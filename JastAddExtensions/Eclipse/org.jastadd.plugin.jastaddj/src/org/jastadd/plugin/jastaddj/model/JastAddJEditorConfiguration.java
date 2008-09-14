@@ -101,6 +101,9 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		if (!indent.startsWith("\n"))
 			indent = "\n" + indent;
 		if (insertEndBrace) {
+			if (!endBrace.startsWith("\n")) {
+				indent += "\n";
+			}
 			indent += endBrace;
 		}
 		cmd.text = indent;

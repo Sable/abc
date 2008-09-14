@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -165,7 +166,12 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 		SelectionAdapter adapter = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					DirectoryDialog dialog = new DirectoryDialog (shell);
-					String projectDir = project.getRawLocation().toOSString();
+					IPath path = project.getRawLocation();
+					if (path == null) {
+						IPath projectPath = project.getFullPath();
+						path = ResourcesPlugin.getWorkspace().getRoot().getRawLocation().append(projectPath);
+					}
+					String projectDir = path.toOSString();
 					dialog.setFilterPath(projectDir);
 					String dir = dialog.open();
 				    if (dir != null) {

@@ -33,31 +33,36 @@ public class NewProjectWizard extends JastAddJNewProjectWizard {
 		
 		// Add JastAdd files
 		
-		// Create src/AST directory
-		IFolder astFolder = project.getFolder(new Path("src/AST"));
+		// Create src/ast directory
+		IFolder astFolder = project.getFolder(new Path("src/ast"));
 		if (!astFolder.exists()) {
 			astFolder.create(false, true, monitor);
 		} 
 		
-		// Copy ASTNode.java, List.java and Opt.java to AST dir
+		// Copy ASTNode.jrag, List.jrag, Opt.jrag and ASTNode$State.jrag to ast dir
 		Bundle bundle = Platform.getBundle(Activator.JASTADD_PLUGIN_ID);
 		if (bundle == null)
 			return;
 		InputStream in;
 		try {
-			// Copy ASTNode.java
-			in = FileLocator.openStream(bundle, new Path("plugin-lib/ASTNode.java"), false);
-			IFile file = project.getFile(new Path("src/AST/ASTNode.java"));
+			// Copy ASTNode.jrag
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/ASTNode.jrag"), false);
+			IFile file = project.getFile(new Path("src/ast/ASTNode.jrag"));
 			file.create(in, true, monitor);
 			in.close();
-			// Copy List.java
-			in = FileLocator.openStream(bundle, new Path("plugin-lib/List.java"), false);
-			file = project.getFile(new Path("src/AST/List.java"));
+			// Copy List.jrag
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/List.jrag"), false);
+			file = project.getFile(new Path("src/ast/List.jrag"));
 			file.create(in, true, monitor);
 			in.close();
-			// Copy Opt.java
-			in = FileLocator.openStream(bundle, new Path("plugin-lib/Opt.java"), false);
-			file = project.getFile(new Path("src/AST/Opt.java"));
+			// Copy Opt.jrag
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/Opt.jrag"), false);
+			file = project.getFile(new Path("src/ast/Opt.jrag"));
+			file.create(in, true, monitor);
+			in.close();
+			// Copy ASTNode$State.jrag
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/ASTNode$State.jrag"), false);
+			file = project.getFile(new Path("src/ast/ASTNode$State.jrag"));
 			file.create(in, true, monitor);
 			in.close();
 		} catch (IOException e) {

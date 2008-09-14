@@ -22,36 +22,29 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
-import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
-import org.jastadd.plugin.jastadd.generated.AST.Access;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
 import org.jastadd.plugin.jastadd.generated.AST.CompilationUnit;
-import org.jastadd.plugin.jastadd.generated.AST.Expr;
 import org.jastadd.plugin.jastadd.generated.AST.JavaParser;
-import org.jastadd.plugin.jastadd.generated.AST.MethodAccess;
+import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
-import org.jastadd.plugin.jastadd.generated.AST.ParExpr;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
 import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
-import org.jastadd.plugin.jastadd.properties.FolderList.ParserFolderList;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -124,6 +117,7 @@ public class Model extends JastAddJModel {
 		program.options().addKeyValueOption("-classpath");
 		program.options().addKeyValueOption("-bootclasspath");
 		program.options().addKeyValueOption("-d");
+		program.options().addKeyValueOption("-package");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		//program.options().setOption("-verbose");
 		program.options().setOption("-no_visit_check");
@@ -133,6 +127,17 @@ public class Model extends JastAddJModel {
 		//program.options().addKeyOption("-weave_inline");
 		//program.options().setOption("-weave_inline");
 		return program;	   
+	}
+	
+	protected void initProgram(Program program, JastAddBuildConfiguration buildConfig) {
+		Collection<String> options = new ArrayList<String>();
+		if (buildConfig.jastadd.getPackage() != null) {
+			options.add("-package");
+			options.add(buildConfig.jastadd.getPackage());
+		}
+		synchronized (program.treeLockObject()) {
+			program.addOptions(options.toArray(new String[0]));
+		}
 	}
 	
 	@Override
@@ -333,6 +338,7 @@ public class Model extends JastAddJModel {
 				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
 				program = (Program) initProgram(project, buildConfiguration);
+				initProgram(program, jastAddBuildConfig);
 				if (program == null)
 					return;
 				
@@ -663,7 +669,7 @@ public class Model extends JastAddJModel {
   		return true;
   	}
   	
-	protected String[] filterNames = {"flex.xml", "parser.xml"};
+	protected String[] filterNames = {"flex.xml", "parser.xml", "jastadd.xml"};
 	
 	public boolean filterInExplorer(String resourceName) {
 		if (resourceName.endsWith("~")) {

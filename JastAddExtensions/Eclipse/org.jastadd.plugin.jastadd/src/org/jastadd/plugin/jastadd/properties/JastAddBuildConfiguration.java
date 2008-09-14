@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.jastadd.plugin.jastadd.properties.FolderList.FileEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.FolderEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.ParserFolderList;
@@ -45,6 +46,8 @@ public class JastAddBuildConfiguration {
 	public final static String PARSER_RESOURCE = "parser.xml";
 	public final static String FLEX_FILTER = "*.flex";
 	public final static String PARSER_FILTER = "*.parser";
+	
+	public final static String JASTADD_RESOURCE = "jastadd.xml";
 
 	private static final String OUTPUT_FOLDER_TAG = "output";
 	private static final String PARSER_TAG = "parser";
@@ -53,6 +56,9 @@ public class JastAddBuildConfiguration {
 	private static final String INCLUDING_TAG = "include";
 	private static final String FILE_TAG = "file";
 	private static final String FOLDER_TAG = "folder";
+	
+	private static final String JASTADD_TAG = "jastadd";
+	private static final String PACKAGE_TAG = "package";
 
 	private static final String DIR_ATTR = "dir";
 	private static final String NAME_ATTR = "name";
@@ -62,12 +68,75 @@ public class JastAddBuildConfiguration {
 	public FolderList flex = new FolderList(FLEX_RESOURCE, FLEX_FILTER);
 	public ParserFolderList parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
 
+	public PackageEntry jastadd = new PackageEntry(JASTADD_RESOURCE);
+	
+	public static class PackageEntry {
+		private String pack;
+		private String resource;
+		public PackageEntry(String resource) {
+			this.resource = resource;
+		}
+		public void setPackage(String p) {
+			pack = p;
+		}
+		public String getPackage() {
+			return pack; 
+		}
+		public String getResource() {
+			return resource;
+		}
+	}
+
 	public JastAddBuildConfiguration(IProject project) {
 		flex = readBuildConfiguration(project, FLEX_RESOURCE, FLEX_FILTER, false);
 		FolderList folder = readBuildConfiguration(project, PARSER_RESOURCE, PARSER_FILTER, true);
 		if (folder instanceof ParserFolderList)
 			parser = (ParserFolderList)folder;
 		else parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
+		jastadd = readBuildConfiguration(project, JASTADD_RESOURCE);
+	}
+	
+	public static PackageEntry readBuildConfiguration(IProject project, String resource) {
+		IFile rscFile = project.getFile(resource);
+		try {
+			if (rscFile.exists()) {
+				InputStream stream = rscFile.getContents(true);
+
+				Element cpElement;
+				try {
+					DocumentBuilder dparser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					cpElement = dparser.parse(new InputSource(stream)).getDocumentElement();
+				} finally {
+					stream.close();
+				}
+				
+				PackageEntry packageEntry = new PackageEntry(resource);
+
+				// Get the output folder directory
+				{
+					NodeList list = cpElement.getElementsByTagName(PACKAGE_TAG);
+					if (list.getLength() > 0) {
+						Node node = list.item(0);
+						NamedNodeMap attributes = node.getAttributes();
+						String pack = readAttribute(attributes, NAME_ATTR);
+						if (pack != null) {
+							packageEntry.setPackage(pack);
+						}
+					}
+				}
+
+				return packageEntry;
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+		return new PackageEntry(resource);
 	}
 
 	public static FolderList readBuildConfiguration(IProject project, String resource, String filter, boolean parser) {
@@ -190,6 +259,46 @@ public class JastAddBuildConfiguration {
 		else
 			return null;
 	}
+	
+	public static void writePackageEntry(IProject project, PackageEntry packageEntry) throws CoreException {
+		// Compose XML
+		ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		XMLWriter xmlWriter;
+		try {
+			xmlWriter = new XMLWriter(byteOutputStream);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+
+		xmlWriter.startTag(JASTADD_TAG, new HashMap<String, String>(), true);
+
+		if (packageEntry.getPackage() != null) {
+			HashMap<String, String> packageMap = new HashMap<String, String>();
+			packageMap.put(NAME_ATTR, packageEntry.getPackage());
+			xmlWriter.startTag(PACKAGE_TAG, packageMap, true);
+			xmlWriter.endTag(PACKAGE_TAG);
+		}
+
+		xmlWriter.endTag(JASTADD_TAG);
+
+		xmlWriter.flush();
+		xmlWriter.close();
+
+		// Write bytes
+		InputStream byteInputStream = new ByteArrayInputStream(byteOutputStream.toByteArray());
+
+		IFile rscFile = project.getFile(packageEntry.getResource());
+		if (rscFile.exists()) {
+			if (rscFile.isReadOnly()) {
+				// provide opportunity to checkout read-only file
+				ResourcesPlugin.getWorkspace().validateEdit(new IFile[] { rscFile }, null);
+			}
+			rscFile.setContents(byteInputStream, IResource.FORCE, null);
+		} else {
+			rscFile.create(byteInputStream, IResource.FORCE, null);
+		}		
+	}
+	
 
 	public static void writeFolderList(IProject project, FolderList folderList) throws CoreException {
 		// Compose XML

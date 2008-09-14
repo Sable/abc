@@ -16,6 +16,7 @@ public class JastAddBuildConfigurationPropertyPage extends JastAddJBuildConfigur
 		super.addPages(list);
 		list.add(new FolderListPage(getShell(), project, buildConfiguration.flex, "Flex"));
 		list.add(new FolderListPage(getShell(), project, buildConfiguration.parser, "Parser"));
+		list.add(new JastAddFilesPropertyPage(getShell(), project, buildConfiguration.jastadd));
 	}
 	
 	protected void initContents() {
@@ -29,5 +30,6 @@ public class JastAddBuildConfigurationPropertyPage extends JastAddJBuildConfigur
 		super.doSave();
 		JastAddBuildConfiguration.writeFolderList(project, buildConfiguration.flex);
 		JastAddBuildConfiguration.writeFolderList(project, buildConfiguration.parser);
+		JastAddBuildConfiguration.writePackageEntry(project, buildConfiguration.jastadd);
 	}	
 }

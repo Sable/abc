@@ -162,10 +162,10 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 	throws CoreException, OperationCanceledException {
 		try {
 			monitor.beginTask("", 4000); //$NON-NLS-1$
-
-			projectHandle.create(
-					description,
-					new SubProgressMonitor(monitor, 1000));
+			if (!projectHandle.exists()) {
+				projectHandle.create(description,
+						new SubProgressMonitor(monitor, 1000));
+			}			
 
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
@@ -186,6 +186,13 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 				throw new OperationCanceledException();
 			
 			projectHandle.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+
+			if (monitor.isCanceled())
+				throw new OperationCanceledException();
+			
+			if (!projectHandle.isOpen()) {
+				projectHandle.open(monitor);
+			}
 			
 		} finally {
 			monitor.done();
