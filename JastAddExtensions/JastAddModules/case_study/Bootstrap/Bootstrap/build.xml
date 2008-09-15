@@ -30,7 +30,7 @@
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
 <taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../../../../JastAdd/"/>
+<!--taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../../../../JastAdd/"/-->
 <taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../../classes"/>
 
 <!-- compile sources -->
