@@ -89,7 +89,8 @@ aspect InnerClasses {
   eq ByteType.stringPromotion() = typeInt();
   eq ShortType.stringPromotion() = typeInt();
 
-  syn boolean ASTNode.isStringAdd() = false;
+  //NEIL: changed to allow access across modules
+  public syn boolean ASTNode.isStringAdd() = false;
   eq AddExpr.isStringAdd() = type().isString() && !isConstant();
   
   syn boolean AddExpr.firstStringAddPart() = type().isString() && !getLeftOperand().isStringAdd();

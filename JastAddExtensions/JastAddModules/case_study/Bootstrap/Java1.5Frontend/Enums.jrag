@@ -128,7 +128,8 @@ aspect Enums {
     }
   }
 
-  void ASTNode.transformEnumConstructors() {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.transformEnumConstructors() {
     for(int i = 0; i < getNumChildNoTransform(); i++) {
       ASTNode child = getChildNoTransform(i);
       if(child != null)
@@ -411,7 +412,8 @@ aspect Enums {
     type.
   */
 
-  void ASTNode.checkEnum(EnumDecl enumDecl) {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.checkEnum(EnumDecl enumDecl) {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).checkEnum(enumDecl);
   }

@@ -930,7 +930,8 @@ aspect CreateBCode {
   syn lazy int Expr.true_label() = getParent().definesLabel() ? condition_true_label() : hostType().constantPool().newLabel();
   
   // these nodes defines labels for their children
-  syn boolean ASTNode.definesLabel() = false;
+  //NEIL: changed to allow access across modules
+  public syn boolean ASTNode.definesLabel() = false;
   eq Opt.definesLabel() = getParent().definesLabel();
   eq List.definesLabel() = getParent().definesLabel();
   eq AbstractDot.definesLabel() = getParent().definesLabel();

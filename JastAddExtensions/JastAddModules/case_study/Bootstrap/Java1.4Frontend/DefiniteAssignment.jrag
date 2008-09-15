@@ -452,20 +452,21 @@ public aspect DA {
   syn boolean Block.isDUeverywhere(Variable v) = isDUbefore(v) && checkDUeverywhere(v);
 
   // 16.2.2 9th, 10th bullet
-  boolean ASTNode.checkDUeverywhere(Variable v) {
+  //NEIL: Added since ASTNode is in another package
+  public boolean ASTNode.checkDUeverywhere(Variable v) {
     for(int i = 0; i < getNumChild(); i++)
       if(!getChild(i).checkDUeverywhere(v))
         return false;
     return true;
   }
 
-  boolean VarAccess.checkDUeverywhere(Variable v) {
+  public boolean VarAccess.checkDUeverywhere(Variable v) {
     if(isDest() && decl() == v)
       return false;
     return super.checkDUeverywhere(v);
   }
   // 16.2.2 9th bullet
-  boolean AssignExpr.checkDUeverywhere(Variable v) {
+  public boolean AssignExpr.checkDUeverywhere(Variable v) {
     if(getDest().isVariable() && getDest().varDecl() == v)
       if(!getSource().isDAafter(v))
         return false;
@@ -473,19 +474,19 @@ public aspect DA {
   }
   
   // 16.2.2 10th bullet
-  boolean PostfixExpr.checkDUeverywhere(Variable v) {
+  public boolean PostfixExpr.checkDUeverywhere(Variable v) {
     if(getOperand().isVariable() && getOperand().varDecl() == v)
       if(!isDAbefore(v))
         return false;
     return super.checkDUeverywhere(v);
   }
-  boolean PreIncExpr.checkDUeverywhere(Variable v) {
+  public boolean PreIncExpr.checkDUeverywhere(Variable v) {
     if(getOperand().isVariable() && getOperand().varDecl() == v)
       if(!isDAbefore(v))
         return false;
     return super.checkDUeverywhere(v);
   }
-  boolean PreDecExpr.checkDUeverywhere(Variable v) {
+  public boolean PreDecExpr.checkDUeverywhere(Variable v) {
     if(getOperand().isVariable() && getOperand().varDecl() == v)
       if(!isDAbefore(v))
         return false;
@@ -562,7 +563,8 @@ public aspect DA {
     return result;
   }
 
-  boolean ASTNode.isDescendantTo(ASTNode node) {
+  //NEIL: Changed since astnode is now in another package
+  public boolean ASTNode.isDescendantTo(ASTNode node) {
     if(this == node)
       return true;
     if(getParent() == null)
@@ -1202,7 +1204,8 @@ public aspect DU {
     return true;
   }
 
-  syn boolean ASTNode.unassignedEverywhere(Variable v, TryStmt stmt) {
+  //NEIL: Changed
+  public syn boolean ASTNode.unassignedEverywhere(Variable v, TryStmt stmt) {
     for(int i = 0; i < getNumChild(); i++) {
       if(!getChild(i).unassignedEverywhere(v, stmt))
         return false;

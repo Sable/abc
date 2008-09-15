@@ -15,7 +15,8 @@ import java.util.ArrayList;
 
 public aspect ErrorCheck {
 
-  String ASTNode.sourceFile() {
+  //NEIL: changed to allow access across modules
+  public String ASTNode.sourceFile() {
     ASTNode node = this;
     while(node != null && !(node instanceof CompilationUnit))
       node = node.getParent();
@@ -25,7 +26,8 @@ public aspect ErrorCheck {
     return u.relativeName();
   }
 
-  syn int ASTNode.lineNumber() {
+  //NEIL: changed to allow access across modules
+  public syn int ASTNode.lineNumber() {
     ASTNode n = this;
     while(n.getParent() != null && n.getStart() == 0) {
       n = n.getParent();
@@ -76,7 +78,8 @@ public aspect ErrorCheck {
   Collection CompilationUnit.parseErrors = new ArrayList();
 
 
-  void ASTNode.error(String s) {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.error(String s) {
     ASTNode node = this;
     while(node != null && !(node instanceof CompilationUnit))
       node = node.getParent();
@@ -92,7 +95,8 @@ public aspect ErrorCheck {
       cu.errors.add(new Problem(sourceFile(), s, lineNumber(), Problem.Severity.ERROR, Problem.Kind.SEMANTIC));
   }
 
-  void ASTNode.warning(String s) {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.warning(String s) {
     ASTNode node = this;
     while(node != null && !(node instanceof CompilationUnit))
       node = node.getParent();

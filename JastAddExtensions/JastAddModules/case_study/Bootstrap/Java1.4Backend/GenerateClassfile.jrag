@@ -331,7 +331,8 @@ aspect GenerateClassfile {
     return empty;
   }
 
-  syn boolean ASTNode.flush() = true;
+  //NEIL: changed to allow access across modules
+  public syn boolean ASTNode.flush() = true;
   
   eq TypeDecl.flush() = false;
   eq LocalClassDeclStmt.flush() = true;

@@ -12,17 +12,18 @@ import java.util.Iterator;
 
 public aspect UnreachableStatements {
 
-  void ASTNode.checkUnreachableStmt() {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.checkUnreachableStmt() {
   }
-  void Stmt.checkUnreachableStmt() {
+  public void Stmt.checkUnreachableStmt() {
     if(!reachable() && reportUnreachable())
       error("statement is unreachable");
   }
-  void StaticInitializer.checkUnreachableStmt() {
+  public void StaticInitializer.checkUnreachableStmt() {
     if(!getBlock().canCompleteNormally())
       error("static initializer in " + hostType().fullName() + " can not complete normally");
   }
-  void InstanceInitializer.checkUnreachableStmt() {
+  public void InstanceInitializer.checkUnreachableStmt() {
     if(!getBlock().canCompleteNormally())
       error("instance initializer in " + hostType().fullName() + " can not complete normally");
   }

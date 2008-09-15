@@ -138,12 +138,13 @@ public aspect AnonymousClasses {
     return set;
   }
 
-  void ASTNode.collectExceptions(Collection c, ASTNode target) {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.collectExceptions(Collection c, ASTNode target) {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).collectExceptions(c, target);
   }
 
-  void ThrowStmt.collectExceptions(Collection c, ASTNode target) {
+  public void ThrowStmt.collectExceptions(Collection c, ASTNode target) {
     super.collectExceptions(c, target);
     TypeDecl exceptionType = getExpr().type();
     if(exceptionType == typeNull())
@@ -151,7 +152,7 @@ public aspect AnonymousClasses {
     c.add(exceptionType);
   }
 
-  void MethodAccess.collectExceptions(Collection c, ASTNode target) {
+  public void MethodAccess.collectExceptions(Collection c, ASTNode target) {
     super.collectExceptions(c, target);
     for(int i = 0; i < decl().getNumException(); i++)
       c.add(decl().getException(i).type());

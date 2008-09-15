@@ -18,7 +18,8 @@ aspect SourceLineNumber {
     setStart(ASTNode.makePosition(i, 1));
   }
   
-  syn int ASTNode.sourceLineNumber() = getStart() != 0 ? getLine(getStart()) : -1;
+  //NEIL: changed to allow access across modules
+  public syn int ASTNode.sourceLineNumber() = getStart() != 0 ? getLine(getStart()) : -1;
   eq ReturnStmt.sourceLineNumber() {
     int num = super.sourceLineNumber();
     if(num != -1)
@@ -33,7 +34,8 @@ aspect SourceLineNumber {
   eq ExprStmt.sourceLineNumber() = getExpr().findFirstSourceLineNumber();
   eq Access.sourceLineNumber() = findFirstSourceLineNumber();
 
-  int ASTNode.findFirstSourceLineNumber() {
+  //NEIL: changed to allow access across modules
+  public int ASTNode.findFirstSourceLineNumber() {
     if(getStart() != 0)
       return getLine(getStart());
     for(int i = 0; i < getNumChild(); i++) {

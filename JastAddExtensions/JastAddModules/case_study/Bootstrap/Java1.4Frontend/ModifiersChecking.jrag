@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public aspect ModifiersChecking {
-  void ASTNode.checkModifiers() {
+  //NEIL: changed to allow access across modules
+  public void ASTNode.checkModifiers() {
   }
 
   syn lazy boolean TypeDecl.hasAbstract() = false;

@@ -769,7 +769,8 @@ public aspect PrettyPrint {
     dumpTreeNoRewrite(s, 0);
     return s.toString();
   }
-  void ASTNode.dumpTreeNoRewrite(StringBuffer s, int indent) {
+  //NEIL: Changed to allow access across modules
+  public void ASTNode.dumpTreeNoRewrite(StringBuffer s, int indent) {
     for(int i = 0; i < indent; i++)
       s.append("  ");
     s.append(dumpString());
@@ -779,7 +780,8 @@ public aspect PrettyPrint {
     }
   }
 
-  syn String ASTNode.dumpString() = getClass().getName();
+  //NEIL: Changed to allow access across modules
+  public syn String ASTNode.dumpString() = getClass().getName();
   eq CompilationUnit.dumpString() = getClass().getName() + " [" + getPackageDecl() + "]";
   eq VarAccess.dumpString() = getClass().getName() + " [" + getID() + "]";
   eq MethodAccess.dumpString() = getClass().getName() + " [" + getID() + "]";

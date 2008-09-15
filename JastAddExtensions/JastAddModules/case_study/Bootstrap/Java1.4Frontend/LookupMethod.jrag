@@ -340,7 +340,8 @@ public aspect MemberMethods {
     }
     return map;
   }
-  static void ASTNode.putSimpleSetElement(HashMap map, Object key, Object value) {
+  //NEIL: changed to allow access across modules
+  public static void ASTNode.putSimpleSetElement(HashMap map, Object key, Object value) {
     SimpleSet set = (SimpleSet)map.get(key);
     if(set == null) set = SimpleSet.emptySet;
     map.put(key, set.add(value));

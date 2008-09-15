@@ -198,14 +198,15 @@ public aspect ExceptionHandling {
   syn lazy boolean TryStmt.reachableThrow(CatchClause c) = 
     getBlock().reachedException(c.getParameter().type());
 
-  boolean ASTNode.reachedException(TypeDecl type) {
+  //NEIL: changed to allow access across modules
+  public boolean ASTNode.reachedException(TypeDecl type) {
     for(int i = 0; i < getNumChild(); i++)
       if(getChild(i).reachedException(type))
         return true;
     return false;
   }
 
-  boolean TryStmt.reachedException(TypeDecl type) {
+  public boolean TryStmt.reachedException(TypeDecl type) {
     boolean found = false;
     // found is true if the exception type is caught by a catch clause
     for(int i = 0; i < getNumCatchClause() && !found; i++)
@@ -227,7 +228,7 @@ public aspect ExceptionHandling {
   syn lazy boolean TypeDecl.mayCatch(TypeDecl thrownType) =
     thrownType.instanceOf(this) || this.instanceOf(thrownType);
 
-  boolean MethodAccess.reachedException(TypeDecl catchType) {
+  public boolean MethodAccess.reachedException(TypeDecl catchType) {
     for(Iterator iter = exceptionCollection().iterator(); iter.hasNext(); ) {
       TypeDecl exceptionType = (TypeDecl)iter.next();
       if(catchType.mayCatch(exceptionType))
@@ -236,7 +237,7 @@ public aspect ExceptionHandling {
     return super.reachedException(catchType);
   }
   
-  boolean ThrowStmt.reachedException(TypeDecl catchType) {
+  public boolean ThrowStmt.reachedException(TypeDecl catchType) {
     TypeDecl exceptionType = getExpr().type();
     if(exceptionType == typeNull())
       exceptionType = typeNullPointerException();
@@ -246,7 +247,7 @@ public aspect ExceptionHandling {
   }
   
   // 8.8.4 (8.4.4)
-  boolean ConstructorAccess.reachedException(TypeDecl catchType) {
+  public boolean ConstructorAccess.reachedException(TypeDecl catchType) {
     for(int i = 0; i < decl().getNumException(); i++) {
       TypeDecl exceptionType = decl().getException(i).type();
       if(catchType.mayCatch(exceptionType))
@@ -255,7 +256,7 @@ public aspect ExceptionHandling {
     return super.reachedException(catchType);
   }
 
-  boolean ClassInstanceExpr.reachedException(TypeDecl catchType) {
+  public boolean ClassInstanceExpr.reachedException(TypeDecl catchType) {
     ConstructorDecl decl = decl();
     for(int i = 0; i < decl.getNumException(); i++) {
       TypeDecl exceptionType = decl.getException(i).type();

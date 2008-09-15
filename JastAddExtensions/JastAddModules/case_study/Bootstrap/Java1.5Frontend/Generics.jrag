@@ -948,7 +948,8 @@ aspect LookupParTypeDecl {
   }
   syn lazy List ParInterfaceDecl.getBodyDeclList() = new List();
 
-  syn boolean ASTNode.usesTypeVariable() {
+  //NEIL: changed to allow access across modules
+  public syn boolean ASTNode.usesTypeVariable() {
     for(int i = 0; i < getNumChild(); i++)
       if(getChild(i).usesTypeVariable())
         return true;

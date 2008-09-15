@@ -17,7 +17,8 @@ import java.util.LinkedList;
     protected Program program;
 
     protected Frontend() {
-      ASTNode.reset(); // reset global state and possible debug info
+      //NEIL: Removed, no longer supported in new ASTNode
+      //ASTNode.reset(); // reset global state and possible debug info
       program = new Program();
     }
 
