@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
 
-aspect SourceLineNumber {
+public aspect SourceLineNumber {
   public void ASTNode.setSourceLineNumber(int i) {
     setStart(ASTNode.makePosition(i, 1));
   }
@@ -460,7 +460,7 @@ aspect SourceLineNumber {
     }
   }
 
-aspect EmitMethods {
+public aspect EmitMethods {
 
   /*************************************************************
    * Emit methods
@@ -947,7 +947,7 @@ aspect EmitMethods {
     gen.emit(Bytecode.NEW).add2(index);
   }
 }
-aspect CodeGenerationConversions {
+public aspect CodeGenerationConversions {
   void TypeDecl.emitAssignConvTo(CodeGeneration gen, TypeDecl type) {
     if(!type.isIntegralType() || !isIntegralType() || type.isLong())
       emitCastTo(gen, type);
@@ -1026,7 +1026,7 @@ aspect CodeGenerationConversions {
 
 }
 
-aspect CodeGenerationBinaryOperations {
+public aspect CodeGenerationBinaryOperations {
   // emit the desired operation on the operand(s) on the stack
   void Expr.emitOperation(CodeGeneration gen) {error();}
   // unary
@@ -1120,7 +1120,7 @@ aspect CodeGenerationBinaryOperations {
   void BooleanType.bitxor(CodeGeneration gen) {gen.emit(Bytecode.IXOR);}
 }
 
-aspect CodeGenerationBranch {
+public aspect CodeGenerationBranch {
   public void TypeDecl.branchLT(CodeGeneration gen, int label) { throw new Error("branchLT not supported for " + getClass().getName()); }
   public void DoubleType.branchLT(CodeGeneration gen, int label)   { gen.emit(Bytecode.DCMPG).emitCompare(Bytecode.IFLT, label); }
   public void FloatType.branchLT(CodeGeneration gen, int label)    { gen.emit(Bytecode.FCMPG).emitCompare(Bytecode.IFLT, label); }

@@ -58,7 +58,7 @@ import java.util.ArrayList;
     }
   }
 
-aspect AttributesCodegen {
+public aspect AttributesCodegen {
   public int TypeDecl.addConstant(ConstantPool p, Constant c)     { 
     if(isString()) return p.addConstant(c.stringValue());
     throw new Error("Not supported"); 

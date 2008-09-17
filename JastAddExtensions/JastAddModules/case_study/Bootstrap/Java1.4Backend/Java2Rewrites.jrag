@@ -9,7 +9,7 @@
 module org.jastadd.java14backend;
 import java.util.HashMap;
 
-aspect Java2Rewrites {
+public aspect Java2Rewrites {
   int TypeDecl.uniqueIndexCounter = 1;
   syn lazy int TypeDecl.uniqueIndex() = topLevelType().uniqueIndexCounter++;
 

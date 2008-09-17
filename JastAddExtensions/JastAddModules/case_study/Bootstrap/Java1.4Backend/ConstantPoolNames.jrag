@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 module org.jastadd.java14backend;
-aspect ConstantPoolNames {
+public aspect ConstantPoolNames {
 
   syn lazy String TypeDecl.typeDescriptor() {
     throw new Error("Can not compute typeDescriptor for " + getClass().getName());

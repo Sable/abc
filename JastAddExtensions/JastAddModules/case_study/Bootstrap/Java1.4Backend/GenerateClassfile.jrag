@@ -16,7 +16,7 @@ import java.io.BufferedOutputStream;
 import java.util.Collection;
 import java.util.ArrayList;
 
-aspect GenerateClassfile {
+public aspect GenerateClassfile {
   public void Program.generateClassfile() {
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit cu = (CompilationUnit)iter.next();

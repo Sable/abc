@@ -12,7 +12,7 @@ import java.io.*;
 //NEIL: Needed to override java.util.*
 import jastadd$framework::List;
 
-aspect CreateBCode {
+public aspect CreateBCode {
   inh TypeDecl CatchClause.hostType();
   
   syn lazy boolean TypeDecl.hasClinit() {
@@ -935,7 +935,10 @@ aspect CreateBCode {
   // these nodes defines labels for their children
   //NEIL: changed to allow access across modules
   public syn boolean ASTNode.definesLabel() = false;
-  eq Opt.definesLabel() = getParent().definesLabel();
+  //NEIL: For some reason this causes an "unable to find attribute" error on definesLabel.
+  //decl() finds a MethodDeclSubstituted instead of a SynDecl on nameCheck
+  //Check if you can get away with leaving this out (unlikely)
+  //eq Opt.definesLabel() = getParent().definesLabel();
   eq List.definesLabel() = getParent().definesLabel();
   eq AbstractDot.definesLabel() = getParent().definesLabel();
   eq ParExpr.definesLabel() = getParent().definesLabel();

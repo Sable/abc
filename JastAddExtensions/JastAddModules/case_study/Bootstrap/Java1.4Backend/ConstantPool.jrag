@@ -10,7 +10,7 @@ module org.jastadd.java14backend;
 import java.util.*;
 import java.io.*;
 
-aspect ConstantPoolAspect {
+public aspect ConstantPoolAspect {
   syn lazy ConstantPool TypeDecl.constantPool() = new ConstantPool(this);
 
   syn lazy String TypeDecl.constantPoolName() {

@@ -10,7 +10,7 @@ module org.jastadd.java14backend;
 import java.util.Iterator;
 import java.util.Collection;
 
-aspect LocalNum {
+public aspect LocalNum {
   inh lazy int VariableDeclaration.localNum();
   inh lazy int Stmt.localNum();
   inh lazy int ParameterDeclaration.localNum();

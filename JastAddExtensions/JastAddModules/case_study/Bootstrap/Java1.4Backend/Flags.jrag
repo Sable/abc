@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 module org.jastadd.java14backend;
-aspect Flags {
+public aspect Flags {
   public static final int Modifiers.ACC_PUBLIC       = 0x0001; // class field method
   public static final int Modifiers.ACC_PRIVATE      = 0x0002; //       field method
   public static final int Modifiers.ACC_PROTECTED    = 0x0004; //       field method

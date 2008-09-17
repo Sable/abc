@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
 
-aspect InnerClasses {
+public aspect InnerClasses {
   // no attribute since needed in phases when the AST has been modified
   public boolean TypeDecl.hasField(String name) {
     if(!memberFields(name).isEmpty())
