@@ -20,7 +20,7 @@ aspect ModuleCompilationUnit {
 			File inFile = new File(name);
 			FileInputStream is = new FileInputStream(inFile);
 			scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-			scanner.enterJastAdd();
+			scanner.enterJastAddModule();
 			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.jamodule_compilation_unit);
 			scanner.previousState();
 			is.close();

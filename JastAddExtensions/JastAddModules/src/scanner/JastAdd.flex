@@ -68,6 +68,9 @@ import java.io.*;
   public void enterJava() {
     enterState(YYINITIAL);
   }
+  public void enterJastAddModule() {
+  	enterState(JASTADDMODULE);
+  }
   
   public void openBrace() {
     braceLevel++;
@@ -134,7 +137,7 @@ HexSignificand = {HexNumeral} [\.]?
 
 BinaryExponent = [pP] [+-]? {Digits}
 
-%state STRING, JASTADD
+%state STRING, JASTADD, JASTADDMODULE
 
 %%
 
@@ -153,6 +156,9 @@ BinaryExponent = [pP] [+-]? {Digits}
   "nta" { return sym(Terminals.NTA); }
   "refine" { return sym(Terminals.REFINE); }
   "refined" { return sym(Terminals.REFINED); }
+}
+
+<JASTADDMODULE> {
   "own" { return sym(Terminals.OWN); }
   "export" { return sym(Terminals.EXPORT); }
   "as" { return sym(Terminals.AS); }
@@ -166,7 +172,7 @@ BinaryExponent = [pP] [+-]? {Digits}
 }
 
 
-<YYINITIAL,JASTADD> {
+<YYINITIAL,JASTADD, JASTADDMODULE> {
   // 3.6 White Space
   {WhiteSpace}                   { }
   
