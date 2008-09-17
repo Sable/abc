@@ -11,9 +11,10 @@ import java.util.Iterator;
 import java.util.Collection;
 
 public aspect LocalNum {
-  inh lazy int VariableDeclaration.localNum();
-  inh lazy int Stmt.localNum();
-  inh lazy int ParameterDeclaration.localNum();
+  //NEIL: Changed to allow inter-module access
+  public inh lazy int VariableDeclaration.localNum();
+  public inh lazy int Stmt.localNum();
+  public inh lazy int ParameterDeclaration.localNum();
 
   eq Program.getChild(int index).localNum() = 0;
 

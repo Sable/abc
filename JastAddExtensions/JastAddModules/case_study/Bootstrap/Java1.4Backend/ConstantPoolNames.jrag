@@ -61,7 +61,9 @@ public aspect ConstantPoolNames {
   }
 
 
-  inh lazy String TypeDecl.destinationPath();
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been detected at compile time, but wasn't. Check.
+  public inh lazy String TypeDecl.destinationPath();
   eq CompilationUnit.getTypeDecl(int index).destinationPath() = destinationPath();
   eq CompilationUnit.getImportDecl(int index).destinationPath() = destinationPath();
 

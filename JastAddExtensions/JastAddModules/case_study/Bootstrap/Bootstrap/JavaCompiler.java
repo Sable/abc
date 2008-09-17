@@ -28,10 +28,10 @@ class JavaCompiler extends Frontend {
     );
   }
   protected void processNoErrors(CompilationUnit unit) {
-   // unit.transformation();
-   // if(Program.hasOption("-print"))
-   //   System.out.println(unit);
-   // unit.generateClassfile();
+    unit.transformation();
+    if(Program.hasOption("-print"))
+      System.out.println(unit);
+    unit.generateClassfile();
   }
 
   protected String name() { return "Java1.4Frontend + Backend"; }

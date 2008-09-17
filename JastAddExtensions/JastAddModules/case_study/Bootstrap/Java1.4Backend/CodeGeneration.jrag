@@ -56,7 +56,9 @@ public aspect SourceLineNumber {
     throw new Error("variableScopeEndLabel not valid from here");
   }
 } 
-  class CodeGeneration {
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been caught at compile time, but was not. Check
+  public class CodeGeneration {
     private ByteArray bytes = new ByteArray();
     private ConstantPool constantPool;
 
@@ -109,7 +111,9 @@ public aspect SourceLineNumber {
     private HashMap variableScopeLabelAddress = new HashMap();
     private HashMap variableScopeLabelUses = new HashMap();
 
-    class LocalVariableEntry {
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been caught at compile time, but was not. Check
+    public class LocalVariableEntry {
       int start_pc;
       int length;
       int name_index;
@@ -138,7 +142,9 @@ public aspect SourceLineNumber {
     // syn lazy int Block.variableScopeEndLabel(CodeGeneration gen) = gen.variableScopeLabel();
     //  Block.createBCode() { ... gen.addLabel(variableScopeLabel());
     
-    class LineNumberEntry {
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been caught at compile time, but was not. Check
+    public class LineNumberEntry {
       int start_pc;
       int line_number;
     }
@@ -161,7 +167,9 @@ public aspect SourceLineNumber {
       if(e.start_pc != e.end_pc)
         exceptions.add(e);
     }
-    class ExceptionEntry {
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been caught at compile time, but was not. Check
+    public class ExceptionEntry {
       int start_pc;
       int end_pc;
       int handler_pc;
@@ -383,7 +391,9 @@ public aspect SourceLineNumber {
   /*************************************************************
    * Auxiliary class
    *************************************************************/
-  class ByteArray {
+  //NEIL: Changed to allow inter-module access
+  //TODO: Should have been caught at compile time, but was not. Check
+  public class ByteArray {
     private int stackDepth = 0;
     private int maxStackDepth = 0;
     private int size = 64;
