@@ -694,7 +694,8 @@ public aspect DA {
   }
 }
 
-  interface FinallyHost {
+  //NEIL: Changed to public to allow inter-module access
+  public interface FinallyHost {
     //public Block getFinally();
     public boolean isDUafterFinally(Variable v);
     public boolean isDAafterFinally(Variable v);

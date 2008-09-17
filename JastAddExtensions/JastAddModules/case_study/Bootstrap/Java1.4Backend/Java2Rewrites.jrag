@@ -6,7 +6,7 @@
  * Copyright (c) 2005-2008, Torbjorn Ekman
  * All rights reserved.
  */
-
+module org.jastadd.java14backend;
 import java.util.HashMap;
 
 aspect Java2Rewrites {

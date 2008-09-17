@@ -7,92 +7,92 @@
  * All rights reserved.
  */
 module org.jastadd.java14frontend;
-
-  class Constant {
-    static class ConstantInt extends Constant {
+//NEIL: Changed to public to allow for inter-module access
+  public class Constant {
+    public static class ConstantInt extends Constant {
       private int value;
       public ConstantInt(int i) { this.value = i; }
-      int intValue() { return value; }
-      long longValue() { return value; }
-      float floatValue() { return value; }
-      double doubleValue() { return value; }
-      String stringValue() { return new Integer(value).toString(); }
-      Literal buildLiteral() { return new IntegerLiteral(stringValue()); }
+      public int intValue() { return value; }
+      public long longValue() { return value; }
+      public float floatValue() { return value; }
+      public double doubleValue() { return value; }
+      public String stringValue() { return new Integer(value).toString(); }
+      public Literal buildLiteral() { return new IntegerLiteral(stringValue()); }
     }
-    static class ConstantLong extends Constant {
+    public static class ConstantLong extends Constant {
       private long value;
       public ConstantLong(long l) { this.value = l; }
-      int intValue() { return (int)value; }
-      long longValue() { return value; }
-      float floatValue() { return value; }
-      double doubleValue() { return value; }
-      String stringValue() { return new Long(value).toString(); }
-      Literal buildLiteral() { return new LongLiteral(stringValue()); }
+      public int intValue() { return (int)value; }
+      public long longValue() { return value; }
+      public float floatValue() { return value; }
+      public double doubleValue() { return value; }
+      public String stringValue() { return new Long(value).toString(); }
+      public Literal buildLiteral() { return new LongLiteral(stringValue()); }
     }
-    static class ConstantFloat extends Constant {
+    public static class ConstantFloat extends Constant {
       private float value;
       public ConstantFloat(float f) { this.value = f; }
-      int intValue() { return (int)value; }
-      long longValue() { return (long)value; }
-      float floatValue() { return value; }
-      double doubleValue() { return value; }
-      String stringValue() { return new Float(value).toString(); }
-      Literal buildLiteral() { return new FloatingPointLiteral(stringValue()); }
+      public int intValue() { return (int)value; }
+      public long longValue() { return (long)value; }
+      public float floatValue() { return value; }
+      public double doubleValue() { return value; }
+      public String stringValue() { return new Float(value).toString(); }
+      public Literal buildLiteral() { return new FloatingPointLiteral(stringValue()); }
     }
-    static class ConstantDouble extends Constant {
+    public static class ConstantDouble extends Constant {
       private double value;
       public ConstantDouble(double d) { this.value = d; }
-      int intValue() { return (int)value; }
-      long longValue() { return (long)value; }
-      float floatValue() { return (float)value; }
-      double doubleValue() { return value; }
-      String stringValue() { return new Double(value).toString(); }
-      Literal buildLiteral() { return new DoubleLiteral(stringValue()); }
+      public int intValue() { return (int)value; }
+      public long longValue() { return (long)value; }
+      public float floatValue() { return (float)value; }
+      public double doubleValue() { return value; }
+      public String stringValue() { return new Double(value).toString(); }
+      public Literal buildLiteral() { return new DoubleLiteral(stringValue()); }
     }
-    static class ConstantChar extends Constant {
+    public static class ConstantChar extends Constant {
       private char value;
       public ConstantChar(char c) { this.value = c; }
-      int intValue() { return value; }
-      long longValue() { return value; }
-      float floatValue() { return value; }
-      double doubleValue() { return value; }
-      String stringValue() { return new Character(value).toString(); }
-      Literal buildLiteral() { return new CharacterLiteral(stringValue()); }
+      public int intValue() { return value; }
+      public long longValue() { return value; }
+      public float floatValue() { return value; }
+      public double doubleValue() { return value; }
+      public String stringValue() { return new Character(value).toString(); }
+      public Literal buildLiteral() { return new CharacterLiteral(stringValue()); }
     }
-    static class ConstantBoolean extends Constant {
+    public static class ConstantBoolean extends Constant {
       private boolean value;
       public ConstantBoolean(boolean b) { this.value = b; }
-      boolean booleanValue() { return value; }
-      String stringValue() { return new Boolean(value).toString(); }
-      Literal buildLiteral() { return new BooleanLiteral(stringValue()); }
+      public boolean booleanValue() { return value; }
+      public String stringValue() { return new Boolean(value).toString(); }
+      public Literal buildLiteral() { return new BooleanLiteral(stringValue()); }
     }
-    static class ConstantString extends Constant {
+    public static class ConstantString extends Constant {
       private String value;
       public ConstantString(String s) { this.value = s; }
-      String stringValue() { return value; }
-      Literal buildLiteral() { return new StringLiteral(stringValue()); }
+      public String stringValue() { return value; }
+      public Literal buildLiteral() { return new StringLiteral(stringValue()); }
     }
 
-    int intValue() { throw new UnsupportedOperationException(); }
-    long longValue() { throw new UnsupportedOperationException(); }
-    float floatValue() { throw new UnsupportedOperationException(); }
-    double doubleValue() { throw new UnsupportedOperationException(); }
-    boolean booleanValue() { throw new UnsupportedOperationException(getClass().getName()); }
-    String stringValue() { throw new UnsupportedOperationException(); }
-    Literal buildLiteral() { throw new UnsupportedOperationException(); }
+    public int intValue() { throw new UnsupportedOperationException(); }
+    public long longValue() { throw new UnsupportedOperationException(); }
+    public float floatValue() { throw new UnsupportedOperationException(); }
+    public double doubleValue() { throw new UnsupportedOperationException(); }
+    public boolean booleanValue() { throw new UnsupportedOperationException(getClass().getName()); }
+    public String stringValue() { throw new UnsupportedOperationException(); }
+    public Literal buildLiteral() { throw new UnsupportedOperationException(); }
       
     protected Constant() {
     }
     
     public boolean error = false;
 
-    static Constant create(int i) { return new ConstantInt(i); }
-    static Constant create(long l) { return new ConstantLong(l); }
-    static Constant create(float f) { return new ConstantFloat(f); }
-    static Constant create(double d) { return new ConstantDouble(d); }
-    static Constant create(boolean b) { return new ConstantBoolean(b); }
-    static Constant create(char c) { return new ConstantChar(c); }
-    static Constant create(String s) { return new ConstantString(s); }
+    public static Constant create(int i) { return new ConstantInt(i); }
+    public static Constant create(long l) { return new ConstantLong(l); }
+    public static Constant create(float f) { return new ConstantFloat(f); }
+    public static Constant create(double d) { return new ConstantDouble(d); }
+    public static Constant create(boolean b) { return new ConstantBoolean(b); }
+    public static Constant create(char c) { return new ConstantChar(c); }
+    public static Constant create(String s) { return new ConstantString(s); }
   }
 
 public aspect ConstantExpression {

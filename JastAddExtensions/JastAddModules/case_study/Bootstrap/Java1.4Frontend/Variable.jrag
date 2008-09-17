@@ -9,7 +9,8 @@
 module org.jastadd.java14frontend;
 import jastadd$framework::List;
 
-interface Variable {
+//NEIL: Changed to allow inter-module access
+public interface Variable {
   public String name();
   public TypeDecl type();
   // 4.5.3

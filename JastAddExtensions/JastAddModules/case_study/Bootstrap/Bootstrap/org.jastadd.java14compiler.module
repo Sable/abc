@@ -1,5 +1,10 @@
 module org.jastadd.java14compiler;
 import own org.jastadd.java14frontend export as frontend;
+import own org.jastadd.java14backend export as backend;
+
+merge frontend, backend::frontend 
+	export as org.jastadd.java14frontend frontend;
+
 import net.sourceforge.beaver;
 import de.jflex;
 

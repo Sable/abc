@@ -6,7 +6,7 @@
  * Copyright (c) 2005-2008, Torbjorn Ekman
  * All rights reserved.
  */
-
+module org.jastadd.java14backend;
 aspect Transformations {
   // generic traversal of the tree
   public void ASTNode.transformation() {
@@ -34,7 +34,7 @@ aspect Transformations {
   /*
   public void Expr.transformation() {
     if(isConstant() && !(this instanceof Literal))
-      replace(this).with(constant().buildLiteral());
+      replaceNode(this).withNode(constant().buildLiteral());
     else
       super.transformation();
   }
@@ -58,7 +58,7 @@ aspect Transformations {
         a = a.qualifiesAccess(new VarAccess("this$0"));
         typeDecl = typeDecl.enclosingType();
       }
-      ASTNode result = replace(this).with(qualifyTailWith(a));
+      ASTNode result = replaceNode(this).withNode(qualifyTailWith(a));
       result.transformation();
       return;
     }
@@ -74,7 +74,7 @@ aspect Transformations {
       TypeDecl typeDecl = hostType();
       while(typeDecl != null && !typeDecl.hasMethod(name()))
         typeDecl = typeDecl.enclosingType();
-      ASTNode result = replace(this).with(typeDecl.createQualifiedAccess().qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new MethodAccess(name(), getArgList())));
+      ASTNode result = replaceNode(this).withNode(typeDecl.createQualifiedAccess().qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new MethodAccess(name(), getArgList())));
       result.transformation();
       return;
     }*/
@@ -90,7 +90,7 @@ aspect Transformations {
       3) The flags must indicate that the method is static and package private
       */
       super.transformation();
-      replace(this).with(decl().createAccessor(methodQualifierType()).createBoundAccess(getArgList()));
+      replaceNode(this).withNode(decl().createAccessor(methodQualifierType()).createBoundAccess(getArgList()));
       return;
     }
     else if(!m.isStatic() && isQualified() && prevExpr().isSuperAccess() && !hostType().instanceOf(prevExpr().type())) {
@@ -199,21 +199,21 @@ aspect Transformations {
         new Opt()
       );
      
-    replace(this).with(stmt);
+    replaceNode(this).withNode(stmt);
     stmt.transformation();
   }
   
   // imperative transformation of the AST
-  // syntax ASTNode.replace(sourcenode).with(destnode)
+  // syntax ASTNode.replaceNode(sourcenode).withNode(destnode)
   // this syntax is used to allow for building the destnode using the sourcenode
   //NEIL: changed to allow access across modules
-  public static ASTNode ASTNode.replace(ASTNode node) {
+  public static ASTNode ASTNode.replaceNode(ASTNode node) {
     replacePos = node.getParent().getIndexOfChild(node);
     node.getParent().in$Circle(true);
     return node.getParent();
   }
   //NEIL: changed to allow access across modules
-  public ASTNode ASTNode.with(ASTNode node) {
+  public ASTNode ASTNode.withNode(ASTNode node) {
    ((ASTNode)this).setChild(node, replacePos);
    in$Circle(false);
    return node;

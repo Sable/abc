@@ -6,7 +6,7 @@
  * Copyright (c) 2005-2008, Torbjorn Ekman
  * All rights reserved.
  */
-
+module org.jastadd.java14backend;
 aspect Flags {
   public static final int Modifiers.ACC_PUBLIC       = 0x0001; // class field method
   public static final int Modifiers.ACC_PRIVATE      = 0x0002; //       field method

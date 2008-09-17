@@ -40,7 +40,7 @@
 <!-- generate compiler source files and compile sources -->
 <target name="gen" depends="scanner,parser">
   <!-- create AST node types and weave aspect modules -->
-  <jastaddmodules package="${package}" outdir="classes-jastaddmodules" verbose="true" weaveInline="false" novisitcheck="true" instancemodule="org.jastadd.java14compiler" jastaddframework="true" debug="false">
+  <jastaddmodules outdir="classes-jastaddmodules" verbose="true" weaveInline="false" novisitcheck="true" instancemodule="org.jastadd.java14compiler" jastaddframework="true" debug="true" classpath=".">
 		<fileset dir="${Java1.4Frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -48,11 +48,12 @@
 			<include name="**/*.module"/> 
       <!--exclude name="Bytecode*.jrag"/-->
 		</fileset>
-		<!--fileset dir="${Java1.4Backend}">
+		<fileset dir="${Java1.4Backend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/> 
-		</fileset-->
+			<include name="**/*.module"/> 
+		</fileset>
     <!--fileset dir="${Java1.5Frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>

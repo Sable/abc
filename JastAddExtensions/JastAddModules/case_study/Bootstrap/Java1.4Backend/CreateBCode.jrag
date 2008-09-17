@@ -6,9 +6,12 @@
  * Copyright (c) 2005-2008, Torbjorn Ekman
  * All rights reserved.
  */
-
+module org.jastadd.java14backend;
 import java.util.*;
 import java.io.*;
+//NEIL: Needed to override java.util.*
+import jastadd$framework::List;
+
 aspect CreateBCode {
   inh TypeDecl CatchClause.hostType();
   
