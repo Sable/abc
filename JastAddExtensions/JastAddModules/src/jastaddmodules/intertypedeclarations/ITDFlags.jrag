@@ -1,0 +1,30 @@
+
+public aspect ITDFlags {
+	//refined for Java1.5Backend/VariableArityParametersCodegen
+	eq IntertypeMethodDecl.flags() {
+		int res = 0;
+		res = super.flags();
+		//always public
+		res &= (~(Modifiers.ACC_PRIVATE | Modifiers.ACC_PROTECTED));
+		res |= Modifiers.ACC_PUBLIC;
+		return res;
+	}
+
+	eq IntertypeConstructorDecl.flags() {
+		int res = 0;
+		res = super.flags();
+		//always public
+		res &= (~(Modifiers.ACC_PRIVATE | Modifiers.ACC_PROTECTED));
+		res |= Modifiers.ACC_PUBLIC;
+		return res;
+	}
+
+	eq IntertypeFieldDeclaration.flags() {
+		int res = 0;
+		res = super.flags();
+		//always public
+		res &= (~(Modifiers.ACC_PRIVATE | Modifiers.ACC_PROTECTED));
+		res |= Modifiers.ACC_PUBLIC;
+		return res;
+	}		
+}
