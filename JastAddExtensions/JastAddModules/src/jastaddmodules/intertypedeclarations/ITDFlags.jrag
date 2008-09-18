@@ -1,6 +1,7 @@
 
+//TODO: Currently not in use.
 public aspect ITDFlags {
-	//refined for Java1.5Backend/VariableArityParametersCodegen
+	/*
 	eq IntertypeMethodDecl.flags() {
 		int res = 0;
 		res = super.flags();
@@ -26,5 +27,6 @@ public aspect ITDFlags {
 		res &= (~(Modifiers.ACC_PRIVATE | Modifiers.ACC_PROTECTED));
 		res |= Modifiers.ACC_PUBLIC;
 		return res;
-	}		
+	}
+	*/		
 }
