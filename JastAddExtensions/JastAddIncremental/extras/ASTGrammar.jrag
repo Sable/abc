@@ -1,0 +1,1166 @@
+import java.util.*;
+
+aspect ASTGrammar {
+
+  syn lazy final List ASTDecl.getImplementsList() = new List();
+
+  inh TypeDecl CompilationUnit.unknownType();
+  eq CompilationUnit.getChild().astNode() =
+    lookupFrameworkType("ASTNode");
+  eq CompilationUnit.getChild().astNodeState() =
+    lookupFrameworkType("ASTNode$State");
+  eq CompilationUnit.getChild().listNode() =
+    lookupFrameworkType("List");
+  eq CompilationUnit.getChild().optNode() =
+    lookupFrameworkType("Opt");
+
+  syn TypeDecl CompilationUnit.lookupFrameworkType(String name) {
+    // imported types
+    SimpleSet set = importedTypes(name);
+    if(set.isEmpty()) {
+      // types in the same package
+      TypeDecl result = lookupType(packageName(), name);
+      if(result != null && result.accessibleFromPackage(packageName())) 
+        set = set.add(result);
+    }
+    if(set.isEmpty()) {
+      // types imported on demand
+      set = importedTypesOnDemand(name);
+    }
+    if(set.size() == 1)
+      return (TypeDecl)set.iterator().next();
+    else
+      return unknownType();
+  }
+
+  public void AspectDecl.collectErrors() {
+    if(astNode().isUnknown())
+      error("type ASTNode is not visible from " + typeName());
+    else
+      super.collectErrors();
+  }
+  inh TypeDecl AspectDecl.astNode();
+  inh TypeDecl AspectDecl.astNodeState();
+  inh TypeDecl ClassDecl.astNodeState();
+
+  inh lazy TypeDecl ASTDecl.astNode();
+  inh lazy TypeDecl AttributeDecl.astNode();
+  inh lazy TypeDecl InhEq.astNode();
+  inh lazy TypeDecl ClassDecl.astNode();
+  inh lazy TypeDecl Rewrite.astNode();
+  inh lazy TypeDecl Rewrite.listNode();
+  inh lazy TypeDecl AttributeDecl.listNode();
+  
+  refine ClassPath public void Program.addSourceFile(String name) {
+    if(name.endsWith(".ast"))
+      loadASTFile(name);
+    else
+      refined(name);
+  }
+
+  private void Program.loadASTFile(String name) {
+    try {
+      FileInputStream is = new FileInputStream(name);
+      scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+      scanner.enterJastAdd();
+      CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.ast_file);
+      scanner.previousState();
+      is.close();
+      List importList = cu.getImportDeclList();
+      for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+        TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+        CompilationUnit unit = new CompilationUnit(
+            cu.getPackageDecl(),
+            (List)importList.fullCopy(),
+            new List().add(typeDecl)
+            );
+        unit.setFromSource(true);
+        unit.setRelativeName(name);
+        unit.setPathName(".");
+        addCompilationUnit(unit);
+      }
+    } catch (Exception e) {
+      throw new Error(e.getMessage());
+    }
+  }
+
+  eq ASTDecl.isStatic() = !isTopLevelType();
+  eq ASTDecl.isPublic() = true;
+
+  syn String ASTChild.name() = getName();
+  syn TypeDecl ASTChild.type() = hasType() ? getType().type() : extractSingleType(lookupType(name()));
+  inh TypeDecl ASTTokenChild.lookupType(String pack, String name);
+  eq ASTTokenChild.type() = hasType() ? getType().type() : lookupType("java.lang", "String");
+
+  eq ASTChild.getType().nameType() = NameType.TYPE_NAME;
+
+  syn boolean ASTChild.isNTA() = false;
+  eq NTAListChild.isNTA() = true;
+  eq NTAOptionalChild.isNTA() = true;
+  eq NTAElementChild.isNTA() = true;
+  eq NTATokenChild.isNTA() = true;
+
+  syn TypeDecl ASTChild.parameterType() = type();
+  inh TypeDecl ASTListChild.listNode();
+  eq ASTListChild.parameterType() = listNode();
+
+  inh TypeDecl ASTOptionalChild.optNode();
+  eq ASTOptionalChild.parameterType() = optNode();
+
+  syn ASTChild InhEq.child() {
+    if(introducedType() instanceof ASTDecl) {
+      ASTChild child = ((ASTDecl)introducedType()).lookupChild(childName());
+      if(child != null)
+        return child;
+      throw new Error("Can not find child for equation " + errorPrefix());
+    }
+    return null;
+  }
+
+  syn lazy ASTChild ASTDecl.lookupChild(String name) {
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(child.name().equals(name))
+        return child;
+    }
+    return null;
+  }
+
+  public Expr ASTChild.createDefaultInit() {
+    return new NullLiteral();
+  }
+  public Expr ASTListChild.createDefaultInit() {
+    return new ClassInstanceExpr(
+      listNode().createQualifiedAccess(),
+      new List()
+    );
+  }
+  public Expr ASTOptionalChild.createDefaultInit() {
+    return new ClassInstanceExpr(
+      optNode().createQualifiedAccess(),
+      new List()
+    );
+  }
+
+  inh SimpleSet ASTChild.lookupType(String name);
+
+  syn lazy Collection ASTDecl.components() {
+    ArrayList list = new ArrayList();
+    if(hasSuperclass() && superclass() instanceof ASTDecl) {
+      ASTDecl superClass = (ASTDecl)superclass();
+      list.addAll(superClass.components());
+    }
+    for(int i = 0; i < getNumASTChild(); i++) {
+      boolean done = false;
+      for(Iterator iter = list.iterator(); !done && iter.hasNext(); ) {
+        ASTChild c = (ASTChild)iter.next();
+        if(c.name().equals(getASTChild(i).name()) && c.type().equals(getASTChild(i).type())) {
+          iter.remove();
+          done = true;
+        }
+      }
+      if(getASTChild(i).isNTA()) {
+        list.add(getASTChild(i));
+      }
+      else {
+        int j = 0;
+        while(j < list.size() && !((ASTChild)list.get(j)).isNTA())
+          j++;
+        list.add(j, getASTChild(i));
+      }
+    }
+    return list;
+  }
+
+  public boolean ASTDecl.hasSuperclass() {
+    return true;
+  }
+
+  public ClassDecl ASTDecl.superclass() {
+    if(hasSuperClassAccess() && !isCircular() && getSuperClassAccess().type().isClassDecl())
+      return (ClassDecl)getSuperClassAccess().type();
+    ClassDecl classDecl = (ClassDecl)astNode();
+    if(classDecl != null) return classDecl;
+    return (ClassDecl)typeObject();
+  }
+
+  eq ASTDecl.noConstructor() = false;
+
+  syn lazy List ASTDecl.getBodyDeclList() {
+    List bodyDeclList = new List();
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      child.addAccessors(bodyDeclList, index);
+      if(!(child instanceof ASTTokenChild))
+        index++;
+    }
+
+    int numparms = addConstructorWithChildrenAsArguments(bodyDeclList);
+    addBeaverConstructor(bodyDeclList);
+
+    // add constructor with a single int argument for backward compability with jjtree
+
+    //if(list.getNumChild() > 0) {
+      List statements = new List();
+      /*
+      index = 0;
+      for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+        ASTChild child = (ASTChild)iter.next();
+        if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+          statements.add(
+              new ExprStmt(
+                new MethodAccess(
+                  "setChild",
+                  new List().add(
+                    child.createDefaultInit()
+                    ).add(
+                      new IntegerLiteral(index)
+                      )
+                  )
+                )
+              );
+        }
+        if(!(child instanceof ASTTokenChild))
+          index++;
+      }*/
+
+      /*
+         if(isRootNode()) {
+         statements.add(
+         AssignExpr.asStmt(
+         new VarAccess("is$Final"),
+         new BooleanLiteral("true")
+         )
+         );
+         }
+       */
+    if(options().hasOption("-jjtree")) {
+      bodyDeclList.add(
+          new ConstructorDecl(
+            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+            name(),
+            new List().add(new ParameterDeclaration(new TypeAccess("int"), "kind")),
+            new List(),
+            new Opt(),
+            new Block(
+              statements
+              )
+            )
+          );
+    }
+    if(numparms > 0) {
+      bodyDeclList.add(
+        new ConstructorDecl(
+          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+          name(),
+          new List(),
+          new List(),
+          new Opt(),
+          new Block(
+            (List)statements.fullCopy()
+          )
+        )
+      );
+    }
+
+    // add init$children method
+    addInitChildren(bodyDeclList);
+
+    // add flushCache method
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("void"),
+        "flushCache",
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new ExprStmt(
+                new SuperAccess("super").qualifiesAccess(
+                  new MethodAccess("flushCache", new List())
+                )
+              )
+            )
+          )
+        )
+      )
+    );
+    return bodyDeclList;
+  }
+
+  // build parameter list for standard constructor
+  private List ASTDecl.buildConstructorParameterList() {
+    List list = new List();
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        list.add(
+          new ParameterDeclaration(
+            child.parameterType().createQualifiedAccess(),
+            "p" + index
+          )
+        );
+      }
+    }
+    return list;
+  }
+
+  // build body of standard constructor
+  private List ASTDecl.buildConstructorBody() {
+    List statements = new List();
+    int index = 0;
+    int nextChildIndex = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        if(child instanceof ASTTokenChild) {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "set" + child.name(),
+                new List().add(
+                  new VarAccess("p" + index)
+                )
+              )
+            )
+          );
+        }
+        else {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  new VarAccess("p" + index)
+                ).add(
+                  new IntegerLiteral(nextChildIndex)
+                )
+              )
+            )
+          );
+        }
+      }
+      if(!(child instanceof ASTTokenChild))
+        nextChildIndex++;
+    }
+    return statements;
+  }
+
+  // add a standard constructor
+  private int ASTDecl.addConstructorWithChildrenAsArguments(List bodyDeclList) {
+    List parameters = buildConstructorParameterList();
+    List statements = buildConstructorBody();
+    bodyDeclList.add(
+      new ConstructorDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+        name(),
+        parameters,
+        new List(),
+        new Opt(),
+        new Block(
+          statements
+        )
+      )
+    );
+    return parameters.getNumChild();
+  }
+
+  // count number of non-token children
+  private int ASTDecl.numNonTokenChild() {
+    int n = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild c = (ASTChild)iter.next();
+      if(!(c instanceof ASTTokenChild))
+        n++;
+    }
+    return n;
+  }
+
+  // set default values for list and option children
+  private void ASTDecl.createDefaultInits(List statements) {
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+        statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  child.createDefaultInit()
+                  ).add(
+                    new IntegerLiteral(index)
+                  )
+                )
+              )
+            );
+      }
+      if(!(child instanceof ASTTokenChild))
+        index++;
+    }
+  }
+
+  // create and add init$children
+  private void ASTDecl.addInitChildren(List bodyDeclList) {
+    List statements = new List();
+    int n = numNonTokenChild();
+    // allocate children array
+    statements.add(
+      new ExprStmt(
+        new AssignSimpleExpr(
+          new VarAccess("children"),
+          new ArrayCreationExpr(
+            new ArrayTypeWithSizeAccess(
+              astNode().createQualifiedAccess(),
+              new IntegerLiteral(n)
+            ),
+            new Opt()
+	  )
+        )
+      )
+    );
+    createDefaultInits(statements);
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("synthetic"))),
+        new PrimitiveTypeAccess("void"),
+        "init$children",
+        new List(),
+        new List(),
+        new Opt(new Block((List)statements.fullCopy()))
+      )
+    );
+  }
+
+  // called from Rewrites.jrag when generating intertype declarations
+  private void ASTDecl.addNTAGetChildNoTransform() {
+    List statements = new List();
+    int i = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild c = (ASTChild)iter.next();
+      c.addForceNTAEvaluation(statements, i);
+      if(!(c instanceof ASTTokenChild))
+        i++;
+    }
+    if(statements.getNumChild() != 0) {
+      statements.add(
+          new ReturnStmt(
+            astNode().createQualifiedAccess().qualifiesAccess(
+              new MethodAccess(
+                "getChild",
+                new List().add(
+                  new ThisAccess("this")
+                ).add(
+                  new VarAccess("i")
+                )
+              )
+            )
+          )
+        );
+      addMemberMethod(
+        new MethodDecl(
+          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+          astNode().createQualifiedAccess(),
+          "getChild",
+          new List().add(
+            new ParameterDeclaration(
+              new TypeAccess("int"),
+              "i"
+            )
+          ),
+          new List(),
+          new Opt(
+            new Block(
+              statements
+            )
+          )
+        )
+      );
+    }
+  }
+
+  public void ASTChild.addForceNTAEvaluation(List statements, int i) {
+    if(isNTA()) {
+      statements.add(
+        new IfStmt(
+          new EQExpr(
+            new VarAccess("i"),
+            new IntegerLiteral(i)
+          ),
+          new ExprStmt(
+            new MethodAccess(
+              evalNTAName(),
+			  new List()
+            )
+          )
+        )
+      );
+    }
+  }
+  
+  syn String ASTChild.evalNTAName() { throw new Error("evalNTAName() not valid for " + getClass().getName()); }
+  eq NTAListChild.evalNTAName() = "get" + name() + "List";
+  eq NTAOptionalChild.evalNTAName() = "get" + name() + "Opt";
+  eq NTAElementChild.evalNTAName() = "get" + name();
+  eq NTATokenChild.evalNTAName() = "get" + name();
+
+  public abstract void ASTChild.addAccessors(List bodyDeclList, int index);
+  
+  protected MethodDecl ASTChild.createMethodDecl(Access returnType, String name, List parameters, List statements) {
+    MethodDecl m = new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))/*.add(new Modifier("synthetic"))*/),
+        returnType,
+        name,
+        parameters,
+        new List(),
+        new Opt(new Block(statements))
+    );
+    m.setStart(getStart()).setEnd(getEnd());
+    return m;
+  }
+  protected MethodDecl ASTChild.createMethodDecl(String returnType, String name, List parameters, List statements) {
+    return createMethodDecl(new TypeAccess(returnType), name, parameters, statements);
+  }
+
+  public void ASTListChild.addAccessors(List bodyDeclList, int index) {
+    if(!isNTA()) {
+      addGetterList(bodyDeclList, index);
+    }
+    addGetterListJava5(bodyDeclList, index);
+    addGetterListNoTransform(bodyDeclList, index);
+    addSetterList(bodyDeclList, index);
+    addNumElements(bodyDeclList, index);
+    addGetter(bodyDeclList, index);
+    addSetter(bodyDeclList, index);
+    addInserter(bodyDeclList, index);
+    addAdder(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "List" + "ChildPosition");
+  }
+  public void ASTChild.addChildPosition(List bodyDeclList, int index, String name) {
+    bodyDeclList.add(
+      createMethodDecl(
+        "int",
+        name,
+        new List(),
+        new List().add(new ReturnStmt(new IntegerLiteral(index)).setLocation(this))
+      )
+    );
+  }
+
+  public void ASTListChild.addGetterList(List bodyDeclList, int index) {
+    // public List getNameList() { return (List)getChild(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
+    bodyDeclList.add(
+      createMethodDecl(returnType, "get" + name() + "List", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              listNode().createQualifiedAccess(),
+              new MethodAccess(
+                "getChild",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addGetterListJava5(List bodyDeclList, int index) {
+    // public List getNameList() { return (List)getChild(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
+    bodyDeclList.add(
+      createMethodDecl(returnType, "get" + name() + "s", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              listNode().createQualifiedAccess(),
+              new MethodAccess(
+                "get" + name() + "List",
+                new List()
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addGetterListNoTransform(List bodyDeclList, int index) {
+    // public List getNameListNoTransform() { return (List)getChildNoTransform(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
+    bodyDeclList.add(
+      createMethodDecl(returnType, "get" + name() + "ListNoTransform", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              listNode().createQualifiedAccess(),
+              new MethodAccess(
+                "getChildNoTransform",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addSetterList(List bodyDeclList, int index) {
+    // public void setNameList(List list) { setChild(list, index); }
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name() + "List", 
+        new List().add(new ParameterDeclaration(listNode().createQualifiedAccess(), "list")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(new VarAccess("list")).add(new IntegerLiteral(index))
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addNumElements(List bodyDeclList, int index) {
+    // public void int getNumName() { return getNameList().getNumChild(); }
+    bodyDeclList.add(
+      createMethodDecl("int", "getNum" + name(),
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
+              new MethodAccess(
+                "getNumChild",
+                new List()
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addGetter(List bodyDeclList, int index) {
+    // public type getName(int i) { return (type)getNameList().getChild(i); }
+    bodyDeclList.add(
+      createMethodDecl(
+        type().createQualifiedAccess(),
+        "get" + name(),
+        new List().add(new ParameterDeclaration(new TypeAccess("int"), "index")),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              new MethodAccess(
+                "get" + name() + "List",
+                new List()
+              ).qualifiesAccess(
+                new MethodAccess(
+                  "getChild",
+                  new List().add(new VarAccess("index"))
+                )
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(type node, int i) { getNameList().setChild(node, i); }
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        "set" + name(),
+        new List().add(
+          new ParameterDeclaration(type().createQualifiedAccess(), "node")
+		).add(
+          new ParameterDeclaration(new TypeAccess("int"), "i")
+		),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
+              new MethodAccess(
+                "setChild",
+                new List().add(new VarAccess("node")).add(new VarAccess("i"))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addInserter(List bodyDeclList, int index) {
+    // public void insertName(type node, int i) { getNameList().insertChild(node, i); }
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        "insert" + name(),
+        new List().add(
+          new ParameterDeclaration(type().createQualifiedAccess(), "node")
+        ).add(
+          new ParameterDeclaration(new TypeAccess("int"), "i")
+        ),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
+              new MethodAccess(
+                "insertChild",
+                new List().add(new VarAccess("node")).add(new VarAccess("i"))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addAdder(List bodyDeclList, int index) {
+    // public void addName(type node) { List list = getNameList(); list.setChild(node, list.getNumChild()); }
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        "add" + name(),
+        new List().add(
+          new ParameterDeclaration(type().createQualifiedAccess(), "node")
+		),
+        new List().add(
+          new VariableDeclaration(
+            listNode().createQualifiedAccess(),
+            "list",
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            )
+          )
+        ).add(
+          new ExprStmt(
+            new VarAccess("list").qualifiesAccess(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  new VarAccess("node")
+                ).add(
+                  new VarAccess("list").qualifiesAccess(
+                    new MethodAccess(
+                      "getNumChild",
+                      new List()
+                    )
+                  )
+                )
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  
+  public void ASTOptionalChild.addAccessors(List bodyDeclList, int index) {
+    if(!isNTA())
+      addGetterOpt(bodyDeclList, index);
+    addGetterOptNoTransform(bodyDeclList, index);
+    addSetterOpt(bodyDeclList, index);
+    addHasOptional(bodyDeclList, index);
+    addGetter(bodyDeclList, index);
+    addSetter(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "Opt" + "ChildPosition");
+  }
+  public void ASTOptionalChild.addGetterOpt(List bodyDeclList, int index) {
+    // public Opt getNameOpt() { return (Opt)getChild(index); }
+    bodyDeclList.add(
+      createMethodDecl(optNode().createQualifiedAccess(), "get" + name() + "Opt", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              optNode().createQualifiedAccess(),
+              new MethodAccess(
+                "getChild",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTOptionalChild.addGetterOptNoTransform(List bodyDeclList, int index) {
+    // public Opt getNameOptNoTransform() { return (Opt)getChildNoTransform(index); }
+    bodyDeclList.add(
+      createMethodDecl(optNode().createQualifiedAccess(), "get" + name() + "OptNoTransform", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              optNode().createQualifiedAccess(),
+              new MethodAccess(
+                "getChildNoTransform",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTOptionalChild.addSetterOpt(List bodyDeclList, int index) {
+    // public void setNameOpt(Opt opt) { setChild(opt, index); }
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name() + "Opt", 
+        new List().add(new ParameterDeclaration(optNode().createQualifiedAccess(), "opt")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(new VarAccess("opt")).add(new IntegerLiteral(index))
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTOptionalChild.addHasOptional(List bodyDeclList, int index) {
+    // public boolean hasName() { return getNameOpt().getNumChild() != 0; }
+    bodyDeclList.add(
+      createMethodDecl("boolean", "has" + name(),
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new NEExpr(
+              new MethodAccess(
+                "get" + name() + "Opt",
+                new List()
+              ).qualifiesAccess(
+                new MethodAccess(
+                  "getNumChild",
+                  new List()
+                )
+              ),
+              new IntegerLiteral(0)
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTOptionalChild.addGetter(List bodyDeclList, int index) {
+    // public type getName() { return (type)getNameOpt().getChild(0); }
+    bodyDeclList.add(
+      createMethodDecl(
+        type().createQualifiedAccess(),
+        "get" + name(),
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              new MethodAccess(
+                "get" + name() + "Opt",
+                new List()
+              ).qualifiesAccess(
+                new MethodAccess(
+                  "getChild",
+                  new List().add(new IntegerLiteral(0))
+                )
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTOptionalChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(type node) { getNameList().setChild(node, 0); }
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        "set" + name(),
+        new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "node")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "get" + name() + "Opt",
+              new List()
+            ).qualifiesAccess(
+              new MethodAccess(
+                "setChild",
+                new List().add(new VarAccess("node")).add(new IntegerLiteral(0))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  
+  public void ASTElementChild.addAccessors(List bodyDeclList, int index) {
+    if(!isNTA())
+      addGetter(bodyDeclList, index);
+    addGetterNoTransform(bodyDeclList, index);
+    addSetter(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "ChildPosition");
+  }
+  protected void ASTElementChild.addGetter(List bodyDeclList, int index) {
+    // public type getName() { return (type)getChild(index); }
+    bodyDeclList.add(
+      createMethodDecl(type().createQualifiedAccess(), "get" + name(), 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              new MethodAccess(
+                "getChild",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  protected void ASTElementChild.addGetterNoTransform(List bodyDeclList, int index) {
+    // public type getNameNoTransform() { return (type)getChildNoTransform(index); }
+    bodyDeclList.add(
+      createMethodDecl(type().createQualifiedAccess(), "get" + name() + "NoTransform", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              new MethodAccess(
+                "getChildNoTransform",
+                new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  protected void ASTElementChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(Type node) { setChild(node, index); }
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(), 
+        new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "node")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(new VarAccess("node")).add(new IntegerLiteral(index))
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  
+  public void ASTTokenChild.addAccessors(List bodyDeclList, int index) {
+    if(!isNTA()) {
+      addGetter(bodyDeclList, index);
+    }
+    addCacheDecl(bodyDeclList, index);
+    addSetter(bodyDeclList, index);
+  }
+  public void ASTTokenChild.addCacheDecl(List bodyDeclList, int index) {
+    // private type name$value;
+    bodyDeclList.add(
+      new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        type().createQualifiedAccess(),
+        name() + "$value"
+      )
+    );
+    addCacheDeclBeaverToken(bodyDeclList, index);
+  }
+  public void ASTTokenChild.addGetter(List bodyDeclList, int index) {
+    // public type getName() { return name$value; }
+    bodyDeclList.add(
+      createMethodDecl(type().createQualifiedAccess(), "get" + name(), 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new VarAccess(name() + "$value")
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTTokenChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(Type value) { name$value = value; }
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(), 
+        new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "value")),
+        new List().add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "$value"),
+            new VarAccess("value")
+          ).setLocation(this)
+        )
+      )
+    );
+    addSetterBeaverToken(bodyDeclList, index);
+  }
+  public void ASTTokenChild.addCacheDeclBeaverToken(List bodyDeclList, int index) {
+    // public int namestart;
+    // public int nameend;
+    bodyDeclList.add(
+      new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("int"),
+        name() + "start"
+      )
+    );
+    bodyDeclList.add(
+      new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("int"),
+        name() + "end"
+      )
+    );
+  }
+
+  public void ASTTokenChild.addSetterBeaverToken(List bodyDeclList, int index) {
+    TypeDecl stringType = lookupType("java.lang", "String");
+    if(type() != stringType)
+      return;
+    // public void setName(beaver.Symbol value) {
+    //   if(symbol.value != null && !(symbol.value instanceof String))
+    //     throw new UnsupportedOperationException("setID is only valid for String lexemes");
+    //   tokenString_ID = (String)symbol.value;
+    //   IDstart = symbol.getStart();
+    //   IDend = symbol.getEnd();
+
+    Expr ifCondition = 
+          new AndLogicalExpr(
+            new NEExpr(
+              new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+              new NullLiteral("null")
+            ),
+            new LogNotExpr(
+              new ParExpr(
+              new InstanceOfExpr(
+                new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+                stringType.createQualifiedAccess()
+              )
+              )
+            )
+          );
+    Expr thrownException =
+      new ClassInstanceExpr(
+        new TypeAccess("java.lang", "UnsupportedOperationException"),
+        new List().add(new StringLiteral("set" + name() + " is only valid for String lexemes")),
+        new Opt()
+      );
+
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(),
+        new List().add(new ParameterDeclaration(lookupType("beaver", "Symbol").createQualifiedAccess(), "symbol")),
+        new List().add(
+          new IfStmt(
+            ifCondition,
+            new ThrowStmt(thrownException),
+            new Opt()
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "$value"),
+            new CastExpr(new TypeAccess("java.lang", "String"), new VarAccess("symbol").qualifiesAccess(new VarAccess("value")))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "start"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getStart", new List()))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "end"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getEnd", new List()))
+          )
+        )
+      )
+    );
+
+  }
+
+  public void ASTDecl.addBeaverConstructor(List bodyDeclList) {
+    boolean hasString = false;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && child instanceof ASTTokenChild) {
+        ASTTokenChild c = (ASTTokenChild)child;
+        if(c.type().isString())
+          hasString = true;
+      }
+    }
+    if(!hasString)
+      return;
+    // add constructor with children as arguments
+    List list = new List();
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        TypeDecl parameterType;
+        if(child instanceof ASTTokenChild && ((ASTTokenChild)child).type().isString())
+          parameterType = lookupType("beaver", "Symbol");
+        else
+          parameterType = child.parameterType();
+        list.add(
+          new ParameterDeclaration(
+            parameterType.createQualifiedAccess(),
+            "p" + index
+          )
+        );
+      }
+    }
+    List statements = buildConstructorBody();
+    bodyDeclList.add(
+      new ConstructorDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+        name(),
+        list,
+        new List(),
+        new Opt(),
+        new Block(
+          statements
+        )
+      )
+    );
+  }
+
+  public void ASTDecl.transformation() {
+    super.transformation();
+    getImplementsList().transformation();
+    getBodyDeclList().transformation();
+  }
+}

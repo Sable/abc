@@ -6,3 +6,5 @@ At the moment, there are three tweaks that have to be done manually to get JastA
      this.arrayType$computed = false;
 3. In CompilationUnit.java, fix the two "unknown()" calls: they should
    be calls to "invalidate()".
+
+Also, you need to put the files in extras/ into your JastAdd directory (overwriting the corresponding versions there).
