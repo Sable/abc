@@ -1,34 +1,21 @@
 aspect Caching {
 
-  private MemoLine CompilationUnit.memoline = new MemoLine(this);
-  public MemoLine CompilationUnit.getMemoLine() {
-    return memoline;
-  }
-  public boolean CompilationUnit.memoValid() {
-    return memoline.hit();
-  }
-  public void CompilationUnit.invalidate() {
-    if(parent != null) {
-      flushCaches();
-      if(memoline != null) {
-        memoline.clear();
-      }
-    }
+  interface CacheRoot { 
+    void flushCaches();
   }
 
-  // same thing again, for Program
-  private MemoLine Program.memoline = new MemoLine(this);
-  public MemoLine Program.getMemoLine() {
-    return memoline;
-  }
-  public boolean Program.memoValid() {
-    return memoline.hit();
-  }
-  public void Program.invalidate() {
+  CompilationUnit implements CacheRoot;
+  Program implements CacheRoot;
+
+  public void CacheRoot.invalidate() {
     flushCaches();
-    if(memoline != null) {
-      memoline.clear();
-    }
+    Main.last_change++;
   }
 
+  public ASTNode ASTNode.getCacheRoot() {
+    ASTNode n = this;
+    while(n != null && !(n instanceof CacheRoot))
+      n = n.parent;
+    return n;
+  }
 }

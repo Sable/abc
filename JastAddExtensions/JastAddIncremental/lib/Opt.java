@@ -5,7 +5,7 @@ public class Opt extends ASTNode implements Cloneable {
   }
 
   public Opt(ASTNode opt) {
-    setChild(opt, 0);
+    setChild(opt, 0, false);
   }
 
 }

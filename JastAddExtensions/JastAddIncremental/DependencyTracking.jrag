@@ -272,7 +272,7 @@ aspect DependencyTracking {
           new VarAccess("res").qualifiesAccess(
             new MethodAccess(
               "setParent",
-              new List().add(new ThisAccess("this"))
+              new List().add(new ThisAccess("this")).add(new BooleanLiteral("false"))
             )
           )
         )
@@ -286,7 +286,9 @@ aspect DependencyTracking {
               "set" + name().substring(3), // replace initial get with set
               new List().add(
                 new VarAccess("res")
-              )
+              ).add(
+	        new BooleanLiteral("false")
+	      )
             )
           )
         )
@@ -539,12 +541,12 @@ aspect DependencyTracking {
 
       The caching prologue then looks like this:
       <pre>
-        if(height$computed &amp;&amp; this.memoValid()) {
+        if(height$computed &amp;&amp; height$cache.hit()) {
 	  if(Main.DEBUG) 
 	    System.out.println("height cached for " + getDebugID());
 	  return this$.height$value;
         }
-	this.invalidate();
+	height$cache.clear();
 	if(Main.DEBUG) 
 	  System.out.println("Recomputing height for " + getDebugID());
 	Main.pushMemoLine(height$cache);
@@ -608,8 +610,8 @@ aspect DependencyTracking {
         new IfStmt(
           new AndLogicalExpr(
             computedFlag.createQualifiedBoundAccess(),
-            new ThisAccess("this").qualifiesAccess(
-              new MethodAccess("memoValid", new List())
+            f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess("hit", new List())
             )
           ),
           thenBranch,
@@ -620,11 +622,11 @@ aspect DependencyTracking {
       // add statement to clear memoline
       statements.add(
         new ExprStmt(
-	  new ThisAccess("this").qualifiesAccess(
-	    new MethodAccess("invalidate", new List())
-	  )
-	)
-      );
+	  f.createQualifiedBoundAccess().qualifiesAccess(
+	    new MethodAccess("clear", new List())
+          )
+        )
+		     );
     }
     else {
       statements.add(
@@ -652,9 +654,9 @@ aspect DependencyTracking {
           ).add(
             new IfStmt(
               new VarAccess("v$").qualifiesAccess(
-                new VarAccess("node")
+                new VarAccess("line")
               ).qualifiesAccess(
-                new MethodAccess("memoValid", new List())
+                new MethodAccess("hit", new List())
               ),
               new ReturnStmt(
                 new CastExpr(
@@ -663,10 +665,12 @@ aspect DependencyTracking {
                 )
               ),
               new ExprStmt(
-	        new ThisAccess("this").qualifiesAccess(
-		  new MethodAccess("invalidate", new List())
-		)
-	      )
+                new VarAccess("v$").qualifiesAccess(
+                  new VarAccess("line")
+                ).qualifiesAccess(
+                  new MethodAccess("clear", new List())
+                )
+              )
             )
           )
         );
@@ -718,11 +722,7 @@ aspect DependencyTracking {
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
-              new List().add(
-                new ThisAccess("this").qualifiesAccess(
-                  new MethodAccess("getMemoLine", new List())
-                )
-              )
+              new List().add(f.createQualifiedBoundAccess())
             )
           )
         )
@@ -734,13 +734,7 @@ aspect DependencyTracking {
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
-              new List().add(
-                new VarAccess("v$").qualifiesAccess(
-                  new VarAccess("node")
-                ).qualifiesAccess(
-                  new MethodAccess("getMemoLine", new List())
-                )
-              )
+              new List().add(new VarAccess("v$").qualifiesAccess(new VarAccess("line")))
             )
           )
         )
@@ -803,11 +797,21 @@ aspect DependencyTracking {
     if(returnType.isPrimitive())
       returnType = returnType.boxed();
 
+    FieldDeclaration f;
     if(getNumParameter() == 0) {
-      return null;
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        new TypeAccess("MemoLine"),
+        fieldName,
+        new ClassInstanceExpr(
+          new TypeAccess("MemoLine"),
+          new List().add(new ThisAccess("this")),
+          new Opt()
+        )
+      );
     }
     else {
-      FieldDeclaration f = new FieldDeclaration(
+      f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
         new ParTypeAccess(
           new TypeAccess("java.util", "Map"),
@@ -831,24 +835,23 @@ aspect DependencyTracking {
           new Opt()
         )
       );
-      f = typeDecl.addMemberField(f);
-      typeDecl.addFlushCode(
-        f,
-        new ClassInstanceExpr(
-          new ParTypeAccess(
-            new TypeAccess("java.util", "HashMap"),
-            new List().add(
-              new TypeAccess("java.lang", "Object")
-            ).add(
-              new TypeAccess("CachedValue")
-            )
-          ),
-          new List(),
-          new Opt()
-        )
-      );
-      return f;
     }
+    FieldDeclaration res = typeDecl.addMemberField(f);
+    typeDecl.addClearCode(f);
+    return res;
+  }
+
+  void TypeDecl.addClearCode(FieldDeclaration f) {
+    MethodDecl m = flushCacheMethod();
+    List list = m.getBlock().getStmtList();
+    Stmt clearStmt = new ExprStmt(
+      f.createQualifiedBoundAccess().qualifiesAccess(
+        new MethodAccess("clear", new List())
+      )
+    );
+    list.add(new IfStmt(new NEExpr(f.createQualifiedBoundAccess(), 
+    		                   new NullLiteral("null")),
+      clearStmt));
   }
 
 }

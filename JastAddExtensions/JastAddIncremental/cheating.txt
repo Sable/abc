@@ -1,0 +1,8 @@
+At the moment, there are three tweaks that have to be done manually to get JastAddJ to compile and behave sensibly:
+
+1. In ASTNode.getParent(), comment out the if-statement incrementing the
+   boundariesCrossed counter.
+2. In TypeDecl.flushCache(), comment out the statement 
+     this.arrayType$computed = false;
+3. In CompilationUnit.java, fix the two "unknown()" calls: they should
+   be calls to "invalidate()".

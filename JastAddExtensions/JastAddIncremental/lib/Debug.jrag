@@ -10,11 +10,19 @@ aspect Debug {
     }
 
     public String TypeDecl.getDebugID() {
-	return "type "+name();
+	return "type "+getID();
     }
 
-    public String Dependency.toString() {
-        return node.getDebugID() + "." + offset +
-	  (args == null ? "()" : "(" + args + ")");
+    public String MethodDecl.getDebugID() {
+        return "method "+getID();
+    }
+
+    public boolean ASTNode.fromLibrary() {
+	ASTNode n = this;
+	while(n != null && !(n instanceof CompilationUnit))
+	    n = n.parent;
+	if(n == null)
+	    return false;
+	return !((CompilationUnit)n).fromSource();
     }
 }

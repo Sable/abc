@@ -1,0 +1,39 @@
+- NTAs: if we try to evaluate an attribute on a stale copy of an NTA, 
+  strange things will happen; also, cache flushing is not propagated
+  into NTAs
+- rewriting: apparently, the boundaryCrossed count in getParent() is
+  (spuriously?) incremented many times, preventing caching (and maybe
+  leading to infinite loops, or just very bad performance)
+- TODO:
+  * in fullCopy, use the non-invalidating setParent (same for clone, copy?)
+  * in NTAs, use non-invalidating setters
+  * remove if(...)s from flush code
+  * add invalidate()s to other setters (besides setParent)
+  * there's no need to flush caches when adding primitive types
+  * in setChild, insert Child, removeChild: flush caches of affected
+    subtrees
+
+
+- reasons for flushing:
+  * FileNamesPart.addSourceFile(String) : 564
+  * Program.addPrimitiveTypes() : 1103
+  * TypeDecl.impl$body$constructors(TypeDecl) : 1413
+  * ConstructorDecl.rewrite$transform$0(ConstructorDecl) : 923
+  * BytecodeParser.parse(TypeDecl, CONSTANT_Class_Info, Program) : 234
+  * BytecodeParser.parseFields(TypeDecl) : 350
+  * BytecodeParser.parseMethods(TypeDecl) : 362
+  * Program.impl$body$lookupType(Program, String, String) : 622
+  * Attributes.innerClasses(TypeDecl, TypeDecl, Program) : 75
+    (called from within constructor, itself calls setModifiers, which
+    calls setChild)
+  * Attributes.innerClasses(TypeDecl, TypeDecl, Program) : 83, 88
+  * Attributes.removeEnclosingThis(ASTNode) : 130
+    (called from Attributes.innerClasses)
+  * fullCopy (see TODO)
+  * VarDeclStmt.rewriteTo() : 158, 164
+  * AnonymousDecl.rewrite$transform$0(AnonymousDecl) : 235, 237, 238,
+      246, 250, 251, 273
+  * AnonymousDecl.getImplementsList() : 189 (NTA?)
+  * AnonymousDecl.getSuperClassAccessOpt() : 173 (NTA?)
+  * FieldDecl.rewriteTo() : 117
+  

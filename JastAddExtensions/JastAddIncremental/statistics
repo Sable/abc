@@ -1,0 +1,61 @@
+compiling Jigsaw (to get it to compile, we need to comment out the boundariesCrossed++ in ASTNode.getParent(), and avoid flushing the arrayType$computed flag in TypeDecl.flushCache())
+
+non-incremental JastAddJ:
+  0m21.79s
+  0m35.75s
+  0m 1.41s
+
+  maximum heap size about 600M
+
+incremental JastAddJ without any optimisations:
+  28m 6.68s
+  28m44.01s
+   0m 4.21s
+
+  number of AST nodes: 1,514,712
+  number of memolines: 5,023,193
+  total number of dependencies: 30,901,433
+  number of dependencies on library: 9,933,435
+  Program node flushes: 0
+  CompilationUnit node flushes: 55,579
+   of which caused by
+   * inserting default constructors: 279
+   * inserting default super constructor invocation: 1636
+   * on-demand-loading a type: 1225
+   * on-demand-loading a field: 7006
+   * on-demand-loading a method: 15730
+  maximum heap size about 1.5G
+  
+  repeating error-check right away takes about one minute
+
+omitting dependencies on library:
+  23m28.27s
+  23m55.34s
+   0m 3.19s
+
+suppressing flushes:
+   8m23s
+   8m43s
+   0m 3s
+
+with timestamps:
+  13m44.54s
+  13m32.71s
+   0m 3.60s
+
+  only about 30,000 flushes
+  maximum heap size about 1.7G
+
+with timestamps, suppressing flushes:
+   1m56.27s
+   2m 5.80s
+   0m 3.34s
+
+  repeating error-check right away takes about eight to nine seconds
+
+with timestamps, non-invalidating constructors in NTAs:
+   3m 5.79s
+   3m18.87s
+   0m 2.60s
+
+  

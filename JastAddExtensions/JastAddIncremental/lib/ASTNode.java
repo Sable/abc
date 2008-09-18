@@ -80,7 +80,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
         oldNode.in$Circle(true);
         node = node.rewriteTo();
         if(node != oldNode)
-          that.setChild(node, i);
+          that.setChild(node, i, false);
         oldNode.in$Circle(false);
         rewriteState = that.state().pop();
       } while(rewriteState == ASTNode$State.REWRITE_CHANGE);
@@ -129,7 +129,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     return numChildren();
   }
 
-  public void setChild(T node, int i) {
+  public void setChild(T node, int i, boolean invalidate) {
     // debugNodeAttachment(node);
     if(children == null) {
       children = new ASTNode[i + 1];
@@ -141,10 +141,15 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     children[i] = node;
     if(i >= numChildren) numChildren = i+1;
     if(node != null) { 
-      node.setParent(this); node.childIndex = i; 
-    } else {
-      invalidate();
+	node.setParent(this, invalidate); 
+	node.childIndex = i; 
+    } else if(invalidate) {
+	invalidate();
     }
+  }
+
+  public void setChild(T node, int i) {
+    setChild(node, i, true);
   }
 
   public void insertChild(T node, int i) {
@@ -164,9 +169,10 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
     numChildren++;
     if(node != null) { 
-      node.setParent(this); node.childIndex = i; 
+	node.setParent(this, true); 
+	node.childIndex = i; 
     } else {
-      invalidate();
+	invalidate();
     }
   }
 
@@ -174,7 +180,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     if(children != null) {
       ASTNode child = children[i];
       if(child != null) {
-        child.setParent(null);
+        child.setParent(null, false);
         child.childIndex = -1;
       }
       System.arraycopy(children, i+1, children, i, children.length-i-1);
@@ -191,11 +197,15 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     return (ASTNode)parent;
   }
 
-  public void setParent(ASTNode node) {
+  public void setParent(ASTNode node, boolean invalidate) {
     parent = node;
-    if(node != null)
-      invalidate();
+    if(invalidate && node != null)
+	invalidate();
   }
+  public void setParent(ASTNode node) {
+    setParent(node, true);
+  }
+
   protected boolean debugNodeAttachmentIsRoot() { return false; }
   private static void debugNodeAttachment(ASTNode node) {
       if(node == null) throw new RuntimeException("Trying to assign null to a tree child node");
@@ -281,29 +291,17 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
   }
 
-  public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
-
-  public static void reset() {
-  }
-
-  /** gets the memo line associated with this node; node
-      types that have their own memo lines will override this */
-  public MemoLine getMemoLine() {
-    return parent == null ? null : parent.getMemoLine();
-  }
-
-  /** determines whether the memo line associated with this
-      node is valid */
-  public boolean memoValid() {
-    return parent == null ? false : parent.memoValid();
-  }
-
   /** invalidates all caches; this means we first need to
       dispatch upwards until we reach the root of the
       subtree, and then call flushCaches() from these */
   public void invalidate() {
     if(parent != null)
       parent.invalidate();
+  }
+
+  public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
+
+  public static void reset() {
   }
 
 }

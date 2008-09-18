@@ -1,0 +1,430 @@
+aspect RefineSetters {
+
+  /* methods ASTNode.setParent and ASTNode.setChild come in two variants, 
+     the invalidating version and the non-invalidating version
+
+     generally, we want to call the invalidating version, except for
+     calls that come from within a constructor, the init$children method,
+     or from NTAs */
+
+  refine ASTGrammar private List ASTDecl.buildConstructorBody() {
+    List statements = new List();
+    int index = 0;
+    int nextChildIndex = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        if(child instanceof ASTTokenChild) {
+	  statements.add(
+	    new ExprStmt(
+	      new MethodAccess(
+		"set" + child.name(),
+		new List().add(
+		  new VarAccess("p" + index)
+ 	        ).add(
+ 	          new BooleanLiteral("false")
+		)
+	      )
+	    )
+	  );
+	} else {
+	  statements.add(
+	    new ExprStmt(
+	      new MethodAccess(
+	        "setChild",
+		new List().add(
+		  new VarAccess("p" + index)
+		).add(
+		  new IntegerLiteral(nextChildIndex)
+  	        ).add(
+		  new BooleanLiteral("false")
+		)
+	      )
+	    )
+	  );
+	}
+      }
+      if(!(child instanceof ASTTokenChild))
+	nextChildIndex++;
+    }
+    return statements;
+  }
+  
+  refine ASTGrammar private void ASTDecl.createDefaultInits(List statements) {
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+        statements.add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(
+                child.createDefaultInit()
+              ).add(
+                  new IntegerLiteral(index)
+  	      ).add(
+	          new BooleanLiteral("false")
+	      )
+            )
+          )
+        );
+      }
+      if(!(child instanceof ASTTokenChild))
+        index++;
+    }
+  }
+
+  refine ASTGrammar public void ASTListChild.addSetterList(List bodyDeclList, int index) {
+    // public void setNameList(List list) { setNameList(list, true); }
+    // public void setNameList(List list, boolean invalidate) {
+    //   setChild(list, index, invalidate); 
+    // }
+    String setterName = "set" + name() + "List";
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(new ParameterDeclaration(listNode().createQualifiedAccess(), "list")),
+	new List().add(
+	  new ExprStmt(
+	    new MethodAccess(
+	      setterName,
+	      new List().add(
+	        new VarAccess("list")
+	      ).add(
+	        new BooleanLiteral("true")
+	      )
+            )
+          )
+	)
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(
+	  new ParameterDeclaration(listNode().createQualifiedAccess(), "list")
+	).add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")
+	),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(
+	        new VarAccess("list")
+	      ).add(
+	        new IntegerLiteral(index)
+	      ).add(
+	        new BooleanLiteral("false")
+	      )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+
+  refine ASTGrammar public void ASTListChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(type node, int i) { setName(node, i, true); }
+    // public void setName(type node, int i, boolean invalidate) {
+    //   getNameList().setChild(node, i, invalidate); 
+    // }
+    String setterName = "set"+name();
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        setterName,
+        new List().add(
+          new ParameterDeclaration(type().createQualifiedAccess(), "node")
+	).add(
+          new ParameterDeclaration(new TypeAccess("int"), "i")
+	),
+	new List().add(
+	  new ExprStmt(
+	    new MethodAccess(
+	      setterName,
+	      new List().add(
+	        new VarAccess("node")
+	      ).add(
+	        new VarAccess("i")
+	      ).add(
+	        new BooleanLiteral("true")
+	      )
+	    )
+	  )
+	)
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl(
+        new TypeAccess("void"),
+        setterName,
+        new List().add(
+          new ParameterDeclaration(type().createQualifiedAccess(), "node")
+	).add(
+          new ParameterDeclaration(new TypeAccess("int"), "i")
+	).add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")
+	),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+		  new VarAccess("node")
+		).add(
+		  new VarAccess("i")
+		).add(
+		  new VarAccess("invalidate")
+		)
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+
+  refine ASTGrammar protected void ASTElementChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(Type node) { setName(node, true);
+    // public void setName(Type node, boolean invalidate) {
+    //   setChild(node, index, invalidate); 
+    // }
+    String setterName = "set" + name();
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "node")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              setterName,
+              new List().add(new VarAccess("node")).add(new BooleanLiteral("true"))
+            )
+          )
+        )
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(
+	  new ParameterDeclaration(type().createQualifiedAccess(), "node"))
+	.add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(
+	        new VarAccess("node")
+	      ).add(
+	        new IntegerLiteral(index)
+	      ).add(
+	        new VarAccess("invalidate")
+	      )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+
+  refine ASTGrammar public void ASTTokenChild.addSetter(List bodyDeclList, int index) {
+    // public void setName(Type value) { setName(value, true); }
+    // public void setName(Type value, boolean invalidate) {
+    //   name$value = value; 
+    //   if(invalidate) invalidate();
+    // }
+    String setterName = "set" + name();
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "value")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              setterName,
+              new List().add(new VarAccess("value")).add(new BooleanLiteral("true"))
+	    )
+	  )
+	)
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(
+	  new ParameterDeclaration(type().createQualifiedAccess(), "value")
+        ).add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")
+	),
+        new List().add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "$value"),
+            new VarAccess("value")
+          ).setLocation(this)
+        ).add(
+	  new IfStmt(
+	    new VarAccess("invalidate"),
+/*problem*/
+	    new ExprStmt(
+  	      new MethodAccess(
+	        "invalidate",
+	        new List()
+	      )
+	    )
+	  )
+	)
+      )
+    );
+    addSetterBeaverToken(bodyDeclList, index);
+  }
+
+  refine ASTGrammar public void ASTTokenChild.addSetterBeaverToken(List bodyDeclList, int index) {
+    TypeDecl stringType = lookupType("java.lang", "String");
+    if(type() != stringType)
+      return;
+    // public void setName(beaver.Symbol value) {
+    //   setName(value, true);
+    // }
+    // public void setName(beaver.Symbol value, boolean invalidate) {
+    //   if(symbol.value != null && !(symbol.value instanceof String))
+    //     throw new UnsupportedOperationException("setID is only valid for String lexemes");
+    //   tokenString_ID = (String)symbol.value;
+    //   IDstart = symbol.getStart();
+    //   IDend = symbol.getEnd();
+    //   if(invalidate) invalidate();
+    // }
+
+    Expr ifCondition = 
+          new AndLogicalExpr(
+            new NEExpr(
+              new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+              new NullLiteral("null")
+            ),
+            new LogNotExpr(
+              new ParExpr(
+              new InstanceOfExpr(
+                new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+                stringType.createQualifiedAccess()
+              )
+              )
+            )
+          );
+    Expr thrownException =
+      new ClassInstanceExpr(
+        new TypeAccess("java.lang", "UnsupportedOperationException"),
+        new List().add(new StringLiteral("set" + name() + " is only valid for String lexemes")),
+        new Opt()
+      );
+
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(),
+        new List().add(new ParameterDeclaration(lookupType("beaver", "Symbol").createQualifiedAccess(), "symbol")),
+        new List().add(
+	  new ExprStmt(
+  	    new MethodAccess(
+	      "set" + name(),
+  	      new List().add(
+	        new VarAccess("symbol")
+	      ).add(
+	        new BooleanLiteral("true")
+	      )
+	    )
+	  )
+	)
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(),
+        new List().add(
+	  new ParameterDeclaration(lookupType("beaver", "Symbol").createQualifiedAccess(), "symbol")
+	).add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")
+	),
+        new List().add(
+          new IfStmt(
+            ifCondition,
+            new ThrowStmt(thrownException),
+            new Opt()
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "$value"),
+            new CastExpr(new TypeAccess("java.lang", "String"), new VarAccess("symbol").qualifiesAccess(new VarAccess("value")))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "start"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getStart", new List()))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "end"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getEnd", new List()))
+          )
+        ).add(
+	  new IfStmt(
+	    new VarAccess("invalidate"),
+	    new ExprStmt(
+  	      new MethodAccess(
+	        "invalidate",
+	        new List()
+	      )
+	    )
+	  )
+	)
+      )
+    );
+
+  }
+
+  refine ASTGrammar public void ASTOptionalChild.addSetterOpt(List bodyDeclList, int index) {
+    // public void setNameOpt(Opt opt) { setNameOpt(opt, true); }
+    // public void setNameOpt(Opt opt, boolean invalidate) {
+    //   setChild(opt, index, invalidate); 
+    // }
+    String setterName = "set" + name() + "Opt";
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(new ParameterDeclaration(optNode().createQualifiedAccess(), "opt")),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              setterName,
+              new List().add(
+	        new VarAccess("opt")
+	      ).add(
+	        new BooleanLiteral("true")
+	      )
+            )
+          )
+        )
+      )
+    );
+    bodyDeclList.add(
+      createMethodDecl("void", setterName,
+        new List().add(
+	  new ParameterDeclaration(optNode().createQualifiedAccess(), "opt")
+	).add(
+	  new ParameterDeclaration(new TypeAccess("boolean"), "invalidate")
+	),
+        new List().add(
+          new ExprStmt(
+            new MethodAccess(
+              "setChild",
+              new List().add(
+	        new VarAccess("opt")
+	      ).add(
+	        new IntegerLiteral(index)
+	      ).add(
+	        new BooleanLiteral("false")
+	      )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+
+}

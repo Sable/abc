@@ -39,4 +39,8 @@ public class Dependency {
   public int hashCode() {
     return node.hashCode() * offset * (args == null ? 1 : args.hashCode());
   }
+
+  public ASTNode getCacheRoot() {
+    return node.getCacheRoot();
+  }
 }
