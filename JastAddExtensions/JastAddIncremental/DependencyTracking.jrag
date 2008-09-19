@@ -849,9 +849,10 @@ aspect DependencyTracking {
         new MethodAccess("clear", new List())
       )
     );
-    list.add(new IfStmt(new NEExpr(f.createQualifiedBoundAccess(), 
+/*    list.add(new IfStmt(new NEExpr(f.createQualifiedBoundAccess(), 
     		                   new NullLiteral("null")),
-      clearStmt));
+      clearStmt));*/
+    list.add(clearStmt);
   }
 
 }
