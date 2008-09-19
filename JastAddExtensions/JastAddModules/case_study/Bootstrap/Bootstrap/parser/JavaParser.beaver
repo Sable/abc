@@ -153,155 +153,155 @@ class Events extends Parser.Events {
 %terminals XOREQ;
 %terminals OREQ;
 %terminals error;
-%typeof interface_type = "Access";
-%typeof simple_name = "Access";
-%typeof variable_declarator = "VariableDecl";
-%typeof field_access = "Access";
+%typeof synchronized_statement = "SynchronizedStmt";
 %typeof try_statement = "TryStmt";
-%typeof constructor_body = "ConstructorDecl";
-%typeof expression = "Expr";
-%typeof expression_opt = "Opt";
-%typeof predecrement_expression = "Expr";
-%typeof class_or_interface_type = "Access";
-%typeof extends_interfaces = "List";
+%typeof labeled_statement = "LabeledStmt";
+%typeof method_header = "MethodDecl";
+%typeof statement_expression_list = "List";
+%typeof if_then_else_statement = "IfStmt";
+%typeof cast_expression = "Expr";
+%typeof type_declarations = "List";
+%typeof if_then_statement = "IfStmt";
+%typeof equality_expression = "Expr";
+%typeof numeric_type = "Access";
+%typeof interface_type = "Access";
+%typeof interfaces = "List";
+%typeof for_statement = "ForStmt";
+%typeof local_variable_declaration = "VarDeclStmt";
 %typeof statement_no_short_if = "Stmt";
-%typeof name_decl = "IdUse";
-%typeof relational_expression = "Expr";
-%typeof interface_body = "List";
-%typeof return_statement = "ReturnStmt";
+%typeof class_declaration = "ClassDecl";
+%typeof variable_declarator_id = "VariableDecl";
+%typeof interface_type_list = "List";
+%typeof conditional_and_expression = "Expr";
+%typeof goal = "CompilationUnit";
+%typeof import_declarations = "List";
 %typeof variable_initializers = "List";
+%typeof shift_expression = "Expr";
+%typeof method_declaration = "MethodDecl";
+%typeof assert_statement = "AssertStmt";
+%typeof import_declaration = "ImportDecl";
+%typeof inclusive_or_expression = "Expr";
+%typeof class_instance_creation_expression = "Expr";
+%typeof interface_body = "List";
+%typeof interface_member_declaration = "BodyDecl";
+%typeof compilation_unit = "CompilationUnit";
+%typeof constant_expression = "Expr";
+%typeof block = "Block";
+%typeof empty_statement = "EmptyStmt";
+%typeof finally = "Block";
+%typeof relational_expression = "Expr";
+%typeof floating_point_type = "Access";
+%typeof primary_no_new_array = "Expr";
+%typeof postfix_expression = "Expr";
+%typeof postdecrement_expression = "Expr";
+%typeof type_import_on_demand_declaration = "ImportDecl";
+%typeof conditional_or_expression = "Expr";
+%typeof modifiers = "List";
+%typeof name_decl = "IdUse";
+%typeof instance_initializer = "InstanceInitializer";
+%typeof class_body = "List";
+%typeof return_statement = "ReturnStmt";
+%typeof catches = "List";
+%typeof class_type_list = "List";
+%typeof continue_statement = "ContinueStmt";
+%typeof unary_expression_not_plus_minus = "Expr";
+%typeof field_access = "Access";
+%typeof assignment = "Expr";
+%typeof conditional_expression = "Expr";
+%typeof break_statement = "BreakStmt";
+%typeof block_statement = "Stmt";
+%typeof dim_exprs = "List";
 %typeof block_statements = "List";
 %typeof block_statements_opt = "List";
-%typeof method_body = "Opt";
-%typeof inclusive_or_expression = "Expr";
-%typeof statement_without_trailing_substatement = "Stmt";
-%typeof import_declarations = "List";
-%typeof switch_labels = "List";
-%typeof conditional_expression = "Expr";
-%typeof primitive_type = "Access";
-%typeof local_variable_declaration = "VarDeclStmt";
-%typeof break_statement = "BreakStmt";
-%typeof switch_block_statement_group = "List";
-%typeof and_expression = "Expr";
-%typeof postdecrement_expression = "Expr";
-%typeof interface_member_declaration = "BodyDecl";
-%typeof literal = "Expr";
-%typeof modifiers = "List";
-%typeof labeled_statement = "LabeledStmt";
-%typeof argument_list = "List";
-%typeof argument_list_opt = "List";
-%typeof class_literal = "ClassAccess";
-%typeof formal_parameter_list = "List";
-%typeof formal_parameter_list_opt = "List";
+%typeof expression = "Expr";
+%typeof expression_opt = "Opt";
+%typeof local_variable_declaration_statement = "VarDeclStmt";
+%typeof assignment_expression = "Expr";
+%typeof interface_declaration = "InterfaceDecl";
+%typeof multiplicative_expression = "Expr";
+%typeof variable_declarator = "VariableDecl";
+%typeof type = "Access";
+%typeof reference_type = "Access";
+%typeof constant_declaration = "BodyDecl";
+%typeof labeled_statement_no_short_if = "LabeledStmt";
+%typeof constructor_declaration = "ConstructorDecl";
+%typeof primary = "Expr";
+%typeof array_creation_uninit = "Expr";
+%typeof simple_name_decl = "IdUse";
+%typeof while_statement_no_short_if = "WhileStmt";
+%typeof explicit_constructor_invocation = "ExprStmt";
 %typeof interface_member_declarations = "List";
 %typeof interface_member_declarations_opt = "List";
-%typeof catches = "List";
-%typeof floating_point_type = "Access";
-%typeof method_declaration = "MethodDecl";
-%typeof name = "Access";
-%typeof primary = "Expr";
-%typeof class_instance_creation_expression = "Expr";
-%typeof while_statement_no_short_if = "WhileStmt";
-%typeof equality_expression = "Expr";
-%typeof synchronized_statement = "SynchronizedStmt";
-%typeof if_then_else_statement = "IfStmt";
-%typeof constructor_declaration = "ConstructorDecl";
-%typeof if_then_statement = "IfStmt";
-%typeof field_declaration = "BodyDecl";
-%typeof static_initializer = "StaticInitializer";
-%typeof type_declaration = "TypeDecl";
-%typeof block_statement = "Stmt";
-%typeof if_then_else_statement_no_short_if = "IfStmt";
-%typeof constant_declaration = "BodyDecl";
-%typeof type_declarations = "List";
-%typeof additive_expression = "Expr";
-%typeof switch_block_statement_groups = "List";
-%typeof array_access = "Access";
-%typeof assert_statement = "AssertStmt";
-%typeof formal_parameter = "ParameterDeclaration";
-%typeof modifier = "Modifier";
-%typeof import_declaration = "ImportDecl";
-%typeof shift_expression = "Expr";
-%typeof continue_statement = "ContinueStmt";
-%typeof dims = "List";
-%typeof dims_opt = "List";
-%typeof postfix_expression = "Expr";
-%typeof for_statement_no_short_if = "ForStmt";
-%typeof class_declaration = "ClassDecl";
-%typeof while_statement = "WhileStmt";
-%typeof statement = "Stmt";
 %typeof throws = "List";
 %typeof throws_opt = "List";
-%typeof super = "Opt";
-%typeof switch_label = "Case";
+%typeof switch_block = "Block";
+%typeof method_body = "Opt";
+%typeof do_statement = "DoStmt";
+%typeof exclusive_or_expression = "Expr";
+%typeof formal_parameter = "ParameterDeclaration";
+%typeof modifier = "Modifier";
+%typeof statement = "Stmt";
+%typeof preincrement_expression = "Expr";
+%typeof additive_expression = "Expr";
+%typeof qualified_name_decl = "IdUse";
 %typeof for_init = "List";
 %typeof for_init_opt = "List";
-%typeof unary_expression_not_plus_minus = "Expr";
-%typeof unary_expression = "Expr";
-%typeof array_type = "Access";
-%typeof qualified_name_decl = "IdUse";
-%typeof abstract_method_declaration = "BodyDecl";
-%typeof array_creation_uninit = "Expr";
+%typeof class_or_interface_type = "Access";
+%typeof dim_expr = "Dims";
+%typeof postincrement_expression = "Expr";
+%typeof throw_statement = "ThrowStmt";
+%typeof statement_without_trailing_substatement = "Stmt";
+%typeof argument_list = "List";
+%typeof argument_list_opt = "List";
+%typeof statement_expression = "ExprStmt";
+%typeof for_statement_no_short_if = "ForStmt";
+%typeof switch_labels = "List";
+%typeof subclass_body = "Opt";
+%typeof switch_label = "Case";
+%typeof while_statement = "WhileStmt";
+%typeof formal_parameter_list = "List";
+%typeof formal_parameter_list_opt = "List";
 %typeof method_invocation = "Access";
-%typeof class_body_declaration = "BodyDecl";
-%typeof catch_clause = "CatchClause";
+%typeof simple_name = "Access";
+%typeof qualified_name = "Access";
+%typeof abstract_method_declaration = "BodyDecl";
 %typeof variable_initializer = "Expr";
 %typeof for_update = "List";
 %typeof for_update_opt = "List";
-%typeof method_header = "MethodDecl";
-%typeof conditional_or_expression = "Expr";
-%typeof class_type_list = "List";
-%typeof type_import_on_demand_declaration = "ImportDecl";
-%typeof integral_type = "Access";
-%typeof block = "Block";
-%typeof statement_expression = "ExprStmt";
-%typeof variable_declarator_id = "VariableDecl";
-%typeof single_type_import_declaration = "ImportDecl";
-%typeof preincrement_expression = "Expr";
-%typeof instance_initializer = "InstanceInitializer";
-%typeof class_type = "Access";
-%typeof compilation_unit = "CompilationUnit";
-%typeof package_declaration = "IdUse";
-%typeof do_statement = "DoStmt";
+%typeof super = "Opt";
+%typeof field_declaration = "BodyDecl";
+%typeof class_literal = "ClassAccess";
+%typeof unary_expression = "Expr";
+%typeof catch_clause = "CatchClause";
 %typeof variable_declarators = "List";
-%typeof cast_expression = "Expr";
-%typeof dim_exprs = "List";
-%typeof expression_statement = "ExprStmt";
-%typeof array_creation_init = "Expr";
-%typeof assignment_expression = "Expr";
-%typeof interface_type_list = "List";
-%typeof class_member_declaration = "BodyDecl";
-%typeof postincrement_expression = "Expr";
-%typeof empty_statement = "EmptyStmt";
+%typeof name = "Access";
+%typeof single_type_import_declaration = "ImportDecl";
+%typeof array_initializer = "ArrayInit";
+%typeof package_declaration = "IdUse";
+%typeof primitive_type = "Access";
+%typeof if_then_else_statement_no_short_if = "IfStmt";
+%typeof class_body_declaration = "BodyDecl";
+%typeof array_type = "Access";
 %typeof switch_statement = "SwitchStmt";
-%typeof qualified_name = "Access";
-%typeof constant_expression = "Expr";
-%typeof finally = "Block";
-%typeof goal = "CompilationUnit";
+%typeof switch_block_statement_groups = "List";
+%typeof static_initializer = "StaticInitializer";
+%typeof dims = "List";
+%typeof dims_opt = "List";
+%typeof expression_statement = "ExprStmt";
+%typeof predecrement_expression = "Expr";
+%typeof constructor_body = "ConstructorDecl";
+%typeof switch_block_statement_group = "List";
+%typeof array_creation_init = "Expr";
+%typeof integral_type = "Access";
+%typeof type_declaration = "TypeDecl";
+%typeof extends_interfaces = "List";
 %typeof class_body_declarations = "List";
 %typeof class_body_declarations_opt = "List";
-%typeof interfaces = "List";
-%typeof dim_expr = "Dims";
-%typeof numeric_type = "Access";
-%typeof exclusive_or_expression = "Expr";
-%typeof simple_name_decl = "IdUse";
-%typeof conditional_and_expression = "Expr";
-%typeof assignment = "Expr";
-%typeof array_initializer = "ArrayInit";
-%typeof type = "Access";
-%typeof labeled_statement_no_short_if = "LabeledStmt";
-%typeof switch_block = "Block";
-%typeof reference_type = "Access";
-%typeof throw_statement = "ThrowStmt";
-%typeof primary_no_new_array = "Expr";
-%typeof explicit_constructor_invocation = "ExprStmt";
-%typeof local_variable_declaration_statement = "VarDeclStmt";
-%typeof for_statement = "ForStmt";
-%typeof statement_expression_list = "List";
-%typeof subclass_body = "Opt";
-%typeof interface_declaration = "InterfaceDecl";
-%typeof class_body = "List";
-%typeof multiplicative_expression = "Expr";
+%typeof and_expression = "Expr";
+%typeof class_type = "Access";
+%typeof class_member_declaration = "BodyDecl";
+%typeof array_access = "Access";
+%typeof literal = "Expr";
 %goal goal;
 goal =
     compilation_unit.cu {: return cu;:}
@@ -1251,10 +1251,48 @@ statement =
 
 
 
-expression_opt =
-    {: return new Opt(); :}
-  | expression.n {: return new Opt(n); :}
-  ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1270,80 +1308,43 @@ block_statements_opt =
   | block_statements.n {: return n; :}
   ;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-argument_list_opt =
-    {: return new List(); :}
-  | argument_list.n {: return n; :}
+expression_opt =
+    {: return new Opt(); :}
+  | expression.n {: return new Opt(n); :}
   ;
 
 
-formal_parameter_list_opt =
-    {: return new List(); :}
-  | formal_parameter_list.n {: return n; :}
-  ;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface_member_declarations_opt =
     {: return new List(); :}
   | interface_member_declarations.n {: return n; :}
   ;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-dims_opt =
-    {: return new List(); :}
-  | dims.n {: return n; :}
-  ;
-
-
-
-
-
-
 throws_opt =
     {: return new List(); :}
   | throws.n {: return n; :}
   ;
+
+
+
+
+
+
+
+
 
 
 
@@ -1356,6 +1357,22 @@ for_init_opt =
 
 
 
+
+argument_list_opt =
+    {: return new List(); :}
+  | argument_list.n {: return n; :}
+  ;
+
+
+
+
+
+
+
+formal_parameter_list_opt =
+    {: return new List(); :}
+  | formal_parameter_list.n {: return n; :}
+  ;
 
 
 
@@ -1384,10 +1401,10 @@ for_update_opt =
 
 
 
-
-
-
-
+dims_opt =
+    {: return new List(); :}
+  | dims.n {: return n; :}
+  ;
 
 
 
@@ -1401,23 +1418,6 @@ class_body_declarations_opt =
     {: return new List(); :}
   | class_body_declarations.n {: return n; :}
   ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
