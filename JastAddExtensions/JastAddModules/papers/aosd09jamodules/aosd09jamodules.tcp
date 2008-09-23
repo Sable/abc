@@ -6,7 +6,7 @@ Version=4
 MainFile=aosd09jamodules.tex
 UseBibTeX=0
 UseMakeIndex=0
-ActiveProfile=LaTeX => DVI
+ActiveProfile=LaTeX => PS
 ProjectLanguage=
 ProjectDialect=
 
