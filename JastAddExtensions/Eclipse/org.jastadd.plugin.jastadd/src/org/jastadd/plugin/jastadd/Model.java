@@ -45,6 +45,7 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel.ProgramInfo;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -129,7 +130,7 @@ public class Model extends JastAddJModel {
 		return program;	   
 	}
 	
-	protected void initProgram(Program program, JastAddBuildConfiguration buildConfig) {
+	protected void initProgram(IProgram program, JastAddBuildConfiguration buildConfig) {
 		Collection<String> options = new ArrayList<String>();
 		if (buildConfig.jastadd.getPackage() != null) {
 			options.add("-package");
@@ -317,7 +318,7 @@ public class Model extends JastAddJModel {
 	@Override
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
 		ProgramInfo info = getProgramInfo(project);
-		if (info != null && info.hasChaged()) {
+		if (info != null && info.hasChanged()) {
 
 			// Only build if there was a change
 
@@ -472,6 +473,32 @@ public class Model extends JastAddJModel {
 				System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
 			}
 		}
+	}
+	
+	protected ProgramInfo getProgramInfo(IProject project) {
+		if (projectToNodeMap.containsKey(project)) {
+			return projectToNodeMap.get(project);
+		} else {
+			if (isModelFor(project)) {
+				try {
+					ProgramInfo programInfo = new ProgramInfo();
+					programInfo.buildConfiguration = readBuildConfiguration(project);
+					programInfo.program = initProgram(project, programInfo.buildConfiguration);
+					JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
+					initProgram(programInfo.program, jastAddBuildConfig);
+					projectToNodeMap.put(project, programInfo);
+					nodeToProjectMap.put(programInfo.program, project);
+					return programInfo;
+				} catch (CoreException e) {
+					logError(e, "Initializing program failed!");
+					return null;
+				} catch (Error e) {
+					logError(e, "Initializing program failed!");
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 		
 	private static void clearProgram(ASTNode node) {

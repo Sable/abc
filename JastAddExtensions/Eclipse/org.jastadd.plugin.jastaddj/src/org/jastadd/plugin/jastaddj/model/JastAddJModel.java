@@ -92,8 +92,8 @@ import AST.Program;
 public class JastAddJModel extends JastAddModel {
 
 	public static class ProgramInfo {
-		IProgram program;
-		JastAddJBuildConfiguration buildConfiguration;
+		public IProgram program;
+		public JastAddJBuildConfiguration buildConfiguration;
 		private boolean changed = false;
 		private boolean updateView = true;
 		public void changed() {
@@ -102,7 +102,7 @@ public class JastAddJModel extends JastAddModel {
 		public void clearChanges() {
 			changed = false;
 		}
-		public boolean hasChaged() {
+		public boolean hasChanged() {
 			return changed;
 		}
 		public void updateView(boolean b) {
@@ -303,7 +303,7 @@ public class JastAddJModel extends JastAddModel {
 
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
 		ProgramInfo info = getProgramInfo(project);
-		if (info != null && info.hasChaged()) {
+		if (info != null && info.hasChanged()) {
 			
 		    // Only build if there was a change
 		
