@@ -416,11 +416,21 @@ aspect AttributesCodegeneration {
     );
   }
 
+  private void AttributeDecl.makeNTAFinal(List list, Access f) {
+    list.add(new ExprStmt(
+      f.qualifiesAccess(
+        new MethodAccess("is$Final", new List().add(new BooleanLiteral("true")))
+      )
+    ));
+  }
+
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
     if(declaredNTA()) {
       if(getNumParameter() == 0) {
-	list.add(new ExprStmt(adoptNTA(fieldComputedValue(typeDecl))));
+        FieldDeclaration f = fieldComputedValue(typeDecl);
+        makeNTAFinal(list, f.createQualifiedBoundAccess());
+	list.add(new ExprStmt(adoptNTA(f)));
       } else {
         FieldDeclaration f = ntaListField(typeDecl);
         list.add(
@@ -443,8 +453,8 @@ aspect AttributesCodegeneration {
                 )
               ).add(
 	        new ExprStmt(adoptNTA(f))
-		    )
-		      ),
+	      )
+	    ),
             new Opt()
           )
         ).add(
@@ -462,8 +472,11 @@ aspect AttributesCodegeneration {
         );
       }
     }
-    else
+    else {
+      if(!bindsToTokenChild())
+        makeNTAFinal(list, new VarAccess(computedValueName()));
       storeNTAValue(list);
+    }
   }
     
   protected void AttributeDecl.nodeCopyClearCache(TypeDecl type) {
