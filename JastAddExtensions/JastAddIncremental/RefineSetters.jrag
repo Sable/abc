@@ -265,13 +265,17 @@ aspect RefineSetters {
           ).setLocation(this)
         ).add(
 	  new IfStmt(
-	    new VarAccess("invalidate"),
-/*problem*/
+	    new AndLogicalExpr(
+	      new VarAccess("invalidate"),
+	      new MethodAccess("is$Final", new List())
+	    ),
 	    new ExprStmt(
-  	      new MethodAccess(
-	        "invalidate",
-	        new List()
-	      )
+	      new ThisAccess("this").qualifiesAccess(
+    	        new MethodAccess(
+	          "invalidate",
+	          new List()
+	        )
+              )
 	    )
 	  )
 	)
@@ -365,7 +369,10 @@ aspect RefineSetters {
           )
         ).add(
 	  new IfStmt(
-	    new VarAccess("invalidate"),
+	    new AndLogicalExpr(
+	      new VarAccess("invalidate"),
+	      new MethodAccess("is$Final", new List())
+	    ),
 	    new ExprStmt(
   	      new MethodAccess(
 	        "invalidate",
@@ -423,6 +430,35 @@ aspect RefineSetters {
             )
           ).setLocation(this)
         )
+      )
+    );
+  }
+
+  /* when setting the value of NTAs, make sure to use the non-invalidating setters */
+
+  refine AttributesCodegeneration private Expr AttributeDecl.adoptNTA(FieldDeclaration f) {
+    // f.setParent(this)
+    return f.createQualifiedBoundAccess().qualifiesAccess(
+ 	     new MethodAccess("setParent", new List().add(new ThisAccess("this"))
+			                             .add(new BooleanLiteral("false"))
+             )
+	   );
+  }
+
+  refine AttributesCodegeneration private void AttributeDecl.storeNTAValue(List list) {
+    // this.setNNN(computedValueName())
+    list.add(
+      new ExprStmt(
+        new ThisAccess("this").qualifiesAccess(
+          new MethodAccess(
+            "set" + name().substring(3), // replace initial get with set
+            new List().add(
+ 	      new VarAccess(computedValueName())
+	    ).add(
+	      new BooleanLiteral("false")
+	    )
+	  )
+	)
       )
     );
   }

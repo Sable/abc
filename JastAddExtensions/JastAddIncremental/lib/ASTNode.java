@@ -143,7 +143,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     if(node != null) { 
 	node.setParent(this, invalidate); 
 	node.childIndex = i; 
-    } else if(invalidate) {
+    } else if(invalidate && is$Final()) {
 	invalidate();
     }
   }
@@ -171,7 +171,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     if(node != null) { 
 	node.setParent(this, true); 
 	node.childIndex = i; 
-    } else {
+    } else if(is$Final()) {
 	invalidate();
     }
   }
@@ -185,7 +185,8 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       }
       System.arraycopy(children, i+1, children, i, children.length-i-1);
       numChildren--;
-      invalidate();
+      if(is$Final())
+        invalidate();
     }
   }
 
@@ -199,7 +200,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   public void setParent(ASTNode node, boolean invalidate) {
     parent = node;
-    if(invalidate && node != null)
+    if(invalidate && node != null && node.is$Final())
 	invalidate();
   }
   public void setParent(ASTNode node) {
