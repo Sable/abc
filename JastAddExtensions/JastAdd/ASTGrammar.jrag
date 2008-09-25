@@ -188,8 +188,7 @@ aspect ASTGrammar {
 
   syn lazy List ASTDecl.getBodyDeclList() {
     List bodyDeclList = new List();
-    int index;
-    index = 0;
+    int index = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       child.addAccessors(bodyDeclList, index);
@@ -197,85 +196,13 @@ aspect ASTGrammar {
         index++;
     }
 
-    // add constructor with children as arguments
-    List list = new List();
-    index = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
-      ASTChild child = (ASTChild)iter.next();
-      if(!child.isNTA()) {
-        list.add(
-          new ParameterDeclaration(
-            child.parameterType().createQualifiedAccess(),
-            "p" + index
-          )
-        );
-      }
-    }
-    List statements = new List();
-    index = 0;
-    int nextChildIndex = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
-      ASTChild child = (ASTChild)iter.next();
-      if(!child.isNTA()) {
-        if(child instanceof ASTTokenChild) {
-          statements.add(
-            new ExprStmt(
-              new MethodAccess(
-                "set" + child.name(),
-                new List().add(
-                  new VarAccess("p" + index)
-                )
-              )
-            )
-          );
-        }
-        else {
-          statements.add(
-            new ExprStmt(
-              new MethodAccess(
-                "setChild",
-                new List().add(
-                  new VarAccess("p" + index)
-                ).add(
-                  new IntegerLiteral(nextChildIndex)
-                )
-              )
-            )
-          );
-        }
-      }
-      if(!(child instanceof ASTTokenChild))
-        nextChildIndex++;
-    }
-    /*
-    if(isRootNode()) {
-      statements.add(
-        AssignExpr.asStmt(
-          new VarAccess("is$Final"),
-          new BooleanLiteral("true")
-        )
-      );
-    }
-    */
-    bodyDeclList.add(
-      new ConstructorDecl(
-        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-        name(),
-        list,
-        new List(),
-        new Opt(),
-        new Block(
-          statements
-        )
-      )
-    );
-
+    int numparms = addConstructorWithChildrenAsArguments(bodyDeclList);
     addBeaverConstructor(bodyDeclList);
 
     // add constructor with a single int argument for backward compability with jjtree
 
     //if(list.getNumChild() > 0) {
-      statements = new List();
+      List statements = new List();
       /*
       index = 0;
       for(Iterator iter = components().iterator(); iter.hasNext(); ) {
@@ -322,7 +249,7 @@ aspect ASTGrammar {
             )
           );
     }
-    if(list.getNumChild() > 0) {
+    if(numparms > 0) {
       bodyDeclList.add(
         new ConstructorDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
@@ -337,59 +264,10 @@ aspect ASTGrammar {
       );
     }
 
-    // create and add init$children
-    statements = new List();
-    int n = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
-      ASTChild c = (ASTChild)iter.next();
-      if(!(c instanceof ASTTokenChild))
-        n++;
-    }
-    statements.add(
-    new ExprStmt(
-    new AssignSimpleExpr(
-      new VarAccess("children"),
-      new ArrayCreationExpr(
-        new ArrayTypeWithSizeAccess(
-          astNode().createQualifiedAccess(),
-          new IntegerLiteral(n)
-        ),
-        new Opt()
-      )
-    )
-    )
-    );
-    index = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
-      ASTChild child = (ASTChild)iter.next();
-      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
-        statements.add(
-            new ExprStmt(
-              new MethodAccess(
-                "setChild",
-                new List().add(
-                  child.createDefaultInit()
-                  ).add(
-                    new IntegerLiteral(index)
-                    )
-                )
-              )
-            );
-      }
-      if(!(child instanceof ASTTokenChild))
-        index++;
-    }
-    bodyDeclList.add(
-      new MethodDecl(
-        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("synthetic"))),
-        new PrimitiveTypeAccess("void"),
-        "init$children",
-        new List(),
-        new List(),
-        new Opt(new Block((List)statements.fullCopy()))
-      )
-    );
-    //}
+    // add init$children method
+    addInitChildren(bodyDeclList);
+
+    // add flushCache method
     bodyDeclList.add(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
@@ -411,6 +289,151 @@ aspect ASTGrammar {
       )
     );
     return bodyDeclList;
+  }
+
+  // build parameter list for standard constructor
+  private List ASTDecl.buildConstructorParameterList() {
+    List list = new List();
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        list.add(
+          new ParameterDeclaration(
+            child.parameterType().createQualifiedAccess(),
+            "p" + index
+          )
+        );
+      }
+    }
+    return list;
+  }
+
+  // build body of standard constructor
+  private List ASTDecl.buildConstructorBody() {
+    List statements = new List();
+    int index = 0;
+    int nextChildIndex = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        if(child instanceof ASTTokenChild) {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "set" + child.name(),
+                new List().add(
+                  new VarAccess("p" + index)
+                )
+              )
+            )
+          );
+        }
+        else {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  new VarAccess("p" + index)
+                ).add(
+                  new IntegerLiteral(nextChildIndex)
+                )
+              )
+            )
+          );
+        }
+      }
+      if(!(child instanceof ASTTokenChild))
+        nextChildIndex++;
+    }
+    return statements;
+  }
+
+  // add a standard constructor
+  private int ASTDecl.addConstructorWithChildrenAsArguments(List bodyDeclList) {
+    List parameters = buildConstructorParameterList();
+    List statements = buildConstructorBody();
+    bodyDeclList.add(
+      new ConstructorDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+        name(),
+        parameters,
+        new List(),
+        new Opt(),
+        new Block(
+          statements
+        )
+      )
+    );
+    return parameters.getNumChild();
+  }
+
+  // count number of non-token children
+  private int ASTDecl.numNonTokenChild() {
+    int n = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild c = (ASTChild)iter.next();
+      if(!(c instanceof ASTTokenChild))
+        n++;
+    }
+    return n;
+  }
+
+  // set default values for list and option children
+  private void ASTDecl.createDefaultInits(List statements) {
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+        statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  child.createDefaultInit()
+                  ).add(
+                    new IntegerLiteral(index)
+                  )
+                )
+              )
+            );
+      }
+      if(!(child instanceof ASTTokenChild))
+        index++;
+    }
+  }
+
+  // create and add init$children
+  private void ASTDecl.addInitChildren(List bodyDeclList) {
+    List statements = new List();
+    int n = numNonTokenChild();
+    // allocate children array
+    statements.add(
+      new ExprStmt(
+        new AssignSimpleExpr(
+          new VarAccess("children"),
+          new ArrayCreationExpr(
+            new ArrayTypeWithSizeAccess(
+              astNode().createQualifiedAccess(),
+              new IntegerLiteral(n)
+            ),
+            new Opt()
+	  )
+        )
+      )
+    );
+    createDefaultInits(statements);
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("synthetic"))),
+        new PrimitiveTypeAccess("void"),
+        "init$children",
+        new List(),
+        new List(),
+        new Opt(new Block((List)statements.fullCopy()))
+      )
+    );
   }
 
   // called from Rewrites.jrag when generating intertype declarations
@@ -1120,52 +1143,7 @@ aspect ASTGrammar {
         );
       }
     }
-    List statements = new List();
-    index = 0;
-    int nextChildIndex = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
-      ASTChild child = (ASTChild)iter.next();
-      if(!child.isNTA()) {
-        if(child instanceof ASTTokenChild) {
-          statements.add(
-            new ExprStmt(
-              new MethodAccess(
-                "set" + child.name(),
-                new List().add(
-                  new VarAccess("p" + index)
-                )
-              )
-            )
-          );
-        }
-        else {
-          statements.add(
-            new ExprStmt(
-              new MethodAccess(
-                "setChild",
-                new List().add(
-                  new VarAccess("p" + index)
-                ).add(
-                  new IntegerLiteral(nextChildIndex)
-                )
-              )
-            )
-          );
-        }
-      }
-      if(!(child instanceof ASTTokenChild))
-        nextChildIndex++;
-    }
-    /*
-    if(isRootNode()) {
-      statements.add(
-        AssignExpr.asStmt(
-          new VarAccess("is$Final"),
-          new BooleanLiteral("true")
-        )
-      );
-    }
-    */
+    List statements = buildConstructorBody();
     bodyDeclList.add(
       new ConstructorDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),

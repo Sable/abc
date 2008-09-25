@@ -393,24 +393,35 @@ aspect AttributesCodegeneration {
   }
   
   
-  
+  private Expr AttributeDecl.adoptNTA(FieldDeclaration f) {
+    // f.setParent(this)
+    return f.createQualifiedBoundAccess().qualifiesAccess(
+	     new MethodAccess("setParent", new List().add(new ThisAccess("this")))
+	   );
+  }
+
+  private void AttributeDecl.storeNTAValue(List list) {
+    // this.setNNN(computedValueName())
+    list.add(
+      new ExprStmt(
+        new ThisAccess("this").qualifiesAccess(
+          new MethodAccess(
+            "set" + name().substring(3), // replace initial get with set
+            new List().add(
+ 	      new VarAccess(computedValueName())
+	    )
+	  )
+	)
+      )
+    );
+  }
 
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
     if(declaredNTA()) {
       if(getNumParameter() == 0) {
-        list.add(
-          new ExprStmt(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
-              new MethodAccess(
-                "setParent",
-                new List().add(new ThisAccess("this"))
-              )
-            )
-          )
-        );
-      }
-      else {
+	list.add(new ExprStmt(adoptNTA(fieldComputedValue(typeDecl))));
+      } else {
         FieldDeclaration f = ntaListField(typeDecl);
         list.add(
           new IfStmt(
@@ -431,13 +442,9 @@ aspect AttributesCodegeneration {
                   )
                 )
               ).add(
-                new ExprStmt(
-                  f.createQualifiedBoundAccess().qualifiesAccess(
-                    new MethodAccess("setParent", new List().add(new ThisAccess("this")))
-                  )
-                )
-              )
-            ),
+	        new ExprStmt(adoptNTA(f))
+		    )
+		      ),
             new Opt()
           )
         ).add(
@@ -456,18 +463,7 @@ aspect AttributesCodegeneration {
       }
     }
     else
-      list.add(
-        new ExprStmt(
-          new ThisAccess("this").qualifiesAccess(
-            new MethodAccess(
-              "set" + name().substring(3), // replace initial get with set
-              new List().add(
-                new VarAccess(computedValueName())
-              )
-            )
-          )
-        )
-      );
+      storeNTAValue(list);
   }
     
   protected void AttributeDecl.nodeCopyClearCache(TypeDecl type) {
