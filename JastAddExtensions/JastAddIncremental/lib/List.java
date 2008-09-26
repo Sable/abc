@@ -29,7 +29,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
       list$touched = false;
     }
     int res = getNumChildNoTransform();
-    Main.registerDependency(new Dependency(this, 2), res);
+    state().registerDependency(new Dependency(this, 2), res);
     return res;
   }
   private boolean list$touched = true;

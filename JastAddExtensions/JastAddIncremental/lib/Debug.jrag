@@ -25,4 +25,10 @@ aspect Debug {
 	    return false;
 	return !((CompilationUnit)n).fromSource();
     }
+
+    // only register dependencies on non-library attributes
+    refine Main public void ASTNode$State.registerDependency(Dependency dep, Object val) {
+	if(!dep.node.fromLibrary())
+	    refined(dep, val);
+    }
 }

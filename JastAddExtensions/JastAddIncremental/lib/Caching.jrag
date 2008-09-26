@@ -9,12 +9,12 @@ aspect Caching {
 
   public void CompilationUnit.invalidate() {
     flushCaches();
-    Main.last_change++;
+    state().last_change++;
   }
 
   public void Program.invalidate() {
     flushCaches();
-    Main.last_change++;
+    state().last_change++;
   }
 
   public ASTNode ASTNode.getCacheRoot() {

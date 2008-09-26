@@ -12,7 +12,7 @@ public class MemoLine {
     private boolean checkingHit = false;
     private int last_checked = -1;
     public boolean hit() {
-	if(last_checked >= Main.last_change)
+	if(last_checked >= node.state().last_change)
 	  return true;
 	if(checkingHit)
 	    throw new RuntimeException("Circular dependency detected");
@@ -29,7 +29,7 @@ public class MemoLine {
 	} finally {
 	    checkingHit = false;
 	}
-	last_checked = Main.last_change;
+	last_checked = node.state().last_change;
 	return true;
     }
     public  <T extends java.lang.Object> void add(AST.Dependency dep, T val) {

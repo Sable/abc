@@ -1,0 +1,28 @@
+package AST;
+
+import java.util.Stack;
+
+aspect Main {
+
+    public static final boolean DEBUG = false;
+	
+    private Stack<MemoLine> ASTNode$State.memostack = new Stack<MemoLine>();
+    private MemoLine ASTNode$State.curline = null;
+    public int ASTNode$State.last_change = 0;
+	
+    public void ASTNode$State.pushMemoLine(MemoLine line) {
+	memostack.push(curline=line);
+    }
+
+    public void ASTNode$State.popMemoLine() {
+	memostack.pop();
+	curline = memostack.isEmpty()? null : memostack.peek();
+    }
+
+    public void ASTNode$State.registerDependency(Dependency dep, Object val) {
+	    if (curline != null)
+		if(dep.getCacheRoot() != curline.getCacheRoot())
+		    curline.add(dep, val);
+    }
+
+}

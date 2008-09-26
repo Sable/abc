@@ -58,7 +58,7 @@ aspect DependencyTracking {
   
             m.getBlock().getStmtList().insertChild(
               new ExprStmt(
-                new TypeAccess("Main").qualifiesAccess(
+                accessState().qualifiesAccess(
                   new MethodAccess(
                     "registerDependency",
                     new List().add(
@@ -170,7 +170,7 @@ aspect DependencyTracking {
       }
       Stmt registerDependency =
         new ExprStmt(
-          new TypeAccess("Main").qualifiesAccess(
+          accessState().qualifiesAccess(
             new MethodAccess(
               "registerDependency",
               new List().add(
@@ -216,7 +216,7 @@ aspect DependencyTracking {
   /** Creates a conditional print statement of the form
       <pre>
         if(Main.DEBUG)
-	  System.out.println(...messag... + getDebugID());
+	  System.out.println(...message... + getDebugID());
       </pre> */
   Stmt AttributeDecl.debugPrint(String s) {
     return new IfStmt(
@@ -390,7 +390,7 @@ aspect DependencyTracking {
       }
       Stmt registerDependency = 
         new ExprStmt(
-          new TypeAccess("Main").qualifiesAccess(
+          accessState().qualifiesAccess(
             new MethodAccess(
               "registerDependency",
               new List().add(
@@ -719,7 +719,7 @@ aspect DependencyTracking {
     if(getNumParameter() == 0) {
       statements.add(
         new ExprStmt(
-          new TypeAccess("Main").qualifiesAccess(
+          accessState().qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
               new List().add(f.createQualifiedBoundAccess())
@@ -731,7 +731,7 @@ aspect DependencyTracking {
     else {
       statements.add(
         new ExprStmt(
-          new TypeAccess("Main").qualifiesAccess(
+          accessState().qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
               new List().add(new VarAccess("v$").qualifiesAccess(new VarAccess("line")))
@@ -752,7 +752,7 @@ aspect DependencyTracking {
   void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl, FieldDeclaration f) {
     statements.add(
       new ExprStmt(
-        new TypeAccess("Main").qualifiesAccess(new MethodAccess("popMemoLine", new List()))
+        accessState().qualifiesAccess(new MethodAccess("popMemoLine", new List()))
       )
     );
     Stmt thenBranch;
@@ -853,6 +853,10 @@ aspect DependencyTracking {
     		                   new NullLiteral("null")),
       clearStmt));*/
     list.add(clearStmt);
+  }
+
+  Expr ASTNode.accessState() {
+    return new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()));
   }
 
 }

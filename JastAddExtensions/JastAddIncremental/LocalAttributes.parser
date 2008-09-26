@@ -1,0 +1,13 @@
+BodyDecl intertype_member_declaration = local_syn_decl | local_inh_decl ;
+
+BodyDecl local_syn_decl =
+  modifiers.mod? SYN SUPER LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN method_body.b 
+  {: return new LocalSynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, b); :}
+| modifiers.mod? SYN SUPER LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
+  {: return new LocalSynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+;
+
+BodyDecl local_inh_decl =
+  modifiers.mod? INH SUPER LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
+  {: return new LocalInhDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p); :}
+;

@@ -1,0 +1,2 @@
+LocalSynDecl : SynDecl;
+LocalInhDecl : InhDecl;
