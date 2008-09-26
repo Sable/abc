@@ -12,7 +12,7 @@ public aspect X {
 	public void BType.f() {
 		System.out.println("BType.f");
 	}
-	public void B.f() {
+	public void m2::B.f() {
 		System.out.println("B.f");
 	}
 }
