@@ -19,10 +19,10 @@ aspect Main {
 	curline = memostack.isEmpty()? null : memostack.peek();
     }
 
-    public void ASTNode$State.registerDependency(Dependency dep, Object val) {
-	    if (curline != null)
-		if(dep.getCacheRoot() != curline.getCacheRoot())
-		    curline.add(dep, val);
+    public void ASTNode$State.registerDependency(ASTNode node) {
+	if (curline != null)
+	    if(node.getCacheRoot() != curline.getCacheRoot())
+		curline.add(node);
     }
 
 }

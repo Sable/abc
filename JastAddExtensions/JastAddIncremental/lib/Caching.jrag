@@ -4,23 +4,28 @@ aspect Caching {
     void flushCaches();
   }
 
+  private int CacheRoot.last_changed = 0;
+  public int CacheRoot.lastChanged() {
+    return last_changed;
+  }
+
   CompilationUnit implements CacheRoot;
   Program implements CacheRoot;
 
   public void CompilationUnit.invalidate() {
     flushCaches();
-    state().last_change++;
+    last_changed++;
   }
 
   public void Program.invalidate() {
     flushCaches();
-    state().last_change++;
+    last_changed++;
   }
 
-  public ASTNode ASTNode.getCacheRoot() {
+  public CacheRoot ASTNode.getCacheRoot() {
     ASTNode n = this;
     while(n != null && !(n instanceof CacheRoot))
       n = n.parent;
-    return n;
+    return (CacheRoot)n;
   }
 }

@@ -1,5 +1,5 @@
 aspect CreateEvalMethods {
-  public void TypeDecl.addCaseFor(List list, int i, MethodDecl m) {
+/*  public void TypeDecl.addCaseFor(List list, int i, MethodDecl m) {
     list.add(new ConstCase(new IntegerLiteral(i)));
     List args = new List();
     args.add(new ThisAccess("this"));
@@ -157,11 +157,9 @@ aspect CreateEvalMethods {
     else if(this instanceof ASTDecl) {
       for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
         MethodDecl m = (MethodDecl)iter.next();
-        /*if(m instanceof AttributeDecl && ((AttributeDecl)m).isLazy()) {*/
-	if(!m.type().isVoid() /*&& (!hasSuperclass() || superclass().ancestorMethods(m.signature()).isEmpty())*/) {
+	if(!m.type().isVoid()) {
             list.add(m);
 	}
-        //}
       }
     }
     return list;
@@ -214,5 +212,5 @@ aspect CreateEvalMethods {
       createEvalMethod();
     }
     refined();
-  }
+  }*/
 }

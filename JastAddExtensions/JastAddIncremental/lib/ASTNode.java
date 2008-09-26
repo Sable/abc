@@ -59,9 +59,8 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   public boolean is$Final() { return is$Final; }
   public void is$Final(boolean b) { is$Final = b; }
   /*@SuppressWarnings("cast")*/ public T getChild(int i) {
-    T res = (T)ASTNode.getChild(this, i); 
-    state().registerDependency(new Dependency(this, 1, i), res);
-    return res;
+    state().registerDependency(this);
+    return (T)ASTNode.getChild(this, i);
   }
 
   public static ASTNode getChild(ASTNode that, int i) {
@@ -122,7 +121,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   }
 
   public int getNumChild() {
-    state().registerDependency(new Dependency(this, 2), numChildren());
+    state().registerDependency(this);
     return numChildren();
   }
   public final int getNumChildNoTransform() {
@@ -194,7 +193,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     if(parent != null && ((ASTNode)parent).is$Final() != is$Final()) {
       state().boundariesCrossed++;
     }
-    state().registerDependency(new Dependency(this, 0), parent);
+    state().registerDependency(this);
     return (ASTNode)parent;
   }
 

@@ -9,7 +9,7 @@ aspect DependencyTracking {
       generateIntertypeDecls();
       MethodDecl aspectMethod = createAspectMethod();
       int lineNum = getParameterList().sourceLineNumber();
-      MethodDecl delegateMethod = decl().generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached(), this.evalIndex());
+      MethodDecl delegateMethod = decl().generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
       introducedType.addMemberMethod(delegateMethod);
       if(hostType() != introducedType) {
         aspectMethod.generateSuperDispatchDelegate(introducedType);
@@ -28,12 +28,11 @@ aspect DependencyTracking {
       among others, a field <code>Width$value</code> and an accessor method 
       <code>getWidth</code>.
 
-      Assuming that the eval index of <code>Width</code> is 29, the definition
-      of <code>getWidth</code> should be made to look like this:
+      The definition of <code>getWidth</code> should look like this:
 
       <pre>
         public int getWidth() {
-	  Main.registerDependency(new Dependency(this, 29), Width$value);
+	  Main.registerDependency(new Dependency(this));
 	  return Width$value;
 	}
       </pre>
@@ -46,39 +45,16 @@ aspect DependencyTracking {
         for(Iterator i2 = memberMethods("get" + child.name()).iterator(); i2.hasNext(); ) {
           MethodDecl m = (MethodDecl)i2.next();
           if(m.getNumParameter() == 0) {
-            ClassInstanceExpr expr = new ClassInstanceExpr(
-              new TypeAccess("Dependency"),
-              new List().add(
-                new ThisAccess("this")
-              ).add(
-                new IntegerLiteral(m.evalIndex())
-              ),
-              new Opt()
-            );
-  
             m.getBlock().getStmtList().insertChild(
               new ExprStmt(
                 accessState().qualifiesAccess(
-                  new MethodAccess(
-                    "registerDependency",
-                    new List().add(
-                      expr
-                    ).add(
-                      new VarAccess(child.name() + "$value")
-                    )
-                  )
-                )
-              ),
+	          new MethodAccess("registerDependency", 
+				   new List().add(new ThisAccess("this")))
+		)
+	      ),
               0
             );
-
-	    // insert a clause into the [switch] statement in method [eval]
-            MethodDecl evalMethod = createEvalMethod();
-            SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
-            List list = switchStmt.getBlock().getStmtList();
-            list.add(new ConstCase(new IntegerLiteral(m.evalIndex())));
-            list.add(new ReturnStmt(new VarAccess(child.name() + "$value")));
-          }
+	  }
         }
       }
     }
@@ -105,13 +81,8 @@ aspect DependencyTracking {
       instead of the wrapper method.
    */
   refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
-    if(isNTA() || declaredNTA()) {
+    if(isNTA() || declaredNTA())
       return refined(typeDecl, aspectMethod, lineNum, isLazy);
-    }
-    return generateAttributeDecl(typeDecl, aspectMethod, lineNum, isLazy, evalIndex());
-  }
-
-  public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy, int evalIndex) {
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy) {
@@ -143,41 +114,12 @@ aspect DependencyTracking {
       );
 
       // add dependency tracking
-      ClassInstanceExpr expr;
-      if(getNumParameter() == 0) {
-        expr = new ClassInstanceExpr(
-          new TypeAccess("Dependency"),
-          new List().add(
-            new ThisAccess("this")
-          ).add(
-	    new IntegerLiteral(evalIndex)
-          ),
-          new Opt()
-        );
-      }
-      else {
-        expr = new ClassInstanceExpr(
-          new TypeAccess("Dependency"),
-          new List().add(
-            new ThisAccess("this")
-          ).add(
-            new IntegerLiteral(evalIndex)
-          ).add(
-            new VarAccess("parameters$")
-          ),
-          new Opt()
-        );
-      }
       Stmt registerDependency =
         new ExprStmt(
           accessState().qualifiesAccess(
             new MethodAccess(
               "registerDependency",
-              new List().add(
-                expr
-              ).add(
-                new VarAccess("res")
-              )
+              new List().add(new ThisAccess("this"))
             )
           )
         );
@@ -187,12 +129,6 @@ aspect DependencyTracking {
       statements.add(
         new ReturnStmt(new VarAccess("res"))
       );
-
-      // add case entry in typeDecl, for evalIndex, and cacheMethod
-      MethodDecl evalMethod = typeDecl.createEvalMethod();
-      SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
-      List caseList = switchStmt.getBlock().getStmtList();
-      typeDecl.addCaseFor(caseList, evalIndex, cacheMethod);
     }
     else {
       // non-lazy are done as before
@@ -363,41 +299,12 @@ aspect DependencyTracking {
           )
       );
 
-      ClassInstanceExpr expr;
-      if(getNumParameter() == 0) {
-        expr = new ClassInstanceExpr(
-          new TypeAccess("Dependency"),
-          new List().add(
-            new ThisAccess("this")
-          ).add(
-            new IntegerLiteral(evalIndex())
-          ),
-          new Opt()
-        );
-      }
-      else {
-        expr = new ClassInstanceExpr(
-          new TypeAccess("Dependency"),
-          new List().add(
-            new ThisAccess("this")
-          ).add(
-            new IntegerLiteral(evalIndex())
-          ).add(
-            new VarAccess("parameters$")
-          ),
-          new Opt()
-        );
-      }
       Stmt registerDependency = 
         new ExprStmt(
           accessState().qualifiesAccess(
             new MethodAccess(
               "registerDependency",
-              new List().add(
-                expr
-              ).add(
-                new VarAccess("res")
-              )
+              new List().add(new ThisAccess("this"))
             )
           )
         );
@@ -406,12 +313,6 @@ aspect DependencyTracking {
       statements.add(
         new ReturnStmt(new VarAccess("res"))
       );
-
-      // add case entry in typeDecl, for evalIndex, and cacheMethod
-      MethodDecl evalMethod = typeDecl.createEvalMethod();
-      SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
-      List caseList = switchStmt.getBlock().getStmtList();
-      typeDecl.addCaseFor(caseList, evalIndex(), cacheMethod);
     }
     else {
       addComputeCall(statements);
@@ -626,7 +527,7 @@ aspect DependencyTracking {
 	    new MethodAccess("clear", new List())
           )
         )
-		     );
+     );
     }
     else {
       statements.add(
@@ -681,7 +582,7 @@ aspect DependencyTracking {
               new VarAccess("v$"),
               new ClassInstanceExpr(
                 new TypeAccess("CachedValue"),
-                new List().add(new ThisAccess("this")), // HERE
+                new List().add(new ThisAccess("this")),
                 new Opt()
               )
             )
@@ -849,9 +750,6 @@ aspect DependencyTracking {
         new MethodAccess("clear", new List())
       )
     );
-/*    list.add(new IfStmt(new NEExpr(f.createQualifiedBoundAccess(), 
-    		                   new NullLiteral("null")),
-      clearStmt));*/
     list.add(clearStmt);
   }
 
