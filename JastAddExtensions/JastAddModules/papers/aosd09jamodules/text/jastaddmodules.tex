@@ -2,6 +2,82 @@ This provides a description of the JastAdd module system.
 
 \subsection{Module System Overview}
 
+A module consists of aspects and classes, and defines the set of external
+modules that are visible to the module's members. The module system is based
+on the object-oriented java module system presented in \cite{modulesastypes}
+
+\subsection{Declaration, Membership and Exports}
+
+A module is defined in a \texttt{.module} file, and is headed by the module's name:
+
+\begin{lstlisting}[caption={Module Declaration}]
+//file prettyprinter.module
+module prettyprinter;
+...
+\end{lstlisting}
+
+Membership to a module is defined in the compilation unit of the members,
+similar to a package declaration:
+
+\begin{lstlisting}[caption={Module Membership}]
+//file prettyprinter.jrag
+module prettyprinter; //module membership
+public aspect PrettyPrinter {
+	public abstract String Expr.prettyPrint();
+	
+	public String Add.prettyPrint() {
+		return getLeft().prettyPrint() + 
+				"+" + getRight().prettyPrint();
+	}
+	
+	public String IntLit.prettyPrint() {
+		return getIntLit().toString();
+	}
+}
+
+//file Expr.java
+module asttypes; //module membership
+package expr; //package declaration
+public class Expr {
+...
+}
+
+\end{lstlisting}
+
+Module and package declarations can coexist in a single compilation unit.
+Modules can contain aspects and classes that span multiple packages.
+
+Packages are also not implicitly visible outside the module unless an
+\texttt{export} declaration is provided for that package. These declarations
+are placed in \texttt{.module} files.
+
+\begin{lstlisting}[caption={Export Package}]
+//file asttypes.module
+module asttypes;
+export package expr, stmt; //export expr and stmt
+
+//file prettyprinter.module
+module prettyprinter;
+export package *; //export all packages
+\end{lstlisting}
+
+As the example shows, an export package may contain a list of packages, or the
+wildcard \texttt{*}, which exposes all packages in the module. Any types that
+belong to a package that is not exported are not visible from outside the module.
+
+\subsection{Imports and Instantiation}
+
+Module definitions also contain import declarations, which specify which
+other modules are visible to 
+
+\subsection{Merge}
+
+
+
+\subsection{Extension}
+
+
+
 Imports and instantiation/merge, extension, access control.
 
 \subsection{ITD Calculator with Modules}

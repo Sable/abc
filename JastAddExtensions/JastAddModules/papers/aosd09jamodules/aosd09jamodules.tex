@@ -31,6 +31,15 @@
 \usepackage{url}
 \usepackage{cite}
 
+\lstset{numbers=left, columns=flexible, language=[AspectJ]Java, basicstyle=\small, numberstyle=\tiny, frame=tb}
+\lstset{
+morekeywords={own,module,export,as,merge,{module\_interface}, replace, with, overrides, singleton, supermodule},
+frame=tb,
+numbers=left,
+captionpos=t,
+tabsize=2
+}
+
 \begin{document}
 
 \title{Extensible Inter-type Declarations Through Modules}
@@ -91,7 +100,7 @@ Torbj\"{o}rn Ekman\\
 % author on the opening page (as the 'third row') but we ask,
 % for aesthetic reasons that you place these 'additional authors'
 % in the \additional authors block, viz.
-\date{30 July 1999}
+
 % Just remember to make sure that the TOTAL number of authors
 % is the number that will appear on the first page PLUS the
 % number that will appear in the \additionalauthors section.
@@ -106,6 +115,7 @@ Torbj\"{o}rn Ekman\\
 \input{text/introduction}
 
 \section{ITDs vs. Visitors}
+\label{section:itdvisitors}
 \input{text/itdvsvisitor}
 
 \section{Module System for ITDs}
