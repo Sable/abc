@@ -20,7 +20,7 @@ Membership to a module is defined in the compilation unit of the members,
 similar to a package declaration:
 
 \begin{lstlisting}[caption={Module Membership}]
-//file prettyprinter.jrag
+//file PrettyPrinter.jrag
 module prettyprinter; //module membership
 public aspect PrettyPrinter {
 	public abstract String Expr.prettyPrint();
@@ -74,18 +74,64 @@ an \textit{instance} of another module, which allows multiple instances
 of the same module to exist within a single context.
 
 There are two ways to import a module instance: importing the singleton or
-an \textbf{own} instance. 
+an \textbf{own} instance. Imports may also be alised to allow multiple instances
+of the same module to exist in the same context, and be exported so that
+they are also accessible through indirection from other modules;
 
-\begin{lstlisting}[caption={Imports}]
+\begin{lstlisting}[caption={Imports}, label={figure:imports}]
 //file prettyprinter.module
 module prettyprinter;
 //import the singleton instance of module parserframework
 import parserframework; 
 //import an own instance of the module asttypes
 import own asttype;
+//import another instance of asttype, using an alias and export
+import own asttype export as public_ast;
 \end{lstlisting}
 
-The imports 
+Imports of \textbf{own} instances without an explicit alias use the name
+of the imported module as its alias. To be more specific, line 6 from the above
+example is equivalent to
+\begin{lstlisting}
+import own asttype as asttype;
+\end{lstlisting}
+
+The visibility of imported modules become important for the \textbf{merge}
+operation, described later.
+
+\subsection{Lookup}
+
+Allowing two instances of the same module to exist in the same context
+requires a way to disambiguate references to the members of the instances.
+We introduce \textit{module qualifiers} for type references to explicitly
+choose the module to which the type belongs.
+
+The following example uses the module definition from listing \ref{figure:imports}.
+The module \texttt{prettyprinter} imports two instances of \texttt{asttype}, with the
+aliases \texttt{asttype} and \texttt{public\_ast}. The aspect \texttt{PrettyPrinter},
+which belongs to the module, introduces ITDs to each of the \texttt{Add} types
+of the instances.
+
+\begin{lstlisting}[caption={Module Qualfiers}]
+//file PrettyPrinter.jrag
+module prettyprinter;
+aspect PrettyPrinter {
+	...
+	//modifies the Add type in asttypes
+	public String asttypes::Add.prettyPrint() {
+		//infix print
+		return getLeft().prettyPrint() + "+" + 
+				getRight().prettyPrint();
+	}
+	...
+	//modifies the Add type in public_ast
+	public String public_ast::Add.prettyPrint() {
+		//postfix print
+		return getLeft().prettyPrint() + 
+				getRight().prettyPrint() + "+";
+	}
+}
+\end{lstlisting}
 
 \subsection{Merge}
 
@@ -94,8 +140,6 @@ The imports
 \subsection{Extension}
 
 
-
-Imports and instantiation/merge, extension, access control.
 
 \subsection{ITD Calculator with Modules}
 
