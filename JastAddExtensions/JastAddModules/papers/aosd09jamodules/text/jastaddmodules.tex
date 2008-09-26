@@ -41,7 +41,6 @@ package expr; //package declaration
 public class Expr {
 ...
 }
-
 \end{lstlisting}
 
 Module and package declarations can coexist in a single compilation unit.
@@ -55,10 +54,12 @@ are placed in \texttt{.module} files.
 //file asttypes.module
 module asttypes;
 export package expr, stmt; //export expr and stmt
+...
 
 //file prettyprinter.module
 module prettyprinter;
 export package *; //export all packages
+...
 \end{lstlisting}
 
 As the example shows, an export package may contain a list of packages, or the
@@ -68,7 +69,23 @@ belong to a package that is not exported are not visible from outside the module
 \subsection{Imports and Instantiation}
 
 Module definitions also contain import declarations, which specify which
-other modules are visible to 
+other modules are visible to the members of the module. A module imports 
+an \textit{instance} of another module, which allows multiple instances
+of the same module to exist within a single context.
+
+There are two ways to import a module instance: importing the singleton or
+an \textbf{own} instance. 
+
+\begin{lstlisting}[caption={Imports}]
+//file prettyprinter.module
+module prettyprinter;
+//import the singleton instance of module parserframework
+import parserframework; 
+//import an own instance of the module asttypes
+import own asttype;
+\end{lstlisting}
+
+The imports 
 
 \subsection{Merge}
 
