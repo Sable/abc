@@ -122,8 +122,10 @@ aspect JastAdd {
 
   public void AttributeDecl.typeCheck() {
     super.typeCheck();
-    //if(!(introducedType().subtype(astNode())))
-    //  error("attributes can only be introduced in AST nodes");
+    if(declaredNTA() && !type().subtype(astNode()))
+      error("declared nta:s must be subtypes of ASTNode");
+    if(!(introducedType().subtype(astNode())) && !introducedType().isInterfaceDecl())
+      error("attributes can only be introduced in AST nodes");
   }
 
   public void InhEq.typeCheck() {

@@ -1,0 +1,5 @@
+Errors:
+test/Test79.java:8:
+  Semantic Error: declared nta:s must be subtypes of ASTNode
+test/Test79.java:12:
+  Semantic Error: declared nta:s must be subtypes of ASTNode

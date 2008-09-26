@@ -48,22 +48,35 @@ aspect ASTGrammarAnalysis {
   eq ASTDecl.getASTChild(int i).hostType() = this;
   
   public void NTAListChild.nameCheck() {
+    super.nameCheck();
     if(hostType().memberMethods("get" + name() + "List").isEmpty())
       error("Missing equation for NTA " + name() + " in " + hostType().typeName());
   }
 
   public void NTAOptionalChild.nameCheck() {
+    super.nameCheck();
     if(hostType().memberMethods("get" + name() + "Opt").isEmpty())
       error("Missing equation for NTA " + name() + " in " + hostType().typeName());
   }
   
   public void NTAElementChild.nameCheck() {
+    super.nameCheck();
     if(hostType().memberMethods("get" + name()).isEmpty())
       error("Missing equation for NTA " + name() + " in " + hostType().typeName());
   }
   
   public void NTATokenChild.nameCheck() {
+    super.nameCheck();
     if(hostType().memberMethods("get" + name()).isEmpty())
       error("Missing equation for NTA " + name() + " in " + hostType().typeName());
   }
+
+  public void ASTChild.nameCheck() {
+    super.nameCheck();
+    if(lookupASTChild(name()) != this)
+      error("AST child " + name() + " is multiply declared");
+  }
+
+  inh ASTChild ASTChild.lookupASTChild(String name);
+  eq ASTDecl.getASTChild(int i).lookupASTChild(String name) = lookupChild(name);
 }

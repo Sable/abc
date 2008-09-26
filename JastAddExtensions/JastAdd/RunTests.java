@@ -39,11 +39,11 @@ public class RunTests {
 		  System.setOut(ps);
     
     // run JastAdd to build .class files for test case
-		new jastadd.JastAdd().compile(buildArgs(testName));
-    
-    // load test class in a separate class loader and invoke main method
-    String className = testName.replace('/', '.');
-    loadAndInvoke(className);
+		if(new jastadd.JastAdd().compile(buildArgs(testName))) {
+      // load test class in a separate class loader and invoke main method
+      String className = testName.replace('/', '.');
+      loadAndInvoke(className);
+    }
     
     // restore output stream
 		if(verbose)
