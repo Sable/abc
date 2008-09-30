@@ -1,12 +1,255 @@
-ITDs vs visitors.
+In this section we present two alternative implementations of a small
+calculator, one using visitors and one using ITDs. It will be used as a
+running example throughout the paper to illustrate the advantages and
+disadvantages of the respective solution. In Section~\ref{jastaddmodules}
+we then present a module system for ITDs that removes some of the presented
+deficiencies.
 
 \subsection{Running Example: Calculator}
+Consider a tiny calculator supporting integer literals and addition, thus 
+supporting composite expressions like: 1 + 2. It may seem trivial but its 
+implementation illustrates some important exensibility challenges that we 
+address in this paper. The calculator supports various computations on top 
+of this structure, e.g., evaluating its value and printing its string
+representation.
+
+To evaluate the extensibility of a visitor based solution and an ITD based
+solution we extend the calculator with two small extensions: first support
+for subtraction and then support for an alternative string representation 
+where constants are printed using natural language, i.e., one, two, 
+three, etc.
+
+TODO: %Introduce the Expression problem.
+
+Notice that this is a simplified example of an compiler. Information is
+for instance only propagated bottom up so there is no need for parameter
+propagation during a visit. Parameters would require a significantly more 
+complex visitor due to the requirement on contravariance in the argument 
+for type safety would require much more complex genericity. We chose an 
+example that is flattering for visitors to be fair when arguing that ITDs 
+are a more suitable solution even in this case. While the example is 
+tiny the same structure is commonly used in compilers. In~\cite{} we argue 
+the merits of using ITDs and attribute grammars rather than visitors in 
+extensible compiler construction, using a complete Java compiler as a 
+major case study.
 
 \subsection{Visitor Implementation}
+A visitor based solution uses the composite design pattern to model the
+static structure of expressions: one class for each language element and
+composition of language elements forming a tree structure. I.e., the 
+Add node has references to its left and right child respectively, while 
+the Int node has a single filed holding its value.
+
+Each node type also contains an accept method that performs an additional
+dispatch to select the code in the visitor for the concrete node type. 
+This double dispatch scheme is the key to dispatching both on the node 
+type and the visitor. We can thus select a particular method that is
+selected based on both the dynamic type of the recieving object and the 
+dynamic type of the visitor, provided as a parameter. 
+
+A visitor is then simply a class that holds an implementation for each concrete 
+class type that may accept the visitor. The Eval visitor computes the 
+value for Int and Add, while the Print visitor computes a string 
+represenation for each expression in a similar fashion. The visitor code 
+is required to visit children indirectly using the accept method which 
+clutters the implementation and is somewhat error prone.
+
+\begin{lstlisting}[caption={Visitor Base}]
+abstract class Expr {
+}
+class Int extends Expr {
+  int value;
+  <T> T accept(Visitor<T> v) {
+    return v.visitInt(this);
+  }
+}
+class Add extends Expr {
+  Expr left;
+  Expr right;
+  <T> accept(Visitor<T> v) {
+    return v.visitAdd(this);
+  }
+}
+class Visitor<T> {
+  <T> visitInt(Int i) { return null; }
+  <T> visitAdd(Add a) { return null; }
+}
+
+class Eval extends Visitor<Integer> {
+  Integer visitInt(Int i) {
+    return i.value;
+  }
+  Integer visitAdd(Add a) {
+    return a.left.accept(this) + a.right.accept(this);
+  }
+}
+class Print extends Visitor<String> {
+  String visitInt(Int i) {
+    return Integer.toString(i.value);
+  }
+  String visitAdd(Add a) {
+    return a.left.accept(this) + " + " + a.right.accept(this);
+  }
+}
+\end{lstlisting}
 
 \subsection{ITD Implementation}
+The ITD implementation of the calculator has a similar implementation of the
+node types as the visitor based solution, but the accept methods are no
+longer necessary. Instead the aspect Eval introduces an eval method in each
+node type. These methods can then be called from other introduced methods
+directly without the need for using accept methods to enable dispatch.
+
+\begin{lstlisting}[caption={ITD Base}]
+abstract class Expr {
+}
+class Int extends Expr {
+  int value;
+}
+class Add extends Expr {
+  Expr left;
+  Expr right;
+}
+aspect Eval {
+  int Int.eval() {
+    return value;
+  }
+  int Add.eval() {
+    return left.eval() + right.eval();
+  }
+}
+aspect Print {
+  String Int.print() {
+    return Integer.toString(value);
+  }
+  String Add.print() {
+    return left.print() + " + " + right.print();
+  }
+}
+\end{lstlisting}
 
 \subsection{Extension}
+As an example of extension we first add a subtraction node and enable the
+existing analyses to support that new operation. Then, we add a new
+analysis that computes a string representation of an expression where the
+literals are printed using natural language.
 
-\subsection{Evaluation}
+\subsubsection{Visitor extension}
+We need to add a new node type Sub that includes the boiler plate code to
+support the visitor pattern. Then the base visitor is extended to support
+the new node type. This change is not completely modular but a pragmatic
+choice to keep the solution simple. We could have used various tricks with advanced
+generics concepts, but that would make the solution even more complex and 
+clutter the solution with framework code. It should be admitted that the 
+current solution is not
+completely safe since the default implementation for visitSub is not
+suitable for the Eval and Print visitors. 
 
+We also provide extended vistitors
+,ExtEval and ExtPrint, to support the extended language.
+They can extend the base behaviour and simply provide the increment
+needed to support the subtraction operation. The extended version of the
+printer can then be refined to display integer constants using natural
+language in the separate visitor WordPrint. Notice that functionality from
+the base visitor can be reused here as well and only the functionality 
+that is refined need to be provided.
+
+\begin{lstlisting}[caption={Visitor Extension}]
+class Sub extends Expr {
+  Expr left;
+  Expr right;
+  T accept(Visitor<T> v) {
+    return v.visitSub(this);
+  }
+}
+class Visitor<T> { // replace old impl.
+  T visitInt(Int i) { return null; }
+  T visitAdd(Add a) { return null; }
+  T visitSub(Sub s) { return null; } // new
+}
+class ExtEval extends Eval {
+  Integer visitSub(Sub s) {
+    return a.left.accept(this) - a.right.accept(this);
+  }
+}
+class ExtPrint extends Eval {
+  String visitSub(Sub s) {
+    return a.left.accept(this) + " - " + a.right.accept(this);
+  }
+}
+class WordPrint extends ExtPrint {
+  Integer visitInt(Int i) {
+    .. convert i to the strings "one", "two", etc.
+  }
+}
+\end{lstlisting}
+
+\subsubsection{ITD extension}
+The ITD-based solution simply adds a new node type and introduces methods in that
+node type to make the evaluator and printer support subtraction.
+The natural language based printer is slightly more complicated. The simple
+model of introducing new methods in an existing class is not as convenient
+in this case. We can not keep the implementation printing numbers and reuse
+the other printing functionality while still changing it to print using
+natural language. The word printer therefore choses to take precedence over
+the other definitions of visitInt making it the only implementation, thus
+disabling the normal printer.
+
+\begin{lstlisting}[caption={ITD Extension}]
+class Sub extends Expr {
+  Expr left;
+  Expr right;
+}
+aspect ExtEval {
+  int Sub.eval() {
+    return left.eval() - right.eval();
+  }
+}
+aspect ExtPrint {
+  String Sub.print() {
+    return left.print() + " - " + right.print(); 
+  }
+}
+aspect WordPrint {
+  declare precendence: WordPrint, *;
+  Integer Int.visitInt(Int i) {
+    .. convert i to the strings "one", "two", etc.
+  }
+}
+\end{lstlisting}
+
+\subsection{Discussion}
+While both presented solutions are quite similar there are some important
+differences:
+
+Visitors require some ahead of time planning with boiler plate code in the 
+node types while the ITD solution can modularly update an existing class 
+hierarchy if needed. The actual visitors can be updated in a 
+modular fashion using inheritance and overriding but the user of these 
+analyses need to update the code to use the extended versions. ITDs can 
+be used to directly add support for existing analyses in the new node type 
+in a completely modular fashion. 
+
+The visitor based solution need to include framework code to enable the 
+double dispatch pattern which clutters the implementation and is somewhat 
+error prone. The ITD solution on the other hand is quite 
+straightforward with a clean implementation.
+
+The base visitor could not be modularly extended in the presented example.
+There are solutions based on advanced usage of generics that support
+modular extension but that requires much more framework code and clutters
+the solution even more. Moreover, the user need still replace uses of the
+old visitors with uses of the new visitor.
+(as long as we don't try to run Eval
+or Print on a tree containing sub nodes. could probably be fixed using more
+complex visitor)
+
+Visitors can be inherited and overridden to refine behaviour in a visitor
+being extended. This enables both visitors to be used in the same system
+while the ITD solutation can only use either the original implementation 
+or the refined implementation. 
+
+Another advantage of the visitor based solution is that each class can be
+modularly type-checked and compiled while the ITD based solution requires a
+global analysis since methods can be introduced by any aspect in the
+system.
