@@ -1,14 +1,66 @@
 This describes the case study on the Java1.4 frontend and
 backend, and how the modules fit in.
 
+scales to real problems
+  substantial application
+    LOC
+    part of abc, soot, JastAddJ
+  large example of AO application from the beginning
+    everything is an ITD
+
+illustrate instantiation and imports on a real example
+
 \subsection{JastAdd Java Compiler Overview}
 
 Frontend, backend, compilerapp, parser/scanner
+
+first diagram
+
+explain problems
+  replace bytecode reader (ugly hack using buildfiles)
+  multiple variants can't coexist
+  everything is global to allow extension and composition
+
 
 \subsection{Applying Modules}
 
 Imports, merge (to share frontend types)
 
+changes:
+split ast and jrag
+permissions
+
+new diagram
+
+a few code snippets
+
 \subsection{Evaluation}
 
 Shows dependencies explicitly, information hiding, enables sharing through merge
+
+everything used to be globally visible
+  modules improves information hiding 
+    (concrete example would be nice)
+    percent that became non-global
+
+enables variants with different sets of ITDs
+  examples
+enables variants with replaced/overridden classes
+  example: bytecode reader
+  (reason, monolithic implementation not suitable for extension, therefore
+  replacement easier)
+
+can we characterize the typical changes needed?
+how intrusive/global were the changes?
+
+eliminate cycles as a side-effect
+  required by the module system
+  architecture improved/ should have been done that way from the beginning
+  in retrospect
+
+
+
+
+
+ 
+ 
