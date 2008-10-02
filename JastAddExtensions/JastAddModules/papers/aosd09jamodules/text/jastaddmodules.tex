@@ -56,7 +56,7 @@ Modules can contain aspects and classes that span multiple packages.
 
 \subsection{Module Access Control}
 
-Packages are also not implicitly visible outside the module unless an
+Packages are not implicitly visible outside the module unless an
 \texttt{export} declaration is provided for that package. These declarations
 are placed in \texttt{.module} files.
 
@@ -133,7 +133,7 @@ also ensures that the imported module is an unmodified version of the base modul
 
 The visibility of imported modules become important for module qualifiers and the \textbf{merge} operation, described later.
 
-\subsection{Lookup}
+\subsection{Module Qualified Type Accesses}
 
 Allowing two instances of the same module to exist in the same context
 requires a way to disambiguate references to the members of the instances.
@@ -182,11 +182,11 @@ modulealias1::modulealias2::packagename.TypeName
 \end{lstlisting}
 
 The following example
-shows a small system consisting of the modules \textbf{scanner}, 
-\textbf{parser} and \textbf{parserapp}. The parser module imports
+shows a small system consisting of the modules \texttt{scanner}, 
+\texttt{parser} and \texttt{parserapp}. The parser module imports
 the scanner module, and the parser application module imports the
 parser. The parser application module then adds an ITD to the classes
-\textbf{Scanner} and \textbf{Parser}, which are members of the scanner
+\texttt{Scanner} and \texttt{Parser}, which are members of the scanner
 and parser modules respectively. The import statements in the 
 \texttt{ParserApp.jrag} file in the example are normal java import
 statements, to demonstrate that module qualifiers are also allowed
@@ -221,8 +221,10 @@ import parser::scanner::Scanner;
 
 aspect ParserApp {
 	//add an ITD to the direct import parser
+	private App Parser.parentApp;
 	public void Parser.setParentApp(App app) {...}
 	//add an ITD to the indirect import scanner
+	private App Scanner.parentApp;
 	public void Scanner.setParentApp(App app) {...}
 }
 \end{lstlisting}
