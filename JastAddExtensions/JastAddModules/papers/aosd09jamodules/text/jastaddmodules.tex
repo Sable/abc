@@ -121,6 +121,10 @@ example is equivalent to
 import own asttype as asttype;
 \end{lstlisting}
 
+Import cycles involving \textbf{own} instances are not allowed as they
+lead to infinite module instance creation. Import cycles involving only
+singleton instances, however, are allowed.
+
 An aspect can only introduce ITDs to types that are visible from its parent module. 
 This allows the use of module imports and access modifiers to control dependencies
 caused by ITDs.
@@ -230,6 +234,84 @@ aspect ParserApp {
 \end{lstlisting}
 
 \subsection{Extension}
+
+THe module system in \cite{modulesastypes} introduced the concept of
+module extension and class overriding, where a class in a subtype module
+overrides a class of the same name in the supertype module to satisfy the 
+open/closed principle for modules.
+
+A subtype module declaration takes the form
+\begin{lstlisting}
+module m2 extends m1;
+\end{lstlisting}
+where \texttt{m1} is another module in the compilation. The subtype module
+inherits all the aspects and classes of the supertype module, and can override
+them as well by declaring an aspect or class with the same package and type name.
+
+The usual rules for Java inheritance also apply for module subtyping: single 
+inheritance only, and no subtyping cycles.
+
+We extend this to aspects and ITDs, specifying that an aspect in a subtype module
+overrides an aspect of the same name in the supertype module. This effectively
+replaces all ITDs in the overriden module.
+
+In the following example
+
+\begin{lstlisting}
+//file parserv1.module
+module parserv1;
+...
+
+//file Program.java
+//base class, inherited by parserv2
+module parserv1;
+public class Program {...}
+
+//file ParserClassFilev1.jrag
+//version 1 parser
+module parserv1;
+aspect ParseClassFile {
+	public void Program.parseClassFile(String file) {...}
+}
+
+//file parserv2.module
+module parserv2 extends parserv1;
+...
+
+//file ParserClassFilev2.jrag
+module parserv2;
+//has the same name as parserv1::ParseClassFile, 
+//overrides that aspect when parserv2 is instantiated
+aspect ParseClassFile {
+	public void Program.parserClassFile(String file) {...}
+}
+
+//file multiversion.module
+//a multi-version parser that supports both versions
+module multiversion;
+import own parserv1;
+import own parserv2;
+...
+
+//file MultiVersion.java
+module multiversion;
+public class MultiVersion {
+	...
+	//version1 parser
+	parserv1::Program progv1 = ...;
+	//version2 parser
+	parserv2::Program progv2 = ...;
+	
+	//parse depending on version
+	void parseClassFile(String file) {
+		if (version1) {
+			progv1.parseClassFile(file)
+		} else if (version2) {
+			progv2.parseClassFile(file)
+		}
+	}
+}
+\end{lstlisting}
 
 \subsection{Merge}
 
