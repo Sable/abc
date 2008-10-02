@@ -4,9 +4,14 @@ This provides a description of the JastAdd module system.
 
 A module consists of aspects and classes, and defines the set of external
 modules that are visible to the module's members. The module system is based
-on the object-oriented java module system presented in \cite{modulesastypes}
+on the object-oriented java module system presented in \cite{modulesastypes}.
 
-\subsection{Declaration, Membership and Exports}
+A module is considered to be the type of the collection of classes and aspects
+that belong to it. The module system allows the instantiation these module types
+within the context of an importing module, and defines a subtyping relation
+on module types.
+
+\subsection{Declaration and Membership}
 
 A module is defined in a \texttt{.module} file, and is headed by the module's name:
 
@@ -46,6 +51,8 @@ public class Expr {
 Module and package declarations can coexist in a single compilation unit.
 Modules can contain aspects and classes that span multiple packages.
 
+\subsection{Module Access Control}
+
 Packages are also not implicitly visible outside the module unless an
 \texttt{export} declaration is provided for that package. These declarations
 are placed in \texttt{.module} files.
@@ -65,6 +72,21 @@ export package *; //export all packages
 As the example shows, an export package may contain a list of packages, or the
 wildcard \texttt{*}, which exposes all packages in the module. Any types that
 belong to a package that is not exported are not visible from outside the module.
+
+The module system also introduces the module-private access modifier \textbf{module},
+which allows access to a type, method or field from the within the same module. This
+allows more fine-grained control over the set of publicly accessible types of a module.
+
+\begin{lstlisting}
+//file Expr.java
+module asttypes;
+//only visible from module asttypes
+module class Expr {
+	//only visible from module asttypes
+	module int moduleField;
+	module void moduleMethod() {...}
+}
+\end{lstlisting}
 
 \subsection{Imports and Instantiation}
 
@@ -96,8 +118,17 @@ example is equivalent to
 import own asttype as asttype;
 \end{lstlisting}
 
-The visibility of imported modules become important for the \textbf{merge}
-operation, described later.
+An aspect can only introduce ITDs to types that are visible from its parent module. 
+This allows the use of module imports and access modifiers to control dependencies
+caused by ITDs.
+
+Importing the singleton module allows different module to share the same instance
+of the same module type. This allows the sharing of classes across modules, as
+classes that belong to different instances of a module are not type compatible.
+In the presence of the \textbf{merge} operator (described later), a singleton import
+also ensures that the imported module is an unmodified version of the base module type.
+
+The visibility of imported modules become important for module qualifiers and the \textbf{merge} operation, described later.
 
 \subsection{Lookup}
 
@@ -105,6 +136,12 @@ Allowing two instances of the same module to exist in the same context
 requires a way to disambiguate references to the members of the instances.
 We introduce \textit{module qualifiers} for type references to explicitly
 choose the module to which the type belongs.
+
+A module qualified type access takes this form:
+
+\begin{lstlisting}
+modulealias::packagename.TypeName
+\end{lstlisting}
 
 The following example uses the module definition from listing \ref{figure:imports}.
 The module \texttt{prettyprinter} imports two instances of \texttt{asttype}, with the
@@ -133,11 +170,68 @@ aspect PrettyPrinter {
 }
 \end{lstlisting}
 
-\subsection{Merge}
+Module qualifiers also allow for indirection. A module can be accessed 
+through its importing module if it was exported. A type access
+that uses module indirection takes the form:
 
+\begin{lstlisting}
+modulealias1::modulealias2::packagename.TypeName
+\end{lstlisting}
 
+The following example
+shows a small system consisting of the modules \textbf{scanner}, 
+\textbf{parser} and \textbf{parserapp}. The parser module imports
+the scanner module, and the parser application module imports the
+parser. The parser application module then adds an ITD to the classes
+\textbf{Scanner} and \textbf{Parser}, which are members of the scanner
+and parser modules respectively. The import statements in the 
+\texttt{ParserApp.jrag} file in the example are normal java import
+statements, to demonstrate that module qualifiers are also allowed
+for that language construct.
+
+\begin{lstlisting}
+//file scanner.module
+module scanner;
+export package *;
+...
+
+//file parser.module
+module parser;
+//allow access to imported scanner
+import own scanner export as scanner;
+export package *;
+...
+
+//file parserapp.module
+module parserapp;
+import own parser;
+...
+
+//file ParserApp.jrag
+module parserapp;
+//module qualifiers are also supported in normal
+//java import statements
+//from the direct import parser
+import parser::Parser;
+//indirect through parser to get scanner
+import parser::scanner::Scanner;
+
+aspect ParserApp {
+	//add an ITD to the direct import parser
+	public void Parser.setParentApp(App app) {...}
+	//add an ITD to the indirect import scanner
+	public void Scanner.setParentApp(App app) {...}
+}
+\end{lstlisting}
 
 \subsection{Extension}
+
+\subsection{Merge}
+
+Types that belong to different module instances, even if they have the same
+base module type, are not type compatible. Though type sharing can be done
+in a using singleton instances, 
+
 
 
 
