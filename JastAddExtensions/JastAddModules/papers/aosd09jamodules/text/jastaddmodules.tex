@@ -247,6 +247,8 @@ module m2 extends m1;
 where \texttt{m1} is another module in the compilation. The subtype module
 inherits all the aspects and classes of the supertype module, and can override
 them as well by declaring an aspect or class with the same package and type name.
+As with the module system in \cite{modulesastypes}, a subtype module also inherits
+the imports and export package declarations of its supertype module.
 
 The usual rules for Java inheritance also apply for module subtyping: single 
 inheritance only, and no subtyping cycles.
@@ -255,7 +257,11 @@ We extend this to aspects and ITDs, specifying that an aspect in a subtype modul
 overrides an aspect of the same name in the supertype module. This effectively
 replaces all ITDs in the overriden module.
 
-In the following example
+In the following example, we have two parser modules \texttt{parserv1} and \texttt{parserv2},
+with the latter being a subtype of the former. The module \texttt{parserv2} inherits
+the class \texttt{Program}, which overriding the aspect \texttt{ParseClassFile}. The
+application module can then use instances of both modules, with the ITD \texttt{Program.parseClassFile}
+being appropriately different for each version.
 
 \begin{lstlisting}
 //file parserv1.module
@@ -305,13 +311,20 @@ public class MultiVersion {
 	//parse depending on version
 	void parseClassFile(String file) {
 		if (version1) {
+		  //this invokes the ITD method introduced in parserv1
 			progv1.parseClassFile(file)
 		} else if (version2) {
+			//while this invokes the parserv2 ITD method
 			progv2.parseClassFile(file)
 		}
 	}
 }
 \end{lstlisting}
+
+It should be noted that even though the class \texttt{Program}
+is inherited by \texttt{parserv2}, the type
+\texttt{parserv2::Program} is different from \texttt{parserv1::Program}. Moreover,
+these two types are not type compatible.
 
 \subsection{Merge}
 
