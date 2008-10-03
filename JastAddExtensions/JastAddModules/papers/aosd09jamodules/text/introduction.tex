@@ -1,4 +1,3 @@
-
 Inter-type declarations (ITDs) provide a powerful yet simple modularisation
 mechanism. The possibility to extend existing classes modularly without
 ahead of time planning is not only useful to separate different concerns
@@ -6,10 +5,13 @@ but also extremely convenient for modular extensibility when software
 evolves.
 
 A common critisizm of ITDs is their global scope which arguably leads to
-poor information hiding and require global analysis during compilation.
-Another disadvantage to more traditional extensibility patterns, e.g.,
-visitors, is that the class hierarchy is destructively updated, preventing
-multiple versions of a system with different sets of ITDs applied.
+poor information hiding, a topic that has gained renewed interest with the 
+emerging support for modules in Java 7. Another disadvantage is that the 
+class hierarchy is destructively updated, preventing multiple variants of 
+classes with different sets of ITDs applied. It is worth noting that 
+this drawback is not shared by more traditional extension mechanisms such 
+as visitors.
+
 These problems exists to a certain extent in plain Java programs as well
 and there has been a wealth of recent work on module systems to improve on
 status quo. 
