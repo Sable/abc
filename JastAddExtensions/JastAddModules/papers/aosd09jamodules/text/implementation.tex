@@ -1,26 +1,27 @@
-This describes the implementation.
+We have implemented the module system as an extension to the JastAdd
+compiler which adds support for ITDs and attribute grammars as an extension
+to the JastAddJ compiler presented in Section~\ref{jastaddjoverview}. 
+The extension adds concrete and abstract syntax to support module
+specifcations and updates name binding and code generation to handle the
+new scope and visibility rules imposed by the module system. 
 
-Modular extension to JastAdd compiler based on JastAddJ.
+In our previous work we have presented a design how to implement name
+binding in a modular extensible fashion, for instance to support new
+language features such as inter-type declarations
+\cite{jastaddjavacompiler}. It is interesting to note that the same
+strategy can be conveniently used to handle name lookup for the presented
+module extension. Each module provides lookup for its contained classes and
+acts as filter that limits visibility and mangles names. This allowed us to
+implement the module system as a completely modular extension that can be
+composed with JastAdd much in the same way as the Java 5 compiler extends
+the Java 1.4 compiler in Section~\ref{jastaddjoverview}.
 
-concrete and abstract syntax for module 
+The approach is a compile-time based solution where new packages are
+generated when multiple instances of the same module is needed, e.g., when
+adding different sets of ITDs to the same class hierarchy. Potential name
+clashes due to the changed visiblity rules are handled by a name mangling
+scheme where module names are included in signatures to create unique method
+names.
 
-Name mangling.
-
-name lookup
-  filter
-  mangling
-
-the same functionality that makes name binding extensible according to our
-previous papers also makes it easier to perform the modified name lookup
-for modules.
-
-compile-time solution. 
-
-generate new packages for different instances.
-
-compile-time for JastAddJ?
-
-
-
-
-
+The source is available for download at the following web
+site: \texttt{http://builds.jastadd.org/modules}
