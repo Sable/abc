@@ -24,7 +24,7 @@ allow the explicit definition of the dependencies of a module. We can extend
 the information hiding features of these module systems to extend to aspects, 
 so as to limit the scope of ITDs.
 
-Another module system,iJAM \cite{iJAM}, adds explicit module instantiation, 
+Another module system, iJAM \cite{iJAM}, adds explicit module instantiation, 
 which allows multiple versions of the same module to coexist in a single compilation.
 This is built upon by some of our previous work \cite{modulesastypes}, which 
 adds the idea of treating modules as object-oriented types, with instantiation
@@ -72,7 +72,8 @@ ITDs are currently destructive updates of the class hierarchy. The base version 
 extended version can not co-exist. This is the main motivation for our
 work. 
 
-We have implemented the proposed module system as an extension to the
+Based on previous work on object-oriented modules for Java \cite{modulesastypes}, 
+we have implemented the proposed module system as an extension to the
 JastAdd Extensible Java Compiler which contains support for amongst others
 ITDs. 
 To evaluate the module system we performed a case study where the above
