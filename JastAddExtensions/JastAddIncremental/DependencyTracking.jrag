@@ -1,39 +1,39 @@
 aspect DependencyTracking {
 
-  // refine to make sure that every equation gets its own eval index
-  refine AttributesCodegeneration public void SynEq.createIntertypeMethod(TypeDecl introducedType) {
-    if(introducedType.isInterfaceDecl()) {
-      // equations do never generate code in interfaces
-    }
-    else {
-      generateIntertypeDecls();
-      MethodDecl aspectMethod = createAspectMethod();
-      int lineNum = getParameterList().sourceLineNumber();
-      MethodDecl delegateMethod = decl().generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
-      introducedType.addMemberMethod(delegateMethod);
-      if(hostType() != introducedType) {
-        aspectMethod.generateSuperDispatchDelegate(introducedType);
-      }
-    }
-  }
-
-
-  /** For every lexeme, adapt its getter method to register a dependency. 
+  /** For every lexeme, adapt its getter method to register a dependency, and
+      its setter to trigger propagation.
 
       Take, for example, the grammar production
       
         BasicBox : Box ::= <Width:int> <Height:int>
 
       Remember that JastAdd creates a class <code>BasicBox</code> containing, 
-      among others, a field <code>Width$value</code> and an accessor method 
-      <code>getWidth</code>.
+      among others, a field <code>Width$value</code> and accessor methods
+      <code>getWidth</code> and <code>setWidth</code>.
+
+      We need to create a field
+
+      <pre>
+        DependentList getWidth$dep = new DependentList();
+      </pre>
+
+      to store the cacheroots depending on this attribute.
 
       The definition of <code>getWidth</code> should look like this:
 
       <pre>
         public int getWidth() {
-	  Main.registerDependency(new Dependency(this));
+	  getWidth$dep.add(state().getCurrentCacheRoot());
 	  return Width$value;
+	}
+      </pre>
+
+      The definition of <code>setWidth</code> will be:
+
+      <pre>
+        public void setWidth(int value) {
+	  Width$value = value;
+	  getWidth$dep.propagate();
 	}
       </pre>
     */
@@ -41,23 +41,54 @@ aspect DependencyTracking {
     refined();
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
-      if(child instanceof ASTTokenChild && !child.isNTA()) {
-        for(Iterator i2 = memberMethods("get" + child.name()).iterator(); i2.hasNext(); ) {
-          MethodDecl m = (MethodDecl)i2.next();
-          if(m.getNumParameter() == 0) {
-            m.getBlock().getStmtList().insertChild(
-              new ExprStmt(
-                accessState().qualifiesAccess(
-	          new MethodAccess("registerDependency", 
-				   new List().add(new ThisAccess("this")))
-		)
-	      ),
-              0
-            );
-	  }
-        }
+      if(child instanceof ASTTokenChild) {
+	FieldDeclaration depfield = createDepField(child.name() + "$dep");
+        if(!child.isNTA()) {
+	  MethodDecl getter = getChildGetter(child.name());
+          getter.getBlock().getStmtList().insertChild(
+            new ExprStmt(
+	      depfield.createQualifiedBoundAccess().qualifiesAccess(
+	        new MethodAccess(
+		  "add",
+		  new List().add(
+		    accessState().qualifiesAccess(
+		      new MethodAccess(
+		        "getCurrentCacheRoot",
+		        new List()
+		      )
+		    )
+		  )
+	        )
+	      )
+	    ),
+            0
+          );
+	}
       }
     }
+  }
+
+  /** Finds the getter method for a child. */
+  public MethodDecl ASTDecl.getChildGetter(String name) {
+    for(Iterator i = memberMethods("get" + name).iterator(); i.hasNext(); ) {
+      MethodDecl m = (MethodDecl)i.next();
+      if(m.getNumParameter() == 0)
+        return m;
+    }
+    assert(false);
+    return null;
+  }
+
+
+  /** Finds the setter method for a child. */
+  public MethodDecl ASTDecl.getChildSetter(String name) {
+    for(Iterator i = memberMethods("set" + name).iterator(); i.hasNext(); ) {
+      MethodDecl m = (MethodDecl)i.next();
+      if(m.getNumParameter() == 1)
+        return m;
+    }
+    assert(false);
+    return null;
   }
 
   /** Generates methods corresponding to a synthesised attribute.
@@ -114,17 +145,43 @@ aspect DependencyTracking {
       );
 
       // add dependency tracking
-      Stmt registerDependency =
-        new ExprStmt(
-          accessState().qualifiesAccess(
-            new MethodAccess(
-              "registerDependency",
-              new List().add(new ThisAccess("this"))
-            )
-          )
-        );
-
-      conditionalOnRewrite(statements, registerDependency, null);
+      Stmt registerDependency;
+      if(getNumParameter() == 0) {
+        registerDependency = new ExprStmt(
+	  new VarAccess(name()+"$cache").qualifiesAccess(
+	    new MethodAccess(
+	      "add",
+	      new List().add(
+	        accessState().qualifiesAccess(
+	          new MethodAccess(
+		    "getCurrentCacheRoot",
+		    new List()
+		  )
+	        )
+	      )
+	    )
+	  )
+	);
+      } else {
+        registerDependency = new ExprStmt(
+	  new VarAccess(uniqueSignatureName()+"$cache").qualifiesAccess(
+	    new MethodAccess(
+	      "addDependent",
+	      new List().add(
+	        new VarAccess("parameters$")
+	      ).add(
+	        accessState().qualifiesAccess(
+                  new MethodAccess(
+                    "getCurrentCacheRoot",
+		    new List()
+		  )
+	        )
+	      )
+	    )
+	  )
+	);
+      }
+      conditionalOnRewrite(statements, registerDependency);
       // and finally a return statement for res
       statements.add(
         new ReturnStmt(new VarAccess("res"))
@@ -149,36 +206,9 @@ aspect DependencyTracking {
      );
   }
 
-  /** Creates a conditional print statement of the form
-      <pre>
-        if(Main.DEBUG)
-	  System.out.println(...message... + getDebugID());
-      </pre> */
-  Stmt AttributeDecl.debugPrint(String s) {
-    return new IfStmt(
-      new TypeAccess("Main").qualifiesAccess(
-        new VarAccess("DEBUG")
-      ),
-      new ExprStmt(
-        new TypeAccess("java.lang", "System").qualifiesAccess(
-          new VarAccess("out")
-        ).qualifiesAccess(
-          new MethodAccess(
-            "println", 
-            new List().add(
-              new AddExpr(
-                new StringLiteral(s), 
-                new ThisAccess("this").qualifiesAccess(
-                  new MethodAccess("getDebugID", new List())
-		)
-              )
-            )
-          )
-        )
-      ),
-      new Opt()
-    );
-  }
+  syn String AttributeDecl.cacheMethodName();
+  eq SynDecl.cacheMethodName() = delegateName() + "$cache";
+  eq InhDecl.cacheMethodName() = definingInterfaceName() + "$cache";
 
   /** Generates the cache method for a lazy synthesised attribute. */
   private MethodDecl SynDecl.generateCacheAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
@@ -252,18 +282,22 @@ aspect DependencyTracking {
     if(getNumParameter() > 0)
       parameterList.add(new ParameterDeclaration(new TypeAccess("java.lang", "Object"), "args"));
 
-    // return _and_ add the cache method
-    return
-    typeDecl.addMemberMethod(
-      new MethodDecl(
-        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC | Modifiers.ACC_STATIC),
-        type().createQualifiedAccess(),
-        delegateName() + "$cache",
-        parameterList,
-        new List(),
-        new Opt(new Block(statements))
-     )
-    );
+    // add the cache method
+    MethodDecl cacheMethod =
+      typeDecl.addMemberMethod(
+        new MethodDecl(
+          Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC | Modifiers.ACC_STATIC),
+          type().createQualifiedAccess(),
+          cacheMethodName(),
+          parameterList,
+          new List(),
+          new Opt(new Block(statements))
+       )
+      );
+    // add recomputation code
+    typeDecl.addClearCode(f, this, cacheMethod);
+
+    return cacheMethod;
   }
 
   /** Generates methods corresponding to an inherited attribute. Basically
@@ -299,16 +333,44 @@ aspect DependencyTracking {
           )
       );
 
-      Stmt registerDependency = 
-        new ExprStmt(
-          accessState().qualifiesAccess(
-            new MethodAccess(
-              "registerDependency",
-              new List().add(new ThisAccess("this"))
-            )
-          )
-        );
-      conditionalOnRewrite(statements, registerDependency, null);
+      // add dependency tracking
+      Stmt registerDependency;
+      if(getNumParameter() == 0) {
+        registerDependency = new ExprStmt(
+	  new VarAccess(name()+"$cache").qualifiesAccess(
+	    new MethodAccess(
+	      "add",
+	      new List().add(
+	        accessState().qualifiesAccess(
+	          new MethodAccess(
+		    "getCurrentCacheRoot",
+		    new List()
+		  )
+	        )
+	      )
+	    )
+	  )
+	);
+      } else {
+        registerDependency = new ExprStmt(
+	  new VarAccess(uniqueSignatureName()+"$cache").qualifiesAccess(
+	    new MethodAccess(
+	      "addDependent",
+	      new List().add(
+	        new VarAccess("parameters$")
+	      ).add(
+	        accessState().qualifiesAccess(
+                  new MethodAccess(
+                    "getCurrentCacheRoot",
+		    new List()
+		  )
+	        )
+	      )
+	    )
+	  )
+	);
+      }
+      conditionalOnRewrite(statements, registerDependency);
 
       statements.add(
         new ReturnStmt(new VarAccess("res"))
@@ -333,6 +395,7 @@ aspect DependencyTracking {
       )
     );
   }
+
   void AttributeDecl.recordRewriteState(List list) {
     // int num$ = this.state().boundariesCrossed;
     list.add(
@@ -351,7 +414,8 @@ aspect DependencyTracking {
       )
     );
   }
-  void AttributeDecl.conditionalOnRewrite(List list, Stmt thenBranch, Stmt elseBranch) {
+
+  void AttributeDecl.conditionalOnRewrite(List list, Stmt thenBranch) {
     // localFinal$ && num$ == this.state().boundariesCrossed
     Expr cond = new AndLogicalExpr(
       new VarAccess("localFinal$"),
@@ -360,13 +424,7 @@ aspect DependencyTracking {
         new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed")))
       )
     );
-    list.add(
-      new IfStmt(
-        cond,
-        thenBranch,
-        elseBranch == null ? new Opt() : new Opt(elseBranch)
-      )
-    );
+    list.add(new IfStmt(cond, thenBranch));
   }
 
 
@@ -412,284 +470,249 @@ aspect DependencyTracking {
     if(getNumParameter() > 0)
       parameterList.add(new ParameterDeclaration(new TypeAccess("java.lang", "Object"), "args"));
 
-    return
+    MethodDecl cacheMethod =
     typeDecl.addMemberMethod(
       new MethodDecl(
         Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC | Modifiers.ACC_STATIC),
         type().createQualifiedAccess(),
-        definingInterfaceName() + "$cache",
+        cacheMethodName(),
         parameterList,
         new List(),
         new Opt(new Block(statements))
      )
     );
+
+    typeDecl.addClearCode(f, this, cacheMethod);
+
+    return cacheMethod;
   }
 
+  syn boolean AttributeDecl.hasPrimitiveReturnType() = type().isPrimitive();
 
-  /** Generates caching prologue.
 
-      If the attribute has no parameters, we create three fields: A cache field,
-      which is of type <code>MemoLine</code>; a flag to indicate whether the
-      value has been computed; a value field to contain the cached value.
-
-      For a non-parameterised integer attribute <code>height</code>, for 
-      example, we create the three fields
-      <pre>
-        private MemoLine height$cache = new MemoLine();
-	private  boolean height$computed = false;
-	private  int height$value;
-      </pre>
-
-      The caching prologue then looks like this:
-      <pre>
-        if(height$computed &amp;&amp; height$cache.hit()) {
-	  if(Main.DEBUG) 
-	    System.out.println("height cached for " + getDebugID());
-	  return this$.height$value;
-        }
-	height$cache.clear();
-	if(Main.DEBUG) 
-	  System.out.println("Recomputing height for " + getDebugID());
-	Main.pushMemoLine(height$cache);
-      </pre>
-
-      If there are parameters, we instead create a single cache field, which is
-      a map from Objects (representing parameter tuples) to CachedValues.
-
-      For an attribute <code>lookupVar</code> with a <code>String</code>
-      parameter which returns a <code>Variable</code>, that field would be
-      declared as
-      <pre>
-          private Map&lt;Object, CachedValue&gt; lookup$cache 
-	    = new HashMap&lt;Object, CachedValue&gt;();
-      </pre>
-
-      The caching prologue then becomes:
-      <pre>
-        CachedValue v$;
-	if(lookup$cache.containsKey(args)) {
-	  v$ = lookup$cache.get(args);
-	  if(v$.line.hit()) 
-	    return (java.lang.String)v$.value;
-	  else 
-	    v$.line.clear();
-	} else {
-	  v$ = new test.CachedValue();
-	  lookup$cache.put(args, v$);
-	}
-	if(test.Main.DEBUG) 
-	  System.out.println("Recomputing lookup for " + getDebugID());
-	Main.pushMemoLine(v$.line);
-      </pre>
-
-      (Actually, since the caching method is static, some method calls
-      have to be qualified with an explicit <code>this</code> pointer.)
-   */
+  /** Generates caching prologue. */
   FieldDeclaration AttributeDecl.generateBeginCache(List statements, TypeDecl typeDecl, String fieldName) {
     TypeDecl returnType = type();
-    if(returnType.isPrimitive())
+    if(hasPrimitiveReturnType())
       returnType = returnType.boxed();
 
     FieldDeclaration f = generateCacheField(typeDecl, fieldName);
     if(getNumParameter() == 0) {
-      FieldDeclaration computedFlag = fieldComputedFlag(typeDecl);
+      FieldDeclaration computedTimeStamp = fieldComputedTimeStamp(typeDecl);
       FieldDeclaration value = fieldComputedValue(typeDecl);
- 
-      Stmt thenBranch =
-        new Block(
-          new List().add(
-            debugPrint(name() + " cached for ")
-          ).add(
-            new ReturnStmt(
-              value.createQualifiedBoundAccess()
-            )
-          )
-        );
 
-      // check whether the cache is valid, and whether the memoline hits
+      // check whether the cache is valid
       Stmt ifStmt = 
         new IfStmt(
-          new AndLogicalExpr(
-            computedFlag.createQualifiedBoundAccess(),
-            f.createQualifiedBoundAccess().qualifiesAccess(
-              new MethodAccess("hit", new List())
+          new GEExpr(
+	    computedTimeStamp.createQualifiedBoundAccess(),
+	    new ThisAccess("this").qualifiesAccess(
+              new MethodAccess(
+                "getCacheRoot",
+                new List()
+              )
+            ).qualifiesAccess(
+              new MethodAccess(
+                "getLastFlushed",
+                new List()
+              )
             )
           ),
-          thenBranch,
-          new Opt()
-        );
+	  new ReturnStmt(value.createQualifiedBoundAccess())
+	);
       statements.add(ifStmt);
-
-      // add statement to clear memoline
-      statements.add(
-        new ExprStmt(
-	  f.createQualifiedBoundAccess().qualifiesAccess(
-	    new MethodAccess("clear", new List())
-          )
-        )
-     );
     }
     else {
-      statements.add(
-        new VariableDeclaration(
-          new TypeAccess("CachedValue"),
-          "v$"
-        )
-      );
       // check whether the cache contains an entry for the current arguments,
-      // and whether the corresponding memoline hits; if so, return the
-      // value; if not, either allocate a fresh entry (if there was none),
-      // or clear the memoline
-      Stmt thenBlock =
-        new Block(
-          new List().add(
-            AssignExpr.asStmt(
-              new VarAccess("v$"),
-              f.createQualifiedBoundAccess().qualifiesAccess(
-                new MethodAccess(
-                  "get",
-                  new List().add(new VarAccess("args"))
-                )
-              )
-            )
-          ).add(
-            new IfStmt(
-              new VarAccess("v$").qualifiesAccess(
-                new VarAccess("line")
-              ).qualifiesAccess(
-                new MethodAccess("hit", new List())
-              ),
-              new ReturnStmt(
-                new CastExpr(
-                  returnType.createQualifiedAccess(),
-                  new VarAccess("v$").qualifiesAccess(new VarAccess("value"))
-                )
-              ),
-              new ExprStmt(
-                new VarAccess("v$").qualifiesAccess(
-                  new VarAccess("line")
-                ).qualifiesAccess(
-                  new MethodAccess("clear", new List())
-                )
-              )
-            )
-          )
-        );
-      Stmt elseBlock =
-        new Block(
-          new List().add(
-            AssignExpr.asStmt(
-              new VarAccess("v$"),
-              new ClassInstanceExpr(
-                new TypeAccess("CachedValue"),
-                new List().add(new ThisAccess("this")),
-                new Opt()
-              )
-            )
-          ).add(
-            new ExprStmt(
-              f.createQualifiedBoundAccess().qualifiesAccess(
-                new MethodAccess(
-                  "put",
-                  new List().add(new VarAccess("args")).add(new VarAccess("v$"))
-                )
-              )
-            )
-          )
-        );
-            
-      Stmt outerIf =
+      // and return it if so
+      statements.add(
         new IfStmt(
-          f.createQualifiedBoundAccess().qualifiesAccess(
-            new MethodAccess(
-              "containsKey",
-              new List().add(new VarAccess("args"))
+          new GEExpr(
+	    f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess(
+                "last_computed",
+                new List().add(new VarAccess("args"))
+              )
+            ),
+	    new ThisAccess("this").qualifiesAccess(
+              new MethodAccess(
+                "getCacheRoot",
+                new List()
+              )
+            ).qualifiesAccess(
+              new MethodAccess(
+                "getLastFlushed",
+                new List()
+              )
             )
           ),
-          thenBlock,
-          elseBlock
-        );
-      statements.add(outerIf);
+	  new ReturnStmt(
+	    new CastExpr(
+	      returnType.createQualifiedAccess(),
+	      f.createQualifiedBoundAccess().qualifiesAccess(
+	        new MethodAccess(
+	      	  "get",
+	      	  new List().add(new VarAccess("args"))
+		)
+	      )
+	    )
+	  )
+	)
+      );
     }
 
-    // print a debugging message
-    statements.add(debugPrint("Recomputing " + name() + " for "));
     recordRewriteState(statements);
 
-    // push the memo line
-    if(getNumParameter() == 0) {
-      statements.add(
-        new ExprStmt(
-          accessState().qualifiesAccess(
-            new MethodAccess(
-              "pushMemoLine", 
-              new List().add(f.createQualifiedBoundAccess())
-            )
+    // push the current cache root
+    statements.add(
+      new ExprStmt(
+        accessState().qualifiesAccess(
+          new MethodAccess(
+            "pushCacheRoot",
+     	    new List().add(
+	      new ThisAccess("this").qualifiesAccess(
+		new MethodAccess(
+		  "getCacheRoot",
+		  new List()
+		)
+	      )
+	    )
           )
         )
-      );
-    }
-    else {
-      statements.add(
-        new ExprStmt(
-          accessState().qualifiesAccess(
-            new MethodAccess(
-              "pushMemoLine", 
-              new List().add(new VarAccess("v$").qualifiesAccess(new VarAccess("line")))
-            )
-          )
-        )
-      );
-    }
+      )
+    );
     return f;
   }
 
-  /** Generates caching epilogue.
-
-      First, the memo line is popped. Then, for an unparameterised attribute,
-      the value field is written and the computed flag is set. For a
-      parameterised attribute, the value field of the CachedValue object
-      is set. */
+  /** Generates caching epilogue. */
   void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl, FieldDeclaration f) {
     statements.add(
       new ExprStmt(
-        accessState().qualifiesAccess(new MethodAccess("popMemoLine", new List()))
+        accessState().qualifiesAccess(new MethodAccess("popCacheRoot", new List()))
       )
     );
-    Stmt thenBranch;
-    Stmt elseBranch = null;
+    Stmt update;
     if(getNumParameter() == 0) {
-      thenBranch = new Block(
+      update = new Block(
         new List().add(
+	  // boolean changed;
+          new VariableDeclaration(
+            new TypeAccess("boolean"),
+            "changed"
+          )
+        ).add(
+          // for primitive return types:
+          //   changed = last_flushed != -1 && value != res
+          // for others:
+          //   changed = last_flushed != -1 && (value == null && res != null ||
+          //                                    !value.equals(res))
+          AssignExpr.asStmt(
+            new VarAccess("changed"),
+            new AndLogicalExpr(
+              new NEExpr(
+                fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess(),
+                new IntegerLiteral("-1")
+              ),
+              hasPrimitiveReturnType() ?
+              new NEExpr(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                new VarAccess("res")
+              )
+              :
+              new ParExpr(
+                new OrLogicalExpr(
+                  new AndLogicalExpr(
+                    new EQExpr(
+                      fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                      new NullLiteral("null")
+                    ),
+                    new NEExpr(
+                      new VarAccess("res"),
+                      new NullLiteral("null")
+                    )
+                  ),
+                  new LogNotExpr(
+                    fieldComputedValue(typeDecl).createQualifiedBoundAccess().
+                    qualifiesAccess(
+                      new MethodAccess(
+                        "equals",
+                        new List().add(new VarAccess("res"))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ).add(
+          // value = res;
           AssignExpr.asStmt(
             fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
             new VarAccess("res")
           )
         ).add(
+          // last_computed = this$.getCacheRoot().getLastFlushed();
           AssignExpr.asStmt(
-            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
-            new BooleanLiteral("true")
+            fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess(),
+            new ThisAccess("this").qualifiesAccess(
+              new MethodAccess(
+                "getCacheRoot",
+                new List()
+              )
+            ).qualifiesAccess(
+              new MethodAccess(
+                "getLastFlushed",
+                new List()
+              )
+            )
+          )
+        ).add(
+          // if(changed)
+          //   dep.propagate();
+          new IfStmt(
+            new VarAccess("changed"),
+            new ExprStmt(
+              f.createQualifiedBoundAccess().qualifiesAccess(
+                new MethodAccess(
+                  "propagate",
+                  new List()
+                )
+              )
+            )
           )
         )
       );
     }
     else {
-      thenBranch =
-        AssignExpr.asStmt(
-          new VarAccess("v$").qualifiesAccess(new VarAccess("value")),
-          new VarAccess("res")
-        );
-      elseBranch =
-        new ExprStmt(
-          f.createQualifiedBoundAccess().qualifiesAccess(
-            new MethodAccess(
-              "remove",
-              new List().add(new VarAccess("args"))
-            )
-          )
-        );
+      update = new ExprStmt(
+        f.createQualifiedBoundAccess().qualifiesAccess(
+	  new MethodAccess(
+	    "put",
+	    new List().add(
+	      new VarAccess("args")
+	    ).add(
+	      new VarAccess("res")
+	    )
+	  )
+	)
+      );
     }
-    conditionalOnRewrite(statements, thenBranch, elseBranch);
+    conditionalOnRewrite(statements, update);
+  }
+
+  FieldDeclaration ASTDecl.createDepField(String fieldName) {
+    FieldDeclaration f = new FieldDeclaration(
+      new Modifiers(new List().add(new Modifier("private"))),
+      new TypeAccess("DependentList"),
+      fieldName,
+      new ClassInstanceExpr(
+        new TypeAccess("DependentList"),
+        new List().add(new ThisAccess("this")),
+        new Opt()
+      )
+    );
+    f = addMemberField(f);
+    return f;
   }
 
   /** Generates the cache field. */
@@ -702,54 +725,135 @@ aspect DependencyTracking {
     if(getNumParameter() == 0) {
       f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
-        new TypeAccess("MemoLine"),
-        fieldName,
-        new ClassInstanceExpr(
-          new TypeAccess("MemoLine"),
-          new List().add(new ThisAccess("this")),
-          new Opt()
-        )
+	new TypeAccess("DependentList"),
+	fieldName,
+	new ClassInstanceExpr(
+	  new TypeAccess("DependentList"),
+	  new List().add(new ThisAccess("this")),
+	  new Opt()
+	)
       );
     }
     else {
       f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
-        new ParTypeAccess(
-          new TypeAccess("java.util", "Map"),
-          new List().add(
-            new TypeAccess("java.lang", "Object")
-          ).add(
-            new TypeAccess("CachedValue")
-          )
-        ),
-        fieldName,
+	new TypeAccess("AST", "AttributeCache"),
+	fieldName,
         new ClassInstanceExpr(
-          new ParTypeAccess(
-            new TypeAccess("java.util", "HashMap"),
-            new List().add(
-              new TypeAccess("java.lang", "Object")
-            ).add(
-              new TypeAccess("CachedValue")
-            )
-          ),
-          new List(),
+	  new TypeAccess("AST", "AttributeCache"),
+          new List().add(new ThisAccess("this")),
           new Opt()
         )
       );
     }
-    FieldDeclaration res = typeDecl.addMemberField(f);
-    typeDecl.addClearCode(f);
-    return res;
+    f = typeDecl.addMemberField(f);
+    return f;
   }
 
-  void TypeDecl.addClearCode(FieldDeclaration f) {
+  /** Generates the value timestamp for 0-arg lazy attributes. */
+  syn String AttributeDecl.computedTimeStampName() = uniqueSignatureName() + "$last_updated";
+  private HashMap AttributeDecl.fieldComputedTimeStampAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.fieldComputedTimeStamp(TypeDecl typeDecl) {
+    if(fieldComputedTimeStampAdded.containsKey(typeDecl))
+      return (FieldDeclaration)fieldComputedTimeStampAdded.get(typeDecl);
+
+    Expr init = new IntegerLiteral("-1");
+    FieldDeclaration f =
+      new FieldDeclaration(
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
+        new TypeAccess("int"),
+        computedTimeStampName(),
+        init
+      );
+    f = typeDecl.addMemberField(f);
+    fieldComputedTimeStampAdded.put(typeDecl, f);
+    return f;
+  }
+
+  void TypeDecl.addClearCode(FieldDeclaration f, AttributeDecl attrDecl, MethodDecl cacheMethod) {
     MethodDecl m = flushCacheMethod();
     List list = m.getBlock().getStmtList();
-    Stmt clearStmt = new ExprStmt(
-      f.createQualifiedBoundAccess().qualifiesAccess(
-        new MethodAccess("clear", new List())
-      )
-    );
+    Stmt clearStmt;
+    if(attrDecl.getNumParameter() == 0) {
+      clearStmt = new IfStmt(
+        new NEExpr(
+          attrDecl.fieldComputedTimeStamp(this).createQualifiedBoundAccess(),
+	  new IntegerLiteral("-1")
+	),
+        new ExprStmt(
+          cacheMethod.createBoundAccess(
+            new List().add(new ThisAccess("this"))
+ 	  )
+	)
+      );
+    } else if(attrDecl.getNumParameter() == 1) {
+      TypeDecl argtype = attrDecl.getParameter(0).type();
+      if(argtype.isPrimitive())
+        argtype = argtype.boxed();
+      clearStmt = new EnhancedForStmt(
+        new VariableDeclaration(
+          new TypeAccess("java.lang", "Object"),
+          "arg"
+        ),
+        f.createQualifiedBoundAccess().qualifiesAccess(
+          new MethodAccess(
+            "getKeys",
+            new List()
+          )
+        ),
+        new ExprStmt(
+	  cacheMethod.createBoundAccess(
+            new List().add(
+              new ThisAccess("this")
+            ).add(
+              new CastExpr(
+                argtype.createQualifiedAccess(),
+                new VarAccess("arg")
+              )
+            ).add(
+              new VarAccess("arg")
+            )
+          )
+        )
+      );
+    } else {
+      List cacheMethodArgs = new List().add(new ThisAccess("this"));
+      for(int i=0;i<attrDecl.getNumParameter();++i) {
+        TypeDecl argtype = attrDecl.getParameter(i).type();
+	if(argtype.isPrimitive())
+	  argtype = argtype.boxed();
+        cacheMethodArgs.add(
+          new CastExpr(
+            argtype.createQualifiedAccess(),
+            new ParExpr(
+              new CastExpr(
+                new TypeAccess("java.util", "List"),
+                new VarAccess("args")
+              )
+            ).qualifiesAccess(
+              new MethodAccess(
+                "get",
+                new List().add(new IntegerLiteral(i+""))
+	      )
+            )
+          )
+        );
+      }
+      cacheMethodArgs.add(new VarAccess("args"));
+      clearStmt = new EnhancedForStmt(
+        new VariableDeclaration(
+          new TypeAccess("java.lang", "Object"),
+          "args"
+        ),
+        f.createQualifiedBoundAccess().qualifiesAccess(
+          new MethodAccess(
+            "getKeys",
+            new List()
+          )
+        ),
+        new ExprStmt(cacheMethod.createBoundAccess(cacheMethodArgs))
+      );
+    }
     list.add(clearStmt);
   }
 

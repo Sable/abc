@@ -22,6 +22,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     list$touched = true;
     super.removeChild(i);
   }
+
   public int getNumChild() {
     if(list$touched) {
       for(int i = 0; i < getNumChildNoTransform(); i++)
@@ -29,7 +30,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
       list$touched = false;
     }
     int res = getNumChildNoTransform();
-    state().registerDependency(this);
+    getNumChild$dep.add(state().getCurrentCacheRoot());
     return res;
   }
   private boolean list$touched = true;

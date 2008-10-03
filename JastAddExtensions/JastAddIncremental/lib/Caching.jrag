@@ -1,25 +1,28 @@
+package AST;
+
 aspect Caching {
 
-  interface CacheRoot { 
+  interface CacheRoot {
     void flushCaches();
-  }
-
-  private int CacheRoot.last_changed = 0;
-  public int CacheRoot.lastChanged() {
-    return last_changed;
+    int getLastFlushed();
   }
 
   CompilationUnit implements CacheRoot;
-  Program implements CacheRoot;
-
+  private int CompilationUnit.last_flushed = 0;
+  public int CompilationUnit.getLastFlushed() { return last_flushed; }
   public void CompilationUnit.invalidate() {
-    flushCaches();
-    last_changed++;
+    ++last_flushed;
   }
 
+  Program implements CacheRoot;
+  private int Program.last_flushed = 0;
+  public int Program.getLastFlushed() { return last_flushed; }
   public void Program.invalidate() {
-    flushCaches();
-    last_changed++;
+    ++last_flushed;
+  }
+  public void Program.flushCaches() {
+    flushCache();
+    getChildNoTransform(0).flushCache();
   }
 
   public CacheRoot ASTNode.getCacheRoot() {

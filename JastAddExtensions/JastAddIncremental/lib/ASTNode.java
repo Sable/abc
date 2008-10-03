@@ -58,8 +58,13 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   public boolean is$Final = false;
   public boolean is$Final() { return is$Final; }
   public void is$Final(boolean b) { is$Final = b; }
+
+  Map<Integer, DependentList> getChild$dep = new HashMap<Integer, DependentList>();
   /*@SuppressWarnings("cast")*/ public T getChild(int i) {
-    state().registerDependency(this);
+    DependentList dep = getChild$dep.get(i);
+    if(dep == null)
+      getChild$dep.put(i, (dep=new DependentList(this)));
+    dep.add(state().getCurrentCacheRoot());
     return (T)ASTNode.getChild(this, i);
   }
 
@@ -120,8 +125,9 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     return numChildren;
   }
 
+  DependentList getNumChild$dep = new DependentList(this);
   public int getNumChild() {
-    state().registerDependency(this);
+    getNumChild$dep.add(state().getCurrentCacheRoot());
     return numChildren();
   }
   public final int getNumChildNoTransform() {
@@ -144,6 +150,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 	node.childIndex = i; 
     } else if(invalidate && is$Final()) {
 	invalidate();
+	getChild$dep.get(i).propagate();
     }
   }
 
@@ -172,6 +179,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 	node.childIndex = i; 
     } else if(is$Final()) {
 	invalidate();
+	getNumChild$dep.propagate();
     }
   }
 
@@ -184,23 +192,28 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       }
       System.arraycopy(children, i+1, children, i, children.length-i-1);
       numChildren--;
-      if(is$Final())
-        invalidate();
+      if(is$Final()) {
+	invalidate();
+        getNumChild$dep.propagate();
+      }
     }
   }
 
+  DependentList getParent$dep = new DependentList(this);
   public ASTNode getParent() {
     if(parent != null && ((ASTNode)parent).is$Final() != is$Final()) {
       state().boundariesCrossed++;
     }
-    state().registerDependency(this);
+    getParent$dep.add(state().getCurrentCacheRoot());
     return (ASTNode)parent;
   }
 
   public void setParent(ASTNode node, boolean invalidate) {
     parent = node;
-    if(invalidate && node != null && node.is$Final())
+    if(invalidate && node != null && node.is$Final()) {
 	invalidate();
+	getParent$dep.propagate();
+    }
   }
   public void setParent(ASTNode node) {
     setParent(node, true);
@@ -291,17 +304,11 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
   }
 
-  /** invalidates all caches; this means we first need to
-      dispatch upwards until we reach the root of the
-      subtree, and then call flushCaches() from these */
-  public void invalidate() {
-    if(parent != null)
-      parent.invalidate();
+  public static void reset() {
   }
 
-  public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
-
-  public static void reset() {
+  public void invalidate() {
+    parent.invalidate();
   }
 
 }

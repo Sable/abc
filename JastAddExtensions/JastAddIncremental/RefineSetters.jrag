@@ -269,11 +269,17 @@ aspect RefineSetters {
 	      new VarAccess("invalidate"),
 	      new MethodAccess("is$Final", new List())
 	    ),
-	    new ExprStmt(
-	      new ThisAccess("this").qualifiesAccess(
-    	        new MethodAccess(
-	          "invalidate",
-	          new List()
+	    new Block(
+	      new List().add(
+	        new ExprStmt(new MethodAccess("invalidate", new List()))
+	      ).add(
+	        new ExprStmt(
+  	          new VarAccess(name()+"$dep").qualifiesAccess(
+    	            new MethodAccess(
+	              "propagate",
+	              new List()
+                    )
+		  )
 	        )
               )
 	    )
@@ -373,10 +379,18 @@ aspect RefineSetters {
 	      new VarAccess("invalidate"),
 	      new MethodAccess("is$Final", new List())
 	    ),
-	    new ExprStmt(
-  	      new MethodAccess(
-	        "invalidate",
-	        new List()
+	    new Block(
+	      new List().add(
+	        new ExprStmt(new MethodAccess("invalidate", new List()))
+	      ).add(
+	        new ExprStmt(
+  	          new VarAccess(name()+"$dep").qualifiesAccess(
+    	            new MethodAccess(
+	              "propagate",
+	              new List()
+                    )
+		  )
+	        )
 	      )
 	    )
 	  )
