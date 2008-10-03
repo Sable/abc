@@ -114,34 +114,61 @@ merge frontend, backend::frontend as java15frontend frontend;
 
 \subsection{Evaluation}
 
-Shows dependencies explicitly, information hiding, enables sharing through merge
+%Shows dependencies explicitly, information hiding, enables sharing through merge
+The addition of modules to JastAddJ has made the dependencies of the components
+explicit, and will lessen the chance of inadrvetently introducing dependencies 
+in the future. 
 
-everything used to be globally visible
-  modules improves information hiding 
-    (concrete example would be nice)
-    percent that became non-global
+%everything used to be globally visible
+%  modules improves information hiding 
+%    (concrete example would be nice)
+%    percent that became non-global
+Information hiding among the components of the system has also benefited from
+the introduction of modules. In the previous system, the class files produced from
+compilation all belong to the same package, which means that a package private access modifier
+is equivalent to a public modifier. Though several ITDs needed to be changed from 
+package private to public to allow access from outside, a great majority remained private to
+the module. As an example, in the Java 1.4 frontend, 24 ITDs (including synthesized attributes)
+were changed from package private to public to allow other modules to access them. This is a small number 
+compared to the total number of synthesized attributes alone (541) that were package private in the pre-module version.
+This has effectively reduced the public ITD signature of the the Java 1.4 frontend to 5\% of its previous state.
 
-enables variants with different sets of ITDs
-  examples
-enables variants with replaced/overridden classes
-  example: bytecode reader
-  (reason, monolithic implementation not suitable for extension, therefore
-  replacement easier)
-
-can we characterize the typical changes needed?
-how intrusive/global were the changes?
-
-eliminate cycles as a side-effect
-  required by the module system
-  architecture improved/ should have been done that way from the beginning
-  in retrospect
+%enables variants with different sets of ITDs
+%  examples
 
 
+%enables variants with replaced/overridden classes
+%  example: bytecode reader
+%  (reason, monolithic implementation not suitable for extension, therefore
+%  replacement easier)
+The use of aspect overriding has allowed the Java 1.5 bytecode parser aspects in the Java 1.5 frontend to
+override the corresponding aspects in the Java 1.4 frontend without the build file hacks that involved
+excluding the Java 1.4 bytecode parser files when building the 1.5 compiler. This demonstrates that
+aspect overriding solves a problem that arises in a real aspect oriented system, as opposed to 
+hypothetical examples.s
 
-many properties
-are global even though a more local scope would improve information hiding.
 
-improve extensibility and information hiding
+%can we characterize the typical changes needed?
+%how intrusive/global were the changes?
+The changes required to introduce modules into JastAddJ were minimal: just the addition of the module 
+declarations in \texttt{.module} files, the module membership specifications in the existing compilation units,
+and a change to the access modifiers of some ITDs to allow inter-access. Given the benefits of instantiation, 
+module composition and information hiding, this is a relatively small price to pay.
+
+%eliminate cycles as a side-effect
+%  required by the module system
+%  architecture improved/ should have been done that way from the beginning
+%  in retrospect
+The use of \textbf{own} module instances will also benefit the architecture of JastAddJ,
+since cyclic dependencies that involve \textbf{own} instances will cause an error to
+be raised by the compiler. This provides a compile-time architecture check to avoid cyclic dependencies,
+and would allow the early detection of decisions that would have caused unnecessarily
+tight coupling between the components.
+
+%many properties
+%are global even though a more local scope would improve information hiding.
+
+%improve extensibility and information hiding
 
 
 
