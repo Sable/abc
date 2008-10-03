@@ -98,10 +98,12 @@ other modules are visible to the members of the module. A module imports
 an \textit{instance} of another module, which allows multiple instances
 of the same module to exist within a single context.
 
+An import in a module declaration creates a typed module reference which is pointed to
+an instance of that module type. 
 There are two ways to import a module instance: importing the singleton or
 an \textbf{own} instance. Imports may also be alised to allow multiple instances
 of the same module to exist in the same context, and be exported so that
-they are also accessible through indirection from other modules;
+they are also accessible through indirection from other modules.
 
 \begin{lstlisting}[caption={Imports}, label={figure:imports}]
 //file prettyprinter.module
@@ -335,7 +337,81 @@ instance may have imported \textbf{own} instances of another module that you wis
 share.
 
 For these circumstances the module system provides the \textbf{merge} operation,
-which 
+which targets a set of module references and points them to a new \textbf{own} instance
+of a module that is compatible with the types of the references in the set. A merge
+declaration has the form
+
+\begin{lstlisting}
+merge m1, m2, m3::m4 [export] as newtype alias;
+\end{lstlisting}
+
+The merge declaration above points the module references \texttt{m1}, \texttt{m2} and
+\texttt{m3::m4} to a new module instance of type \texttt{newtype}, while also creating a
+new module reference \texttt{alias} in the module that contained the merge declaration. 
+The old instances that were pointed to by the references are deallocated if there are no
+other references that also point to the instance.
+
+Merge declarations also cascade: if the module reference \texttt{alias} were used as a target in
+another merge declaration:
+
+\begin{lstlisting}
+merge m5, alias as newtype2 alias2;
+\end{lstlisting}
+
+then the targets of the previous merge \texttt{m1}, \texttt{m2} and \texttt{m3::m4} will also
+be pointed to the new instance of \texttt{newtype2}. 
+
+Once a reference is used in a merge, however,
+it cannot be used as a target in another merge declaration. This enforces the condition that
+all the targets of a merge declaration point to the same instance, regardless of any future merge
+declarations.
+
+In the merge above, \texttt{newtype} must be type compatible with all of the target references
+in the list; that is, it must be the same type as or is a subtype of the types of the module
+references. In addition, merge allows the use of module references that have indirection. This allows 
+an importing module to change the dependencies of an imported module so it can share types with
+that module. 
+
+However, module references that indirect through a singleton module are not allowed to
+be a target in a merge declaration. This keeps the unmodified state of the singleton module
+instance, preserving any assumptions of other modules about the dependencies of the singleton.
+
+The following example demonstrates how merge is used to share types between modules. The example
+shows a basic compiler application, with a \texttt{frontend} module, a \texttt{backend} module
+and a \texttt{compilerapp} module. It also contains an extension to the frontend, the module 
+\texttt{frontendext}. The compiler application would require a frontend and a backend. 
+However, it uses the extended frontend \texttt{frontendext}. In order for the backend and the
+compiler application to share the frontend types, the merge in line 21 merges the backend's
+frontend import with \texttt{compilerapp}'s frontend extension import. This changes the backend's
+dependency, now pointing it to the extended frontend, which is the same instance as that pointed
+to by \texttt{compilerapp}'s reference to \texttt{frontendext}.
+
+
+\begin{lstlisting}[caption={Merge}]
+//file frontend.module
+module frontend;
+...
+
+//file backend.module
+module backend;
+import own frontend export as frontend;
+...
+
+//file frontendext.module
+module frontendext extends frontend;
+...
+
+//file compilerapp.module
+module compilerapp;
+import own frontendext;
+import own backend;
+//merges the compilerapp's frontendext import 
+//with the backend's frontendext import. Is possible
+//since frontendext extends frontend
+merge frontendext, backend::frontend as frontendext frontendext;
+...
+\end{lstlisting}
+
 
 
 
