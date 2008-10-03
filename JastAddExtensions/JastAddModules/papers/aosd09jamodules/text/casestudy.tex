@@ -135,7 +135,12 @@ This has effectively reduced the public ITD signature of the the Java 1.4 fronte
 
 %enables variants with different sets of ITDs
 %  examples
-
+The module system also allows instances of the frontend and backend with different versions
+to exist in the same system, albeit being unable to share types. This will prove to be useful
+in an IDE application, where multiple versions of the frontend would be necessary to provide
+as-you-type error checking to different source versions. The ability to instantiate the frontend
+without also pulling in the backend will also reduce the size of the AST objects created, as the
+ITDs introduced by the backend would not be present in the AST nodes of that instance.
 
 %enables variants with replaced/overridden classes
 %  example: bytecode reader
