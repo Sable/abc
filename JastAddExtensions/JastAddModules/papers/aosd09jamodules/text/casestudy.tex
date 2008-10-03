@@ -94,7 +94,7 @@ the JastAddJ compiler. We have refactored the components such that:
   \end{center}
 \end{figure}
 
-Other than the necessary changes to use modules, it was necessary to change the 
+Other than the necessary changes to use modules, it was also necessary to change the 
 access modifiers of several ITDs from package private to public, to allow the 
 access of these ITDs from outside their module. 
 
@@ -104,6 +104,7 @@ also imports an instance of the frontend, the \texttt{javacompiler} module conta
 operation that allows the java compiler and the backend to share the frontend classes.
 
 \begin{lstlisting}[caption={JastAddJ Compiler Application}]
+//file javacompiler.module
 module javacompiler;
 import own java15frontend as frontend;
 import own java15backend as backend;
