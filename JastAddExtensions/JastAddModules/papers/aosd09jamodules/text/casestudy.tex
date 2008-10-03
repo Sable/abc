@@ -35,6 +35,11 @@ a \emph{Bytecode backend} as illustrated by Figure~\ref{MainComponents}.
   \end{center}
 \end{figure}
 
+The components themselves are composed of AST "`base"' classes, and the
+aspects that introduce the ITDs to the said classes. The AST classes
+directly or indirectly extend the classes \texttt{ASTNode}, \texttt{List}, and \texttt{Opt},
+which form the JastAdd framework classes. 
+
 Since there is no module system each component is represented as a
 directory of reusable source files that are combined using build files. The
 Java 5 frontend is an extension to the Java 1.4 frontend, reusing its
@@ -68,13 +73,16 @@ namespace which is terrible from an information hiding point of view.
 
 \subsection{Applying Modules}
 
-Imports, merge (to share frontend types)
+To remedy the problems detailed above, we apply the module system to
+the JastAddJ compiler. We have refactored the components such that:
 
-changes:
-split ast and jrag
-permissions
-
-new diagram
+\begin{enumerate}
+\item {The JastAdd framework classes reside in their own module.}
+\item {The AST classes in the frontend components have been separated from the aspects, and extend the JastAdd framework module.}
+\item {The Java 1.5 frontend extends the 1.4 frontend, and similarly with the backends and the AST modules}
+\item {Dependencies between the modules were explicitly defined by the use of imports in the module declarations.}
+	
+\end{enumerate}
 
 \begin{figure}[htb!]
   \begin{center}
@@ -86,7 +94,22 @@ new diagram
   \end{center}
 \end{figure}
 
-a few code snippets
+Other than the necessary changes to use modules, it was necessary to change the 
+access modifiers of several ITDs from package private to public, to allow the 
+access of these ITDs from outside their module. 
+
+An example compiler application that uses the JastAddJ with modules is shown in the example below.
+The module for the compiler application imports a frontend and a backend, and since the backend 
+also imports an instance of the frontend, the \texttt{javacompiler} module contains a merge
+operation that allows the java compiler and the backend to share the frontend classes.
+
+\begin{lstlisting}[caption={JastAddJ Compiler Application}]
+module javacompiler;
+import own java15frontend as frontend;
+import own java15backend as backend;
+//merge the frontends to point to the same instance
+merge frontend, backend::frontend as java15frontend frontend;
+\end{lstlisting}
 
 \subsection{Evaluation}
 
