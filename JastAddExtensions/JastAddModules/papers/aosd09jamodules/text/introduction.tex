@@ -15,14 +15,21 @@ and there has been a wealth of recent work on module systems to improve on
 status quo. 
 
 The emerging support for modules in Java 7 enhances information hiding and
-extended module proposals such as Srniza gives hope for simulatneous
+extended module proposals such as Strnisa gives hope for simulatneous
 deployment of multiple versions of the same library in different modules.
 
-import-export for information hiding -> package is too fine grained which
-often leads to global scope. modules allow more precise control of
-access control which leads to improved information hiding.
+Modules provide information hiding at a level higher than packages. Module
+systems like OSGi bundles\cite{OSGi4} and the proposed Java module system\cite{JSR277}
+allow the explicit definition of the dependencies of a module. We can extend
+the information hiding features of these module systems to extend to aspects, 
+so as to limit the scope of ITDs.
 
-instantiation for multiple versions of a module (iJAM)-> 
+Another module system,iJAM \cite{iJAM}, adds explicit module instantiation, 
+which allows multiple versions of the same module to coexist in a single compilation.
+This is built upon by some of our previous work \cite{modulesastypes}, which 
+adds the idea of treating modules as object-oriented types, with instantiation
+similar to iJAM and additional operations to allow explicit and fine-grained
+module instance sharing. 
 
 ITDs are global in their nature which makes local
 reasoning somewhat difficult, and as an extensibility mechanism they can be
@@ -56,15 +63,14 @@ needed to support code generation.
 That work highlights some defiencies to ITDs from an extensibility point of
 view compared to the more traditional use of visitors.
 
-Traditionally done using visitors. Advantages of inter-type declarations:
-no ahead of time planning, add state, no boiler-plate code, less error
-prone since you don't have to adhere to framework conventions to enable dispatch.
+Traditionally, this was done using visitors. Inter-type declarations have the advantages of
+not requiring too much ahead of time planning, the ability to add state, minimal boiler-plate code, 
+and being less error prone since you don't have to adhere to framework conventions to enable dispatch.
 
-Severe drawbacks from extensibility point of view:
-Destructive update of the class hierarchy. The base version and the
+However, ITDs do not provide the same level of extensibility as visitors.
+ITDs are currently destructive updates of the class hierarchy. The base version and the
 extended version can not co-exist. This is the main motivation for our
-work. Requires a global analysis for type checking, name binding, and
-compilation.
+work. 
 
 We have implemented the proposed module system as an extension to the
 JastAdd Extensible Java Compiler which contains support for amongst others
