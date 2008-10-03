@@ -330,7 +330,12 @@ these two types are not type compatible.
 
 Types that belong to different module instances, even if they have the same
 base module type, are not type compatible. Though type sharing can be done
-in a using singleton instances, 
+in a using singleton instances, this is limited in its usefulness, as the singleton
+instance may have imported \textbf{own} instances of another module that you wish to
+share.
+
+For these circumstances the module system provides the \textbf{merge} operation,
+which 
 
 
 
