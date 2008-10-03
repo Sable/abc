@@ -172,7 +172,7 @@ class ExtEval extends Eval {
     return a.left.accept(this) - a.right.accept(this);
   }
 }
-class ExtPrint extends Eval {
+class ExtPrint extends Print {
   String visitSub(Sub s) {
     return a.left.accept(this) + " - " + a.right.accept(this);
   }
@@ -192,7 +192,7 @@ model of introducing new methods in an existing class is not as convenient
 in this case. We can not keep the implementation printing numbers and reuse
 the other printing functionality while still changing it to print using
 natural language. The word printer therefore choses to take precedence over
-the other definitions of visitInt making it the only implementation, thus
+the other definitions of \texttt{print} making it the only implementation, thus
 disabling the normal printer.
 
 \begin{lstlisting}[caption={ITD Extension}]
@@ -212,7 +212,7 @@ aspect ExtPrint {
 }
 aspect WordPrint {
   declare precendence: WordPrint, *;
-  Integer Int.visitInt(Int i) {
+  String Int.print() {
     .. convert i to the strings "one", "two", etc.
   }
 }
@@ -246,7 +246,7 @@ complex visitor)
 
 Visitors can be inherited and overridden to refine behaviour in a visitor
 being extended. This enables both visitors to be used in the same system
-while the ITD solutation can only use either the original implementation 
+while the ITD solution can only use either the original implementation 
 or the refined implementation. 
 
 Another advantage of the visitor based solution is that each class can be

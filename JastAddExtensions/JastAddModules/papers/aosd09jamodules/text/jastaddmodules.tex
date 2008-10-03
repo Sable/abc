@@ -412,11 +412,108 @@ merge frontendext, backend::frontend as frontendext frontendext;
 ...
 \end{lstlisting}
 
-
-
-
-
 \subsection{ITD Calculator with Modules}
+
+As already shown in section \ref{section:itdvisitors}, while ITD implementations
+are generally cleaner than visitor implementations due to the lack of framework code,
+it is not possible to have versions of the original and the refined
+ITDs in the same system, as aspect precedence and scope are global. Since modules
+allow for multiple instances of classes to exist, we can use them to allow for
+non-destructive ITD extension. 
+
+We take the example given in section \ref{section:itdvisitors} and include them in a module system.
+All of the base classes and aspects belong to the module \texttt{calculator}, while the extensions
+are placed in the module \texttt{calculatorsub}, which extends \texttt{calculator}.
+
+\begin{lstlisting}[caption={ITD Base and Extension with modules}]
+//base files
+//file calculator.module
+module calculator;
+export package *;
+
+//file Expr.java
+module calculator; //module membership
+public abstract class Expr {...}
+class Int extends Expr {...}
+class Add extends Expr {...}
+
+//file CalcFacade.java
+module calculator;
+public class CalcFacade {
+	public static Expr parse(String expr) {...}
+	public static int eval(Expr expr) {return expr.eval();}
+	public static String print(Expr expr) {return expr.print();}
+}
+
+//file CalcAspects.jrag
+module calculator; //module membership
+aspect Eval {...}
+aspect Print {
+  String Int.print() {
+    return Integer.toString(value);
+  }
+  String Add.print() {
+    return left.print() + " + " + right.print();
+  }
+}
+
+//extension files
+//file calculatorsub.module
+module calculatorsub extends calculator;
+export package *;
+
+//file Sub.java
+module calculatorsub;
+class Sub extends Expr {...}
+
+//file CalcAspectsSub.jrag
+module calculatorsub;
+aspect ExtEval {
+  int Sub.eval() {
+    return left.eval() - right.eval();
+  }
+}
+//overrides the aspect calculator::Print
+aspect Print {
+  String Add.print() {
+    return left.print() + " + " + right.print();
+  }
+  //add the subtraction print
+  String Sub.print() {
+    return left.print() + " - " + right.print(); 
+  }
+  //change integer printing to word printing
+  String Int.print() {
+    .. convert i to the strings "one", "two", etc.
+  }
+}
+
+//file multicalc.module;
+module multicalc;
+import own calculator;
+import own calculatorsub;
+
+//file MultiCalc.java
+module multicalc;
+public class MultiCalc {
+	public void print(String expr) {
+		String output;
+		if (base) {
+			//uses the base classes and aspects
+			calculator::Expr expr = 
+					calculator::CalcFacade.parse(expr);
+			output = calculator::CalcFacade.print(expr);
+		} else if (extended} {
+			//uses the extended classes and aspects
+			calculatorsub::Expr expr = 
+					calculatorsub::CalcFacade.parse(expr);
+			output = calculatorsub::CalcFacade.print(expr);
+		}
+		System.out.println(output);
+	}
+}
+\end{lstlisting}
+
 
 \subsection{Evaluation}
 
