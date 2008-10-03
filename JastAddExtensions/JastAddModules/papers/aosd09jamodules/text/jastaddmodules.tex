@@ -567,3 +567,13 @@ aspect Print extends supermodule::Print {
 
 Indeed, the module system in \cite{modulesastypes} already allows this for Java classes, and
 we believe that implementing this for a more expressive AOP language such as AspectJ is possible.
+
+The module system, as with any good module system, also brings an architectural advantage to
+even the basic calculator example. Aspects are no longer just individual program transformations
+that have unstructured interdependencies, they now exist in the context of a module, and the
+\textbf{extend} relation between \texttt{calculator} and \texttt{calculatorsub} provides a way
+to classify the relation between their component aspects. The modules themselves serve as a filter
+to limit the scope of its component aspects to that of its members and imports, decreasing the
+chance of introducing unplanned dependencies to the system. These architectural advantages
+become more apparent in a larger system, and are explored further in the next section, which
+describes the use of the module system on a non-trivial Java compiler implemented in JastAdd.
