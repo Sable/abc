@@ -1,11 +1,21 @@
-This provides a description of the JastAdd module system.
+The previous section has shown that while ITD implementations are generally
+cleaner and require less ahead-of-time planning to allow extensibility, they
+are still limited by their global scope: two versions of the same ITD cannot
+exist in the same system. We now propose to remedy this problem by introducing
+an aspect-aware module system that allows for multiple instances of classes
+to exist, each instance modified by a particular version of the ITDs.
+
+The module system is based on the object-oriented java module system 
+presented in \texttt{Modules as Object-Oriented Types}\cite{modulesastypes},
+and the aspect-oriented features are provided by JastAdd\cite{jastadd, jastaddjavacompiler}, 
+an aspect-oriented compiler framework. JastAdd's ITD syntax is very similar
+to that of AspectJ, and should be familiar to most of the expected audience
+of this paper.
 
 \subsection{Module System Overview}
 
 A module consists of aspects and classes, and defines the set of external
-modules that are visible to the module's members. The module system is based
-on the object-oriented java module system presented in \cite{modulesastypes}.
-
+modules that are visible to the module's members. 
 A module is considered to be the type of the collection of classes and aspects
 that belong to it. The module system allows the instantiation these module types
 within the context of an importing module, defines a subtyping relation
@@ -527,9 +537,13 @@ public class MultiCalc {
 }
 \end{lstlisting}
 
-
-
 \subsection{Evaluation}
+
+The addition of modules to the ITD implementation allows the use of both the base
+and extended versions of the \texttt{Int.print()} method. This gives ITD implementations
+a greater level of extensibility without explicit use of ITD refinements, which are
+the norm for JastAdd. However, this comes at the cost of maintaining parallel type 
+hierarchies for each version.
 
 An observant reader would have noticed that the aspect \texttt{calculatorsub::Print}
 also contains a reimplementation of the ITD \texttt{Add.print}. This is only required
@@ -537,7 +551,7 @@ since JastAdd currently has no concept of aspect extension, and any modification
 aspect would require a reimplementation of the unmodified behavior. However, for languages
 that allow aspect subtyping, the refinement code could have been changed to
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Aspect Overriding with Subtyping}]
 aspect Print extends supermodule::Print {
 	//the Add.print ITD is inherited from the supermodule print
   //add the subtraction print
