@@ -423,7 +423,10 @@ non-destructive ITD extension.
 
 We take the example given in section \ref{section:itdvisitors} and include them in a module system.
 All of the base classes and aspects belong to the module \texttt{calculator}, while the extensions
-are placed in the module \texttt{calculatorsub}, which extends \texttt{calculator}.
+are placed in the module \texttt{calculatorsub}, which extends \texttt{calculator}. Note that
+aspect overriding is used to change the behavior of \texttt{Int.print()} in the subtype module.
+We have also added a facade class \texttt{CalcFacade} to the calculator, which will be used
+in the application example shown later.
 
 \begin{lstlisting}[caption={ITD Base and Extension with modules}]
 //base files
@@ -487,7 +490,17 @@ aspect Print {
     .. convert i to the strings "one", "two", etc.
   }
 }
+\end{lstlisting}
 
+The following listing shows how the both the base and extended 
+calculator modules can be used at the same time by a single application.
+We define a module \texttt{multicalc} which imports \texttt{own} instances
+of \texttt{calculator} and \texttt{calculatorsub}. The module also
+contains the application class \texttt{MultiCalc}, which shows how
+to use the two calculator versions in a single system.
+
+\begin{lstlisting}[caption={Using the ITD Calculator}]
+//An application that uses both versions of calculator
 //file multicalc.module;
 module multicalc;
 import own calculator;
@@ -515,5 +528,28 @@ public class MultiCalc {
 \end{lstlisting}
 
 
+
 \subsection{Evaluation}
 
+An observant reader would have noticed that the aspect \texttt{calculatorsub::Print}
+also contains a reimplementation of the ITD \texttt{Add.print}. This is only required
+since JastAdd currently has no concept of aspect extension, and any modification to an
+aspect would require a reimplementation of the unmodified behavior. However, for languages
+that allow aspect subtyping, the refinement code could have been changed to
+
+\begin{lstlisting}
+aspect Print extends supermodule::Print {
+	//the Add.print ITD is inherited from the supermodule print
+  //add the subtraction print
+  String Sub.print() {
+    return left.print() + " - " + right.print(); 
+  }
+  //change integer printing to word printing
+  String Int.print() {
+    .. convert i to the strings "one", "two", etc.
+  }
+}
+\end{lstlisting}
+
+Indeed, the module system in \cite{modulesastypes} already allows this for Java classes, and
+we believe that implementing this for a more expressive AOP language such as AspectJ is possible.
