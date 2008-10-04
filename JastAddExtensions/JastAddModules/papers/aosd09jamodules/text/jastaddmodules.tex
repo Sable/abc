@@ -7,9 +7,9 @@ to exist, each instance modified by a particular version of the ITDs.
 
 The module system is based on the object-oriented java module system 
 presented in \texttt{Modules as Object-Oriented Types}\cite{modulesastypes},
-and the aspect-oriented features are provided by JastAdd\cite{jastadd, jastaddjavacompiler}, 
-an aspect-oriented compiler framework. JastAdd's ITD syntax is very similar
-to that of AspectJ, and should be familiar to most of the expected audience
+and the aspect-oriented features are provided by Jast\-Add\cite{jastadd, jastaddjavacompiler}, 
+an aspect-oriented compiler framework. Jast\-Add's uses the same ITD 
+syntax as in AspectJ, and should therefore be familiar to the expected audience
 of this paper.
 
 \subsection{Module System Overview}
@@ -22,7 +22,8 @@ within the context of an importing module, defines a subtyping relation
 on module types, and a merge operation to manipulate module instances.
 
 The remainder of this section goes into the details of the module system, and shows
-how it can be used as a solution to the 
+how it can be used the enhance the ITD solution to the calculator 
+presented in Section~\ref{section:itdvisitors}.
 
 \subsection{Declaration and Membership}
 
@@ -542,12 +543,12 @@ public class MultiCalc {
 The addition of modules to the ITD implementation allows the use of both the base
 and extended versions of the \texttt{Int.print()} method. This gives ITD implementations
 a greater level of extensibility without explicit use of ITD refinements, which are
-the norm for JastAdd. However, this comes at the cost of maintaining parallel type 
+the norm for Jast\-Add. However, this comes at the cost of maintaining parallel type 
 hierarchies for each version.
 
 An observant reader would have noticed that the aspect \texttt{calculatorsub::Print}
 also contains a reimplementation of the ITD \texttt{Add.print}. This is only required
-since JastAdd currently has no concept of aspect extension, and any modification to an
+since Jast\-Add currently has no concept of aspect extension, and any modification to an
 aspect would require a reimplementation of the unmodified behavior. However, for languages
 that allow aspect subtyping, the refinement code could have been changed to
 
@@ -576,4 +577,4 @@ to classify the relation between their component aspects. The modules themselves
 to limit the scope of its component aspects to that of its members and imports, decreasing the
 chance of introducing unplanned dependencies to the system. These architectural advantages
 become more apparent in a larger system, and are explored further in the next section, which
-describes the use of the module system on a non-trivial Java compiler implemented in JastAdd.
+describes the use of the module system on a non-trivial Java compiler implemented in Jast\-Add.

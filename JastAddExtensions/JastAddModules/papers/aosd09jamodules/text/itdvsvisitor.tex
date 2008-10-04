@@ -56,6 +56,7 @@ clutters the implementation and is somewhat error prone.
 
 \begin{lstlisting}[caption={Visitor Base}]
 abstract class Expr {
+  abstract <T> T accept(Visitor<T> v);
 }
 class Int extends Expr {
   int value;
@@ -83,7 +84,7 @@ class Eval extends Visitor<Integer> {
     return a.left.accept(this) + a.right.accept(this);
   }
 }
-class Print extends Visitor<String> {
+class PrettyPrinter extends Visitor<String> {
   String visitInt(Int i) {
     return Integer.toString(i.value);
   }
@@ -111,6 +112,7 @@ class Add extends Expr {
   Expr right;
 }
 aspect Eval {
+  abstract int Expr.eval();
   int Int.eval() {
     return value;
   }
@@ -118,7 +120,8 @@ aspect Eval {
     return left.eval() + right.eval();
   }
 }
-aspect Print {
+aspect PrettyPrinter {
+  abstract String Expr.print();
   String Int.print() {
     return Integer.toString(value);
   }

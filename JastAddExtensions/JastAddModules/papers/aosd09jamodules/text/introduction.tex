@@ -1,6 +1,6 @@
 Inter-type declarations (ITDs) provide a powerful yet simple modularisation
 mechanism. The possibility to extend existing classes modularly without
-ahead of time planning is not only useful to separate different concerns
+ahead-of-time planning is not only useful to separate different concerns
 but also extremely convenient for modular extensibility when software
 evolves.
 
@@ -10,20 +10,20 @@ emerging support for modules in Java 7. Another disadvantage is that the
 class hierarchy is destructively updated, preventing multiple variants of 
 classes with different sets of ITDs applied. It is worth noting that 
 this drawback is not shared by more traditional extension mechanisms such 
-as visitors.
+as visitors. The problem of how to handle multiple variants of the same 
+class exist in plain Java as JAR hell, and there has been a wealth of work 
+on module systems for Java-like languages to improve on status quo. We use 
+this existing work on Java modules in an attempt to solve the class 
+variant problem for ITDs.
 
-The problem of how to handle multiple variants of the same class exist in plain
-Java as JAR hell, and there has been a wealth of work on module systems for Java-like
-languages to improve on status quo. The emerging support for modules in Java 7 enhances information hiding and
+The emerging support for modules in Java 7 enhances information hiding and
 extended module proposals such as Strnisa gives hope for simulatneous
 deployment of multiple versions of the same library in different modules.
-
 Modules provide information hiding at a level higher than packages. Module
 systems like OSGi bundles\cite{OSGi4} and the proposed Java module system\cite{JSR277}
 allow the explicit definition of the dependencies of a module. We can extend
 the information hiding features of these module systems to extend to aspects, 
 so as to limit the scope of ITDs.
-
 Another module system, iJAM \cite{iJAM}, adds explicit module instantiation, 
 which allows multiple versions of the same module to coexist in a single compilation.
 This is built upon by some of our previous work \cite{modulesastypes}, which 
@@ -31,30 +31,40 @@ adds the idea of treating modules as object-oriented types, with instantiation
 similar to iJAM and additional operations to allow explicit and fine-grained
 module instance sharing. 
 
-ITDs are global in their nature which makes local
-reasoning somewhat difficult, and as an extensibility mechanism they can be
-improved by enabling deployment of multiple versions of libraries, 
-each woven a with different set of ITDs.
+%ITDs are global in their nature which makes local
+%reasoning somewhat difficult, and as an extensibility mechanism they can be
+%improved by enabling deployment of multiple versions of libraries, 
+%each woven a with different set of ITDs.
 
 
 Previous work show how aspects can be improved using modules for point-cut
-and advice.
-Aspects don't work very well without modules, due to global scope, and
-implicit dependencies.
-In this paper we present a module system that supports inter-type
-declarations and improve their use when extending a system in a modular
-fashion.
-
-We believe that such benefits are even more important for a system with
-inter-type declarations. 
-
+and advice \cite{openmodulesaj}. Aspects don't work very well without 
+modules, due to global scope, and implicit dependencies. We believe that 
+such benefits are even more important for a system with inter-type 
+declarations. In this paper we therefore present a module system that 
+supports inter-type declarations and improve their use when extending a 
+system in a modular fashion.
 
 %Aspect instantiation has always been a sticky subject (e.g. doubly applied
 %pointcuts in AspectJ abstract aspects)
 
+We have extended previous work on object-oriented modules for Java \cite{modulesastypes}, 
+and implemented the proposed module system as an extension to the 
+Jast\-Add system, an aspect oriented compiler construction system 
+extending Java with support for attribute grammars and ITDs. That system is itself an extension 
+to the Jast\-Add Extensible Java compiler (Jast\-AddJ), a Java frontend and compiler
+which is used in for instance the AspectBech compiler for AspectJ, and the 
+Soot bytecode manipulation framework. The implementation of ITDs in the JastAdd
+system is actually shared with the implementation of ITDs in the
+AspectBench Compiler for AspectJ. 
+
+To evaluate the module system we performed a case study where JastAddJ was 
+refactored to use the proposed module system. It is important to 
+distinguish JastAdd, a meta compiler system used to build JastAddJ, from JastAddJ, a Java 
+compiler, since both are used as examples in the paper.
 
 In our previous work we explain how to use ITDs as one of the main
-modularisation mechanisms when building extensible compilers. Our current
+modularisation mechanisms when building extensible compilers \cite{aosd08abc}. Our current
 work involves using the same techniques to generate IDEs for a wide range
 of dialects of Java. In such an IDE we may for instance want to use numerous variants of the
 same frontend that slightly differ to support different dialects. We also
@@ -62,33 +72,25 @@ want to use a pure frontend for error checking while a backend is also
 needed to support code generation.
 That work highlights some defiencies to ITDs from an extensibility point of
 view compared to the more traditional use of visitors.
-
-Traditionally, this was done using visitors. Inter-type declarations have the advantages of
-not requiring too much ahead of time planning, the ability to add state, minimal boiler-plate code, 
-and being less error prone since you don't have to adhere to framework conventions to enable dispatch.
-
+Inter-type declarations have the advantages of not requiring ahead-of-time 
+planning, the ability to add state, no need for boiler-plate code, and 
+being less error prone since adherance to framework 
+conventions to enable dispatch is not necessary.
 However, ITDs do not provide the same level of extensibility as visitors.
 ITDs are currently destructive updates of the class hierarchy. The base version and the
 extended version can not co-exist. This is the main motivation for our
 work. 
-
-Based on previous work on object-oriented modules for Java \cite{modulesastypes}, 
-we have implemented the proposed module system as an extension to the
-Jast\-Add Extensible Java Compiler which contains support for amongst others
-ITDs. 
-To evaluate the module system we performed a case study where the above
-mentioned extensible Java compiler built using ITDs was refactored to use
-the proposed module system.
-The proposed module system solves some of these problems completely in an
-elegant fashion, while the burden of other problems are slightly lowered.
+Our case study shows that the proposed module system solves these deficiencies completely in an
+elegant fashion, and also enhances information hiding by restricting 
+visibility of large parts of the system that used to be globally visible.
 
 These are the main contributions of this paper:
 \begin{itemize}
 \item The design of a module system for ITDs that improves information
 hiding and extensibility.
-\item An implementation as a modular extension to the Jast\-Add Extensible
-Java compiler.
-\item A case study where extensible Java compiler is retrofitted to use the
+\item An implementation as a modular extension to the Jast\-Add meta 
+compiler system.
+\item A case study where implementation of the Java compiler JastAddJ is retrofitted to use the
 proposed module system.
 \end{itemize}
 
