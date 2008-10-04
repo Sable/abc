@@ -74,7 +74,8 @@ namespace which is terrible from an information hiding point of view.
 \subsection{Applying Modules}
 
 To remedy the problems detailed above, we apply the module system to
-the JastAddJ compiler. We have refactored the components such that:
+the JastAddJ compiler. Figure \ref{ModuleMainComponents} shows the basic
+architecture of JastAddJ with modules. We have refactored the components such that:
 
 \begin{enumerate}
 \item {The JastAdd framework classes reside in their own module.}
@@ -86,7 +87,7 @@ the JastAddJ compiler. We have refactored the components such that:
 
 \begin{figure}[htb!]
   \begin{center}
-    \resizebox{3in}{!}{
+    \resizebox{3.2in}{!}{
       \includegraphics{figures/ModuleMainComponents}
     }
     \caption{JastAddJ refactored to use modules}
