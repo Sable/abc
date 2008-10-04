@@ -39,17 +39,17 @@ Membership to a module is defined in the compilation unit of the members,
 similar to a package declaration:
 
 \begin{lstlisting}[caption={Module Membership}]
-//file PrettyPrinter.jrag
+//file Print.jrag
 module prettyprinter; //module membership
-public aspect PrettyPrinter {
-	public abstract String Expr.prettyPrint();
+public aspect Print {
+	public abstract String Expr.print();
 	
-	public String Add.prettyPrint() {
-		return getLeft().prettyPrint() + 
-				"+" + getRight().prettyPrint();
+	public String Add.print() {
+		return getLeft().print() + 
+				"+" + getRight().print();
 	}
 	
-	public String IntLit.prettyPrint() {
+	public String IntLit.print() {
 		return getIntLit().toString();
 	}
 }
@@ -112,7 +112,7 @@ of the same module to exist within a single context.
 An import in a module declaration creates a typed module reference which is pointed to
 an instance of that module type. 
 There are two ways to import a module instance: importing the singleton or
-an \textbf{own} instance. Imports may also be alised to allow multiple instances
+an \textbf{own} instance. Imports may also be aliased to allow multiple instances
 of the same module to exist in the same context, and be exported so that
 they are also accessible through indirection from other modules.
 
@@ -165,27 +165,27 @@ modulealias::packagename.TypeName
 
 The following example uses the module definition from listing \ref{figure:imports}.
 The module \texttt{prettyprinter} imports two instances of \texttt{asttype}, with the
-aliases \texttt{asttype} and \texttt{public\_ast}. The aspect \texttt{PrettyPrinter},
+aliases \texttt{asttype} and \texttt{public\_ast}. The aspect \texttt{Print},
 which belongs to the module, introduces ITDs to each of the \texttt{Add} types
 of the instances.
 
-\begin{lstlisting}[caption={Module Qualfiers}]
-//file PrettyPrinter.jrag
+\begin{lstlisting}[caption={Module Qualifiers}]
+//file Print.jrag
 module prettyprinter;
-aspect PrettyPrinter {
+aspect Print {
 	...
 	//modifies the Add type in asttypes
-	public String asttypes::Add.prettyPrint() {
+	public String asttypes::Add.print() {
 		//infix print
-		return getLeft().prettyPrint() + "+" + 
-				getRight().prettyPrint();
+		return getLeft().print() + "+" + 
+				getRight().print();
 	}
 	...
 	//modifies the Add type in public_ast
-	public String public_ast::Add.prettyPrint() {
+	public String public_ast::Add.print() {
 		//postfix print
-		return getLeft().prettyPrint() + 
-				getRight().prettyPrint() + "+";
+		return getLeft().print() + 
+				getRight().print() + "+";
 	}
 }
 \end{lstlisting}
@@ -268,7 +268,7 @@ inheritance only, and no subtyping cycles.
 
 We extend this to aspects and ITDs, specifying that an aspect in a subtype module
 overrides an aspect of the same name in the supertype module. This effectively
-replaces all ITDs in the overriden module.
+replaces all ITDs in the overridden module.
 
 In the following example, we have two parser modules \texttt{parserv1} and \texttt{parserv2},
 with the latter being a subtype of the former. The module \texttt{parserv2} inherits
@@ -456,7 +456,7 @@ module calculator;
 public class CalcFacade {
 	public static Expr parse(String expr) {...}
 	public static int eval(Expr expr) {return expr.eval();}
-	public static String print(Expr expr) {return expr.print();}
+	public static String prettyPrint(Expr expr) {return expr.print();}
 }
 
 //file CalcAspects.jrag
@@ -526,12 +526,12 @@ public class MultiCalc {
 			//uses the base classes and aspects
 			calculator::Expr expr = 
 					calculator::CalcFacade.parse(expr);
-			output = calculator::CalcFacade.print(expr);
+			output = calculator::CalcFacade.prettyPrint(expr);
 		} else if (extended} {
 			//uses the extended classes and aspects
 			calculatorsub::Expr expr = 
 					calculatorsub::CalcFacade.parse(expr);
-			output = calculatorsub::CalcFacade.print(expr);
+			output = calculatorsub::CalcFacade.prettyPrint(expr);
 		}
 		System.out.println(output);
 	}

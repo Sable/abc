@@ -7,7 +7,7 @@ deficiencies of using plain ITDs compared to a visitor based solution.
 
 The module system has been implemented as an extension to the JastAdd
 system, an aspect-oriented attribute grammar extension to Java, which
-supports ITDs as one of its major modularisation mechanisms. The solution
+supports ITDs as one of its major modularization mechanisms. The solution
 is purely compile-time and generates class files that can be executed on
 a traditional JVM without explicit support for modules.
 
@@ -15,13 +15,13 @@ To evaluate the module system on a realistic system we retrofitted the
 JastAdd Extensible Java Compiler (JastAddJ) to use modules. It is a medium
 sized application of more than 21.000 lines of code which is designed using
 the somewhat extreme viewpoint that the class hierarchy does not contain
-any behaviour but modularly added using ITDs. Minor changes to the
+any behavior but modularly added using ITDs. Minor changes to the
 implementation enabled us to create a family of compilers that can coexist
 in the same system using modules compared to the previous solution using an
 ugly build file hack. Moreover, it enabled us to limit the scope of many
 properties that were global in the original implementation.
 
 As future work we will experiment with using the module instantiation
-features to further enahance the reuse of ITDs. One can for instance
+features to further enhance the reuse of ITDs. One can for instance
 envision a situation where ITDs are multiply instantiated in different
 modules of the same compiler rather than only across tool boundaries.

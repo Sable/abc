@@ -2,9 +2,9 @@ To evaluate our proposed module system we carried out a case study where
 the JastAdd Extensible Java Compiler (JastAddJ), a system entirely based on
 inter-type declarations, was retrofitted to use modules. JastAddJ is a
 modular Java compiler designed particularly with extensibility in mind,
-that uses ITDs and attribute grammars as its main modularisation
+that uses ITDs and attribute grammars as its main modularization
 mechanisms.  We have previously reported on the merits of this combination
-in \cite{aosd08abc}. However, there are some nuicenses related to using
+in \cite{aosd08abc}. However, there are some nuisances related to using
 multiple variants in the same system and certain properties with
 unnecessary global scope that makes it a prime target for our proposed
 module system. 
@@ -13,7 +13,7 @@ We believe this application serves as a suitable case to study when
 evaluating the merits of the module system on realistic examples for
 several reasons: 1) It is a reasonably sized application of more than
 21,000 lines of code not counting documentation and white space.  3) It is
-designed using ITDs from the beginning, completely separating behaviour
+designed using ITDs from the beginning, completely separating behavior
 from the class hierarchy using the paradigm that "everything is an ITD". 2)
 The system is commonly used in various applications requiring extensible
 compiler frontends, e.g., the Soot bytecode manipulation framework, and the
@@ -116,7 +116,7 @@ merge frontend, backend::frontend as java15frontend frontend;
 
 %Shows dependencies explicitly, information hiding, enables sharing through merge
 The addition of modules to JastAddJ has made the dependencies of the components
-explicit, and will lessen the chance of inadrvetently introducing dependencies 
+explicit, and will lessen the chance of inadvertently introducing dependencies 
 in the future. 
 
 %everything used to be globally visible

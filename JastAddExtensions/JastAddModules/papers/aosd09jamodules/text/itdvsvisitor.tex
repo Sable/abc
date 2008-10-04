@@ -8,7 +8,7 @@ deficiencies.
 \subsection{Running Example: Calculator}
 Consider a tiny calculator supporting integer literals and addition, thus 
 supporting composite expressions like: 1 + 2. It may seem trivial but its 
-implementation illustrates some important exensibility challenges that we 
+implementation illustrates some important extensibility challenges that we 
 address in this paper. The calculator supports various computations on top 
 of this structure, e.g., evaluating its value and printing its string
 representation.
@@ -44,13 +44,13 @@ Each node type also contains an accept method that performs an additional
 dispatch to select the code in the visitor for the concrete node type. 
 This double dispatch scheme is the key to dispatching both on the node 
 type and the visitor. We can thus select a particular method that is
-selected based on both the dynamic type of the recieving object and the 
+selected based on both the dynamic type of the receiving object and the 
 dynamic type of the visitor, provided as a parameter. 
 
 A visitor is then simply a class that holds an implementation for each concrete 
 class type that may accept the visitor. The Eval visitor computes the 
 value for Int and Add, while the Print visitor computes a string 
-represenation for each expression in a similar fashion. The visitor code 
+representation for each expression in a similar fashion. The visitor code 
 is required to visit children indirectly using the accept method which 
 clutters the implementation and is somewhat error prone.
 
@@ -150,7 +150,7 @@ suitable for the Eval and Print visitors.
 
 We also provide extended vistitors
 ,ExtEval and ExtPrint, to support the extended language.
-They can extend the base behaviour and simply provide the increment
+They can extend the base behavior and simply provide the increment
 needed to support the subtraction operation. The extended version of the
 printer can then be refined to display integer constants using natural
 language in the separate visitor WordPrint. Notice that functionality from
@@ -214,7 +214,7 @@ aspect ExtPrint {
   }
 }
 aspect WordPrint {
-  declare precendence: WordPrint, *;
+  declare precedence: WordPrint, *;
   String Int.print() {
     .. convert i to the strings "one", "two", etc.
   }
@@ -247,7 +247,7 @@ old visitors with uses of the new visitor.
 or Print on a tree containing sub nodes. could probably be fixed using more
 complex visitor)
 
-Visitors can be inherited and overridden to refine behaviour in a visitor
+Visitors can be inherited and overridden to refine behavior in a visitor
 being extended. This enables both visitors to be used in the same system
 while the ITD solution can only use either the original implementation 
 or the refined implementation. 

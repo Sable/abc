@@ -1,10 +1,10 @@
-Inter-type declarations (ITDs) provide a powerful yet simple modularisation
+Inter-type declarations (ITDs) provide a powerful yet simple modularization
 mechanism. The possibility to extend existing classes modularly without
 ahead-of-time planning is not only useful to separate different concerns
 but also extremely convenient for modular extensibility when software
 evolves.
 
-A common critisizm of ITDs is their global scope which arguably leads to
+A common criticism of ITDs is their global scope which arguably leads to
 poor information hiding, a topic that has gained renewed interest with the 
 emerging support for modules in Java 7. Another disadvantage is that the 
 class hierarchy is destructively updated, preventing multiple variants of 
@@ -17,7 +17,7 @@ this existing work on Java modules in an attempt to solve the class
 variant problem for ITDs.
 
 The emerging support for modules in Java 7 enhances information hiding and
-extended module proposals such as Strnisa gives hope for simulatneous
+extended module proposals such as Strnisa gives hope for simultaneous
 deployment of multiple versions of the same library in different modules.
 Modules provide information hiding at a level higher than packages. Module
 systems like OSGi bundles\cite{OSGi4} and the proposed Java module system\cite{JSR277}
@@ -53,7 +53,7 @@ and implemented the proposed module system as an extension to the
 Jast\-Add system, an aspect oriented compiler construction system 
 extending Java with support for attribute grammars and ITDs. That system is itself an extension 
 to the Jast\-Add Extensible Java compiler (Jast\-AddJ), a Java frontend and compiler
-which is used in for instance the AspectBech compiler for AspectJ, and the 
+which is used in for instance the AspectBench compiler for AspectJ, and the 
 Soot bytecode manipulation framework. The implementation of ITDs in the JastAdd
 system is actually shared with the implementation of ITDs in the
 AspectBench Compiler for AspectJ. 
@@ -64,17 +64,17 @@ distinguish JastAdd, a meta compiler system used to build JastAddJ, from JastAdd
 compiler, since both are used as examples in the paper.
 
 In our previous work we explain how to use ITDs as one of the main
-modularisation mechanisms when building extensible compilers \cite{aosd08abc}. Our current
+modularization mechanisms when building extensible compilers \cite{aosd08abc}. Our current
 work involves using the same techniques to generate IDEs for a wide range
 of dialects of Java. In such an IDE we may for instance want to use numerous variants of the
 same frontend that slightly differ to support different dialects. We also
 want to use a pure frontend for error checking while a backend is also
 needed to support code generation.
-That work highlights some defiencies to ITDs from an extensibility point of
+That work highlights some deficiencies to ITDs from an extensibility point of
 view compared to the more traditional use of visitors.
 Inter-type declarations have the advantages of not requiring ahead-of-time 
 planning, the ability to add state, no need for boiler-plate code, and 
-being less error prone since adherance to framework 
+being less error prone since adherence to framework 
 conventions to enable dispatch is not necessary.
 However, ITDs do not provide the same level of extensibility as visitors.
 ITDs are currently destructive updates of the class hierarchy. The base version and the
@@ -101,7 +101,7 @@ approach. A module system that shows how that example can be improved is
 presented in Section~\ref{section:jastaddmodules} and we present a case
 study where an extensible Java compiler is retrofitted to use that module
 system in Section~\ref{section:casestudy} where we also discuss 
-the advantages it brings compared to the original impelementation. A
+the advantages it brings compared to the original implementation. A
 brief overview of the module system implementation is presented in
 Section~\ref{section:implementation} and we discuss related work in
 Section~\ref{section:related} and conclude in

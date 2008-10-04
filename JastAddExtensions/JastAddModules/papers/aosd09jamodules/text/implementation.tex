@@ -2,7 +2,7 @@ We have implemented the module system as an extension to the JastAdd
 compiler which adds support for ITDs and attribute grammars as an extension
 to the JastAddJ compiler presented in Section~\ref{jastaddjoverview}. 
 The extension adds concrete and abstract syntax to support module
-specifcations and updates name binding and code generation to handle the
+specifications and updates name binding and code generation to handle the
 new scope and visibility rules imposed by the module system. 
 
 In our previous work we have presented a design how to implement name
@@ -19,7 +19,7 @@ the Java 1.4 compiler in Section~\ref{jastaddjoverview}.
 The approach is a compile-time based solution where new packages are
 generated when multiple instances of the same module is needed, e.g., when
 adding different sets of ITDs to the same class hierarchy. Potential name
-clashes due to the changed visiblity rules are handled by a name mangling
+clashes due to the changed visibility rules are handled by a name mangling
 scheme where module names are included in signatures to create unique method
 names.
 
