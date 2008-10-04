@@ -1,0 +1,27 @@
+aspect ITDOverriding {
+	syn lazy boolean AspectDecl.isOverriden() {
+		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+		if (mcu == null) {
+			return false;
+		}
+		if (!mcu.isSuperInstance()) {
+			return false;
+		}
+		ModuleCompilationUnit realMCU = mcu.getRealInstance();
+		while (realMCU != mcu) {
+			SimpleSet memberTypes = realMCU.moduleMemberTypes();
+			for (Iterator iter = memberTypes.iterator(); iter.hasNext(); ) {
+				TypeDecl typeDecl = (TypeDecl) iter.next();
+				if (typeDecl instanceof AspectDecl) {
+					AspectDecl subAspect = (AspectDecl) typeDecl;
+					if (subAspect.name().equals(this.name()) &&
+							subAspect.moduleLocalPackageName().equals(this.moduleLocalPackageName())) {
+						return true;
+					}
+				}
+			}
+			realMCU = realMCU.getSuperInstance();
+		}
+		return false;
+	}
+}
