@@ -6,9 +6,9 @@ an aspect-aware module system that allows for multiple instances of classes
 to exist, each instance modified by a particular version of the ITDs.
 
 The module system is based on the object-oriented java module system 
-presented in \texttt{Modules as Object-Oriented Types}\cite{modulesastypes},
+presented in \textit{Modules as Object-Oriented Types}\cite{modulesastypes},
 and the aspect-oriented features are provided by Jast\-Add\cite{jastadd, jastaddjavacompiler}, 
-an aspect-oriented compiler framework. Jast\-Add's uses the same ITD 
+an aspect-oriented compiler framework. Jast\-Add uses the same ITD 
 syntax as in AspectJ, and should therefore be familiar to the expected audience
 of this paper.
 
@@ -142,7 +142,7 @@ An aspect can only introduce ITDs to types that are visible from its parent modu
 This allows the use of module imports and access modifiers to control dependencies
 caused by ITDs.
 
-Importing the singleton module allows different module to share the same instance
+Importing the singleton module allows different modules to share the same instance
 of the same module type. This allows the sharing of classes across modules, as
 classes that belong to different instances of a module are not type compatible.
 In the presence of the \textbf{merge} operator (described later), a singleton import
@@ -272,7 +272,7 @@ replaces all ITDs in the overridden module.
 
 In the following example, we have two parser modules \texttt{parserv1} and \texttt{parserv2},
 with the latter being a subtype of the former. The module \texttt{parserv2} inherits
-the class \texttt{Program}, which overriding the aspect \texttt{ParseClassFile}. The
+the class \texttt{Program}, while overriding the aspect \texttt{ParseClassFile}. The
 application module can then use instances of both modules, with the ITD \texttt{Program.parseClassFile}
 being appropriately different for each version.
 
@@ -343,7 +343,7 @@ these two types are not type compatible.
 
 Types that belong to different module instances, even if they have the same
 base module type, are not type compatible. Though type sharing can be done
-in a using singleton instances, this is limited in its usefulness, as the singleton
+by using singleton instances, this is limited in its usefulness, as the singleton
 instance may have imported \textbf{own} instances of another module that you wish to
 share.
 

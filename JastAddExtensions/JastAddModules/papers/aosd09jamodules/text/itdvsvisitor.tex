@@ -36,7 +36,7 @@ major case study.
 \subsection{Visitor Implementation}
 A visitor based solution uses the composite design pattern to model the
 static structure of expressions: one class for each language element and
-composition of language elements forming a tree structure. I.e., the 
+composition of language elements forming a tree structure. That is, the 
 Add node has references to its left and right child respectively, while 
 the Int node has a single filed holding its value.
 
@@ -243,9 +243,6 @@ There are solutions based on advanced usage of generics that support
 modular extension but that requires much more framework code and clutters
 the solution even more. Moreover, the user need still replace uses of the
 old visitors with uses of the new visitor.
-(as long as we don't try to run Eval
-or Print on a tree containing sub nodes. could probably be fixed using more
-complex visitor)
 
 Visitors can be inherited and overridden to refine behavior in a visitor
 being extended. This enables both visitors to be used in the same system

@@ -99,7 +99,7 @@ Other than the necessary changes to use modules, it was also necessary to change
 access modifiers of several ITDs from package private to public, to allow the 
 access of these ITDs from outside their module. 
 
-An example compiler application that uses the JastAddJ with modules is shown in the example below.
+An example compiler application that uses JastAddJ with modules is shown in the example below.
 The module for the compiler application imports a frontend and a backend, and since the backend 
 also imports an instance of the frontend, the \texttt{javacompiler} module contains a merge
 operation that allows the java compiler and the backend to share the frontend classes.
@@ -151,14 +151,14 @@ The use of aspect overriding has allowed the Java 1.5 bytecode parser aspects in
 override the corresponding aspects in the Java 1.4 frontend without the build file hacks that involved
 excluding the Java 1.4 bytecode parser files when building the 1.5 compiler. This demonstrates that
 aspect overriding solves a problem that arises in a real aspect oriented system, as opposed to 
-hypothetical examples.s
+hypothetical examples.
 
 
 %can we characterize the typical changes needed?
 %how intrusive/global were the changes?
 The changes required to introduce modules into JastAddJ were minimal: just the addition of the module 
 declarations in \texttt{.module} files, the module membership specifications in the existing compilation units,
-and a change to the access modifiers of some ITDs to allow inter-access. Given the benefits of instantiation, 
+and a change to the access modifiers of some ITDs to allow inter-module access. Given the benefits of instantiation, 
 module composition and information hiding, this is a relatively small price to pay.
 
 %eliminate cycles as a side-effect
