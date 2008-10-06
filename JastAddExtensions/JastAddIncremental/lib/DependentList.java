@@ -22,8 +22,9 @@ public class DependentList {
 
     public void propagate() {
 	int sz = deps.size();
-	while(sz-- > 0)
-	    deps.poll().flushCaches();
+	while(sz-- > 0) {
+	    deps.poll().propagate();
+	}
     }
 
     public String toString() {

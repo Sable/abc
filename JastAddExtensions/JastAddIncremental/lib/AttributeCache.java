@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Set;
 
 class AttributeCache {
-  private ASTNode home;
-  private Map<Object, CachedValue> cache = new HashMap<Object, CachedValue>();
+  private final ASTNode home;
+  private final Map<Object, CachedValue> cache = new HashMap<Object, CachedValue>();
 
   public AttributeCache(ASTNode home) {
     this.home = home;
@@ -38,7 +38,7 @@ class AttributeCache {
     return v == null ? -1 : v.last_computed();
   }
 
-  public Set<Object> getKeys() {
-    return cache.keySet();
+  public Object[] getKeys() {
+    return cache.keySet().toArray();
   }
 }

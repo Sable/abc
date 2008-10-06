@@ -3,8 +3,28 @@ package AST;
 aspect Caching {
 
   interface CacheRoot {
-    void flushCaches();
+    void propagate();
     int getLastFlushed();
+    void invalidate();
+    void flushCaches();
+  }
+
+  boolean CacheRoot.flushing = false;
+  public void CompilationUnit.propagate() {
+    if(flushing)
+      return;
+    flushing = true;
+    invalidate();
+    flushCaches();
+    flushing = false;
+  }
+  public void Program.propagate() {
+    if(flushing)
+      return;
+    flushing = true;
+    invalidate();
+    flushCaches();
+    flushing = false;
   }
 
   CompilationUnit implements CacheRoot;
