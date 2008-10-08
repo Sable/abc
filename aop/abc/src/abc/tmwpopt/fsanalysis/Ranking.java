@@ -229,7 +229,7 @@ public class Ranking {
 		public String ppfAndGroupToHTMLString(String URLPrefix, int pfgNumber) {
 			// Partition this failure group by symbol and emit the necessary
 			// SuperNote HTML for the failure group.
-			StringBuffer res = new StringBuffer("<h1>Potential point of failure "+pfgNumber+"</h1>\n");
+			StringBuffer res = new StringBuffer("<h1>Potential point of failure "+pfgNumber+"("+features+")</h1>\n");
 			res.append("<script type='text/javascript'>\n");
 			res.append("var supernote"+pfgNumber+" = new SuperNote('supernote"+pfgNumber+"', []);\n");
 			res.append("</script>\n");
