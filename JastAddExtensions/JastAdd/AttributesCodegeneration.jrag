@@ -1017,11 +1017,19 @@ aspect AttributesCodegeneration {
     }
   }
 
+  syn lazy String TypeDecl.typeNameInSignature() {
+    return fullName().
+      replace('.', '$').
+      replace('@', '_').
+      replace('[', '$').
+      replace(']', 'A');
+  }    
+
   syn lazy String InhDecl.definingInterfaceName() {
     StringBuffer s = new StringBuffer();
     s.append("Defines$" + name());
     for(int i = 0; i < getNumParameter(); i++)
-      s.append("$" + getParameter(i).type().constantPoolName().replace('/', '$'));
+      s.append("$" + getParameter(i).type().typeNameInSignature());
     return s.toString();
   }
 
@@ -1649,7 +1657,7 @@ aspect AttributesCodegeneration {
       s.append("_");
     for(int i = 0; i < getNumParameter(); i++) {
       ParameterDeclaration p = getParameter(i);
-      s.append(p.type().fullName().replace('.', '$').replace('@', '_'));
+      s.append(p.type().typeNameInSignature());
     }
     return s.toString();
   }
