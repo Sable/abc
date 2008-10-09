@@ -121,8 +121,6 @@ public class Statistics {
 			if(removeIfExists) {
 				new File(fileName).delete();
 			}
-			// we really don't want three copies of the HTML output.
-			new File(HTMLfileName).delete();
 			
 			try {
 				Set<Shadow> ppfs = filterPotentialPointOfFailures(perTMShadows);
@@ -142,6 +140,9 @@ public class Statistics {
 				}
 				
 				if(!numberOnly && Debug.v().outputHTML){
+					System.err.println("Writing HTML to "+HTMLfileName+" ...");
+					// we really don't want three copies of the HTML output.
+					new File(HTMLfileName).delete();
 					PrintWriter hOut = new PrintWriter(new FileOutputStream(HTMLfileName,true));
 					int c = 1;
 					for (PotentialFailureGroup pfg : sortedGroups) {
