@@ -125,7 +125,7 @@ public class OutputDotGraphs {
 			if (e.getLabel().equals("newDaCapoRun"))
 				continue;
 			String label = " ";
-			label = label + "label=\"" + e.getLabel() + "\" ";
+			label = label + "label=\" " + e.getLabel() + " \" ";
 			if (e.isSkipEdge())
 				label = label + "style=dashed ";
 			label = label + "URL=\"#" + e.getLabel() + "\"";
