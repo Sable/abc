@@ -462,7 +462,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 	protected Object[] filter(Object[] children) {
 		ArrayList childList = new ArrayList();
 		for (int i = 0; i < children.length; i++) {
-			if (model == null || children[i] instanceof IProject) {
+			if (model == null && children[i] instanceof IProject) {
 				IProject project = (IProject)children[i];
 				Collection<JastAddModel> modelList = JastAddModelProvider.getModels(project);
 				for (JastAddModel m : modelList) {
@@ -470,8 +470,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 					// Can there be more than one possible model?
 				}
 			}
-			if (model != null && children[i] instanceof IResource) {
-				
+			if (model != null && children[i] instanceof IResource) {	
 				IResource res = (IResource)children[i];
 				if (!model.filterInExplorer(res.getName())) {
 					childList.add(res);
