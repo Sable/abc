@@ -19,8 +19,8 @@ aspect Completion {
 			return new CompletionProposal(proposal, documentOffset - filter.length(), 
 				      filter.length(), cursorOffset, image, label, null, comment);
 		}
-		return new CompletionProposal(proposal, documentOffset - filter.length() - 1, 
-                 filter.length() + 1, cursorOffset, image, label, null, comment);
+		return new CompletionProposal(proposal, documentOffset - filter.length(), 
+                 filter.length(), cursorOffset, image, label, null, comment);
 	}
 
 	syn String ASTNode.completionLabel() = this.getClass().getName();
