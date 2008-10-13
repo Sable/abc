@@ -572,12 +572,15 @@ public class Model extends JastAddJModel {
 
 	private long getTimeStamp(String name, IProject project) {
 		IFile oldFile = project.getFile(name);
-		if(oldFile.exists())
-			name = oldFile.getLocation().toOSString();
+		if(oldFile.exists()) {
+			return oldFile.getLocalTimeStamp();
+		}
+		/*
 		File file = new File(name);
 		if(file.exists())
 			return file.lastModified();
-		return Long.MAX_VALUE;
+			*/
+		return Long.MIN_VALUE;
 	}
 	
 	private void buildJFlexScanner(IProject project, JastAddBuildConfiguration buildConfig) {
@@ -585,9 +588,11 @@ public class Model extends JastAddJModel {
 		
 		long lastModified = getTimeStamp(flexFileName, project);
 		boolean needsUpdate = false;
-		for(PathEntry p : buildConfig.flex.entries())
-			if(getTimeStamp(p.getPath(), project) > lastModified)
+		for(PathEntry p : buildConfig.flex.entries()) {
+			long stamp = getTimeStamp(p.getPath(), project);
+			if(stamp > lastModified)
 				needsUpdate = true;
+		}
 		if(!needsUpdate)
 			return;
 		

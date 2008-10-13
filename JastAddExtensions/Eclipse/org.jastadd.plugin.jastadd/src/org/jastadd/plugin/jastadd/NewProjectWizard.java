@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jastadd.plugin.jastaddj.wizards.JastAddJNewProjectWizard;
 import org.osgi.framework.Bundle;
 
