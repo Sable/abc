@@ -66,7 +66,6 @@ class MakeMethod extends ASTChange {
 }
 
 class MoveStmt extends ASTChange {
-	
 	private Block block;
 	private int old_index;
 	private int index;
@@ -86,15 +85,34 @@ class MoveStmt extends ASTChange {
 	public void undo() {
 		block.getStmtList().moveChild(index, old_index);
 	}
-
 }
 
-class PrivatiseField extends ASTChange {
-    
+class MoveMethod extends ASTChange {
+	private TypeDecl origin;
+	private MethodDecl method;
+	private TypeDecl destination;
+	
+	public MoveMethod(MethodDecl method, TypeDecl destination) {
+		this.origin = method.hostType();
+		this.method = method;
+		this.destination = destination;
+	}
+	
+	public String prettyprint() {
+		return "move method "+method.dumpString()+" to type "+destination.name();
+	}
+	
+	public void undo() {
+		destination.removeBodyDecl(method);
+		origin.addBodyDecl(method);
+	}
+}
+
+class ChangeFieldModifiers extends ASTChange {
     private FieldDeclaration field;
     private Modifiers old_modifiers;
     
-    public PrivatiseField(FieldDeclaration field) {
+    public ChangeFieldModifiers(FieldDeclaration field) {
         this.field = field;
         this.old_modifiers = (Modifiers)field.getModifiers().fullCopy();
     }
@@ -104,9 +122,26 @@ class PrivatiseField extends ASTChange {
     }
 
     public String prettyprint() {
-        return "make field "+field+" private";
+        return "change modifiers of field "+field;
     }
+}
 
+class ChangeMethodModifiers extends ASTChange {
+	private MethodDecl method;
+	private Modifiers old_modifiers;
+	
+	public ChangeMethodModifiers(MethodDecl method) {
+		this.method = method;
+		this.old_modifiers = (Modifiers)method.getModifiers().fullCopy();
+	}
+	
+	public String prettyprint() {
+		return "change modifiers of method "+method.dumpTree();
+	}
+	
+	public void undo() {
+		method.setModifiers(old_modifiers);
+	}
 }
 
 /*

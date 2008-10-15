@@ -98,8 +98,21 @@ aspect Undo {
 	
 	refine ASTUtil void FieldDeclaration.makePrivate() throws RefactoringException {
 		ensureFromSource();
-		programRoot().pushUndo(new PrivatiseField(this));
+		programRoot().pushUndo(new ChangeFieldModifiers(this));
 		ASTUtil.FieldDeclaration.makePrivate();
+	}
+	
+	refine PushDownMethod void MethodDecl.makePublicAbstract() throws RefactoringException {
+		ensureFromSource();
+		programRoot().pushUndo(new ChangeMethodModifiers(this));
+		PushDownMethod.MethodDecl.makePublicAbstract();
+	}
+	
+	refine PushDownMethod void MethodDecl.moveTo(TypeDecl target) throws RefactoringException {
+		ensureFromSource();
+		target.ensureFromSource();
+		programRoot().pushUndo(new MoveMethod(this, target));
+		PushDownMethod.MethodDecl.moveTo(target);
 	}
 
 }

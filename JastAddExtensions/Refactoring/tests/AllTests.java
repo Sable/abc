@@ -14,6 +14,7 @@ public class AllTests {
 		suite.addTest(RenameTestsITD.suite());
 		suite.addTest(ExtractClassTests.suite());
 		suite.addTest(InlineVariableTests.suite());
+		suite.addTest(PushDownMethodTests.suite());
 		return suite;
 	}
 }
