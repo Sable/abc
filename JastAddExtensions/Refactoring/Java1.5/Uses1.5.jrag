@@ -8,19 +8,19 @@ aspect Uses {
 	
 	// bind all uses of a variable to its declaration
 	coll Collection<VarAccess> FieldDeclaration.uses() [new ArrayList<VarAccess>()] 
-	                                                    with add;
+	                                                    with add root Program;
 	VarAccess contributes
 	this when decl().sourceVariableDecl() instanceof FieldDeclaration
 	to FieldDeclaration.uses() for (FieldDeclaration)decl().sourceVariableDecl();
 	
 	coll Collection<VarAccess> VariableDeclaration.uses() [new ArrayList<VarAccess>()] 
-	                                                       with add;
+	                                                       with add root Program;
 	VarAccess contributes
 	this when decl().sourceVariableDecl() instanceof VariableDeclaration
 	to VariableDeclaration.uses() for (VariableDeclaration)decl().sourceVariableDecl();
 
 	coll Collection<VarAccess> ParameterDeclaration.uses() [new ArrayList<VarAccess>()] 
-	                                                        with add;
+	                                                        with add root Program;
 	VarAccess contributes
 	this when decl().sourceVariableDecl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl().sourceVariableDecl();
@@ -29,7 +29,7 @@ aspect Uses {
 	// since this is in general undecidable, we report
 	// all uses that possibly might refer to it
 	coll Collection<MethodAccess> MethodDecl.uses() [new ArrayList<MethodAccess>()] 
-	                                                 with addAll;
+	                                                 with addAll root Program;
 	MethodAccess contributes
 	this.asSet() to MethodDecl.uses() for decl().sourceMethodDecl();
 	
@@ -43,7 +43,7 @@ aspect Uses {
 
 	// collects all descendants of a type declaration, including itself
 	coll Collection<TypeDecl> TypeDecl.descendants() circular [new HashSet<TypeDecl>()] 
-	                                                           with addAll;
+	                                                           with addAll root Program;
 	TypeDecl contributes 
 	this.asSet() to TypeDecl.descendants() for this;
 
@@ -76,7 +76,7 @@ aspect Uses {
 	}
 	
 	// collect all method declarations overriding a given method declaration
-	coll HashSet MethodDecl.overriders() [new HashSet()] with add;
+	coll HashSet MethodDecl.overriders() [new HashSet()] with add root Program;
 	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
 	
 	// get all method declarations overridden by a given method declaration
