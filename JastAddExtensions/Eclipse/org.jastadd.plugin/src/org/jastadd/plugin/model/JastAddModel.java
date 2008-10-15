@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,27 +19,19 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultLineTracker;
-import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
-import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.model.repair.RecoveryLexer;
 import org.jastadd.plugin.util.JastAddPair;
 
@@ -151,7 +142,9 @@ public abstract class JastAddModel {
 	public void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
 		boolean fireEvent = true;
 		synchronized(getASTRootForLock(project)) {
+			System.out.println("Took ast lock: " + Thread.currentThread().getId());
 			fireEvent = updateModel(changedFiles, project);
+			System.out.println("Handing back ast lock: " + Thread.currentThread().getId());
 		}
 		if (fireEvent)
 			notifyModelListeners();
@@ -159,18 +152,17 @@ public abstract class JastAddModel {
 
 	public void updateProjectModel(IDocument document) {
 		FileInfo fileInfo = documentToFileInfo(document);
-		if(fileInfo == null) return;
-		
-		synchronized (getASTRootForLock(fileInfo.getProject())) {
-			updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
-		}
-		
+		if(fileInfo == null) 
+			return;		
+		updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
 		boolean fireEvent = true;
 		synchronized(getASTRootForLock(project)) {
+			System.out.println("Took ast lock: " + Thread.currentThread().getId());
 			fireEvent = updateModel(document, fileName, project);
+			System.out.println("Handing back ast lock: " + Thread.currentThread().getId());
 		}
 		if (fireEvent)
 			notifyModelListeners();

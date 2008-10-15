@@ -39,7 +39,9 @@ import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
+import org.jastadd.plugin.jastadd.properties.FolderList;
 import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
+import org.jastadd.plugin.jastadd.properties.FolderList.FileEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
@@ -617,6 +619,7 @@ public class Model extends JastAddJModel {
 			parserName = "Parser";
 		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
 		String beaverFileName = buildConfig.parser.getOutputFolder() + File.separator + parserName + ".beaver";
+		String rawBeaverFileName = buildConfig.parser.getOutputFolder() + File.separator + parserName + "_raw.beaver";
 		
 		long lastModified = getTimeStamp(parserFileName, project);
 		boolean needsUpdate = false;
@@ -628,7 +631,18 @@ public class Model extends JastAddJModel {
 		
 		try {
 			concatFiles(project, buildConfig.parser.entries(), parserFileName);
-			if (convertToBeaverSpec(project, parserFileName, beaverFileName)) {
+			if (convertToBeaverSpec(project, parserFileName, rawBeaverFileName)) {
+				
+				// Concatenated beaver init file with generated beaver file
+				LinkedList<PathEntry> beaverList = new LinkedList<PathEntry>();
+				PathEntry entry = new FolderList.FileEntry();
+				entry.setPath("src/parser/beaver.input");
+				beaverList.add(entry);
+				entry = new FolderList.FileEntry();
+				entry.setPath(rawBeaverFileName);
+				beaverList.add(entry);
+				concatFiles(project, beaverList, beaverFileName);
+				
 				IFile file = project.getFile(beaverFileName);
 				ArrayList<String> args = new ArrayList<String>();
 				args.add("-c");
@@ -655,11 +669,11 @@ public class Model extends JastAddJModel {
 				IFile srcFile = project.getFile(entry.getPath());
 				InputStream stream = srcFile.getContents(true);
 				if (firstFile) {
-					if (!targetFile.exists()) {
+					if (targetFile.exists()) {
+						targetFile.delete(true, null);
 						targetFile.create(stream, true, null);
-					} else {
-						targetFile.setContents(stream, true, false, null);
 					}
+					targetFile.setContents(stream, true, false, null);
 					firstFile = false;
 				} else {
 					targetFile.appendContents(stream, true, false, null);
@@ -693,10 +707,13 @@ public class Model extends JastAddJModel {
   		}
   		
   		// Done the old way because root.pp takes a PrintStream
-  		java.io.File bFile = new File(beaverFile.getLocation().toOSString());
-  		PrintStream out = new PrintStream(new FileOutputStream(bFile));
-  		root.pp(out);
-  		out.close();
+  		if (beaverFile.exists()) {
+  			beaverFile.delete(true, null);
+  		}
+  		FileOutputStream os = new FileOutputStream(beaverFile.getLocation().toOSString());
+		PrintStream out = new PrintStream(os);
+		root.pp(out);
+		out.close();
 
   		return true;
   	}
