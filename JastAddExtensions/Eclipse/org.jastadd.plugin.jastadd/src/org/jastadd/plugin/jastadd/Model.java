@@ -2,11 +2,13 @@ package org.jastadd.plugin.jastadd;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,6 +18,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -649,7 +652,7 @@ public class Model extends JastAddJModel {
 				args.add("-t");
 				args.add("-w");
 				args.add(file.getLocation().toOSString());
-				beaver.comp.run.Make.main(args.toArray(new String[] { }));		
+				beaver.comp.run.Make.main(args.toArray(new String[] { }));	
 			}
 		} catch (IOException e) {
 			logError(e, "Problem generating parser");
@@ -667,10 +670,10 @@ public class Model extends JastAddJModel {
 			boolean firstFile = true;
 			for (PathEntry entry : entries) {
 				IFile srcFile = project.getFile(entry.getPath());
-				InputStream stream = srcFile.getContents(true);
+				InputStream stream = new FileInputStream(srcFile.getLocation().toOSString());
+				//InputStream stream = srcFile.getContents(true);
 				if (firstFile) {
-					if (targetFile.exists()) {
-						targetFile.delete(true, null);
+					if (!targetFile.exists()) {
 						targetFile.create(stream, true, null);
 					}
 					targetFile.setContents(stream, true, false, null);
