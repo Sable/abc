@@ -1,0 +1,284 @@
+<!--
+ Targets for working from terminal window:
+       build (default) - generates java files and compiles them
+       clean           - removes all generated files and class files
+ Targets for working from Eclipse:
+       gen             - generates java files
+       genClean        - removes all generated files and their class files
+-->
+<project name="Refactoring" default="build">
+
+<!-- location of Java1.4Frontend -->
+<property name="Java1.4Frontend" value="../../Java1.4Frontend"/>
+<!-- location of Java1.5Frontend -->
+<property name="Java1.5Frontend" value="../../Java1.5Frontend"/>
+<!-- location of XML frontend -->
+<property name="XMLFrontend" value="../../XML"/>
+<!-- location of Analyses -->
+<property name="Analyses" value="../../Analyses"/>
+<!-- location of self -->
+<property name="Refactoring" value=".."/>
+
+<!-- "package" is the directory where generated files will be stored -->
+<property name="package" value="AST"/>
+
+<!-- "tools" is the directory where generators and libraries are located. -->
+<property name="tools" value="${Java1.4Frontend}/tools"/>
+	
+<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
+<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
+<!-- "jastadd" is an ant task class in jastadd2.jar -->
+<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
+
+<!-- compile sources -->
+<target name="build" depends="gen">
+  <javac debug="true" nowarn="true" srcdir=".." includes="**/*.java" 
+         excludes="tests/data/**" 
+	 classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
+</target>
+
+<!-- generate compiler source files and compile sources -->
+<target name="gen" depends="scanner1.5,parser1.5,scannerxml,parserxml">
+  <!-- create AST node types and weave aspect modules -->
+  <jastadd package="AST" rewrite="true" beaver="true" novisitcheck="true" noCacheCycle="true" outdir="${Refactoring}" debug="false">
+    <fileset dir="${Java1.4Frontend}">
+      <include name="**/*.ast"/>
+      <exclude name="java.ast"/>
+      <include name="**/*.jrag"/>
+      <include name="**/*.jadd"/> 
+      <exclude name="BytecodeAttributes.jrag"/>
+      <exclude name="BytecodeDescriptor.jrag"/>
+      <exclude name="BytecodeReader.jrag"/>
+    </fileset>
+    <fileset dir="${Java1.5Frontend}">
+      <include name="**/*.ast"/>
+      <include name="**/*.jrag"/>
+      <include name="**/*.jadd"/>
+    </fileset>
+    <fileset dir="${XMLFrontend}">
+      <include name="**/*.ast"/>
+      <include name="**/*.jadd"/>
+      <include name="**/*.jrag"/>
+    </fileset>
+    <fileset file="${Analyses}/LocalDeclaration.jrag"/>
+    <fileset dir="${Analyses}">
+      <include name="**/*.ast"/>
+      <include name="**/*.jrag"/>
+      <include name="**/*.jadd"/>
+      <exclude name="LocalDeclaration.jrag"/>
+    </fileset>
+    <fileset file="${Refactoring}/Methodoid.jadd"/>
+    <fileset file="${Refactoring}/Scope.jadd"/>
+    <fileset file="${Refactoring}/AccessInfo.jrag"/>
+    <fileset file="${Refactoring}/VarAccessInfo.jrag"/>
+    <fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
+    <fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
+    <fileset dir="${Refactoring}">
+      <include name="**/*.ast"/>
+      <include name="**/*.jadd"/>
+      <include name="**/*.jrag"/>
+      <exclude name="Methodoid.jadd"/>
+      <exclude name="Scope.jadd"/>
+      <exclude name="Uses.jrag"/>
+      <exclude name="VarAccessInfo.jrag"/>
+      <exclude name="MethodAccessInfo.jrag"/>
+      <exclude name="TypeAccessInfo.jrag"/>
+      <exclude name="IntertypeDeclarations/**/*"/>
+    </fileset>
+    <fileset dir=".">
+      <include name="**/*.ast"/>
+      <include name="**/*.jadd"/>
+      <include name="**/*.jrag"/>
+    </fileset>
+  </jastadd>
+  <!-- copy library files-->
+  <copy todir="${Refactoring}/beaver" preservelastmodified="true">
+    <fileset dir="${Java1.4Frontend}/beaver">
+      <include name="**/*.java"/>
+    </fileset>
+  </copy>
+</target>
+
+<target name="scanner1.4">
+  <!-- compose the scanner -->
+  <concat destfile="${Refactoring}/scanner/JavaScanner.flex" binary="true" force="false">
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="preamble.flex"/>
+      <file name="macros.flex"/>
+      <file name="rules_preamble.flex"/>
+      <file name="WhiteSpace.flex"/>
+      <file name="Comments.flex"/>
+      <file name="Keywords.flex"/>
+      <file name="Literals.flex"/>
+      <file name="Separators.flex"/>
+      <file name="Operators.flex"/>
+      <file name="Identifiers.flex"/>
+      <file name="postamble.flex"/>
+    </filelist>
+  </concat>
+  <!-- generate the scanner -->
+  <jflex file="${Refactoring}/scanner/JavaScanner.flex" outdir="${Refactoring}/scanner" nobak="yes"/>
+  <copy todir="${Refactoring}/scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true"/>
+</target>
+
+<target name="scanner1.5">
+  <mkdir dir="${Refactoring}/scanner"/>
+  <concat destfile="${Refactoring}/scanner/JavaScanner.flex" binary="true" force="false">
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="preamble.flex"/>
+      <file name="macros.flex"/>
+    </filelist>
+    <filelist dir="${Java1.5Frontend}">
+      <file name="java15macros.flex"/>
+    </filelist>
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="rules_preamble.flex"/>
+      <file name="WhiteSpace.flex"/>
+      <file name="Comments.flex"/>
+      <file name="Keywords.flex"/>
+    </filelist>
+    <filelist dir="${Java1.5Frontend}">
+      <file name="java15keywords.flex"/>
+    </filelist>
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="Literals.flex"/>
+    </filelist>
+    <filelist dir="${Java1.5Frontend}">
+      <file name="java15literals.flex"/>
+    </filelist>
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="Separators.flex"/>
+      <file name="Operators.flex"/>
+    </filelist>
+    <filelist dir="${Java1.5Frontend}">
+      <file name="java15operators.flex"/>
+      <file name="java15identifiers.flex"/>
+    </filelist>
+    <filelist dir="${Java1.4Frontend}/scanner">
+      <file name="postamble.flex"/>
+    </filelist>
+  </concat>
+  <jflex file="${Refactoring}/scanner/JavaScanner.flex" outdir="${Refactoring}/scanner" nobak="yes"/>
+  <copy todir="${Refactoring}/scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true"/>
+</target>
+
+<target name="scannerxml">
+  <!-- compose the scanner -->
+  <concat destfile="${Refactoring}/scanner/XMLScanner.flex" 
+	  binary="true" force="false">
+    <filelist dir="${XMLFrontend}/scanner">
+      <file name="preamble.flex"/>
+      <file name="xml.flex"/>
+    </filelist>
+  </concat>
+  <!-- generate the scanner -->
+  <jflex file="${Refactoring}/scanner/XMLScanner.flex" 
+	 outdir="${Refactoring}/scanner" nobak="yes"/>
+</target>
+
+<target name="parser1.4">
+  <mkdir dir="${Refactoring}/parser"/>
+  <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
+  <concat destfile="${Refactoring}/parser/JavaParser.all" binary="true" force="false">
+    <filelist dir="${Java1.4Frontend}">
+      <file name="parser/preamble.parser"/>
+      <file name="parser/java14.parser"/>
+      <file name="parser/errorrecovery.parser"/>
+    </filelist>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+  <java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
+    <arg line="${Refactoring}/parser/JavaParser.all ${Refactoring}/parser/JavaParser.beaver"/>
+  </java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${Refactoring}/parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="yes"/>
+</target>
+
+<target name="parser1.5">
+  <mkdir dir="${Refactoring}/parser"/>
+  <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
+  <concat destfile="${Refactoring}/parser/JavaParser.all" binary="true" force="false">
+    <filelist dir="${Java1.4Frontend}">
+      <file name="parser/preamble.parser"/>
+      <file name="parser/java14.parser"/>
+      <file name="parser/errorrecovery.parser"/>
+    </filelist>
+    <fileset dir="${Java1.5Frontend}">
+      <include name="*.parser"/>
+    </fileset>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+  <java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
+    <arg line="${Refactoring}/parser/JavaParser.all ${Refactoring}/parser/JavaParser.beaver"/>
+  </java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${Refactoring}/parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="yes"/>
+</target>
+
+<target name="parserxml">
+  <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
+  <concat destfile="${Refactoring}/parser/XMLParser.all" 
+	  binary="true" force="false">
+    <filelist dir="${XMLFrontend}">
+      <file name="parser/xml.parser"/>
+    </filelist>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+  <java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" 
+	classname="Main" fork="true">
+    <arg line="${Refactoring}/parser/XMLParser.all ${Refactoring}/parser/XMLParser.beaver"/>
+  </java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${Refactoring}/parser/XMLParser.beaver"
+	  terminalNames="yes" compress="yes" useSwitch="yes"/>
+</target>
+
+<!-- remove generated source files and .class files -->
+<target name="clean" depends="cleanGen">
+    <!-- delete all .class files recursively -->
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+    </delete>
+    <delete file="JavaCompiler.jar"/>
+	  <delete file="Java1.5Backend-src.jar"/>
+</target>
+
+<!-- remove generated source files and .class files -->
+<target name="cleanGen">
+    <delete dir="${package}"/>
+    <delete dir="${Refactoring}/beaver"/>
+    <delete>
+      <fileset dir="${Refactoring}/scanner" includes="*Scanner.flex"/>
+      <fileset dir="${Refactoring}/scanner" includes="*Scanner.java"/>
+      <fileset dir="${Refactoring}/scanner" includes="Unicode.java"/>
+      <fileset dir="${Refactoring}/parser" includes="*Parser.java"/>
+      <fileset dir="${Refactoring}/parser" includes="*Parser.beaver"/>
+      <fileset dir="${Refactoring}/parser" includes="*Parser.all"/>
+    </delete>
+</target>
+
+<target name="jar" depends="build">
+  <jar destfile="org.jastadd.refactoring.jar" basedir=".">
+    <include name="${Refactoring}/AST/*.class"/>
+    <include name="${Refactoring}/beaver/*.class"/>
+    <include name="${Refactoring}/parser/*.class"/>
+    <include name="${Refactoring}/scanner/*.class"/>
+    <include name="${Refactoring}/tests/TestHelper*.class"/>
+  </jar>
+</target>
+
+<target name="test" depends="build">
+  <java 
+     classname="junit.awtui.TestRunner"
+     classpath=".:tools/junit.jar" 
+     fork="true" 
+     maxmemory="2048M"
+     dir="tests/data">
+    <arg line="tests.AllTests"/>
+  </java>
+</target>
+
+</project>
+

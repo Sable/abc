@@ -79,6 +79,7 @@
 			<exclude name="MethodAccessInfo.jrag"/>
 			<exclude name="TypeAccessInfo.jrag"/>
 			<exclude name="IntertypeDeclarations/**/*"/>
+			<exclude name="XML/**/*"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

@@ -1,0 +1,74 @@
+aspect XMLRefactoring {
+	
+	refine PrettyPrint public void Program.toString(StringBuffer s) {
+		refined(s);
+		for(XMLDocument d : getXMLDocuments()) {
+			d.toString(s);
+			s.append("\n");
+		}
+	}
+	
+	refine ClassPath public void Program.addSourceFile(String name) {
+		if(name.endsWith(".xml"))
+			addXMLFile(name);
+		else
+			refined(name);
+	}
+	
+	private void Program.addXMLFile(String name) {
+		try {
+			addXMLDocument(new parser.XMLParser().parse(new FileInputStream(name), name));
+		} catch (FileNotFoundException e) {
+			throw new Error("file not found: "+name);
+		} catch (IOException e) {
+			throw new Error("IOException: "+e);
+		} catch (Exception e) {
+			throw new Error("Exception: "+e);
+		}
+	}
+	
+	eq Program.getXMLDocument().compilationUnit() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().packageName() { throw new UnsupportedOperationException("XML fail"); } 
+	eq Program.getXMLDocument().enclosingType() { throw new UnsupportedOperationException("XML fail"); } 
+	eq Program.getXMLDocument().isNestedType() = false;
+	eq Program.getXMLDocument().isLocalClass() = false;
+	eq Program.getXMLDocument().hostPackage() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().visibleLocalDecls() = new java.util.HashSet();
+	eq Program.getXMLDocument().hasEnclosingTryStmt() = false;
+	eq Program.getXMLDocument().isFinallyBlock() = false;
+	eq Program.getXMLDocument().enclosingFinally() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().enclosingTryStmt() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().withInCatchClause() = false;
+	eq Program.getXMLDocument().followingConstCase() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().followingDefaultCase() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().following() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().exitBlock() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().entryBlock() { throw new UnsupportedOperationException("XML fail"); }
+	eq Program.getXMLDocument().reportUnreachable() = true;
+	
+	rewrite KVAttribute {
+	  when(getName().equals("classname"))
+	  to ClassAttribute {
+    	  String val = getValue();
+	      String[] path = val.split("\\.");
+	      assert(path.length > 0);
+	      Access acc = new ParseName(path[path.length-1]);
+	      for(int i=path.length-2;i>=0;--i)
+	    	  acc = new ParseName(path[i]).qualifiesAccess(acc);
+	      ClassAttribute attr = new ClassAttribute(getName(), acc);
+	      attr.setStart(start); // copy location information
+	      attr.setEnd(end); // copy location information
+	      return attr;
+	  }
+	}
+	
+	eq ClassAttribute.getType().nameType() = NameType.TYPE_NAME;
+	syn String ClassAttribute.getValue() = getType().toString();
+	
+	refine Undo protected void ASTNode.ensureFromSource() throws RefactoringException {
+		CompilationUnit cu = compilationUnit();
+		if(cu != null && !cu.fromSource())
+			throw new RefactoringException("cannot change library class");
+	}
+	
+}

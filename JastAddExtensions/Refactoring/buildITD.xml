@@ -86,6 +86,7 @@
 			<exclude name="VarAccessInfo.jrag"/>
 			<exclude name="MethodAccessInfo.jrag"/>
 			<exclude name="TypeAccessInfo.jrag"/>
+			<exclude name="XML/**/*"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

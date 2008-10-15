@@ -91,7 +91,7 @@ aspect Uses {
 	}
 
 	// bind all uses of a type to its declaration
-	coll Collection TypeDecl.uses() [new ArrayList()] with add;
+	coll Collection TypeDecl.uses() [new ArrayList()] with add root Program;
 	TypeAccess contributes
 	this to TypeDecl.uses() for (TypeDecl)decl().sourceTypeDecl();
 	
