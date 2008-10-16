@@ -22,8 +22,10 @@ aspect Undo {
 	}*/
 	
 	protected void ASTNode.ensureFromSource() throws RefactoringException {
-		if(!compilationUnit().fromSource())
-			throw new RefactoringException("cannot change library class");
+		CompilationUnit cu = compilationUnit();
+		if(!cu.fromSource())
+			throw new RefactoringException("cannot change binary "+
+					"compilation unit "+cu.pathName());
 	}
 	
 	refine Names public void VariableDeclaration.changeID(String id) throws RefactoringException {
