@@ -1,7 +1,5 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
-import java.util.Stack;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,12 +13,13 @@ import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
 import org.jastadd.plugin.model.JastAddModel;
 
+import AST.MethodDecl;
+import AST.TypeDecl;
+import AST.Variable;
+
 public class RenameRefactoring extends Refactoring {
 
-	private IEditorPart editorPart;
-	private IFile editorFile;
 	private JastAddModel model;
-	private ISelection selection;
 	private IJastAddNode selectedNode;
 	private String name;
 	private RefactoringStatus status;
@@ -30,11 +29,7 @@ public class RenameRefactoring extends Refactoring {
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
 		this.model = model;
-		this.editorPart = editorPart; {
-		this.editorFile = editorFile;
-		this.selection = selection;
-			this.selectedNode = selectedNode;
-		}
+		this.selectedNode = selectedNode;
 	}
 
 	public String getName() {
@@ -44,6 +39,12 @@ public class RenameRefactoring extends Refactoring {
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
+		if(selectedNode instanceof TypeDecl
+				|| selectedNode instanceof MethodDecl
+				|| selectedNode instanceof Variable)
+			/*OK*/;
+		else
+			status.addFatalError("Only types, methods, and variables can be renamed.");
 		return status;
 	}
 

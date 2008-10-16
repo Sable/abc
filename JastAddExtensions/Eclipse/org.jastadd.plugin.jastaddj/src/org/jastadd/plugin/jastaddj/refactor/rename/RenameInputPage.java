@@ -1,40 +1,110 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
+import org.eclipse.jdt.internal.ui.dialogs.TextFieldNavigationHandler;
+import org.eclipse.jdt.internal.ui.util.RowLayouter;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 
 public class RenameInputPage extends UserInputWizardPage {
+	private String initialSuggestion;
+	private Text text;
+	
 	public RenameInputPage(String name) {
 		super(name);
+		initialSuggestion = "newName";
 	}
-
+	
+	// much of this code closely mirrors code from the JDT to preserve look and feel
 	public void createControl(Composite parent) {
-		Composite result = new Composite(parent, SWT.NONE);
-		setControl(result);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		result.setLayout(layout);
+		Composite ctrl= new Composite(parent, SWT.NONE);
+		setControl(ctrl);
+		initializeDialogUnits(ctrl);
+		ctrl.setLayout(new GridLayout());
+		Composite composite= new Composite(ctrl, SWT.NONE);
+		composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));	
+		
+		GridLayout layout= new GridLayout();
+		layout.numColumns= 2;
+		layout.marginHeight= 0;
+		layout.marginWidth= 0;
 
-		Label label = new Label(result, SWT.NONE);
-		label.setText("Name:");
-		final Text name = new Text(result, SWT.SINGLE);
-		name.addModifyListener(new ModifyListener() {
+		composite.setLayout(layout);
+		RowLayouter layouter= new RowLayouter(2);
+		
+		Label label= new Label(composite, SWT.NONE);
+		label.setText("New name:");
+		
+		Text text= createTextInputField(composite);
+		text.selectAll();
+		GridData gd= new GridData(GridData.FILL_HORIZONTAL);
+		gd.widthHint= convertWidthInCharsToPixels(25);
+		text.setLayoutData(gd);
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				((RenameRefactoring)getRefactoring()).setName(name.getText());
-			}
-			
-		});
+		layouter.perform(label, text, 1);
+
+		Label separator= new Label(composite, SWT.NONE);
+		GridData gridData= new GridData(SWT.FILL, SWT.FILL, false, false);
+		gridData.heightHint= 2;
+		separator.setLayoutData(gridData);
+		
+		
+		int indent= convertWidthInCharsToPixels(2);
+		
+		Dialog.applyDialogFont(ctrl);
 	}
+	
+	protected Text createTextInputField(Composite parent) {
+		return createTextInputField(parent, SWT.BORDER);
+	}
+	
+	protected Text createTextInputField(Composite parent, int style) {
+		text= new Text(parent, style);
+		text.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				textModified(getText());
+			}
+		});
+		text.setText(initialSuggestion);
+		TextFieldNavigationHandler.install(text);
+		return text;
+	}
+	
+	protected String getText() {
+		if (text == null)
+			return null;
+		return text.getText();	
+	}
+	
+	protected void textModified(String text) {	
+		if("".equals(text)) {
+			setPageComplete(false);
+			setErrorMessage(null);
+			restoreMessage();
+			return;
+		}
+		if(initialSuggestion.equals(text)) {
+			setPageComplete(false);
+			setErrorMessage(null);
+			restoreMessage();
+			return;
+		}
+
+		((RenameRefactoring)getRefactoring()).setName(text);
+		setPageComplete(new RefactoringStatus());
+	}
+
+	private void restoreMessage() {
+		setMessage(null);
+	}	
+	
 }
