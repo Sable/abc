@@ -14,6 +14,7 @@ import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.model.JastAddModel;
 
+import AST.ASTChange;
 import AST.ChangeAccumulator;
 import AST.MethodDecl;
 import AST.RefactoringException;
@@ -54,7 +55,7 @@ public class PushDownMethodRefactoring extends Refactoring {
 		MethodDecl m = (MethodDecl)selectedNode;
 		try {
 			m.pushDown();
-			Stack ch = m.programRoot().cloneUndoStack();
+			Stack<ASTChange> ch = m.programRoot().cloneUndoStack();
 			m.programRoot().undo();
 			ChangeAccumulator accu = new ChangeAccumulator("PushDownMethod");
 			accu.addAllEdits(model, ch.iterator());

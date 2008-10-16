@@ -4,6 +4,9 @@ import org.eclipse.ltk.core.refactoring.*;
 import org.eclipse.core.resources.IFile;
 import org.jastadd.plugin.model.JastAddModel;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.ISourceModifier;
+import org.eclipse.text.edits.MoveSourceEdit;
+import org.eclipse.text.edits.MoveTargetEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.core.resources.IFile;
@@ -29,17 +32,17 @@ aspect CreateTextEdit {
 	class ChangeAccumulator {
 		private String name;
 		private CompositeChange changes;
-		private Map/*<IFile, TextFileChange>*/ changemap;
+		private Map<IFile, TextFileChange> changemap;
 		
 		public ChangeAccumulator(String name) {
 			this.name = name;
 			changes = new CompositeChange(name);
-			changemap = new HashMap();
+			changemap = new HashMap<IFile, TextFileChange>();
 		}
 
-		public void addEdit(IFile file, int offset, int length, String contents) {
+		// retrieve the text file change object for file
+		private TextFileChange changeForFile(IFile file) {
 			TextFileChange tfc;
-			// first, determine which TextFileChange the new change should belong to
 			if(!changemap.containsKey(file)) {
 				// create a new one
 				tfc = new TextFileChange(name, file);
@@ -48,28 +51,51 @@ aspect CreateTextEdit {
 				changemap.put(file, tfc);
 			}
 			else {
-				tfc = (TextFileChange)changemap.get(file);
+				tfc = changemap.get(file);
 			}
-			TextEdit new_edit = new ReplaceEdit(offset, length, contents);
+			return tfc;
+		}
+		
+		public void addEdit(IFile file, TextEdit te) {
+			TextFileChange tfc = changeForFile(file);
 			/* when inserting the new edit into tfc, we must be careful to avoid
 			 * overlapping edits; our solution here is very simple: walk through
 			 * all changes already in tfc, if one of them covers the new change
 			 * we don't need to add it, if some of them are covered by the new
-			 * change, remove them */
+			 * change, remove them 
+			 * 
+			 * a subtlety arises with replace edits nested inside move source edits;
+			 * we want those to be allowed, but they have to be handled specially */
 			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
 			java.util.Set covered = new java.util.HashSet();
 			for(int i=0; i<mte.getChildren().length; ++i) {
-				TextEdit te = mte.getChildren()[i];
-				if(te.covers(new_edit))
+				TextEdit te2 = mte.getChildren()[i];
+				if(te2.covers(te)) {
+					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
+						MoveSourceEdit cse = (MoveSourceEdit)te2;
+						ReplaceEdit re = (ReplaceEdit)te;
+						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+					}
 					return;
-				else if(new_edit.covers(te))
-					covered.add(te);
+				} else if(te.covers(te2))
+					covered.add(te2);
 			}
-			for(Iterator iter=covered.iterator();iter.hasNext();)
-				mte.removeChild((TextEdit)iter.next());
-			tfc.addEdit(new_edit);
+			for(Iterator iter=covered.iterator();iter.hasNext();) {
+				TextEdit te2 = (TextEdit)iter.next();
+				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
+					MoveSourceEdit cse = (MoveSourceEdit)te;
+					ReplaceEdit re = (ReplaceEdit)te2;
+					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+				}
+				mte.removeChild(te2);
+			}
+			tfc.addEdit(te);
 		}
-		
+
+		public void addEdit(IFile file, int offset, int length, String contents) {
+			addEdit(file, new ReplaceEdit(offset, length, contents));
+		}
+
 		// creates the TextChanges corresponding to the ASTChanges in some iterator
 		// and adds them to the accumulator
 		public void addAllEdits(JastAddModel model, Iterator/*<ASTChange>*/ iter) {
@@ -236,6 +262,59 @@ aspect CreateTextEdit {
 		protected IResource getModifiedResource() {	
 			return getResource();
 		}
+	}
+	
+	class MoveMethodSourceModifier implements ISourceModifier {
+		private final MoveSourceEdit parent;
+		private final ArrayList<ReplaceEdit> edits;
+		
+		public MoveMethodSourceModifier(MoveSourceEdit parent) {
+			this.parent = parent;
+			this.edits = new ArrayList<ReplaceEdit>();
+		}
+		
+		private MoveMethodSourceModifier(MoveSourceEdit parent, ArrayList<ReplaceEdit> edits) {
+			this.parent = parent;
+			this.edits = edits;
+		}
+
+		public ISourceModifier copy() {
+			ArrayList<ReplaceEdit> newlist = new ArrayList<ReplaceEdit>();
+			for(ReplaceEdit re : edits)
+				newlist.add((ReplaceEdit)re.copy());
+			return new MoveMethodSourceModifier(parent, newlist);
+		}
+
+		public ReplaceEdit[] getModifications(String arg0) {
+			return edits.toArray(new ReplaceEdit[]{});
+		}
+		
+		public void addReplaceEdit(ReplaceEdit re) {
+			ReplaceEdit nre = new ReplaceEdit(re.getOffset()-parent.getOffset(), re.getLength(), re.getText());
+			edits.add(nre);
+		}
+		
+	}
+	
+	public void MoveMethod.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+		IFile origfile = model.getFile(origin);
+		IFile destfile = model.getFile(destination);
+		int origoffset = method.getBeginOffset();
+		int origlength = method.getEndOffset() - origoffset + 1;
+		int destoffset = destination.getEndOffset() - 1;
+		for(int i=0;i<destination.getNumBodyDecl();++i) {
+			BodyDecl bd = destination.getBodyDecl(i);
+			if(bd.getEndOffset() > 0) {
+				destoffset = bd.getBeginOffset() - 1;
+				break;
+			}
+		}
+		MoveSourceEdit cse = new MoveSourceEdit(origoffset, origlength);
+		MoveTargetEdit cte = new MoveTargetEdit(destoffset, cse);
+		cse.setTargetEdit(cte);
+		cse.setSourceModifier(new MoveMethodSourceModifier(cse));
+		accu.addEdit(origfile, cse);
+		accu.addEdit(destfile, cte);
 	}
 
 }
