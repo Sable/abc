@@ -1,19 +1,17 @@
 package org.jastadd.plugin.jastaddj.editor;
 
-import java.io.IOException;
 import java.util.ResourceBundle;
 
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -110,6 +108,10 @@ public class JastAddJEditor extends JastAddEditor {
 		addContextMenuItem(refactorMenu, "Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
 				new RenameRefactoringHandler());
+		
+		addContextMenuItem(refactorMenu, "Push &Down Method",
+				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
+				new PushDownMethodHandler());
 
 	}
 

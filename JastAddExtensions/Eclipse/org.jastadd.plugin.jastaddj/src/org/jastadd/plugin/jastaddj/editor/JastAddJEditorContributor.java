@@ -61,6 +61,10 @@ public class JastAddJEditorContributor extends JastAddEditorContributor {
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
 				new RenameRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
+				"Push Down Method", "JastAddJ Push Down Method", "Shift+Alt+D",
+				new RenameRefactoringHandler());
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
