@@ -84,6 +84,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
 			<include name="**/*.jrag"/>
+			<exclude name="XML/**/*"/>
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
