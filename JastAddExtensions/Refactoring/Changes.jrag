@@ -9,15 +9,6 @@ class ASTChange {
 	public void undo() { throw new UnsupportedOperationException("abstract method"); }
 }
 
-/*
-abstract class ASTChange {
-	
-	public abstract String prettyprint();
-    public abstract void undo();
-
-}
-*/
-
 class InsertStmt extends ASTChange {
 	
 	private Block block;
@@ -63,6 +54,27 @@ class MakeMethod extends ASTChange {
         return "add method "+method.dumpTree()+" to type "+td.getID();
     }
 
+}
+
+class InsertMethod extends ASTChange {
+    
+    private TypeDecl td;
+    private MethodDecl method;
+    
+    public void undo() {
+        td.removeBodyDecl(method);
+    }
+    
+    public String prettyprint() {
+        return "add new method "+method.dumpTree()+" to type "+td.getID();
+    }
+
+}
+
+// constructor needs to be refined later, hence made an ITD
+public InsertMethod.InsertMethod(TypeDecl td, MethodDecl method) {
+    this.td = td;
+    this.method = method;
 }
 
 class MoveStmt extends ASTChange {
@@ -111,10 +123,15 @@ class MoveMethod extends ASTChange {
 class ChangeFieldModifiers extends ASTChange {
     private FieldDeclaration field;
     private Modifiers old_modifiers;
+    private Modifiers new_modifiers;
     
     public ChangeFieldModifiers(FieldDeclaration field) {
         this.field = field;
         this.old_modifiers = (Modifiers)field.getModifiers().fullCopy();
+    }
+    
+    public void setNewModifiers(Modifiers new_modifiers) {
+    	this.new_modifiers = (Modifiers)new_modifiers.fullCopy();
     }
 
     public void undo() {
@@ -129,6 +146,7 @@ class ChangeFieldModifiers extends ASTChange {
 class ChangeMethodModifiers extends ASTChange {
 	private MethodDecl method;
 	private Modifiers old_modifiers;
+    private Modifiers new_modifiers;
 	
 	public ChangeMethodModifiers(MethodDecl method) {
 		this.method = method;
@@ -139,6 +157,10 @@ class ChangeMethodModifiers extends ASTChange {
 		return "change modifiers of method "+method.dumpTree();
 	}
 	
+    public void setNewModifiers(Modifiers new_modifiers) {
+    	this.new_modifiers = (Modifiers)new_modifiers.fullCopy();
+    }
+    
 	public void undo() {
 		method.setModifiers(old_modifiers);
 	}
@@ -232,12 +254,6 @@ class ReplaceNode extends ASTChange {
     private ASTNode before;
     private ASTNode after;
     
-    public ReplaceNode(ASTNode before, ASTNode after) {
-        this.index = before.getParent().getIndexOfChild(before);
-        this.before = before;
-        this.after = after;
-    }
-
     public String prettyprint() {
         FileRange pos = new FileRange(before.compilationUnit().relativeName(),
         							  before.getStart(), before.getEnd());
@@ -255,6 +271,12 @@ class ReplaceNode extends ASTChange {
       return after;
     }
 
+}
+
+public ReplaceNode.ReplaceNode(ASTNode before, ASTNode after) {
+    this.index = after.getParent().getIndexOfChild(after);
+    this.before = before;
+    this.after = after;
 }
 
 }

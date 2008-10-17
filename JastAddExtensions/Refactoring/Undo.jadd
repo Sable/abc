@@ -72,6 +72,12 @@ aspect Undo {
 		programRoot().pushUndo(new MakeMethod(this, md, host, index));
 	}
 	
+	refine Encapsulate void TypeDecl.insertMethod(MethodDecl md) throws RefactoringException {
+		ensureFromSource();
+		Encapsulate.TypeDecl.insertMethod(md);
+		programRoot().pushUndo(new InsertMethod(this, md));
+	}
+	
 	refine ASTUtil void Block.insertStmt(int idx, Stmt stmt) throws RefactoringException {
 		ensureFromSource();
 		programRoot().pushUndo(new InsertStmt(this, idx, stmt));
@@ -94,14 +100,16 @@ aspect Undo {
 	//       of the other modification operations above
 	refine ASTUtil void ASTNode.replaceWith(ASTNode newnode) throws RefactoringException {
 		ensureFromSource();
-		programRoot().pushUndo(new ReplaceNode(this, newnode));
 		ASTUtil.ASTNode.replaceWith(newnode);
+		programRoot().pushUndo(new ReplaceNode(this, newnode));
 	}
 	
 	refine ASTUtil void FieldDeclaration.makePrivate() throws RefactoringException {
 		ensureFromSource();
-		programRoot().pushUndo(new ChangeFieldModifiers(this));
+		ChangeFieldModifiers ch = new ChangeFieldModifiers(this);
+		programRoot().pushUndo(ch);
 		ASTUtil.FieldDeclaration.makePrivate();
+		ch.setNewModifiers(this.getModifiers());
 	}
 	
 	refine PushDownMethod void MethodDecl.makePublicAbstract() throws RefactoringException {

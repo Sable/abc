@@ -209,9 +209,13 @@ aspect Encapsulate {
 			MethodDecl md = (MethodDecl)methods.get(classname);
 			if(md == null)
 				throw new RefactoringException("no accessor for "+classname);
-			field.hostType().addMethod(md, false, false, false);
+			field.hostType().insertMethod(md);
 			return md;
 		}
+	}
+	
+	private void TypeDecl.insertMethod(MethodDecl md) throws RefactoringException {
+		addMethod(md, false, false, false);
 	}
 
 }
