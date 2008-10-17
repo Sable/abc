@@ -7,9 +7,12 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.jastadd.plugin.editor.JastAddEditorContributor;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
+import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -52,11 +55,7 @@ public class JastAddJEditorContributor extends JastAddEditorContributor {
 				"Quick Outline", "JastAddJ Quick Outline", "Ctrl+O",
 				new QuickContentOutlineHandler());
 		
-		/*
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
-				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
-				new InsertCrapRefactoringHandler());
-		*/
+		// NEW REFACTORING HOOK
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
@@ -64,7 +63,15 @@ public class JastAddJEditorContributor extends JastAddEditorContributor {
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				"Push Down Method", "JastAddJ Push Down Method", "Shift+Alt+D",
-				new RenameRefactoringHandler());
+				new PushDownMethodHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
+				"Encapsulate Field", "JastAddJ Encapsulate Field", null,
+				new EncapsulateFieldHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractClass",
+				"Extract Class", "JastAddJ Extract Class", null,
+				new ExtractClassRefactoringHandler());
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
@@ -114,14 +121,8 @@ public class JastAddJEditorContributor extends JastAddEditorContributor {
 
 	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
 			ITopMenuActionBuilder actionBuilder) {
-		/*
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.InsertCrapTopMenuItem",
-				"Insert &Crap",
-				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
-				new InsertCrapRefactoringHandler());
-		*/
-
+		// NEW REFACTORING HOOK (opt)
+		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
 				"Re&name",

@@ -119,10 +119,16 @@ aspect CreateTextEdit {
 		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
 	}
 	
+	// we need to store a copy of the new node's pretty printed representation
+	private String ReplaceNode.afterText;
+	refine Changes ReplaceNode.ReplaceNode(ASTNode before, ASTNode after) {
+		Changes.ReplaceNode.ReplaceNode(before, after);
+		this.afterText = after.toString();
+	}
 	public void ReplaceNode.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
 		int offset = before.getBeginOffset();
 		int length = before.getEndOffset() - offset + 1;
-		accu.addEdit(model.getFile(after), offset, length, after.toString());
+		accu.addEdit(model.getFile(after), offset, length, afterText);
 	}
 
 	public void Rename.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
@@ -301,14 +307,7 @@ aspect CreateTextEdit {
 		IFile destfile = model.getFile(destination);
 		int origoffset = method.getBeginOffset();
 		int origlength = method.getEndOffset() - origoffset + 1;
-		int destoffset = destination.getEndOffset() - 1;
-		for(int i=0;i<destination.getNumBodyDecl();++i) {
-			BodyDecl bd = destination.getBodyDecl(i);
-			if(bd.getEndOffset() > 0) {
-				destoffset = bd.getBeginOffset() - 1;
-				break;
-			}
-		}
+		int destoffset = destination.possibleInsertOffset();
 		MoveSourceEdit cse = new MoveSourceEdit(origoffset, origlength);
 		MoveTargetEdit cte = new MoveTargetEdit(destoffset, cse);
 		cse.setTargetEdit(cte);
@@ -317,4 +316,35 @@ aspect CreateTextEdit {
 		accu.addEdit(destfile, cte);
 	}
 
+	public void ChangeFieldModifiers.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+    	IFile file = model.getFile(field);
+    	int offset = old_modifiers.getBeginOffset();
+    	if(offset == -1)
+    		offset = field.getBeginOffset();
+    	assert(offset >= 0);
+    	int length = old_modifiers.getEndOffset() == -1 ? 0 : old_modifiers.getEndOffset() - offset + 1;
+    	accu.addEdit(file, offset, length, new_modifiers.toString()+" ");
+	}
+	
+	// we need to store a copy of the method's pretty printed representation
+	private String InsertMethod.methodText;
+	refine Changes InsertMethod.InsertMethod(TypeDecl td, MethodDecl method) {
+		Changes.InsertMethod.InsertMethod(td, method);
+		this.methodText = method.toString();
+	}
+	public void InsertMethod.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+		IFile file = model.getFile(td);
+		int destoffset = td.possibleInsertOffset();
+		accu.addEdit(file, destoffset, 0, methodText);
+	}
+	
+	// try to guess a good place to insert a new member
+	public int TypeDecl.possibleInsertOffset() {
+		for(int i=0;i<getNumBodyDecl();++i) {
+			BodyDecl bd = getBodyDecl(i);
+			if(bd.getEndOffset() > 0)
+				return bd.getBeginOffset()-1; 
+		}
+		return getEndOffset() == -1 ? -1 : getEndOffset() - 1;
+	}
 }

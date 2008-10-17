@@ -8,6 +8,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.jastadd.plugin.editor.JastAddEditor;
+import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
@@ -99,11 +101,7 @@ public class JastAddJEditor extends JastAddEditor {
 
 	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu,
 			JastAddEditor editor) {
-		/*
-		addContextMenuItem(refactorMenu, "Insert &Crap",
-				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
-				new InsertCrapRefactoringHandler());
-		*/
+		// NEW REFACTORING HOOK
 		
 		addContextMenuItem(refactorMenu, "Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
@@ -113,6 +111,13 @@ public class JastAddJEditor extends JastAddEditor {
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				new PushDownMethodHandler());
 
+		addContextMenuItem(refactorMenu, "Encapsulate Field",
+				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
+				new EncapsulateFieldHandler());
+
+		addContextMenuItem(refactorMenu, "Extract Class",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
+				new ExtractClassRefactoringHandler());
 	}
 
 }
