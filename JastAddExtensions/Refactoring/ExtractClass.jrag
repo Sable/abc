@@ -32,7 +32,7 @@ aspect ExtractClass {
 		Modifiers modifiers = new Modifiers();
 		modifiers.addModifier(new Modifier("static"));
 		ClassDecl cd = new ClassDecl(modifiers, className, new Opt(), new List(), new List());
-		cd.addConstructor(new ConstructorDecl(new Modifiers(), this.name(), new List(), new List(), new Opt(), new Block()));
+		cd.addConstructor(new ConstructorDecl(new Modifiers(), className, new List(), new List(), new Opt(), new Block()));
 		this.addMemberClass(cd);
 		programRoot().flushCaches();
 		table.adjust();
@@ -79,8 +79,12 @@ aspect ExtractClass {
 			va.replaceWith(q.qualifiesAccess(va.fullCopy()));
 		}
 		// remove old field
-		toMove.getParent().removeChild(toMove.getParent().getIndexOfChild(toMove));
+		toMove.hostType().removeOldField(toMove);
 		return newField;
+	}
+	
+	public void TypeDecl.removeOldField(BodyDecl bd) {
+		removeBodyDecl(bd);
 	}
 	
 	public TypeAccess FieldDeclaration.getLockedTypeAccess(AdjustmentTable table) {

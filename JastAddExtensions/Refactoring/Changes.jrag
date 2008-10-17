@@ -56,25 +56,52 @@ class MakeMethod extends ASTChange {
 
 }
 
-class InsertMethod extends ASTChange {
-    
+class InsertBodyDecl extends ASTChange {
     private TypeDecl td;
-    private MethodDecl method;
+    private BodyDecl bd;
     
     public void undo() {
-        td.removeBodyDecl(method);
+        td.removeBodyDecl(bd);
     }
     
     public String prettyprint() {
-        return "add new method "+method.dumpTree()+" to type "+td.getID();
+        return "add new body declaration "+bd.dumpTree()+" to type "+td.getID();
     }
-
+    
+    public BodyDecl getBodyDecl() {
+    	return bd;
+    }
 }
 
 // constructor needs to be refined later, hence made an ITD
-public InsertMethod.InsertMethod(TypeDecl td, MethodDecl method) {
+public InsertBodyDecl.InsertBodyDecl(TypeDecl td, BodyDecl bd) {
     this.td = td;
-    this.method = method;
+    this.bd = bd;
+}
+
+class RemoveBodyDecl extends ASTChange {
+    private TypeDecl td;
+    private BodyDecl bd;
+    private int index;
+    
+    public RemoveBodyDecl(TypeDecl td, BodyDecl bd) {
+    	this.td = td;
+    	this.bd = bd;
+    	this.index = td.getBodyDeclList().getIndexOfChild(bd);
+    	assert(this.index != -1);
+    }
+    
+    public void undo() {
+        td.getBodyDeclList().insertChild(bd, index);
+    }
+    
+    public String prettyprint() {
+        return "remove body declaration "+bd.dumpTree()+" from type "+td.getID();
+    }
+    
+    public BodyDecl getBodyDecl() {
+    	return bd;
+    }
 }
 
 class MoveStmt extends ASTChange {
@@ -140,6 +167,10 @@ class ChangeFieldModifiers extends ASTChange {
 
     public String prettyprint() {
         return "change modifiers of field "+field;
+    }
+    
+    public FieldDeclaration getFieldDeclaration() {
+    	return field;
     }
 }
 

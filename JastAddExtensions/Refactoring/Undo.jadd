@@ -75,7 +75,7 @@ aspect Undo {
 	refine Encapsulate void TypeDecl.insertMethod(MethodDecl md) throws RefactoringException {
 		ensureFromSource();
 		Encapsulate.TypeDecl.insertMethod(md);
-		programRoot().pushUndo(new InsertMethod(this, md));
+		programRoot().pushUndo(new InsertBodyDecl(this, md));
 	}
 	
 	refine ASTUtil void Block.insertStmt(int idx, Stmt stmt) throws RefactoringException {
@@ -124,5 +124,27 @@ aspect Undo {
 		programRoot().pushUndo(new MoveMethod(this, target));
 		PushDownMethod.MethodDecl.moveTo(target);
 	}
+	
+	refine ExtractClass public ClassDecl ClassDecl.createNewStaticMemberClassWithDefaultConstructor(String className) throws RefactoringException {
+		ensureFromSource();
+		ClassDecl cd =
+			ExtractClass.ClassDecl.createNewStaticMemberClassWithDefaultConstructor(className);
+		// this relies on the fact that member classes are always inserted as the last body decl
+		programRoot().pushUndo(new InsertBodyDecl(this, 
+				getBodyDecl(getNumBodyDecl()-1)));
+		return cd;
+	}
+	
+	refine ExtractClass public FieldDeclaration ClassDecl.createNewPublicMemberField(Access typeAccess, String fieldName) throws RefactoringException {
+		ensureFromSource();
+		FieldDeclaration fd =
+			ExtractClass.ClassDecl.createNewPublicMemberField(typeAccess, fieldName);
+		programRoot().pushUndo(new InsertBodyDecl(this, fd));
+		return fd;
+	}
 
+	refine ExtractClass public void TypeDecl.removeOldField(BodyDecl bd) {
+		programRoot().pushUndo(new RemoveBodyDecl(this, bd));
+		ExtractClass.TypeDecl.removeOldField(bd);
+	}
 }
