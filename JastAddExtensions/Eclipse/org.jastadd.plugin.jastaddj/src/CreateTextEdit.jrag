@@ -326,16 +326,26 @@ aspect CreateTextEdit {
     	accu.addEdit(file, offset, length, new_modifiers.toString()+" ");
 	}
 	
-	// we need to store a copy of the method's pretty printed representation
-	private String InsertMethod.methodText;
-	refine Changes InsertMethod.InsertMethod(TypeDecl td, MethodDecl method) {
-		Changes.InsertMethod.InsertMethod(td, method);
-		this.methodText = method.toString();
+	// we need to store a copy of the body decl's pretty printed representation
+	private String InsertBodyDecl.bdText;
+	refine Changes InsertBodyDecl.InsertBodyDecl(TypeDecl td, BodyDecl bd) {
+		Changes.InsertBodyDecl.InsertBodyDecl(td, bd);
+		this.bdText = bd.toString();
 	}
-	public void InsertMethod.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+	public void InsertBodyDecl.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
 		IFile file = model.getFile(td);
 		int destoffset = td.possibleInsertOffset();
-		accu.addEdit(file, destoffset, 0, methodText);
+		accu.addEdit(file, destoffset, 0, bdText);
+	}
+	public void InsertBodyDecl.updateText() {
+		this.bdText = bd.toString();
+	}
+	
+	public void RemoveBodyDecl.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+    	IFile file = model.getFile(td);
+    	int offset = bd.getBeginOffset();
+    	int length = bd.getEndOffset() - offset + 1;
+    	accu.addEdit(file, offset, length, "");
 	}
 	
 	// try to guess a good place to insert a new member
