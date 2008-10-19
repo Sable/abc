@@ -87,6 +87,7 @@
 			<exclude name="TypeAccessInfo.jrag"/>
 			<exclude name="VarAccessInfo.jrag"/>
 			<exclude name="MethodAccessInfo.jrag"/>
+			<exclude name="XML/**/*"/>
 		</fileset>
 		<fileset dir="../../org.jastadd.plugin/src">
 			<include name="**/*.jrag"/>
