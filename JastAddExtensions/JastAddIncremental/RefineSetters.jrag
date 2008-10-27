@@ -459,7 +459,7 @@ aspect RefineSetters {
 	   );
   }
 
-  refine AttributesCodegeneration private void AttributeDecl.storeNTAValue(List list) {
+  refine AttributesCodegeneration void AttributeDecl.storeNTAValue(List list) {
     // this.setNNN(computedValueName())
     list.add(
       new ExprStmt(

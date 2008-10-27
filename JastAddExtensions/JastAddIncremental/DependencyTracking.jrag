@@ -112,8 +112,6 @@ aspect DependencyTracking {
       instead of the wrapper method.
    */
   refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
-    if(isNTA() || declaredNTA())
-      return refined(typeDecl, aspectMethod, lineNum, isLazy);
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy) {
@@ -181,6 +179,7 @@ aspect DependencyTracking {
 	  )
 	);
       }
+
       conditionalOnRewrite(statements, registerDependency);
       // and finally a return statement for res
       statements.add(
@@ -231,7 +230,7 @@ aspect DependencyTracking {
         )
     );
   
-    // NTAs need to be put into the tree
+    // NTAs need to be put into the tree 
     if(declaredNTA()) {
       statements.add(
         new ExprStmt(
@@ -243,6 +242,7 @@ aspect DependencyTracking {
           )
         )
       );
+      makeNTAFinal(statements, new VarAccess("res"));
     }
     else if(isNTA()) {
       statements.add(
@@ -259,6 +259,8 @@ aspect DependencyTracking {
           )
         )
       );
+      if(!bindsToTokenChild())
+	makeNTAFinal(statements, new VarAccess("res"));
     }
 
     // generate caching epilogue
@@ -303,11 +305,6 @@ aspect DependencyTracking {
   /** Generates methods corresponding to an inherited attribute. Basically
       the same as for synthesised attributes. */
   refine AttributesCodegeneration public void InhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
-    if(isNTA() || declaredNTA()) {
-      refined(typeDecl, lineNum);
-      return;
-    }
-
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy()) {
@@ -397,6 +394,8 @@ aspect DependencyTracking {
   }
 
   void AttributeDecl.recordRewriteState(List list) {
+    if(isNTA() || declaredNTA())
+      return;
     // int num$ = this.state().boundariesCrossed;
     list.add(
       new VariableDeclaration(
@@ -416,15 +415,19 @@ aspect DependencyTracking {
   }
 
   void AttributeDecl.conditionalOnRewrite(List list, Stmt thenBranch) {
-    // localFinal$ && num$ == this.state().boundariesCrossed
-    Expr cond = new AndLogicalExpr(
-      new VarAccess("localFinal$"),
-      new EQExpr(
-        new VarAccess("num$"),
-        new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed")))
-      )
-    );
-    list.add(new IfStmt(cond, thenBranch));
+    if(isNTA() || declaredNTA()) {
+      list.add(thenBranch);
+    } else {
+      // localFinal$ && num$ == this.state().boundariesCrossed
+      Expr cond = new AndLogicalExpr(
+	new VarAccess("localFinal$"),
+        new EQExpr(
+          new VarAccess("num$"),
+          new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed")))
+        )
+      );
+      list.add(new IfStmt(cond, thenBranch));
+    }
   }
 
 
@@ -604,8 +607,8 @@ aspect DependencyTracking {
           // for primitive return types:
           //   changed = last_flushed != -1 && value != res
           // for others:
-          //   changed = last_flushed != -1 && (value == null && res != null ||
-          //                                    !value.equals(res))
+          //   changed = last_flushed != -1 && 
+          //     (value == null ? res != null : !value.equals(res))
           AssignExpr.asStmt(
             new VarAccess("changed"),
             new AndLogicalExpr(
@@ -620,17 +623,15 @@ aspect DependencyTracking {
               )
               :
               new ParExpr(
-                new OrLogicalExpr(
-                  new AndLogicalExpr(
-                    new EQExpr(
-                      fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-                      new NullLiteral("null")
-                    ),
-                    new NEExpr(
-                      new VarAccess("res"),
-                      new NullLiteral("null")
-                    )
+  	        new ConditionalExpr(
+                  new EQExpr(
+                    fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                    new NullLiteral("null")
                   ),
+                  new NEExpr(
+                    new VarAccess("res"),
+                    new NullLiteral("null")
+  	          ),
                   new LogNotExpr(
                     fieldComputedValue(typeDecl).createQualifiedBoundAccess().
                     qualifiesAccess(
@@ -640,9 +641,9 @@ aspect DependencyTracking {
                       )
                     )
                   )
-                )
-              )
-            )
+		)
+	      )
+	    )
           )
         ).add(
           // value = res;
