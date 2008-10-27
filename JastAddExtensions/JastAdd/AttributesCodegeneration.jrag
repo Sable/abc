@@ -400,7 +400,7 @@ aspect AttributesCodegeneration {
 	   );
   }
 
-  private void AttributeDecl.storeNTAValue(List list) {
+  void AttributeDecl.storeNTAValue(List list) {
     // this.setNNN(computedValueName())
     list.add(
       new ExprStmt(
@@ -416,7 +416,7 @@ aspect AttributesCodegeneration {
     );
   }
 
-  private void AttributeDecl.makeNTAFinal(List list, Access f) {
+  void AttributeDecl.makeNTAFinal(List list, Access f) {
     list.add(new ExprStmt(
       f.qualifiesAccess(
         new MethodAccess("is$Final", new List().add(new BooleanLiteral("true")))
@@ -424,7 +424,7 @@ aspect AttributesCodegeneration {
     ));
   }
 
-  protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
+  void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
     if(declaredNTA()) {
       if(getNumParameter() == 0) {
