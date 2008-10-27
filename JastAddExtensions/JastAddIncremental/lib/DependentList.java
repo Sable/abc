@@ -21,6 +21,7 @@ public class DependentList {
     }
 
     public void propagate() {
+        add(home.getCacheRoot());
 	int sz = deps.size();
 	while(sz-- > 0) {
 	    deps.poll().propagate();

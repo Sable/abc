@@ -13,6 +13,7 @@ aspect Caching {
   public void CompilationUnit.propagate() {
     if(flushing)
       return;
+    System.out.println("Recompiling "+pathName());
     flushing = true;
     invalidate();
     flushCaches();
@@ -21,6 +22,7 @@ aspect Caching {
   public void Program.propagate() {
     if(flushing)
       return;
+    System.out.println("Flushing whole program");
     flushing = true;
     invalidate();
     flushCaches();
@@ -47,7 +49,7 @@ aspect Caching {
 
   public CacheRoot ASTNode.getCacheRoot() {
     ASTNode n = this;
-    while(n != null && !(n instanceof CacheRoot))
+    while(/*n != null &&*/ !(n instanceof CacheRoot))
       n = n.parent;
     return (CacheRoot)n;
   }

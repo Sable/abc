@@ -1,10 +1,10 @@
 package AST;
-public class Opt extends ASTNode implements Cloneable {
+public class Opt<T extends ASTNode> extends ASTNode<T> implements Cloneable {
   public Opt() {
     super();
   }
 
-  public Opt(ASTNode opt) {
+  public Opt(T opt) {
     setChild(opt, 0, false);
   }
 
