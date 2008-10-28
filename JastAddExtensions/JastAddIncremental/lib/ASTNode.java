@@ -59,12 +59,14 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   public boolean is$Final() { return is$Final; }
   public void is$Final(boolean b) { is$Final = b; }
 
-  Map<Integer, DependentList> getChild$dep = new HashMap<Integer, DependentList>();
+  DependentList[] getChild$dep;
   /*@SuppressWarnings("cast")*/ public T getChild(int i) {
-    DependentList dep = getChild$dep.get(i);
+    if(getChild$dep == null)
+      getChild$dep = new DependentList[numChildren];
+    DependentList dep = getChild$dep[i];
     if(dep == null)
       dep = DependentList.emptyDependentList;
-    getChild$dep.put(i, dep.add(state().getCurrentCacheRoot()));
+    getChild$dep[i] = dep.add(state().getCurrentCacheRoot());
     return (T)ASTNode.getChild(this, i);
   }
 
@@ -144,13 +146,26 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       children = c;
     }
     children[i] = node;
-    if(i >= numChildren) numChildren = i+1;
+    if(i >= numChildren) {
+      numChildren = i+1;
+      adjustGetChild$dep();
+    }
     if(node != null) { 
 	node.setParent(this, invalidate); 
 	node.childIndex = i; 
     } else if(invalidate && is$Final()) {
 	invalidate();
-	getChild$dep.get(i).propagate(this);
+	getChild$dep[i].propagate(this);
+    }
+  }
+
+  private void adjustGetChild$dep() {
+    if(getChild$dep == null) {
+      getChild$dep = new DependentList[numChildren];
+    } else if(getChild$dep.length < numChildren) {
+      DependentList[] old_getChild$dep = getChild$dep;
+      getChild$dep = new DependentList[numChildren];
+      System.arraycopy(getChild$dep, 0, getChild$dep, 0, old_getChild$dep.length);
     }
   }
 
@@ -174,6 +189,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       children = c;
     }
     numChildren++;
+    adjustGetChild$dep();
     if(node != null) { 
 	node.setParent(this, true); 
 	node.childIndex = i; 
