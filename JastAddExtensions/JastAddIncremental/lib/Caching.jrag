@@ -1,7 +1,6 @@
-package AST;
+import java.util.Stack;
 
 aspect Caching {
-
   interface CacheRoot {
     void propagate();
     int getLastFlushed();
@@ -9,43 +8,7 @@ aspect Caching {
     void flushCaches();
   }
 
-  boolean CacheRoot.flushing = false;
-  public void CompilationUnit.propagate() {
-    if(flushing)
-      return;
-    //System.out.println("Recompiling "+pathName());
-    flushing = true;
-    invalidate();
-    flushCaches();
-    flushing = false;
-  }
-  public void Program.propagate() {
-    if(flushing)
-      return;
-    //System.out.println("Flushing whole program");
-    flushing = true;
-    invalidate();
-    flushCaches();
-    flushing = false;
-  }
-
-  CompilationUnit implements CacheRoot;
-  private int CompilationUnit.last_flushed = 0;
-  public int CompilationUnit.getLastFlushed() { return last_flushed; }
-  public void CompilationUnit.invalidate() {
-    ++last_flushed;
-  }
-
-  Program implements CacheRoot;
-  private int Program.last_flushed = 0;
-  public int Program.getLastFlushed() { return last_flushed; }
-  public void Program.invalidate() {
-    ++last_flushed;
-  }
-  public void Program.flushCaches() {
-    flushCache();
-    getChildNoTransform(0).flushCache();
-  }
+  public boolean CacheRoot.flushing = false;
 
   public CacheRoot ASTNode.getCacheRoot() {
     ASTNode n = this;
@@ -54,5 +17,21 @@ aspect Caching {
     return (CacheRoot)n;
   }
 
-  
+  private Stack<Caching.CacheRoot> ASTNode$State.cachestack = new Stack<Caching.CacheRoot>();
+  private Caching.CacheRoot ASTNode$State.curroot = null;
+
+  public void ASTNode$State.pushCacheRoot(Caching.CacheRoot root) {
+    cachestack.push(curroot=root);
+  }
+
+  public void ASTNode$State.popCacheRoot() {
+    cachestack.pop();
+    curroot = cachestack.isEmpty()? null : cachestack.peek();
+  }
+
+  public Caching.CacheRoot ASTNode$State.getCurrentCacheRoot() {
+    assert(curroot != null);
+    return curroot;
+  }
+
 }
