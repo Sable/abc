@@ -47,17 +47,20 @@ aspect DependencyTracking {
 	  MethodDecl getter = getChildGetter(child.name());
           getter.getBlock().getStmtList().insertChild(
             new ExprStmt(
-	      depfield.createQualifiedBoundAccess().qualifiesAccess(
-	        new MethodAccess(
-		  "add",
-		  new List().add(
-		    accessState().qualifiesAccess(
-		      new MethodAccess(
-		        "getCurrentCacheRoot",
-		        new List()
+	      new AssignSimpleExpr(
+	        depfield.createQualifiedBoundAccess(),
+		depfield.createQualifiedBoundAccess().qualifiesAccess(
+	          new MethodAccess(
+		    "add",
+		    new List().add(
+		      accessState().qualifiesAccess(
+		        new MethodAccess(
+		          "getCurrentCacheRoot",
+		          new List()
+		        )
 		      )
 		    )
-		  )
+                  )
 	        )
 	      )
 	    ),
@@ -145,21 +148,26 @@ aspect DependencyTracking {
       // add dependency tracking
       Stmt registerDependency;
       if(getNumParameter() == 0) {
-        registerDependency = new ExprStmt(
-	  new VarAccess(name()+"$cache").qualifiesAccess(
-	    new MethodAccess(
-	      "add",
-	      new List().add(
-	        accessState().qualifiesAccess(
-	          new MethodAccess(
-		    "getCurrentCacheRoot",
-		    new List()
+	VarAccess cacheVar = new VarAccess(name()+"$cache");
+        registerDependency = 
+	  new ExprStmt(
+	    new AssignSimpleExpr(
+	      cacheVar,
+	      cacheVar.qualifiesAccess(
+	        new MethodAccess(
+	          "add",
+	      	  new List().add(
+	            accessState().qualifiesAccess(
+	              new MethodAccess(
+		        "getCurrentCacheRoot",
+		        new List()
+		      )
+		    )
 		  )
 	        )
 	      )
 	    )
-	  )
-	);
+	  );
       } else {
         registerDependency = new ExprStmt(
 	  new VarAccess(uniqueSignatureName()+"$cache").qualifiesAccess(
@@ -333,21 +341,26 @@ aspect DependencyTracking {
       // add dependency tracking
       Stmt registerDependency;
       if(getNumParameter() == 0) {
-        registerDependency = new ExprStmt(
-	  new VarAccess(name()+"$cache").qualifiesAccess(
-	    new MethodAccess(
-	      "add",
-	      new List().add(
-	        accessState().qualifiesAccess(
-	          new MethodAccess(
-		    "getCurrentCacheRoot",
-		    new List()
-		  )
+        VarAccess cacheVar = new VarAccess(name()+"$cache");
+        registerDependency = 
+	  new ExprStmt(
+	    new AssignSimpleExpr(
+	      cacheVar,
+	      cacheVar.qualifiesAccess(
+	        new MethodAccess(
+	          "add",
+	      	  new List().add(
+	            accessState().qualifiesAccess(
+	              new MethodAccess(
+		        "getCurrentCacheRoot",
+		    	new List()
+                      )
+		    )
+	          )
 	        )
 	      )
 	    )
-	  )
-	);
+	  );
       } else {
         registerDependency = new ExprStmt(
 	  new VarAccess(uniqueSignatureName()+"$cache").qualifiesAccess(
@@ -530,25 +543,31 @@ aspect DependencyTracking {
       // and return it if so
       statements.add(
         new IfStmt(
-          new GEExpr(
-	    f.createQualifiedBoundAccess().qualifiesAccess(
-              new MethodAccess(
-                "last_computed",
-                new List().add(new VarAccess("args"))
-              )
-            ),
-	    new ThisAccess("this").qualifiesAccess(
-              new MethodAccess(
-                "getCacheRoot",
-                new List()
-              )
-            ).qualifiesAccess(
-              new MethodAccess(
-                "getLastFlushed",
-                new List()
+	  new AndLogicalExpr(
+	    new NEExpr(
+	      f.createQualifiedBoundAccess(),
+	      new NullLiteral("null")
+	    ),	    
+            new GEExpr(
+	      f.createQualifiedBoundAccess().qualifiesAccess(
+                new MethodAccess(
+                  "last_computed",
+                  new List().add(new VarAccess("args"))
+                )
+              ),
+	      new ThisAccess("this").qualifiesAccess(
+                new MethodAccess(
+                  "getCacheRoot",
+                  new List()
+                )
+              ).qualifiesAccess(
+                new MethodAccess(
+                  "getLastFlushed",
+                  new List()
+                )
               )
             )
-          ),
+	  ),
 	  new ReturnStmt(
 	    new CastExpr(
 	      returnType.createQualifiedAccess(),
@@ -669,14 +688,14 @@ aspect DependencyTracking {
           )
         ).add(
           // if(changed)
-          //   dep.propagate();
+          //   dep.propagate(this);
           new IfStmt(
             new VarAccess("changed"),
             new ExprStmt(
               f.createQualifiedBoundAccess().qualifiesAccess(
                 new MethodAccess(
                   "propagate",
-                  new List()
+                  new List().add(new ThisAccess("this"))
                 )
               )
             )
@@ -685,14 +704,35 @@ aspect DependencyTracking {
       );
     }
     else {
-      update = new ExprStmt(
-        f.createQualifiedBoundAccess().qualifiesAccess(
-	  new MethodAccess(
-	    "put",
-	    new List().add(
-	      new VarAccess("args")
-	    ).add(
-	      new VarAccess("res")
+      update = new Block(
+        new List().add(
+	  new IfStmt(
+	    new EQExpr(
+	      f.createQualifiedBoundAccess(),
+	      new NullLiteral("null")
+	    ),
+	    AssignExpr.asStmt(
+	      f.createQualifiedBoundAccess(),
+	      new ClassInstanceExpr(
+	        new TypeAccess("AST", "AttributeCache"),
+          	new List(),
+          	new Opt()
+              )
+	    )
+          )
+        ).add(
+	  new ExprStmt(
+            f.createQualifiedBoundAccess().qualifiesAccess(
+	      new MethodAccess(
+	        "put",
+	        new List().add(
+ 	          new ThisAccess("this")
+	        ).add(
+	          new VarAccess("args")
+	        ).add(
+	          new VarAccess("res")
+		)
+	      )
 	    )
 	  )
 	)
@@ -706,10 +746,8 @@ aspect DependencyTracking {
       new Modifiers(new List().add(new Modifier("private"))),
       new TypeAccess("DependentList"),
       fieldName,
-      new ClassInstanceExpr(
-        new TypeAccess("DependentList"),
-        new List().add(new ThisAccess("this")),
-        new Opt()
+      new TypeAccess("DependentList").qualifiesAccess(
+        new VarAccess("emptyDependentList")
       )
     );
     f = addMemberField(f);
@@ -728,10 +766,8 @@ aspect DependencyTracking {
         new Modifiers(new List().add(new Modifier("private"))),
 	new TypeAccess("DependentList"),
 	fieldName,
-	new ClassInstanceExpr(
-	  new TypeAccess("DependentList"),
-	  new List().add(new ThisAccess("this")),
-	  new Opt()
+  	new TypeAccess("DependentList").qualifiesAccess(
+	  new VarAccess("emptyDependentList")
 	)
       );
     }
@@ -739,12 +775,7 @@ aspect DependencyTracking {
       f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
 	new TypeAccess("AST", "AttributeCache"),
-	fieldName,
-        new ClassInstanceExpr(
-	  new TypeAccess("AST", "AttributeCache"),
-          new List().add(new ThisAccess("this")),
-          new Opt()
-        )
+	fieldName
       );
     }
     f = typeDecl.addMemberField(f);
@@ -791,32 +822,39 @@ aspect DependencyTracking {
       TypeDecl argtype = attrDecl.getParameter(0).type();
       if(argtype.isPrimitive())
         argtype = argtype.boxed();
-      clearStmt = new EnhancedForStmt(
-        new VariableDeclaration(
-          new TypeAccess("java.lang", "Object"),
-          "arg"
-        ),
-        f.createQualifiedBoundAccess().qualifiesAccess(
-          new MethodAccess(
-            "getKeys",
-            new List()
-          )
-        ),
-        new ExprStmt(
-	  cacheMethod.createBoundAccess(
-            new List().add(
-              new ThisAccess("this")
-            ).add(
-              new CastExpr(
-                argtype.createQualifiedAccess(),
-                new VarAccess("arg")
+      clearStmt = 
+	new IfStmt(
+   	  new NEExpr(
+	    f.createQualifiedBoundAccess(),
+	    new NullLiteral("null")
+	  ),
+	  new EnhancedForStmt(
+	    new VariableDeclaration(
+              new TypeAccess("java.lang", "Object"),
+              "arg"
+            ),
+            f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess(
+                "getKeys",
+                new List()
               )
-            ).add(
-              new VarAccess("arg")
+            ),
+            new ExprStmt(
+	      cacheMethod.createBoundAccess(
+                new List().add(
+                  new ThisAccess("this")
+                ).add(
+                  new CastExpr(
+                    argtype.createQualifiedAccess(),
+                    new VarAccess("arg")
+                  )
+                ).add(
+                  new VarAccess("arg")
+                )
+              )
             )
           )
-        )
-      );
+        );
     } else {
       List cacheMethodArgs = new List().add(new ThisAccess("this"));
       for(int i=0;i<attrDecl.getNumParameter();++i) {
@@ -841,19 +879,26 @@ aspect DependencyTracking {
         );
       }
       cacheMethodArgs.add(new VarAccess("args"));
-      clearStmt = new EnhancedForStmt(
-        new VariableDeclaration(
-          new TypeAccess("java.lang", "Object"),
-          "args"
-        ),
-        f.createQualifiedBoundAccess().qualifiesAccess(
-          new MethodAccess(
-            "getKeys",
-            new List()
+      clearStmt = 
+	new IfStmt(
+   	  new NEExpr(
+	    f.createQualifiedBoundAccess(),
+	    new NullLiteral("null")
+	  ),
+	  new EnhancedForStmt(
+            new VariableDeclaration(
+              new TypeAccess("java.lang", "Object"),
+              "args"
+            ),
+            f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess(
+                "getKeys",
+                new List()
+              )
+            ),
+            new ExprStmt(cacheMethod.createBoundAccess(cacheMethodArgs))
           )
-        ),
-        new ExprStmt(cacheMethod.createBoundAccess(cacheMethodArgs))
-      );
+        );
     }
     list.add(clearStmt);
   }

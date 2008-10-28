@@ -277,7 +277,7 @@ aspect RefineSetters {
   	          new VarAccess(name()+"$dep").qualifiesAccess(
     	            new MethodAccess(
 	              "propagate",
-	              new List()
+	              new List().add(new ThisAccess("this"))
                     )
 		  )
 	        )
@@ -387,7 +387,7 @@ aspect RefineSetters {
   	          new VarAccess(name()+"$dep").qualifiesAccess(
     	            new MethodAccess(
 	              "propagate",
-	              new List()
+	              new List().add(new ThisAccess("this"))
                     )
 		  )
 	        )

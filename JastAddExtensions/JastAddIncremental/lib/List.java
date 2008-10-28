@@ -30,7 +30,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
       list$touched = false;
     }
     int res = getNumChildNoTransform();
-    getNumChild$dep.add(state().getCurrentCacheRoot());
+    getNumChild$dep = getNumChild$dep.add(state().getCurrentCacheRoot());
     return res;
   }
   private boolean list$touched = true;

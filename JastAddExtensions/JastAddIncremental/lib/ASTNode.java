@@ -63,8 +63,8 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   /*@SuppressWarnings("cast")*/ public T getChild(int i) {
     DependentList dep = getChild$dep.get(i);
     if(dep == null)
-      getChild$dep.put(i, (dep=new DependentList(this)));
-    dep.add(state().getCurrentCacheRoot());
+      dep = DependentList.emptyDependentList;
+    getChild$dep.put(i, dep.add(state().getCurrentCacheRoot()));
     return (T)ASTNode.getChild(this, i);
   }
 
@@ -125,9 +125,9 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     return numChildren;
   }
 
-  DependentList getNumChild$dep = new DependentList(this);
+  DependentList getNumChild$dep = DependentList.emptyDependentList;
   public int getNumChild() {
-    getNumChild$dep.add(state().getCurrentCacheRoot());
+    getNumChild$dep = getNumChild$dep.add(state().getCurrentCacheRoot());
     return numChildren();
   }
   public final int getNumChildNoTransform() {
@@ -150,7 +150,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 	node.childIndex = i; 
     } else if(invalidate && is$Final()) {
 	invalidate();
-	getChild$dep.get(i).propagate();
+	getChild$dep.get(i).propagate(this);
     }
   }
 
@@ -179,7 +179,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 	node.childIndex = i; 
     } else if(is$Final()) {
 	invalidate();
-	getNumChild$dep.propagate();
+	getNumChild$dep.propagate(this);
     }
   }
 
@@ -194,17 +194,17 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       numChildren--;
       if(is$Final()) {
 	invalidate();
-        getNumChild$dep.propagate();
+        getNumChild$dep.propagate(this);
       }
     }
   }
 
-  DependentList getParent$dep = new DependentList(this);
+  DependentList getParent$dep = DependentList.emptyDependentList;
   public ASTNode getParent() {
     if(parent != null && ((ASTNode)parent).is$Final() != is$Final()) {
       state().boundariesCrossed++;
     }
-    getParent$dep.add(state().getCurrentCacheRoot());
+    getParent$dep = getParent$dep.add(state().getCurrentCacheRoot());
     return (ASTNode)parent;
   }
 
@@ -212,7 +212,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     parent = node;
     if(invalidate && node != null && node.is$Final()) {
 	invalidate();
-	getParent$dep.propagate();
+	getParent$dep.propagate(this);
     }
   }
   public void setParent(ASTNode node) {
