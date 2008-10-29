@@ -1,0 +1,19 @@
+aspect CachingTesting {
+  ASTNode implements Caching.CacheRoot;
+
+  public void ASTNode.propagate() {
+    if(flushing)
+      return;
+    flushing = true;
+    invalidate();
+    flushCaches();
+    flushing = false;
+  }
+
+  private int ASTNode.last_flushed = 0;
+  public int ASTNode.getLastFlushed() { return last_flushed; }
+  refine public void ASTNode.invalidate() {
+    ++last_flushed;
+    if(false) refined();
+  }
+}
