@@ -265,10 +265,8 @@ aspect DependencyTracking {
     // generate caching epilogue
     generateEndCache(statements, typeDecl, f);
 
-    // and return statement
-    statements.add(
-      new ReturnStmt(new VarAccess("res"))
-    );
+    if(!declaredFinal() && !declaredNTA())
+      statements.add(new ReturnStmt(new VarAccess("res")));
 
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
 
@@ -542,9 +540,8 @@ aspect DependencyTracking {
     );
 
     generateEndCache(statements, typeDecl, f);
-    statements.add(
-      new ReturnStmt(new VarAccess("res"))
-    );
+    if(!isNTA() && !declaredNTA())
+      statements.add(new ReturnStmt(new VarAccess("res")));
 
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
 
@@ -677,6 +674,10 @@ aspect DependencyTracking {
 
   /** Generates caching epilogue. */
   void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl, FieldDeclaration f) {
+    TypeDecl returnType = type();
+    if(hasPrimitiveReturnType())
+      returnType = returnType.boxed();
+
     statements.add(
       new ExprStmt(
         accessState().qualifiesAccess(new MethodAccess("popCacheRoot", new List()))
@@ -756,20 +757,35 @@ aspect DependencyTracking {
             )
           )
         ).add(
-          // if(changed)
+          // if(changed) {
+	  //   ++last_computed;
           //   dep.propagate(this);
+          // }
           new IfStmt(
             new VarAccess("changed"),
-            new ExprStmt(
-              f.createQualifiedBoundAccess().qualifiesAccess(
-                new MethodAccess(
-                  "propagate",
-                  new List().add(new ThisAccess("this"))
+	    new Block(
+	      new List().add(
+	        new ExprStmt(
+		  new PreIncExpr(
+		    fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess()
+		  )
+		)
+	      ).add(
+                new ExprStmt(
+                  f.createQualifiedBoundAccess().qualifiesAccess(
+                    new MethodAccess(
+                      "propagate",
+                      new List().add(new ThisAccess("this"))
+		    )
+                  )
                 )
-              )
+	      )
             )
           )
-        )
+        ).add(
+	  // return value;
+	  new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess())
+	)
       );
     }
     else {
@@ -800,6 +816,18 @@ aspect DependencyTracking {
 	          new VarAccess("args")
 	        ).add(
 	          new VarAccess("res")
+		)
+	      )
+	    )
+	  )
+	).add(
+	  new ReturnStmt(
+	    new CastExpr(
+	      returnType.createQualifiedAccess(),
+	      f.createQualifiedBoundAccess().qualifiesAccess(
+		new MethodAccess(
+		  "get",
+		  new List().add(new VarAccess("args"))
 		)
 	      )
 	    )
@@ -881,10 +909,20 @@ aspect DependencyTracking {
           attrDecl.fieldComputedTimeStamp(this).createQualifiedBoundAccess(),
 	  new IntegerLiteral("-1")
 	),
-        new ExprStmt(
-          cacheMethod.createBoundAccess(
-            new List().add(new ThisAccess("this"))
- 	  )
+	new IfStmt(
+	  new LogNotExpr(
+	    f.createQualifiedBoundAccess().qualifiesAccess(
+	      new MethodAccess(
+	        "isEmpty",
+	        new List().add(new ThisAccess("this"))
+	      )
+	    )
+	  ),
+          new ExprStmt(
+            cacheMethod.createBoundAccess(
+              new List().add(new ThisAccess("this"))
+ 	    )
+	  )
 	)
       );
     } else if(attrDecl.getNumParameter() == 1) {
@@ -908,17 +946,25 @@ aspect DependencyTracking {
                 new List()
               )
             ),
-            new ExprStmt(
-	      cacheMethod.createBoundAccess(
-                new List().add(
-                  new ThisAccess("this")
-                ).add(
-                  new CastExpr(
-                    argtype.createQualifiedAccess(),
+	    new IfStmt(
+	      f.createQualifiedBoundAccess().qualifiesAccess(
+	        new MethodAccess(
+                  "hasExternalDependents",
+                  new List().add(new VarAccess("arg")).add(new ThisAccess("this"))
+                )
+              ),
+              new ExprStmt(
+	        cacheMethod.createBoundAccess(
+                  new List().add(
+                    new ThisAccess("this")
+                  ).add(
+                    new CastExpr(
+                      argtype.createQualifiedAccess(),
+                      new VarAccess("arg")
+                    )
+                  ).add(
                     new VarAccess("arg")
-                  )
-                ).add(
-                  new VarAccess("arg")
+		  )
                 )
               )
             )
@@ -965,8 +1011,16 @@ aspect DependencyTracking {
                 new List()
               )
             ),
-            new ExprStmt(cacheMethod.createBoundAccess(cacheMethodArgs))
-          )
+	    new IfStmt(
+	      f.createQualifiedBoundAccess().qualifiesAccess(
+	        new MethodAccess(
+		  "hasExternalDependents",
+		  new List().add(new VarAccess("args")).add(new ThisAccess("this"))
+		)
+	      ),
+	      new ExprStmt(cacheMethod.createBoundAccess(cacheMethodArgs))
+            )
+	  )
         );
     }
     list.add(clearStmt);

@@ -1,33 +1,28 @@
 aspect CachingJastAddJ {
-
+  CompilationUnit implements Caching.CacheRoot;
   public void CompilationUnit.propagate() {
-    if(flushing)
+    if(!incremental || flushing)
       return;
-    //System.out.println("Recompiling "+pathName());
     flushing = true;
     invalidate();
     flushCaches();
     flushing = false;
   }
-  public void Program.propagate() {
-    if(flushing)
-      return;
-    //System.out.println("Flushing whole program");
-    flushing = true;
-    invalidate();
-    flushCaches();
-    flushing = false;
-  }
-
-  CompilationUnit implements CacheRoot;
   private int CompilationUnit.last_flushed = 0;
   public int CompilationUnit.getLastFlushed() { return last_flushed; }
-  public void CompilationUnit.invalidate() {
-    ++last_flushed;
-  }
+  public void CompilationUnit.invalidate() { ++last_flushed; }
+  public void CompilationUnit.incremental(boolean flag) { incremental = flag; }
 
-  Program implements CacheRoot;
+  Program implements Caching.CacheRoot;
   private int Program.last_flushed = 0;
+  public void Program.propagate() {
+    if(!incremental || flushing)
+      return;
+    flushing = true;
+    invalidate();
+    flushCaches();
+    flushing = false;
+  }
   public int Program.getLastFlushed() { return last_flushed; }
   public void Program.invalidate() {
     ++last_flushed;
@@ -36,4 +31,5 @@ aspect CachingJastAddJ {
     flushCache();
     getChildNoTransform(0).flushCache();
   }
+  public void Program.incremental(boolean flag) { incremental = flag; }
 }

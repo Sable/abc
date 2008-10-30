@@ -28,4 +28,7 @@ public class CachedValue {
   public int last_computed() {
     return last_computed;
   }
+  public boolean hasExternalDependents(ASTNode home) {
+    return !list.isEmpty(home);
+  }
 }

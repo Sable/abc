@@ -9,11 +9,8 @@ aspect CachingTesting {
     flushCaches();
     flushing = false;
   }
-
   private int ASTNode.last_flushed = 0;
   public int ASTNode.getLastFlushed() { return last_flushed; }
-  refine public void ASTNode.invalidate() {
-    ++last_flushed;
-    if(false) refined();
-  }
+  refine public void ASTNode.invalidate() { ++last_flushed; }
+  public void ASTNode.incremental(boolean flag) { incremental = flag; }
 }

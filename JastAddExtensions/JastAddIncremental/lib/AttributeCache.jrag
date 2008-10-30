@@ -34,4 +34,7 @@ class AttributeCache {
       return new java.lang.Object[0];
     return cache.keySet().toArray();
   }
+  public boolean hasExternalDependents(Object o, ASTNode home) {
+    return cache.get(o).hasExternalDependents(home);
+  }
 }

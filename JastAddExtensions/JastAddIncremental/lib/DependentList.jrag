@@ -14,7 +14,11 @@ public class DependentList {
 
       @Override	public String toString() {
 	return "[]";
-      } 
+      }
+
+      @Override public boolean isEmpty(ASTNode home) {
+	return true;
+      }
     };
 
   // prevent direct instantiation
@@ -25,6 +29,10 @@ public class DependentList {
   // in that case, deps points directly to the depending cache root
   // otherwise it refers to a deque of cache roots
   private java.lang.Object deps;
+
+  public boolean isEmpty(ASTNode home) {
+    return deps == null || deps == home.getCacheRoot();
+  }
 	
   public DependentList add(Caching.CacheRoot root) {
     if(root == null) 
