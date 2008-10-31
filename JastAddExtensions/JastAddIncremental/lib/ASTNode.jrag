@@ -297,8 +297,9 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     for(int i = 0; i < getNumChild(); i++) {
       ASTNode node = getChildNoTransform(i);
       if(node != null) node = node.fullCopy();
-      res.setChild(node, i);
+      res.setChild(node, i, false);
     }
+    res.purgeCache();
     return res;
   }
 
@@ -311,6 +312,18 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       ASTNode child = getChildNoTransform(i);
       if(child != null)
         child.flushCaches();
+    }
+  }
+
+  public void purgeCache() {
+  }
+
+  public void purgeCaches() {
+    purgeCache();
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode child = getChildNoTransform(i);
+      if(child != null)
+        child.purgeCaches();
     }
   }
 

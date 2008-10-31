@@ -900,6 +900,11 @@ aspect DependencyTracking {
   }
 
   void TypeDecl.addClearCode(FieldDeclaration f, AttributeDecl attrDecl, MethodDecl cacheMethod) {
+    addToFlushCache(f, attrDecl, cacheMethod);
+    addToPurgeCache(attrDecl);
+  }
+
+  void TypeDecl.addToFlushCache(FieldDeclaration f, AttributeDecl attrDecl, MethodDecl cacheMethod) {
     MethodDecl m = flushCacheMethod();
     List list = m.getBlock().getStmtList();
     Stmt clearStmt;
@@ -1026,8 +1031,44 @@ aspect DependencyTracking {
     list.add(clearStmt);
   }
 
+  void TypeDecl.addToPurgeCache(AttributeDecl attrDecl) {
+    MethodDecl m = purgeCacheMethod();
+    List list = m.getBlock().getStmtList();
+    FieldDeclaration f = attrDecl.fieldComputedTimeStamp(this);
+    list.add(AssignExpr.asStmt(f.createQualifiedBoundAccess(), new IntegerLiteral("-1")));
+  }
+
   Expr ASTNode.accessState() {
     return new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()));
   }
+
+  refine ASTGrammar eq ASTDecl.getBodyDeclList() {
+    List bodyDeclList = refined();
+    // add purgeCache method
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("void"),
+        "purgeCache",
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new ExprStmt(
+                new SuperAccess("super").qualifiesAccess(
+                  new MethodAccess("purgeCache", new List())
+                )
+              )
+            )
+          )
+        )
+      )
+    );
+    return bodyDeclList;    
+  }
+
+  syn MethodDecl TypeDecl.purgeCacheMethod() =
+    (MethodDecl)memberMethods("purgeCache").iterator().next();
 
 }

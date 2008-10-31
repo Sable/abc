@@ -6,11 +6,11 @@ aspect Caching {
     int getLastFlushed();
     void invalidate();
     void flushCaches();
-    void incremental(boolean flag);
+    //void incremental(boolean flag);
   }
 
   public boolean CacheRoot.flushing = false;
-  boolean CacheRoot.incremental = true;
+  //boolean CacheRoot.incremental = true;
 
   public CacheRoot ASTNode.getCacheRoot() {
     ASTNode n = this;
