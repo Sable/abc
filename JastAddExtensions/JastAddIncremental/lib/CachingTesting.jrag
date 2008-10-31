@@ -11,5 +11,11 @@ aspect CachingTesting {
   }
   private int ASTNode.last_flushed = 0;
   public int ASTNode.getLastFlushed() { return last_flushed; }
-  refine public void ASTNode.invalidate() { ++last_flushed; }
+  refine public void ASTNode.invalidate() {
+    ++last_flushed; 
+    // patch to make sure that the refined method gets removed
+    // this should eventually be fixed in the code generator
+    if(false)
+      refined();
+  }
 }
