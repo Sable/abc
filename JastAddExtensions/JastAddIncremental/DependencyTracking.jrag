@@ -65,7 +65,39 @@ aspect DependencyTracking {
 	      )
 	    ),
             0
-          );
+	  );
+	  MethodDecl lexemesEqual = lexemesEqualMethod();
+	  lexemesEqual.getBlock().getStmtList().insertChild(
+	    new IfStmt(
+	      new AndLogicalExpr(
+		child.type().isPrimitive() ?
+		  new BooleanLiteral("true")
+		: 
+		  new NEExpr(
+		    new ThisAccess("this").qualifiesAccess(
+		      new VarAccess(child.name() + "$value")
+		    ), 
+		    new NullLiteral("null")
+		  ),
+		new LogNotExpr(
+		  new ThisAccess("this").qualifiesAccess(
+		    new VarAccess(child.name() + "$value")
+		  ).qualifiesAccess(
+		    new MethodAccess(
+		      "equals",
+		      new List().add(
+			new VarAccess("that").qualifiesAccess(
+			  new VarAccess(child.name() + "$value")
+			)
+		      )
+		    )
+		  )
+		)
+	      ),
+	      new ReturnStmt(new BooleanLiteral("false"))
+	    ),
+	    3
+	  );
 	}
       }
     }
@@ -570,7 +602,7 @@ aspect DependencyTracking {
   }
 
   syn boolean AttributeDecl.hasPrimitiveReturnType() = type().isPrimitive();
-
+  syn boolean AttributeDecl.hasNodeReturnType() = type().subtype(astNode());
 
   /** Generates caching prologue. */
   FieldDeclaration AttributeDecl.generateBeginCache(List statements, TypeDecl typeDecl, String fieldName) {
@@ -685,103 +717,147 @@ aspect DependencyTracking {
     );
     Stmt update;
     if(getNumParameter() == 0) {
+      FieldDeclaration last_updated = fieldComputedTimeStamp(typeDecl);
+      FieldDeclaration value = fieldComputedValue(typeDecl);
       update = new Block(
         new List().add(
-	  // boolean changed;
-          new VariableDeclaration(
-            new TypeAccess("boolean"),
-            "changed"
-          )
-        ).add(
-          // for primitive return types:
-          //   changed = last_flushed != -1 && value != res
-          // for others:
-          //   changed = last_flushed != -1 && 
-          //     (value == null ? res != null : !value.equals(res))
-          AssignExpr.asStmt(
-            new VarAccess("changed"),
-            new AndLogicalExpr(
-              new NEExpr(
-                fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess(),
-                new IntegerLiteral("-1")
-              ),
-              hasPrimitiveReturnType() ?
-              new NEExpr(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-                new VarAccess("res")
-              )
-              :
-              new ParExpr(
-  	        new ConditionalExpr(
-                  new EQExpr(
-                    fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-                    new NullLiteral("null")
-                  ),
-                  new NEExpr(
-                    new VarAccess("res"),
-                    new NullLiteral("null")
-  	          ),
-                  new LogNotExpr(
-                    fieldComputedValue(typeDecl).createQualifiedBoundAccess().
-                    qualifiesAccess(
-                      new MethodAccess(
-                        "equals",
-                        new List().add(new VarAccess("res"))
-                      )
-                    )
-                  )
-		)
-	      )
-	    )
-          )
-        ).add(
-          // value = res;
-          AssignExpr.asStmt(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-            new VarAccess("res")
-          )
-        ).add(
-          // last_computed = this$.getCacheRoot().getLastFlushed();
-          AssignExpr.asStmt(
-            fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess(),
-            new ThisAccess("this").qualifiesAccess(
-              new MethodAccess(
-                "getCacheRoot",
-                new List()
-              )
-            ).qualifiesAccess(
-              new MethodAccess(
-                "getLastFlushed",
-                new List()
-              )
-            )
-          )
-        ).add(
-          // if(changed) {
-	  //   ++last_computed;
-          //   dep.propagate(this);
+	  // if(last_updated == -1) {
+	  //   last_updated = last_flushed();
+	  //   value = res;
+	  // } else {
+	  //   last_updated = last_flushed();
+	  //   <Type> before = value;
+	  //   value = res;
+	  //   boolean changed = value == null ? before != null : !value.equals(before);
+	  //   if(changed) {
+	  //     ++last_updated;
+	  //     propagate();
+	  //   } else {
+	  //     value = before;
+	  //   }
           // }
-          new IfStmt(
-            new VarAccess("changed"),
+	  new IfStmt(
+	    new EQExpr(
+	      last_updated.createQualifiedBoundAccess(),
+	      new IntegerLiteral("-1")
+	    ),
 	    new Block(
 	      new List().add(
-	        new ExprStmt(
-		  new PreIncExpr(
-		    fieldComputedTimeStamp(typeDecl).createQualifiedBoundAccess()
+	        AssignExpr.asStmt(
+		  last_updated.createQualifiedBoundAccess(),
+		  new ThisAccess("this").qualifiesAccess(
+		    new MethodAccess(
+		      "getCacheRoot",
+		      new List()
+		    )
+		  ).qualifiesAccess(
+		    new MethodAccess(
+		      "getLastFlushed",
+		      new List()
+		    )
 		  )
 		)
 	      ).add(
-                new ExprStmt(
-                  f.createQualifiedBoundAccess().qualifiesAccess(
-                    new MethodAccess(
-                      "propagate",
-                      new List().add(new ThisAccess("this"))
-		    )
-                  )
-                )
+		AssignExpr.asStmt(
+		  value.createQualifiedBoundAccess(),
+		  new VarAccess("res")
+		)
 	      )
-            )
-          )
+	    ),
+	    new Block(
+	      new List().add(
+	        AssignExpr.asStmt(
+		  last_updated.createQualifiedBoundAccess(),
+		  new ThisAccess("this").qualifiesAccess(
+		    new MethodAccess(
+		      "getCacheRoot",
+		      new List()
+		    )
+		  ).qualifiesAccess(
+		    new MethodAccess(
+		      "getLastFlushed",
+		      new List()
+		    )
+		  )
+		)
+	      ).add(
+		new VariableDeclaration(
+		  type().createQualifiedAccess(),
+		  "before",
+		  value.createQualifiedBoundAccess()
+		)
+	      ).add(
+		AssignExpr.asStmt(
+		  value.createQualifiedBoundAccess(),
+		  new VarAccess("res")
+		)
+	      ).add(
+		new VariableDeclaration(
+		  new PrimitiveTypeAccess("boolean"),
+		  "changed",
+		  // for primitive return types: changed = value != before
+		  // for node return types: changed = (value == null ? before != null : !value.like(before))
+		  // for others: changed = (value == null ? before != null : !value.equals(before))
+		  hasPrimitiveReturnType() ?
+		    new NEExpr(
+		      value.createQualifiedBoundAccess(),
+		      new VarAccess("before")
+		    )
+		  :
+		    new ParExpr(
+		      new ConditionalExpr(
+			new EQExpr(
+			  value.createQualifiedBoundAccess(),
+			  new NullLiteral("null")
+			),
+			new NEExpr(
+			  new VarAccess("before"),
+			  new NullLiteral("null")
+			),
+			new LogNotExpr(
+			  value.createQualifiedBoundAccess().qualifiesAccess(
+			    new MethodAccess(
+			      hasNodeReturnType() ? "like" : "equals",
+			      new List().add(new VarAccess("before"))
+			    )
+			  )
+			)
+		      )
+		    )
+		)
+	      ).add(
+		new IfStmt(
+		  new VarAccess("changed"),
+		  new Block(
+		    new List().add(
+		      new ExprStmt(
+			new PreIncExpr(
+			  last_updated.createQualifiedBoundAccess()
+			)
+		      )
+		    ).add(
+		      new ExprStmt(
+			f.createQualifiedBoundAccess().qualifiesAccess(
+			  new MethodAccess(
+			    "propagate",
+			    new List().add(new ThisAccess("this"))
+			  )
+			)
+		      )
+		    )
+		  ),
+		  new Block(
+		    new List().add(
+		      AssignExpr.asStmt(
+			value.createQualifiedBoundAccess(),
+			new VarAccess("before")
+		      )
+		    )
+		  )
+		)
+	      )
+	    )
+	  )
         ).add(
 	  // return value;
 	  new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess())
@@ -837,7 +913,7 @@ aspect DependencyTracking {
     }
     conditionalOnRewrite(statements, update);
   }
-
+  
   FieldDeclaration ASTDecl.createDepField(String fieldName) {
     FieldDeclaration f = new FieldDeclaration(
       new Modifiers(new List().add(new Modifier("private"))),
@@ -1065,10 +1141,72 @@ aspect DependencyTracking {
         )
       )
     );
+    // add lexemesEqual method
+    bodyDeclList.add(
+      new MethodDecl(
+	new Modifiers(new List().add(new Modifier("protected"))),
+	new PrimitiveTypeAccess("boolean"),
+	"lexemesEqual",
+	new List().add(
+	  new ParameterDeclaration(
+	    new TypeAccess("ASTNode"),
+	    "node"
+	  )
+	),
+	new List(),
+	new Opt(
+	  new Block(
+	    new List().add(
+	      // if(!super.lexemesEqual(node)) return false;
+	      new IfStmt(
+		new LogNotExpr(
+		  new SuperAccess("super").qualifiesAccess(
+		    new MethodAccess(
+		      "lexemesEqual",
+		      new List().add(new VarAccess("node"))
+		    )
+		  )
+		),
+		new ReturnStmt(new BooleanLiteral("false"))
+	      )
+	    ).add(
+	      // if(!(node instanceof <OurType>)) return false;
+	      new IfStmt(
+		new LogNotExpr(
+		  new ParExpr(
+		    new InstanceOfExpr(
+		      new VarAccess("node"),
+		      this.createQualifiedAccess()
+		    )
+		  )
+		),
+		new ReturnStmt(new BooleanLiteral("false"))
+	      )
+	    ).add(
+	      // <OurType> that = (<OurType>)node;
+	      new VariableDeclaration(
+		this.createQualifiedAccess(),
+		"that",
+		new CastExpr(
+		  this.createQualifiedAccess(),
+		  new VarAccess("node")
+		)
+	      )
+	    ).add(
+	      // return true;
+	      new ReturnStmt(new BooleanLiteral("true"))
+	    )
+	  )
+	)
+      )
+    );
     return bodyDeclList;    
   }
 
   syn MethodDecl TypeDecl.purgeCacheMethod() =
     (MethodDecl)memberMethods("purgeCache").iterator().next();
+
+  syn MethodDecl TypeDecl.lexemesEqualMethod() =
+    (MethodDecl)memberMethods("lexemesEqual").iterator().next();
 
 }

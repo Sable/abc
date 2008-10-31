@@ -13,11 +13,13 @@ public class CachedValue {
     return value;
   }
   public void setValue(ASTNode home, java.lang.Object value) {
-    boolean prop = this.value == null ? value != null : !this.value.equals(value);
-    this.value = value;
     this.last_computed = home.getCacheRoot().getLastFlushed();
-    if(prop) 
+    Object before = this.value;
+    this.value = value;
+    if(this.value == null ? before != null : !this.value.equals(before))
       propagate(home);
+    else
+      this.value = before;
   }
   public void addDependent(Caching.CacheRoot dep) {
     list = list.add(dep);

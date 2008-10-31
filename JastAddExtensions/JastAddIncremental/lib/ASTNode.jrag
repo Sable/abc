@@ -327,6 +327,30 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
   }
 
+  protected boolean lexemesEqual(ASTNode node) {
+    return true;
+  }
+
+  public boolean like(ASTNode that) {
+    if(that == null || !this.lexemesEqual(that))
+      return false;
+    int n1 = this.numChildren();
+    int n2 = that.numChildren();
+    if(n1 != n2)
+      return false;
+    for(int i = 0; i < n1; i++) {
+      ASTNode child1 = ASTNode.getChild(this, i);
+      ASTNode child2 = ASTNode.getChild(that, i);
+      if(child1 == null) {
+	if(child2 != null)
+	  return false;
+      } else if(!child1.like(child2)) {
+	return false;
+      }
+    }
+    return true;
+  }
+
   public static void reset() {
   }
 
