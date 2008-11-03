@@ -38,3 +38,18 @@ class AttributeCache {
     return cache.get(o).hasExternalDependents(home);
   }
 }
+
+
+class FinalAttributeCache extends AttributeCache {
+  public void put(ASTNode home, java.lang.Object o, java.lang.Object val) {
+    if(has(o))
+      throw new RuntimeException("trying to overwrite value of final attribute");
+    super.put(home, o, val);
+  }
+  public void addDependent(java.lang.Object o, Caching.CacheRoot root) {
+    throw new RuntimeException("final attributes cannot have dependents");
+  }
+  public boolean hasExternalDependents(Object o, ASTNode home) {
+    return false;
+  }
+}
