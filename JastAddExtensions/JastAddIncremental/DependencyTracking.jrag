@@ -1005,7 +1005,7 @@ aspect DependencyTracking {
   void TypeDecl.addClearCode(FieldDeclaration f, AttributeDecl attrDecl, MethodDecl cacheMethod) {
     if(!attrDecl.declaredFinal())
       addToFlushCache(f, attrDecl, cacheMethod);
-    addToPurgeCache(attrDecl);
+    addToPurgeCache(f, attrDecl);
   }
 
   void TypeDecl.addToFlushCache(FieldDeclaration f, AttributeDecl attrDecl, MethodDecl cacheMethod) {
@@ -1135,11 +1135,19 @@ aspect DependencyTracking {
     list.add(clearStmt);
   }
 
-  void TypeDecl.addToPurgeCache(AttributeDecl attrDecl) {
+  void TypeDecl.addToPurgeCache(FieldDeclaration f, AttributeDecl attrDecl) {
     MethodDecl m = purgeCacheMethod();
     List list = m.getBlock().getStmtList();
-    FieldDeclaration f = attrDecl.fieldComputedTimeStamp(this);
-    list.add(AssignExpr.asStmt(f.createQualifiedBoundAccess(), new IntegerLiteral("-1")));
+    if(attrDecl.getNumParameter() == 0) {
+      FieldDeclaration last_updated = attrDecl.fieldComputedTimeStamp(this);
+      list.add(AssignExpr.asStmt(last_updated.createQualifiedBoundAccess(), 
+				 new IntegerLiteral("-1")));
+      if(attrDecl.type().isReferenceType())
+	list.add(AssignExpr.asStmt(attrDecl.fieldComputedValue(this).createQualifiedBoundAccess(),
+				   new NullLiteral("null")));
+    } else {
+      list.add(AssignExpr.asStmt(f.createQualifiedBoundAccess(), new NullLiteral("null")));
+    }
   }
 
   Expr ASTNode.accessState() {

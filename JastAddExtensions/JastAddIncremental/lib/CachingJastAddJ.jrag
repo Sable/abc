@@ -1,7 +1,7 @@
 aspect CachingJastAddJ {
   CompilationUnit implements Caching.CacheRoot;
   public void CompilationUnit.propagate() {
-    if(/*!incremental ||*/ flushing)
+    if(!incremental || flushing)
       return;
     flushing = true;
     invalidate();
@@ -11,12 +11,16 @@ aspect CachingJastAddJ {
   private int CompilationUnit.last_flushed = 0;
   public int CompilationUnit.getLastFlushed() { return last_flushed; }
   public void CompilationUnit.invalidate() { ++last_flushed; }
-  //public void CompilationUnit.incremental(boolean flag) { incremental = flag; }
+  public boolean CompilationUnit.incremental(boolean flag) { 
+    boolean res = incremental;
+    incremental = flag; 
+    return res;
+  }
 
   Program implements Caching.CacheRoot;
   private int Program.last_flushed = 0;
   public void Program.propagate() {
-    if(/*!incremental ||*/ flushing)
+    if(!incremental || flushing)
       return;
     flushing = true;
     invalidate();
@@ -31,5 +35,9 @@ aspect CachingJastAddJ {
     flushCache();
     getChildNoTransform(0).flushCache();
   }
-  //public void Program.incremental(boolean flag) { incremental = flag; }
+  public boolean Program.incremental(boolean flag) {
+    boolean res = incremental;
+    incremental = flag; 
+    return res;
+  }
 }
