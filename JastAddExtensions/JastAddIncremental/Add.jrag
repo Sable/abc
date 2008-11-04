@@ -1,0 +1,93 @@
+aspect Add {
+  
+  refine ASTGrammar public void ASTDecl.transformation() {
+    refined();
+    addCreateForward(getBodyDeclList());
+  }
+  
+  protected void ASTDecl.addCreateForward(List list) {
+    // ThisType createForward() {
+    //   return forwardBackwardField = new ThisType_proxy(this);
+    // }
+
+    Expr e = new ClassInstanceExpr(proxy().createBoundAccess(), new List().add(new ThisAccess("this")), new Opt());
+    Stmt s = new ReturnStmt(new Opt(new AssignSimpleExpr(new VarAccess("forwardBackwardField"), e)));
+    MethodDecl m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      this.createBoundAccess(),
+      "createForward",
+      new List(),
+      new List(),
+      new Opt(new Block(new List().add(s)))
+    );
+    list.add(m);
+  }
+
+  private ASTDecl ASTDecl.proxy = null;
+  protected ASTDecl ASTDecl.proxy() {
+    if(proxy != null)
+      return proxy;
+  
+    List list = new List();
+    ASTDecl d = new ASTDecl(
+      new Modifiers(new List().add(new Modifier("public"))),
+      name() + "_proxy",
+      new Opt(this.createBoundAccess()),
+      list
+    );
+
+    addForwardBackward(list);
+    addAttributeProxies(list);
+    addProxyConstructor(list);
+
+    proxy = (ASTDecl)addMemberClass(d);
+    return proxy;
+  }
+  private void ASTDecl.addForwardBackward(List list) {
+    // add forward method "return this"
+
+    // add backward method
+    Stmt s = new ReturnStmt(
+      new Opt(
+        new CastExpr(
+          this.createBoundAccess(),
+          new VarAccess("forwardBackwardField")
+        )
+      )
+    );
+    MethodDecl m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      this.createBoundAccess(),
+      "backward",
+      new List(),
+      new List(),
+      new Opt(new Block(new List().add(s)))
+    );
+    list.add(m);
+  }
+
+  private void ASTDecl.addProxyConstructor(List list) {
+    ConstructorDecl c = new ConstructorDecl(
+      new Modifiers(new List().add(new Modifier("public"))),
+      name() + "_proxy",
+      new List().add(
+        new ParameterDeclaration(this, "that")
+      ),
+      new List(),
+      new Opt(),
+      new Block(new List())
+    );
+    list.add(c);
+  }
+
+  private void ASTDecl.addAttributeProxies(List list) {
+    for(Iterator iter = methodsIterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof AttributeDecl) {
+        // create overriding proxy method
+        // return backward().x()
+      }
+    }
+  }
+
+}
