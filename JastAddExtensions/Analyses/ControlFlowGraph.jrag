@@ -71,7 +71,7 @@ aspect ControlFlowGraph {
 //	Want something like this but the mutatingUnion method implementation is currently incorrect..
 //	coll Set Stmt.pred() [Set.empty()] with mutatingUnion;
 //	Stmt contributes this to Stmt.pred() for each succ();
-	coll Collection Stmt.pred() [new ArrayList()] with add;
+	coll Collection Stmt.pred() [new HashSet()] with add;
 	Stmt contributes this to Stmt.pred() for each succ();
 
 	syn boolean Stmt.hasCondBranch();

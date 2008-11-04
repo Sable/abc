@@ -98,11 +98,13 @@ aspect ASTUtil {
     	getStmtList().moveChild(old_idx, new_idx);
     }
     
-    public void Block.pullTogether(int start, int end) throws RefactoringException {
+    public Block Block.pullTogether(int start, int end) throws RefactoringException {
     	List stmts = new List();
     	for(int i=start;i<=end;++i)
     		stmts.add(getStmt(i));
-    	getStmtList().replaceRange(new Block(stmts), start, end);
+	Block new_block = new Block(stmts);
+    	getStmtList().replaceRange(new_block, start, end);
+	return new_block;
     }
 
 	public Collection List.toCollection() {
