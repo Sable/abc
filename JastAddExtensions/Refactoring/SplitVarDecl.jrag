@@ -1,0 +1,37 @@
+/** The "Split Variable Declaration" refactoring splits a variable declaration
+ *  with initialiser like
+ *
+ *        int x = 42;
+ *
+ *  into a declaration followed by an assignment like
+ *
+ *        int x;
+ *        x = 42;
+ *
+ *  For the moment, we require that the original declaration is inside a block
+ *  (this is not strictly necessary, since we could create a block to take
+ *  up the created statements, but we'd have to be careful about declarations
+ *  inside for loops and such then).
+ */
+
+aspect SplitVarDecl {
+  
+  public void VariableDeclaration.split() throws RefactoringException {
+    if(!hasInit())
+      return;  // we could throw an exception here, but I think it's better this way
+    if(!(getParent().getParent() instanceof Block))
+      throw new RefactoringException("cannot split declarations outside blocks");
+    Block block = (Block)getParent().getParent();
+    int idx = block.getIndexOfStmt(this);
+    assert(idx != -1);
+    Stmt assignment = AssignExpr.asStmt(new VarAccess(name()), getInit());
+    this.setInitOpt(new Opt());
+    block.insertStmt(idx+1, assignment);
+    block.flushCaches();
+  }
+
+  public int Block.getIndexOfStmt(Stmt stmt) {
+    return getStmtList().getIndexOfChild(stmt);
+  }
+
+}

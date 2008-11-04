@@ -90,10 +90,10 @@ aspect Undo {
 		ASTUtil.Block.moveStmt(stmt, new_idx);
 	}
 	
-	refine ASTUtil void Block.pullTogether(int start, int end) throws RefactoringException {
+	refine ASTUtil Block Block.pullTogether(int start, int end) throws RefactoringException {
 		ensureFromSource();
 		programRoot().pushUndo(new PullTogether(this, start, end));
-		ASTUtil.Block.pullTogether(start, end);
+		return ASTUtil.Block.pullTogether(start, end);
 	}
 	
 	// NOTE: we better not refine ASTNode.setChild(), since this is used in a couple

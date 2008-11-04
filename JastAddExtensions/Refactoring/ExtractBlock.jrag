@@ -8,98 +8,139 @@
  */
 
 aspect ExtractBlock {
-	
-	public void CompilationUnit.extractBlock(Stmt begin, Stmt end) 
-			throws RefactoringException {
-		check_block_extraction_preconds(begin, end);
-		Block begin_host = begin.hostBlock();
-		int begin_idx = begin.indexInHostBlock();
-		int end_idx = end.indexInHostBlock();
-		begin_host.encapsulate(begin_idx, end_idx);
-	}
-	
-	/*
-	 * the preconditions are:
-	 *   1. neither begin nor end can be an init or update statement of a for block
-	 *   2. begin must dominate end, i.e. every control flow path from the surrounding
-	 *      block's entry node to the end node must pass through the begin node
-	 *   3. begin and end must be in the same host block
-	 *   4. the selection cannot contain case labels
-	 */
-	private void CompilationUnit.check_block_extraction_preconds(Stmt begin, Stmt end)
-			throws RefactoringException {
-		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
-			throw new RefactoringException("selection cannot start or end at init or update statements");
-		if(!begin.dominates(end))
-			throw new RefactoringException("begin must dominate end");
-		Block begin_host = begin.hostBlock();
-		Block end_host = end.hostBlock();
-		if(begin_host == null || end_host == null)
-			throw new RefactoringException("invalid statement for extraction");
-		if(begin_host != end_host)
-			throw new RefactoringException("selection straddles block borders");
-		int begin_idx = begin.indexInHostBlock();
-		int end_idx = end.indexInHostBlock();
-		for(int i=begin_idx;i<=end_idx;++i)
-			if(begin_host.getStmt(i) instanceof Case)
-				throw new RefactoringException("selection cannot contain case labels");
-	}
-	
-	public void Block.encapsulate(int begin, int end) 
-			throws RefactoringException {
-		Stmt begin_stmt = getStmt(begin);
-		Stmt end_stmt = getStmt(end);
-		int i; Iterator iter;
-		Collection moveOut = localDeclsBetween(begin, end);
-		// leave only those decls that are accessed after end
-		for(iter=moveOut.iterator();iter.hasNext();) {
-			VariableDeclaration vdecl = (VariableDeclaration)iter.next();
-			if(!vdecl.accessedAfter(end_stmt))
-				iter.remove();
-		}
-		/*
-		 * what we do now:
-		 * 1. for every declaration to be moved out, see if it has an initializer
-		 *    a) if yes, then insert the declaration (without initializer) at
-		 *       position begin++ and replace the original definition by an assignment
-		 *    b) if no, then insert the declaration at begin++ and remove original
-		 * 2. lock all type accesses
-		 * 3. pull statements between begin and end together into a block
-		 * 4. unlock all type accesses
-		 */
-		for(iter=moveOut.iterator();iter.hasNext();) {
-			VariableDeclaration vd = (VariableDeclaration)iter.next();
-			if(vd.hasInit()) {
-				Expr init = vd.getInit();
-				Stmt assign = new ExprStmt(new AssignSimpleExpr(
-					new VarAccess(vd.getID()), init));
-				vd.replaceWith(assign);
-				vd = (VariableDeclaration)vd.fullCopy();
-				vd.setInitOpt(new Opt());
-				insertStmt(begin++, vd);
-				++end;
-			} else {
-				moveStmt(vd, begin++);
-			}
-		}
-		AdjustmentTable table = new AdjustmentTable();
-		lockTypeAccesses(table);
-		pullTogether(begin, end);
-		programRoot().flushCaches();
-		table.adjust();
-	}
-	
-	// lock all type accesses in a subtree
-	public void ASTNode.lockTypeAccesses(AdjustmentTable table) {
-        for(int i = 0; i < getNumChildNoTransform(); i++) {
-          ASTNode node = getChildNoTransform(i);
-          if(node != null) 
-        	  node.lockTypeAccesses(table);
-        }
-	}
-	
-	public void TypeAccess.lockTypeAccesses(AdjustmentTable table) {
-		table.add(this);
-	}
-	
+
+  public void Block.extractBlock(int begin, int end) 
+    throws RefactoringException {
+    new ExtractBlockRefactoring(this, begin, end).execute();
+  }
+
+  class ExtractBlockRefactoring {
+    Block block;
+    int begin;
+    int end;
+    int n;
+    Stmt[] stmts;
+    Collection<Stmt>[] preds;
+    Set[] succs;
+    Block new_block;
+    Collection<Variable> vars_used_after_selection;
+    AdjustmentTable table;
+
+    public ExtractBlockRefactoring(Block block, int begin, int end) 
+        throws RefactoringException {
+      this.block = block;
+      this.begin = begin;
+      this.end = end;
+      this.n = end-begin;
+      if(begin < 0 || end >= block.getNumStmt() || end < begin)
+	throw new RefactoringException("indices out of range");
+      stmts = new Stmt[n+1];
+      preds = new Collection[n+1];
+      succs = new Set[n+1];
+      for(int i=0;i<=n;++i) {
+	stmts[i] = block.getStmt(begin+i);
+	preds[i] = stmts[i].pred();
+	succs[i] = stmts[i].succ();
+      }
+      table = new AdjustmentTable();
+    }
+
+    public void execute() throws RefactoringException {
+      vars_used_after_selection = varsUsedAfterSelection();
+      block.lockAllTypeAccesses(table);
+      new_block = block.pullTogether(begin, end);
+      flushLocalCaches();
+      checkCFlow();
+      moveDeclarations();
+    }
+   
+    private void flushLocalCaches() {
+      //block.enclosingBodyDecl().flushCaches();
+      block.programRoot().flushCaches();
+    }
+
+    private void checkCFlow() throws RefactoringException {
+      // the first statement should have the same predecessor as before
+      // except for the new block
+      Collection<Stmt> firstpred = stmts[0].pred();
+      firstpred.remove(new_block);
+      if(!preds[0].equals(firstpred))
+	throw new RefactoringException("couldn't preserve control flow into statement #0");
+      // all other statements should have same predecessors
+      for(int i=0;i<=n;++i)
+	if(!preds[i].equals(stmts[i].pred()))
+	  throw new RefactoringException("couldn't preserve control flow into statement #"+i);
+      // all statements should have same successors
+      for(int i=0;i<=n;++i)
+	if(!succs[i].equals(stmts[i].succ()))
+	  throw new RefactoringException("couldn't preserve control flow out of statement #"+i);
+    }
+
+    private void moveDeclarations() throws RefactoringException {
+      Collection<VariableDeclaration> to_be_moved 
+	= new ArrayList<VariableDeclaration>();
+      // figure out which of the local_vars_used_after_selection 
+      // are actually declared within the selection
+      for(int i=0;i<=n;++i)
+	if(vars_used_after_selection.contains(stmts[i]))
+	  to_be_moved.add((VariableDeclaration)stmts[i]);
+      for(VariableDeclaration v : to_be_moved) {
+	v.split();
+	new_block.removeStmt(v);
+	block.insertStmt(begin++, v);
+      }
+      // stmts[] is now outdated, so we might as well nix it
+      stmts = null;
+      flushLocalCaches();
+      table.adjust();
+    }
+
+    private Collection<Variable> varsUsedAfterSelection() {
+      Collection<Variable> res = new HashSet<Variable>();
+      for(int i=end+1;i<block.getNumStmt();++i)
+	block.getStmt(i).allAccessedVars(res);
+      return res;
+    }
+
+  }
+
+  public void ASTNode.removeChild(ASTNode child) {
+    removeChild(getIndexOfChild(child));
+  }
+
+  public void Block.removeStmt(Stmt stmt) {
+    getStmtList().removeChild(stmt);
+  }
+
+  // lock all type accesses in a subtree
+  public void ASTNode.lockAllTypeAccesses(AdjustmentTable table) {
+    lockTypeAccesses(table);
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode node = getChildNoTransform(i);
+      if(node != null) 
+	node.lockAllTypeAccesses(table);
+    }
+  }
+
+  public void ASTNode.lockTypeAccesses(AdjustmentTable table) {}
+  public void TypeAccess.lockTypeAccesses(AdjustmentTable table) {
+    super.lockTypeAccesses(table);
+    table.add(this);
+  }
+
+  // get all variable accesses in a subtree
+  public void ASTNode.allAccessedVars(Collection<Variable> res) {
+    accessedVars(res);
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode node = getChildNoTransform(i);
+      if(node != null) 
+	node.allAccessedVars(res);
+    }
+  }
+
+  public void ASTNode.accessedVars(Collection<Variable> res) {}
+  public void VarAccess.accessedVars(Collection<Variable> res) {
+    super.accessedVars(res);
+    res.add(decl());
+  }
 }

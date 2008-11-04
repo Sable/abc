@@ -65,6 +65,7 @@ public abstract class ExtractMethod extends TestCase {
         } catch(IOException ioe) {
         	fail("unable to read from file "+ioe);
         } catch(RefactoringException rfe) {
+        	rfe.printStackTrace();
         	assertFalse(new File(resfile).exists());
         }
 	}
@@ -83,9 +84,7 @@ public abstract class ExtractMethod extends TestCase {
             d = (TypeDecl)iter.next();
         }
 		Methodoid md = findMethodoid(d, meth);
-		Stmt start_stmt = md.getBlock().getStmt(start);
-		Stmt end_stmt = md.getBlock().getStmt(end);
-		d.compilationUnit().extractBlock(start_stmt, end_stmt);
+		md.getBlock().extractBlock(start, end);
 		int i;
 		for(i=start;i<md.getBlock().getNumStmt();++i)
 			if(md.getBlock().getStmt(i) instanceof Block)
