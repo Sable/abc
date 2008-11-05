@@ -1,6 +1,6 @@
 aspect Add {
   
-  refine ASTGrammar public void ASTDecl.transformation() {
+  refine DependencyTracking public void ASTDecl.generateIntertypeDecls() {
     refined();
     addCreateForward(getBodyDeclList());
   }
@@ -23,16 +23,17 @@ aspect Add {
     list.add(m);
   }
 
-  private ASTDecl ASTDecl.proxy = null;
-  protected ASTDecl ASTDecl.proxy() {
+  private ClassDecl ASTDecl.proxy = null;
+  protected ClassDecl ASTDecl.proxy() {
     if(proxy != null)
       return proxy;
   
     List list = new List();
-    ASTDecl d = new ASTDecl(
-      new Modifiers(new List().add(new Modifier("public"))),
+    ClassDecl d = new ClassDecl(
+      new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
       name() + "_proxy",
       new Opt(this.createBoundAccess()),
+      new List(),
       list
     );
 
@@ -40,33 +41,49 @@ aspect Add {
     addAttributeProxies(list);
     addProxyConstructor(list);
 
-    proxy = (ASTDecl)addMemberClass(d);
+    proxy = addMemberClass(d);
     return proxy;
   }
   private void ASTDecl.addForwardBackward(List list) {
     // add forward method "return this"
-
-    // add backward method
-    Stmt s = new ReturnStmt(
-      new Opt(
-        new CastExpr(
-          this.createBoundAccess(),
-          new VarAccess("forwardBackwardField")
+    list.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("protected"))),
+        this.createBoundAccess(),
+        "forward",
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new ReturnStmt(new Opt(new ThisAccess("this")))
+            )
+          )
         )
       )
     );
-    MethodDecl m = new MethodDecl(
-      new Modifiers(new List().add(new Modifier("protected"))),
-      this.createBoundAccess(),
-      "backward",
-      new List(),
-      new List(),
-      new Opt(new Block(new List().add(s)))
+
+    // add backward method "return (Type)forwardBackwardField
+    list.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("protected"))),
+        this.createBoundAccess(),
+        "backward",
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new ReturnStmt(new Opt(new CastExpr(createBoundAccess(), new VarAccess("forwardBackwardField"))))
+            )
+          )
+        )
+      )
     );
-    list.add(m);
   }
 
   private void ASTDecl.addProxyConstructor(List list) {
+    // TODO: assign fields in proxy to values from original node
     ConstructorDecl c = new ConstructorDecl(
       new Modifiers(new List().add(new Modifier("public"))),
       name() + "_proxy",
@@ -86,6 +103,33 @@ aspect Add {
       if(m instanceof AttributeDecl) {
         // create overriding proxy method
         // return backward().x()
+
+        List args = new List();
+        for(int i = 0; i < m.getNumParameter(); i++)
+          args.add(new VarAccess(m.getParameter(i).name()));
+
+        Expr call = new MethodAccess("backward", new List()).qualifiesAccess(m.createBoundAccess(args));
+
+        list.add(
+          new MethodDecl(
+            new Modifiers(new List().add(new Modifier("public"))),
+            m.type().createQualifiedAccess(),
+            m.name(),
+            (List)m.getParameterList().fullCopy(),
+            new List(),
+            new Opt(
+              new Block(
+                new List().add(
+                  new ReturnStmt(
+                    new Opt(
+                      call
+                    )
+                  )
+                )
+              )
+            )
+          )
+        );
       }
     }
   }

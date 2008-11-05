@@ -358,4 +358,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     parent.invalidate();
   }
 
+  protected ASTNode forwardBackwardField = this;
+  protected ASTNode forward() { return forwardBackwardField; }
+
 }

@@ -2,7 +2,7 @@ aspect CachingTesting {
   ASTNode implements Caching.CacheRoot;
 
   public void ASTNode.propagate() {
-    if(flushing)
+    if(incremental || flushing)
       return;
     flushing = true;
     invalidate();
@@ -17,5 +17,10 @@ aspect CachingTesting {
     // this should eventually be fixed in the code generator
     if(false)
       refined();
+  }
+  public boolean ASTNode.incremental(boolean flag) {
+    boolean res = incremental;
+    incremental = flag;
+    return res;
   }
 }
