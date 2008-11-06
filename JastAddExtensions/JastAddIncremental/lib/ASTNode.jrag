@@ -361,4 +361,16 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   protected ASTNode forwardBackwardField = this;
   protected ASTNode forward() { return forwardBackwardField; }
 
+  protected void initProxyChildren(ASTNode n) {
+    for(int i = 0; i < getNumChild(); i++) {
+      ASTNode node = getChildNoTransform(i);
+      if(node != null) node = node.createForward();
+      n.setChild(node, i, false);
+    }
+  }
+
+  protected ASTNode createForward() {
+    throw new UnsupportedOperationException("Can not create a forward node for ASTNode");
+  }
+
 }

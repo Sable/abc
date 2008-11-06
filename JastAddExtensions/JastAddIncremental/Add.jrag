@@ -7,21 +7,83 @@ aspect Add {
   
   protected void ASTDecl.addCreateForward(List list) {
     // ThisType createForward() {
-    //   return forwardBackwardField = new ThisType_proxy(this);
+    //   forwardBackwardField = new ThisType_proxy(this);
+    //   initProxyFields(forwardBackwardField);
+    //   return forwardBackwardField;
     // }
 
     Expr e = new ClassInstanceExpr(proxy().createBoundAccess(), new List().add(new ThisAccess("this")), new Opt());
-    Stmt s = new ReturnStmt(new Opt(new AssignSimpleExpr(new VarAccess("forwardBackwardField"), e)));
+    List statements = new List();
+    statements.add(AssignExpr.asStmt(new VarAccess("forwardBackwardField"), e));
+    statements.add(new ExprStmt(createInitProxyFields().createBoundAccess(new List().add(new VarAccess("forwardBackwardField")))));
+    statements.add(new ReturnStmt(new Opt(new VarAccess("forwardBackwardField"))));
+
     MethodDecl m = new MethodDecl(
       new Modifiers(new List().add(new Modifier("protected"))),
       this.createBoundAccess(),
       "createForward",
       new List(),
       new List(),
-      new Opt(new Block(new List().add(s)))
+      new Opt(new Block(statements))
     );
     list.add(m);
   }
+
+  syn MethodDecl ClassDecl.superInitProxyFields() =
+    superclass().createInitProxyFields();
+
+  protected MethodDecl ClassDecl.createInitProxyFields() {
+    MethodDecl m = (MethodDecl)getAccessor(this, "init_proxy_fields");
+    if(m != null) return m;
+
+    List list = new List();
+    list.add(
+      new VariableDeclaration(createQualifiedAccess(), "n", new CastExpr(createQualifiedAccess(), new VarAccess("node")))
+    );
+
+    // TODO: remove static fields, remove caching fields, etc.
+    for(Iterator iter = localFieldsMap().keySet().iterator(); iter.hasNext(); ) {
+      String name = (String)iter.next();
+      list.add(
+        AssignExpr.asStmt(
+          new VarAccess("n").qualifiesAccess(new VarAccess(name)),
+          new ThisAccess("this").qualifiesAccess(new VarAccess(name))
+        )
+      );
+    }
+    if(astNode() != this) {
+      list.add(
+        new ExprStmt(
+          new SuperAccess("super").qualifiesAccess(
+            superInitProxyFields().createBoundAccess(
+              new List().add(new VarAccess("node"))
+            )
+          )
+        )
+      );
+    }
+    else {
+      list.add(
+        new ExprStmt(
+          new MethodAccess("initProxyChildren", new List().add(new VarAccess("node")))
+        )
+      );
+    }
+
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      new PrimitiveTypeAccess("void"),
+      "initProxyFields",
+      new List().add(new ParameterDeclaration(new TypeAccess("ASTNode"), "node")),
+      new List(),
+      new Opt(new Block(list))
+    );
+
+    m = addMemberMethod(m);
+    addAccessor(this, "init_proxy_fields", m);
+    return m;
+  }
+
 
   private ClassDecl ASTDecl.proxy = null;
   protected ClassDecl ASTDecl.proxy() {
