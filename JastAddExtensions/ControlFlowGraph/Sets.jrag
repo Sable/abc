@@ -243,6 +243,7 @@ class BitSet {
     public Iterator iterator() { return set.iterator(); }
     public static SmallSet empty() { return emptySet; }
     private static SmallSet emptySet = new SmallSet() {
+      public boolean equals(Object o) { return o instanceof SmallSet && ((SmallSet)o).isEmpty(); }
       public SmallSet union(SmallSet set) { return set; }
       public SmallSet union(Object element) { return new SmallSet().union(element); }
       public SmallSet compl(SmallSet set) { return this; }
@@ -301,7 +302,7 @@ class BitSet {
       newSet.set.remove(element);
       return newSet;
     }
-    
+
     public SmallSet intersect(SmallSet set) {
       if(this.equals(set) || set == fullSet)
         return this;

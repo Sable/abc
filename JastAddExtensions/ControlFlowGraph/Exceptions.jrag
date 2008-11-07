@@ -1,0 +1,53 @@
+aspect Exceptions {
+
+  // set of uncaught exceptions thrown in an AST node and its children
+  syn lazy SmallSet ASTNode.uncaughtExceptions() {
+    SmallSet uncaughtExns = SmallSet.empty();
+    for(int i = 0; i < getNumChild(); i++)
+      uncaughtExns = uncaughtExns.union(getChild(i).uncaughtExceptions());
+    return uncaughtExns;
+  }
+  eq ThrowStmt.uncaughtExceptions() 
+    = super.uncaughtExceptions().union(getExpr().type());
+  eq TryStmt.uncaughtExceptions() {
+    // Create a set containing the remaining throws after a throw-catch match
+    SmallSet uncaughtExns = getBlock().uncaughtExceptions();
+    SmallSet remainingExceptions = SmallSet.empty();
+    for(Iterator itr = uncaughtExns.iterator(); itr.hasNext();) {
+      TypeDecl exn = (TypeDecl)itr.next();
+      boolean caught = false;
+      for(int i = 0; i < getNumCatchClause() && !caught; i++)
+	caught = getCatchClause(i).handles(exn);
+      if(!caught)
+	remainingExceptions = remainingExceptions.union(exn);
+    }
+    // Add throws from catch blocks and finally
+    for(int i = 0; i < getNumCatchClause(); i++)
+      remainingExceptions = remainingExceptions.union(getCatchClause(i).getBlock().uncaughtExceptions());
+    if (hasFinally())
+      remainingExceptions = remainingExceptions.union(getFinally().uncaughtExceptions());
+    return remainingExceptions;
+  }
+  eq MethodAccess.uncaughtExceptions() {
+    SmallSet uncaughtExns = super.uncaughtExceptions();
+    for(Access acc : decl().getExceptions())
+      uncaughtExns = uncaughtExns.union(acc.type());
+    return uncaughtExns;
+  }
+  eq ConstructorAccess.uncaughtExceptions() {
+    SmallSet uncaughtExns = super.uncaughtExceptions();
+    for(Access acc : decl().getExceptions())
+      uncaughtExns = uncaughtExns.union(acc.type());
+    return uncaughtExns;
+  }
+  eq ClassInstanceExpr.uncaughtExceptions() {
+    SmallSet uncaughtExns = super.uncaughtExceptions();
+    for(Access acc : decl().getExceptions())
+      uncaughtExns = uncaughtExns.union(acc.type());
+    return uncaughtExns;
+  }
+  eq TypeDecl.uncaughtExceptions() {
+    return SmallSet.empty();
+  }
+
+}

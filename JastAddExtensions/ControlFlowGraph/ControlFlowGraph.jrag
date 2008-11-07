@@ -15,12 +15,14 @@ aspect ControlFlowGraph {
 
     // the exit node does not have a successor
     eq BodyDecl.exit().following() = SmallSet.empty();
-    // set exit node as the defult successor
+    // set exit node as the default successor
     eq BodyDecl.getChild().following() = SmallSet.empty();
     // propagate the exit node downwards
+    eq Program.getChild().exit() = null;
     eq BodyDecl.getChild().exit() = exit();
     inh CFGNode Stmt.exit();
     // propagate the entry node downwards
+    eq Program.getChild().entry() = null;
     eq BodyDecl.getChild().entry() = entry();
     inh CFGNode Stmt.entry();
 
@@ -303,26 +305,6 @@ aspect ControlFlowGraph {
 	eq DoStmt.getCondition().followingWhenFalse() = following();
 	eq DoStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
 
-	
-	//ForStmt
-/*	//consider [Condition:Expr]
-	eq ForStmt.succ() = getNumInitStmt() > 0 ?
-		SmallSet.empty().union(getInitStmt(0)) : (hasCondition() ?
-		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt()));// InitStmt:Stmt* 
-	
-	eq ForStmt.getInitStmt(int i).following() = i < getNumInitStmt() - 1 ?
-		SmallSet.empty().union(getInitStmt(i + 1)) : (hasCondition() ? 
-		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt()));			
-	eq ForStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getStmt());
-	eq ForStmt.getCondition().followingWhenFalse() = following();
-	eq ForStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
-	eq ForStmt.getStmt().following() = getNumUpdateStmt() > 0 ?
-		SmallSet.empty().union(getUpdateStmt(0)) : (hasCondition() ? 
-		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt())); // UpdateStmt:Stmt* 		
-	eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
-		SmallSet.empty().union(getUpdateStmt(i + 1)) : (hasCondition() ? 
-		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt()));	
-*/
 	//for(;;); -> for(;true;);
 	eq ForStmt.succ() = getNumInitStmt() > 0 ?
 		SmallSet.empty().union(getInitStmt(0)) : 
@@ -338,8 +320,7 @@ aspect ControlFlowGraph {
 		SmallSet.empty().union(getCondition().first()); // UpdateStmt:Stmt* 		
 	eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
 		SmallSet.empty().union(getUpdateStmt(i + 1)) :  
-		SmallSet.empty().union(getCondition().first());	
-
+		SmallSet.empty().union(getCondition().first());
 
 	// ExprStmt
 	eq ExprStmt.succ() = SmallSet.empty().union(getExpr().first());
@@ -395,175 +376,6 @@ aspect ControlFlowGraph {
     	getCondition().first() : getStmt());   
     eq LabeledStmt.targetForContinue() = getStmt().targetForContinue();
 
-/*
-	// If there is an enclosing finally block before the target of
-	// this break the successor is the finally block otherwise
-	// the following() of the target node.
-    eq BreakStmt.succ() =
-      finallyList().isEmpty() ? targetStmt().following() :
-        SmallSet.empty().union(finallyList().iterator().next());
-      
-    eq ContinueStmt.succ() =
-      SmallSet.empty().union(finallyList().isEmpty() ? 
-        targetStmt().targetForContinue() : finallyList().iterator().next());
-
-    // Either pass through the first enclosing finally block
-    // or take the exit block
-    eq ReturnStmt.succ() = hasResult() ?
-      SmallSet.empty().union(getResult().first()) :	
-      SmallSet.empty().union(finallyList().isEmpty() ? 
-        exit() : finallyList().iterator().next());
-    
-    eq ReturnStmt.getResult().following() =  
-      SmallSet.empty().union(finallyList().isEmpty() ? 
-        exit() : finallyList().iterator().next());
-        
-    // Search for catch-finally .. catch-finally. 
-    // When no enclosing try-catch-finally take the exit block
-    eq ThrowStmt.succ() = SmallSet.empty().union(getExpr().first());
-    eq ThrowStmt.getExpr().following() = 	   	
-      SmallSet.empty().union(targetList().isEmpty() ?
-        exit() : targetList().iterator().next());
-    
-    
-
-    // TryStmt
-    eq TryStmt.succ() = SmallSet.empty().union(getBlock());
-    
-    eq TryStmt.getBlock().following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
-    eq TryStmt.getCatchClause(int index).following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
- 
-
-    // *** Original ***
-    eq TryStmt.getFinally().following() { 
-      SmallSet succSet = getFinally().canCompleteNormally() ? following() : SmallSet.empty();
-      for(Iterator outerIter = uncaughtThrows().iterator(); outerIter.hasNext(); ) {
-         ThrowStmt stmt = (ThrowStmt)outerIter.next();
-         // We are in a finally block and a throw statement reaches this try stmt
-         // We have a list of zero of more finally blocks followed by an optional
-         // single catch clause block
-         Iterator iter = stmt.targetList().iterator();
-         Object element = null;
-         // try to find the current finally block in the list
-         while(iter.hasNext() && (element = iter.next()) != getFinally());
-         // element is the last read entry
-         // if the current finally block was matched and there is a catch block in the list then that block is the successor
-         if(iter.hasNext())
-           element = iter.next();
-         // if we found the finally block and there is no catch block then we return exit
-         if(element == getFinally())
-           succSet = succSet.union(exit());
-         // otherwise we return the single catch clause in this try statement that caught the exception
-         else 
-           succSet = succSet.union(element);
-      }
-  	  // Try to match all unmatched breaks, continues, and returns
-      for(Iterator outerIter = escapedBranches().iterator(); outerIter.hasNext(); ) {
-        Object o = outerIter.next();
-        if(o instanceof BreakStmt) {
-          BreakStmt stmt = (BreakStmt)o;
-          Iterator iter = stmt.finallyList().iterator();
-          // find the current finally block in the list
-          while(iter.hasNext() && iter.next() != getFinally()); 
-          // if there is another finally block in the list then it is the successor
-          // otherwise the following of the target statement is the successor
-          succSet = succSet.union(iter.hasNext()? iter.next() : stmt.targetStmt().following());
-        }
-        else if(o instanceof ContinueStmt) {
-          ContinueStmt stmt = (ContinueStmt)o;
-          Iterator iter = stmt.finallyList().iterator();
-          // find the current finally block in the list
-          while(iter.hasNext() && iter.next() != getFinally()); 
-          // if there is another finally block in the list then it is the successor
-          // otherwise the target statement is the successor
-          succSet = succSet.union(iter.hasNext()? iter.next() : stmt.targetStmt());
-        }
-        else if(o instanceof ReturnStmt) {
-          ReturnStmt stmt = (ReturnStmt)o;
-          Iterator iter = stmt.finallyList().iterator();
-          // find the current finally block in the list
-          while(iter.hasNext() && iter.next() != getFinally()); 
-          // if there is another finally block in the list then it is the successor
-          // otherwise the target statement is the successor
-          succSet = succSet.union(iter.hasNext()? iter.next() : exit());
-        }
-      }
-	  return succSet;
-    }
-
-    // *** Implementation of helper attributes ***
-
-	// Propagate uncaught throws upwards
-	syn SmallSet ASTNode.uncaughtThrows() {
-      SmallSet uncaughtThrows = SmallSet.empty();
-  		for(int i = 0; i < getNumChild(); i++)
-	  		uncaughtThrows = uncaughtThrows.union(getChild(i).uncaughtThrows());
-	  	return uncaughtThrows;
-	  }
-    eq ThrowStmt.uncaughtThrows() = SmallSet.empty().union(this);
-    eq TryStmt.uncaughtThrows() {
-        // if there is a finally block which can not complete normally
-        // then all previous exceptions get stuck in the finally block
-        // the only the exceptions thrown in the finally block
-        // are propagated
-        if(hasFinally() && !getFinally().canCompleteNormally())
-          return getFinally().uncaughtThrows();
-
-        // Create a set containing the remaining throws after a throw-catch match
-        SmallSet uncaughtThrows = getBlock().uncaughtThrows();
-        SmallSet remainingThrows = SmallSet.empty();
-        for (Iterator itr = uncaughtThrows.iterator(); itr.hasNext();) {
-          ThrowStmt throwStmt = (ThrowStmt)itr.next();
-          boolean caught = false;
-	      for (int i = 0; i < getNumCatchClause() && !caught; i++)
-            caught = getCatchClause(i).handles(throwStmt.getExpr().type());
-	      if (!caught) remainingThrows = remainingThrows.union(throwStmt);
-        }
-        // Add throws from catch blocks and finally
-        for (int i = 0; i < getNumCatchClause(); i++)
-	      remainingThrows = remainingThrows.union(getCatchClause(i).getBlock().uncaughtThrows());
-	    if (hasFinally())
-          remainingThrows = remainingThrows.union(getFinally().uncaughtThrows());
-        return remainingThrows;
-    }
-
-
-  // finally* [catch clause]
-  syn lazy ArrayList ThrowStmt.targetList() {
-    ArrayList list = new ArrayList();
-    collectThrowTargets(this, list, this);
-    return list;
-  }
-  public void ASTNode.collectThrowTargets(ThrowStmt stmt, ArrayList list, ASTNode child) {
-    if(getParent() != null)
-      getParent().collectThrowTargets(stmt, list, this);
-  }
-  public void TryStmt.collectThrowTargets(ThrowStmt stmt, ArrayList list, ASTNode child) {
-    boolean found = false;
-    if(child != getCatchClauseList()) {
-      for(int i = 0; i < getNumCatchClause() && !found; i++) {
-        if(getCatchClause(i).handles(stmt.getExpr().type())) {
-          list.add(getCatchClause(i).getBlock());
-          found = true;
-        }
-      }
-    }
-    if(!found) {
-      if(hasFinally()) {
-        list.add(getFinally());
-      }
-      if(!hasFinally() || getFinally().canCompleteNormally())
-        super.collectThrowTargets(stmt, list, this);
-    }
-  }
-  public void BodyDecl.collectThrowTargets(ThrowStmt stmt, ArrayList list, ASTNode child) {
-  }
-  
-  */
-    
-    
-    
-    // *** My Implementation ***
 	// If there is an enclosing finally block before the target of
 	// this break the successor is the finally block otherwise
 	// the following() of the target node.
