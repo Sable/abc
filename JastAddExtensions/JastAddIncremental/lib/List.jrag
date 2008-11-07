@@ -33,4 +33,5 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     return res;
   }
   private boolean list$touched = true;
+
 }

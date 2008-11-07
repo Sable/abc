@@ -360,8 +360,11 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   protected ASTNode forwardBackwardField = this;
   protected ASTNode forward() { return forwardBackwardField; }
+  protected ASTNode backward() { return this; }
 
   protected void initProxyChildren(ASTNode n) {
+    if(children != null)
+      n.children = new ASTNode[children.length];
     for(int i = 0; i < getNumChild(); i++) {
       ASTNode node = getChildNoTransform(i);
       if(node != null) node = node.createForward();
@@ -369,7 +372,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
   }
 
-  protected ASTNode createForward() {
+  public ASTNode createForward() {
     throw new UnsupportedOperationException("Can not create a forward node for ASTNode");
   }
 
