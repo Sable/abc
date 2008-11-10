@@ -27,8 +27,6 @@ aspect NamingContext {
 		public abstract Access accessType(TypeDecl td, boolean ambiguous);
 	}
 	
-	inh boolean BodyDecl.inStaticContext();
-	
 	public NamingContext Expr.getNamingContext() {
 		return new NamingContext() {
 			public boolean isStatic() { return inStaticContext(); }
@@ -38,6 +36,20 @@ aspect NamingContext {
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, boolean ambiguous) {
 				return Expr.this.access(td, ambiguous);
+			}
+		};
+	}
+
+	inh boolean Stmt.inStaticContext();
+	public NamingContext Stmt.getNamingContext() {
+		return new NamingContext() {
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return hostType(); }
+			public NamingContext unqualifiedCtxt() { return this; }
+			public SimpleSet lookupType(String name) { return Stmt.this.lookupType(name); }
+			public SimpleSet lookupVariable(String name) { return Stmt.this.lookupVariable(name); }
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return Stmt.this.access(td, ambiguous);
 			}
 		};
 	}
@@ -61,6 +73,7 @@ aspect NamingContext {
 		};
 	}
 	
+	inh boolean BodyDecl.inStaticContext();
 	public NamingContext BodyDecl.getNamingContext() {
 		return new NamingContext() {
 			public boolean isStatic() { return inStaticContext(); }

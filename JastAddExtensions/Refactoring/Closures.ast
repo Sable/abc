@@ -1,0 +1,2 @@
+Closure : Expr ::= InParameter:ParameterDeclaration* OutParameter:ParameterDeclaration* ReturnType:Access Exception:Access* Block;
+Application : Expr ::= Rator:Expr InRand:Expr* OutRand:Expr*;

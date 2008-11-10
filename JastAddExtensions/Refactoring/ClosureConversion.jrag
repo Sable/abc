@@ -1,0 +1,93 @@
+aspect ClosureConversion {
+  public void Closure.convert() throws RefactoringException {
+    new ClosureConversionRefactoring(this).execute();
+  }
+
+  class ClosureConversionRefactoring {
+    private Closure closure;
+    private Application app;
+    private java.util.Set<VarAccess> local_accesses;
+    private AdjustmentTable table;
+
+    public ClosureConversionRefactoring(Closure closure) throws RefactoringException {
+      this.closure = closure;
+      if(!(closure.getParent() instanceof Application))
+	throw new RefactoringException("only closures in applications can be converted");
+      this.app = (Application)closure.getParent();
+      this.local_accesses = closure.collectLocalAccesses();
+      this.table = new AdjustmentTable();
+    }
+
+    public void execute() throws RefactoringException {
+      for(VarAccess v : local_accesses) {
+	if(hasIncomingDataflowEdge(v))
+	  addInputParameter(v);
+	if(hasOutgoingDataflowEdge(v))
+	  addOutputParameter(v);
+      }
+      table.adjust();
+    }
+
+    private boolean hasIncomingDataflowEdge(VarAccess v) {
+      for(CFGNode u : v.reachingDefinitions())
+	if(!((ASTNode)u).beneath(closure))
+	  return true;
+      return false;
+    }
+
+    private boolean hasOutgoingDataflowEdge(VarAccess v) {
+      for(CFGNode w : v.reachedUses())
+	if(!((ASTNode)w).beneath(closure))
+	  return true;
+      return false;
+    }
+
+    private void addInputParameter(VarAccess v) {
+      if(closure.hasInParameter(v.name()))
+	return;
+      TypeAccess tp = new TypeAccess(v.type().name());
+      tp.lockOn(v.type());
+      table.add(tp);
+      closure.addInParameter(new ParameterDeclaration(tp, v.name()));
+      app.addInRand((VarAccess)v.fullCopy());
+      closure.programRoot().flushCaches();
+    }
+
+    private void addOutputParameter(VarAccess v) {
+      if(closure.hasOutParameter(v.name()))
+	return;
+      TypeAccess tp = new TypeAccess(v.type().name());
+      tp.lockOn(v.type());
+      table.add(tp);
+      closure.addOutParameter(new ParameterDeclaration(tp, v.name()));
+      app.addOutRand((VarAccess)v.fullCopy());
+      closure.programRoot().flushCaches();
+    }
+  }
+
+  public boolean ASTNode.beneath(ASTNode n) {
+    ASTNode p;
+    for(p=this;p!=n&&p!=null;p=p.getParent())
+      ;
+    return p!=null;
+  }
+
+  public java.util.Set<VarAccess> ASTNode.collectLocalAccesses() {
+    java.util.Set<VarAccess> res = new HashSet<VarAccess>();
+    this.collectLocalAccesses(res);
+    return res;
+  }
+
+  public void ASTNode.collectLocalAccesses(java.util.Set<VarAccess> res) {
+    for(int i=0;i<getNumChild();++i) {
+      ASTNode child = getChild(i);
+      if(child != null)
+	child.collectLocalAccesses(res);
+    }
+  }
+  public void VarAccess.collectLocalAccesses(java.util.Set<VarAccess> res) {
+    if(decl() instanceof LocalDeclaration)
+      res.add(this);
+    super.collectLocalAccesses(res);
+  }
+}

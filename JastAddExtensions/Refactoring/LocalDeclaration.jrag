@@ -1,0 +1,86 @@
+
+aspect LocalDeclaration {
+	
+	// a local declaration is either a variable declaration or a parameter declaration
+	
+	interface LocalDeclaration extends Named { 
+		Access getTypeAccess();
+		String getID();
+		void setID(String id);
+		Block getBlock();
+		ParameterDeclaration asParameterDeclaration();
+		VariableDeclaration asVariableDeclaration();
+	}
+	
+	ParameterDeclaration implements LocalDeclaration;
+	VariableDeclaration implements LocalDeclaration;
+	
+	public ParameterDeclaration ParameterDeclaration.asParameterDeclaration() {
+		return (ParameterDeclaration)fullCopy();
+	}
+	
+	public ParameterDeclaration VariableDeclaration.asParameterDeclaration() {
+		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration ParameterDeclaration.asVariableDeclaration() {
+		return new VariableDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration VariableDeclaration.asVariableDeclaration() {
+		return (VariableDeclaration)fullCopy();
+	}
+	
+	inh java.util.Set Stmt.visibleLocalDecls();
+	inh java.util.Set CatchClause.visibleLocalDecls();
+	
+	eq CompilationUnit.getChild().visibleLocalDecls() = new HashSet();
+	eq TypeDecl.getChild().visibleLocalDecls() = new HashSet();
+	eq MethodDecl.getBlock().visibleLocalDecls() {
+		HashSet decls = new HashSet();
+		for(int i=0;i<getNumParameter();++i)
+			decls.add(getParameter(i));
+		return decls;
+	}
+	eq Block.getStmt(int k).visibleLocalDecls() {
+		java.util.Set decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
+		return decls;
+	}
+	eq CatchClause.getBlock().visibleLocalDecls() {
+		java.util.Set decls = visibleLocalDecls();
+		decls.add(getParameter());
+		return decls;
+	}
+	eq ForStmt.getStmt().visibleLocalDecls() {
+		java.util.Set decls = visibleLocalDecls();
+		for(int i=0;i<getNumInitStmt();++i)
+			if(getInitStmt(i) instanceof VariableDeclaration)
+				decls.add(getInitStmt(i));
+		return decls;
+	}
+	
+	public java.util.Set Block.localDecls() {
+		if(getNumStmt() == 0) return new HashSet();
+		return localDeclsBetween(0, getNumStmt()-1);
+	}
+	
+	syn java.util.Set Block.localDeclsBetween(int start, int end) {
+		HashSet decls = new HashSet();
+		for(int i=start;i<=end;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
+
+	inh lazy Block ParameterDeclaration.getBlock();
+	eq MethodDecl.getParameter().getBlock() = getBlock();
+	eq ConstructorDecl.getParameter().getBlock() = getBlock();
+	eq CatchClause.getParameter().getBlock() = getBlock();
+
+	inh lazy Block Stmt.hostBlock();
+	eq Block.getStmt().hostBlock() = this;
+	eq ConstructorDecl.getConstructorInvocation().hostBlock() = getBlock();
+
+	syn lazy Block VariableDeclaration.getBlock() = hostBlock();
+}

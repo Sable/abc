@@ -82,7 +82,7 @@ What is where:
            - FileRange.jrag: a FileRange represents a range of
 		           characters in a file; used for error
 				   reporting and testing
-           - Methodoid.jrag: a methodoid is either a method or
+           - Callable.jrag: a callable is either a method or
 		     	   a constructor
            - Changes.jrag: abstract representations of AST changes, 
                    plus a class for refactoring exceptions; such 

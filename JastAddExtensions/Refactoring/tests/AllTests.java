@@ -9,12 +9,14 @@ public class AllTests {
 		TestSuite suite = new TestSuite();
 		suite.addTest(AccessTests.suite());
 		suite.addTest(EncapsulateFieldTests.suite());
-		suite.addTest(ExtractMethodTests.suite());
+		//suite.addTest(ExtractMethodTests.suite());
 		suite.addTest(RenameTests.suite());
 		suite.addTest(RenameTestsITD.suite());
 		suite.addTest(ExtractClassTests.suite());
 		suite.addTest(InlineVariableTests.suite());
 		suite.addTest(PushDownMethodTests.suite());
+		suite.addTest(WrapBlockInClosureTests.suite());
+		suite.addTest(PushStatementIntoBlockTests.suite());
 		return suite;
 	}
 }

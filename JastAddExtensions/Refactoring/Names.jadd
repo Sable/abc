@@ -1,0 +1,63 @@
+/*
+ * some utility methods for dealing with named entities
+ */
+
+aspect Names {
+	
+	interface Named {
+		String getID();
+		void setID(String id);
+		void changeID(String id) throws RefactoringException;
+	}
+	
+	// in file LocalDeclaration.jadd: LocalDeclaration extends Named	
+	FieldDeclaration implements Named;
+	ConstructorDecl implements Named;
+	MethodDecl implements Named;
+	TypeDecl implements Named;
+	CompilationUnit implements Named;
+	
+	public void VariableDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void ParameterDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void FieldDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void ConstructorDecl.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void MethodDecl.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	
+	// when we change the ID of a class, we also need to rename its constructors
+	public void TypeDecl.changeID(String id) throws RefactoringException { 
+		setID(id);
+		for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl bd = getBodyDecl(i);
+            if(bd instanceof ConstructorDecl) {
+                ConstructorDecl ctordecl = (ConstructorDecl)bd;
+                ctordecl.changeID(id);
+            }
+        }		
+	}
+	
+	public void CompilationUnit.changeID(String id) throws RefactoringException { 
+		// we also need to rename the file the compilation unit is in
+		setID(id); 
+	}
+	
+	public void CompilationUnit.setID(String id) {
+        setRelativeName(patch_name(relativeName(), id));
+        setPathName(patch_name(pathName(), id));
+	}
+	
+    private static String CompilationUnit.patch_name(String path, String name) {
+        char pathsep = File.separatorChar;
+        int i = path.lastIndexOf(pathsep);
+        String relname_head = i == -1 ? "" : path.substring(0, i+1);
+        String relname_tail = i == -1 ? path : path.substring(i+1);
+        int j = relname_tail.lastIndexOf(".");
+        return relname_head + name + relname_tail.substring(j);
+    }
+	
+	
+}

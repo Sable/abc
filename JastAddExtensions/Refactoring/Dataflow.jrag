@@ -1,0 +1,57 @@
+// some very simple dataflow analyses
+
+aspect Dataflow {
+  public SmallSet<CFGNode> VarAccess.reachingDefinitions() {
+    if(!(decl() instanceof LocalDeclaration))
+      return SmallSet.empty();
+    LocalDeclaration decl = (LocalDeclaration)decl();
+    if(isSource()) {
+      if(isDest()) {
+	SmallSet<CFGNode> result = SmallSet.empty();
+	for(CFGNode pred : pred())
+	  result = result.union(pred.reachingDefinitions(decl));
+	return result;
+      }
+      return reachingDefinitions(decl);
+    } else {
+      return SmallSet.empty();
+    }
+  }
+
+  coll SmallSet<CFGNode> CFGNode.reachedUses() [SmallSet.mutable()] 
+    with add root BodyDecl;
+  VarAccess contributes this to CFGNode.reachedUses() for each reachingDefinitions();
+
+  syn SmallSet<CFGNode> CFGNode.reachingDefinitions(LocalDeclaration v) 
+    circular [SmallSet.empty()] {
+    SmallSet<CFGNode> result = SmallSet.empty();
+    for(CFGNode pred : pred())
+      result = result.union(pred.reachingDefinitions(v));
+    return result;
+  }
+
+  eq VarAccess.reachingDefinitions(LocalDeclaration v) {
+    if(decl() == v && isDest())
+      return SmallSet.singleton((CFGNode)this);
+    return super.reachingDefinitions(v);
+  }
+
+  eq VariableDeclaration.reachingDefinitions(LocalDeclaration v) {
+    if(this == v && hasInit())
+      return SmallSet.singleton((CFGNode)this);
+    return super.reachingDefinitions(v);
+  }
+
+  public boolean ASTNode.mayRef(Variable v) {
+    for(int i=0;i<getNumChild();++i) {
+      ASTNode child = getChild(i);
+      if(child != null && child.mayRef(v))
+	return true;
+    }
+    return false;
+  }
+
+  public boolean VarAccess.mayRef(Variable v) {
+    return decl() == v;
+  }
+}

@@ -1,0 +1,133 @@
+aspect Closures {
+  public void Closure.toString(StringBuffer s) {
+    s.append("λ (");
+    if(getNumInParameter() > 0) {
+      getInParameter(0).toString(s);
+      for(int i = 1; i < getNumInParameter(); i++) {
+        s.append(", ");
+        getInParameter(i).toString(s);
+      }
+    }
+    if(getNumOutParameter() > 0) {
+      if(getNumInParameter() > 0)
+	s.append(" ");
+      s.append("| ");
+      getOutParameter(0).toString(s);
+      for(int i = 1; i < getNumOutParameter(); i++) {
+	s.append(", ");
+	getOutParameter(i).toString(s);
+      }
+    }
+    s.append(") : ");
+    getReturnType().toString(s);
+    if(getNumException() > 0) {
+      s.append(" throws ");
+      getException(0).toString(s);
+      for(int i = 1; i < getNumException(); i++) {
+	s.append(", ");
+	getException(i).toString(s);
+      }
+    }
+    s.append(" ");
+    getBlock().toString(s);
+  }
+
+  public void Application.toString(StringBuffer s) {
+    getRator().toString(s);
+    s.append("(");
+    if(getNumInRand() > 0) {
+      getInRand(0).toString(s);
+      for(int i = 1; i < getNumInRand(); i++) {
+        s.append(", ");
+        getInRand(i).toString(s);
+      }
+    }
+    if(getNumOutRand() > 0) {
+      if(getNumInRand() > 0)
+	s.append(" ");
+      s.append("| ");
+      getOutRand(0).toString(s);
+      for(int i = 1; i < getNumOutRand(); i++) {
+	s.append(", ");
+	getOutRand(i).toString(s);
+      }
+    }
+    s.append(")");
+  }
+
+  public boolean Closure.hasParameter(String name) {
+    return hasInParameter(name) || hasOutParameter(name);
+  }
+
+  public boolean Closure.hasInParameter(String name) {
+    for(int i=0;i<getNumInParameter();++i)
+      if(getInParameter(i).name().equals(name))
+	return true;
+    return false;
+  }
+
+  public boolean Closure.hasOutParameter(String name) {
+    for(int i=0;i<getNumOutParameter();++i)
+      if(getOutParameter(i).name().equals(name))
+	return true;
+    return false;
+  }
+
+  eq Closure.getInParameter().getBlock() = getBlock();
+  eq Closure.getOutParameter().getBlock() = getBlock();
+
+  eq Closure.getInParameter().canRenameTo(String new_name) {
+    if(hasParameter(new_name))
+      return new RefactoringException("parameter of the same name exists");
+    return getBlock().acceptLocal(new_name);
+  }
+  eq Closure.getOutParameter().canRenameTo(String new_name) {
+    if(hasParameter(new_name))
+      return new RefactoringException("parameter of the same name exists");
+    return getBlock().acceptLocal(new_name);
+  }
+
+  eq Closure.getBlock().reachable() = true;
+
+  eq Closure.type() {
+    throw new RuntimeException("closures should only appear in applications");
+  }
+  eq Application.type() {
+    if(getRator() instanceof Closure) {
+      Closure rator = (Closure)getRator();
+      return rator.getReturnType().type();
+    } else {
+      throw new RuntimeException("only closures can be applied");
+    }
+  }
+
+  eq Closure.succ() = SmallSet.singleton((CFGNode)getBlock());
+  eq Closure.getBlock().following() = following();
+  public SmallSet Closure.followingTarget(Stmt branch, ASTNode child) {
+    return following();
+  }
+
+  eq Application.succ() {
+    if(getNumInRand() == 0)
+      if(getNumOutRand() == 0)
+	return SmallSet.singleton((CFGNode)getRator());
+      else
+	return SmallSet.singleton((CFGNode)getOutRand(0));
+    else
+      return SmallSet.singleton((CFGNode)getInRand(0));
+  }
+  eq Application.getInRand(int i).following() {
+    if(i == getNumInRand() - 1)
+      if(getNumOutRand() == 0)
+	return SmallSet.singleton((CFGNode)getRator());
+      else
+	return SmallSet.singleton((CFGNode)getOutRand(0));
+    else
+      return SmallSet.singleton((CFGNode)getInRand(i+1));
+  }
+  eq Application.getOutRand(int i).following() = 
+    i == getNumOutRand() - 1 ? SmallSet.singleton((CFGNode)getRator()) 
+                             : SmallSet.singleton((CFGNode)getOutRand(i+1));
+  eq Application.getRator().following() = following();
+
+}

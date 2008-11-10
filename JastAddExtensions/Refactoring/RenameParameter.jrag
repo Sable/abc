@@ -9,7 +9,7 @@ aspect RenameParameter {
 	// checks that the renaming doesn't lead to a name clash
 	inh RefactoringException ParameterDeclaration.canRenameTo(String new_name);
 	
-	eq Methodoid.getParameter().canRenameTo(String new_name) {
+	eq Callable.getParameter().canRenameTo(String new_name) {
 		if(!parameterDeclaration(new_name).isEmpty())
 			return new RefactoringException("parameter of the same name exists");
 		if(this.hasBody())

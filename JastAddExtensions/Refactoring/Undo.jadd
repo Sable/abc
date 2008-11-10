@@ -64,13 +64,13 @@ aspect Undo {
 		Names.CompilationUnit.changeID(id);
 	}
 
-	refine MakeMethod void TypeDecl.insertMethod(MethodDecl md, Block host, int index, 
+	/*	refine MakeMethod void TypeDecl.insertMethod(MethodDecl md, Block host, int index, 
 			Collection parms, Opt retvar, TypeDecl rettype) 
 			throws RefactoringException {
 		ensureFromSource();
 		MakeMethod.TypeDecl.insertMethod(md, host, index, parms, retvar, rettype);
 		programRoot().pushUndo(new MakeMethod(this, md, host, index));
-	}
+		}*/
 	
 	refine Encapsulate void TypeDecl.insertMethod(MethodDecl md) throws RefactoringException {
 		ensureFromSource();

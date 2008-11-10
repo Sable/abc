@@ -1,0 +1,81 @@
+/** The "Wrap Block Into Closure" refactoring turns a block
+
+      <pre>
+      { b_1, ..., b_n }
+      </pre>
+
+    into a closure application statement
+
+      <pre>
+      (λ () throws e_1, ..., e_m { b_1, ..., b_n }) ();
+      </pre>
+
+    which is optionally itself wrapped into a block, if the original block does not
+    itself occur inside a larger block.
+
+    Exceptions e_1, ..., e_m are all uncaught exceptions thrown in the block.
+    The refactoring ensures that control flow stays intact. In particular, if the
+    block contains any break, continue, or return statements with target outside
+    the block, the refactoring will be rejected.
+
+    A possible future optimisation would be to allow the case where all control
+    paths of the block end in a return statement, and then wrap the generated
+    application into a return statement.
+ */
+
+aspect WrapBlockIntoClosure {
+
+  public Closure Block.wrapIntoClosure() throws RefactoringException {
+    return new WrapBlockIntoClosureRefactoring(this).execute();
+  }
+
+  class WrapBlockIntoClosureRefactoring {
+    private Block block;
+    private AdjustmentTable table;
+
+    public WrapBlockIntoClosureRefactoring(Block block) {
+      this.block = block;
+      this.table = new AdjustmentTable();
+    }
+    
+    public Closure execute() throws RefactoringException {
+      block.lockAllCFlow(table);
+      // create a closure without parameters returning void and throwing all
+      // uncaught exceptions of block
+      List<Access> exns = computeUncaughtExceptions();
+      Closure cl = new Closure(new List(), new List(), 
+			       new PrimitiveTypeAccess("void"), exns,
+			       null);
+      block.replaceWith(new ExprStmt(new Application(cl, new List<Expr>(), new List<Expr>())));
+      cl.setBlock(block);
+      block.programRoot().flushCaches();
+      table.adjust();
+      return cl;
+    }
+
+    private List<Access> computeUncaughtExceptions() throws RefactoringException {
+      List<Access> res = new List<Access>();
+      for(TypeDecl exn : block.uncaughtExceptions()) {
+	Access exnacc = block.access(exn, false);
+	if(exnacc == null)
+	  throw new RefactoringException("cannot access type "+exn);
+	res.add(exnacc);
+      }
+      return res;
+    }
+  }
+
+  // lock all CFlow in a subtree (only statements for now)
+  public void ASTNode.lockAllCFlow(AdjustmentTable table) {
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode node = getChildNoTransform(i);
+      if(node != null) 
+	node.lockAllCFlow(table);
+    }
+  }
+  public void Stmt.lockAllCFlow(AdjustmentTable table) {
+    super.lockAllCFlow(table);
+    table.add(this);
+  }
+
+}

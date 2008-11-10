@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="test/cases/|tests/data/Access/|tests/data/|main/RunAccessTests.java|tests/Encapsulate/|tests/ExtractMethod/|tests/RenameField/|tests/RenameMethod/|tests/RenameType/|tests/Access/|IntertypeDeclarations/|tools/|SimpleEndangeredComputation/|licences/|XML/" kind="src" path=""/>
+	<classpathentry excluding="test/cases/|tests/data/Access/|tests/data/|main/RunAccessTests.java|tests/Encapsulate/|tests/ExtractMethod/|tests/RenameField/|tests/RenameMethod/|tests/RenameType/|tests/Access/|IntertypeDeclarations/|tools/|SimpleEndangeredComputation/|licences/|XML/|tests/ExtractMethod.java|tests/ExtractMethodTests.java" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="output" path=""/>

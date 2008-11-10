@@ -15,8 +15,10 @@ import AST.CompilationUnit;
 import AST.FileRange;
 import AST.Frontend;
 import AST.JavaParser;
+import AST.LabeledStmt;
 import AST.LocalDeclaration;
 import AST.Program;
+import AST.Stmt;
 import AST.Variable;
 
 public class TestHelper {
@@ -118,6 +120,32 @@ public class TestHelper {
 		for(int i=0;i<n.getNumChild();++i) {
 			Variable v = findVariable(n.getChild(i), name);
 			if(v != null) return v;
+		}
+		return null;
+	}
+	
+	public static Stmt findCommentedStmt(ASTNode n, String comment) {
+		if(n == null) return null;
+		if(n instanceof Stmt) {
+			if(comment.equals(n.getComment()))
+				return (Stmt)n;
+		}
+		for(int i=0;i<n.getNumChild();++i) {
+			Stmt s = findCommentedStmt(n.getChild(i), comment);
+			if(s != null) return s;
+		}
+		return null;
+	}
+
+	public static Stmt findStmtFollowedByComment(ASTNode n, String comment) {
+		if(n == null) return null;
+		if(n instanceof Stmt) {
+			if(comment.equals(n.getFollowingComment()))
+				return (Stmt)n;
+		}
+		for(int i=0;i<n.getNumChild();++i) {
+			Stmt s = findStmtFollowedByComment(n.getChild(i), comment);
+			if(s != null) return s;
 		}
 		return null;
 	}

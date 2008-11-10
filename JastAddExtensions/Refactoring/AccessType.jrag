@@ -267,6 +267,12 @@ aspect AccessType {
 		if(acc == null) return null;
 		return acc.computeAccess(getNamingContext(), ambiguous);
 	}
+
+	public Access Stmt.access(TypeDecl td, boolean ambiguous) {
+		TypeAccessInfo acc = accessType(td);
+		if(acc == null) return null;
+		return acc.computeAccess(getNamingContext(), ambiguous);
+	}
 	
 	public Access Expr.access(TypeDecl td, boolean ambiguous) {
 		TypeAccessInfo acc = accessType(td);

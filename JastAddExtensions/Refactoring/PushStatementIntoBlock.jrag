@@ -1,0 +1,74 @@
+aspect PushStatementIntoBlock {
+  public boolean Stmt.pushIntoBlock() throws RefactoringException {
+    return new PushStatementIntoBlockRefactoring(this).execute();
+  }
+
+  class PushStatementIntoBlockRefactoring {
+    protected Block parent_block;
+    protected Stmt stmt;
+    protected Block following_block;
+    protected int idx;
+    protected AdjustmentTable table;
+
+    public PushStatementIntoBlockRefactoring(Stmt stmt) throws RefactoringException {
+      if(!stmt.inBlock() || !(stmt.subsequentStmt() instanceof Block))
+	throw new RefactoringException("Can only push statement into following block.");
+      this.parent_block = (Block)stmt.getParent().getParent();
+      this.stmt = stmt;
+      this.following_block = (Block)stmt.subsequentStmt();
+      this.idx = parent_block.getIndexOfStmt(stmt);
+      this.table = new AdjustmentTable();
+    }
+      
+    public boolean execute() throws RefactoringException {
+      table.add(stmt);
+      parent_block.removeStmt(stmt);
+      following_block.insertStmt(0, stmt);
+      parent_block.programRoot().flushCaches();
+      table.adjust();
+      return false;
+    }
+  }
+
+  public boolean VariableDeclaration.pushIntoBlock() throws RefactoringException {
+    return new PushVariableDeclarationIntoBlockRefactoring(this).execute();
+  }
+
+  class PushVariableDeclarationIntoBlockRefactoring extends PushStatementIntoBlockRefactoring {
+    public PushVariableDeclarationIntoBlockRefactoring(VariableDeclaration decl) throws RefactoringException {
+      super(decl);
+    }
+
+    public boolean execute() throws RefactoringException {
+      VariableDeclaration decl = (VariableDeclaration)stmt;
+      // check to see whether this statement could be used after the block
+      boolean referenced = false;
+      // we are at idx, the block is at idx+1, so we start at idx+2
+      for(int i=idx+2;i<parent_block.getNumStmt();++i)
+	if(parent_block.getStmt(i).mayRef(decl)) {
+	  referenced = true;
+	  break;
+	}
+      if(referenced) {
+	boolean did_split = decl.split();
+	if(!did_split)
+	  return referenced;
+	// only push the assignment
+	idx++;
+	stmt = parent_block.getStmt(idx);
+	parent_block.programRoot().flushCaches();
+      }
+      super.execute();
+      return referenced;
+    }
+  }
+
+  syn lazy boolean Stmt.inBlock() 
+    = getParent() != null && getParent().getParent() instanceof Block;
+  public Stmt Stmt.subsequentStmt() {
+    int idx = getParent().getIndexOfChild(this);
+    if(idx == -1 || idx >= getParent().getNumChild() - 1)
+      return null;
+    return (Stmt)getParent().getChild(idx+1);
+  }
+}

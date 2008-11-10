@@ -4,18 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import AST.Block;
+import AST.Callable;
 import AST.ConstructorDecl;
-import AST.Methodoid;
 import AST.Program;
 import AST.RefactoringException;
-import AST.Stmt;
 import AST.TypeDecl;
 
 public abstract class ExtractMethod extends TestCase {
@@ -83,7 +81,7 @@ public abstract class ExtractMethod extends TestCase {
         	assertTrue(iter.hasNext());
             d = (TypeDecl)iter.next();
         }
-		Methodoid md = findMethodoid(d, meth);
+		Callable md = findCallable(d, meth);
 		md.getBlock().extractBlock(start, end);
 		int i;
 		for(i=start;i<md.getBlock().getNumStmt();++i)
@@ -95,14 +93,14 @@ public abstract class ExtractMethod extends TestCase {
 		return prog;
 	}
 	
-	private Methodoid findMethodoid(TypeDecl td, String name) {
+	private Callable findCallable(TypeDecl td, String name) {
 		for(ConstructorDecl c : (Collection<ConstructorDecl>)td.constructors()) {
 			if(c.name().equals(name))
 				return c;
 		}
 		Iterator iter = td.memberMethods(name).iterator();
 		assertTrue(iter.hasNext());
-		return (Methodoid)iter.next();
+		return (Callable)iter.next();
 	}
 
 }

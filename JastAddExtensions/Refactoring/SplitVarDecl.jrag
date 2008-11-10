@@ -16,9 +16,9 @@
 
 aspect SplitVarDecl {
   
-  public void VariableDeclaration.split() throws RefactoringException {
+  public boolean VariableDeclaration.split() throws RefactoringException {
     if(!hasInit())
-      return;  // we could throw an exception here, but I think it's better this way
+      return false;  // we could throw an exception here, but I think it's better this way
     if(!(getParent().getParent() instanceof Block))
       throw new RefactoringException("cannot split declarations outside blocks");
     Block block = (Block)getParent().getParent();
@@ -28,6 +28,7 @@ aspect SplitVarDecl {
     this.setInitOpt(new Opt());
     block.insertStmt(idx+1, assignment);
     block.flushCaches();
+    return true;
   }
 
   public int Block.getIndexOfStmt(Stmt stmt) {

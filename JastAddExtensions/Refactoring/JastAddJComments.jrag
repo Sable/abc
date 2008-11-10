@@ -1,0 +1,41 @@
+aspect Comments {
+
+  syn String ASTNode.getComment() {
+    CompilationUnit cu = declarationCompilationUnit();
+    if(cu != null) {
+      String s = cu.comment(getLine(getStart()));
+      if(s != null)
+        return s;
+    }
+    return null;
+  }
+
+  syn String ASTNode.getFollowingComment() {
+    CompilationUnit cu = declarationCompilationUnit();
+    return cu == null ? null : cu.comment(getLine(getStart())+2);
+  }
+
+  public void CompilationUnit.setComments(HashMap map) {
+    comments = map;
+  }
+  private HashMap CompilationUnit.comments;
+  public String CompilationUnit.comment(int line) {
+    if(comments != null) {
+      Integer key = new Integer(line);
+      if(comments.containsKey(key))
+        return (String)comments.get(key);
+      key = new Integer(line - 1);
+      return (String)comments.get(key);
+    }
+    return null;
+  }
+
+  public CompilationUnit ASTNode.declarationCompilationUnit() {
+    ASTNode target = this;
+    while (target != null && !(target instanceof CompilationUnit))
+      target = target.getParent();
+    if (target instanceof CompilationUnit)
+      return (CompilationUnit)target;
+    return null;
+  }
+}

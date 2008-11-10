@@ -20,7 +20,7 @@ aspect LocalVarNesting {
 	
 	syn RefactoringException BodyDecl.acceptLocal(String name) = null;
 	
-	eq Methodoid.acceptLocal(String name) {
+	eq Callable.acceptLocal(String name) {
 		if(!parameterDeclaration(name).isEmpty())
 			return new RefactoringException("parameter of the same name exists");
 		if(hasBody())
