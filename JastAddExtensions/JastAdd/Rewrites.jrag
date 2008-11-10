@@ -5,7 +5,7 @@ aspect Rewrites {
 
   eq Rewrite.getAccess().nameType() = NameType.TYPE_NAME;
 
-  eq Rewrite.getBlock().returnType() = introducedType();
+  eq Rewrite.getBlock().returnType() = getAccess().type();
 
   eq RewriteDecl.getChild().thisType() = introducedType();
   
