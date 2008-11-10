@@ -50,6 +50,7 @@ aspect ASTGrammar {
   inh lazy TypeDecl Rewrite.astNode();
   inh lazy TypeDecl Rewrite.listNode();
   inh lazy TypeDecl AttributeDecl.listNode();
+  inh lazy TypeDecl TypeDecl.listNode();
   
   refine ClassPath public void Program.addSourceFile(String name) {
     if(name.endsWith(".ast"))

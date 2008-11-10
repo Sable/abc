@@ -28,9 +28,9 @@ public aspect Test35 {
   
   public static void main(String[] args) {
     System.out.println("LAZY: check that lazy is used for syn and inh decl");
-    B b = new B();
-    A a = new A(b);
+    A a = new A(new B());
     a.is$Final = true;
+    B b = a.getB();
 
     a.syn1();
     a.syn1();

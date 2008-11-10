@@ -233,6 +233,15 @@ aspect Rewrites {
   eq ASTDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || superclass().mayHaveRewriteRule();
 
   private void ASTDecl.addMayHaveRewrite() {
+    List statements = new List();
+    if(this == listNode())
+      statements.add(
+        new ExprStmt(new MethodAccess("getNumChild", new List()))
+      );
+    statements.add(
+      new ReturnStmt(new BooleanLiteral(mayHaveRewriteRule()))
+    );
+
     addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
@@ -241,11 +250,7 @@ aspect Rewrites {
         new List(),
         new List(),
         new Opt(
-          new Block(
-            new List().add(
-              new ReturnStmt(new BooleanLiteral(mayHaveRewriteRule()))
-            )
-          )
+          new Block(statements)
         )
       )
     );

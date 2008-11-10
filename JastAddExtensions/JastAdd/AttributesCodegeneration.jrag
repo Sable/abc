@@ -1562,6 +1562,35 @@ aspect AttributesCodegeneration {
   }
 
   protected void InhDecl.addCacheComputeCall(List list, TypeDecl typeDecl) {
+    // int num$ = boundariesCrossed;
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("int"),
+        "num$",
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed"))
+      )
+    );
+    // boolean localFinal$ = this.is$Final()
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("boolean"),
+        "localFinal$",
+        new MethodAccess("is$Final", new List())
+      )
+    );
+    // localFinal$ && num$ == boundariesCrossed
+    Expr cond;
+    if(declaredFinal() || declaredNTA())
+      cond = new BooleanLiteral("true");
+    else 
+      cond = new AndLogicalExpr(
+        new VarAccess("localFinal$"),
+        new EQExpr(
+          new VarAccess("num$"),
+          new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed"))
+        )
+      );
+
     addSearchAncestorForEquation(list);
     Expr computeCall = createComputeCall();
       
@@ -1574,12 +1603,15 @@ aspect AttributesCodegeneration {
           computeCall
         )
       );
-      // computed_flag = true;
+      // if(cond) computed_flag = true;
       list.add(
-        AssignExpr.asStmt(
-          fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
-          //new VarAccess(computedFlagName()),
-          new BooleanLiteral(true)
+        new IfStmt(
+          cond,
+          AssignExpr.asStmt(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            //new VarAccess(computedFlagName()),
+            new BooleanLiteral(true)
+          )
         )
       );
     }
@@ -1592,16 +1624,19 @@ aspect AttributesCodegeneration {
           computeCall
         )
       );
-      // this.computed_value.put(parameters$, computed_value);
+      // if(cond) this.computed_value.put(parameters$, computed_value);
       list.add(
-        new ExprStmt(
-          fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
-            new MethodAccess(
-              "put",
-              new List().add(
-                new VarAccess("parameters$")
-              ).add(
-                type().box(new VarAccess(computedValueName()))
+        new IfStmt(
+          cond,
+          new ExprStmt(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess(
+                "put",
+                new List().add(
+                  new VarAccess("parameters$")
+                ).add(
+                  type().box(new VarAccess(computedValueName()))
+                )
               )
             )
           )
