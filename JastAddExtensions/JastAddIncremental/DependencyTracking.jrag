@@ -37,8 +37,8 @@ aspect DependencyTracking {
 	}
       </pre>
     */
-  refine Rewrites public void ASTDecl.generateIntertypeDecls() {
-    refined();
+  public void ASTDecl.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       if(child instanceof ASTTokenChild) {

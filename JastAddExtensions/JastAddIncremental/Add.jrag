@@ -1,6 +1,6 @@
 aspect Add {
 
-  refine IntertypeFieldCodegeneration public void ClassDecl.generateIntertypeDecls() {
+  refine Rewrites public void ClassDecl.generateIntertypeDecls() {
     refined();
     if(this == listNode() || this == optNode())
       addCreateForward(getBodyDeclList());
