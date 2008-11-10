@@ -52,6 +52,12 @@ aspect ASTGrammar {
   inh lazy TypeDecl AttributeDecl.listNode();
   inh TypeDecl TypeDecl.optNode();
   inh lazy TypeDecl TypeDecl.listNode();
+
+  syn boolean TypeDecl.isAnASTNode() = false;
+  eq ClassDecl.isAnASTNode() = astNode() == this || listNode() == this || optNode() == this;
+  eq ASTDecl.isAnASTNode() = true;
+  eq ParTypeDecl.isAnASTNode() = genericDecl().original().isAnASTNode();
+
   
   refine ClassPath public void Program.addSourceFile(String name) {
     if(name.endsWith(".ast"))
@@ -439,7 +445,7 @@ aspect ASTGrammar {
   }
 
   // called from Rewrites.jrag when generating intertype declarations
-  private void ASTDecl.addNTAGetChildNoTransform() {
+  void ASTDecl.addNTAGetChildNoTransform() {
     List statements = new List();
     int i = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {

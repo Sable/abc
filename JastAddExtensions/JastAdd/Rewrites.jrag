@@ -5,19 +5,21 @@ aspect Rewrites {
 
   eq Rewrite.getAccess().nameType() = NameType.TYPE_NAME;
 
-  eq Rewrite.getBlock().returnType() = getAccess().type();
+  eq Rewrite.getBlock().returnType() = introducedType();
 
-  eq RewriteDecl.getChild().thisType() = getAccess().type();
+  eq RewriteDecl.getChild().thisType() = introducedType();
   
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
 
   eq RewriteDecl.getRewrite().inStaticContext() = false;
 
+  inh TypeDecl RewriteDecl.astNode();
+
   public void RewriteDecl.typeCheck() {
     super.typeCheck();
-    if(!(getAccess().type() instanceof ASTDecl))
-      error("only AST nodes can be rewritten");
+    if(!introducedType().isAnASTNode() || introducedType() == astNode())
+      error("only subclasses of ASTNode can be rewritten");
   }
 
   // Maps TypeDecl -> RewriteDecl
@@ -41,16 +43,16 @@ aspect Rewrites {
   
   // Override and add self when rewrite
   protected void RewriteDecl.collectRewrites(Map map) {
-    TypeDecl introducedType = getAccess().type();
+    TypeDecl introducedType = introducedType();
     if(!map.containsKey(introducedType))
       map.put(introducedType, new ArrayList(1));
     Collection c = (Collection)map.get(introducedType);
     c.add(this);
   }
 
-  // Set of rewrites for this ASTDecl
-  syn lazy Collection ASTDecl.rewrites() = lookupRewrites(this);
-  inh Collection ASTDecl.lookupRewrites(TypeDecl typeDecl);
+  // Set of rewrites for this ClassDecl
+  syn lazy Collection ClassDecl.rewrites() = lookupRewrites(this);
+  inh Collection ClassDecl.lookupRewrites(TypeDecl typeDecl);
   eq Program.getCompilationUnit(int i).lookupRewrites(TypeDecl typeDecl) = rewritesMap().containsKey(typeDecl) ? (Collection)rewritesMap().get(typeDecl) : new ArrayList(0);
 
 
@@ -204,35 +206,38 @@ aspect Rewrites {
   eq AspectDecl.getBodyDecl(int i).duringCounter() = duringCounter();
   eq Program.getCompilationUnit(int i).duringCounter() { throw new Error("inherited attribute duringCounter does not have an equation"); }
 
-  // Generate rewrite code for this ASTDecl
-  public void ASTDecl.generateIntertypeDecls() {
-    super.generateIntertypeDecls();
-    List statements = new List();
-    for(Iterator iter = rewrites().iterator(); iter.hasNext(); ) {
-      RewriteDecl r = (RewriteDecl)iter.next();
-      for(int i = 0; i < r.getNumRewrite(); i++)
-        r.getRewrite(i).addTestAndRewrite(statements);
+  // Generate rewrite code for this ClassDecl
+  refine IntertypeFieldCodegeneration public void ClassDecl.generateIntertypeDecls() {
+    refined();
+    if(isAnASTNode() && astNode() != this) {
+      List statements = new List();
+      for(Iterator iter = rewrites().iterator(); iter.hasNext(); ) {
+        RewriteDecl r = (RewriteDecl)iter.next();
+        for(int i = 0; i < r.getNumRewrite(); i++)
+          r.getRewrite(i).addTestAndRewrite(statements);
+      }
+      addDelegationRewriteTo(statements);
+      addRewriteMethodDecl(statements);
+      addMayHaveRewrite();
+
+      addCloneNodeInit("in$Circle", new BooleanLiteral(false));
+      addCloneNodeInit("is$Final", new BooleanLiteral(false));
+
+      if(this instanceof ASTDecl) {
+        ASTDecl node = (ASTDecl)this;
+        if(localMethodsSignature("getNumChild()").isEmpty())
+          node.addGetNumChild();
+        node.addFinalRootNode();
+        if(localMethodsSignature("getChild(int)").isEmpty())
+          node.addNTAGetChildNoTransform();
+      }
     }
-    addDelegationRewriteTo(statements);
-    addRewriteMethodDecl(statements);
-
-    addCloneNodeInit("in$Circle", new BooleanLiteral(false));
-    addCloneNodeInit("is$Final", new BooleanLiteral(false));
-
-    if(localMethodsSignature("getNumChild()").isEmpty())
-      addGetNumChild();
-    addMayHaveRewrite();
-
-    addFinalRootNode();
-    if(localMethodsSignature("getChild(int)").isEmpty())
-      addNTAGetChildNoTransform();
   }
 
   syn lazy boolean TypeDecl.mayHaveRewriteRule() = false;
-  eq ClassDecl.mayHaveRewriteRule() = hasSuperclass() ? superclass().mayHaveRewriteRule() : false;
-  eq ASTDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || superclass().mayHaveRewriteRule();
+  eq ClassDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || (hasSuperclass() && superclass().mayHaveRewriteRule());
 
-  private void ASTDecl.addMayHaveRewrite() {
+  private void ClassDecl.addMayHaveRewrite() {
     List statements = new List();
     if(this == listNode())
       statements.add(
@@ -256,7 +261,7 @@ aspect Rewrites {
     );
   }
 
-  private void ASTDecl.addFinalRootNode() {
+  void ASTDecl.addFinalRootNode() {
     if(isRootNode())
       addBodyDecl(
         new InstanceInitializer(
@@ -272,7 +277,7 @@ aspect Rewrites {
       );
   }
 
-  private void ASTDecl.addGetNumChild() {
+  void ASTDecl.addGetNumChild() {
     int n = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild c = (ASTChild)iter.next();
@@ -512,7 +517,7 @@ aspect Rewrites {
     }
   }
   
-  private void ASTDecl.addDelegationRewriteTo(List statements) {
+  private void ClassDecl.addDelegationRewriteTo(List statements) {
     // return super.rewriteTo();
     statements.add(
       new ReturnStmt(
@@ -527,7 +532,7 @@ aspect Rewrites {
       )
     );
   }
-  private void ASTDecl.addRewriteMethodDecl(List statements) {
+  private void ClassDecl.addRewriteMethodDecl(List statements) {
     // public ASTNode rewriteTo() { statements }
     addMemberMethod(
       new MethodDecl(
@@ -584,12 +589,13 @@ aspect Rewrites {
     getParentType().type().memberFields(name);
 
   eq RewriteDecl.getRewrite(int index).lookupMethod(String name) = 
-    getAccess().type().memberMethods(name);
+    introducedType().memberMethods(name);
   eq RewriteDecl.getRewrite(int index).lookupVariable(String name) =
-    getAccess().type().memberFields(name);
+    introducedType().memberFields(name);
 
-  eq RewriteDecl.getRewrite(int index).hostType() = getAccess().type();
-
-  eq RewriteDecl.getRewrite(int index).introducedType() = getAccess().type();
+  eq RewriteDecl.getRewrite(int index).hostType() = introducedType();
+  
+  syn lazy TypeDecl RewriteDecl.introducedType() = getAccess().type().sourceTypeDecl();
+  eq RewriteDecl.getRewrite(int index).introducedType() = introducedType();
   inh TypeDecl Rewrite.introducedType();
 }

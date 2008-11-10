@@ -1704,7 +1704,7 @@ aspect AttributesCodegeneration {
   syn String AttributeDecl.ntaListName() = uniqueSignatureName() + "$list";
 
   syn MethodDecl TypeDecl.flushCacheMethod() =
-    (MethodDecl)memberMethods("flushCache").iterator().next();
+    ((MethodDecl)memberMethods("flushCache").iterator().next()).sourceMethodDecl();
 
 
 }

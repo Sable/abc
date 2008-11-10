@@ -1,5 +1,5 @@
 aspect ASTNodeCopy {
-  syn lazy List ASTDecl.cloneStatementList() {
+  syn lazy List ClassDecl.cloneStatementList() {
     List statements = new List();
     //ClassName node = (ClassName)super.clone();
     statements.add(
@@ -45,7 +45,7 @@ aspect ASTNodeCopy {
     return statements;
   }
 
-  public void ASTDecl.addCloneNodeInit(String fieldName, Expr expr) {
+  public void ClassDecl.addCloneNodeInit(String fieldName, Expr expr) {
     // insert initialization statement of field in node right before return statement
     List list = cloneStatementList();
     list.insertChild(
@@ -59,7 +59,7 @@ aspect ASTNodeCopy {
     );
   }
   
-  public void ASTDecl.addCloneNodeInit(Access fieldAccess, Expr expr) {
+  public void ClassDecl.addCloneNodeInit(Access fieldAccess, Expr expr) {
     // insert initialization statement of field in node right before return statement
     List list = cloneStatementList();
     list.insertChild(
