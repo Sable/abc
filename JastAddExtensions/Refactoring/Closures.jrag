@@ -130,4 +130,28 @@ aspect Closures {
                              : SmallSet.singleton((CFGNode)getOutRand(i+1));
   eq Application.getRator().following() = following();
 
+  // lookup is done as for methods
+  eq Closure.getBlock().lookupVariable(String name) {
+    SimpleSet set = inParameterDeclaration(name);
+    if(!set.isEmpty()) return set;
+    set = outParameterDeclaration(name);
+    if(!set.isEmpty()) return set;
+    return lookupVariable(name);
+  }
+  eq Closure.getInParameter().lookupVariable(String name) 
+    = inParameterDeclaration(name);
+  eq Closure.getOutParameter().lookupVariable(String name)
+    = outParameterDeclaration(name);
+  syn lazy SimpleSet Closure.inParameterDeclaration(String name) {
+    for(int i = 0; i < getNumInParameter(); i++)
+      if(getInParameter(i).name().equals(name))
+        return (ParameterDeclaration)getInParameter(i);
+    return SimpleSet.emptySet;
+  }
+  syn lazy SimpleSet Closure.outParameterDeclaration(String name) {
+    for(int i = 0; i < getNumOutParameter(); i++)
+      if(getOutParameter(i).name().equals(name))
+        return (ParameterDeclaration)getOutParameter(i);
+    return SimpleSet.emptySet;
+  }
 }

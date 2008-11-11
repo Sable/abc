@@ -1,0 +1,49 @@
+aspect EliminateOutParams {
+  public void Closure.eliminateOutParams() throws RefactoringException {
+    new EliminateOutParamsRefactoring(this).execute();
+  }
+
+  class EliminateOutParamsRefactoring {
+    private Closure closure;
+    private Application app;
+    private AdjustmentTable table;
+
+    public EliminateOutParamsRefactoring(Closure closure) throws RefactoringException {
+      this.closure = closure;
+      if(closure.getParent() instanceof Application)
+	this.app = (Application)closure.getParent();
+      else
+	throw new RefactoringException("cannot eliminate out parameters of this closure");
+      table = new AdjustmentTable();
+    }
+
+    public void execute() throws RefactoringException {
+      if(closure.getNumOutParameter() == 0)
+	return;
+      if(closure.getNumOutParameter() > 1)
+	throw new RefactoringException("ambiguous return value");
+      ParameterDeclaration parm = closure.getOutParameter(0);
+      if(!(app.getOutRand(0) instanceof VarAccess))
+	throw new RefactoringException("cannot eliminate out parameter");
+      VarAccess v = (VarAccess)app.getOutRand(0);
+      closure.setOutParameterList(new List<ParameterDeclaration>());
+      closure.setReturnType(v.type().getLockedAccess(table));
+      if(!closure.hasInParameter(v.name()))
+	closure.getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
+      closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
+      app.setOutRandList(new List<Expr>());
+      AssignExpr assgn = new AssignSimpleExpr(v, null);
+      app.replaceWith(assgn);
+      assgn.setSource(app);
+      closure.programRoot().flushCaches();
+      table.adjust();
+    }
+  }
+
+  public TypeAccess TypeDecl.getLockedAccess(AdjustmentTable table) {
+    TypeAccess acc = new TypeAccess(this.name());
+    acc.lockOn(this);
+    table.add(acc);
+    return acc;
+  }
+}

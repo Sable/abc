@@ -38,8 +38,8 @@ aspect ControlFlow {
   // there could be many more here
 
   syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {
-    SmallSet<CFGNode> res = succ();
-    for(CFGNode n : res)
+    SmallSet<CFGNode> res = SmallSet.empty();
+    for(CFGNode n : succ())
       if(n.isPureCFlowNode())
 	res = res.union(n.weakSucc());
       else
@@ -47,7 +47,14 @@ aspect ControlFlow {
     return res;
   }
 
-  coll SmallSet<CFGNode> CFGNode.weakPred() [SmallSet.mutable()] with add root BodyDecl;
-  Stmt contributes this when !isPureCFlowNode() to CFGNode.weakPred() for each weakSucc();
-  Expr contributes this when !isPureCFlowNode() to CFGNode.weakPred() for each weakSucc();
+  syn lazy SmallSet<CFGNode> CFGNode.weakPred() {
+    SmallSet<CFGNode> res = SmallSet.empty();
+    for(CFGNode n : pred())
+      if(n.isPureCFlowNode())
+	res = res.union(n.weakPred());
+      else
+	res = res.union(n);
+    return res;
+  }
+
 }

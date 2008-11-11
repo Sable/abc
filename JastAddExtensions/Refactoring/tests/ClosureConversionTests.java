@@ -25,7 +25,13 @@ public class ClosureConversionTests extends ClosureConversion {
 	public void test4() {
 		runTest("test4");
 	}
-/*	public void test5() {
+	public void test5() {
 		runTest("test5");
-	}*/
+	}
+	public void test6() {
+		runTest("test6");
+	}
+	public void test7() {
+		runTest("test7");
+	}
 }

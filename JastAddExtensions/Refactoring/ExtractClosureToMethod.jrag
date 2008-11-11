@@ -1,0 +1,69 @@
+aspect ExtractClosureToMethod {
+  public void Closure.extractToMethod(String visibility, String name) throws RefactoringException {
+    new ExtractClosureToMethodRefactoring(this, visibility, name).execute();
+  }
+
+  class ExtractClosureToMethodRefactoring {
+    private Closure closure;
+    private Application app;
+    private String visibility;
+    private String name;
+    private BodyDecl bodydecl;
+    private TypeDecl typedecl;
+    private AdjustmentTable table;
+
+    public ExtractClosureToMethodRefactoring(Closure closure, String visibility, String name)
+      throws RefactoringException {
+      this.closure = closure;
+      if(!(closure.getParent() instanceof Application))
+	throw new RefactoringException("cannot extract closure outside application");
+      this.app = (Application)closure.getParent();
+      this.visibility = visibility;
+      this.name = name;
+      this.bodydecl = closure.hostBodyDecl();
+      this.typedecl = bodydecl.hostType();
+      this.table = new AdjustmentTable();
+    }
+
+    public void execute() throws RefactoringException {
+      closure.eliminateOutParams();
+      closure.lockAllAccesses(table);
+      MethodDecl md = 
+	new MethodDecl(modifiers(),
+		       closure.getReturnType(), 
+		       name, 
+		       closure.getInParameters(), 
+		       closure.getExceptions(), 
+		       new Opt(closure.getBlock()));
+      typedecl.addMethod(md, false, false, false);
+      MethodAccess ma = md.getLockedAccess(table, app.getInRandList());
+      app.replaceWith(ma);
+      typedecl.programRoot().flushCaches();
+      table.adjust();
+    }
+
+    private Modifiers modifiers() {
+      List<Modifier> mods = new List<Modifier>();
+      mods.add(new Modifier(visibility));
+      if(bodydecl.isStatic())
+	mods.add(new Modifier("static"));
+      return new Modifiers(mods);
+    }
+  }
+
+  syn boolean BodyDecl.isStatic();
+  eq ConstructorDecl.isStatic() = false;
+  eq InstanceInitializer.isStatic() = false;
+  eq StaticInitializer.isStatic() = true;
+  // MemberDecls already have an isStatic() method
+  eq DeclareParentsExtends.isStatic() = false;
+  eq DeclareParentsImplements.isStatic() = false;
+  eq DeclarePrecedence.isStatic() = false;
+
+  public MethodAccess MethodDecl.getLockedAccess(AdjustmentTable table, List<Expr> args) {
+    MethodAccess ma = new MethodAccess(name(), args);
+    ma.lockOn(this);
+    table.add(ma);
+    return ma;
+  }
+}

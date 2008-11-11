@@ -82,14 +82,7 @@ public abstract class ExtractMethod extends TestCase {
             d = (TypeDecl)iter.next();
         }
 		Callable md = findCallable(d, meth);
-		md.getBlock().extractBlock(start, end);
-		int i;
-		for(i=start;i<md.getBlock().getNumStmt();++i)
-			if(md.getBlock().getStmt(i) instanceof Block)
-				break;
-		assertTrue(i != md.getBlock().getNumStmt());
-		Block blk = (Block)md.getBlock().getStmt(i);
-		d.compilationUnit().makeMethod(name, vis, blk);
+		md.getBlock().extractMethod(vis, name, start, end);
 		return prog;
 	}
 	

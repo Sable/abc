@@ -9,9 +9,9 @@
 
 aspect ExtractBlock {
 
-  public void Block.extractBlock(int begin, int end) 
+  public Block Block.extractBlock(int begin, int end) 
     throws RefactoringException {
-    new ExtractBlockRefactoring(this, begin, end).execute();
+    return new ExtractBlockRefactoring(this, begin, end).execute();
   }
 
   class ExtractBlockRefactoring {
@@ -31,7 +31,7 @@ aspect ExtractBlock {
       table = new AdjustmentTable();
     }
 
-    public void execute() throws RefactoringException {
+    public Block execute() throws RefactoringException {
       block.lockAllTypeAccesses(table);
       block.lockAllVarAccesses(table);
       new_block = new Block(new List());
@@ -50,6 +50,7 @@ aspect ExtractBlock {
       }
       flushCaches();
       table.adjust();
+      return new_block;
     }
    
     private void flushCaches() {
@@ -93,5 +94,11 @@ aspect ExtractBlock {
   public void VarAccess.lockAllVarAccesses(AdjustmentTable table) {
     super.lockAllTypeAccesses(table);
     table.add(this);
+  }
+
+  // lock all accesses (variable and type) in a subtree
+  public void ASTNode.lockAllAccesses(AdjustmentTable table) {
+    lockAllTypeAccesses(table);
+    lockAllVarAccesses(table);
   }
 }

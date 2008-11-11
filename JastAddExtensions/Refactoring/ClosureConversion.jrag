@@ -1,6 +1,6 @@
 aspect ClosureConversion {
-  public void Closure.convert() throws RefactoringException {
-    new ClosureConversionRefactoring(this).execute();
+  public Closure Closure.convert() throws RefactoringException {
+    return new ClosureConversionRefactoring(this).execute();
   }
 
   class ClosureConversionRefactoring {
@@ -18,14 +18,23 @@ aspect ClosureConversion {
       this.table = new AdjustmentTable();
     }
 
-    public void execute() throws RefactoringException {
+    public Closure execute() throws RefactoringException {
       for(VarAccess v : local_accesses) {
 	if(hasIncomingDataflowEdge(v))
 	  addInputParameter(v);
 	if(hasOutgoingDataflowEdge(v))
 	  addOutputParameter(v);
       }
+      for(VarAccess v : local_accesses) {
+	if(!closure.hasOutParameter(v.name()) &&
+	   hasNoIncomingDataflow(v) && declaredOutside(v)) {
+	  Variable decl = v.decl();
+	  addLocalVariable(v);
+	  removeIfUnused(decl);
+	}
+      }
       table.adjust();
+      return closure;
     }
 
     private boolean hasIncomingDataflowEdge(VarAccess v) {
@@ -35,6 +44,10 @@ aspect ClosureConversion {
       return false;
     }
 
+    private boolean hasNoIncomingDataflow(VarAccess v) {
+      return v.reachingDefinitions().isEmpty();
+    }
+
     private boolean hasOutgoingDataflowEdge(VarAccess v) {
       for(CFGNode w : v.reachedUses())
 	if(!((ASTNode)w).beneath(closure))
@@ -42,12 +55,21 @@ aspect ClosureConversion {
       return false;
     }
 
-    private void addInputParameter(VarAccess v) {
-      if(closure.hasInParameter(v.name()))
-	return;
+    private boolean declaredOutside(VarAccess v) {
+      return !((ASTNode)v.decl()).beneath(closure);
+    }
+
+    private TypeAccess getTypeAccessFor(VarAccess v) {
       TypeAccess tp = new TypeAccess(v.type().name());
       tp.lockOn(v.type());
       table.add(tp);
+      return tp;
+    }
+
+    private void addInputParameter(VarAccess v) {
+      if(closure.hasInParameter(v.name()))
+	return;
+      TypeAccess tp = getTypeAccessFor(v);
       closure.addInParameter(new ParameterDeclaration(tp, v.name()));
       app.addInRand((VarAccess)v.fullCopy());
       closure.programRoot().flushCaches();
@@ -56,12 +78,22 @@ aspect ClosureConversion {
     private void addOutputParameter(VarAccess v) {
       if(closure.hasOutParameter(v.name()))
 	return;
-      TypeAccess tp = new TypeAccess(v.type().name());
-      tp.lockOn(v.type());
-      table.add(tp);
+      TypeAccess tp = getTypeAccessFor(v);
       closure.addOutParameter(new ParameterDeclaration(tp, v.name()));
       app.addOutRand((VarAccess)v.fullCopy());
       closure.programRoot().flushCaches();
+    }
+
+    private void addLocalVariable(VarAccess v) throws RefactoringException {
+      TypeAccess tp = getTypeAccessFor(v);
+      closure.getBlock().insertStmt(0, new VariableDeclaration(tp, v.name()));
+      closure.programRoot().flushCaches();
+    }
+
+    private void removeIfUnused(Variable decl) throws RefactoringException {
+      if(!decl.isLocalVariable())
+	return;
+      ((VariableDeclaration)decl).removeUnused();
     }
   }
 
