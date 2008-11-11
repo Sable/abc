@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import AST.ASTNode;
 import AST.Block;
-import AST.ConstCase;
-import AST.IntegerLiteral;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;

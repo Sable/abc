@@ -43,4 +43,7 @@ public class ExtractBlockTests extends ExtractBlock {
 	public void test10() {
 		runTest("test10");
 	}
+	public void test11() {
+		runTest("test11");
+	}
 }
