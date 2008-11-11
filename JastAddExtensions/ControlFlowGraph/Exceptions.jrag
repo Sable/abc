@@ -1,8 +1,8 @@
 aspect Exceptions {
 
   // set of uncaught exceptions thrown in an AST node and its children
-  syn lazy SmallSet ASTNode.uncaughtExceptions() {
-    SmallSet uncaughtExns = SmallSet.empty();
+  syn lazy SmallSet<TypeDecl> ASTNode.uncaughtExceptions() {
+    SmallSet<TypeDecl> uncaughtExns = SmallSet.empty();
     for(int i = 0; i < getNumChild(); i++)
       uncaughtExns = uncaughtExns.union(getChild(i).uncaughtExceptions());
     return uncaughtExns;
@@ -11,8 +11,8 @@ aspect Exceptions {
     = super.uncaughtExceptions().union(getExpr().type());
   eq TryStmt.uncaughtExceptions() {
     // Create a set containing the remaining throws after a throw-catch match
-    SmallSet uncaughtExns = getBlock().uncaughtExceptions();
-    SmallSet remainingExceptions = SmallSet.empty();
+    SmallSet<TypeDecl> uncaughtExns = getBlock().uncaughtExceptions();
+    SmallSet<TypeDecl> remainingExceptions = SmallSet.empty();
     for(Iterator itr = uncaughtExns.iterator(); itr.hasNext();) {
       TypeDecl exn = (TypeDecl)itr.next();
       boolean caught = false;
@@ -29,19 +29,19 @@ aspect Exceptions {
     return remainingExceptions;
   }
   eq MethodAccess.uncaughtExceptions() {
-    SmallSet uncaughtExns = super.uncaughtExceptions();
+    SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;
   }
   eq ConstructorAccess.uncaughtExceptions() {
-    SmallSet uncaughtExns = super.uncaughtExceptions();
+    SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;
   }
   eq ClassInstanceExpr.uncaughtExceptions() {
-    SmallSet uncaughtExns = super.uncaughtExceptions();
+    SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;

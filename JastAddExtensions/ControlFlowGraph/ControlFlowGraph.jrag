@@ -1,607 +1,633 @@
 aspect ControlFlowGraph {
-    interface CFGNode {
-    }
+  interface CFGNode {
+  }
 
-    Stmt implements CFGNode;
-    Expr implements CFGNode;
+  Stmt implements CFGNode;
+  Expr implements CFGNode;
+
+  private BodyDecl EntryStmt.host;
+  public EntryStmt.EntryStmt(BodyDecl host) {
+    this.host = host;
+  }
+  public boolean EntryStmt.equals(Object o) {
+    if(!(o instanceof EntryStmt))
+      return false;
+    EntryStmt stmt = (EntryStmt)o;
+    if(stmt.host == null)
+      return this.host == null;
+    return stmt.host.equals(this.host);
+  }
     
-	// *** API: entry and exit ***
+  private BodyDecl ExitStmt.host;
+  public ExitStmt.ExitStmt(BodyDecl host) {
+    this.host = host;
+  }
+  public boolean ExitStmt.equals(Object o) {
+    if(!(o instanceof ExitStmt))
+      return false;
+    ExitStmt stmt = (ExitStmt)o;
+    if(stmt.host == null)
+      return this.host == null;
+    return stmt.host.equals(this.host);
+  }
+    
+  // *** API: entry and exit ***
 
-    // artificial entry and exit statements using NTAs
-    syn nta Stmt BodyDecl.entry() = new EntryStmt();
-    syn nta Stmt BodyDecl.exit() = new ExitStmt();
+  // artificial entry and exit statements using NTAs
+  syn nta Stmt BodyDecl.entry() = new EntryStmt(this);
+  syn nta Stmt BodyDecl.exit() = new ExitStmt(this);
   
-    // *** Implementation: entry and exit ***
+  // *** Implementation: entry and exit ***
 
-    // the exit node does not have a successor
-    eq BodyDecl.exit().following() = SmallSet.empty();
-    // set exit node as the default successor
-    eq BodyDecl.getChild().following() = SmallSet.empty();
-    // propagate the exit node downwards
-    eq Program.getChild().exit() = null;
-    eq BodyDecl.getChild().exit() = exit();
-    inh CFGNode Stmt.exit();
-    // propagate the entry node downwards
-    eq Program.getChild().entry() = null;
-    eq BodyDecl.getChild().entry() = entry();
-    inh CFGNode Stmt.entry();
+  // the exit node does not have a successor
+  eq BodyDecl.exit().following() = SmallSet.empty();
+  // set exit node as the default successor
+  eq BodyDecl.getChild().following() = SmallSet.empty();
+  // propagate the exit node downwards
+  eq Program.getChild().exit() = null;
+  eq BodyDecl.getChild().exit() = exit();
+  inh CFGNode Stmt.exit();
+  // propagate the entry node downwards
+  eq Program.getChild().entry() = null;
+  eq BodyDecl.getChild().entry() = entry();
+  inh CFGNode Stmt.entry();
 
-    eq MethodDecl.getBlock().following() = SmallSet.empty().union(exit());
-    eq ConstructorDecl.getBlock().following() = SmallSet.empty().union(exit());
-    eq InstanceInitializer.getBlock().following() = SmallSet.empty().union(exit());
-    eq StaticInitializer.getBlock().following() = SmallSet.empty().union(exit());
+  eq MethodDecl.getBlock().following() = SmallSet.singleton((CFGNode)exit());
+  eq ConstructorDecl.getBlock().following() = SmallSet.singleton((CFGNode)exit());
+  eq InstanceInitializer.getBlock().following() = SmallSet.singleton((CFGNode)exit());
+  eq StaticInitializer.getBlock().following() = SmallSet.singleton((CFGNode)exit());
 
-    // insert block between entry and exit nodes
-    eq MethodDecl.entry().following() = SmallSet.empty().union(hasBlock() ? getBlock() : exit());
-    eq InstanceInitializer.entry().following() = SmallSet.empty().union(getBlock());
-    eq StaticInitializer.entry().following() = SmallSet.empty().union(getBlock());
-    eq ConstructorDecl.entry().following() = SmallSet.empty().union(getConstructorInvocation());
-    eq ConstructorDecl.getConstructorInvocation().following() = SmallSet.empty().union(getBlock());
+  // insert block between entry and exit nodes
+  eq MethodDecl.entry().following() = SmallSet.singleton((CFGNode)(hasBlock() ? getBlock() : exit()));
+  eq InstanceInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
+  eq StaticInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
+  eq ConstructorDecl.entry().following() = SmallSet.singleton((CFGNode)getConstructorInvocation());
+  eq ConstructorDecl.getConstructorInvocation().following() = SmallSet.singleton((CFGNode)getBlock());
 
-	// *** API predecessors ***
+  // *** API predecessors ***
 
-    coll SmallSet CFGNode.pred() [SmallSet.mutable()] with add root BodyDecl;
+  coll SmallSet<CFGNode> CFGNode.pred() [SmallSet.mutable()] with add root BodyDecl;
 
-	// *** Implementation predecessors ***
+  // *** Implementation predecessors ***
 
-    Stmt contributes this to CFGNode.pred() for each succ();
-    Expr contributes this to CFGNode.pred() for each succ();
+  Stmt contributes this to CFGNode.pred() for each succ();
+  Expr contributes this to CFGNode.pred() for each succ();
 
- 	// *** API: successors ***
+  // *** API: successors ***
 
-    syn lazy SmallSet Stmt.succ();
-    syn lazy SmallSet Expr.succ() = following();
+  syn lazy SmallSet<CFGNode> Stmt.succ();
+  syn lazy SmallSet<CFGNode> Expr.succ() = following();
    
-    // *** Implementation: successors ***
+  // *** Implementation: successors ***
 
- 	// Default successors is given by the helper attribute following() 
-	eq Stmt.succ() = following();
+  // Default successors is given by the helper attribute following() 
+  eq Stmt.succ() = following();
 	
 	
-	// *** API: following() ***
-    inh lazy SmallSet Expr.following();
-    eq Program.getChild().following() = SmallSet.empty();
+  // *** API: following() ***
+  inh lazy SmallSet<CFGNode> Expr.following();
+  eq Program.getChild().following() = SmallSet.empty();
 
-    inh lazy SmallSet Stmt.following();
+  inh lazy SmallSet<CFGNode> Stmt.following();
     
     
-    // *** API: first() ***
-    syn Expr Expr.first() = this; //lazy???   VarAccess/Literal
+  // *** API: first() ***
+  syn Expr Expr.first() = this; //lazy???   VarAccess/Literal
     
      	
-	// *** Expressions ***   
+  // *** Expressions ***   
 	
-	// Unary
-	eq Unary.first() = getOperand().first();
-	eq Unary.getOperand().following() = SmallSet.empty().union(this);
+  // Unary
+  eq Unary.first() = getOperand().first();
+  eq Unary.getOperand().following() = SmallSet.singleton((CFGNode)this);
 	
 		
-	// Binary
-	eq Binary.first() = getLeftOperand().first();
-	eq Binary.getLeftOperand().following() = SmallSet.empty().union(getRightOperand().first());
-	eq Binary.getRightOperand().following() = SmallSet.empty().union(this); // not needed (inherited attributes are automatically propagated to children unless redefined)
+  // Binary
+  eq Binary.first() = getLeftOperand().first();
+  eq Binary.getLeftOperand().following() = SmallSet.singleton((CFGNode)getRightOperand().first());
+  eq Binary.getRightOperand().following() = SmallSet.singleton((CFGNode)this); // not needed (inherited attributes are automatically propagated to children unless redefined)
 	
-	// ** Special case: LogicalExpr (&&, ||) ** [see below]
+  // ** Special case: LogicalExpr (&&, ||) ** [see below]
       
 		
 	
-	// AssignExpr
-    eq AssignExpr.first() = getDest().first();
-    eq AssignExpr.getDest().following() = SmallSet.empty().union(getSource().first());
-    eq AssignExpr.getSource().following() = SmallSet.empty().union(this);
+  // AssignExpr
+  eq AssignExpr.first() = getDest().first();
+  eq AssignExpr.getDest().following() = SmallSet.singleton((CFGNode)getSource().first());
+  eq AssignExpr.getSource().following() = SmallSet.singleton((CFGNode)this);
         
-	//AssignSimpleExpr	
-	//AssignMultiplicativeExpr	
-	//AssignAdditiveExpr	
-	//AssignShiftExpr	
-	//AssignBitwiseExpr
+  //AssignSimpleExpr	
+  //AssignMultiplicativeExpr	
+  //AssignAdditiveExpr	
+  //AssignShiftExpr	
+  //AssignBitwiseExpr
 	
 		
-	// InstanceOfExpr
-	eq InstanceOfExpr.first() = getExpr().first();
-	eq InstanceOfExpr.getExpr().following() = SmallSet.empty().union(this);
+  // InstanceOfExpr
+  eq InstanceOfExpr.first() = getExpr().first();
+  eq InstanceOfExpr.getExpr().following() = SmallSet.singleton((CFGNode)this);
 	
-	eq InstanceOfExpr.getTypeAccess().following() = SmallSet.empty();
+  eq InstanceOfExpr.getTypeAccess().following() = SmallSet.empty();
 	
-	// CastExpr
-	eq CastExpr.first() = getExpr().first();
-	eq CastExpr.getExpr().following() = SmallSet.empty().union(this);
+  // CastExpr
+  eq CastExpr.first() = getExpr().first();
+  eq CastExpr.getExpr().following() = SmallSet.singleton((CFGNode)this);
 	
-	eq CastExpr.getTypeAccess().following() = SmallSet.empty();
+  eq CastExpr.getTypeAccess().following() = SmallSet.empty();
 	
-	// ParExpr 
-	eq ParExpr.first() = getExpr().first();
-	eq ParExpr.getExpr().following() = SmallSet.empty().union(this);//following();
+  // ParExpr 
+  eq ParExpr.first() = getExpr().first();
+  eq ParExpr.getExpr().following() = SmallSet.singleton((CFGNode)this);//following();
 	
 	
-	// MethodAccess
-	eq MethodAccess.first() = getNumArg() == 0 ?
-		this : getArg(0).first();
-	eq MethodAccess.getArg(int i).following() = i < getNumArg()-1 ?
-		SmallSet.empty().union(getArg(i+1).first()) : SmallSet.empty().union(this);
+  // MethodAccess
+  eq MethodAccess.first() = getNumArg() == 0 ?
+    this : getArg(0).first();
+  eq MethodAccess.getArg(int i).following() = i < getNumArg()-1 ?
+    SmallSet.singleton((CFGNode)getArg(i+1).first()) : SmallSet.singleton((CFGNode)this);
 	
-	// ConstructorAccess
-	eq ConstructorAccess.first() = getNumArg() == 0 ?
-		this : getArg(0).first();
-	eq ConstructorAccess.getArg(int i).following() = i < getNumArg()-1 ?
-		SmallSet.empty().union(getArg(i+1).first()) : SmallSet.empty().union(this);
+  // ConstructorAccess
+  eq ConstructorAccess.first() = getNumArg() == 0 ?
+    this : getArg(0).first();
+  eq ConstructorAccess.getArg(int i).following() = i < getNumArg()-1 ?
+    SmallSet.singleton((CFGNode)getArg(i+1).first()) : SmallSet.singleton((CFGNode)this);
 					
-	// ClassInstanceExpr (the same as MethodAccess/ConstructorAccess)
-	eq ClassInstanceExpr.first() = getNumArg() == 0 ?
-		this : getArg(0).first();
-	eq ClassInstanceExpr.getArg(int i).following() = i < getNumArg()-1 ?
-		SmallSet.empty().union(getArg(i+1).first()) : SmallSet.empty().union(this);	
+  // ClassInstanceExpr (the same as MethodAccess/ConstructorAccess)
+  eq ClassInstanceExpr.first() = getNumArg() == 0 ?
+    this : getArg(0).first();
+  eq ClassInstanceExpr.getArg(int i).following() = i < getNumArg()-1 ?
+    SmallSet.singleton((CFGNode)getArg(i+1).first()) : SmallSet.singleton((CFGNode)this);	
 	
-	eq ClassInstanceExpr.getAccess().following() = SmallSet.empty();	
+  eq ClassInstanceExpr.getAccess().following() = SmallSet.empty();	
 		
-	// Dot
-	eq Dot.first() = getLeft().first();
-	eq Dot.getLeft().following() = SmallSet.empty().union(getRight().first());
-	eq Dot.getRight().following() = SmallSet.empty().union(this);//following();
+  // Dot
+  eq Dot.first() = getLeft().first();
+  eq Dot.getLeft().following() = SmallSet.singleton((CFGNode)getRight().first());
+  eq Dot.getRight().following() = SmallSet.singleton((CFGNode)this);//following();
 	
-	// ArrayAccess
-	eq ArrayAccess.first() = getExpr().first();
-	eq ArrayAccess.getExpr().following() = SmallSet.empty().union(this);//following();
+  // ArrayAccess
+  eq ArrayAccess.first() = getExpr().first();
+  eq ArrayAccess.getExpr().following() = SmallSet.singleton((CFGNode)this);//following();
 	
 	
-	// ArrayCreationExpr
-	eq ArrayCreationExpr.first() = getTypeAccess().first();
-	eq ArrayCreationExpr.getTypeAccess().following() = hasArrayInit() ?
-		SmallSet.empty().union(getArrayInit().first()) : SmallSet.empty().union(this);
-	eq ArrayCreationExpr.getArrayInit().following() = SmallSet.empty().union(this);
+  // ArrayCreationExpr
+  eq ArrayCreationExpr.first() = getTypeAccess().first();
+  eq ArrayCreationExpr.getTypeAccess().following() = hasArrayInit() ?
+    SmallSet.singleton((CFGNode)getArrayInit().first()) : SmallSet.singleton((CFGNode)this);
+  eq ArrayCreationExpr.getArrayInit().following() = SmallSet.singleton((CFGNode)this);
 
 	
-	// ArrayInit 
-	eq ArrayInit.first() = getNumInit() == 0 ?
-		this : getInit(0).first();
-	eq ArrayInit.getInit(int i).following() = i < getNumInit()-1 ?
-		SmallSet.empty().union(getInit(i+1).first()) : SmallSet.empty().union(this);
+  // ArrayInit 
+  eq ArrayInit.first() = getNumInit() == 0 ?
+    this : getInit(0).first();
+  eq ArrayInit.getInit(int i).following() = i < getNumInit()-1 ?
+    SmallSet.singleton((CFGNode)getInit(i+1).first()) : SmallSet.singleton((CFGNode)this);
 
 		
 		
-	// PrimitiveTypeAccess - default
-	// ArrayTypeAccess/ArrayTypeWithSizeAccess
-	eq ArrayTypeAccess.first() = getAccess().first();
-	eq ArrayTypeAccess.getAccess().following() = SmallSet.empty().union(this);//following();
-	eq ArrayTypeWithSizeAccess.getAccess().following() = SmallSet.empty().union(getExpr().first());
-	eq ArrayTypeWithSizeAccess.getExpr().following() = SmallSet.empty().union(this);//following();
+  // PrimitiveTypeAccess - default
+  // ArrayTypeAccess/ArrayTypeWithSizeAccess
+  eq ArrayTypeAccess.first() = getAccess().first();
+  eq ArrayTypeAccess.getAccess().following() = SmallSet.singleton((CFGNode)this);//following();
+  eq ArrayTypeWithSizeAccess.getAccess().following() = SmallSet.singleton((CFGNode)getExpr().first());
+  eq ArrayTypeWithSizeAccess.getExpr().following() = SmallSet.singleton((CFGNode)this);//following();
 	
 	
-	// ** Special case for Binary: LogicalExpr (&&, ||) **	
-    inh SmallSet Expr.followingWhenTrue();
-    inh SmallSet Expr.followingWhenFalse();
+  // ** Special case for Binary: LogicalExpr (&&, ||) **	
+  inh SmallSet Expr.followingWhenTrue();
+  inh SmallSet Expr.followingWhenFalse();
    
-    eq Program.getChild().followingWhenTrue() = SmallSet.empty();//=Program.following()?
-    eq Program.getChild().followingWhenFalse() = SmallSet.empty();//?
+  eq Program.getChild().followingWhenTrue() = SmallSet.empty();//=Program.following()?
+  eq Program.getChild().followingWhenFalse() = SmallSet.empty();//?
 
-    // AndLogicalExpr
-    // AndLogicalExpr.first() is not needed (same equation as in superclass)
-    eq AndLogicalExpr.getLeftOperand().followingWhenFalse() = followingWhenFalse();// not needed (inherited propagated automatically)      
-    eq AndLogicalExpr.getLeftOperand().followingWhenTrue() = 
-    	SmallSet.empty().union(getRightOperand().first());
-    eq AndLogicalExpr.getLeftOperand().following() =
-    	getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-    eq AndLogicalExpr.getRightOperand().following() = SmallSet.empty().union(this);//following(); // not needed (same as in superclass and automatically propagated)
+  // AndLogicalExpr
+  // AndLogicalExpr.first() is not needed (same equation as in superclass)
+  eq AndLogicalExpr.getLeftOperand().followingWhenFalse() = followingWhenFalse();// not needed (inherited propagated automatically)      
+  eq AndLogicalExpr.getLeftOperand().followingWhenTrue() = 
+    SmallSet.singleton((CFGNode)getRightOperand().first());
+  eq AndLogicalExpr.getLeftOperand().following() =
+    getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
+  eq AndLogicalExpr.getRightOperand().following() = SmallSet.singleton((CFGNode)this);//following(); // not needed (same as in superclass and automatically propagated)
       
-    // OrLogicalExpr
-    // OrLogicalExpr.first() is not needed (same equation as in superclass)
-    eq OrLogicalExpr.getLeftOperand().followingWhenTrue() = followingWhenTrue();
-    eq OrLogicalExpr.getLeftOperand().followingWhenFalse() = // not needed (inherited propagated automatically)
-    	SmallSet.empty().union(getRightOperand().first());     
-    eq OrLogicalExpr.getLeftOperand().following() =
-    	getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-    eq OrLogicalExpr.getRightOperand().following() = SmallSet.empty().union(this);//following(); // not needed (same as in superclass and automatically propagated)
+  // OrLogicalExpr
+  // OrLogicalExpr.first() is not needed (same equation as in superclass)
+  eq OrLogicalExpr.getLeftOperand().followingWhenTrue() = followingWhenTrue();
+  eq OrLogicalExpr.getLeftOperand().followingWhenFalse() = // not needed (inherited propagated automatically)
+    SmallSet.singleton((CFGNode)getRightOperand().first());     
+  eq OrLogicalExpr.getLeftOperand().following() =
+    getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
+  eq OrLogicalExpr.getRightOperand().following() = SmallSet.singleton((CFGNode)this);//following(); // not needed (same as in superclass and automatically propagated)
 
-    // ** followingWhenTrue()/followingWhenFalse() **
+  // ** followingWhenTrue()/followingWhenFalse() **
     
-	// Unary
-	eq Unary.getOperand().followingWhenTrue() = SmallSet.empty().union(this);
-	eq Unary.getOperand().followingWhenFalse() = SmallSet.empty().union(this);
+  // Unary
+  eq Unary.getOperand().followingWhenTrue() = SmallSet.singleton((CFGNode)this);
+  eq Unary.getOperand().followingWhenFalse() = SmallSet.singleton((CFGNode)this);
 			
-	// AssignExpr
-    eq AssignExpr.getSource().followingWhenTrue() = SmallSet.empty().union(this);
-    eq AssignExpr.getSource().followingWhenFalse() = SmallSet.empty().union(this);
+  // AssignExpr
+  eq AssignExpr.getSource().followingWhenTrue() = SmallSet.singleton((CFGNode)this);
+  eq AssignExpr.getSource().followingWhenFalse() = SmallSet.singleton((CFGNode)this);
     
-	// InstanceOfExpr
-	eq InstanceOfExpr.getExpr().followingWhenTrue() = SmallSet.empty().union(this);
-	eq InstanceOfExpr.getExpr().followingWhenFalse() = SmallSet.empty().union(this);
+  // InstanceOfExpr
+  eq InstanceOfExpr.getExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)this);
+  eq InstanceOfExpr.getExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)this);
 	
-	// CastExpr
-	eq CastExpr.getExpr().followingWhenTrue() = SmallSet.empty().union(this);
-	eq CastExpr.getExpr().followingWhenFalse() = SmallSet.empty().union(this);
+  // CastExpr
+  eq CastExpr.getExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)this);
+  eq CastExpr.getExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)this);
 	
-	// ParExpr 
-	eq ParExpr.getExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
-	eq ParExpr.getExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
+  // ParExpr 
+  eq ParExpr.getExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)this);//following();
+  eq ParExpr.getExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)this);//following();
 	
-	// MethodAccess
-	eq MethodAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
-	eq MethodAccess.getArg(int i).followingWhenFalse() = getArg(i).following();
+  // MethodAccess
+  eq MethodAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
+  eq MethodAccess.getArg(int i).followingWhenFalse() = getArg(i).following();
 	
-	// ConstructorAccess
-	eq ConstructorAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
-	eq ConstructorAccess.getArg(int i).followingWhenFalse() = getArg(i).following();
+  // ConstructorAccess
+  eq ConstructorAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
+  eq ConstructorAccess.getArg(int i).followingWhenFalse() = getArg(i).following();
 	
-	// ClassInstanceExpr (the same as MethodAccess/ConstructorAccess)
-	eq ClassInstanceExpr.getArg(int i).followingWhenTrue() = getArg(i).following();
-	eq ClassInstanceExpr.getArg(int i).followingWhenFalse() = getArg(i).following();
+  // ClassInstanceExpr (the same as MethodAccess/ConstructorAccess)
+  eq ClassInstanceExpr.getArg(int i).followingWhenTrue() = getArg(i).following();
+  eq ClassInstanceExpr.getArg(int i).followingWhenFalse() = getArg(i).following();
 	
-	// ArrayInit 
-	eq ArrayInit.getInit(int i).followingWhenTrue() = getInit(i).following();
-	eq ArrayInit.getInit(int i).followingWhenFalse() = getInit(i).following();
+  // ArrayInit 
+  eq ArrayInit.getInit(int i).followingWhenTrue() = getInit(i).following();
+  eq ArrayInit.getInit(int i).followingWhenFalse() = getInit(i).following();
 	
        
-	// ConditionalExpr (special)
-	eq ConditionalExpr.first() = getCondition().first();
-	eq ConditionalExpr.getCondition().followingWhenTrue() = SmallSet.empty().union(getTrueExpr().first());
-	eq ConditionalExpr.getCondition().followingWhenFalse() = SmallSet.empty().union(getFalseExpr().first());		
-	eq ConditionalExpr.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());	
-	eq ConditionalExpr.getTrueExpr().following() = SmallSet.empty().union(this);//following();
-	eq ConditionalExpr.getFalseExpr().following() = SmallSet.empty().union(this);//following();
+  // ConditionalExpr (special)
+  eq ConditionalExpr.first() = getCondition().first();
+  eq ConditionalExpr.getCondition().followingWhenTrue() = SmallSet.singleton((CFGNode)getTrueExpr().first());
+  eq ConditionalExpr.getCondition().followingWhenFalse() = SmallSet.singleton((CFGNode)getFalseExpr().first());		
+  eq ConditionalExpr.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());	
+  eq ConditionalExpr.getTrueExpr().following() = SmallSet.singleton((CFGNode)this);//following();
+  eq ConditionalExpr.getFalseExpr().following() = SmallSet.singleton((CFGNode)this);//following();
 	
-	eq ConditionalExpr.getTrueExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
-	eq ConditionalExpr.getTrueExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
-	eq ConditionalExpr.getFalseExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
-	eq ConditionalExpr.getFalseExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
+  eq ConditionalExpr.getTrueExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)this);//following();
+  eq ConditionalExpr.getTrueExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)this);//following();
+  eq ConditionalExpr.getFalseExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)this);//following();
+  eq ConditionalExpr.getFalseExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)this);//following();
 	
 	
 	
-	// *** Statements ***  
+  // *** Statements ***  
      
-    // Block
-	// If a block is empty the successor is the node given by following()
-	// or the first node amongst its child nodes. 
-    eq Block.succ() = getNumStmt() == 0 ? following() : SmallSet.empty().union(getStmt(0));
-	eq Block.getStmt(int i).following() = i == getNumStmt() - 1 ? 
-		following() : SmallSet.empty().union(getStmt(i + 1));   
+  // Block
+  // If a block is empty the successor is the node given by following()
+  // or the first node amongst its child nodes. 
+  eq Block.succ() = getNumStmt() == 0 ? following() : SmallSet.singleton((CFGNode)getStmt(0));
+  eq Block.getStmt(int i).following() = i == getNumStmt() - 1 ? 
+    following() : SmallSet.singleton((CFGNode)getStmt(i + 1));   
 	
-    // IfStmt
-    eq IfStmt.succ() = SmallSet.empty().union(getCondition().first());
-    eq IfStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getThen());
-    eq IfStmt.getCondition().followingWhenFalse() = hasElse() ? 
-    	SmallSet.empty().union(getElse()) : following();
-    eq IfStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());
-    eq IfStmt.getThen().following() = following();
-    eq IfStmt.getElse().following() = following();
+  // IfStmt
+  eq IfStmt.succ() = SmallSet.singleton((CFGNode)getCondition().first());
+  eq IfStmt.getCondition().followingWhenTrue() = SmallSet.singleton((CFGNode)getThen());
+  eq IfStmt.getCondition().followingWhenFalse() = hasElse() ? 
+    SmallSet.singleton((CFGNode)getElse()) : following();
+  eq IfStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());
+  eq IfStmt.getThen().following() = following();
+  eq IfStmt.getElse().following() = following();
 	
 		
-	// SwitchStmt
-	eq SwitchStmt.succ() = SmallSet.empty().union(getExpr().first());
-	// ConstCase & DefaultCase are handled in Block.getStmt(int i).following()	
-    eq SwitchStmt.getExpr().following() {
-    	Block b = getBlock();
-    	SmallSet set = SmallSet.empty().union(b); //???
-    	boolean hasDefault = false;
-        for(int i = 0; i < b.getNumStmt(); i++)
-        	if(b.getStmt(i) instanceof ConstCase)
-        		set = set.union(b.getStmt(i));
-        	else 
-        	if(b.getStmt(i) instanceof DefaultCase) {
-        		set = set.union(b.getStmt(i));
-        		hasDefault = true;
-        	}
-        if(!hasDefault) 
-        	set = set.union(following());
-        return set;
-  	}
-    eq SwitchStmt.getBlock().following() = following();
+  // SwitchStmt
+  eq SwitchStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
+  // ConstCase & DefaultCase are handled in Block.getStmt(int i).following()	
+  eq SwitchStmt.getExpr().following() {
+    Block b = getBlock();
+    SmallSet set = SmallSet.empty(); // b should _not_ be a successor of the expression; this helps catch malformed switch statements
+    boolean hasDefault = false;
+    for(int i = 0; i < b.getNumStmt(); i++)
+      if(b.getStmt(i) instanceof ConstCase)
+	set = set.union(b.getStmt(i));
+      else 
+	if(b.getStmt(i) instanceof DefaultCase) {
+	  set = set.union(b.getStmt(i));
+	  hasDefault = true;
+	}
+    if(!hasDefault) 
+      set = set.union(following());
+    return set;
+  }
+  eq SwitchStmt.getBlock().following() = following();
 	
-	// ConstCase
-    eq ConstCase.succ() = SmallSet.empty().union(getValue().first());
-    eq ConstCase.getValue().following() = following();
+  // ConstCase
+  eq ConstCase.succ() = SmallSet.singleton((CFGNode)getValue().first());
+  eq ConstCase.getValue().following() = following();
     
 	
-	//WhileStmt
-	eq WhileStmt.succ() = SmallSet.empty().union(getCondition().first());
-	eq WhileStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getStmt());
-	eq WhileStmt.getCondition().followingWhenFalse() = following();
-	eq WhileStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
-	eq WhileStmt.getStmt().following() = SmallSet.empty().union(getCondition().first());
+  //WhileStmt
+  eq WhileStmt.succ() = SmallSet.singleton((CFGNode)getCondition().first());
+  eq WhileStmt.getCondition().followingWhenTrue() = SmallSet.singleton((CFGNode)getStmt());
+  eq WhileStmt.getCondition().followingWhenFalse() = following();
+  eq WhileStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
+  eq WhileStmt.getStmt().following() = SmallSet.singleton((CFGNode)getCondition().first());
 	
-	//DoStmt
-	eq DoStmt.succ() = SmallSet.empty().union(getStmt());
-	eq DoStmt.getStmt().following() = SmallSet.empty().union(getCondition().first());
-	eq DoStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getStmt());
-	eq DoStmt.getCondition().followingWhenFalse() = following();
-	eq DoStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
+  //DoStmt
+  eq DoStmt.succ() = SmallSet.singleton((CFGNode)getStmt());
+  eq DoStmt.getStmt().following() = SmallSet.singleton((CFGNode)getCondition().first());
+  eq DoStmt.getCondition().followingWhenTrue() = SmallSet.singleton((CFGNode)getStmt());
+  eq DoStmt.getCondition().followingWhenFalse() = following();
+  eq DoStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
 
-	//for(;;); -> for(;true;);
-	eq ForStmt.succ() = getNumInitStmt() > 0 ?
-		SmallSet.empty().union(getInitStmt(0)) : 
-		SmallSet.empty().union(getCondition().first()); // InitStmt:Stmt* 		
-	eq ForStmt.getInitStmt(int i).following() = i < getNumInitStmt() - 1 ?
-		SmallSet.empty().union(getInitStmt(i + 1)) : 
-		SmallSet.empty().union(getCondition().first());			
-	eq ForStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getStmt());
-	eq ForStmt.getCondition().followingWhenFalse() = following();
-	eq ForStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
-	eq ForStmt.getStmt().following() = getNumUpdateStmt() > 0 ?
-		SmallSet.empty().union(getUpdateStmt(0)) : 
-		SmallSet.empty().union(getCondition().first()); // UpdateStmt:Stmt* 		
-	eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
-		SmallSet.empty().union(getUpdateStmt(i + 1)) :  
-		SmallSet.empty().union(getCondition().first());
+  //for(;;); -> for(;true;);
+  eq ForStmt.succ() = getNumInitStmt() > 0 ?
+    SmallSet.singleton((CFGNode)getInitStmt(0)) : 
+    SmallSet.singleton((CFGNode)getCondition().first()); // InitStmt:Stmt* 		
+  eq ForStmt.getInitStmt(int i).following() = i < getNumInitStmt() - 1 ?
+    SmallSet.singleton((CFGNode)getInitStmt(i + 1)) : 
+    SmallSet.singleton((CFGNode)getCondition().first());			
+  eq ForStmt.getCondition().followingWhenTrue() = SmallSet.singleton((CFGNode)getStmt());
+  eq ForStmt.getCondition().followingWhenFalse() = following();
+  eq ForStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
+  eq ForStmt.getStmt().following() = getNumUpdateStmt() > 0 ?
+    SmallSet.singleton((CFGNode)getUpdateStmt(0)) : 
+    SmallSet.singleton((CFGNode)getCondition().first()); // UpdateStmt:Stmt* 		
+  eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
+    SmallSet.singleton((CFGNode)getUpdateStmt(i + 1)) :  
+    SmallSet.singleton((CFGNode)getCondition().first());
 
-	// ExprStmt
-	eq ExprStmt.succ() = SmallSet.empty().union(getExpr().first());
-	eq ExprStmt.getExpr().following() = following();
+  // ExprStmt
+  eq ExprStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
+  eq ExprStmt.getExpr().following() = following();
 	
-	// LabeledStmt
-    eq LabeledStmt.succ() = SmallSet.empty().union(getStmt());
-    eq LabeledStmt.getStmt().following() = following();
+  // LabeledStmt
+  eq LabeledStmt.succ() = SmallSet.singleton((CFGNode)getStmt());
+  eq LabeledStmt.getStmt().following() = following();
     
-    // SynchronizedStmt
-    eq SynchronizedStmt.succ() = SmallSet.empty().union(getExpr().first());
-    eq SynchronizedStmt.getExpr().following() = SmallSet.empty().union(getBlock());
-    eq SynchronizedStmt.getBlock().following() = following();
+  // SynchronizedStmt
+  eq SynchronizedStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
+  eq SynchronizedStmt.getExpr().following() = SmallSet.singleton((CFGNode)getBlock());
+  eq SynchronizedStmt.getBlock().following() = following();
     
-    // AssertStmt ???
-    eq AssertStmt.succ() = SmallSet.empty().union(getfirst().first()); //first:Expr???
-    eq AssertStmt.getfirst().followingWhenTrue() = following();
-    eq AssertStmt.getfirst().followingWhenFalse() = 
-    	SmallSet.empty().union(hasExpr() ? getExpr().first() : exit());
-    eq AssertStmt.getfirst().following() = getfirst().followingWhenTrue().union(getfirst().followingWhenFalse());
-    eq AssertStmt.getExpr().following() = SmallSet.empty().union(exit());
+  // AssertStmt ???
+  eq AssertStmt.succ() = SmallSet.singleton((CFGNode)getfirst().first()); //first:Expr???
+  eq AssertStmt.getfirst().followingWhenTrue() = following();
+  eq AssertStmt.getfirst().followingWhenFalse() = 
+    SmallSet.singleton(hasExpr() ? getExpr().first() : exit());
+  eq AssertStmt.getfirst().following() = getfirst().followingWhenTrue().union(getfirst().followingWhenFalse());
+  eq AssertStmt.getExpr().following() = SmallSet.singleton((CFGNode)exit());
     
-    eq AssertStmt.getExpr().followingWhenTrue() = SmallSet.empty().union(exit());
-    eq AssertStmt.getExpr().followingWhenFalse() = SmallSet.empty().union(exit());
+  eq AssertStmt.getExpr().followingWhenTrue() = SmallSet.singleton((CFGNode)exit());
+  eq AssertStmt.getExpr().followingWhenFalse() = SmallSet.singleton((CFGNode)exit());
     
     
-	// EmptyStmt -- no need handling
-	
-	
-	// VarDeclStmt(delete)
+  // EmptyStmt -- no need handling
 	
 	
-	// VariableDeclaration
-    eq VariableDeclaration.succ() = hasInit() ?
-    	SmallSet.empty().union(getInit().first()) : following();
-    eq VariableDeclaration.getInit().following() = following();	
+  // VarDeclStmt(delete)
+	
+	
+  // VariableDeclaration
+  eq VariableDeclaration.succ() = hasInit() ?
+    SmallSet.singleton((CFGNode)getInit().first()) : following();
+  eq VariableDeclaration.getInit().following() = following();	
     
-    eq VariableDeclaration.getInit().followingWhenTrue() = following();
-    eq VariableDeclaration.getInit().followingWhenFalse() = following();
+  eq VariableDeclaration.getInit().followingWhenTrue() = following();
+  eq VariableDeclaration.getInit().followingWhenFalse() = following();
   
-    eq VariableDeclaration.getTypeAccess().following() = SmallSet.empty();//
+  eq VariableDeclaration.getTypeAccess().following() = SmallSet.empty();//
     
-    // *** Implementation helper attribute following() ***
+  // *** Implementation helper attribute following() ***
     
     
-    // *** ***
+  // *** ***
 
-    syn CFGNode Stmt.targetForContinue() = this;
-    eq WhileStmt.targetForContinue() = getCondition().first();
-    eq DoStmt.targetForContinue() = getCondition().first();
-    eq ForStmt.targetForContinue() = getNumUpdateStmt() > 0 ?
-    	getUpdateStmt(0) : (hasCondition() ?
-    	getCondition().first() : getStmt());   
-    eq LabeledStmt.targetForContinue() = getStmt().targetForContinue();
+  syn CFGNode Stmt.targetForContinue() = this;
+  eq WhileStmt.targetForContinue() = getCondition().first();
+  eq DoStmt.targetForContinue() = getCondition().first();
+  eq ForStmt.targetForContinue() = getNumUpdateStmt() > 0 ?
+    getUpdateStmt(0) : (hasCondition() ?
+			getCondition().first() : getStmt());   
+  eq LabeledStmt.targetForContinue() = getStmt().targetForContinue();
 
-	// If there is an enclosing finally block before the target of
-	// this break the successor is the finally block otherwise
-	// the following() of the target node.
-    eq BreakStmt.succ() = followingTarget(this, this);
+  // If there is an enclosing finally block before the target of
+  // this break the successor is the finally block otherwise
+  // the following() of the target node.
+  eq BreakStmt.succ() = followingTarget(this, this);
    
-    eq ContinueStmt.succ() = followingTarget(this, this);
+  eq ContinueStmt.succ() = followingTarget(this, this);
 
-    // Either pass through the first enclosing finally block
-    // or take the exit block
-    eq ReturnStmt.succ() = hasResult() ?
-    	SmallSet.empty().union(getResult().first()) : followingTarget(this, this);  	    
-    eq ReturnStmt.getResult().following() = followingTarget(this, this);
+  // Either pass through the first enclosing finally block
+  // or take the exit block
+  eq ReturnStmt.succ() = hasResult() ?
+    SmallSet.singleton((CFGNode)getResult().first()) : followingTarget(this, this);  	    
+  eq ReturnStmt.getResult().following() = followingTarget(this, this);
 
-    eq ReturnStmt.getResult().followingWhenTrue() = followingTarget(this, this);
-    eq ReturnStmt.getResult().followingWhenFalse() = followingTarget(this, this);
+  eq ReturnStmt.getResult().followingWhenTrue() = followingTarget(this, this);
+  eq ReturnStmt.getResult().followingWhenFalse() = followingTarget(this, this);
         
-    // Search for catch-finally .. catch-finally. 
-    // When no enclosing try-catch-finally take the exit block
-    eq ThrowStmt.succ() = SmallSet.empty().union(getExpr().first());
-    eq ThrowStmt.getExpr().following() = followingTarget(this, this);	   	
+  // Search for catch-finally .. catch-finally. 
+  // When no enclosing try-catch-finally take the exit block
+  eq ThrowStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
+  eq ThrowStmt.getExpr().following() = followingTarget(this, this);	   	
 
  
-    // TryStmt
-    eq TryStmt.succ() = SmallSet.empty().union(getBlock());  
-    eq TryStmt.getBlock().following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
-    eq TryStmt.getCatchClause(int index).following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
+  // TryStmt
+  eq TryStmt.succ() = SmallSet.singleton((CFGNode)getBlock());  
+  eq TryStmt.getBlock().following() = hasFinally() ? SmallSet.singleton((CFGNode)getFinally()) : following();
+  eq TryStmt.getCatchClause(int index).following() = hasFinally() ? SmallSet.singleton((CFGNode)getFinally()) : following();
     
-    // delete unnecessary edge for catch clause
-    eq ParameterDeclaration.getTypeAccess().following() = SmallSet.empty();
+  // delete unnecessary edge for catch clause
+  eq ParameterDeclaration.getTypeAccess().following() = SmallSet.empty();
     
  
-    eq TryStmt.getFinally().following() { 
+  eq TryStmt.getFinally().following() { 
 
-    	SmallSet branchesSet = collectBranches(); //all the branches accumulated at the end of Finally()
-    	SmallSet succSet = SmallSet.empty();
+    SmallSet branchesSet = collectBranches(); //all the branches accumulated at the end of Finally()
+    SmallSet succSet = SmallSet.empty();
     	 	
-    	for(Iterator Iter = branchesSet.iterator(); Iter.hasNext(); ) {
-    		Object o = Iter.next();
+    for(Iterator Iter = branchesSet.iterator(); Iter.hasNext(); ) {
+      Object o = Iter.next();
     	
-    		/*
-    		if(o instanceof EmptyStmt)
-    			System.err.println("**Branches in Finally: EmptyStmt");
-    		else
-    			System.err.println("**Branches in Finally:"+((Stmt)o).dumpString());
-    		*/
+      /*
+	if(o instanceof EmptyStmt)
+	System.err.println("**Branches in Finally: EmptyStmt");
+	else
+	System.err.println("**Branches in Finally:"+((Stmt)o).dumpString());
+      */
     		
-            //Stmt tryStmt = this;//(Stmt)(this.getParent().getParent());
-            if(o instanceof EmptyStmt) //can complete normally
-            	succSet = succSet.union(following());
-            else if(o instanceof ThrowStmt) 
-            	succSet = succSet.union(super.followingTarget((ThrowStmt)o, this));
-            else if(o instanceof BreakStmt)
-            	succSet = succSet.union(super.followingTarget((BreakStmt)o, this));
-            else if(o instanceof ContinueStmt)
-            	succSet = succSet.union(super.followingTarget((ContinueStmt)o, this));
-            else if(o instanceof ReturnStmt)
-                succSet = succSet.union(super.followingTarget((ReturnStmt)o, this));
-            else
-            	System.err.println("Wrong in TryStmt.getFinally().following()!!!");         
-    	}   
+      //Stmt tryStmt = this;//(Stmt)(this.getParent().getParent());
+      if(o instanceof EmptyStmt) //can complete normally
+	succSet = succSet.union(following());
+      else if(o instanceof ThrowStmt) 
+	succSet = succSet.union(super.followingTarget((ThrowStmt)o, this));
+      else if(o instanceof BreakStmt)
+	succSet = succSet.union(super.followingTarget((BreakStmt)o, this));
+      else if(o instanceof ContinueStmt)
+	succSet = succSet.union(super.followingTarget((ContinueStmt)o, this));
+      else if(o instanceof ReturnStmt)
+	succSet = succSet.union(super.followingTarget((ReturnStmt)o, this));
+      else
+	System.err.println("Wrong in TryStmt.getFinally().following()!!!");         
+    }   
     	
-    	return succSet;
-	}
+    return succSet;
+  }
 
-    // *** Implementation of helper attributes ***
+  // *** Implementation of helper attributes ***
 
-  	// Propagate upwards
-    syn SmallSet ASTNode.collectBranches() {
-        SmallSet collectBranches = SmallSet.empty();
-    	for(int i = 0; i < getNumChild(); i++)
-    		collectBranches = collectBranches.union(getChild(i).collectBranches());
-  	  	return collectBranches;
-    }
+  // Propagate upwards
+  syn SmallSet ASTNode.collectBranches() {
+    SmallSet collectBranches = SmallSet.empty();
+    for(int i = 0; i < getNumChild(); i++)
+      collectBranches = collectBranches.union(getChild(i).collectBranches());
+    return collectBranches;
+  }
     
-	eq ThrowStmt.collectBranches() = SmallSet.empty().union(this);
-	eq BreakStmt.collectBranches() = SmallSet.empty().union(this);
-	eq ContinueStmt.collectBranches() = SmallSet.empty().union(this);
-	eq ReturnStmt.collectBranches() = SmallSet.empty().union(this);
+  eq ThrowStmt.collectBranches() = SmallSet.singleton((CFGNode)this);
+  eq BreakStmt.collectBranches() = SmallSet.singleton((CFGNode)this);
+  eq ContinueStmt.collectBranches() = SmallSet.singleton((CFGNode)this);
+  eq ReturnStmt.collectBranches() = SmallSet.singleton((CFGNode)this);
 	
-	eq BranchTargetStmt.collectBranches() {
-		SmallSet set = super.collectBranches();
-		SmallSet targetSet = SmallSet.empty();
-		//delete 'target' BreakStmt/ContinueStmt in BranchTargetStmt
-		//suppose: try{ while{break;} } finally{}
-		for(Iterator Iter = set.iterator(); Iter.hasNext(); ) {
-			Object o = Iter.next();   		
-    		if(o instanceof BreakStmt && this == ((BreakStmt)o).targetStmt())
-    			continue;
-    		else if(o instanceof ContinueStmt && this == ((ContinueStmt)o).targetStmt())
-    			continue;  		
-    		else
-    			targetSet = targetSet.union(o);
-		}
-		return targetSet;
-	}
+  eq BranchTargetStmt.collectBranches() {
+    SmallSet set = super.collectBranches();
+    SmallSet targetSet = SmallSet.empty();
+    //delete 'target' BreakStmt/ContinueStmt in BranchTargetStmt
+    //suppose: try{ while{break;} } finally{}
+    for(Iterator Iter = set.iterator(); Iter.hasNext(); ) {
+      Object o = Iter.next();   		
+      if(o instanceof BreakStmt && this == ((BreakStmt)o).targetStmt())
+	continue;
+      else if(o instanceof ContinueStmt && this == ((ContinueStmt)o).targetStmt())
+	continue;  		
+      else
+	targetSet = targetSet.union(o);
+    }
+    return targetSet;
+  }
 	
-	eq TryStmt.collectBranches() {
-		// Try
-		SmallSet branchesInTry = getBlock().collectBranches(); //add try
-		EmptyStmt emptyStmt = new EmptyStmt();
-		if(getBlock().canCompleteNormally()){
-			branchesInTry = branchesInTry.union(emptyStmt); //try_normally
-			//System.err.println("-Block "+getBlock().uniqueIndex()+" can complete normally");
-		}
-		//else
-			//System.err.println("-Block "+getBlock().uniqueIndex()+" can NOT complete normally");
+  eq TryStmt.collectBranches() {
+    // Try
+    SmallSet branchesInTry = getBlock().collectBranches(); //add try
+    EmptyStmt emptyStmt = new EmptyStmt();
+    if(getBlock().canCompleteNormally()){
+      branchesInTry = branchesInTry.union(emptyStmt); //try_normally
+      //System.err.println("-Block "+getBlock().uniqueIndex()+" can complete normally");
+    }
+    //else
+    //System.err.println("-Block "+getBlock().uniqueIndex()+" can NOT complete normally");
 		
-		// Catch
-        SmallSet remainingBranches = SmallSet.empty();
-        for (Iterator itr = branchesInTry.iterator(); itr.hasNext();) {
-        	Object o = itr.next();       	
+    // Catch
+    SmallSet remainingBranches = SmallSet.empty();
+    for (Iterator itr = branchesInTry.iterator(); itr.hasNext();) {
+      Object o = itr.next();       	
         	
-        	/*
-        	if(o instanceof EmptyStmt)
-    			System.err.println("**Branches in Try: EmptyStmt");
-        	else
-        		System.err.println("**Branches in Try:"+((Stmt)o).dumpString());
-        	*/
+      /*
+	if(o instanceof EmptyStmt)
+	System.err.println("**Branches in Try: EmptyStmt");
+	else
+	System.err.println("**Branches in Try:"+((Stmt)o).dumpString());
+      */
         	
-        	if(o instanceof ThrowStmt) {
-        		ThrowStmt throwStmt = (ThrowStmt)o;
-        		boolean caught = false;
-            	for (int i = 0; i < getNumCatchClause() && !caught; i++) {
-            		if(getCatchClause(i).handles(throwStmt.getExpr().type())) {
-            			caught = true;
-            			remainingBranches = //add catch
-            				remainingBranches.union(getCatchClause(i).getBlock().collectBranches());
-            			if(getCatchClause(i).getBlock().canCompleteNormally()){
-            				//System.err.println("Catch can complete normally!!!");
-            				remainingBranches = remainingBranches.union(emptyStmt);  //catch_normally
-            			}
-            		}
-            	}
-    	     	if (!caught) 
-    	     		remainingBranches = remainingBranches.union(throwStmt);  		
-        	}
-        	else
-        		remainingBranches = remainingBranches.union(o);   	
-        }
-        
-        /*
-        //---test---
-        for (Iterator itr = remainingBranches.iterator(); itr.hasNext();) {
-        	Object o = itr.next();       	        	
-        	if(o instanceof EmptyStmt)
-    			System.err.println("**Branches in Remain: EmptyStmt");
-        	else
-        		System.err.println("**Branches in Remain:"+((Stmt)o).dumpString());
-        }       
-        //-----------
-        */
-        
-        if(!hasFinally()) return remainingBranches;
-        	    
-        // hasFinally
-        SmallSet branchesInFinally = SmallSet.empty();
-        SmallSet branchesInAll = SmallSet.empty();
-        
-        // Ensure that branchesInFinally does not contain EmptyStmt
-        for(Iterator itr = getFinally().collectBranches().iterator(); itr.hasNext();) {
-        	Object o = itr.next();       	        	
-        	if(!(o instanceof EmptyStmt))
-        		branchesInFinally = branchesInFinally.union(o);
-        }
-        	
-        if(getFinally().canCompleteNormally()) { 
-        	// branches above Finally are available
-        	branchesInAll = branchesInAll.union(remainingBranches);
-        	// branches(in Finally) except EmptyStmt can replace the branches above
-        	branchesInAll = branchesInAll.union(branchesInFinally);
-        	
-        	//System.err.println("Finally "+getFinally().uniqueIndex()+" can complete normally");
-        }
-        else{
-        	//Branches in Finally except EmptyStmt replace all the possible branches above 
-        	branchesInAll = branchesInAll.union(branchesInFinally);
-        	//System.err.println("Finally "+getFinally().uniqueIndex()+" can NOT complete normally");
-        }        	     
-        
-        return branchesInAll;
-		      
+      if(o instanceof ThrowStmt) {
+	ThrowStmt throwStmt = (ThrowStmt)o;
+	boolean caught = false;
+	for (int i = 0; i < getNumCatchClause() && !caught; i++) {
+	  if(getCatchClause(i).handles(throwStmt.getExpr().type())) {
+	    caught = true;
+	    remainingBranches = //add catch
+	      remainingBranches.union(getCatchClause(i).getBlock().collectBranches());
+	    if(getCatchClause(i).getBlock().canCompleteNormally()){
+	      //System.err.println("Catch can complete normally!!!");
+	      remainingBranches = remainingBranches.union(emptyStmt);  //catch_normally
+	    }
+	  }
 	}
-	
-	
-    public SmallSet ASTNode.followingTarget(Stmt branch, ASTNode child) {
-        if(getParent() != null)
-        	return getParent().followingTarget(branch, this);
-        return null;
+	if (!caught) 
+	  remainingBranches = remainingBranches.union(throwStmt);  		
+      }
+      else
+	remainingBranches = remainingBranches.union(o);   	
     }
+        
+    /*
+    //---test---
+    for (Iterator itr = remainingBranches.iterator(); itr.hasNext();) {
+    Object o = itr.next();       	        	
+    if(o instanceof EmptyStmt)
+    System.err.println("**Branches in Remain: EmptyStmt");
+    else
+    System.err.println("**Branches in Remain:"+((Stmt)o).dumpString());
+    }       
+    //-----------
+    */
+        
+    if(!hasFinally()) return remainingBranches;
+        	    
+    // hasFinally
+    SmallSet branchesInFinally = SmallSet.empty();
+    SmallSet branchesInAll = SmallSet.empty();
+        
+    // Ensure that branchesInFinally does not contain EmptyStmt
+    for(Iterator itr = getFinally().collectBranches().iterator(); itr.hasNext();) {
+      Object o = itr.next();       	        	
+      if(!(o instanceof EmptyStmt))
+	branchesInFinally = branchesInFinally.union(o);
+    }
+        	
+    if(getFinally().canCompleteNormally()) { 
+      // branches above Finally are available
+      branchesInAll = branchesInAll.union(remainingBranches);
+      // branches(in Finally) except EmptyStmt can replace the branches above
+      branchesInAll = branchesInAll.union(branchesInFinally);
+        	
+      //System.err.println("Finally "+getFinally().uniqueIndex()+" can complete normally");
+    }
+    else{
+      //Branches in Finally except EmptyStmt replace all the possible branches above 
+      branchesInAll = branchesInAll.union(branchesInFinally);
+      //System.err.println("Finally "+getFinally().uniqueIndex()+" can NOT complete normally");
+    }        	     
+        
+    return branchesInAll;
+		      
+  }
+	
+	
+  public SmallSet ASTNode.followingTarget(Stmt branch, ASTNode child) {
+    if(getParent() != null)
+      return getParent().followingTarget(branch, this);
+    return null;
+  }
 
-    // The end for break/continue 
-    public SmallSet BranchTargetStmt.followingTarget(Stmt branch, ASTNode child) {
-    	if(branch instanceof BreakStmt && this == ((BreakStmt)branch).targetStmt())
-    		return this.following();
-    	else if(branch instanceof ContinueStmt && this == ((ContinueStmt)branch).targetStmt())
-    		return SmallSet.empty().union(this.targetForContinue());
-    	else // ReturnStmt & ThrowStmt
-    		return super.followingTarget(branch, this);    	
-    }
+  // The end for break/continue 
+  public SmallSet BranchTargetStmt.followingTarget(Stmt branch, ASTNode child) {
+    if(branch instanceof BreakStmt && this == ((BreakStmt)branch).targetStmt())
+      return this.following();
+    else if(branch instanceof ContinueStmt && this == ((ContinueStmt)branch).targetStmt())
+      return SmallSet.singleton(this.targetForContinue());
+    else // ReturnStmt & ThrowStmt
+      return super.followingTarget(branch, this);    	
+  }
     
-    // The end for throw/return
-    public SmallSet BodyDecl.followingTarget(Stmt branch, ASTNode child) {
-    	return SmallSet.empty().union(exit());  	
-    }
+  // The end for throw/return
+  public SmallSet BodyDecl.followingTarget(Stmt branch, ASTNode child) {
+    return SmallSet.singleton((CFGNode)exit());  	
+  }
     
-    public SmallSet TryStmt.followingTarget(Stmt branch, ASTNode child) {
+  public SmallSet TryStmt.followingTarget(Stmt branch, ASTNode child) {
     	
-    	if(child == getBlock() && branch instanceof ThrowStmt){
-    	    for(int i = 0; i < getNumCatchClause(); i++) 
-    	    	if(getCatchClause(i).handles(((ThrowStmt)branch).getExpr().type())) 
-    	            return SmallSet.empty().union(getCatchClause(i).getBlock());   	         	          
-    	}    
+    if(child == getBlock() && branch instanceof ThrowStmt){
+      for(int i = 0; i < getNumCatchClause(); i++) 
+	if(getCatchClause(i).handles(((ThrowStmt)branch).getExpr().type())) 
+	  return SmallSet.singleton((CFGNode)getCatchClause(i).getBlock());   	         	          
+    }    
     	
-    	/*
-    	if(hasFinally() && child.getChild(0) == getFinally())
-    		return super.followingTarget(branch, this);  		  
-    	*/
+    /*
+      if(hasFinally() && child.getChild(0) == getFinally())
+      return super.followingTarget(branch, this);  		  
+    */
     	
-    	//TryStmt-Opt-Block(Finally)
-    	if(hasFinally() && child.getChild(0) != getFinally())
-    		return SmallSet.empty().union(getFinally());
-    	else{  // include child.getChild(0) == getFinally()
-    		//System.err.println("super");
-    		return super.followingTarget(branch, this);			
-    	}
-    	
+    //TryStmt-Opt-Block(Finally)
+    if(hasFinally() && child.getChild(0) != getFinally())
+      return SmallSet.singleton((CFGNode)getFinally());
+    else{  // include child.getChild(0) == getFinally()
+      //System.err.println("super");
+      return super.followingTarget(branch, this);			
     }
+    	
+  }
     
- }
+}

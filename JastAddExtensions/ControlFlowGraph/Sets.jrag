@@ -238,10 +238,13 @@ class BitSet {
     }
   }
 
-  class SmallSet {
-    HashSet set = new HashSet();
-    public Iterator iterator() { return set.iterator(); }
-    public static SmallSet empty() { return emptySet; }
+  class SmallSet<T> implements Iterable<T> {
+    HashSet<T> set = new HashSet<T>();
+    public String toString() { return set.toString(); }
+    public Iterator<T> iterator() { return set.iterator(); }
+    @SuppressWarnings("unchecked")
+    public static <T> SmallSet<T> empty() { return emptySet; }
+    @SuppressWarnings("unchecked")
     private static SmallSet emptySet = new SmallSet() {
       public boolean equals(Object o) { return o instanceof SmallSet && ((SmallSet)o).isEmpty(); }
       public SmallSet union(SmallSet set) { return set; }
@@ -251,8 +254,11 @@ class BitSet {
       public SmallSet intersect(SmallSet set) { return this; }
       public boolean isEmpty() { return true; }
     };
-    public static SmallSet full() { return fullSet; }
+    @SuppressWarnings("unchecked")
+    public static <T> SmallSet<T> full() { return fullSet; }
+    @SuppressWarnings("unchecked")
     private static SmallSet fullSet = new SmallSet() {
+      public String toString() { return "full set"; }
       public SmallSet union(SmallSet set) { return this; }
       public SmallSet union(Object element) { return this; }
       public SmallSet compl(SmallSet set) {
@@ -267,46 +273,46 @@ class BitSet {
 
     protected SmallSet() {
     }
-    public SmallSet union(SmallSet set) {
+    public SmallSet<T> union(SmallSet<T> set) {
       if(set.isEmpty() || this.equals(set))
         return this;
-      SmallSet newSet = new SmallSet();
+      SmallSet<T> newSet = new SmallSet<T>();
       newSet.set.addAll(this.set);
       newSet.set.addAll(set.set);
       return newSet;
     }
     
-    public SmallSet union(Object element) {
+    public SmallSet<T> union(T element) {
       if(contains(element))
         return this;
-      SmallSet newSet = new SmallSet();
+      SmallSet<T> newSet = new SmallSet<T>();
       newSet.set.addAll(this.set);
       newSet.set.add(element);
       return newSet;
     }
     
-    public SmallSet compl(SmallSet set) {
+    public SmallSet<T> compl(SmallSet<T> set) {
       if(set.isEmpty())
         return this;
-      SmallSet newSet = new SmallSet();
+      SmallSet<T> newSet = new SmallSet<T>();
       newSet.set.addAll(this.set);
       newSet.set.removeAll(set.set);
       return newSet;
     }
     
-    public SmallSet compl(Object element) {
+    public SmallSet<T> compl(Object element) {
       if(!set.contains(element))
         return this;
-      SmallSet newSet = new SmallSet();
+      SmallSet<T> newSet = new SmallSet<T>();
       newSet.set.addAll(this.set);
       newSet.set.remove(element);
       return newSet;
     }
 
-    public SmallSet intersect(SmallSet set) {
+    public SmallSet<T> intersect(SmallSet<T> set) {
       if(this.equals(set) || set == fullSet)
         return this;
-      SmallSet newSet = new SmallSet();
+      SmallSet<T> newSet = new SmallSet<T>();
       newSet.set.addAll(this.set);
       newSet.set.retainAll(set.set);
       return newSet;
@@ -316,11 +322,12 @@ class BitSet {
       return set.contains(o);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
       if (o == null) return false;
       if(this == o) return true;
       if(o instanceof SmallSet) {
-        SmallSet set = (SmallSet)o;
+        SmallSet<T> set = (SmallSet)o;
         return this.set.equals(set.set);
       }
       return super.equals(o);
@@ -329,14 +336,19 @@ class BitSet {
     public boolean isEmpty() {
       return set.isEmpty();
     }
-    public void add(SmallSet set) {
+    public void add(SmallSet<T> set) {
       this.set.addAll(set.set);
     }
-    public void add(Object o) {
+    public void add(T o) {
       this.set.add(o);
     }
-    public static SmallSet mutable() {
-      return new SmallSet();
+    public static <T> SmallSet<T> mutable() {
+      return new SmallSet<T>();
+    }
+    public static <T> SmallSet<T> singleton(T elt) {
+      SmallSet<T> res = new SmallSet<T>();
+      res.add(elt);
+      return res;
     }
   }
 
