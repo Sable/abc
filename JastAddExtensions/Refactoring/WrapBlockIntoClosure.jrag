@@ -25,7 +25,7 @@
 
 aspect WrapBlockIntoClosure {
 
-  public Closure Block.wrapIntoClosure() throws RefactoringException {
+  public ClosureInvocation Block.wrapIntoClosure() throws RefactoringException {
     return new WrapBlockIntoClosureRefactoring(this).execute();
   }
 
@@ -38,15 +38,21 @@ aspect WrapBlockIntoClosure {
       this.table = new AdjustmentTable();
     }
     
-    public Closure execute() throws RefactoringException {
+    public ClosureInvocation execute() throws RefactoringException {
       block.lockAllCFlow(table);
       // create a closure without parameters returning void and throwing all
       // uncaught exceptions of block
       List<Access> exns = computeUncaughtExceptions();
-      Closure cl = new Closure(new List(), new List(), 
-			       new PrimitiveTypeAccess("void"), exns,
-			       null);
-      block.replaceWith(new ExprStmt(new Application(cl, new List<Expr>(), new List<Expr>())));
+      ClosureInvocation cl = 
+	new ClosureInvocation(
+	  new List(),                      // input parameters
+	  new List(),                      // output parameters
+          new PrimitiveTypeAccess("void"), // return type
+          exns,                            // thrown exceptions
+	  null,                            // body (to be filled in shortly)
+          new List<Expr>(),                // input arguments
+          new List<Expr>());               // output arguments
+      block.replaceWith(new ExprStmt(cl));
       cl.setBlock(block);
       block.programRoot().flushCaches();
       table.adjust();

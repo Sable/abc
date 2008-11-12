@@ -1,19 +1,14 @@
 aspect EliminateOutParams {
-  public void Closure.eliminateOutParams() throws RefactoringException {
+  public void ClosureInvocation.eliminateOutParams() throws RefactoringException {
     new EliminateOutParamsRefactoring(this).execute();
   }
 
   class EliminateOutParamsRefactoring {
-    private Closure closure;
-    private Application app;
+    private ClosureInvocation closure;
     private AdjustmentTable table;
 
-    public EliminateOutParamsRefactoring(Closure closure) throws RefactoringException {
+    public EliminateOutParamsRefactoring(ClosureInvocation closure) {
       this.closure = closure;
-      if(closure.getParent() instanceof Application)
-	this.app = (Application)closure.getParent();
-      else
-	throw new RefactoringException("cannot eliminate out parameters of this closure");
       table = new AdjustmentTable();
     }
 
@@ -23,18 +18,18 @@ aspect EliminateOutParams {
       if(closure.getNumOutParameter() > 1)
 	throw new RefactoringException("ambiguous return value");
       ParameterDeclaration parm = closure.getOutParameter(0);
-      if(!(app.getOutRand(0) instanceof VarAccess))
+      if(!(closure.getOutArg(0) instanceof VarAccess))
 	throw new RefactoringException("cannot eliminate out parameter");
-      VarAccess v = (VarAccess)app.getOutRand(0);
+      VarAccess v = (VarAccess)closure.getOutArg(0);
       closure.setOutParameterList(new List<ParameterDeclaration>());
       closure.setReturnType(v.type().getLockedAccess(table));
       if(!closure.hasInParameter(v.name()))
 	closure.getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
       closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
-      app.setOutRandList(new List<Expr>());
+      closure.setOutArgList(new List<Expr>());
       AssignExpr assgn = new AssignSimpleExpr(v, null);
-      app.replaceWith(assgn);
-      assgn.setSource(app);
+      closure.replaceWith(assgn);
+      assgn.setSource(closure);
       closure.programRoot().flushCaches();
       table.adjust();
     }

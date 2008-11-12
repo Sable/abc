@@ -1,23 +1,18 @@
 aspect ExtractClosureToMethod {
-  public void Closure.extractToMethod(String visibility, String name) throws RefactoringException {
+  public void ClosureInvocation.extractToMethod(String visibility, String name) throws RefactoringException {
     new ExtractClosureToMethodRefactoring(this, visibility, name).execute();
   }
 
   class ExtractClosureToMethodRefactoring {
-    private Closure closure;
-    private Application app;
+    private ClosureInvocation closure;
     private String visibility;
     private String name;
     private BodyDecl bodydecl;
     private TypeDecl typedecl;
     private AdjustmentTable table;
 
-    public ExtractClosureToMethodRefactoring(Closure closure, String visibility, String name)
-      throws RefactoringException {
+    public ExtractClosureToMethodRefactoring(ClosureInvocation closure, String visibility, String name) {
       this.closure = closure;
-      if(!(closure.getParent() instanceof Application))
-	throw new RefactoringException("cannot extract closure outside application");
-      this.app = (Application)closure.getParent();
       this.visibility = visibility;
       this.name = name;
       this.bodydecl = closure.hostBodyDecl();
@@ -36,8 +31,8 @@ aspect ExtractClosureToMethod {
 		       closure.getExceptions(), 
 		       new Opt(closure.getBlock()));
       typedecl.addMethod(md, false, false, false);
-      MethodAccess ma = md.getLockedAccess(table, app.getInRandList());
-      app.replaceWith(ma);
+      MethodAccess ma = md.getLockedAccess(table, closure.getInArgList());
+      closure.replaceWith(ma);
       typedecl.programRoot().flushCaches();
       table.adjust();
     }

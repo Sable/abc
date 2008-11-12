@@ -1,24 +1,20 @@
 aspect ClosureConversion {
-  public Closure Closure.convert() throws RefactoringException {
+  public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
     return new ClosureConversionRefactoring(this).execute();
   }
 
   class ClosureConversionRefactoring {
-    private Closure closure;
-    private Application app;
+    private ClosureInvocation closure;
     private java.util.Set<VarAccess> local_accesses;
     private AdjustmentTable table;
 
-    public ClosureConversionRefactoring(Closure closure) throws RefactoringException {
+    public ClosureConversionRefactoring(ClosureInvocation closure) {
       this.closure = closure;
-      if(!(closure.getParent() instanceof Application))
-	throw new RefactoringException("only closures in applications can be converted");
-      this.app = (Application)closure.getParent();
       this.local_accesses = closure.collectLocalAccesses();
       this.table = new AdjustmentTable();
     }
 
-    public Closure execute() throws RefactoringException {
+    public ClosureInvocation execute() throws RefactoringException {
       for(VarAccess v : local_accesses) {
 	if(hasIncomingDataflowEdge(v))
 	  addInputParameter(v);
@@ -26,26 +22,18 @@ aspect ClosureConversion {
 	  addOutputParameter(v);
       }
       for(VarAccess v : local_accesses) {
-	if(!closure.hasOutParameter(v.name()) &&
-	   hasNoIncomingDataflow(v) && declaredOutside(v)) {
-	  Variable decl = v.decl();
+	if(declaredOutside(v))
 	  addLocalVariable(v);
-	  removeIfUnused(decl);
-	}
       }
       table.adjust();
       return closure;
     }
 
     private boolean hasIncomingDataflowEdge(VarAccess v) {
-      for(CFGNode u : v.reachingDefinitions())
-	if(!((ASTNode)u).beneath(closure))
+      for(ASTNode u : v.reachingDefinitions())
+	if(!u.beneath(closure))
 	  return true;
       return false;
-    }
-
-    private boolean hasNoIncomingDataflow(VarAccess v) {
-      return v.reachingDefinitions().isEmpty();
     }
 
     private boolean hasOutgoingDataflowEdge(VarAccess v) {
@@ -59,41 +47,44 @@ aspect ClosureConversion {
       return !((ASTNode)v.decl()).beneath(closure);
     }
 
-    private TypeAccess getTypeAccessFor(VarAccess v) {
-      TypeAccess tp = new TypeAccess(v.type().name());
-      tp.lockOn(v.type());
-      table.add(tp);
-      return tp;
-    }
-
     private void addInputParameter(VarAccess v) {
       if(closure.hasInParameter(v.name()))
 	return;
-      TypeAccess tp = getTypeAccessFor(v);
-      closure.addInParameter(new ParameterDeclaration(tp, v.name()));
-      app.addInRand((VarAccess)v.fullCopy());
-      closure.programRoot().flushCaches();
+      closure.addInParameter(
+        new ParameterDeclaration(
+          v.type().getLockedAccess(table), 
+	  v.name()
+        )
+      );
+      closure.addInArg((VarAccess)v.fullCopy());
+      flushCaches();
     }
 
     private void addOutputParameter(VarAccess v) {
       if(closure.hasOutParameter(v.name()))
 	return;
-      TypeAccess tp = getTypeAccessFor(v);
-      closure.addOutParameter(new ParameterDeclaration(tp, v.name()));
-      app.addOutRand((VarAccess)v.fullCopy());
-      closure.programRoot().flushCaches();
+      closure.addOutParameter(
+        new ParameterDeclaration(
+	  v.type().getLockedAccess(table), 
+          v.name()
+        )
+      );
+      closure.addOutArg((VarAccess)v.fullCopy());
+      flushCaches();
     }
 
     private void addLocalVariable(VarAccess v) throws RefactoringException {
-      TypeAccess tp = getTypeAccessFor(v);
-      closure.getBlock().insertStmt(0, new VariableDeclaration(tp, v.name()));
-      closure.programRoot().flushCaches();
+      closure.getBlock().insertStmt(0, 
+        new VariableDeclaration(
+	  v.type().getLockedAccess(table), 
+          v.name()
+        )
+      );
+      flushCaches();
     }
 
-    private void removeIfUnused(Variable decl) throws RefactoringException {
-      if(!decl.isLocalVariable())
-	return;
-      ((VariableDeclaration)decl).removeUnused();
+    private void flushCaches() {
+      closure.programRoot().flushCaches();
     }
   }
 

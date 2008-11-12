@@ -1,8 +1,8 @@
 class A {
   void m() {
-    λ () : void {
+    (λ () : void {
       System.out.println();
-    }();
+    })@();
   }
   A() {
     super();

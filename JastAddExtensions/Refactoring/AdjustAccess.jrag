@@ -111,7 +111,12 @@ aspect AdjustAccess {
 	
 	public boolean Variable.accessibleFrom(Expr e);
 	public boolean FieldDeclaration.accessibleFrom(Expr e) {
-		return e.mayAccess(this);
+	  if(isFinal() && e instanceof VarAccess) {
+	    VarAccess v = (VarAccess)e;
+	    if(v.isDest() && !v.enclosingBodyDecl().isInitializing())
+	      return false;
+	  }
+	  return e.mayAccess(this);
 	}
 	public boolean VariableDeclaration.accessibleFrom(Expr e) {
 		return hostType() == e.hostType() || isFinal();
@@ -157,5 +162,11 @@ aspect AdjustAccess {
 			this.unqualifiedScope().replaceWith(expr);
 		}
 	}
+
+	syn boolean BodyDecl.isInitializing() = false;
+	eq ConstructorDecl.isInitializing() = true;
+	eq InstanceInitializer.isInitializing() = true;
+	eq StaticInitializer.isInitializing() = true;
+	eq FieldDeclaration.isInitializing() = hasInit();
 
 }

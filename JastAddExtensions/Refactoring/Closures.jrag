@@ -1,6 +1,6 @@
 aspect Closures {
-  public void Closure.toString(StringBuffer s) {
-    s.append("λ (");
+  public void ClosureInvocation.toString(StringBuffer s) {
+    s.append("(λ (");
     if(getNumInParameter() > 0) {
       getInParameter(0).toString(s);
       for(int i = 1; i < getNumInParameter(); i++) {
@@ -30,125 +30,106 @@ aspect Closures {
     }
     s.append(" ");
     getBlock().toString(s);
-  }
-
-  public void Application.toString(StringBuffer s) {
-    getRator().toString(s);
+    s.append(")@");
     s.append("(");
-    if(getNumInRand() > 0) {
-      getInRand(0).toString(s);
-      for(int i = 1; i < getNumInRand(); i++) {
+    if(getNumInArg() > 0) {
+      getInArg(0).toString(s);
+      for(int i = 1; i < getNumInArg(); i++) {
         s.append(", ");
-        getInRand(i).toString(s);
+        getInArg(i).toString(s);
       }
     }
-    if(getNumOutRand() > 0) {
-      if(getNumInRand() > 0)
+    if(getNumOutArg() > 0) {
+      if(getNumInArg() > 0)
 	s.append(" ");
       s.append("| ");
-      getOutRand(0).toString(s);
-      for(int i = 1; i < getNumOutRand(); i++) {
+      getOutArg(0).toString(s);
+      for(int i = 1; i < getNumOutArg(); i++) {
 	s.append(", ");
-	getOutRand(i).toString(s);
+	getOutArg(i).toString(s);
       }
     }
     s.append(")");
   }
 
-  public boolean Closure.hasParameter(String name) {
+  public boolean ClosureInvocation.hasParameter(String name) {
     return hasInParameter(name) || hasOutParameter(name);
   }
 
-  public boolean Closure.hasInParameter(String name) {
+  public boolean ClosureInvocation.hasInParameter(String name) {
     for(int i=0;i<getNumInParameter();++i)
       if(getInParameter(i).name().equals(name))
 	return true;
     return false;
   }
 
-  public boolean Closure.hasOutParameter(String name) {
+  public boolean ClosureInvocation.hasOutParameter(String name) {
     for(int i=0;i<getNumOutParameter();++i)
       if(getOutParameter(i).name().equals(name))
 	return true;
     return false;
   }
 
-  eq Closure.getInParameter().getBlock() = getBlock();
-  eq Closure.getOutParameter().getBlock() = getBlock();
+  // equations for some attributes defined elsewhere
+  eq ClosureInvocation.getInParameter().getBlock() = getBlock();
+  eq ClosureInvocation.getOutParameter().getBlock() = getBlock();
 
-  eq Closure.getInParameter().canRenameTo(String new_name) {
+  eq ClosureInvocation.getInParameter().canRenameTo(String new_name) {
     if(hasParameter(new_name))
       return new RefactoringException("parameter of the same name exists");
     return getBlock().acceptLocal(new_name);
   }
-  eq Closure.getOutParameter().canRenameTo(String new_name) {
+  eq ClosureInvocation.getOutParameter().canRenameTo(String new_name) {
     if(hasParameter(new_name))
       return new RefactoringException("parameter of the same name exists");
     return getBlock().acceptLocal(new_name);
   }
 
-  eq Closure.getBlock().reachable() = true;
+  // we're not interested in reachability checking for closure invocations
+  eq ClosureInvocation.getBlock().reachable() = true;
 
-  eq Closure.type() {
-    throw new RuntimeException("closures should only appear in applications");
-  }
-  eq Application.type() {
-    if(getRator() instanceof Closure) {
-      Closure rator = (Closure)getRator();
-      return rator.getReturnType().type();
-    } else {
-      throw new RuntimeException("only closures can be applied");
-    }
-  }
+  eq ClosureInvocation.type() = getReturnType().type();
 
-  eq Closure.succ() = SmallSet.singleton((CFGNode)getBlock());
-  eq Closure.getBlock().following() = following();
-  public SmallSet Closure.followingTarget(Stmt branch, ASTNode child) {
+  eq ClosureInvocation.succ() = SmallSet.singleton((CFGNode)getBlock());
+  eq ClosureInvocation.first() 
+    = getNumInArg() == 0 ? this : getInArg(0).first();
+  eq ClosureInvocation.getInArg(int i).following() 
+    = i < getNumInArg()-1 ? SmallSet.singleton((CFGNode)getInArg(i+1).first()) 
+			  : SmallSet.singleton((CFGNode)getBlock());
+  eq ClosureInvocation.getOutArg(int i).following() 
+    = i < getNumOutArg()-1 ? SmallSet.singleton((CFGNode)getOutArg(i+1).first()) 
+                           : following();
+  eq ClosureInvocation.getBlock().following()
+    = getNumOutArg() == 0 ? following()
+                          : SmallSet.singleton((CFGNode)getOutArg(0).first());
+  public SmallSet ClosureInvocation.followingTarget(Stmt branch, ASTNode child) {
     return following();
   }
 
-  eq Application.succ() {
-    if(getNumInRand() == 0)
-      if(getNumOutRand() == 0)
-	return SmallSet.singleton((CFGNode)getRator());
-      else
-	return SmallSet.singleton((CFGNode)getOutRand(0));
-    else
-      return SmallSet.singleton((CFGNode)getInRand(0));
-  }
-  eq Application.getInRand(int i).following() {
-    if(i == getNumInRand() - 1)
-      if(getNumOutRand() == 0)
-	return SmallSet.singleton((CFGNode)getRator());
-      else
-	return SmallSet.singleton((CFGNode)getOutRand(0));
-    else
-      return SmallSet.singleton((CFGNode)getInRand(i+1));
-  }
-  eq Application.getOutRand(int i).following() = 
-    i == getNumOutRand() - 1 ? SmallSet.singleton((CFGNode)getRator()) 
-                             : SmallSet.singleton((CFGNode)getOutRand(i+1));
-  eq Application.getRator().following() = following();
+  inh boolean Expr.isOutParameter();
+  eq Program.getChild().isOutParameter() = false;
+  eq ClosureInvocation.getOutParameter().isOutParameter() = true;
 
   // lookup is done as for methods
-  eq Closure.getBlock().lookupVariable(String name) {
+  eq ClosureInvocation.getBlock().lookupVariable(String name) {
     SimpleSet set = inParameterDeclaration(name);
     if(!set.isEmpty()) return set;
     set = outParameterDeclaration(name);
     if(!set.isEmpty()) return set;
     return lookupVariable(name);
   }
-  eq Closure.getInParameter().lookupVariable(String name) 
+  eq ClosureInvocation.getInParameter().lookupVariable(String name) 
     = inParameterDeclaration(name);
-  eq Closure.getOutParameter().lookupVariable(String name)
+  eq ClosureInvocation.getOutParameter().lookupVariable(String name)
     = outParameterDeclaration(name);
-  syn lazy SimpleSet Closure.inParameterDeclaration(String name) {
+
+  syn lazy SimpleSet ClosureInvocation.inParameterDeclaration(String name) {
     for(int i = 0; i < getNumInParameter(); i++)
       if(getInParameter(i).name().equals(name))
         return (ParameterDeclaration)getInParameter(i);
     return SimpleSet.emptySet;
   }
-  syn lazy SimpleSet Closure.outParameterDeclaration(String name) {
+  syn lazy SimpleSet ClosureInvocation.outParameterDeclaration(String name) {
     for(int i = 0; i < getNumOutParameter(); i++)
       if(getOutParameter(i).name().equals(name))
         return (ParameterDeclaration)getOutParameter(i);

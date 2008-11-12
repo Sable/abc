@@ -5,10 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import AST.Application;
 import AST.Block;
-import AST.Closure;
-import AST.ExprStmt;
+import AST.ClosureInvocation;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -28,13 +26,14 @@ public class ClosureConversion extends TestCase {
         Stmt stmt = TestHelper.findCommentedStmt(p, "// here\n");
         assertTrue(stmt instanceof Block);
         try {
-            Closure closure = ((Block)stmt).wrapIntoClosure();
+            ClosureInvocation closure = ((Block)stmt).wrapIntoClosure();
 			closure.convert();
 			String expected = new String(TestHelper.wholeFile(resfile));
 			expected = expected.substring(0, expected.length()-1);
 			String actual = p.toString();
 			assertEquals(expected, actual);
 		} catch (RefactoringException e) {
+			e.printStackTrace();
 			assertFalse(name+" failed unexpectedly", new File(resfile).exists());
 		} catch (FileNotFoundException e) {
 			fail(name+" was supposed to fail but yielded result");

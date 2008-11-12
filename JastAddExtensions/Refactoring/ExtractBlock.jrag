@@ -32,8 +32,7 @@ aspect ExtractBlock {
     }
 
     public Block execute() throws RefactoringException {
-      block.lockAllTypeAccesses(table);
-      block.lockAllVarAccesses(table);
+      block.lockAllAccesses(table);
       new_block = new Block(new List());
       block.insertStmt(end+1, new_block);
       for(int i=end;i>=begin;--i) {

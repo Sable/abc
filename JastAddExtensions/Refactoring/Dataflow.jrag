@@ -1,18 +1,15 @@
 // some very simple dataflow analyses
 
 aspect Dataflow {
-  public SmallSet<CFGNode> VarAccess.reachingDefinitions() {
+  public SmallSet<ASTNode> VarAccess.reachingDefinitions() {
     if(!(decl() instanceof LocalDeclaration))
       return SmallSet.empty();
     LocalDeclaration decl = (LocalDeclaration)decl();
     if(isSource()) {
-      if(isDest()) {
-	SmallSet<CFGNode> result = SmallSet.empty();
-	for(CFGNode pred : pred())
-	  result = result.union(pred.reachingDefinitions(decl));
-	return result;
-      }
-      return reachingDefinitions(decl);
+      SmallSet<ASTNode> result = SmallSet.empty();
+      for(CFGNode pred : pred())
+	result = result.union(pred.reachingDefinitions(decl));
+      return result;
     } else {
       return SmallSet.empty();
     }
@@ -21,10 +18,53 @@ aspect Dataflow {
   coll SmallSet<CFGNode> CFGNode.reachedUses() [SmallSet.mutable()] 
     with add root BodyDecl;
   VarAccess contributes this to CFGNode.reachedUses() for each reachingDefinitions();
+  /*
+  /////////////////////////////////////////////////////////////////
+  interface VarDef {
+    Variable decl();
+  }
+  VarAccess implements VarDef;
+  VariableDeclaration implements VarDef;
 
-  syn SmallSet<CFGNode> CFGNode.reachingDefinitions(LocalDeclaration v) 
+  public Variable VariableDeclaration.decl() { return this; }
+
+  syn java.util.Set<VarDef> CFGNode.allReachingDefinitions() 
+    circular [new java.util.HashSet<VarDef>()] {
+    java.util.Set<VarDef> result = new java.util.HashSet();
+    for(CFGNode pred : pred())
+      result.addAll(pred.allReachingDefinitions());
+    return result;
+  }
+
+  eq VarAccess.allReachingDefinitions() {
+    java.util.Set<VarDef> result = super.allReachingDefinitions();
+    if(isDest())
+      for(Iterator<VarDef> iter = result.iterator(); iter.hasNext();)
+	if(iter.next().decl() == this.decl())
+	  iter.remove();
+    result.add(this);
+    return result;
+  }
+
+  eq VariableDeclaration.allReachingDefinitions() {
+    java.util.Set<VarDef> result = super.allReachingDefinitions();
+    if(hasInit())
+      for(Iterator<VarDef> iter = result.iterator(); iter.hasNext();)
+	if(iter.next().decl() == this)
+	  iter.remove();
+    result.add(this);
+    return result;
+    }*/
+
+  //SmallSet<ASTNode> CFGNode.reachingDefinitions(LocalDeclaration v);
+
+  syn SmallSet<ASTNode> ASTNode.reachingDefinitions(LocalDeclaration v) 
     circular [SmallSet.empty()] {
-    SmallSet<CFGNode> result = SmallSet.empty();
+    return SmallSet.empty();
+  }
+
+  eq CFGNode.reachingDefinitions(LocalDeclaration v) {
+    SmallSet<ASTNode> result = SmallSet.empty();
     for(CFGNode pred : pred())
       result = result.union(pred.reachingDefinitions(v));
     return result;
@@ -32,13 +72,19 @@ aspect Dataflow {
 
   eq VarAccess.reachingDefinitions(LocalDeclaration v) {
     if(decl() == v && isDest())
-      return SmallSet.singleton((CFGNode)this);
+      return SmallSet.singleton((ASTNode)this);
     return super.reachingDefinitions(v);
   }
 
   eq VariableDeclaration.reachingDefinitions(LocalDeclaration v) {
     if(this == v && hasInit())
-      return SmallSet.singleton((CFGNode)this);
+      return SmallSet.singleton((ASTNode)this);
+    return super.reachingDefinitions(v);
+  }
+
+  eq ParameterDeclaration.reachingDefinitions(LocalDeclaration v) {
+    if(this == v)
+      return SmallSet.singleton((ASTNode)this);
     return super.reachingDefinitions(v);
   }
 
