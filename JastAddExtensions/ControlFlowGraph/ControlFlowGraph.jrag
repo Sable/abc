@@ -5,37 +5,34 @@ aspect ControlFlowGraph {
   Stmt implements CFGNode;
   Expr implements CFGNode;
 
-  private BodyDecl EntryStmt.host;
-  public EntryStmt.EntryStmt(BodyDecl host) {
-    this.host = host;
-  }
-  public boolean EntryStmt.equals(Object o) {
-    if(!(o instanceof EntryStmt))
-      return false;
-    EntryStmt stmt = (EntryStmt)o;
-    if(stmt.host == null)
-      return this.host == null;
-    return stmt.host.equals(this.host);
-  }
-    
-  private BodyDecl ExitStmt.host;
-  public ExitStmt.ExitStmt(BodyDecl host) {
-    this.host = host;
-  }
-  public boolean ExitStmt.equals(Object o) {
-    if(!(o instanceof ExitStmt))
-      return false;
-    ExitStmt stmt = (ExitStmt)o;
-    if(stmt.host == null)
-      return this.host == null;
-    return stmt.host.equals(this.host);
-  }
-    
   // *** API: entry and exit ***
 
   // artificial entry and exit statements using NTAs
-  syn nta Stmt BodyDecl.entry() = new EntryStmt(this);
-  syn nta Stmt BodyDecl.exit() = new ExitStmt(this);
+  syn nta Stmt BodyDecl.entry() = EntryStmt.get(this);
+  syn nta Stmt BodyDecl.exit() = ExitStmt.get(this);
+
+  // make sure only one entry/exit node is ever constructed for every
+  // body declaration; this makes the above attributes impervious to cache
+  // flushes
+  private static java.util.Map<BodyDecl,EntryStmt> EntryStmt.map = new java.util.HashMap<BodyDecl,EntryStmt>();
+  public static EntryStmt EntryStmt.get(BodyDecl decl) {
+    EntryStmt res = map.get(decl);
+    if(res != null)
+      return res;
+    res = new EntryStmt();
+    map.put(decl, res);
+    return res;
+  }
+  
+  private static java.util.Map<BodyDecl,ExitStmt> ExitStmt.map = new java.util.HashMap<BodyDecl,ExitStmt>();
+  public static ExitStmt ExitStmt.get(BodyDecl decl) {
+    ExitStmt res = map.get(decl);
+    if(res != null)
+      return res;
+    res = new ExitStmt();
+    map.put(decl, res);
+    return res;
+  }
   
   // *** Implementation: entry and exit ***
 
