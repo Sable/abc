@@ -38,9 +38,9 @@ public class ExtractMethodTests extends ExtractMethod {
 	public void test7() {
 		runExtractionTest("test7");
 	}
-	/*public void test8() {
+	public void test8() {
 		runExtractionTest("test8");
-	}*/
+	}
 	public void test9() {
 		runExtractionTest("test9");
 	}
@@ -50,7 +50,7 @@ public class ExtractMethodTests extends ExtractMethod {
 	public void test11() {
 		runExtractionTest("test11");
 	}
-	/*public void test12() {
+	public void test12() {
 		runExtractionTest("test12");
 	}
 	public void test13() {
@@ -58,7 +58,7 @@ public class ExtractMethodTests extends ExtractMethod {
 	}
 	public void test14() {
 		runExtractionTest("test14");
-	}*/
+	}
 	public void test15() {
 		runExtractionTest("test15");
 	}

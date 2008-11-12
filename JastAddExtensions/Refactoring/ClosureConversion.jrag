@@ -15,12 +15,20 @@ aspect ClosureConversion {
     }
 
     public ClosureInvocation execute() throws RefactoringException {
+      // first determine in and out parameters
+      java.util.Set<VarAccess> in = new HashSet<VarAccess>();
+      java.util.Set<VarAccess> out = new HashSet<VarAccess>();
       for(VarAccess v : local_accesses) {
 	if(hasIncomingDataflowEdge(v))
-	  addInputParameter(v);
+	  in.add(v);
 	if(hasOutgoingDataflowEdge(v))
-	  addOutputParameter(v);
+	  out.add(v);
       }
+      for(VarAccess v : in)
+	addInputParameter(v);
+      for(VarAccess v : out)
+	addOutputParameter(v);
+      // now determine variables to be localised
       for(VarAccess v : local_accesses) {
 	if(declaredOutside(v))
 	  addLocalVariable(v);
@@ -30,14 +38,14 @@ aspect ClosureConversion {
     }
 
     private boolean hasIncomingDataflowEdge(VarAccess v) {
-      for(ASTNode u : v.reachingDefinitions())
-	if(!u.beneath(closure))
+      for(CFGNode u : v.dataPred())
+	if(!((ASTNode)u).beneath(closure))
 	  return true;
       return false;
     }
 
     private boolean hasOutgoingDataflowEdge(VarAccess v) {
-      for(CFGNode w : v.reachedUses())
+      for(CFGNode w : v.dataSucc())
 	if(!((ASTNode)w).beneath(closure))
 	  return true;
       return false;
@@ -56,7 +64,7 @@ aspect ClosureConversion {
 	  v.name()
         )
       );
-      closure.addInArg((VarAccess)v.fullCopy());
+      closure.addInArg(new VarAccess(v.name()));
       flushCaches();
     }
 
@@ -69,7 +77,7 @@ aspect ClosureConversion {
           v.name()
         )
       );
-      closure.addOutArg((VarAccess)v.fullCopy());
+      closure.addOutArg(new VarAccess(v.name()));
       flushCaches();
     }
 

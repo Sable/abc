@@ -1,91 +1,76 @@
 // some very simple dataflow analyses
 
 aspect Dataflow {
-  public SmallSet<ASTNode> VarAccess.reachingDefinitions() {
+
+  // data flow predecessors
+  public SmallSet<CFGNode> VarAccess.dataPred() {
     if(!(decl() instanceof LocalDeclaration))
+      return null;
+    if(!isSource())
       return SmallSet.empty();
     LocalDeclaration decl = (LocalDeclaration)decl();
-    if(isSource()) {
-      SmallSet<ASTNode> result = SmallSet.empty();
-      for(CFGNode pred : pred())
-	result = result.union(pred.reachingDefinitions(decl));
-      return result;
-    } else {
-      return SmallSet.empty();
-    }
-  }
-
-  coll SmallSet<CFGNode> CFGNode.reachedUses() [SmallSet.mutable()] 
-    with add root BodyDecl;
-  VarAccess contributes this to CFGNode.reachedUses() for each reachingDefinitions();
-  /*
-  /////////////////////////////////////////////////////////////////
-  interface VarDef {
-    Variable decl();
-  }
-  VarAccess implements VarDef;
-  VariableDeclaration implements VarDef;
-
-  public Variable VariableDeclaration.decl() { return this; }
-
-  syn java.util.Set<VarDef> CFGNode.allReachingDefinitions() 
-    circular [new java.util.HashSet<VarDef>()] {
-    java.util.Set<VarDef> result = new java.util.HashSet();
+    // we don't want the node to be its own data flow predecessor
+    SmallSet<CFGNode> result = SmallSet.empty();
     for(CFGNode pred : pred())
-      result.addAll(pred.allReachingDefinitions());
+      result = result.union(pred.dataPredFor(decl));
     return result;
   }
 
-  eq VarAccess.allReachingDefinitions() {
-    java.util.Set<VarDef> result = super.allReachingDefinitions();
-    if(isDest())
-      for(Iterator<VarDef> iter = result.iterator(); iter.hasNext();)
-	if(iter.next().decl() == this.decl())
-	  iter.remove();
-    result.add(this);
-    return result;
-  }
-
-  eq VariableDeclaration.allReachingDefinitions() {
-    java.util.Set<VarDef> result = super.allReachingDefinitions();
-    if(hasInit())
-      for(Iterator<VarDef> iter = result.iterator(); iter.hasNext();)
-	if(iter.next().decl() == this)
-	  iter.remove();
-    result.add(this);
-    return result;
-    }*/
-
-  //SmallSet<ASTNode> CFGNode.reachingDefinitions(LocalDeclaration v);
-
-  syn SmallSet<ASTNode> ASTNode.reachingDefinitions(LocalDeclaration v) 
+  syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl) 
     circular [SmallSet.empty()] {
-    return SmallSet.empty();
-  }
-
-  eq CFGNode.reachingDefinitions(LocalDeclaration v) {
-    SmallSet<ASTNode> result = SmallSet.empty();
+    SmallSet<CFGNode> result = SmallSet.empty();
     for(CFGNode pred : pred())
-      result = result.union(pred.reachingDefinitions(v));
+      result = result.union(pred.dataPredFor(decl));
     return result;
   }
 
-  eq VarAccess.reachingDefinitions(LocalDeclaration v) {
-    if(decl() == v && isDest())
-      return SmallSet.singleton((ASTNode)this);
-    return super.reachingDefinitions(v);
+  eq VarAccess.dataPredFor(LocalDeclaration decl) {
+    if(decl() == decl)
+      if(isDest())
+	return SmallSet.singleton((CFGNode)this);
+    return super.dataPredFor(decl);
   }
 
-  eq VariableDeclaration.reachingDefinitions(LocalDeclaration v) {
-    if(this == v && hasInit())
-      return SmallSet.singleton((ASTNode)this);
-    return super.reachingDefinitions(v);
+  eq VariableDeclaration.dataPredFor(LocalDeclaration decl) {
+    if(this == decl)
+      if(hasInit())
+	return SmallSet.singleton((CFGNode)this);
+      else
+	return SmallSet.empty();
+    return super.dataPredFor(decl);
   }
 
-  eq ParameterDeclaration.reachingDefinitions(LocalDeclaration v) {
-    if(this == v)
-      return SmallSet.singleton((ASTNode)this);
-    return super.reachingDefinitions(v);
+  // data flow successors
+  public SmallSet<CFGNode> VarAccess.dataSucc() {
+    if(!(decl() instanceof LocalDeclaration))
+      return null;
+    if(!isDest())
+      return SmallSet.empty();
+    LocalDeclaration decl = (LocalDeclaration)decl();
+    // we don't want the node to be its own data flow successor, so we have
+    // to skip past it to its successors
+    SmallSet<CFGNode> result = SmallSet.empty();
+    for(CFGNode succ : succ())
+      result = result.union(succ.dataSuccFor(decl));
+    return result;
+  }
+
+  syn SmallSet<CFGNode> CFGNode.dataSuccFor(LocalDeclaration decl) 
+    circular [SmallSet.empty()] {
+    SmallSet<CFGNode> result = SmallSet.empty();
+    for(CFGNode succ : succ())
+      result = result.union(succ.dataSuccFor(decl));
+    return result;
+  }
+
+  eq VarAccess.dataSuccFor(LocalDeclaration decl) {
+    if(decl() == decl) {
+      SmallSet<CFGNode> gen = SmallSet.empty();
+      if(isSource())
+	gen = gen.union((CFGNode)this);
+      return isDest() ? gen : gen.union(super.dataSuccFor(decl));
+    }
+    return super.dataSuccFor(decl);
   }
 
   public boolean ASTNode.mayRef(Variable v) {
