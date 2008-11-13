@@ -434,23 +434,22 @@ aspect ControlFlowGraph {
   // If there is an enclosing finally block before the target of
   // this break the successor is the finally block otherwise
   // the following() of the target node.
-  eq BreakStmt.succ() = followingTarget(this, this);
-   
-  eq ContinueStmt.succ() = followingTarget(this, this);
+  eq BreakStmt.succ() = targetStmt(this);
+  eq ContinueStmt.succ() = targetStmt(this);
 
   // Either pass through the first enclosing finally block
   // or take the exit block
   eq ReturnStmt.succ() = hasResult() ?
-    SmallSet.singleton((CFGNode)getResult().first()) : followingTarget(this, this);  	    
-  eq ReturnStmt.getResult().following() = followingTarget(this, this);
+    SmallSet.singleton((CFGNode)getResult().first()) : targetStmt(this);  	    
+  eq ReturnStmt.getResult().following() = targetStmt(this);
 
-  eq ReturnStmt.getResult().followingWhenTrue() = followingTarget(this, this);
-  eq ReturnStmt.getResult().followingWhenFalse() = followingTarget(this, this);
+  eq ReturnStmt.getResult().followingWhenTrue() = targetStmt(this);
+  eq ReturnStmt.getResult().followingWhenFalse() = targetStmt(this);
         
   // Search for catch-finally .. catch-finally. 
   // When no enclosing try-catch-finally take the exit block
   eq ThrowStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
-  eq ThrowStmt.getExpr().following() = followingTarget(this, this);	   	
+  eq ThrowStmt.getExpr().following() = targetStmt(this);	   	
 
  
   // TryStmt
@@ -480,16 +479,10 @@ aspect ControlFlowGraph {
       //Stmt tryStmt = this;//(Stmt)(this.getParent().getParent());
       if(o instanceof EmptyStmt) //can complete normally
 	succSet = succSet.union(following());
-      else if(o instanceof ThrowStmt) 
-	succSet = succSet.union(super.followingTarget((ThrowStmt)o, this));
-      else if(o instanceof BreakStmt)
-	succSet = succSet.union(super.followingTarget((BreakStmt)o, this));
-      else if(o instanceof ContinueStmt)
-	succSet = succSet.union(super.followingTarget((ContinueStmt)o, this));
-      else if(o instanceof ReturnStmt)
-	succSet = succSet.union(super.followingTarget((ReturnStmt)o, this));
+      else if(o instanceof BranchStmt)
+	succSet = succSet.union(targetStmt((BranchStmt)o));
       else
-	System.err.println("Wrong in TryStmt.getFinally().following()!!!");         
+	System.err.println("Wrong in TryStmt.getFinally().following()!!!");
     }   
     	
     return succSet;
@@ -613,50 +606,83 @@ aspect ControlFlowGraph {
     return branchesInAll;
 		      
   }
-	
-	
-  public SmallSet ASTNode.followingTarget(Stmt branch, ASTNode child) {
-    if(getParent() != null)
-      return getParent().followingTarget(branch, this);
-    return null;
+
+  // branch target stmts are break, continue, throw, and return
+  // there are three sorts of targets for them: branch targets, try statements,
+  // and body declarations
+  // for all three, every branch target stmt has to indicate what its successors
+  // are for this kind of target; null means that the target doesn't match
+  // this kind of branch statement
+  interface BranchStmt {
+    SmallSet<CFGNode> targetIn(BranchTargetStmt stmt);
+    SmallSet<CFGNode> targetIn(TryStmt stmt);
+    SmallSet<CFGNode> targetIn(BodyDecl bd);
+  }
+  BreakStmt implements BranchStmt;
+  ContinueStmt implements BranchStmt;
+  ThrowStmt implements BranchStmt;
+  ReturnStmt implements BranchStmt;
+
+  inh SmallSet<CFGNode> Stmt.targetStmt(BranchStmt branch);
+  eq Program.getChild().targetStmt(BranchStmt branch) = null;
+  eq TypeDecl.getChild().targetStmt(BranchStmt branch) = null;
+  eq BranchTargetStmt.getChild().targetStmt(BranchStmt branch) {
+    SmallSet<CFGNode> n = branch.targetIn(this);
+    if(n != null)
+      return n;
+    targetStmt(branch);
+  }
+  eq BodyDecl.getChild().targetStmt(BranchStmt branch) {
+    return branch.targetIn(this);
+  }
+  eq TryStmt.getBlock().targetStmt(BranchStmt branch) {
+    SmallSet<CFGNode> n = branch.targetIn(this);
+    if(n != null)
+      return n;
+    return targetStmt(branch);
   }
 
-  // The end for break/continue 
-  public SmallSet BranchTargetStmt.followingTarget(Stmt branch, ASTNode child) {
-    if(branch instanceof BreakStmt && this == ((BreakStmt)branch).targetStmt())
-      return this.following();
-    else if(branch instanceof ContinueStmt && this == ((ContinueStmt)branch).targetStmt())
-      return SmallSet.singleton(this.targetForContinue());
-    else // ReturnStmt & ThrowStmt
-      return super.followingTarget(branch, this);    	
+  public SmallSet<CFGNode> BreakStmt.targetIn(BranchTargetStmt stmt) {
+    return stmt == targetStmt() ? stmt.following() : null;
   }
-    
-  // The end for throw/return
-  public SmallSet BodyDecl.followingTarget(Stmt branch, ASTNode child) {
-    return SmallSet.singleton((CFGNode)exit());  	
+  public SmallSet<CFGNode> BreakStmt.targetIn(BodyDecl bd) {
+    return null;
   }
-    
-  public SmallSet TryStmt.followingTarget(Stmt branch, ASTNode child) {
-    	
-    if(child == getBlock() && branch instanceof ThrowStmt){
-      for(int i = 0; i < getNumCatchClause(); i++) 
-	if(getCatchClause(i).handles(((ThrowStmt)branch).getExpr().type())) 
-	  return SmallSet.singleton((CFGNode)getCatchClause(i).getBlock());   	         	          
-    }    
-    	
-    /*
-      if(hasFinally() && child.getChild(0) == getFinally())
-      return super.followingTarget(branch, this);  		  
-    */
-    	
-    //TryStmt-Opt-Block(Finally)
-    if(hasFinally() && child.getChild(0) != getFinally())
-      return SmallSet.singleton((CFGNode)getFinally());
-    else{  // include child.getChild(0) == getFinally()
-      //System.err.println("super");
-      return super.followingTarget(branch, this);			
-    }
-    	
+  public SmallSet<CFGNode> BreakStmt.targetIn(TryStmt stmt) {
+    return stmt.hasFinally() ? SmallSet.singleton((CFGNode)stmt.getFinally()) : null;
   }
-    
+
+  public SmallSet<CFGNode> ContinueStmt.targetIn(BranchTargetStmt stmt) {
+    return stmt == targetStmt() ? SmallSet.singleton((CFGNode)stmt.targetForContinue()) : null;
+  }
+  public SmallSet<CFGNode> ContinueStmt.targetIn(BodyDecl bd) {
+    return null;
+  }
+  public SmallSet<CFGNode> ContinueStmt.targetIn(TryStmt stmt) {
+    return stmt.hasFinally() ? SmallSet.singleton((CFGNode)stmt.getFinally()) : null;
+  }
+
+  public SmallSet<CFGNode> ReturnStmt.targetIn(BranchTargetStmt stmt) {
+    return null;
+  }
+  public SmallSet<CFGNode> ReturnStmt.targetIn(BodyDecl bd) {
+    return SmallSet.singleton((CFGNode)exit());
+  }
+  public SmallSet<CFGNode> ReturnStmt.targetIn(TryStmt stmt) {
+    return stmt.hasFinally() ? SmallSet.singleton((CFGNode)stmt.getFinally()) : null;
+  }
+
+  public SmallSet<CFGNode> ThrowStmt.targetIn(BranchTargetStmt stmt) {
+    return null;
+  }
+  public SmallSet<CFGNode> ThrowStmt.targetIn(BodyDecl bd) {
+    return SmallSet.singleton((CFGNode)exit());
+  }
+  public SmallSet<CFGNode> ThrowStmt.targetIn(TryStmt stmt) {
+    for(int i = 0; i < stmt.getNumCatchClause(); i++) 
+      if(stmt.getCatchClause(i).handles(getExpr().type()))
+	return SmallSet.singleton((CFGNode)stmt.getCatchClause(i).getBlock());
+    return stmt.hasFinally() ? SmallSet.singleton((CFGNode)stmt.getFinally()) : null;
+  }
+
 }
