@@ -90,6 +90,9 @@ aspect Closures {
 
   eq ClosureInvocation.type() = getReturnType().type();
 
+  syn nta Stmt ClosureInvocation.exit() = ExitStmt.get(this);
+  eq ExitStmt.isPureCFlowNode() = getParent() instanceof ClosureInvocation;
+
   eq ClosureInvocation.succ() = SmallSet.singleton((CFGNode)getBlock());
   eq ClosureInvocation.first() 
     = getNumInArg() == 0 ? this : getInArg(0).first();
@@ -97,19 +100,32 @@ aspect Closures {
     = i < getNumInArg()-1 ? SmallSet.singleton((CFGNode)getInArg(i+1).first()) 
 			  : SmallSet.singleton((CFGNode)getBlock());
   eq ClosureInvocation.getOutArg(int i).following() 
-    = i < getNumOutArg()-1 ? SmallSet.singleton((CFGNode)getOutArg(i+1).first()) 
-                           : following();
+    = SmallSet.singleton((CFGNode)
+			 (i < getNumOutArg()-1 ? getOutArg(i+1).first() : exit()));
   eq ClosureInvocation.getBlock().following()
-    = getNumOutArg() == 0 ? following()
-                          : SmallSet.singleton((CFGNode)getOutArg(0).first());
-  
+    = SmallSet.singleton((CFGNode)
+			 (getNumOutArg() == 0 ? exit() : getOutArg(0).first()));
+  eq ClosureInvocation.getReturnType().following()
+    = SmallSet.singleton((CFGNode)
+			 (getNumOutArg() == 0 ? exit() : getOutArg(0).first()));
+ 
+  SmallSet<CFGNode> BranchStmt.targetIn(ClosureInvocation cl);
+  public SmallSet<CFGNode> BreakStmt.targetIn(ClosureInvocation cl) {
+    return null;
+  }
+  public SmallSet<CFGNode> ContinueStmt.targetIn(ClosureInvocation cl) {
+    return null;
+  }
+  public SmallSet<CFGNode> ReturnStmt.targetIn(ClosureInvocation cl) {
+    return SmallSet.singleton((CFGNode)cl.getReturnType());
+  }
+  public SmallSet<CFGNode> ThrowStmt.targetIn(ClosureInvocation cl) {
+    return cl.targetStmt(this);
+  }
+
   inh SmallSet<CFGNode> ClosureInvocation.targetStmt(BranchStmt branch);
   eq ClosureInvocation.getChild().targetStmt(BranchStmt branch) {
-    if(branch instanceof ReturnStmt)
-      return following();
-    if(branch instanceof ThrowStmt)
-      return targetStmt(branch);
-    return null;
+    return branch.targetIn(this);
   }
 
   inh boolean Expr.isOutParameter();

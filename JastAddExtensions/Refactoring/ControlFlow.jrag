@@ -35,6 +35,7 @@ aspect ControlFlow {
   eq ClosureInvocation.isPureCFlowNode() = true;
   eq ExprStmt.isPureCFlowNode() = true;
   eq VarAccess.isPureCFlowNode() = isOutParameter();
+  eq ReturnStmt.isPureCFlowNode() = true;
   // there could be many more here
 
   syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {

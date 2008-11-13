@@ -55,10 +55,31 @@ aspect WrapBlockIntoClosure {
       block.replaceWith(new ExprStmt(cl));
       cl.setBlock(block);
       block.programRoot().flushCaches();
+      fixReturnType(cl);
       table.adjust();
       return cl;
     }
+
+    private void fixReturnType(ClosureInvocation cl) throws RefactoringException {
+      // if there are no return statements, we're done
+      if(cl.getReturnType().pred().isEmpty())
+	return;
+      // if there is _a_ return statement, _all_ paths should return
+      SmallSet<CFGNode> normalCompletion = cl.exit().pred().compl(cl.getReturnType());
+      if(!normalCompletion.isEmpty())
+	throw new RefactoringException("some control paths return values, others don't");
+      // create return statement
+      cl.setReturnType(cl.returnType().getLockedAccess(table));
+      ReturnStmt ret = new ReturnStmt();
+      cl.getParent().replaceWith(ret);
+      ret.setResult(cl);
+      // ret might be a `return void' statement that needs fixing
+      table.addReturnVoid(ret);
+      block.programRoot().flushCaches();
+    }
   }
+
+  inh TypeDecl ClosureInvocation.returnType();
 
   // lock all CFlow in a subtree (only statements for now)
   public void ASTNode.lockAllCFlow(AdjustmentTable table) {
@@ -80,6 +101,40 @@ aspect WrapBlockIntoClosure {
     for(TypeDecl exn : uncaughtExceptions())
       res.add(exn.getLockedAccess(table));
     return res;
+  }
+
+  inh TypeDecl ReturnStmt.typeVoid();
+  syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();
+
+  private java.util.Set<ReturnStmt> AdjustmentTable.returnStmts = new java.util.HashSet<ReturnStmt>();
+  public void AdjustmentTable.addReturnVoid(ReturnStmt ret) {
+    returnStmts.add(ret);
+  }
+
+  // replace return void statements by expr stmt + return
+  refine ControlFlow public void AdjustmentTable.adjust() throws RefactoringException {
+    refined();
+    for(ReturnStmt ret : returnStmts) {
+      if(ret.hasResult() && ret.type().isVoid()) {
+	boolean inBlock = ret.getParent().getParent() instanceof Block;
+	if(inBlock) {
+	  Block block = (Block)ret.getParent().getParent();
+	  int idx = block.getIndexOfStmt(ret);
+	  block.setStmt(new ExprStmt(ret.getResult()), idx);
+	  block.insertStmt(idx+1, new ReturnStmt());
+	} else {
+	  ret.replaceWith(
+	    new Block(
+	      new List().add(
+		new ExprStmt(ret.getResult())
+              ).add(
+		new ReturnStmt()
+              )
+	    )
+	  );
+	}
+      }
+    }
   }
 
 }
