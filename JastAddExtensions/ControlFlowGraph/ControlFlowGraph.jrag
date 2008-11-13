@@ -4,6 +4,7 @@ aspect ControlFlowGraph {
 
   Stmt implements CFGNode;
   Expr implements CFGNode;
+  ParameterDeclaration implements CFGNode;
 
   // *** API: entry and exit ***
 
@@ -55,11 +56,38 @@ aspect ControlFlowGraph {
   eq StaticInitializer.getBlock().following() = SmallSet.singleton((CFGNode)exit());
 
   // insert block between entry and exit nodes
-  eq MethodDecl.entry().following() = SmallSet.singleton((CFGNode)(hasBlock() ? getBlock() : exit()));
+  eq MethodDecl.entry().following() {
+    // first parameters, then block
+    if(getNumParameter() > 0)
+      return SmallSet.singleton((CFGNode)getParameter(0));
+    else if(hasBlock())
+      return SmallSet.singleton((CFGNode)getBlock());
+    else
+      return SmallSet.singleton((CFGNode)exit());
+  }
+  eq MethodDecl.getParameter(int i).following() {
+    if(i + 1 < getNumParameter())
+      return SmallSet.singleton((CFGNode)getParameter(i+1));
+    else if(hasBlock())
+      return SmallSet.singleton((CFGNode)getBlock());
+    else
+      return SmallSet.singleton((CFGNode)exit());
+  }
+
   eq InstanceInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
   eq StaticInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
-  eq ConstructorDecl.entry().following() = SmallSet.singleton((CFGNode)getConstructorInvocation());
-  eq ConstructorDecl.getConstructorInvocation().following() = SmallSet.singleton((CFGNode)getBlock());
+
+  eq ConstructorDecl.entry().following() {
+    if(getNumParameter() > 0)
+      return SmallSet.singleton((CFGNode)getParameter(0));
+    else
+      return SmallSet.singleton((CFGNode)getConstructorInvocation());
+  }
+  eq ConstructorDecl.getParameter(int i).following()
+    = i + 1 < getNumParameter() ? SmallSet.singleton((CFGNode)getParameter(i+1))
+                                : SmallSet.singleton((CFGNode)getConstructorInvocation());
+  eq ConstructorDecl.getConstructorInvocation().following() 
+    = SmallSet.singleton((CFGNode)getBlock());
 
   // *** API predecessors ***
 
@@ -69,11 +97,15 @@ aspect ControlFlowGraph {
 
   Stmt contributes this to CFGNode.pred() for each succ();
   Expr contributes this to CFGNode.pred() for each succ();
+  ParameterDeclaration contributes this to CFGNode.pred() for each succ();
 
   // *** API: successors ***
 
+  inh lazy SmallSet<CFGNode> ParameterDeclaration.following();
+
   syn lazy SmallSet<CFGNode> Stmt.succ();
   syn lazy SmallSet<CFGNode> Expr.succ() = following();
+  syn lazy SmallSet<CFGNode> ParameterDeclaration.succ() = following();
    
   // *** Implementation: successors ***
 
