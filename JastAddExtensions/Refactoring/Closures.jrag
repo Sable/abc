@@ -102,8 +102,14 @@ aspect Closures {
   eq ClosureInvocation.getBlock().following()
     = getNumOutArg() == 0 ? following()
                           : SmallSet.singleton((CFGNode)getOutArg(0).first());
-  public SmallSet ClosureInvocation.followingTarget(Stmt branch, ASTNode child) {
-    return following();
+  
+  inh SmallSet<CFGNode> ClosureInvocation.targetStmt(BranchStmt branch);
+  eq ClosureInvocation.getChild().targetStmt(BranchStmt branch) {
+    if(branch instanceof ReturnStmt)
+      return following();
+    if(branch instanceof ThrowStmt)
+      return targetStmt(branch);
+    return null;
   }
 
   inh boolean Expr.isOutParameter();

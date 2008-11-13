@@ -42,7 +42,7 @@ aspect WrapBlockIntoClosure {
       block.lockAllCFlow(table);
       // create a closure without parameters returning void and throwing all
       // uncaught exceptions of block
-      List<Access> exns = computeUncaughtExceptions();
+      List<Access> exns = block.computeUncaughtExceptions(table);
       ClosureInvocation cl = 
 	new ClosureInvocation(
 	  new List(),                      // input parameters
@@ -58,17 +58,6 @@ aspect WrapBlockIntoClosure {
       table.adjust();
       return cl;
     }
-
-    private List<Access> computeUncaughtExceptions() throws RefactoringException {
-      List<Access> res = new List<Access>();
-      for(TypeDecl exn : block.uncaughtExceptions()) {
-	Access exnacc = block.access(exn, false);
-	if(exnacc == null)
-	  throw new RefactoringException("cannot access type "+exn);
-	res.add(exnacc);
-      }
-      return res;
-    }
   }
 
   // lock all CFlow in a subtree (only statements for now)
@@ -82,6 +71,15 @@ aspect WrapBlockIntoClosure {
   public void Stmt.lockAllCFlow(AdjustmentTable table) {
     super.lockAllCFlow(table);
     table.add(this);
+  }
+
+  // return a list of locked type accesses to all uncaught exceptions in
+  // a subtree
+  public List<Access> ASTNode.computeUncaughtExceptions(AdjustmentTable table) {
+    List<Access> res = new List<Access>();
+    for(TypeDecl exn : uncaughtExceptions())
+      res.add(exn.getLockedAccess(table));
+    return res;
   }
 
 }

@@ -16,7 +16,9 @@ aspect EliminateOutParams {
       if(closure.getNumOutParameter() == 0)
 	return;
       if(closure.getNumOutParameter() > 1)
-	throw new RefactoringException("ambiguous return value");
+	throw new RefactoringException("ambiguous return value: two or more output parameters");
+      if(!closure.getReturnType().type().isVoid())
+	throw new RefactoringException("ambiguous return value: output parameter and return statement");
       ParameterDeclaration parm = closure.getOutParameter(0);
       if(!(closure.getOutArg(0) instanceof VarAccess))
 	throw new RefactoringException("cannot eliminate out parameter");

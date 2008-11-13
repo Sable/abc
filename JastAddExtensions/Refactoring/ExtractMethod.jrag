@@ -2,4 +2,8 @@ aspect ExtractMethod {
   public void Block.extractMethod(String visibility, String name, int begin, int end) throws RefactoringException {
     extractBlock(begin, end).wrapIntoClosure().convert().extractToMethod(visibility, name);
   }
+
+  public void Expr.extractMethod(String visibility, String name) throws RefactoringException {
+    wrapIntoClosure().convert().extractToMethod(visibility, name);
+  }
 }

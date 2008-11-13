@@ -1,0 +1,22 @@
+aspect WrapExprIntoClosure {
+
+  public ClosureInvocation Expr.wrapIntoClosure() throws RefactoringException {
+    AdjustmentTable table = new AdjustmentTable();
+    List<Access> exns = computeUncaughtExceptions(table);
+    ClosureInvocation cl = 
+      new ClosureInvocation(
+        new List(),                      // input parameters
+	new List(),                      // output parameters
+	type().getLockedAccess(table),   // return type
+        exns,                            // thrown exceptions
+	null,                            // body (to be filled in shortly)
+        new List<Expr>(),                // input arguments
+        new List<Expr>());               // output arguments
+    this.replaceWith(new ExprStmt(cl));
+    cl.setBlock(new Block(new List().add(new ReturnStmt(this))));
+    programRoot().flushCaches();
+    table.adjust();
+    return cl;
+  }
+
+}
