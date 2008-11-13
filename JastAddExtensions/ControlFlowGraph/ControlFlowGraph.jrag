@@ -13,25 +13,24 @@ aspect ControlFlowGraph {
   syn nta Stmt BodyDecl.exit() = ExitStmt.get(this);
 
   // make sure only one entry/exit node is ever constructed for every
-  // body declaration; this makes the above attributes impervious to cache
-  // flushes
-  private static java.util.Map<BodyDecl,EntryStmt> EntryStmt.map = new java.util.HashMap<BodyDecl,EntryStmt>();
-  public static EntryStmt EntryStmt.get(BodyDecl decl) {
-    EntryStmt res = map.get(decl);
+  // node; this makes the above attributes impervious to cache flushes
+  private static java.util.Map<ASTNode,EntryStmt> EntryStmt.map = new java.util.HashMap<ASTNode,EntryStmt>();
+  public static EntryStmt EntryStmt.get(ASTNode node) {
+    EntryStmt res = map.get(node);
     if(res != null)
       return res;
     res = new EntryStmt();
-    map.put(decl, res);
+    map.put(node, res);
     return res;
   }
   
-  private static java.util.Map<BodyDecl,ExitStmt> ExitStmt.map = new java.util.HashMap<BodyDecl,ExitStmt>();
-  public static ExitStmt ExitStmt.get(BodyDecl decl) {
-    ExitStmt res = map.get(decl);
+  private static java.util.Map<ASTNode,ExitStmt> ExitStmt.map = new java.util.HashMap<ASTNode,ExitStmt>();
+  public static ExitStmt ExitStmt.get(ASTNode node) {
+    ExitStmt res = map.get(node);
     if(res != null)
       return res;
     res = new ExitStmt();
-    map.put(decl, res);
+    map.put(node, res);
     return res;
   }
   
