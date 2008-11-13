@@ -16,8 +16,20 @@ aspect Dataflow {
     return result;
   }
 
-  syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl) 
-    circular [SmallSet.empty()] {
+  syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl)
+    circular [SmallSet.empty()];
+
+  eq Stmt.dataPredFor(LocalDeclaration decl) {
+    SmallSet<CFGNode> result = SmallSet.empty();
+    for(CFGNode pred : pred())
+      result = result.union(pred.dataPredFor(decl));
+    return result;
+  }
+
+  // just a duplicate of the above; this is unfortunate but necessary
+  // we cannot give an equation for CFGNode.dataPredFor, since we
+  // then couldn't override it for ParameterDeclaration below
+  eq Expr.dataPredFor(LocalDeclaration decl) {
     SmallSet<CFGNode> result = SmallSet.empty();
     for(CFGNode pred : pred())
       result = result.union(pred.dataPredFor(decl));
@@ -38,6 +50,17 @@ aspect Dataflow {
       else
 	return SmallSet.empty();
     return super.dataPredFor(decl);
+  }
+
+  eq ParameterDeclaration.dataPredFor(LocalDeclaration decl) {
+    if(this == decl)
+      return SmallSet.singleton((CFGNode)this);
+    // unfortunately, we can't just call super.dataPredFor(decl) here,
+    // so we copy again...
+    SmallSet<CFGNode> result = SmallSet.empty();
+    for(CFGNode pred : pred())
+      result = result.union(pred.dataPredFor(decl));
+    return result;
   }
 
   // data flow successors
