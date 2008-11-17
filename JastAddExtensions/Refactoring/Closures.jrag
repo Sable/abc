@@ -89,25 +89,23 @@ aspect Closures {
   eq ClosureInvocation.getBlock().reachable() = true;
 
   eq ClosureInvocation.type() = getReturnType().type();
+  
+  eq ClosureInvocation.isPureCFlowNode() = true;
+  eq VarAccess.isPureCFlowNode() = isOutParameter();
 
-  syn nta Stmt ClosureInvocation.exit() = ExitStmt.get(this);
-  eq ExitStmt.isPureCFlowNode() = getParent() instanceof ClosureInvocation;
-
-  eq ClosureInvocation.succ() = SmallSet.singleton((CFGNode)getBlock());
-  eq ClosureInvocation.first() 
-    = getNumInArg() == 0 ? this : getInArg(0).first();
+  eq ClosureInvocation.first() = getNumInArg() == 0 ? getBlock() : getInArg(0).first();
   eq ClosureInvocation.getInArg(int i).following() 
     = i < getNumInArg()-1 ? SmallSet.singleton((CFGNode)getInArg(i+1).first()) 
 			  : SmallSet.singleton((CFGNode)getBlock());
   eq ClosureInvocation.getOutArg(int i).following() 
     = SmallSet.singleton((CFGNode)
-			 (i < getNumOutArg()-1 ? getOutArg(i+1).first() : exit()));
+			 (i < getNumOutArg()-1 ? getOutArg(i+1).first() : this));
   eq ClosureInvocation.getBlock().following()
     = SmallSet.singleton((CFGNode)
-			 (getNumOutArg() == 0 ? exit() : getOutArg(0).first()));
+			 (getNumOutArg() == 0 ? this : getOutArg(0).first()));
   eq ClosureInvocation.getReturnType().following()
     = SmallSet.singleton((CFGNode)
-			 (getNumOutArg() == 0 ? exit() : getOutArg(0).first()));
+    		 (getNumOutArg() == 0 ? this : getOutArg(0).first()));
  
   SmallSet<CFGNode> BranchStmt.targetIn(ClosureInvocation cl);
   public SmallSet<CFGNode> BreakStmt.targetIn(ClosureInvocation cl) {
@@ -131,6 +129,11 @@ aspect Closures {
   inh boolean Expr.isOutParameter();
   eq Program.getChild().isOutParameter() = false;
   eq ClosureInvocation.getOutParameter().isOutParameter() = true;
+  
+  // all return statements inside the closure
+  syn lazy SmallSet<CFGNode> ClosureInvocation.returns() = getReturnType().pred();
+  // all final, non-return statements inside the closure
+  syn lazy SmallSet<CFGNode> ClosureInvocation.finals() = getNumOutArg() == 0 ? pred().compl(getReturnType()) : getOutArg(0).pred().compl(getReturnType()); 
 
   // lookup is done as for methods
   eq ClosureInvocation.getBlock().lookupVariable(String name) {

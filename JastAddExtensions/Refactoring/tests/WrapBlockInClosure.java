@@ -32,6 +32,7 @@ public class WrapBlockInClosure extends TestCase {
 			String actual = p.toString();
 			assertEquals(expected, actual);
 		} catch (RefactoringException e) {
+			e.printStackTrace();
 			assertFalse(name+" failed unexpectedly", new File(resfile).exists());
 		} catch (FileNotFoundException e) {
 			fail(name+" was supposed to fail but yielded result");

@@ -9,7 +9,7 @@ class A {
   }
   
   static class Data {
-    A() {
+    Data() {
       super();
     }
     private int x;

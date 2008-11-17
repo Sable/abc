@@ -25,116 +25,122 @@
 
 aspect WrapBlockIntoClosure {
 
-  public ClosureInvocation Block.wrapIntoClosure() throws RefactoringException {
-    return new WrapBlockIntoClosureRefactoring(this).execute();
-  }
-
-  class WrapBlockIntoClosureRefactoring {
-    private Block block;
-    private AdjustmentTable table;
-
-    public WrapBlockIntoClosureRefactoring(Block block) {
-      this.block = block;
-      this.table = new AdjustmentTable();
-    }
-    
-    public ClosureInvocation execute() throws RefactoringException {
-      block.lockAllCFlow(table);
-      // create a closure without parameters returning void and throwing all
-      // uncaught exceptions of block
-      List<Access> exns = block.computeUncaughtExceptions(table);
-      ClosureInvocation cl = 
-	new ClosureInvocation(
-	  new List(),                      // input parameters
-	  new List(),                      // output parameters
-          new PrimitiveTypeAccess("void"), // return type
-          exns,                            // thrown exceptions
-	  null,                            // body (to be filled in shortly)
-          new List<Expr>(),                // input arguments
-          new List<Expr>());               // output arguments
-      block.replaceWith(new ExprStmt(cl));
-      cl.setBlock(block);
-      block.programRoot().flushCaches();
-      fixReturnType(cl);
-      table.adjust();
-      return cl;
-    }
-
-    private void fixReturnType(ClosureInvocation cl) throws RefactoringException {
-      // if there are no return statements, we're done
-      if(cl.getReturnType().pred().isEmpty())
-	return;
-      // if there is _a_ return statement, _all_ paths should return
-      SmallSet<CFGNode> normalCompletion = cl.exit().pred().compl(cl.getReturnType());
-      if(!normalCompletion.isEmpty())
-	throw new RefactoringException("some control paths return values, others don't");
-      // create return statement
-      cl.setReturnType(cl.returnType().getLockedAccess(table));
-      ReturnStmt ret = new ReturnStmt();
-      cl.getParent().replaceWith(ret);
-      ret.setResult(cl);
-      // ret might be a `return void' statement that needs fixing
-      table.addReturnVoid(ret);
-      block.programRoot().flushCaches();
-    }
-  }
-
-  inh TypeDecl ClosureInvocation.returnType();
-
-  // lock all CFlow in a subtree (only statements for now)
-  public void ASTNode.lockAllCFlow(AdjustmentTable table) {
-    for(int i = 0; i < getNumChildNoTransform(); i++) {
-      ASTNode node = getChildNoTransform(i);
-      if(node != null) 
-	node.lockAllCFlow(table);
-    }
-  }
-  public void Stmt.lockAllCFlow(AdjustmentTable table) {
-    super.lockAllCFlow(table);
-    table.add(this);
-  }
-
-  // return a list of locked type accesses to all uncaught exceptions in
-  // a subtree
-  public List<Access> ASTNode.computeUncaughtExceptions(AdjustmentTable table) {
-    List<Access> res = new List<Access>();
-    for(TypeDecl exn : uncaughtExceptions())
-      res.add(exn.getLockedAccess(table));
-    return res;
-  }
-
-  inh TypeDecl ReturnStmt.typeVoid();
-  syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();
-
-  private java.util.Set<ReturnStmt> AdjustmentTable.returnStmts = new java.util.HashSet<ReturnStmt>();
-  public void AdjustmentTable.addReturnVoid(ReturnStmt ret) {
-    returnStmts.add(ret);
-  }
-
-  // replace return void statements by expr stmt + return
-  refine ControlFlow public void AdjustmentTable.adjust() throws RefactoringException {
-    refined();
-    for(ReturnStmt ret : returnStmts) {
-      if(ret.hasResult() && ret.type().isVoid()) {
-	boolean inBlock = ret.getParent().getParent() instanceof Block;
-	if(inBlock) {
-	  Block block = (Block)ret.getParent().getParent();
-	  int idx = block.getIndexOfStmt(ret);
-	  block.setStmt(new ExprStmt(ret.getResult()), idx);
-	  block.insertStmt(idx+1, new ReturnStmt());
-	} else {
-	  ret.replaceWith(
-	    new Block(
-	      new List().add(
-		new ExprStmt(ret.getResult())
-              ).add(
-		new ReturnStmt()
-              )
-	    )
-	  );
+	public ClosureInvocation Block.wrapIntoClosure() throws RefactoringException {
+		return new WrapBlockIntoClosureRefactoring(this).execute();
 	}
-      }
-    }
-  }
+
+	class WrapBlockIntoClosureRefactoring {
+		private Block block;
+		private AdjustmentTable table;
+
+		public WrapBlockIntoClosureRefactoring(Block block) {
+			this.block = block;
+			this.table = new AdjustmentTable();
+		}
+
+		public ClosureInvocation execute() throws RefactoringException {
+			block.lockAllCFlow(table);
+			// create a closure without parameters returning void and throwing all
+			// uncaught exceptions of block
+			List<Access> exns = block.computeUncaughtExceptions(table);
+			ClosureInvocation cl = 
+				new ClosureInvocation(
+						new List(),                      // input parameters
+						new List(),                      // output parameters
+						new PrimitiveTypeAccess("void"), // return type
+						exns,                            // thrown exceptions
+						null,                            // body (to be filled in shortly)
+						new List<Expr>(),                // input arguments
+						new List<Expr>());               // output arguments
+			block.replaceWith(new ExprStmt(cl));
+			cl.setBlock(block);
+			block.programRoot().flushCaches();
+			fixReturnType(cl);
+			table.adjust();
+			return cl;
+		}
+
+		private void fixReturnType(ClosureInvocation cl) throws RefactoringException {
+			// if there are no return statements, we're done
+			if(cl.returns().isEmpty())
+				return;
+			// if there is _a_ return statement, _all_ paths should return
+			if(!cl.finals().isEmpty())
+				throw new RefactoringException("some control paths return values, others don't");
+			// create return statement
+			cl.setReturnType(cl.returnType().getLockedAccess(table));
+			ReturnStmt ret = new ReturnStmt();
+			cl.getParent().replaceWith(ret);
+			ret.setResult(cl);
+			// ret might be a `return void' statement that needs fixing
+			table.addReturnVoid(ret);
+			block.programRoot().flushCaches();
+		}
+	}
+
+	inh TypeDecl ClosureInvocation.returnType();
+
+	// lock all CFlow in a subtree (only statements for now)
+	public void ASTNode.lockAllCFlow(AdjustmentTable table) {
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null) 
+				node.lockAllCFlow(table);
+		}
+	}
+	public void Stmt.lockAllCFlow(AdjustmentTable table) {
+		super.lockAllCFlow(table);
+		table.add(this);
+	}
+
+	// return a list of locked type accesses to all uncaught exceptions in
+	// a subtree
+	public List<Access> ASTNode.computeUncaughtExceptions(AdjustmentTable table) {
+		List<Access> res = new List<Access>();
+		for(TypeDecl exn : uncaughtExceptions())
+			res.add(exn.getLockedAccess(table));
+		return res;
+	}
+
+	inh TypeDecl ReturnStmt.typeVoid();
+	syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();
+
+	private java.util.Set<ReturnStmt> AdjustmentTable.returnStmts = new java.util.HashSet<ReturnStmt>();
+	public void AdjustmentTable.addReturnVoid(ReturnStmt ret) {
+		returnStmts.add(ret);
+	}
+
+	// replace return void statements by expr stmt + return
+	refine ControlFlow public void AdjustmentTable.adjust() throws RefactoringException {
+		refined();
+		for(ReturnStmt ret : returnStmts) {
+			if(ret.hasResult() && ret.type().isVoid()) {
+				if(ret.following().equals(ret.targetStmt(ret))) {
+					// we don't need a return at all
+					ret.replaceWith(new ExprStmt(ret.getResult()));
+				} else {
+					boolean inBlock = ret.getParent().getParent() instanceof Block;
+					if(inBlock) {
+						// if we're in a block, simply plug in a return statement
+						Block block = (Block)ret.getParent().getParent();
+						int idx = block.getIndexOfStmt(ret);
+						block.setStmt(new ExprStmt(ret.getResult()), idx);
+						block.insertStmt(idx+1, new ReturnStmt());
+					} else {
+						// otherwise, make a block with a return statement in it
+						ret.replaceWith(
+								new Block(
+										new List().add(
+												new ExprStmt(ret.getResult())
+										).add(
+												new ReturnStmt()
+										)
+								)
+						);
+					}
+				}
+			}
+		}
+	}
 
 }

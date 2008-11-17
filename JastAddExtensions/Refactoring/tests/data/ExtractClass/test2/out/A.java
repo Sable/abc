@@ -16,7 +16,7 @@ public class A extends B {
   }
   
   static class Data {
-    A(int x) {
+    Data(int x) {
       super();
       this.setX(x);
     }

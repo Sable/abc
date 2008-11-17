@@ -26,7 +26,7 @@ public class A extends B {
   }
   
   static class Data {
-    A(int x, p.Data y) {
+    Data(int x, p.Data y) {
       super();
       this.setX(x);
       this.setY(y);
