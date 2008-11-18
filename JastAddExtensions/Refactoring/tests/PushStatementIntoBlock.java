@@ -7,6 +7,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.Block;
+import AST.CompilationUnit;
 import AST.ConstCase;
 import AST.IntegerLiteral;
 import AST.Program;
@@ -25,7 +26,9 @@ public class PushStatementIntoBlock extends TestCase {
         String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
         Program p = TestHelper.compile(infile);
         assertNotNull(p);
-        Stmt stmt = TestHelper.findCommentedStmt(p, "// here\n");
+        CompilationUnit cu = p.lookupType("", "A").compilationUnit();
+        assertNotNull(cu);
+        Stmt stmt = TestHelper.findStmtFollowingComment(cu, "// here\n");
         assertNotNull(stmt);
         try {
 			stmt.pushIntoBlock();

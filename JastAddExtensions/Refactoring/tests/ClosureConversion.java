@@ -7,6 +7,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import AST.Block;
 import AST.ClosureInvocation;
+import AST.CompilationUnit;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -23,7 +24,9 @@ public class ClosureConversion extends TestCase {
         String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
         Program p = TestHelper.compile(infile);
         assertNotNull(p);
-        Stmt stmt = TestHelper.findCommentedStmt(p, "// here\n");
+        CompilationUnit cu = p.lookupType("", "A").compilationUnit();
+        assertNotNull(cu);
+        Stmt stmt = TestHelper.findStmtFollowingComment(cu, "// here\n");
         assertTrue(stmt instanceof Block);
         try {
             ClosureInvocation closure = ((Block)stmt).wrapIntoClosure();

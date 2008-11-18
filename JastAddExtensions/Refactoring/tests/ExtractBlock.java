@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import AST.Block;
+import AST.CompilationUnit;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -22,9 +23,11 @@ public class ExtractBlock extends TestCase {
         String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
         Program p = TestHelper.compile(infile);
         assertNotNull(p);
-        Stmt from = TestHelper.findCommentedStmt(p, "// from\n");
+        CompilationUnit cu = p.lookupType("", "A").compilationUnit();
+        assertNotNull(cu);
+        Stmt from = TestHelper.findStmtFollowingComment(cu, "// from\n");
         assertNotNull(from);
-        Stmt to = TestHelper.findStmtFollowedByComment(p, "// to\n");
+        Stmt to = TestHelper.findStmtPrecedingComment(cu, "// to\n");
         assertNotNull(to);
         Block block = from.hostBlock();
         assertEquals(block, to.hostBlock());

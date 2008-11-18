@@ -5,6 +5,7 @@ import beaver.Scanner;
 import parser.JavaParser.Terminals;
 import java.io.*;
 import java.util.HashMap;
+import AST.FileRange;
 
 %%
 
@@ -40,18 +41,25 @@ import java.util.HashMap;
     throw new Scanner.Exception(yyline + 1, yycolumn + 1, msg);
   }
   
-  private HashMap comments = new HashMap();
-  public HashMap comments() { return comments; }
+  private HashMap<FileRange, String> comments = new HashMap<FileRange, String>();
+  public HashMap<FileRange, String> comments() { return comments; }
   private void registerComment() {
     String comment = str();
-    int line = yyline;
-    // the extra loop accounts from yyline starting at 0
-    int pos = 0;
-    do {
-      line++;
-      pos = comment.indexOf('\n', pos + 1);
-    } while(pos != -1);
-    comments.put(new Integer(line), str());
+    int startline = yyline + 1;
+    int startcol = yycolumn + 1;
+    int endline;
+    int endcol;
+    String eol = System.getProperty("line.separator");     
+    String[] lines = comment.split(eol);
+    int n = lines.length;
+    if(n > 0 && lines[n-1].equals(""))
+    	--n;
+    endline = startline + n - 1;
+    if(n == 1)
+    	endcol = startcol + lines[0].length();
+    else
+    	endcol = lines[n-1].length();
+    comments.put(new FileRange("", startline, startcol, endline, endcol), str());
   }
 
   private HashMap offsets = new java.util.LinkedHashMap();

@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import beaver.Symbol;
+
 import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.BytecodeReader;
@@ -124,27 +126,49 @@ public class TestHelper {
 		return null;
 	}
 	
-	public static Stmt findCommentedStmt(ASTNode n, String comment) {
+	public static Stmt findStmtFollowingComment(CompilationUnit cu, String comment) {
+		return findStmt(cu, cu.findComment(comment).el);
+	}
+	
+	public static Stmt findStmtPrecedingComment(CompilationUnit cu, String comment) {
+		return findStmt(cu, cu.findComment(comment).el-1);
+	}
+	
+	public static Stmt findStmt(ASTNode n, int line) {
 		if(n == null) return null;
 		if(n instanceof Stmt) {
-			if(comment.equals(n.getComment()))
+			int l = ASTNode.getLine(n.getStart());
+			if(l == line || l == line+1)
 				return (Stmt)n;
 		}
 		for(int i=0;i<n.getNumChild();++i) {
-			Stmt s = findCommentedStmt(n.getChild(i), comment);
+			Stmt s = findStmt(n.getChild(i), line);
 			if(s != null) return s;
 		}
 		return null;
 	}
+	
+	public static ASTNode findStmtBetweenComments(CompilationUnit cu, String start, String end) {
+		FileRange startrg = cu.findComment(start);
+		FileRange endrg = cu.findComment(end);
+		int startline = startrg.el;
+		int startcol = startrg.ec;
+		int endline = endrg.sl;
+		int endcol = endrg.sc;
+		return findStmtBetween(cu, startline, startcol, endline, endcol);
+	}
 
-	public static Stmt findStmtFollowedByComment(ASTNode n, String comment) {
+	private static ASTNode findStmtBetween(ASTNode n, int startline,
+			int startcol, int endline, int endcol) {
 		if(n == null) return null;
-		if(n instanceof Stmt) {
-			if(comment.equals(n.getFollowingComment()))
-				return (Stmt)n;
-		}
+		int start = n.getStart();
+		int end = n.getEnd();
+		if(covers(startline, startcol, endline, endcol,
+				  ASTNode.getLine(start), ASTNode.getColumn(start),
+				  ASTNode.getLine(end), ASTNode.getColumn(end)))
+			return n;
 		for(int i=0;i<n.getNumChild();++i) {
-			Stmt s = findStmtFollowedByComment(n.getChild(i), comment);
+			ASTNode s = findStmtBetween(n.getChild(i), startline, startcol, endline, endcol);
 			if(s != null) return s;
 		}
 		return null;
