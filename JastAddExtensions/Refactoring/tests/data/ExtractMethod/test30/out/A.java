@@ -5,12 +5,12 @@ aspect X {
     System.out.println(y);
     return y;
   }
-  X() {
-    super();
-  }
   private int n(int y) {
     y += x;
     return y;
+  }
+  X() {
+    super();
   }
 }
 

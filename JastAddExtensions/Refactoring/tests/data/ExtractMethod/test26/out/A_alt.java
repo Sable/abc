@@ -4,9 +4,6 @@ class A {
     int z;
     n();
   }
-  A() {
-    super();
-  }
   private void n() {
     int y;
     int z;
@@ -14,5 +11,8 @@ class A {
       y = 2;
     }
     z = y;
+  }
+  A() {
+    super();
   }
 }

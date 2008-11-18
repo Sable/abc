@@ -11,10 +11,10 @@ class A {
     }
     n(i);
   }
-  A() {
-    super();
-  }
   private void n(int i) {
     int j = ++i;
+  }
+  A() {
+    super();
   }
 }

@@ -5,9 +5,6 @@ class A {
     y = 2;
     n(y);
   }
-  A() {
-    super();
-  }
   private void n(int y) {
     int z;
     try {
@@ -19,5 +16,8 @@ class A {
     catch (Throwable t) {
     }
     z = y;
+  }
+  A() {
+    super();
   }
 }

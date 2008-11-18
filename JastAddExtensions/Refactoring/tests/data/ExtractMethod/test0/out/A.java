@@ -12,9 +12,9 @@ class A {
     }
     int j = ++i;
   }
+  private void n() {
+  }
   A() {
     super();
-  }
-  private void n() {
   }
 }

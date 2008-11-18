@@ -30,7 +30,9 @@ aspect ExtractClosureToMethod {
 		       closure.getInParameters(), 
 		       closure.getExceptions(), 
 		       new Opt(closure.getBlock()));
-      typedecl.addMethod(md, false, false, false);
+      int index = typedecl.getBodyDeclList().getIndexOfChild(closure.hostBodyDecl());
+      assert(index!=-1);
+      typedecl.addMethod(index+1, md, false, false, false);
       MethodAccess ma = md.getLockedAccess(table, closure.getInArgList());
       closure.replaceWith(ma);
       typedecl.programRoot().flushCaches();

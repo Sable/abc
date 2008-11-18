@@ -2,11 +2,11 @@ class B {
   void m() {
     n();
   }
-  B() {
-    super();
-  }
   private void n() {
     System.out.println(1);
+  }
+  B() {
+    super();
   }
 }
 

@@ -11,12 +11,12 @@ class A {
     }
     int j = ++i;
   }
-  A() {
-    super();
-  }
   private int n() {
     int i;
     i = 2;
     return i;
+  }
+  A() {
+    super();
   }
 }

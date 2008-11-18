@@ -3,10 +3,10 @@ class A {
     n();
     return 42;
   }
-  A() {
-    super();
-  }
   private  <T extends java.lang.Object> void n() {
     T t;
+  }
+  A() {
+    super();
   }
 }

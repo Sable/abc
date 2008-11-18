@@ -4,9 +4,6 @@ class A {
   void m() throws FileNotFoundException {
     n();
   }
-  A() {
-    super();
-  }
   private void n() throws FileNotFoundException {
     int i;
     i = 2;
@@ -16,5 +13,8 @@ class A {
       ++i;
     }
     int j = ++i;
+  }
+  A() {
+    super();
   }
 }

@@ -2,9 +2,6 @@ class A {
   Object m() {
     return n();
   }
-  A() {
-    super();
-  }
   private Object n() {
       class B {
         B() {
@@ -12,5 +9,8 @@ class A {
         }
       }
     return new B();
+  }
+  A() {
+    super();
   }
 }

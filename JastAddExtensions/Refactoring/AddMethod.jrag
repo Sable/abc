@@ -2,7 +2,13 @@ aspect AddMethod {
 	
 	inh Collection ASTNode.lookupMethod(String name);
 
-	public void TypeDecl.addMethod(MethodDecl md, 
+	public void TypeDecl.addMethod(MethodDecl md, boolean mayOverride, 
+								   boolean mayBeOverridden, boolean mayBeCaptured) 
+								   throws RefactoringException {
+		addMethod(getNumBodyDecl(), md, mayOverride, mayBeOverridden, mayBeCaptured);
+	}
+	
+	public void TypeDecl.addMethod(int index, MethodDecl md, 
 				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
 			throws RefactoringException {
 		throw new RefactoringException("cannot add method");
@@ -11,7 +17,7 @@ aspect AddMethod {
 	// add method md to class; the flags specify whether the added method may
 	// override an existing method, be overridden by an existing method, and possibly
 	// be referenced by some method access in the program
-	public void ClassDecl.addMethod(MethodDecl md, 
+	public void ClassDecl.addMethod(int index, MethodDecl md, 
 				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
 			throws RefactoringException {
         AdjustmentTable table = new AdjustmentTable();
@@ -23,7 +29,7 @@ aspect AddMethod {
                 table.add(acc);
             }
         }
-        addMemberMethod(md);
+        getBodyDeclList().insertChild(md, index);
         programRoot().flushCaches();
         if(localMethodsSignature(md.signature()).size() > 1)
             throw new RefactoringException("a method of signature "+md.signature()+" already exists");

@@ -7,9 +7,6 @@ class A {
     i = n(i);
     int j = ++i;
   }
-  A() {
-    super();
-  }
   private int n(int i) throws FileNotFoundException {
     for(int j = 0; j < i; ++j) {
       if(j == 4) 
@@ -17,5 +14,8 @@ class A {
       ++i;
     }
     return i;
+  }
+  A() {
+    super();
   }
 }
