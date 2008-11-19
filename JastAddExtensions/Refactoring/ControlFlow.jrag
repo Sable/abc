@@ -56,4 +56,16 @@ aspect ControlFlow {
 		return res;
 	}
 
+	// lock all CFlow in a subtree (only statements for now)
+	public void ASTNode.lockAllCFlow(AdjustmentTable table) {
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null) 
+				node.lockAllCFlow(table);
+		}
+	}
+	public void Stmt.lockAllCFlow(AdjustmentTable table) {
+		super.lockAllCFlow(table);
+		table.add(this);
+	}
 }

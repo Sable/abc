@@ -2,110 +2,165 @@
 
 aspect Dataflow {
 
-  // data flow predecessors
-  public SmallSet<CFGNode> VarAccess.dataPred() {
-    if(!(decl() instanceof LocalDeclaration))
-      return null;
-    if(!isSource())
-      return SmallSet.empty();
-    LocalDeclaration decl = (LocalDeclaration)decl();
-    // we don't want the node to be its own data flow predecessor
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode pred : pred())
-      result = result.union(pred.dataPredFor(decl));
-    return result;
-  }
+	// data flow predecessors
+	public SmallSet<CFGNode> VarAccess.dataPred() {
+		if(!(decl() instanceof LocalDeclaration))
+			return null;
+		if(!isSource())
+			return SmallSet.empty();
+		LocalDeclaration decl = (LocalDeclaration)decl();
+		// we don't want the node to be its own data flow predecessor
+		SmallSet<CFGNode> result = SmallSet.empty();
+		for(CFGNode pred : pred())
+			result = result.union(pred.dataPredFor(decl));
+		return result;
+	}
 
-  syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl)
-    circular [SmallSet.empty()];
+	syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl)
+	circular [SmallSet.empty()];
 
-  eq Stmt.dataPredFor(LocalDeclaration decl) {
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode pred : pred())
-      result = result.union(pred.dataPredFor(decl));
-    return result;
-  }
+	eq Stmt.dataPredFor(LocalDeclaration decl) {
+		SmallSet<CFGNode> result = SmallSet.empty();
+		for(CFGNode pred : pred())
+			result = result.union(pred.dataPredFor(decl));
+		return result;
+	}
 
-  // just a duplicate of the above; this is unfortunate but necessary
-  // we cannot give an equation for CFGNode.dataPredFor, since we
-  // then couldn't override it for ParameterDeclaration below
-  eq Expr.dataPredFor(LocalDeclaration decl) {
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode pred : pred())
-      result = result.union(pred.dataPredFor(decl));
-    return result;
-  }
+	// just a duplicate of the above; this is unfortunate but necessary
+	// we cannot give an equation for CFGNode.dataPredFor, since we
+	// then couldn't override it for ParameterDeclaration below
+	eq Expr.dataPredFor(LocalDeclaration decl) {
+		SmallSet<CFGNode> result = SmallSet.empty();
+		for(CFGNode pred : pred())
+			result = result.union(pred.dataPredFor(decl));
+		return result;
+	}
 
-  eq VarAccess.dataPredFor(LocalDeclaration decl) {
-    if(decl() == decl)
-      if(isDest())
-	return SmallSet.singleton((CFGNode)this);
-    return super.dataPredFor(decl);
-  }
+	eq VarAccess.dataPredFor(LocalDeclaration decl) {
+		if(decl() == decl)
+			if(isDest())
+				return SmallSet.singleton((CFGNode)this);
+		return super.dataPredFor(decl);
+	}
 
-  eq VariableDeclaration.dataPredFor(LocalDeclaration decl) {
-    if(this == decl)
-      if(hasInit())
-	return SmallSet.singleton((CFGNode)this);
-      else
-	return SmallSet.empty();
-    return super.dataPredFor(decl);
-  }
+	eq VariableDeclaration.dataPredFor(LocalDeclaration decl) {
+		if(this == decl)
+			if(hasInit())
+				return SmallSet.singleton((CFGNode)this);
+			else
+				return SmallSet.empty();
+		return super.dataPredFor(decl);
+	}
 
-  eq ParameterDeclaration.dataPredFor(LocalDeclaration decl) {
-    if(this == decl)
-      return SmallSet.singleton((CFGNode)this);
-    // unfortunately, we can't just call super.dataPredFor(decl) here,
-    // so we copy again...
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode pred : pred())
-      result = result.union(pred.dataPredFor(decl));
-    return result;
-  }
+	eq ParameterDeclaration.dataPredFor(LocalDeclaration decl) {
+		if(this == decl)
+			return SmallSet.singleton((CFGNode)this);
+		// unfortunately, we can't just call super.dataPredFor(decl) here,
+		// so we copy again...
+		SmallSet<CFGNode> result = SmallSet.empty();
+		for(CFGNode pred : pred())
+			result = result.union(pred.dataPredFor(decl));
+		return result;
+	}
 
-  // data flow successors
-  public SmallSet<CFGNode> VarAccess.dataSucc() {
-    if(!(decl() instanceof LocalDeclaration))
-      return null;
-    if(!isDest())
-      return SmallSet.empty();
-    LocalDeclaration decl = (LocalDeclaration)decl();
-    // we don't want the node to be its own data flow successor, so we have
-    // to skip past it to its successors
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode succ : succ())
-      result = result.union(succ.dataSuccFor(decl));
-    return result;
-  }
+	// data flow successors
+	public SmallSet<VarAccess> VarAccess.dataSucc() {
+		if(!(decl() instanceof LocalDeclaration))
+			return null;
+		if(!isDest())
+			return SmallSet.empty();
+		LocalDeclaration decl = (LocalDeclaration)decl();
+		// we don't want the node to be its own data flow successor, so we have
+		// to skip past it to its successors
+		SmallSet<VarAccess> result = SmallSet.empty();
+		for(CFGNode succ : succ())
+			result = result.union(succ.dataSuccFor(decl));
+		return result;
+	}
 
-  syn SmallSet<CFGNode> CFGNode.dataSuccFor(LocalDeclaration decl) 
-    circular [SmallSet.empty()] {
-    SmallSet<CFGNode> result = SmallSet.empty();
-    for(CFGNode succ : succ())
-      result = result.union(succ.dataSuccFor(decl));
-    return result;
-  }
+	syn SmallSet<VarAccess> CFGNode.dataSuccFor(LocalDeclaration decl) 
+			circular [SmallSet.empty()] {
+		SmallSet<VarAccess> result = SmallSet.empty();
+		for(CFGNode succ : succ())
+			result = result.union(succ.dataSuccFor(decl));
+		return result;
+	}
 
-  eq VarAccess.dataSuccFor(LocalDeclaration decl) {
-    if(decl() == decl) {
-      SmallSet<CFGNode> gen = SmallSet.empty();
-      if(isSource())
-	gen = gen.union((CFGNode)this);
-      return isDest() ? gen : gen.union(super.dataSuccFor(decl));
-    }
-    return super.dataSuccFor(decl);
-  }
+	eq VarAccess.dataSuccFor(LocalDeclaration decl) {
+		if(decl() == decl) {
+			SmallSet<VarAccess> gen = SmallSet.empty();
+			if(isSource())
+				gen = gen.union(this);
+			return isDest() ? gen : gen.union(super.dataSuccFor(decl));
+		}
+		return super.dataSuccFor(decl);
+	}
 
-  public boolean ASTNode.mayRef(Variable v) {
-    for(int i=0;i<getNumChild();++i) {
-      ASTNode child = getChild(i);
-      if(child != null && child.mayRef(v))
-	return true;
-    }
-    return false;
-  }
+	// checks if a subtree may reference a variable in any way
+	public boolean ASTNode.mayRef(Variable v) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null && child.mayRef(v))
+				return true;
+		}
+		return false;
+	}
 
-  public boolean VarAccess.mayRef(Variable v) {
-    return decl() == v;
-  }
+	public boolean VarAccess.mayRef(Variable v) {
+		return decl() == v;
+	}
+
+	private Map<VarAccess, SmallSet<CFGNode>> AdjustmentTable.dpreds;
+	private Map<VarAccess, SmallSet<VarAccess>> AdjustmentTable.dsuccs;
+
+	refine ControlFlow public AdjustmentTable.AdjustmentTable() {
+		refined();
+		dpreds = new HashMap<VarAccess, SmallSet<CFGNode>>();
+		dsuccs = new HashMap<VarAccess, SmallSet<VarAccess>>();
+	}
+
+	public void AdjustmentTable.addDataflow(VarAccess v) {
+		dpreds.put(v, v.dataPred());
+		dsuccs.put(v, v.dataSucc());
+	}
+
+	refine WrapBlockIntoClosure public void AdjustmentTable.adjust() throws RefactoringException {
+		refined();
+		for(VarAccess node : dpreds.keySet()) {
+			if(!dpreds.get(node).equals(node.dataPred())) {
+				SmallSet<CFGNode> oldpred = dpreds.get(node);
+				SmallSet<CFGNode> newpred = node.dataPred();
+				throw new RefactoringException("Could not preserve dflow into "+node);
+			}
+			if(!dsuccs.get(node).equals(node.dataSucc())) {
+				SmallSet<VarAccess> oldsucc = dsuccs.get(node);
+				SmallSet<VarAccess> newsucc = node.dataSucc();
+				throw new RefactoringException("Could not preserve dflow out of "+node);
+			}
+		}
+	}
+
+	// lock all DFlow in a subtree (only local var accesses, complain about field accesses and methods)
+	public void ASTNode.lockAllDFlow(AdjustmentTable table) throws RefactoringException {
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null) 
+				node.lockAllDFlow(table);
+		}
+	}
+
+	public void VarAccess.lockAllDFlow(AdjustmentTable table) throws RefactoringException {
+		if(!(decl() instanceof LocalDeclaration))
+			throw new RefactoringException("cannot handle dataflow for non-local variables");
+		super.lockAllDFlow(table);
+		table.addDataflow(this);
+	}
+
+	public void MethodAccess.lockAllDFlow(AdjustmentTable table) throws RefactoringException {
+		throw new RefactoringException("cannot handle dataflow for method calls");
+	}
+
+	public void ClassInstanceExpr.lockAllDFlow(AdjustmentTable table) throws RefactoringException {
+		throw new RefactoringException("cannot handle dataflow for constructors");
+	}
 }

@@ -12,23 +12,25 @@
  *  (this is not strictly necessary, since we could create a block to take
  *  up the created statements, but we'd have to be careful about declarations
  *  inside for loops and such then).
+ *  
+ *  The refactoring returns the newly created assignment, or null if none was created.
  */
 
 aspect SplitVarDecl {
   
-  public boolean VariableDeclaration.split() throws RefactoringException {
+  public AssignSimpleExpr VariableDeclaration.split() throws RefactoringException {
     if(!hasInit())
-      return false;  // we could throw an exception here, but I think it's better this way
+      return null;  // we could throw an exception here, but I think it's better this way
     if(!(getParent().getParent() instanceof Block))
       throw new RefactoringException("cannot split declarations outside blocks");
     Block block = (Block)getParent().getParent();
     int idx = block.getIndexOfStmt(this);
     assert(idx != -1);
-    Stmt assignment = AssignExpr.asStmt(new VarAccess(name()), getInit());
+    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), getInit());
     this.setInitOpt(new Opt());
-    block.insertStmt(idx+1, assignment);
+    block.insertStmt(idx+1, new ExprStmt(assgn));
     block.flushCaches();
-    return true;
+    return assgn;
   }
 
   public int Block.getIndexOfStmt(Stmt stmt) {

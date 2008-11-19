@@ -56,7 +56,7 @@ import AST.FileRange;
     	--n;
     endline = startline + n - 1;
     if(n == 1)
-    	endcol = startcol + lines[0].length();
+    	endcol = startcol + lines[0].length() - 1;
     else
     	endcol = lines[n-1].length();
     comments.put(new FileRange("", startline, startcol, endline, endcol), str());

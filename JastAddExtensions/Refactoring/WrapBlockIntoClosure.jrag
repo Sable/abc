@@ -80,19 +80,6 @@ aspect WrapBlockIntoClosure {
 
 	inh TypeDecl ClosureInvocation.returnType();
 
-	// lock all CFlow in a subtree (only statements for now)
-	public void ASTNode.lockAllCFlow(AdjustmentTable table) {
-		for(int i = 0; i < getNumChildNoTransform(); i++) {
-			ASTNode node = getChildNoTransform(i);
-			if(node != null) 
-				node.lockAllCFlow(table);
-		}
-	}
-	public void Stmt.lockAllCFlow(AdjustmentTable table) {
-		super.lockAllCFlow(table);
-		table.add(this);
-	}
-
 	// return a list of locked type accesses to all uncaught exceptions in
 	// a subtree
 	public List<Access> ASTNode.computeUncaughtExceptions(AdjustmentTable table) {

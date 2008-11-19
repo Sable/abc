@@ -2,17 +2,14 @@ package tests;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import AST.CompilationUnit;
-import AST.FieldDeclaration;
 import AST.Program;
 import AST.RefactoringException;
-import AST.TypeDecl;
-import AST.Variable;
+import AST.VariableDeclaration;
 
 public abstract class InlineVariable extends TestCase {
 	
@@ -42,6 +39,7 @@ public abstract class InlineVariable extends TestCase {
         } catch(IOException ioe) {
         	fail("test "+name+" was supposed to fail but yielded output "+prog);
         } catch(RefactoringException rfe) {
+        	rfe.printStackTrace();
         	assertFalse(new File(outdir_name).exists());
         }
 	}
@@ -62,7 +60,7 @@ public abstract class InlineVariable extends TestCase {
 		Iterator iter;
 		Program prog = TestHelper.compile(files);
         assertNotNull(prog);
-		Variable v = (Variable)TestHelper.findVariable(prog, "i");
+		VariableDeclaration v = (VariableDeclaration)TestHelper.findVariable(prog, "i");
 		assertNotNull(v);
         v.inline();
         return prog;

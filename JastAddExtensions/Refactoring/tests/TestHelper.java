@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import beaver.Symbol;
-
 import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.BytecodeReader;
@@ -17,8 +15,8 @@ import AST.CompilationUnit;
 import AST.FileRange;
 import AST.Frontend;
 import AST.JavaParser;
-import AST.LabeledStmt;
 import AST.LocalDeclaration;
+import AST.Opt;
 import AST.Program;
 import AST.Stmt;
 import AST.Variable;
@@ -148,27 +146,28 @@ public class TestHelper {
 		return null;
 	}
 	
-	public static ASTNode findStmtBetweenComments(CompilationUnit cu, String start, String end) {
+	public static ASTNode findNodeBetweenComments(CompilationUnit cu, String start, String end) {
 		FileRange startrg = cu.findComment(start);
 		FileRange endrg = cu.findComment(end);
 		int startline = startrg.el;
 		int startcol = startrg.ec;
 		int endline = endrg.sl;
 		int endcol = endrg.sc;
-		return findStmtBetween(cu, startline, startcol, endline, endcol);
+		return findNodeBetween(cu, startline, startcol, endline, endcol);
 	}
 
-	private static ASTNode findStmtBetween(ASTNode n, int startline,
+	private static ASTNode findNodeBetween(ASTNode n, int startline,
 			int startcol, int endline, int endcol) {
 		if(n == null) return null;
 		int start = n.getStart();
 		int end = n.getEnd();
-		if(covers(startline, startcol, endline, endcol,
-				  ASTNode.getLine(start), ASTNode.getColumn(start),
-				  ASTNode.getLine(end), ASTNode.getColumn(end)))
+		if(!(n instanceof AST.List) && !(n instanceof Opt) &&
+				covers(startline, startcol, endline, endcol,
+						ASTNode.getLine(start), ASTNode.getColumn(start),
+						ASTNode.getLine(end), ASTNode.getColumn(end)))
 			return n;
 		for(int i=0;i<n.getNumChild();++i) {
-			ASTNode s = findStmtBetween(n.getChild(i), startline, startcol, endline, endcol);
+			ASTNode s = findNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
 			if(s != null) return s;
 		}
 		return null;
