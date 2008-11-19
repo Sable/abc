@@ -1,59 +1,59 @@
 aspect ControlFlow {
-  private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.preds;
-  private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.succs;
+	private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.preds;
+	private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.succs;
 
-  refine AdjustAccess public AdjustmentTable.AdjustmentTable() {
-    refined();
-    preds = new HashMap<Stmt, SmallSet<CFGNode>>();
-    succs = new HashMap<Stmt, SmallSet<CFGNode>>();
-  }
+	refine AdjustAccess public AdjustmentTable.AdjustmentTable() {
+		refined();
+		preds = new HashMap<Stmt, SmallSet<CFGNode>>();
+		succs = new HashMap<Stmt, SmallSet<CFGNode>>();
+	}
 
-  public void AdjustmentTable.add(Stmt node) {
-    preds.put(node, node.weakPred());
-    succs.put(node, node.weakSucc());
-  }
+	public void AdjustmentTable.add(Stmt node) {
+		preds.put(node, node.weakPred());
+		succs.put(node, node.weakSucc());
+	}
 
-  refine AdjustAccess public void AdjustmentTable.adjust() throws RefactoringException {
-    refined();
-    for(Stmt node : preds.keySet()) {
-      if(!preds.get(node).equals(node.weakPred())) {
-	SmallSet<CFGNode> oldpred = preds.get(node);
-	SmallSet<CFGNode> newpred = node.weakPred();
-	throw new RefactoringException("Could not preserve cflow into "+node);
-      }
-      if(!succs.get(node).equals(node.weakSucc())) {
-	SmallSet<CFGNode> oldsucc = succs.get(node);
-	SmallSet<CFGNode> newsucc = node.weakSucc();
-	throw new RefactoringException("Could not preserve cflow out of "+node);
-      }
-    }
-  }
+	refine AdjustAccess public void AdjustmentTable.adjust() throws RefactoringException {
+		refined();
+		for(Stmt node : preds.keySet()) {
+			if(!preds.get(node).equals(node.weakPred())) {
+				SmallSet<CFGNode> oldpred = preds.get(node);
+				SmallSet<CFGNode> newpred = node.weakPred();
+				throw new RefactoringException("Could not preserve cflow into "+node);
+			}
+			if(!succs.get(node).equals(node.weakSucc())) {
+				SmallSet<CFGNode> oldsucc = succs.get(node);
+				SmallSet<CFGNode> newsucc = node.weakSucc();
+				throw new RefactoringException("Could not preserve cflow out of "+node);
+			}
+		}
+	}
 
-  syn boolean CFGNode.isPureCFlowNode() = false;
-  eq Block.isPureCFlowNode() = true;
-  eq TypeAccess.isPureCFlowNode() = true;
-  eq ExprStmt.isPureCFlowNode() = true;
-  eq ReturnStmt.isPureCFlowNode() = true;
-  // there could be many more here
+	syn boolean CFGNode.isPureCFlowNode() = false;
+	eq Block.isPureCFlowNode() = true;
+	eq TypeAccess.isPureCFlowNode() = true;
+	eq ExprStmt.isPureCFlowNode() = true;
+	eq ReturnStmt.isPureCFlowNode() = true;
+	// there could be many more here
 
-  syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {
-    SmallSet<CFGNode> res = SmallSet.empty();
-    for(CFGNode n : succ())
-      if(n.isPureCFlowNode())
-	res = res.union(n.weakSucc());
-      else
-	res = res.union(n);
-    return res;
-  }
+	syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {
+		SmallSet<CFGNode> res = SmallSet.empty();
+		for(CFGNode n : succ())
+			if(n.isPureCFlowNode())
+				res = res.union(n.weakSucc());
+			else
+				res = res.union(n);
+		return res;
+	}
 
-  syn lazy SmallSet<CFGNode> CFGNode.weakPred() {
-    SmallSet<CFGNode> res = SmallSet.empty();
-    for(CFGNode n : pred())
-      if(n.isPureCFlowNode())
-	res = res.union(n.weakPred());
-      else
-	res = res.union(n);
-    return res;
-  }
+	syn lazy SmallSet<CFGNode> CFGNode.weakPred() {
+		SmallSet<CFGNode> res = SmallSet.empty();
+		for(CFGNode n : pred())
+			if(n.isPureCFlowNode())
+				res = res.union(n.weakPred());
+			else
+				res = res.union(n);
+		return res;
+	}
 
 }

@@ -11,9 +11,11 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 import AST.Block;
 import AST.Callable;
+import AST.CompilationUnit;
 import AST.ConstructorDecl;
 import AST.Program;
 import AST.RefactoringException;
+import AST.Stmt;
 import AST.TypeDecl;
 
 public abstract class ExtractMethod extends TestCase {
@@ -55,6 +57,47 @@ public abstract class ExtractMethod extends TestCase {
         				rfw.write(prog+"\n");
         				rfw.close();
         			}*/
+        			assertEquals(res, prog+"\n");
+        		}
+        	} catch(FileNotFoundException fnfe) {
+        		fail(name+" was supposed to fail but yielded result: "+prog);
+        	}
+        } catch(IOException ioe) {
+        	fail("unable to read from file "+ioe);
+        } catch(RefactoringException rfe) {
+        	rfe.printStackTrace();
+        	assertFalse(new File(resfile).exists());
+        }
+	}
+	
+	public void runExtractionTest2(String name) {
+        String infile = TEST_BASE+File.separator+name+File.separator+"in"+File.separator+"A.java";
+        String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
+        String altfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A_alt.java";
+        try {
+        	Program prog = TestHelper.compile(infile);
+        	assertNotNull(prog);
+        	TypeDecl A = prog.lookupType("", "A");
+        	assertNotNull(A);
+        	CompilationUnit cu = A.compilationUnit();
+        	assertNotNull(cu);
+        	Stmt from = TestHelper.findStmtFollowingComment(cu, "// from\n");
+        	assertNotNull(from);
+        	Stmt to = TestHelper.findStmtPrecedingComment(cu, "// to\n");
+        	assertNotNull(to);
+        	Block blk = from.hostBlock();
+        	int fromIndex = blk.getIndexOfStmt(from);
+        	assertTrue(fromIndex != -1);
+        	int toIndex = blk.getIndexOfStmt(to);
+        	assertTrue(toIndex != -1);
+        	blk.extractMethod("protected", "extracted", fromIndex, toIndex);
+        	try {
+        		char[] buf = TestHelper.wholeFile(resfile);
+        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n")) {
+        			String res = new String(TestHelper.wholeFile(altfile));
+        			assertEquals(res, prog+"\n");
+        		} else {
+        			String res = new String(buf);
         			assertEquals(res, prog+"\n");
         		}
         	} catch(FileNotFoundException fnfe) {
