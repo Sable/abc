@@ -1,7 +1,7 @@
 class A {
   void test(int x, int y) {
     while(x < 0){
-      y = extracted(x, y);
+      y = extracted(y, x);
       x = y - 1;
     }
   }

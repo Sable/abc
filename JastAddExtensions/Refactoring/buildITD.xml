@@ -261,7 +261,7 @@
      classname="junit.awtui.TestRunner"
      classpath=".:tools/junit.jar" 
      fork="true" 
-     maxmemory="2048M"
+     maxmemory="4096M"
      dir="tests/data">
     <arg line="tests.AllTests"/>
   </java>
