@@ -1,0 +1,28 @@
+aspect InlineClosureInvocation {
+	
+	public void ClosureInvocation.inline() throws RefactoringException {
+		Program root = programRoot();
+		AdjustmentTable table = new AdjustmentTable();
+		if(getNumInParameter() > 0 || getNumOutParameter() > 0)
+			throw new RefactoringException("cannot inline this closure");
+		if(getParent() instanceof ExprStmt) {
+			getBlock().lockAllCFlow(table);
+			getParent().replaceWith(getBlock());
+		} else if(isExprClosure()) {
+			replaceWith(getExpr());
+		} else if(getParent() instanceof ReturnStmt) {
+			getParent().replaceWith(getBlock());
+		} else {
+			throw new RefactoringException("Cannot inline this closure");
+		}
+		root.flushCaches();
+		table.adjust();
+	}
+	
+	syn boolean ClosureInvocation.isExprClosure() 
+	  = getBlock().getNumStmt() == 1 && getBlock().getStmt(0) instanceof ReturnStmt &&
+	      ((ReturnStmt)getBlock().getStmt(0)).hasResult();
+	
+	syn Expr ClosureInvocation.getExpr() = ((ReturnStmt)getBlock().getStmt(0)).getResult(); 
+	
+}

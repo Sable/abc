@@ -63,31 +63,32 @@ aspect TypeAccessInfo {
 		return addQualifier(!td.memberTypes(target.name()).isEmpty());
 	}
 		
-	public abstract Access TypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous);
+	public abstract Access TypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt);
 	
-	public Access LocalTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		if(ctxt.isShadowed(target, ambiguous))
+	public Access LocalTypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt) {
+		if(ctxt.isShadowed(target, nt))
 			return null;
 		else
 			return new TypeAccess(target.name());
 	}
 	
-	public Access TopLevelTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	public Access TopLevelTypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt) {
 		String pkg = target.packageName();
-		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
-			if(ctxt.isShadowed(new PackageAccess(pkg), ambiguous))
+		if(needsQualifier || ctxt.isShadowed(target, nt)) {
+			if(ctxt.isShadowed(new PackageAccess(pkg), nt))
 				return null;
 			return new TypeAccess(pkg, target.name());
 		} else {
 			return new TypeAccess(target.name());
 		}
 	}
-
-	public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
-			if(ambiguous && !source.memberFields(target.name()).isEmpty())
+	
+	public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt) {
+		if(needsQualifier || ctxt.isShadowed(target, nt)) {
+			if((nt == NameType.AMBIGUOUS_NAME || nt == NameType.EXPRESSION_NAME) 
+					&& !source.memberFields(target.name()).isEmpty())
 				return null;
-			Access source_acc = ctxt.accessType(source, ambiguous);
+			Access source_acc = ctxt.accessType(source, nt);
 			if(source_acc == null) return null;
 			return source_acc.qualifiesAccess(new TypeAccess(target.name()));
 		} else {
@@ -96,33 +97,34 @@ aspect TypeAccessInfo {
 	}
 	
 	public abstract Access TypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
-			boolean ambiguous, Expr qualifier);
+			NameType nt, Expr qualifier);
 	
 	public Access LocalTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
-			boolean ambiguous, Expr qualifier) {
+			NameType nt, Expr qualifier) {
 		return null;
 	}
 
 	public Access TopLevelTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
-			boolean ambiguous, Expr qualifier) {
+			NameType nt, Expr qualifier) {
 		String pkg = target.packageName();
 		if(qualifier instanceof PackageAccess) {
 			// this probably never happens, since package accesses are merged into type accesses anyway
 			PackageAccess pkgacc = (PackageAccess)qualifier;
 			if(pkgacc.packageName().equals(pkg) &&
-					!ctxt.isShadowed(pkgacc, ambiguous))
+					!ctxt.isShadowed(pkgacc, nt))
 				return qualifier.qualifiesAccess(new TypeAccess(target.name()));
 		}
 		return null;
 	}
 	
 	public Access MemberTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
-			boolean ambiguous, Expr qualifier) {
+			NameType nt, Expr qualifier) {
 		if(qualifier.isTypeAccess()) {
 			TypeDecl td = qual_type;
 			// TODO: check that td is something we want to qualify with
 			//       (i.e., td == source, or maybe an ancestor class)
-			if(ambiguous && !source.memberFields(target.name()).isEmpty())
+			if((nt == NameType.AMBIGUOUS_NAME || nt == NameType.EXPRESSION_NAME) 
+					&& !source.memberFields(target.name()).isEmpty())
 				return null;
 			return qualifier.qualifiesAccess(new TypeAccess(target.name()));
 		}

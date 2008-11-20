@@ -1,0 +1,7 @@
+aspect InlineMethod {
+	
+	public void MethodAccess.inline() throws RefactoringException {
+		inlineToClosure().introduceOutParameter().subst().inline();
+	}
+	
+}

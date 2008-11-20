@@ -1,0 +1,51 @@
+aspect ClosureSubstitution {
+	
+	public ClosureInvocation ClosureInvocation.subst() throws RefactoringException {
+		AdjustmentTable table = new AdjustmentTable();
+		Map<Variable, Expr> in = new HashMap<Variable, Expr>();
+		Map<Variable, VarAccess> out = new HashMap<Variable, VarAccess>();
+		for(int i=0;i<getNumInParameter();++i)
+			in.put(getInParameter(i), getInArg(i));
+		for(int i=0;i<getNumOutParameter();++i)
+			if(getOutArg(i) instanceof VarAccess)
+				out.put(getOutParameter(i), (VarAccess)getOutArg(i));
+			else
+				throw new RefactoringException("out argument is not a simple variable");
+		getBlock().subst(in, out, table);
+		setInParameterList(new List<ParameterDeclaration>());
+		setInArgList(new List<Expr>());
+		setOutParameterList(new List<ParameterDeclaration>());
+		setOutArgList(new List<Expr>());
+		programRoot().flushCaches();
+		table.adjust();
+		return this;
+	}
+	
+	public void ASTNode.subst(Map<Variable, Expr> in, Map<Variable, VarAccess> out, AdjustmentTable table) throws RefactoringException {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.subst(in, out, table);
+		}
+	}
+	
+	public void VarAccess.subst(Map<Variable, Expr> in, Map<Variable, VarAccess> out, AdjustmentTable table) throws RefactoringException {
+		if(isSource()) {
+			Expr insubst = in.get(decl());
+			if(insubst == null)
+				return;
+			if(isDest()) {
+				Expr outsubst = out.get(decl());
+				if(outsubst != null)
+					if(!(insubst instanceof VarAccess && insubst.type() != outsubst.type()))
+						throw new RefactoringException("conflicting substitutions");
+			}
+			this.replaceWith(insubst.copyAndLockWithDFlow(table));
+		} else if(isDest()) {
+			VarAccess outsubst = out.get(decl());
+			if(outsubst != null)
+				this.replaceWith(outsubst.copyAndLockWithDFlow(table));
+		}
+	}
+	
+}

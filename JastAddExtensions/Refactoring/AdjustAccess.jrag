@@ -60,7 +60,7 @@ aspect AdjustAccess {
 		TypeDecl td = target;
 		unlock();
 		if(possiblyObscured() || decl() != td) {
-			Access acc = access(td, nameType() == NameType.AMBIGUOUS_NAME);
+			Access acc = access(td, nameType());
 			if(acc == null)
 				throw new RefactoringException("type cannot be accessed");
 			plugIn(acc);
@@ -150,6 +150,40 @@ aspect AdjustAccess {
 			for(LockableAccess acc : adjustments)
 				acc.unlock();
 		}
+	}
+	
+	// lock everything that can be locked in this AST node and its children
+	public void ASTNode.lockAll(AdjustmentTable table) {
+        for(int i = 0; i < getNumChildNoTransform(); i++) {
+          ASTNode node = getChildNoTransform(i);
+          if(node != null) 
+        	  node.lockAll(table);
+        }
+	}
+	
+	public void LockableAccess.lockAll(AdjustmentTable table) {
+		table.add(this);
+		super.lockAll(table);
+	}
+	
+	// copy a subtree and lock everything
+	public ASTNode ASTNode.copyAndLock(AdjustmentTable table) {
+		ASTNode res = (ASTNode)copy();
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null)
+				node = node.copyAndLock(table);
+			res.setChild(node, i);
+		}
+		return res;
+	}
+	
+	public ASTNode LockableAccess.copyAndLock(AdjustmentTable table) {
+		lock();
+		ASTNode res = super.copyAndLock(table);
+		table.add((LockableAccess)res);
+		unlock();
+		return res;
 	}
 	
 	// replace the access and its qualifier by an expr

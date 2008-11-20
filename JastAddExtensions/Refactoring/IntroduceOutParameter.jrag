@@ -1,0 +1,54 @@
+aspect IntroduceOutParameter {
+	
+	public ClosureInvocation ClosureInvocation.introduceOutParameter() throws RefactoringException {
+		if(!(getParent() instanceof AssignSimpleExpr))
+			return this;
+		AssignSimpleExpr parent = (AssignSimpleExpr)getParent();
+		if(!parent.getDest().isVariable())
+			throw new RefactoringException("cannot introduce non-variable out parameter");
+		VarAccess v = (VarAccess)parent.getDest();
+		RefactoringException exn = acceptOutParameter(v.name());
+		if(exn != null)
+			throw exn;
+		AdjustmentTable table = new AdjustmentTable();
+		getBlock().lockAll(table);
+		setReturnType(new PrimitiveTypeAccess("void"));
+		ParameterDeclaration newOut = new ParameterDeclaration(v.type().getLockedAccess(table), v.name());
+		addOutParameter(newOut);
+		addOutArg(new VarAccess(v.name()));
+		table.adjust();
+		table = new AdjustmentTable();
+		// little hack: references to the newly introduced out parameter will bind to an in parameter of the
+		// same name if there is any; that is OK
+		SimpleSet set = this.inParameterDeclaration(v.name());
+		if(!set.isEmpty())
+			newOut = (ParameterDeclaration)(set.iterator().next());
+		getBlock().addAssignToReturns(newOut, table);
+		parent.replaceWith(this);
+		programRoot().flushCaches();
+		table.adjust();
+		return this;
+	}
+	
+	syn RefactoringException ClosureInvocation.acceptOutParameter(String name) {
+		if(hasOutParameter(name))
+			return new RefactoringException("out parameter of the same name exists");
+		return getBlock().acceptLocal(name);
+	}
+	
+	public void ASTNode.addAssignToReturns(Variable v, AdjustmentTable table) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.addAssignToReturns(v, table);
+		}
+	}
+	
+	public void ReturnStmt.addAssignToReturns(Variable v, AdjustmentTable table) {
+		if(hasResult()) {
+			setResult(new AssignSimpleExpr(v.createLockedVarAccess(table), getResult()));
+			programRoot().flushCaches();
+		}
+	}
+	
+}

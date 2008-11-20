@@ -163,4 +163,16 @@ aspect Dataflow {
 	public void ClassInstanceExpr.lockAllDFlow(AdjustmentTable table) throws RefactoringException {
 		throw new RefactoringException("cannot handle dataflow for constructors");
 	}
+
+	// lock all accesses and all dflow in a subtree
+	public ASTNode ASTNode.copyAndLockWithDFlow(AdjustmentTable table) throws RefactoringException {
+		ASTNode parent = getParent();
+		int idx = parent.getIndexOfChild(this);
+		ASTNode copy = copyAndLock(table);
+		parent.setChild(copy, idx);
+		copy.lockAllDFlow(table);
+		parent.setChild(this, idx);
+		return copy;
+	}
+	
 }

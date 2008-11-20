@@ -10,21 +10,25 @@ aspect NamingContext {
 		public abstract TypeDecl enclosingType();
 		public abstract NamingContext unqualifiedCtxt();
 		
-		public boolean isShadowed(PackageAccess pkg, boolean ambiguous) {
+		public boolean isShadowed(PackageAccess pkg, NameType nt) {
+			if(nt == NameType.PACKAGE_NAME)
+				return false;
 			String fst = pkg.packageName().split("\\.")[0];
-			return ambiguous && 
-				(!lookupType(fst).isEmpty() || !lookupVariable(fst).isEmpty()); 
+			return !lookupType(fst).isEmpty() || 
+				   (nt == NameType.AMBIGUOUS_NAME || nt == NameType.EXPRESSION_NAME)
+				       && !lookupVariable(fst).isEmpty(); 
 		}
 		
-		public boolean isShadowed(TypeDecl td, boolean ambiguous) {
-			if(ambiguous && !lookupVariable(td.name()).isEmpty())
+		public boolean isShadowed(TypeDecl td, NameType nt) {
+			if((nt == NameType.AMBIGUOUS_NAME || nt == NameType.EXPRESSION_NAME)
+					&& !lookupVariable(td.name()).isEmpty())
 				return true;
 			return !lookupType(td.name()).contains(td);
 		}
 		
 		public abstract SimpleSet lookupType(String name);
 		public abstract SimpleSet lookupVariable(String name);
-		public abstract Access accessType(TypeDecl td, boolean ambiguous);
+		public abstract Access accessType(TypeDecl td, NameType nt);
 	}
 	
 	public NamingContext Expr.getNamingContext() {
@@ -34,8 +38,8 @@ aspect NamingContext {
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Expr.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return Expr.this.access(td, nt);
 			}
 		};
 	}
@@ -48,8 +52,8 @@ aspect NamingContext {
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return Stmt.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Stmt.this.lookupVariable(name); }
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Stmt.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return Stmt.this.access(td, nt);
 			}
 		};
 	}
@@ -67,8 +71,8 @@ aspect NamingContext {
 			public SimpleSet lookupVariable(String name) { 
 				return Access.this.lookupVariable(name); 
 			}
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Access.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return Access.this.access(td, nt);
 			}
 		};
 	}
@@ -81,8 +85,8 @@ aspect NamingContext {
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return BodyDecl.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return BodyDecl.this.access(td, nt);
 			}
 		};
 	}
@@ -117,8 +121,8 @@ aspect NamingContext {
 				}
 				return list;
 			}
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return TypeDecl.this.accessTypeFromInside(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return TypeDecl.this.accessTypeFromInside(td, nt);
 			}
 		};
 	}

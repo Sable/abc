@@ -1,163 +1,163 @@
 aspect Closures {
-  public void ClosureInvocation.toString(StringBuffer s) {
-    s.append("(λ (");
-    if(getNumInParameter() > 0) {
-      getInParameter(0).toString(s);
-      for(int i = 1; i < getNumInParameter(); i++) {
-        s.append(", ");
-        getInParameter(i).toString(s);
-      }
-    }
-    if(getNumOutParameter() > 0) {
-      if(getNumInParameter() > 0)
-	s.append(" ");
-      s.append("| ");
-      getOutParameter(0).toString(s);
-      for(int i = 1; i < getNumOutParameter(); i++) {
-	s.append(", ");
-	getOutParameter(i).toString(s);
-      }
-    }
-    s.append(") : ");
-    getReturnType().toString(s);
-    if(getNumException() > 0) {
-      s.append(" throws ");
-      getException(0).toString(s);
-      for(int i = 1; i < getNumException(); i++) {
-	s.append(", ");
-	getException(i).toString(s);
-      }
-    }
-    s.append(" ");
-    getBlock().toString(s);
-    s.append(")@");
-    s.append("(");
-    if(getNumInArg() > 0) {
-      getInArg(0).toString(s);
-      for(int i = 1; i < getNumInArg(); i++) {
-        s.append(", ");
-        getInArg(i).toString(s);
-      }
-    }
-    if(getNumOutArg() > 0) {
-      if(getNumInArg() > 0)
-	s.append(" ");
-      s.append("| ");
-      getOutArg(0).toString(s);
-      for(int i = 1; i < getNumOutArg(); i++) {
-	s.append(", ");
-	getOutArg(i).toString(s);
-      }
-    }
-    s.append(")");
-  }
+	public void ClosureInvocation.toString(StringBuffer s) {
+		s.append("(λ (");
+		if(getNumInParameter() > 0) {
+			getInParameter(0).toString(s);
+			for(int i = 1; i < getNumInParameter(); i++) {
+				s.append(", ");
+				getInParameter(i).toString(s);
+			}
+		}
+		if(getNumOutParameter() > 0) {
+			if(getNumInParameter() > 0)
+				s.append(" ");
+			s.append("| ");
+			getOutParameter(0).toString(s);
+			for(int i = 1; i < getNumOutParameter(); i++) {
+				s.append(", ");
+				getOutParameter(i).toString(s);
+			}
+		}
+		s.append(") : ");
+		getReturnType().toString(s);
+		if(getNumException() > 0) {
+			s.append(" throws ");
+			getException(0).toString(s);
+			for(int i = 1; i < getNumException(); i++) {
+				s.append(", ");
+				getException(i).toString(s);
+			}
+		}
+		s.append(" ");
+		getBlock().toString(s);
+		s.append(")@");
+		s.append("(");
+		if(getNumInArg() > 0) {
+			getInArg(0).toString(s);
+			for(int i = 1; i < getNumInArg(); i++) {
+				s.append(", ");
+				getInArg(i).toString(s);
+			}
+		}
+		if(getNumOutArg() > 0) {
+			if(getNumInArg() > 0)
+				s.append(" ");
+			s.append("| ");
+			getOutArg(0).toString(s);
+			for(int i = 1; i < getNumOutArg(); i++) {
+				s.append(", ");
+				getOutArg(i).toString(s);
+			}
+		}
+		s.append(")");
+	}
 
-  public boolean ClosureInvocation.hasParameter(String name) {
-    return hasInParameter(name) || hasOutParameter(name);
-  }
+	public boolean ClosureInvocation.hasParameter(String name) {
+		return hasInParameter(name) || hasOutParameter(name);
+	}
 
-  public boolean ClosureInvocation.hasInParameter(String name) {
-    for(int i=0;i<getNumInParameter();++i)
-      if(getInParameter(i).name().equals(name))
-	return true;
-    return false;
-  }
+	public boolean ClosureInvocation.hasInParameter(String name) {
+		for(int i=0;i<getNumInParameter();++i)
+			if(getInParameter(i).name().equals(name))
+				return true;
+		return false;
+	}
 
-  public boolean ClosureInvocation.hasOutParameter(String name) {
-    for(int i=0;i<getNumOutParameter();++i)
-      if(getOutParameter(i).name().equals(name))
-	return true;
-    return false;
-  }
+	public boolean ClosureInvocation.hasOutParameter(String name) {
+		for(int i=0;i<getNumOutParameter();++i)
+			if(getOutParameter(i).name().equals(name))
+				return true;
+		return false;
+	}
 
-  // equations for some attributes defined elsewhere
-  eq ClosureInvocation.getInParameter().getBlock() = getBlock();
-  eq ClosureInvocation.getOutParameter().getBlock() = getBlock();
+	// equations for some attributes defined elsewhere
+	eq ClosureInvocation.getInParameter().getBlock() = getBlock();
+	eq ClosureInvocation.getOutParameter().getBlock() = getBlock();
 
-  eq ClosureInvocation.getInParameter().canRenameTo(String new_name) {
-    if(hasParameter(new_name))
-      return new RefactoringException("parameter of the same name exists");
-    return getBlock().acceptLocal(new_name);
-  }
-  eq ClosureInvocation.getOutParameter().canRenameTo(String new_name) {
-    if(hasParameter(new_name))
-      return new RefactoringException("parameter of the same name exists");
-    return getBlock().acceptLocal(new_name);
-  }
+	eq ClosureInvocation.getInParameter().canRenameTo(String new_name) {
+		if(hasParameter(new_name))
+			return new RefactoringException("parameter of the same name exists");
+		return getBlock().acceptLocal(new_name);
+	}
+	eq ClosureInvocation.getOutParameter().canRenameTo(String new_name) {
+		if(hasParameter(new_name))
+			return new RefactoringException("parameter of the same name exists");
+		return getBlock().acceptLocal(new_name);
+	}
 
-  // we're not interested in reachability checking for closure invocations
-  eq ClosureInvocation.getBlock().reachable() = true;
+	// we're not interested in reachability checking for closure invocations
+	eq ClosureInvocation.getBlock().reachable() = true;
 
-  eq ClosureInvocation.type() = getReturnType().type();
-  
-  eq ClosureInvocation.isPureCFlowNode() = true;
-  eq VarAccess.isPureCFlowNode() = isOutParameter();
+	eq ClosureInvocation.type() = getReturnType().type();
 
-  eq ClosureInvocation.first() = getNumInArg() == 0 ? getBlock() : getInArg(0).first();
-  eq ClosureInvocation.getInArg(int i).following() 
-    = i < getNumInArg()-1 ? SmallSet.singleton((CFGNode)getInArg(i+1).first()) 
-			  : SmallSet.singleton((CFGNode)getBlock());
-  eq ClosureInvocation.getOutArg(int i).following() 
-    = SmallSet.singleton((CFGNode)
-			 (i < getNumOutArg()-1 ? getOutArg(i+1).first() : this));
-  eq ClosureInvocation.getBlock().following()
-    = SmallSet.singleton((CFGNode)
-			 (getNumOutArg() == 0 ? this : getOutArg(0).first()));
-  eq ClosureInvocation.getReturnType().following()
-    = SmallSet.singleton((CFGNode)
-    		 (getNumOutArg() == 0 ? this : getOutArg(0).first()));
- 
-  SmallSet<CFGNode> BranchStmt.targetIn(ClosureInvocation cl);
-  public SmallSet<CFGNode> BreakStmt.targetIn(ClosureInvocation cl) {
-    return null;
-  }
-  public SmallSet<CFGNode> ContinueStmt.targetIn(ClosureInvocation cl) {
-    return null;
-  }
-  public SmallSet<CFGNode> ReturnStmt.targetIn(ClosureInvocation cl) {
-    return SmallSet.singleton((CFGNode)cl.getReturnType());
-  }
-  public SmallSet<CFGNode> ThrowStmt.targetIn(ClosureInvocation cl) {
-    return cl.targetStmt(this);
-  }
+	eq ClosureInvocation.isPureCFlowNode() = true;
+	eq VarAccess.isPureCFlowNode() = isOutParameter();
 
-  inh SmallSet<CFGNode> ClosureInvocation.targetStmt(BranchStmt branch);
-  eq ClosureInvocation.getChild().targetStmt(BranchStmt branch) {
-    return branch.targetIn(this);
-  }
+	eq ClosureInvocation.first() = getNumInArg() == 0 ? getBlock() : getInArg(0).first();
+	eq ClosureInvocation.getInArg(int i).following() 
+	= i < getNumInArg()-1 ? SmallSet.singleton((CFGNode)getInArg(i+1).first()) 
+			: SmallSet.singleton((CFGNode)getBlock());
+	eq ClosureInvocation.getOutArg(int i).following() 
+	= SmallSet.singleton((CFGNode)
+			(i < getNumOutArg()-1 ? getOutArg(i+1).first() : this));
+	eq ClosureInvocation.getBlock().following()
+	= SmallSet.singleton((CFGNode)
+			(getNumOutArg() == 0 ? this : getOutArg(0).first()));
+	eq ClosureInvocation.getReturnType().following()
+	= SmallSet.singleton((CFGNode)
+			(getNumOutArg() == 0 ? this : getOutArg(0).first()));
 
-  inh boolean Expr.isOutParameter();
-  eq Program.getChild().isOutParameter() = false;
-  eq ClosureInvocation.getOutParameter().isOutParameter() = true;
-  
-  // all return statements inside the closure
-  syn lazy SmallSet<CFGNode> ClosureInvocation.returns() = getReturnType().pred();
-  // all final, non-return statements inside the closure
-  syn lazy SmallSet<CFGNode> ClosureInvocation.finals() = getNumOutArg() == 0 ? pred().compl(getReturnType()) : getOutArg(0).pred().compl(getReturnType()); 
+	SmallSet<CFGNode> BranchStmt.targetIn(ClosureInvocation cl);
+	public SmallSet<CFGNode> BreakStmt.targetIn(ClosureInvocation cl) {
+		return null;
+	}
+	public SmallSet<CFGNode> ContinueStmt.targetIn(ClosureInvocation cl) {
+		return null;
+	}
+	public SmallSet<CFGNode> ReturnStmt.targetIn(ClosureInvocation cl) {
+		return SmallSet.singleton((CFGNode)cl.getReturnType());
+	}
+	public SmallSet<CFGNode> ThrowStmt.targetIn(ClosureInvocation cl) {
+		return cl.targetStmt(this);
+	}
 
-  // lookup is done as for methods
-  eq ClosureInvocation.getBlock().lookupVariable(String name) {
-    SimpleSet set = inParameterDeclaration(name);
-    if(!set.isEmpty()) return set;
-    set = outParameterDeclaration(name);
-    if(!set.isEmpty()) return set;
-    return lookupVariable(name);
-  }
-  eq ClosureInvocation.getInParameter().lookupVariable(String name) 
-    = inParameterDeclaration(name);
-  eq ClosureInvocation.getOutParameter().lookupVariable(String name)
-    = outParameterDeclaration(name);
+	inh SmallSet<CFGNode> ClosureInvocation.targetStmt(BranchStmt branch);
+	eq ClosureInvocation.getChild().targetStmt(BranchStmt branch) {
+		return branch.targetIn(this);
+	}
 
-  syn lazy SimpleSet ClosureInvocation.inParameterDeclaration(String name) {
-    for(int i = 0; i < getNumInParameter(); i++)
-      if(getInParameter(i).name().equals(name))
-        return (ParameterDeclaration)getInParameter(i);
-    return SimpleSet.emptySet;
-  }
-  syn lazy SimpleSet ClosureInvocation.outParameterDeclaration(String name) {
-    for(int i = 0; i < getNumOutParameter(); i++)
-      if(getOutParameter(i).name().equals(name))
-        return (ParameterDeclaration)getOutParameter(i);
-    return SimpleSet.emptySet;
-  }
+	inh boolean Expr.isOutParameter();
+	eq Program.getChild().isOutParameter() = false;
+	eq ClosureInvocation.getOutParameter().isOutParameter() = true;
+
+	// all return statements inside the closure
+	syn lazy SmallSet<CFGNode> ClosureInvocation.returns() = getReturnType().pred();
+	// all final, non-return statements inside the closure
+	syn lazy SmallSet<CFGNode> ClosureInvocation.finals() = getNumOutArg() == 0 ? pred().compl(getReturnType()) : getOutArg(0).pred().compl(getReturnType()); 
+
+	// lookup is done as for methods
+	eq ClosureInvocation.getBlock().lookupVariable(String name) {
+		SimpleSet set = inParameterDeclaration(name);
+		if(!set.isEmpty()) return set;
+		set = outParameterDeclaration(name);
+		if(!set.isEmpty()) return set;
+		return lookupVariable(name);
+	}
+	eq ClosureInvocation.getInParameter().lookupVariable(String name) 
+	= inParameterDeclaration(name);
+	eq ClosureInvocation.getOutParameter().lookupVariable(String name)
+	= outParameterDeclaration(name);
+
+	syn lazy SimpleSet ClosureInvocation.inParameterDeclaration(String name) {
+		for(int i = 0; i < getNumInParameter(); i++)
+			if(getInParameter(i).name().equals(name))
+				return (ParameterDeclaration)getInParameter(i);
+		return SimpleSet.emptySet;
+	}
+	syn lazy SimpleSet ClosureInvocation.outParameterDeclaration(String name) {
+		for(int i = 0; i < getNumOutParameter(); i++)
+			if(getOutParameter(i).name().equals(name))
+				return (ParameterDeclaration)getOutParameter(i);
+		return SimpleSet.emptySet;
+	}
 }

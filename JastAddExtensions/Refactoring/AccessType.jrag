@@ -256,38 +256,38 @@ aspect AccessType {
 	}
 	
 	// convenience methods to compute accesses at different nodes
-	public Access TypeDecl.accessTypeFromInside(TypeDecl td, boolean ambiguous) {
+	public Access TypeDecl.accessTypeFromInside(TypeDecl td, NameType nt) {
 		TypeAccessInfo acc = accessTypeFromInside(td);
 		if(acc == null) return null;
-		return acc.computeAccess(getMemberNamingContext(), ambiguous);
+		return acc.computeAccess(getMemberNamingContext(), nt);
 	}
 	
-	public Access BodyDecl.access(TypeDecl td, boolean ambiguous) {
+	public Access BodyDecl.access(TypeDecl td, NameType nt) {
 		TypeAccessInfo acc = accessType(td);
 		if(acc == null) return null;
-		return acc.computeAccess(getNamingContext(), ambiguous);
+		return acc.computeAccess(getNamingContext(), nt);
 	}
 
-	public Access Stmt.access(TypeDecl td, boolean ambiguous) {
+	public Access Stmt.access(TypeDecl td, NameType nt) {
 		TypeAccessInfo acc = accessType(td);
 		if(acc == null) return null;
-		return acc.computeAccess(getNamingContext(), ambiguous);
+		return acc.computeAccess(getNamingContext(), nt);
 	}
 	
-	public Access Expr.access(TypeDecl td, boolean ambiguous) {
+	public Access Expr.access(TypeDecl td, NameType nt) {
 		TypeAccessInfo acc = accessType(td);
 		if(acc == null) return null;
-		return acc.computeAccess(getNamingContext(), ambiguous);
+		return acc.computeAccess(getNamingContext(), nt);
 	}
 	
-	public Access Access.access(TypeDecl td, boolean ambiguous) {
+	public Access Access.access(TypeDecl td, NameType nt) {
 		TypeAccessInfo acc = accessType(td);
 		if(acc == null) return null;
 		if(isQualified())
 			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(), qualifier().type(),
-										      ambiguous, getCompleteQualifier());
+										      nt, getCompleteQualifier());
 		else
-			return acc.computeAccess(getNamingContext(), ambiguous);
+			return acc.computeAccess(getNamingContext(), nt);
 	}
 	
 }

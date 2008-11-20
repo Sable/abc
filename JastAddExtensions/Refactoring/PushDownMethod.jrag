@@ -62,19 +62,4 @@ aspect PushDownMethod {
     	getModifiers().addModifier(new Modifier("abstract"));
 	}
 	
-	// lock everything that can be locked in this AST node and its children
-	public void ASTNode.lockAll(AdjustmentTable table) {
-        for(int i = 0; i < getNumChildNoTransform(); i++) {
-          ASTNode node = getChildNoTransform(i);
-          if(node != null) 
-        	  node.lockAll(table);
-        }
-	}
-	
-	public void LockableAccess.lockAll(AdjustmentTable table) {
-		table.add(this);
-		super.lockAll(table);
-	}
-	
-	
 }

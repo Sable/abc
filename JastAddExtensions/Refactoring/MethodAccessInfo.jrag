@@ -34,17 +34,6 @@ aspect MethodAccessInfo {
 			} else if(bend instanceof ClassDecl && 
 						source == ((ClassDecl)bend).superclass()) {
 				return computeSuperAccess(ctxt, args);
-			/*} else if(target.isStatic()) {
-				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-				if(upper == null) return null;
-				if(bend == ctxt.enclosingType()) {
-					return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(ma);
-				} else {
-					Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-					if(outer == null) return null;
-					return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
-									   qualifiesAccess(ma);
-				}*/
 			} else {
 				return null;
 			}
@@ -55,7 +44,7 @@ aspect MethodAccessInfo {
 	
 	public Access MethodAccessInfo.computeStaticAccess(NamingContext ctxt, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
-		Access source_acc = ctxt.accessType(source, true);
+		Access source_acc = ctxt.accessType(source, NameType.EXPRESSION_NAME);
 		if(source_acc == null) return null;
 		return source_acc.qualifiesAccess(ma);
 	}
@@ -65,7 +54,7 @@ aspect MethodAccessInfo {
 		if(source == ctxt.enclosingType()) {
 			return ma;
 		} else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.TYPE_NAME);
 			if(outer == null) return null;
 			return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
 		}
@@ -76,7 +65,7 @@ aspect MethodAccessInfo {
 		if(bend == ctxt.enclosingType())
 			return new SuperAccess("super").qualifiesAccess(ma);
 		else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.PACKAGE_OR_TYPE_NAME);
 			if(outer == null) return null;
 			return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
 		}
@@ -96,7 +85,7 @@ aspect MethodAccessInfo {
 			if(source == bend && source == qual_type)
 				return qualifier.qualifiesAccess(ma);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.accessType(source, false);
+				Access upper = ctxt.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
 				if(upper != null && bend == qual_type)
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
 			}

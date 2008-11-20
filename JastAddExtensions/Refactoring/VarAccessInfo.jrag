@@ -107,7 +107,7 @@ aspect VarAccessInfo {
 	// creates an access of the form <Type>.<Field>
 	private Access VarAccessInfo.computeStaticFieldAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
-		Access outer = ctxt.accessType(source, true);
+		Access outer = ctxt.accessType(source, NameType.TYPE_NAME);
 		if(outer == null) return null;
 		return outer.qualifiesAccess(va);
 	}
@@ -118,7 +118,7 @@ aspect VarAccessInfo {
 		if(source == ctxt.enclosingType())
 			return new ThisAccess("this").qualifiesAccess(va);
 		else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.PACKAGE_OR_TYPE_NAME);
 			if(outer == null) return null;
 			return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
 		}
@@ -130,7 +130,7 @@ aspect VarAccessInfo {
 		if(bend == ctxt.enclosingType())
 			return new SuperAccess("super").qualifiesAccess(va);
 		else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.PACKAGE_OR_TYPE_NAME);
 			if(outer == null) return null;
 			return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
 		}
@@ -139,12 +139,12 @@ aspect VarAccessInfo {
 	// creates an access of the form ((<Type>)this).<Field> or ((<Type>)<Type>this).<Field>
 	private Access VarAccessInfo.computeMonsterAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
-		Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+		Access upper = ctxt.unqualifiedCtxt().accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
 		if(upper == null) return null;
 		if(bend == ctxt.enclosingType()) {
 			return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
 		} else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.PACKAGE_OR_TYPE_NAME);
 			if(outer == null) return null;
 			return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
 			qualifiesAccess(va);
@@ -161,7 +161,7 @@ aspect VarAccessInfo {
 			if(source == bend && source == qual_type)
 				return qualifier.qualifiesAccess(va);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = outer.accessType(source, false);
+				Access upper = outer.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
 				if(upper != null && bend == qual_type)
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
 			}
