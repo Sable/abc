@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE taglib
+        PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+	"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_2.dtd">
+<taglib>
+
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.1</jsp-version>
+  <short-name>simple</short-name>
+  <uri>http://xxx.org/super-puper</uri>
+  <description>
+	A simple tab library for the examples
+  </description>
+
+  <tag>
+    <name>__ShowSource</name>
+    <tag-class>examples.ShowSource</tag-class>
+    <description> Display JSP sources </description>
+    <attribute>
+       <name>__jspFile</name>
+       <required>true</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag-file>
+    <name>AAA</name>
+    <path>MyHelloWorldTagFile.tagx</path>
+  </tag-file>
+  <function>
+    <name>myuberfunc</name>
+    <function-class>mypkg.MyFunctions</function-class>
+    <function-signature>  java.lang.String nickName(java.lang.String)  </function-signature>
+    <description>My super func</description>
+    <example>---!!!---</example>
+  </function>
+</taglib>

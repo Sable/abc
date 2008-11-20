@@ -1,0 +1,9 @@
+<jsp:root
+    xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:other="http://some/uri"
+    version="2.0">
+    <jsp:directive.include file="./included.jspx"/>
+    <jsp:declaration>
+        int field = 0;
+    </jsp:declaration>
+    <other:t/>
+</jsp:root>

@@ -1,0 +1,10 @@
+<jsp:root
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    version="2.0">
+    <jsp:declaration>
+    </jsp:declaration>
+    <jsp:directive.include file="/P/included.jspx"/>
+    <jsp:scriptlet>
+        int t = j + 1;
+    </jsp:scriptlet>
+</jsp:root>

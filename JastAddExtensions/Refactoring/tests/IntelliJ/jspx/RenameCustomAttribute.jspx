@@ -1,0 +1,5 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:zzz="/super-puper2.tld">
+  <zzz:__ShowSource __jspFile="aaa"/>
+  <zzz:__ShowSource __jspFile="bbb"/>
+  <__ShowSource />
+</jsp:root>

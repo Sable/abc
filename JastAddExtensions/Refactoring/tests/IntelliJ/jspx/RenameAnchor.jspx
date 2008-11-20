@@ -1,0 +1,6 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:zzz="http://xxx.org/super-puper">
+  <a href="#a<caret>aa"></a>
+  <p id="aaa" />
+  <a href="RenameAnchor.jspx#aaa"></a>
+  <a href="RenameAnchor2.jspx#aaa"></a>
+</jsp:root>

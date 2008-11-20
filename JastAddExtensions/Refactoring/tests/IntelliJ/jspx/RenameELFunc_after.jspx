@@ -1,0 +1,5 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:zzz="http://xxx.org/super-puper">
+  ${ zzz:another<caret>func("1") }
+  <c value="${ zzz:anotherfunc('1') }"></c>
+  ${ myuberfunc("1") }
+</jsp:root>

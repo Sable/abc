@@ -1,0 +1,6 @@
+<jsp:root
+    xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:other="other/uri"
+    version="2.0">
+    <jsp:directive.include <caret>file="/P/included1.jspx"/>
+    <other:v/>
+</jsp:root>

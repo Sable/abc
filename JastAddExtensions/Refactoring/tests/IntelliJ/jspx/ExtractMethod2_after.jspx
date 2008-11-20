@@ -1,0 +1,13 @@
+<jsp:root
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    version="2.0">
+    <jsp:declaration>
+        private void newMethod(int i) {
+            final int k = i;
+        }
+    </jsp:declaration>
+    <jsp:directive.include file="P/included.jspx"/>
+    <jsp:scriptlet>
+        newMethod(i);
+    </jsp:scriptlet>
+</jsp:root>

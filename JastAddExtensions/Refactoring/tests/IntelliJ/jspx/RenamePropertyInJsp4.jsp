@@ -1,0 +1,1 @@
+${ui["prop<caret>erty1"]}

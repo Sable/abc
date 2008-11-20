@@ -1,0 +1,10 @@
+<jsp:root
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    version="2.0">
+    <jsp:scriptlet>
+      int i = 0;
+    </jsp:scriptlet>
+    <jsp:declaration>
+      int j = 0;
+    </jsp:declaration>
+</jsp:root>

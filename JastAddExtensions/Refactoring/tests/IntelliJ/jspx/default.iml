@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4" relativePaths="false" type="JAVA_MODULE">
+  <component name="ModuleRootManager" />
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="FacetManager">
+    <facet type="web" name="default">
+      <configuration>
+        <webroots />
+        <packaging />
+        <descriptors />
+        <building>
+          <option name="JAR_PATH" value="" />
+          <option name="JAR_ENABLED" value="false" />
+          <option name="EXPLODED_PATH" value="" />
+          <option name="EXPLODED_ENABLED" value="false" />
+        </building>
+      </configuration>
+    </facet>
+  </component>
+</module>
+
