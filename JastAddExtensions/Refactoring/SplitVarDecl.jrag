@@ -21,6 +21,8 @@ aspect SplitVarDecl {
   public AssignSimpleExpr VariableDeclaration.split() throws RefactoringException {
     if(!hasInit())
       return null;  // we could throw an exception here, but I think it's better this way
+    if(getInit().isArrayInit())
+    	throw new RefactoringException("cannot split declaration with array initializer");
     if(!(getParent().getParent() instanceof Block))
       throw new RefactoringException("cannot split declarations outside blocks");
     Block block = (Block)getParent().getParent();
@@ -36,5 +38,8 @@ aspect SplitVarDecl {
   public int Block.getIndexOfStmt(Stmt stmt) {
     return getStmtList().getIndexOfChild(stmt);
   }
+  
+  syn lazy boolean Expr.isArrayInit() = false;
+  eq ArrayInit.isArrayInit() = true;
 
 }

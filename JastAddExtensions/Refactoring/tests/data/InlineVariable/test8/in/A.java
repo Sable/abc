@@ -1,8 +1,14 @@
-class A {
-  static final int j = 23;
-  static final int i = j;
-  int m() {
-    int j = 42;
-    return i;
-  }
+class B {
+    class C { }
+}
+
+class A extends B {
+    void m() {
+	C c = new C();
+	Object i = (C)c;
+	{
+	    class C { }
+	    System.out.println(i);
+	}
+    }
 }

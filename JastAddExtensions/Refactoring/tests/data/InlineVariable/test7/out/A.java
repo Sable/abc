@@ -1,7 +1,12 @@
 class A {
-  static final int i = 23;
-  int m() {
-    return 23;
+  void m() {
+    n((int)'x');
+  }
+  void n(int i) {
+    System.out.println("here");
+  }
+  void n(char c) {
+    System.out.println("there");
   }
   A() {
     super();

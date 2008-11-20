@@ -1,9 +1,26 @@
-class A {
-  static final int j = 23;
-  static final int i = j;
-  int m() {
-    int j = 42;
-    return A.j;
+class B {
+  
+  class C {
+    C() {
+      super();
+    }
+  }
+  B() {
+    super();
+  }
+}
+
+class A extends B {
+  void m() {
+    C c = new C();
+    {
+        class C {
+          C() {
+            super();
+          }
+        }
+      System.out.println((Object)(B.C)c);
+    }
   }
   A() {
     super();

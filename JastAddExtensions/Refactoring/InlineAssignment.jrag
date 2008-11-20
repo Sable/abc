@@ -8,15 +8,17 @@ aspect InlineAssignment {
 		if(!(getDest() instanceof VarAccess))
 			throw new RefactoringException("LHS is not a simple variable");
 		VarAccess v = (VarAccess)getDest();
-		Expr rhs = getSource();
 		if(!v.decl().isLocalVariable())
 			throw new RefactoringException("can only inline assignment to local variable");
+		makeConversionExplicit();
+		Expr rhs = getSource();
 		SmallSet<VarAccess> dsuccs = v.dataSucc();
 		// check that all the data successors have this as their only data predecessor and are not destinations
 		// and replace them by copies of the RHS
 		AdjustmentTable table = new AdjustmentTable();
 		for(VarAccess w : dsuccs) {
 			rhs.lockAllDFlow(table);
+			rhs.lockAllAccesses(table);
 			if(w.isDest())
 				throw new RefactoringException("cannot inline into destinations");
 			if(!w.hasSingleDataPred(v))
@@ -34,6 +36,15 @@ aspect InlineAssignment {
 	public boolean VarAccess.hasSingleDataPred(CFGNode node) {
 		Iterator<CFGNode> dpreds = dataPred().iterator();
 		return dpreds.hasNext() && dpreds.next() == node && !dpreds.hasNext();
+	}
+	
+	public void AssignSimpleExpr.makeConversionExplicit() throws RefactoringException {
+		if(getDest().type() != getSource().type()) {
+			AdjustmentTable table = new AdjustmentTable();
+			setSource(new CastExpr(getDest().type().getLockedAccess(table), getSource()));
+			programRoot().flushCaches();
+			table.adjust();
+		}
 	}
 	
 }

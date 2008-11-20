@@ -1,3 +1,6 @@
 class A {
-  int i = 23;
+    void m() {
+	int i = 23;
+	System.out.println(i+i);
+    }
 }

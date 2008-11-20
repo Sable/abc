@@ -26,7 +26,7 @@ aspect ExtractAssignment {
 			AdjustmentTable table = new AdjustmentTable();
 			expr.lockAllDFlow(table);
 			expr.replaceWith(var.createLockedVarAccess(table));
-			block.insertStmt(AssignExpr.asStmt(var.createLockedVarAccess(table), expr));
+			block.insertStmt(index, AssignExpr.asStmt(var.createLockedVarAccess(table), expr));
 			block.programRoot().flushCaches();
 			table.adjust();
 			// TODO: need to check that the new assignment has precisely one dataflow successor, namely

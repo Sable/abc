@@ -1,6 +1,12 @@
 class A {
-  static final int i = 23;
-  int m() {
-    return A.i;
-  }
+    void m() {
+	int i = 'x';
+	n(i);
+    }
+    void n(int i) {
+	System.out.println("here");
+    }
+    void n(char c) {
+	System.out.println("there");
+    }
 }
