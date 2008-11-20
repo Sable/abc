@@ -31,13 +31,11 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.getAccess().access((TypeDecl)m, false);
+        	res = id.getAccess().access((TypeDecl)m, NameType.AMBIGUOUS_NAME);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
-            boolean ambiguous = acc.nameType() == NameType.AMBIGUOUS_NAME || 
-            					acc.nameType() == NameType.EXPRESSION_NAME;
-        	res = acc.access((TypeDecl)m, ambiguous);
+        	res = acc.access((TypeDecl)m, acc.nameType());
         }
         if(expected == null) {
         	assertNull(res);
@@ -57,13 +55,11 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.getAccess().access(td, false);
+        	res = id.getAccess().access(td, NameType.TYPE_NAME);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
-            boolean ambiguous = acc.nameType() == NameType.AMBIGUOUS_NAME || 
-            					acc.nameType() == NameType.EXPRESSION_NAME;
-        	res = acc.access(td, ambiguous);
+        	res = acc.access(td, acc.nameType());
         }
         if(expected == null) {
         	assertNull(res);

@@ -17,8 +17,10 @@ public class AllTests {
 		suite.addTest(RenameTests.suite());
 		suite.addTest(RenameTestsITD.suite());
 		suite.addTest(ExtractClassTests.suite());
-		suite.addTest(InlineVariableTests.suite());
+		suite.addTest(InlineLocalVariableTests.suite());
 		suite.addTest(PushDownMethodTests.suite());
+		suite.addTest(InlineMethodTests.suite());
+		suite.addTest(ExtractLocalVariableTests.suite());
 		return suite;
 	}
 }
