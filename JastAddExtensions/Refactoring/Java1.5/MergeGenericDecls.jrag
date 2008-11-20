@@ -115,7 +115,7 @@ aspect MergeGenericDecls {
 		TypeDecl td = target;
 		unlock();
 		if(possiblyObscured() || decl().sourceTypeDecl() != td) {
-			Access acc = access(td, nameType() == NameType.AMBIGUOUS_NAME);
+			Access acc = access(td, nameType());
 			if(acc == null)
 				throw new RefactoringException("type cannot be accessed");
 			plugIn(acc);
@@ -148,7 +148,7 @@ aspect MergeGenericDecls {
 			if(source == bend && source.sameSourceDeclAs(qual_type))
 				return qualifier.qualifiesAccess(ma);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.accessType(source, false);
+				Access upper = ctxt.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
 				if(upper != null && bend.sameSourceDeclAs(qual_type))
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
 			}
@@ -164,7 +164,7 @@ aspect MergeGenericDecls {
 			if(source == bend && source.sameSourceDeclAs(qual_type))
 				return qualifier.qualifiesAccess(va);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = outer.accessType(source, false);
+				Access upper = outer.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
 				if(upper != null && bend.sameSourceDeclAs(qual_type))
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
 			}

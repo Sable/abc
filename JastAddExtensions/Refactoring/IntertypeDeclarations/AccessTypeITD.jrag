@@ -69,11 +69,11 @@ aspect AccessTypeITD {
 	}
 	
 	// a type in a surrounding aspect cannot be accessed as <Aspect>.<Type> unless it is static
-	refine TypeAccessInfo public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		if(needsQualifier || ctxt.isShadowed(target, ambiguous))
+	refine TypeAccessInfo public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt) {
+		if(needsQualifier || ctxt.isShadowed(target, nt))
 			if(source instanceof AspectDecl && !target.isStatic())
 				return null;
-		return TypeAccessInfo.MemberTypeAccessInfo.computeAccess(ctxt, ambiguous);
+		return TypeAccessInfo.MemberTypeAccessInfo.computeAccess(ctxt, nt);
 	}
 	
 }

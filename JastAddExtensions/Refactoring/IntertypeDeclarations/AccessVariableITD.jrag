@@ -63,8 +63,8 @@ aspect AccessVariableITD {
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Expr.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return Expr.this.access(td, nt);
 			}
 		};
 	}
@@ -82,8 +82,8 @@ aspect AccessVariableITD {
 			public SimpleSet lookupVariable(String name) { 
 				return Access.this.lookupVariable(name); 
 			}
-			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Access.this.access(td, ambiguous);
+			public Access accessType(TypeDecl td, NameType nt) {
+				return Access.this.access(td, nt);
 			}
 		};
 	}

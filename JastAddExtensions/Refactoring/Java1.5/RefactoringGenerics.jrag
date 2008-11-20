@@ -25,12 +25,12 @@ aspect RefactoringGenerics {
 		return this;
 	}
 
-	public Access ParTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		Access source_acc = sourceAccess.computeAccess(ctxt, ambiguous);
+	public Access ParTypeAccessInfo.computeAccess(NamingContext ctxt, NameType nt) {
+		Access source_acc = sourceAccess.computeAccess(ctxt, nt);
 		if(source_acc == null) return null;
 		List<Access> arg_accs = new List<Access>();
 		for(TypeDecl td : target.getArgumentTypes()) {
-			Access acc = ctxt.accessType(td, false);
+			Access acc = ctxt.accessType(td, NameType.PACKAGE_OR_TYPE_NAME);
 			if(acc == null) return null;
 			arg_accs.add(acc);
 		}
@@ -38,12 +38,12 @@ aspect RefactoringGenerics {
 	}
 
 	public Access ParTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
-			boolean ambiguous, Expr qualifier) {
-		Access source_acc = sourceAccess.computeQualifiedAccess(ctxt, qual_type, ambiguous, qualifier);
+			NameType nt, Expr qualifier) {
+		Access source_acc = sourceAccess.computeQualifiedAccess(ctxt, qual_type, nt, qualifier);
 		if(source_acc == null) return null;
 		List<Access> arg_accs = new List<Access>();
 		for(TypeDecl td : target.getArgumentTypes()) {
-			Access acc = ctxt.accessType(td, false);
+			Access acc = ctxt.accessType(td, NameType.PACKAGE_OR_TYPE_NAME);
 			if(acc == null) return null;
 			arg_accs.add(acc);
 		}
