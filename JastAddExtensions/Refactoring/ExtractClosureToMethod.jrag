@@ -27,13 +27,13 @@ aspect ExtractClosureToMethod {
 				new MethodDecl(modifiers(),
 						closure.getReturnType(), 
 						name, 
-						closure.getInParameters(), 
+						closure.getParameters(),  // there are no out or ref parameters anymore! 
 						closure.getExceptions(), 
 						new Opt(closure.getBlock()));
 			int index = typedecl.getBodyDeclList().getIndexOfChild(closure.hostBodyDecl());
 			assert(index!=-1);
 			typedecl.addMethod(index+1, md, false, false, false);
-			MethodAccess ma = md.getLockedAccess(table, closure.getInArgList());
+			MethodAccess ma = md.getLockedAccess(table, closure.getArgList());
 			closure.replaceWith(ma);
 			typedecl.programRoot().flushCaches();
 			table.adjust();

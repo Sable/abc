@@ -4,36 +4,38 @@ aspect IntroduceOutParameter {
 		if(!(getParent() instanceof AssignSimpleExpr))
 			return this;
 		AssignSimpleExpr parent = (AssignSimpleExpr)getParent();
-		if(!parent.getDest().isVariable())
+		if(!(parent.getDest() instanceof VarAccess))
 			throw new RefactoringException("cannot introduce non-variable out parameter");
 		VarAccess v = (VarAccess)parent.getDest();
-		RefactoringException exn = acceptOutParameter(v.name());
-		if(exn != null)
-			throw exn;
 		AdjustmentTable table = new AdjustmentTable();
 		getBlock().lockAll(table);
 		setReturnType(new PrimitiveTypeAccess("void"));
-		ParameterDeclaration newOut = new ParameterDeclaration(v.type().getLockedAccess(table), v.name());
-		addOutParameter(newOut);
-		addOutArg(new VarAccess(v.name()));
-		table.adjust();
-		table = new AdjustmentTable();
-		// little hack: references to the newly introduced out parameter will bind to an in parameter of the
-		// same name if there is any; that is OK
-		SimpleSet set = this.inParameterDeclaration(v.name());
-		if(!set.isEmpty())
-			newOut = (ParameterDeclaration)(set.iterator().next());
-		getBlock().addAssignToReturns(newOut, table);
+		SimpleSet set = parameterDeclaration(v.name());
+		ParameterDeclaration pd;
+		if(set.isEmpty()) {
+			// check that we can introduce a parameter of this name
+			RefactoringException exn = getBlock().acceptLocal(v.name());
+			if(exn != null)
+				throw exn;
+			pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))),
+										  v.type().getLockedAccess(table),
+										  v.name());
+			addParameter(pd);
+			addArg(new VarAccess(v.name()));
+		} else {
+			pd = (ParameterDeclaration)set.iterator().next();
+			pd.makeOut();
+			Expr arg = lookupArg(v.name());
+			if(!(arg instanceof VarAccess))
+				throw new RefactoringException("not a variable");
+			if(arg.type() != v.decl())
+				throw new RefactoringException("inconsistent return");
+		}
+		getBlock().addAssignToReturns(pd, table);
 		parent.replaceWith(this);
 		programRoot().flushCaches();
 		table.adjust();
 		return this;
-	}
-	
-	syn RefactoringException ClosureInvocation.acceptOutParameter(String name) {
-		if(hasOutParameter(name))
-			return new RefactoringException("out parameter of the same name exists");
-		return getBlock().acceptLocal(name);
 	}
 	
 	public void ASTNode.addAssignToReturns(Variable v, AdjustmentTable table) {
@@ -51,4 +53,9 @@ aspect IntroduceOutParameter {
 		}
 	}
 	
+	public void ParameterDeclaration.makeOut() {
+		if(isWrite())
+			return;
+		getModifiers().addModifier(new Modifier("out"));
+	}
 }

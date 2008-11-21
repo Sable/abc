@@ -3,7 +3,7 @@ aspect InlineClosureInvocation {
 	public void ClosureInvocation.inline() throws RefactoringException {
 		Program root = programRoot();
 		AdjustmentTable table = new AdjustmentTable();
-		if(getNumInParameter() > 0 || getNumOutParameter() > 0)
+		if(getNumParameter() > 0)
 			throw new RefactoringException("cannot inline this closure");
 		if(getParent() instanceof ExprStmt) {
 			getBlock().lockAllCFlow(table);

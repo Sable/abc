@@ -9,15 +9,13 @@ aspect InlineMethodToClosure {
 		md.lockAll(table);
 		ClosureInvocation cl = 
 			new ClosureInvocation(md.getParameterList(),
-							      new List<ParameterDeclaration>(),
 								  md.getTypeAccess(),
 								  md.getExceptions(),
 								  md.getBlock(),
-								  null,
-								  new List<Expr>());
+								  null);
 		replaceWith(cl);
 		md.replaceWith(mdcp);
-		cl.setInArgList(getArgList());
+		cl.setArgList(getArgList());
 		mdcp.programRoot().flushCaches();
 		table.adjust();
 		return cl;

@@ -1,51 +1,87 @@
 aspect ClosureSubstitution {
 	
 	public ClosureInvocation ClosureInvocation.subst() throws RefactoringException {
+		renameAway();
 		AdjustmentTable table = new AdjustmentTable();
-		Map<Variable, Expr> in = new HashMap<Variable, Expr>();
-		Map<Variable, VarAccess> out = new HashMap<Variable, VarAccess>();
-		for(int i=0;i<getNumInParameter();++i)
-			in.put(getInParameter(i), getInArg(i));
-		for(int i=0;i<getNumOutParameter();++i)
-			if(getOutArg(i) instanceof VarAccess)
-				out.put(getOutParameter(i), (VarAccess)getOutArg(i));
-			else
-				throw new RefactoringException("out argument is not a simple variable");
-		getBlock().subst(in, out, table);
-		setInParameterList(new List<ParameterDeclaration>());
-		setInArgList(new List<Expr>());
-		setOutParameterList(new List<ParameterDeclaration>());
-		setOutArgList(new List<Expr>());
+		for(int i=getNumParameter()-1;i>=0;--i) {
+			ParameterDeclaration pd = getParameter(i);
+			Expr arg = getArg(i);
+			if(pd.isIn()) {
+				TypeDecl type = pd.type();
+				arg.lockAll(table);
+				removeParameter(i);
+				removeArg(i);
+				VariableDeclaration newdecl = new VariableDeclaration(type.getLockedAccess(table), pd.name(), arg);
+				getBlock().insertStmt(0, newdecl);
+			} else {
+				if(!(arg instanceof VarAccess))
+					throw new RefactoringException("cannot inline argument");
+				Variable decl = ((VarAccess)arg).decl();
+				Collection<VarAccess> uses = pd.uses();
+				removeParameter(i);
+				removeArg(i);
+				for(VarAccess v : uses) {
+					v.flushCaches();
+					v.lockOn(decl);
+					table.add(v);
+				}
+			}
+		}
 		programRoot().flushCaches();
 		table.adjust();
 		return this;
 	}
 	
-	public void ASTNode.subst(Map<Variable, Expr> in, Map<Variable, VarAccess> out, AdjustmentTable table) throws RefactoringException {
+	//// rename all parameters and local variables to avoid clashes with surrounding locals
+	private void ClosureInvocation.renameAway() throws RefactoringException {
+		AdjustmentTable table = new AdjustmentTable();
+		lockAll(table);
+		java.util.Set<LocalDeclaration> vars = new java.util.HashSet<LocalDeclaration>();
+		collectLocalDeclarations(vars);
+		for(LocalDeclaration v : vars)
+			if(nameClash(v.getID()))
+				v.setID(pickFresh(v.getID()));
+		programRoot().flushCaches();
+		table.adjust();
+	}
+	
+	public void ASTNode.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
 			if(child != null)
-				child.subst(in, out, table);
+				child.collectLocalDeclarations(res);
 		}
 	}
 	
-	public void VarAccess.subst(Map<Variable, Expr> in, Map<Variable, VarAccess> out, AdjustmentTable table) throws RefactoringException {
-		if(isSource()) {
-			Expr insubst = in.get(decl());
-			if(insubst == null)
-				return;
-			if(isDest()) {
-				Expr outsubst = out.get(decl());
-				if(outsubst != null)
-					if(!(insubst instanceof VarAccess && insubst.type() != outsubst.type()))
-						throw new RefactoringException("conflicting substitutions");
-			}
-			this.replaceWith(insubst.copyAndLockWithDFlow(table));
-		} else if(isDest()) {
-			VarAccess outsubst = out.get(decl());
-			if(outsubst != null)
-				this.replaceWith(outsubst.copyAndLockWithDFlow(table));
-		}
+	public void VariableDeclaration.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
+		res.add(this);
 	}
 	
+	public void ParameterDeclaration.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
+		res.add(this);
+	}
+	
+	public void TypeDecl.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
+		// cut off
+	}
+	
+	private boolean ClosureInvocation.nameClash(String name) {
+		SimpleSet set = lookupVariable(name);
+		if(set.isEmpty())
+			return false;
+		Variable v = (Variable)set.iterator().next();
+		return v.isLocal();
+	}
+	
+	syn lazy boolean Variable.isLocal();
+	eq FieldDeclaration.isLocal() = false;
+	eq ParameterDeclaration.isLocal() = true;
+	eq VariableDeclaration.isLocal() = true;
+	
+	private String ClosureInvocation.pickFresh(String base) {
+		for(int i=0;;++i)
+			if(!nameClash(base+i))
+				return base+i;
+	}
+		
 }

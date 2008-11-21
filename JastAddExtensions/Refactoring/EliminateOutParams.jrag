@@ -1,46 +1,86 @@
 aspect EliminateOutParams {
-  public void ClosureInvocation.eliminateOutParams() throws RefactoringException {
-    new EliminateOutParamsRefactoring(this).execute();
-  }
+	public void ClosureInvocation.eliminateOutParams() throws RefactoringException {
+		new EliminateOutParamsRefactoring(this).execute();
+	}
 
-  class EliminateOutParamsRefactoring {
-    private ClosureInvocation closure;
-    private AdjustmentTable table;
+	class EliminateOutParamsRefactoring {
+		private ClosureInvocation closure;
+		private AdjustmentTable table;
 
-    public EliminateOutParamsRefactoring(ClosureInvocation closure) {
-      this.closure = closure;
-      table = new AdjustmentTable();
-    }
+		public EliminateOutParamsRefactoring(ClosureInvocation closure) {
+			this.closure = closure;
+			table = new AdjustmentTable();
+		}
 
-    public void execute() throws RefactoringException {
-      if(closure.getNumOutParameter() == 0)
-	return;
-      if(closure.getNumOutParameter() > 1)
-	throw new RefactoringException("ambiguous return value: two or more output parameters");
-      if(!closure.getReturnType().type().isVoid())
-	throw new RefactoringException("ambiguous return value: output parameter and return statement");
-      ParameterDeclaration parm = closure.getOutParameter(0);
-      if(!(closure.getOutArg(0) instanceof VarAccess))
-	throw new RefactoringException("cannot eliminate out parameter");
-      VarAccess v = (VarAccess)closure.getOutArg(0);
-      closure.setOutParameterList(new List<ParameterDeclaration>());
-      closure.setReturnType(v.type().getLockedAccess(table));
-      if(!closure.hasInParameter(v.name()))
-	closure.getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
-      closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
-      closure.setOutArgList(new List<Expr>());
-      AssignExpr assgn = new AssignSimpleExpr(v, null);
-      closure.replaceWith(assgn);
-      assgn.setSource(closure);
-      closure.programRoot().flushCaches();
-      table.adjust();
-    }
-  }
+		public void execute() throws RefactoringException {
+			if(closure.getNumWriteParameter() == 0)
+				return;
+			if(closure.getNumWriteParameter() > 1)
+				throw new RefactoringException("ambiguous return value: two or more output parameters");
+			if(!closure.getReturnType().type().isVoid())
+				throw new RefactoringException("ambiguous return value: output parameter and return statement");
+			int idx = closure.getFirstWriteParameterPos();
+			ParameterDeclaration pd = closure.getParameter(idx);
+			if(!(closure.getArg(idx) instanceof VarAccess))
+				throw new RefactoringException("cannot eliminate out parameter");
+			VarAccess v = (VarAccess)closure.getArg(idx);
+			if(pd.isRef()) {
+				pd.makeIn();
+			} else {
+				// make it a local variable
+				closure.getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
+				closure.removeParameter(idx);
+				closure.removeArg(idx);
+			}
+			closure.setReturnType(v.type().getLockedAccess(table));
+			closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
+			AssignExpr assgn = new AssignSimpleExpr(v, null);
+			closure.replaceWith(assgn);
+			assgn.setSource(closure);
+			closure.programRoot().flushCaches();
+			table.adjust();
+		}
+	}
 
-  public TypeAccess TypeDecl.getLockedAccess(AdjustmentTable table) {
-    TypeAccess acc = new TypeAccess(this.name());
-    acc.lockOn(this);
-    table.add(acc);
-    return acc;
-  }
+	public TypeAccess TypeDecl.getLockedAccess(AdjustmentTable table) {
+		TypeAccess acc = new TypeAccess(this.name());
+		acc.lockOn(this);
+		table.add(acc);
+		return acc;
+	}
+	
+	// get the number of write attributes (either out or ref)
+	syn int ClosureInvocation.getNumWriteParameter() {
+		int res = 0;
+		for(int i = 0; i < getNumParameter(); ++i)
+			if(getParameter(i).isWrite())
+				++res;
+		return res;
+	}
+	
+	syn int ClosureInvocation.getFirstWriteParameterPos() {
+		for(int i=0; i < getNumParameter(); ++i)
+			if(getParameter(i).isWrite())
+				return i;
+		return -1;
+	}
+	
+	syn lazy boolean ParameterDeclaration.isWrite() = !isIn();
+	
+	public void ClosureInvocation.removeParameter(int idx) {
+		getParameterList().removeChild(idx);
+	}
+	
+	public void ClosureInvocation.removeArg(int idx) {
+		getArgList().removeChild(idx);
+	}
+	
+	public void ParameterDeclaration.makeIn() {
+		Modifiers mods = getModifiers();
+		for(int i=0;i<mods.getNumModifier();++i) {
+			Modifier mod = mods.getModifier(i);
+			if(mod.getID().equals("ref") || mod.getID().equals("out"))
+				mods.getModifiers().removeChild(i);
+		}
+	}
 }

@@ -2,7 +2,8 @@ class A {
   void m() {
     String msg = "Hello, ";
     {
-      System.out.println(msg);
+      String msg0 = msg;
+      System.out.println(msg0);
     }
     System.out.println("world!");
   }

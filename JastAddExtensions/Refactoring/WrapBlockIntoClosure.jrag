@@ -45,13 +45,11 @@ aspect WrapBlockIntoClosure {
 			List<Access> exns = block.computeUncaughtExceptions(table);
 			ClosureInvocation cl = 
 				new ClosureInvocation(
-						new List(),                      // input parameters
-						new List(),                      // output parameters
+						new List(),                      // parameters
 						new PrimitiveTypeAccess("void"), // return type
 						exns,                            // thrown exceptions
 						null,                            // body (to be filled in shortly)
-						new List<Expr>(),                // input arguments
-						new List<Expr>());               // output arguments
+						new List<Expr>());               // arguments
 			block.replaceWith(new ExprStmt(cl));
 			cl.setBlock(block);
 			block.programRoot().flushCaches();

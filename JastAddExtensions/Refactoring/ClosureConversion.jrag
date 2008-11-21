@@ -1,124 +1,156 @@
 aspect ClosureConversion {
-  public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
-    return new ClosureConversionRefactoring(this).execute();
-  }
+	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
+		return new ClosureConversionRefactoring(this).execute();
+	}
 
-  class ClosureConversionRefactoring {
-    private ClosureInvocation closure;
-    private java.util.Set<VarAccess> local_accesses;
-    private AdjustmentTable table;
+	class ClosureConversionRefactoring {
+		private ClosureInvocation closure;
+		private java.util.Set<String> inparms;
+		private java.util.Set<String> outparms;
+		private java.util.Set<String> refparms;
+		private java.util.Map<String, TypeDecl> types;
+		private AdjustmentTable table;
 
-    public ClosureConversionRefactoring(ClosureInvocation closure) {
-      this.closure = closure;
-      this.local_accesses = closure.collectLocalAccesses();
-      this.table = new AdjustmentTable();
-    }
+		public ClosureConversionRefactoring(ClosureInvocation closure) {
+			this.closure = closure;
+			this.inparms = new java.util.HashSet<String>();
+			this.outparms = new java.util.HashSet<String>();
+			this.refparms = new java.util.HashSet<String>();
+			this.types = new java.util.HashMap<String, TypeDecl>();
+			this.table = new AdjustmentTable();
+		}
 
-    public ClosureInvocation execute() throws RefactoringException {
-      // first determine in and out parameters
-      java.util.Set<VarAccess> in = new HashSet<VarAccess>();
-      java.util.Set<VarAccess> out = new HashSet<VarAccess>();
-      for(VarAccess v : local_accesses) {
-	if(hasIncomingDataflowEdge(v))
-	  in.add(v);
-	if(hasOutgoingDataflowEdge(v))
-	  out.add(v);
-      }
-      for(VarAccess v : in)
-	addInputParameter(v);
-      for(VarAccess v : out)
-	addOutputParameter(v);
-      // now determine variables to be localised
-      for(VarAccess v : local_accesses) {
-	if(declaredOutside(v))
-	  addLocalVariable(v);
-      }
-      table.adjust();
-      return closure;
-    }
+		public ClosureInvocation execute() throws RefactoringException {
+			java.util.Set<VarAccess> local_accesses = closure.collectLocalAccesses();
+			// first determine in, out, and ref parameters
+			for(VarAccess v : local_accesses) {
+				types.put(v.name(), v.type());
+				if(hasIncomingDataflowEdge(v))
+					classifyAsIn(v.name());
+				if(hasOutgoingDataflowEdge(v))
+					classifyAsOut(v.name());
+			}
+			addParameters();
+			// now determine variables to be localised
+			for(VarAccess v : local_accesses) {
+				if(declaredOutside(v))
+					addLocalVariable(v);
+			}
+			table.adjust();
+			return closure;
+		}
 
-    private boolean hasIncomingDataflowEdge(VarAccess v) {
-      for(CFGNode u : v.dataPred())
-	if(!((ASTNode)u).beneath(closure))
-	  return true;
-      return false;
-    }
+		private boolean hasIncomingDataflowEdge(VarAccess v) {
+			for(CFGNode u : v.dataPred())
+				if(!((ASTNode)u).beneath(closure))
+					return true;
+			return false;
+		}
 
-    private boolean hasOutgoingDataflowEdge(VarAccess v) {
-      for(CFGNode w : v.dataSucc())
-	if(!((ASTNode)w).beneath(closure))
-	  return true;
-      return false;
-    }
+		private boolean hasOutgoingDataflowEdge(VarAccess v) {
+			for(CFGNode w : v.dataSucc())
+				if(!((ASTNode)w).beneath(closure))
+					return true;
+			return false;
+		}
 
-    private boolean declaredOutside(VarAccess v) {
-      return !((ASTNode)v.decl()).beneath(closure);
-    }
+		private boolean declaredOutside(VarAccess v) {
+			return !((ASTNode)v.decl()).beneath(closure);
+		}
 
-    private void addInputParameter(VarAccess v) {
-      if(closure.hasInParameter(v.name()))
-	return;
-      closure.addInParameter(
-        new ParameterDeclaration(
-          v.type().getLockedAccess(table), 
-	  v.name()
-        )
-      );
-      closure.addInArg(new VarAccess(v.name()));
-      flushCaches();
-    }
+		private void classifyAsIn(String name) {
+			if(refparms.contains(name))
+				return;
+			if(outparms.contains(name)) {
+				outparms.remove(name);
+				refparms.add(name);
+			} else {
+				inparms.add(name);
+			}
+		}
+		
+		private void classifyAsOut(String name) {
+			if(refparms.contains(name))
+				return;
+			if(inparms.contains(name)) {
+				inparms.remove(name);
+				refparms.add(name);
+			} else {
+				outparms.add(name);
+			}
+		}
+		
+		private void addParameters() {
+			for(String in : inparms) {
+				closure.addParameter(
+				  new ParameterDeclaration(
+				    types.get(in).getLockedAccess(table),
+				    in
+				  )
+				);
+				closure.addArg(new VarAccess(in));
+			}
+			for(String out : outparms) {
+				closure.addParameter(
+				  new ParameterDeclaration(
+				    new Modifiers(new List().add(new Modifier("out"))),
+				    types.get(out).getLockedAccess(table),
+				    out
+				  )
+				);
+				closure.addArg(new VarAccess(out));
+			}
+			for(String ref : refparms) {
+				closure.addParameter(
+				  new ParameterDeclaration(
+				    new Modifiers(new List().add(new Modifier("ref"))),
+				    types.get(ref).getLockedAccess(table),
+				    ref
+				  )
+				);
+				closure.addArg(new VarAccess(ref));
+			}
+			closure.programRoot().flushCaches();
+		}
 
-    private void addOutputParameter(VarAccess v) {
-      if(closure.hasOutParameter(v.name()))
-	return;
-      closure.addOutParameter(
-        new ParameterDeclaration(
-	  v.type().getLockedAccess(table), 
-          v.name()
-        )
-      );
-      closure.addOutArg(new VarAccess(v.name()));
-      flushCaches();
-    }
+		private void addLocalVariable(VarAccess v) throws RefactoringException {
+			closure.getBlock().insertStmt(0, 
+  			  new VariableDeclaration(
+				v.type().getLockedAccess(table), 
+				v.name()
+			  )
+			);
+			flushCaches();
+		}
 
-    private void addLocalVariable(VarAccess v) throws RefactoringException {
-      closure.getBlock().insertStmt(0, 
-        new VariableDeclaration(
-	  v.type().getLockedAccess(table), 
-          v.name()
-        )
-      );
-      flushCaches();
-    }
+		private void flushCaches() {
+			closure.programRoot().flushCaches();
+		}
+	}
 
-    private void flushCaches() {
-      closure.programRoot().flushCaches();
-    }
-  }
+	public boolean ASTNode.beneath(ASTNode n) {
+		ASTNode p;
+		for(p=this;p!=n&&p!=null;p=p.getParent())
+			;
+		return p!=null;
+	}
 
-  public boolean ASTNode.beneath(ASTNode n) {
-    ASTNode p;
-    for(p=this;p!=n&&p!=null;p=p.getParent())
-      ;
-    return p!=null;
-  }
+	public java.util.Set<VarAccess> ASTNode.collectLocalAccesses() {
+		java.util.Set<VarAccess> res = new HashSet<VarAccess>();
+		this.collectLocalAccesses(res);
+		return res;
+	}
 
-  public java.util.Set<VarAccess> ASTNode.collectLocalAccesses() {
-    java.util.Set<VarAccess> res = new HashSet<VarAccess>();
-    this.collectLocalAccesses(res);
-    return res;
-  }
-
-  public void ASTNode.collectLocalAccesses(java.util.Set<VarAccess> res) {
-    for(int i=0;i<getNumChild();++i) {
-      ASTNode child = getChild(i);
-      if(child != null)
-	child.collectLocalAccesses(res);
-    }
-  }
-  public void VarAccess.collectLocalAccesses(java.util.Set<VarAccess> res) {
-    if(decl() instanceof LocalDeclaration)
-      res.add(this);
-    super.collectLocalAccesses(res);
-  }
+	public void ASTNode.collectLocalAccesses(java.util.Set<VarAccess> res) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.collectLocalAccesses(res);
+		}
+	}
+	public void VarAccess.collectLocalAccesses(java.util.Set<VarAccess> res) {
+		if(decl() instanceof LocalDeclaration)
+			res.add(this);
+		super.collectLocalAccesses(res);
+	}
 }

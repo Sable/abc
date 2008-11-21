@@ -1,9 +1,9 @@
 class A {
   void m() {
     int i = 23;
-    (λ (| int i) : void {
+    (λ (out int i) : void {
       i = 42;
-    })@(| i);
+    })@(i);
     System.out.println(i);
   }
   A() {
