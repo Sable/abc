@@ -1,131 +1,87 @@
 aspect ClosureConversion {
 	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
-		return new ClosureConversionRefactoring(this).execute();
+		AdjustmentTable table = new AdjustmentTable();
+		java.util.Set<VarAccess> local_accesses = collectLocalAccesses();
+		for(VarAccess var : local_accesses)
+			introduceParameter(var, table);
+		flushCaches();
+		for(VarAccess var : local_accesses)
+			localizeVariable(var, table);
+		table.adjust();
+		return this;
+	}
+	
+	private boolean ClosureInvocation.hasIncomingDataflowEdge(VarAccess v) {
+		for(CFGNode u : v.dataPred())
+			if(!((ASTNode)u).beneath(this))
+				return true;
+		return false;
 	}
 
-	class ClosureConversionRefactoring {
-		private ClosureInvocation closure;
-		private java.util.Set<String> inparms;
-		private java.util.Set<String> outparms;
-		private java.util.Set<String> refparms;
-		private java.util.Map<String, TypeDecl> types;
-		private AdjustmentTable table;
+	private boolean ClosureInvocation.hasOutgoingDataflowEdge(VarAccess v) {
+		for(CFGNode w : v.dataSucc())
+			if(!((ASTNode)w).beneath(this))
+				return true;
+		return false;
+	}
 
-		public ClosureConversionRefactoring(ClosureInvocation closure) {
-			this.closure = closure;
-			this.inparms = new java.util.HashSet<String>();
-			this.outparms = new java.util.HashSet<String>();
-			this.refparms = new java.util.HashSet<String>();
-			this.types = new java.util.HashMap<String, TypeDecl>();
-			this.table = new AdjustmentTable();
-		}
+	private boolean ClosureInvocation.declaredOutside(VarAccess v) {
+		return !((ASTNode)v.decl()).beneath(this);
+	}
 
-		public ClosureInvocation execute() throws RefactoringException {
-			java.util.Set<VarAccess> local_accesses = closure.collectLocalAccesses();
-			// first determine in, out, and ref parameters
-			for(VarAccess v : local_accesses) {
-				types.put(v.name(), v.type());
-				if(hasIncomingDataflowEdge(v))
-					classifyAsIn(v.name());
-				if(hasOutgoingDataflowEdge(v))
-					classifyAsOut(v.name());
-			}
-			addParameters();
-			// now determine variables to be localised
-			for(VarAccess v : local_accesses) {
-				if(declaredOutside(v))
-					addLocalVariable(v);
-			}
-			table.adjust();
-			return closure;
+	public ParameterDeclaration ClosureInvocation.introduceParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
+		ParameterDeclaration pd = null;
+		if(hasIncomingDataflowEdge(var))
+			pd = introduceInParameter(var, table);
+		if(hasOutgoingDataflowEdge(var))
+			pd = introduceOutParameter(var, table);
+		return pd;
+	}
+	
+	public ParameterDeclaration ClosureInvocation.introduceInParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
+		TypeDecl type = var.type();
+		ParameterDeclaration pd;
+		SimpleSet set = parameterDeclaration(var.name());
+		if(set.isEmpty()) {
+			pd = new ParameterDeclaration(type.getLockedAccess(table), var.name());
+			addParameter(pd);
+			addArg(new VarAccess(var.name()));
+		} else {
+			pd = (ParameterDeclaration)set.iterator().next();
+			if(pd.isOut())
+				pd.makeRef();
 		}
+		return pd;
+	}
+	
+	public ParameterDeclaration ClosureInvocation.introduceOutParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
+		TypeDecl type = var.type();
+		ParameterDeclaration pd;
+		SimpleSet set = parameterDeclaration(var.name());
+		if(set.isEmpty()) {
+			pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))), 
+										  type.getLockedAccess(table), var.name());
+			addParameter(pd);
+			addArg(new VarAccess(var.name()));
+		} else {
+			pd = (ParameterDeclaration)set.iterator().next();
+			if(pd.isIn())
+				pd.makeRef();
+		}
+		return pd;
+	}
+	
+	public VariableDeclaration ClosureInvocation.localizeVariable(VarAccess var, AdjustmentTable table) throws RefactoringException {
+		if(declaredOutside(var))
+			return addLocalVariable(var, table);
+		return null;
+	}
 
-		private boolean hasIncomingDataflowEdge(VarAccess v) {
-			for(CFGNode u : v.dataPred())
-				if(!((ASTNode)u).beneath(closure))
-					return true;
-			return false;
-		}
-
-		private boolean hasOutgoingDataflowEdge(VarAccess v) {
-			for(CFGNode w : v.dataSucc())
-				if(!((ASTNode)w).beneath(closure))
-					return true;
-			return false;
-		}
-
-		private boolean declaredOutside(VarAccess v) {
-			return !((ASTNode)v.decl()).beneath(closure);
-		}
-
-		private void classifyAsIn(String name) {
-			if(refparms.contains(name))
-				return;
-			if(outparms.contains(name)) {
-				outparms.remove(name);
-				refparms.add(name);
-			} else {
-				inparms.add(name);
-			}
-		}
-		
-		private void classifyAsOut(String name) {
-			if(refparms.contains(name))
-				return;
-			if(inparms.contains(name)) {
-				inparms.remove(name);
-				refparms.add(name);
-			} else {
-				outparms.add(name);
-			}
-		}
-		
-		private void addParameters() {
-			for(String in : inparms) {
-				closure.addParameter(
-				  new ParameterDeclaration(
-				    types.get(in).getLockedAccess(table),
-				    in
-				  )
-				);
-				closure.addArg(new VarAccess(in));
-			}
-			for(String out : outparms) {
-				closure.addParameter(
-				  new ParameterDeclaration(
-				    new Modifiers(new List().add(new Modifier("out"))),
-				    types.get(out).getLockedAccess(table),
-				    out
-				  )
-				);
-				closure.addArg(new VarAccess(out));
-			}
-			for(String ref : refparms) {
-				closure.addParameter(
-				  new ParameterDeclaration(
-				    new Modifiers(new List().add(new Modifier("ref"))),
-				    types.get(ref).getLockedAccess(table),
-				    ref
-				  )
-				);
-				closure.addArg(new VarAccess(ref));
-			}
-			closure.programRoot().flushCaches();
-		}
-
-		private void addLocalVariable(VarAccess v) throws RefactoringException {
-			closure.getBlock().insertStmt(0, 
-  			  new VariableDeclaration(
-				v.type().getLockedAccess(table), 
-				v.name()
-			  )
-			);
-			flushCaches();
-		}
-
-		private void flushCaches() {
-			closure.programRoot().flushCaches();
-		}
+	private VariableDeclaration ClosureInvocation.addLocalVariable(VarAccess v, AdjustmentTable table) throws RefactoringException {
+		VariableDeclaration vd = new VariableDeclaration(v.type().getLockedAccess(table), v.name());
+		getBlock().insertStmt(0, vd);
+		flushCaches();
+		return vd;
 	}
 
 	public boolean ASTNode.beneath(ASTNode n) {
@@ -152,5 +108,15 @@ aspect ClosureConversion {
 		if(decl() instanceof LocalDeclaration)
 			res.add(this);
 		super.collectLocalAccesses(res);
+	}
+	
+	public void ParameterDeclaration.makeRef() {
+		Modifiers mods = getModifiers();
+		for(int i=0;i<mods.getNumModifier();++i) {
+			Modifier mod = mods.getModifier(i);
+			if(mod.getID().equals("out"))
+				mods.getModifiers().removeChild(i);
+		}
+		mods.addModifier(new Modifier("ref"));
 	}
 }

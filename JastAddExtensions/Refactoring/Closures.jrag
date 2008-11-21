@@ -89,7 +89,7 @@ aspect Closures {
 	eq ClosureInvocation.getParameter().lookupVariable(String name) 
 	  = parameterDeclaration(name);
 	
-	syn lazy SimpleSet ClosureInvocation.parameterDeclaration(String name) {
+	syn SimpleSet ClosureInvocation.parameterDeclaration(String name) {
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).name().equals(name))
 				return (ParameterDeclaration)getParameter(i);
