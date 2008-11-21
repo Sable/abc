@@ -12,13 +12,15 @@ aspect RenameParameter {
 	eq Callable.getParameter().canRenameTo(String new_name) {
 		if(!parameterDeclaration(new_name).isEmpty())
 			return new RefactoringException("parameter of the same name exists");
-		if(this.hasBody())
-			return getBlock().acceptLocal(new_name);
+		if(this.hasBody() && !getBlock().canIntroduceLocal(new_name))
+			return new RefactoringException("local variable of same name exists");
 		return null;
 	}
 	
 	eq CatchClause.getParameter().canRenameTo(String new_name) {
-		return hostBodyDecl().acceptLocal(new_name);
+		if(!hostBodyDecl().canIntroduceLocal(new_name))
+			return new RefactoringException("local variable of same name exists");
+		return null;
 	}
 	
 	public BodyDecl ASTNode.hostBodyDecl() {

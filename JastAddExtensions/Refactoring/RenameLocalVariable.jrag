@@ -8,7 +8,9 @@ aspect RenameLocalVariable {
 	
 	// checks that the renaming doesn't lead to a name clash
 	private RefactoringException VariableDeclaration.canRenameTo(String new_name) {
-		return hostBodyDecl().acceptLocal(new_name);
+		if(!hostBodyDecl().canIntroduceLocal(new_name))
+			return new RefactoringException("variable declaration of same name exists");
+		return null;
 	}
 	
 	public void VariableDeclaration.rename(String new_name) throws RefactoringException {
@@ -18,15 +20,10 @@ aspect RenameLocalVariable {
 			throw new RefactoringException("not a valid name: "+new_name);
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null) throw e;
-//TIME long time = System.currentTimeMillis();
 		AdjustmentTable table = findEndangeredVarAccesses(new_name);
-//TIME System.out.println("endangered accesses: "+table.size());
-//TIME System.out.println("time to find: "+(System.currentTimeMillis()-time));
 		changeID(new_name);
 		programRoot().flushCaches();
-//TIME time = System.currentTimeMillis();
 		table.adjust();
-//TIME System.out.println("adjustment: "+(System.currentTimeMillis()-time));
 	}
 	
 	private AdjustmentTable VariableDeclaration.findEndangeredVarAccesses(String new_name) {

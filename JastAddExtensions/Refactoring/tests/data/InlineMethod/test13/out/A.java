@@ -1,9 +1,14 @@
 class A {
-    void m() {
-	int i;
-	int i1;
+  void m() {
+    int i;
+    {
+      int i0;
     }
-    void n() {
-	int i;
-    }
+  }
+  void n() {
+    int i;
+  }
+  A() {
+    super();
+  }
 }

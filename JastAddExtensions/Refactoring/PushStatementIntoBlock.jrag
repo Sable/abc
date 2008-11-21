@@ -21,7 +21,7 @@ aspect PushStatementIntoBlock {
 		}
 
 		public boolean execute() throws RefactoringException {
-			table.add(stmt);
+			table.addCFlow(stmt);
 			parent_block.removeStmt(stmt);
 			following_block.insertStmt(0, stmt);
 			parent_block.programRoot().flushCaches();

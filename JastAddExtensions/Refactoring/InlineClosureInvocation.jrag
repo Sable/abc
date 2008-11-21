@@ -2,21 +2,29 @@ aspect InlineClosureInvocation {
 	
 	public void ClosureInvocation.inline() throws RefactoringException {
 		Program root = programRoot();
-		AdjustmentTable table = new AdjustmentTable();
 		if(getNumParameter() > 0)
 			throw new RefactoringException("cannot inline this closure");
 		if(getParent() instanceof ExprStmt) {
-			getBlock().lockAllCFlow(table);
-			getParent().replaceWith(getBlock());
+			boolean needLabel = false;
+			String label = getBlock().pickFreshLabel("l");
+			for(CFGNode node : returns()) {
+				ReturnStmt ret = (ReturnStmt)node;
+				if(ret.hasResult())
+					throw new RefactoringException("cannot inline this closure");
+				needLabel = true;
+				ret.replaceWith(new BreakStmt(label));
+			}
+			getParent().replaceWith(needLabel ? new LabeledStmt(label, getBlock()) : getBlock());
+			root.flushCaches();
 		} else if(isExprClosure()) {
 			replaceWith(getExpr());
+			root.flushCaches();
 		} else if(getParent() instanceof ReturnStmt) {
 			getParent().replaceWith(getBlock());
+			root.flushCaches();
 		} else {
-			throw new RefactoringException("Cannot inline this closure");
+			throw new RefactoringException("cannot inline this closure");
 		}
-		root.flushCaches();
-		table.adjust();
 	}
 	
 	syn boolean ClosureInvocation.isExprClosure() 
@@ -24,5 +32,16 @@ aspect InlineClosureInvocation {
 	      ((ReturnStmt)getBlock().getStmt(0)).hasResult();
 	
 	syn Expr ClosureInvocation.getExpr() = ((ReturnStmt)getBlock().getStmt(0)).getResult(); 
+	
+	inh LabeledStmt Block.lookupLabel(String name);
+	public String Block.pickFreshLabel(String base) {
+		if(lookupLabel(base) == null && canIntroduceLabel(base))
+			return base;
+		for(int i=0;;++i) {
+			String l = base + i;
+			if(lookupLabel(l) == null && canIntroduceLabel(l))
+				return l;
+		}
+	}
 	
 }

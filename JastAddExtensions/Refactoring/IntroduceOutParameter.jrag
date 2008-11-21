@@ -1,7 +1,7 @@
 aspect IntroduceOutParameter {
-	
+
 	public ClosureInvocation ClosureInvocation.introduceOutParameter() throws RefactoringException {
-		if(!(getParent() instanceof AssignSimpleExpr))
+		if(!(getParent() instanceof AssignSimpleExpr && getParent().getParent() instanceof ExprStmt))
 			return this;
 		AssignSimpleExpr parent = (AssignSimpleExpr)getParent();
 		if(!(parent.getDest() instanceof VarAccess))
@@ -14,12 +14,11 @@ aspect IntroduceOutParameter {
 		ParameterDeclaration pd;
 		if(set.isEmpty()) {
 			// check that we can introduce a parameter of this name
-			RefactoringException exn = getBlock().acceptLocal(v.name());
-			if(exn != null)
-				throw exn;
+			if(!getBlock().canIntroduceLocal(v.name()))
+				throw new RefactoringException("local variable of same name exists");
 			pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))),
-										  v.type().getLockedAccess(table),
-										  v.name());
+					v.type().getLockedAccess(table),
+					v.name());
 			addParameter(pd);
 			addArg(new VarAccess(v.name()));
 		} else {
@@ -37,22 +36,36 @@ aspect IntroduceOutParameter {
 		table.adjust();
 		return this;
 	}
-	
-	public void ASTNode.addAssignToReturns(Variable v, AdjustmentTable table) {
+
+	public void ASTNode.addAssignToReturns(Variable v, AdjustmentTable table) throws RefactoringException {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
 			if(child != null)
 				child.addAssignToReturns(v, table);
 		}
 	}
-	
-	public void ReturnStmt.addAssignToReturns(Variable v, AdjustmentTable table) {
+
+	// turn a return statement
+	//    return e;
+	// into
+	//    v = e;
+	//    return;
+	public void ReturnStmt.addAssignToReturns(Variable v, AdjustmentTable table) throws RefactoringException {
 		if(hasResult()) {
-			setResult(new AssignSimpleExpr(v.createLockedVarAccess(table), getResult()));
+			int idx = getParent().getIndexOfChild(this);
+			Expr assgn = new AssignSimpleExpr(v.createLockedVarAccess(table), getResult());
+			if(getParent().getParent() instanceof Block) {
+				Block block = (Block)getParent().getParent();
+				block.insertStmt(idx, new ExprStmt(assgn));
+				setResultOpt(new Opt());
+			} else {
+				Block block = new Block(new List().add(new ExprStmt(assgn)).add(new ReturnStmt()));
+				getParent().setChild(block, idx);
+			}
 			programRoot().flushCaches();
 		}
 	}
-	
+
 	public void ParameterDeclaration.makeOut() {
 		if(isWrite())
 			return;

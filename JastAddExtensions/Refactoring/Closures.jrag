@@ -38,7 +38,8 @@ aspect Closures {
 	eq ClosureInvocation.getParameter().canRenameTo(String new_name) {
 		if(!parameterDeclaration(new_name).isEmpty())
 			return new RefactoringException("parameter of the same name exists");
-		return getBlock().acceptLocal(new_name);
+		if(!getBlock().canIntroduceLocal(new_name))
+			return new RefactoringException("local variable of the same name exists");
 	}
 
 	// we're not interested in reachability checking for closure invocations

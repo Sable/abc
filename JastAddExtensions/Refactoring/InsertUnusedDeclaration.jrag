@@ -5,9 +5,8 @@ aspect InsertUnusedDeclaration {
 	        throw new RefactoringException("can only remove declarations in blocks");
 	      Block block = (Block)getParent().getParent();
 	      // ensure that output is syntactically correct
-	      RefactoringException exn = block.acceptLocal(decl.name());
-	      if(exn != null)
-	    	  throw exn;
+	      if(!block.canIntroduceLocal(decl.name()))
+	    	  throw new RefactoringException("local variable of same name exists");
 	      // ensure that bindings are preserved
 	      AdjustmentTable table = new AdjustmentTable();
 	      block.lockAllAccesses(table);

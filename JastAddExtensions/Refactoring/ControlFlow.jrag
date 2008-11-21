@@ -1,21 +1,21 @@
 aspect ControlFlow {
-	private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.preds;
-	private Map<Stmt, SmallSet<CFGNode>> AdjustmentTable.succs;
+	private Map<CFGNode, SmallSet<CFGNode>> AdjustmentTable.preds;
+	private Map<CFGNode, SmallSet<CFGNode>> AdjustmentTable.succs;
 
 	refine AdjustAccess public AdjustmentTable.AdjustmentTable() {
 		refined();
-		preds = new HashMap<Stmt, SmallSet<CFGNode>>();
-		succs = new HashMap<Stmt, SmallSet<CFGNode>>();
+		preds = new HashMap<CFGNode, SmallSet<CFGNode>>();
+		succs = new HashMap<CFGNode, SmallSet<CFGNode>>();
 	}
 
-	public void AdjustmentTable.add(Stmt node) {
+	public void AdjustmentTable.addCFlow(CFGNode node) {
 		preds.put(node, node.weakPred());
 		succs.put(node, node.weakSucc());
 	}
 
 	refine AdjustAccess public void AdjustmentTable.adjust() throws RefactoringException {
 		refined();
-		for(Stmt node : preds.keySet()) {
+		for(CFGNode node : preds.keySet()) {
 			if(!preds.get(node).equals(node.weakPred())) {
 				SmallSet<CFGNode> oldpred = preds.get(node);
 				SmallSet<CFGNode> newpred = node.weakPred();
@@ -56,7 +56,7 @@ aspect ControlFlow {
 		return res;
 	}
 
-	// lock all CFlow in a subtree (only statements for now)
+	// lock all CFlow in a subtree
 	public void ASTNode.lockAllCFlow(AdjustmentTable table) {
 		for(int i = 0; i < getNumChildNoTransform(); i++) {
 			ASTNode node = getChildNoTransform(i);
@@ -64,8 +64,9 @@ aspect ControlFlow {
 				node.lockAllCFlow(table);
 		}
 	}
-	public void Stmt.lockAllCFlow(AdjustmentTable table) {
+	public void CFGNode.lockAllCFlow(AdjustmentTable table) {
 		super.lockAllCFlow(table);
-		table.add(this);
+		table.addCFlow(this);
 	}
+	
 }

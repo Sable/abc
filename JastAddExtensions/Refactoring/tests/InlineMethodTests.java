@@ -50,7 +50,7 @@ public class InlineMethodTests extends InlineMethod {
 	public void test12() {
 		runInlineTest("test12");
 	}
-/*	public void test13() {
+	public void test13() {
 		runInlineTest("test13");
 	}
 	public void test14() {
@@ -59,7 +59,7 @@ public class InlineMethodTests extends InlineMethod {
 	public void test15() {
 		runInlineTest("test15");
 	}
-	public void test16() {
+/*	public void test16() {
 		runInlineTest("test16");
 	}
 	public void test17() {

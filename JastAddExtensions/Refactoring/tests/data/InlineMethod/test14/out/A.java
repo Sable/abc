@@ -2,10 +2,12 @@ class A {
   void m() {
     int i = 23;
     l:{
-      int i0 = 23;
-      if(i0 == 42) 
-        break l;
-      System.out.println("here; i == " + i0);
+      l0:{
+        int i0 = 23;
+        if(i0 == 42) 
+          break l0;
+        System.out.println("here; i == " + i0);
+      }
     }
     System.out.println("back");
   }

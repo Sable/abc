@@ -1,98 +1,51 @@
 /*
  * When we rename a local variable, it is important to check that the new name does
- * not clash with the name of an already existing local variable. The attribute
- * acceptLocal(id) checks whether a node and its children could be inside the scope
- * of a local variable named id; if not, it _returns_ (not throws!) a refactoring
- * exception; if everything is OK, it returns null
+ * not clash with the name of an already existing local variable. The method
+ * canIntroduceLocal(id) checks whether a node and its children could be inside the scope
+ * of a local variable named id.
  * 
- * this somewhat weird behaviour is due to the fact that attributes cannot throw
- * exceptions
+ * The method canIntroduceLabel(id) does the same for labels.
  */
 
 aspect LocalVarNesting {
 	
-	interface Initializer {
-		Block getBlock();
-	}
-	
-	InstanceInitializer implements Initializer;
-	StaticInitializer implements Initializer;
-	
-	syn RefactoringException BodyDecl.acceptLocal(String name) = null;
-	
-	eq Callable.acceptLocal(String name) {
-		if(!parameterDeclaration(name).isEmpty())
-			return new RefactoringException("parameter of the same name exists");
-		if(hasBody())
-			return getBlock().acceptLocal(name);
-		return null;
-	}
-	
-	eq Initializer.acceptLocal(String name) = getBlock().acceptLocal(name);
-	
-	syn RefactoringException Stmt.acceptLocal(String name) = null;
-	
-	eq Block.acceptLocal(String name) {
-		RefactoringException e;
-		for(int i=0;i<getNumStmt();++i) {
-			e = getStmt(i).acceptLocal(name);
-			if(e != null) return e;
+	// check whether this subtree contains a conflicting local declaration
+	public boolean ASTNode.canIntroduceLocal(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				if(!child.canIntroduceLocal(name))
+					return false;
 		}
-		return null;
+		return true;
 	}
 	
-	eq DoStmt.acceptLocal(String name) = getStmt().acceptLocal(name);
-	eq WhileStmt.acceptLocal(String name) = getStmt().acceptLocal(name);
+	public boolean VariableDeclaration.canIntroduceLocal(String name) {
+		if(name.equals(name()))
+			return false;
+		return super.canIntroduceLocal(name);
+	}
 	
-	eq SwitchStmt.acceptLocal(String name) = getBlock().acceptLocal(name);
+	public boolean ParameterDeclaration.canIntroduceLocal(String name) {
+		if(name.equals(name()))
+			return false;
+		return super.canIntroduceLocal(name);
+	}
 	
-	eq ForStmt.acceptLocal(String name) {
-		RefactoringException e;
-		int i;
-		for(i=0;i<getNumInitStmt();++i) {
-			e = getInitStmt(i).acceptLocal(name);
-			if(e != null) return e;
+	// check whether this subtree contains a conflicting label
+	public boolean ASTNode.canIntroduceLabel(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				if(!child.canIntroduceLabel(name))
+					return false;
 		}
-		// the update statement cannot declare variables, so we can ignore it
-        e = this.getStmt().acceptLocal(name);
-        return e;
+		return true;
 	}
 	
-	eq IfStmt.acceptLocal(String name) {
-		RefactoringException e;
-		e = getThen().acceptLocal(name);
-		if(e != null) return e;
-		if(hasElse())
-			e = getElse().acceptLocal(name);
-		return e;
+	public boolean LabeledStmt.canIntroduceLabel(String name) {
+		if(name.equals(getLabel()))
+			return false;
+		return super.canIntroduceLabel(name);
 	}
-	
-	eq TryStmt.acceptLocal(String name) {
-		RefactoringException e;
-		e = getBlock().acceptLocal(name);
-		if(e != null) return e;
-		for(int i=0;i<getNumCatchClause();++i) {
-			CatchClause cc = getCatchClause(i);
-			e = cc.getParameter().acceptLocal(name);
-			if(e != null) return e;
-			e = cc.getBlock().acceptLocal(name);
-			if(e != null) return e;
-		}
-		if(hasFinally())
-			e = getFinally().acceptLocal(name);
-		return e;
-	}
-	
-	eq VariableDeclaration.acceptLocal(String name) {
-		if(name.equals(getID()))
-			return new RefactoringException("local variable of same name exists");
-		return null;
-	}
-	
-	syn RefactoringException ParameterDeclaration.acceptLocal(String name) {
-		if(name.equals(getID()))
-			return new RefactoringException("parameter of same name exists");
-		return null;
-	}
-	
 }

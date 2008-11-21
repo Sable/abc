@@ -40,7 +40,7 @@ aspect ClosureSubstitution {
 		collectLocalDeclarations(vars);
 		for(LocalDeclaration v : vars)
 			if(nameClash(v.getID()))
-				v.setID(pickFresh(v.getID()));
+				v.setID(pickFreshVarName(v.getID()));
 		programRoot().flushCaches();
 		table.adjust();
 	}
@@ -78,7 +78,7 @@ aspect ClosureSubstitution {
 	eq ParameterDeclaration.isLocal() = true;
 	eq VariableDeclaration.isLocal() = true;
 	
-	private String ClosureInvocation.pickFresh(String base) {
+	private String ClosureInvocation.pickFreshVarName(String base) {
 		for(int i=0;;++i)
 			if(!nameClash(base+i))
 				return base+i;
