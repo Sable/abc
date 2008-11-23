@@ -2,6 +2,17 @@ import jastaddmodules.*;
 aspect ModulePackageNames {
 	//from Java1.4/QualifiedNames.jrag
 	refine QualifiedNames eq CompilationUnit.packageName() {
+	
+		//avoid calls that reference getParent() on CUs that are generated from JARs, 
+		//since there is a call to isObject() which in turn calls packageName on a CU
+		//that is not yet attached to Program. It works on normal java programs since it just
+		//returns packageDecl without going higher. However, jastaddmodules needs to go higher
+		//due to package name mangling (it needs to fetch the module name to include in the
+		//mangled package name. 
+		if (!this.fromSource()) {
+			return QualifiedNames.CompilationUnit.packageName();
+		}
+		
 		if (getModuleCompilationUnit() == null) {
 			return QualifiedNames.CompilationUnit.packageName();
 		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) == null) {
