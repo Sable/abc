@@ -1,3 +1,3 @@
 Attributes: check that revisited attributes throws an exception
-Circular definition of attr: a() in class: m1.$test.Test44.A
-Circular definition of attr: b() in class: m1.$test.Test44.B
+Circular definition of attr: a() in class: test.Test44.A
+Circular definition of attr: b() in class: test.Test44.B

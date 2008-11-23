@@ -1,4 +1,4 @@
-module m1;
+package test;
 
 aspect Simple {
   ast ANode : ASTNode ::= Child:ASTNode BNode [OptChild:ASTNode] B:BNode*;

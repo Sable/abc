@@ -4,7 +4,7 @@ test/Test73.java:6:
 test/Test73.java:7:
   Semantic Error: attributes can only be introduced in AST nodes
 test/Test73.java:8:
-  Semantic Error: only AST nodes can be rewritten
+  Semantic Error: only subclasses of ASTNode can be rewritten
 test/Test73.java:11:
   Semantic Error: root node must be an AST node
 test/Test73.java:11:

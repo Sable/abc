@@ -1,2 +1,4 @@
-AST: multiple nodes of the same type
-should result in compilation error
+Errors:
+test/Test9.java:4:
+  Semantic Error: AST child Node is multiply declared
+
