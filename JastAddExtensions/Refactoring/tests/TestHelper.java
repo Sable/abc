@@ -125,11 +125,17 @@ public class TestHelper {
 	}
 	
 	public static Stmt findStmtFollowingComment(CompilationUnit cu, String comment) {
-		return findStmt(cu, cu.findComment(comment).el);
+		if (cu == null) return null;
+		FileRange fr = cu.findComment(comment);
+		if (fr == null) return null;
+		return findStmt(cu,fr.el);
 	}
 	
 	public static Stmt findStmtPrecedingComment(CompilationUnit cu, String comment) {
-		return findStmt(cu, cu.findComment(comment).el-1);
+		if (cu == null) return null;
+		FileRange fr = cu.findComment(comment);
+		if (fr == null) return null;
+		return findStmt(cu, fr.el-1);
 	}
 	
 	public static Stmt findStmt(ASTNode n, int line) {
@@ -146,17 +152,22 @@ public class TestHelper {
 		return null;
 	}
 	
-	public static ASTNode findNodeBetweenComments(CompilationUnit cu, String start, String end) {
+	public static ASTNode findFirstNodeBetweenComments(CompilationUnit cu, String start, String end) {
 		FileRange startrg = cu.findComment(start);
 		FileRange endrg = cu.findComment(end);
+		if (endrg.startsBefore(startrg)) {
+			FileRange tmp = endrg;
+			endrg = startrg;
+			startrg = tmp;
+		}
 		int startline = startrg.el;
 		int startcol = startrg.ec;
 		int endline = endrg.sl;
 		int endcol = endrg.sc;
-		return findNodeBetween(cu, startline, startcol, endline, endcol);
+		return findFirstNodeBetween(cu, startline, startcol, endline, endcol);
 	}
 
-	private static ASTNode findNodeBetween(ASTNode n, int startline,
+	private static ASTNode findFirstNodeBetween(ASTNode n, int startline,
 			int startcol, int endline, int endcol) {
 		if(n == null) return null;
 		int start = n.getStart();
@@ -167,7 +178,39 @@ public class TestHelper {
 						ASTNode.getLine(end), ASTNode.getColumn(end)))
 			return n;
 		for(int i=0;i<n.getNumChild();++i) {
-			ASTNode s = findNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
+			ASTNode s = findFirstNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
+			if(s != null) return s;
+		}
+		return null;
+	}
+	
+	public static ASTNode findLastNodeBetweenComments(CompilationUnit cu, String start, String end) {
+		FileRange startrg = cu.findComment(start);
+		FileRange endrg = cu.findComment(end);
+		if (endrg.startsBefore(startrg)) {
+			FileRange tmp = endrg;
+			endrg = startrg;
+			startrg = tmp;
+		}
+		int startline = startrg.el;
+		int startcol = startrg.ec;
+		int endline = endrg.sl;
+		int endcol = endrg.sc;
+		return findLastNodeBetween(cu, startline, startcol, endline, endcol);
+	}
+
+	private static ASTNode findLastNodeBetween(ASTNode n, int startline,
+			int startcol, int endline, int endcol) {
+		if(n == null) return null;
+		int start = n.getStart();
+		int end = n.getEnd();
+		if(!(n instanceof AST.List) && !(n instanceof Opt) &&
+				covers(startline, startcol, endline, endcol,
+						ASTNode.getLine(start), ASTNode.getColumn(start),
+						ASTNode.getLine(end), ASTNode.getColumn(end)))
+			return n;
+		for(int i=n.getNumChild()-1;i>=0;i--) {
+			ASTNode s = findLastNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
 			if(s != null) return s;
 		}
 		return null;

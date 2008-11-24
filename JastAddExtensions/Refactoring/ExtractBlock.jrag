@@ -24,6 +24,11 @@ aspect ExtractBlock {
     public ExtractBlockRefactoring(Block block, int begin, int end) 
         throws RefactoringException {
       this.block = block;
+      if (end <= begin) {
+    	  int tmp = end;
+    	  end = begin;
+    	  begin = tmp;
+      }
       this.begin = begin;
       this.end = end;
       if(begin < 0 || end >= block.getNumStmt() || end < begin)
