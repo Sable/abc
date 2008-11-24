@@ -117,5 +117,15 @@ aspect Uses {
 		//return hasPackage(name) ? new PackageDecl(name) : null;
 		return new PackageDecl(name);
 	}
-
+	
+	// bind all uses of a label to its declaration
+	coll Collection<Stmt> LabeledStmt.uses() [new ArrayList<Stmt>()] 
+	                                         with add root BodyDecl;
+	BreakStmt contributes
+	this when targetStmt() instanceof LabeledStmt
+	to LabeledStmt.uses() for (LabeledStmt)targetStmt();
+	
+	ContinueStmt contributes
+	this when targetStmt() instanceof LabeledStmt
+	to LabeledStmt.uses() for (LabeledStmt)targetStmt();
 }
