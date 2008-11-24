@@ -4,8 +4,21 @@ aspect ClosureSubstitution {
 		renameAway();
 		AdjustmentTable table = new AdjustmentTable();
 		for(int i=getNumParameter()-1;i>=0;--i) {
-			ParameterDeclaration pd = getParameter(i);
-			Expr arg = getArg(i);
+			RefactoringException exn = getParameter(i).inline(table);
+			if(exn != null)
+				throw exn;
+		}
+		programRoot().flushCaches();
+		table.adjust();
+		return this;
+	}
+	
+	inh RefactoringException ParameterDeclaration.inline(AdjustmentTable table);
+	
+	eq ClosureInvocation.getParameter(int i).inline(AdjustmentTable table) {
+		ParameterDeclaration pd = getParameter(i);
+		Expr arg = getArg(i);
+		try {
 			if(pd.isIn()) {
 				TypeDecl type = pd.type();
 				arg.lockAll(table);
@@ -26,10 +39,13 @@ aspect ClosureSubstitution {
 					table.add(v);
 				}
 			}
+		} catch(RefactoringException rfe) {
+			return rfe;
 		}
-		programRoot().flushCaches();
-		table.adjust();
-		return this;
+		return null;
+	}
+	eq Program.getChild().inline(AdjustmentTable table) {
+		throw new RuntimeException("Cannot inline non-closure parameters");
 	}
 	
 	//// rename all parameters and local variables to avoid clashes with surrounding locals
