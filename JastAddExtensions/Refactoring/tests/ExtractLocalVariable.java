@@ -26,7 +26,7 @@ public class ExtractLocalVariable extends TestCase {
         assertNotNull(p);
         CompilationUnit cu = p.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
-        ASTNode node = TestHelper.findNodeBetweenComments(cu, "/*[*/", "/*]*/");
+        ASTNode node = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
         assertTrue(node instanceof Expr);
         Expr expr = (Expr)node;
         try {

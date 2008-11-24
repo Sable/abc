@@ -27,7 +27,7 @@ public abstract class InlineMethod extends TestCase {
         assertNotNull(p);
         CompilationUnit cu = p.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
-        ASTNode node = TestHelper.findNodeBetweenComments(cu, "/*[*/", "/*]*/");
+        ASTNode node = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
         assertTrue(node instanceof MethodAccess);
         MethodAccess ma = (MethodAccess)node;
         try {

@@ -9,17 +9,17 @@
 
 aspect ExtractBlock {
 
-  public Block Block.extractBlock(int begin, int end) 
-    throws RefactoringException {
-    return new ExtractBlockRefactoring(this, begin, end).execute();
-  }
+	public Block Block.extractBlock(int begin, int end) 
+	throws RefactoringException {
+		return new ExtractBlockRefactoring(this, begin, end).execute();
+	}
 
-  class ExtractBlockRefactoring {
-    Block block;
-    int begin;
-    int end;
-    Block new_block;
-    AdjustmentTable table;
+	class ExtractBlockRefactoring {
+		Block block;
+		int begin;
+		int end;
+		Block new_block;
+		AdjustmentTable table;
 
     public ExtractBlockRefactoring(Block block, int begin, int end) 
         throws RefactoringException {
@@ -36,73 +36,73 @@ aspect ExtractBlock {
       table = new AdjustmentTable();
     }
 
-    public Block execute() throws RefactoringException {
-      block.lockAllAccesses(table);
-      new_block = new Block(new List());
-      block.insertStmt(end+1, new_block);
-      for(int i=end;i>=begin;--i) {
-	Stmt stmt = block.getStmt(i);
-	boolean leftover_decl = stmt.pushIntoBlock();
-	// take care of left-over variable declarations
-	if(leftover_decl && i > begin) {
-	  stmt = block.getStmt(i);
-	  block.removeStmt(i);
-	  block.insertStmt(begin++, stmt);
-	  i++;
-	  flushCaches();
+		public Block execute() throws RefactoringException {
+			block.lockAllAccesses(table);
+			new_block = new Block(new List());
+			block.insertStmt(end+1, new_block);
+			for(int i=end;i>=begin;--i) {
+				Stmt stmt = block.getStmt(i);
+				boolean leftover_decl = stmt.pushIntoBlock();
+				// take care of left-over variable declarations
+				if(leftover_decl && i > begin) {
+					stmt = block.getStmt(i);
+					block.removeStmt(i);
+					block.insertStmt(begin++, stmt);
+					i++;
+					flushCaches();
+				}
+			}
+			flushCaches();
+			table.adjust();
+			return new_block;
+		}
+
+		private void flushCaches() {
+			block.programRoot().flushCaches();
+		}
 	}
-      }
-      flushCaches();
-      table.adjust();
-      return new_block;
-    }
-   
-    private void flushCaches() {
-      block.programRoot().flushCaches();
-    }
-  }
 
-  public void ASTNode.removeChild(ASTNode child) {
-    removeChild(getIndexOfChild(child));
-  }
+	public void ASTNode.removeChild(ASTNode child) {
+		removeChild(getIndexOfChild(child));
+	}
 
-  public void Block.removeStmt(Stmt stmt) {
-    getStmtList().removeChild(stmt);
-  }
+	public void Block.removeStmt(Stmt stmt) {
+		getStmtList().removeChild(stmt);
+	}
 
-  public void Block.removeStmt(int idx) {
-    getStmtList().removeChild(idx);
-  }
+	public void Block.removeStmt(int idx) {
+		getStmtList().removeChild(idx);
+	}
 
-  // lock all type accesses in a subtree
-  public void ASTNode.lockAllTypeAccesses(AdjustmentTable table) {
-    for(int i = 0; i < getNumChildNoTransform(); i++) {
-      ASTNode node = getChildNoTransform(i);
-      if(node != null) 
-	node.lockAllTypeAccesses(table);
-    }
-  }
-  public void TypeAccess.lockAllTypeAccesses(AdjustmentTable table) {
-    super.lockAllTypeAccesses(table);
-    table.add(this);
-  }
+	// lock all type accesses in a subtree
+	public void ASTNode.lockAllTypeAccesses(AdjustmentTable table) {
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null) 
+				node.lockAllTypeAccesses(table);
+		}
+	}
+	public void TypeAccess.lockAllTypeAccesses(AdjustmentTable table) {
+		super.lockAllTypeAccesses(table);
+		table.add(this);
+	}
 
-  // lock all variable accesses in a subtree
-  public void ASTNode.lockAllVarAccesses(AdjustmentTable table) {
-    for(int i = 0; i < getNumChildNoTransform(); i++) {
-      ASTNode node = getChildNoTransform(i);
-      if(node != null) 
-	node.lockAllVarAccesses(table);
-    }
-  }
-  public void VarAccess.lockAllVarAccesses(AdjustmentTable table) {
-    super.lockAllTypeAccesses(table);
-    table.add(this);
-  }
+	// lock all variable accesses in a subtree
+	public void ASTNode.lockAllVarAccesses(AdjustmentTable table) {
+		for(int i = 0; i < getNumChildNoTransform(); i++) {
+			ASTNode node = getChildNoTransform(i);
+			if(node != null) 
+				node.lockAllVarAccesses(table);
+		}
+	}
+	public void VarAccess.lockAllVarAccesses(AdjustmentTable table) {
+		super.lockAllTypeAccesses(table);
+		table.add(this);
+	}
 
-  // lock all accesses (variable and type) in a subtree
-  public void ASTNode.lockAllAccesses(AdjustmentTable table) {
-    lockAllTypeAccesses(table);
-    lockAllVarAccesses(table);
-  }
+	// lock all accesses (variable and type) in a subtree
+	public void ASTNode.lockAllAccesses(AdjustmentTable table) {
+		lockAllTypeAccesses(table);
+		lockAllVarAccesses(table);
+	}
 }

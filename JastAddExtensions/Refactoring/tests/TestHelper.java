@@ -85,7 +85,7 @@ public class TestHelper {
                 rng.sl, rng.sc, rng.el, rng.ec);
     }
 
-    static boolean covers(int sl1, int sc1, int el1, int ec1, int sl2, int sc2, int el2, int ec2) {
+    public static boolean covers(int sl1, int sc1, int el1, int ec1, int sl2, int sc2, int el2, int ec2) {
         if(sl1 > sl2 || sl1 == sl2 && sc1 > sc2) return false;
         if(el1 < el2 || el1 == el2 && ec1 < ec2) return false;
         return true;
@@ -155,6 +155,8 @@ public class TestHelper {
 	public static ASTNode findFirstNodeBetweenComments(CompilationUnit cu, String start, String end) {
 		FileRange startrg = cu.findComment(start);
 		FileRange endrg = cu.findComment(end);
+		if(startrg == null || endrg == null)
+			return null;
 		if (endrg.startsBefore(startrg)) {
 			FileRange tmp = endrg;
 			endrg = startrg;
@@ -187,6 +189,8 @@ public class TestHelper {
 	public static ASTNode findLastNodeBetweenComments(CompilationUnit cu, String start, String end) {
 		FileRange startrg = cu.findComment(start);
 		FileRange endrg = cu.findComment(end);
+		if(startrg == null || endrg == null)
+			return null;
 		if (endrg.startsBefore(startrg)) {
 			FileRange tmp = endrg;
 			endrg = startrg;

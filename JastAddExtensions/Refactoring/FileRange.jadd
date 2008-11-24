@@ -32,7 +32,7 @@ aspect FileRange {
 		return new FileRange(compilationUnit().relativeName(), getStart(), getEnd());
 	}
 		
-	public boolean startsBefore(FileRange that) {
+	public boolean FileRange.startsBefore(FileRange that) {
 		return this.sl < that.sl ||
 		   this.sl == that.sl && this.sc < that.sc;
 	}

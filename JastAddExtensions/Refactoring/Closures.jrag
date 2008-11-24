@@ -72,7 +72,10 @@ aspect Closures {
 
 	inh SmallSet<CFGNode> ClosureInvocation.targetStmt(BranchStmt branch);
 	eq ClosureInvocation.getChild().targetStmt(BranchStmt branch) {
-		return branch.targetIn(this);
+	        SmallSet<CFGNode> n = branch.targetIn(this);
+    		if(n == null)
+      		     n = SmallSet.empty();
+    		return n;
 	}
 
 	// all return statements inside the closure
