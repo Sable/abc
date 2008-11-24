@@ -10,26 +10,12 @@ aspect IntroduceOutParameter {
 		AdjustmentTable table = new AdjustmentTable();
 		getBlock().lockAll(table);
 		setReturnType(new PrimitiveTypeAccess("void"));
-		SimpleSet set = parameterDeclaration(v.name());
-		ParameterDeclaration pd;
-		if(set.isEmpty()) {
-			// check that we can introduce a parameter of this name
-			if(!getBlock().canIntroduceLocal(v.name()))
-				throw new RefactoringException("local variable of same name exists");
-			pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))),
-					v.type().getLockedAccess(table),
-					v.name());
-			addParameter(pd);
-			addArg(new VarAccess(v.name()));
-		} else {
-			pd = (ParameterDeclaration)set.iterator().next();
-			pd.makeOut();
-			Expr arg = lookupArg(v.name());
-			if(!(arg instanceof VarAccess))
-				throw new RefactoringException("not a variable");
-			if(arg.type() != v.decl())
-				throw new RefactoringException("inconsistent return");
-		}
+		String parmname = this.pickFreshVarName(v.name());
+		ParameterDeclaration pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))),
+				v.type().getLockedAccess(table),
+				parmname);
+		addParameter(pd);
+		addArg(new VarAccess(v.name()));
 		getBlock().addAssignToReturns(pd, table);
 		parent.replaceWith(this);
 		programRoot().flushCaches();

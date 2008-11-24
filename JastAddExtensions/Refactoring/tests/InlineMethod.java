@@ -22,6 +22,7 @@ public abstract class InlineMethod extends TestCase {
 	public void runInlineTest(String name) {
         String infile = TEST_BASE+File.separator+name+File.separator+"in"+File.separator+"A.java";
         String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
+        String altfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A_alt.java";
         Program p = TestHelper.compile(infile);
         assertNotNull(p);
         CompilationUnit cu = p.lookupType("", "A").compilationUnit();
@@ -33,7 +34,10 @@ public abstract class InlineMethod extends TestCase {
         	ma.inline();
 			String expected = new String(TestHelper.wholeFile(resfile));
 			String actual = p.toString();
-			assertEquals(expected, actual);
+			if(!expected.equals(actual)) {
+				expected = new String(TestHelper.wholeFile(altfile));
+				assertEquals(expected, actual);
+			}
 		} catch (RefactoringException e) {
 			e.printStackTrace();
 			assertFalse(name+" failed unexpectedly", new File(resfile).exists());

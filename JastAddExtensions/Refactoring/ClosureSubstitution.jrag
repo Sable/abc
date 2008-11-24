@@ -68,7 +68,7 @@ aspect ClosureSubstitution {
 	private boolean ClosureInvocation.nameClash(String name) {
 		SimpleSet set = lookupVariable(name);
 		if(set.isEmpty())
-			return false;
+			return !canIntroduceLocal(name);
 		Variable v = (Variable)set.iterator().next();
 		return v.isLocal();
 	}

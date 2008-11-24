@@ -2,7 +2,7 @@ class A {
   void m() {
     int i;
     {
-      int i0 = 23;
+      int i1 = 23;
       i = 42;
     }
   }
