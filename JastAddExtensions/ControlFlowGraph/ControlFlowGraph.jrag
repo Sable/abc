@@ -623,8 +623,8 @@ aspect ControlFlowGraph {
   ReturnStmt implements BranchStmt;
 
   inh SmallSet<CFGNode> Stmt.targetStmt(BranchStmt branch);
-  eq Program.getChild().targetStmt(BranchStmt branch) = null;
-  eq TypeDecl.getChild().targetStmt(BranchStmt branch) = null;
+  eq Program.getChild().targetStmt(BranchStmt branch) = SmallSet.empty();
+  eq TypeDecl.getChild().targetStmt(BranchStmt branch) = SmallSet.empty();
   eq BranchTargetStmt.getChild().targetStmt(BranchStmt branch) {
     SmallSet<CFGNode> n = branch.targetIn(this);
     if(n != null)
@@ -632,7 +632,10 @@ aspect ControlFlowGraph {
     return targetStmt(branch);
   }
   eq BodyDecl.getChild().targetStmt(BranchStmt branch) {
-    return branch.targetIn(this);
+    SmallSet<CFGNode> n = branch.targetIn(this);
+    if(n == null)
+      n = SmallSet.empty();
+    return n;
   }
   eq TryStmt.getBlock().targetStmt(BranchStmt branch) {
     SmallSet<CFGNode> n = branch.targetIn(this);
