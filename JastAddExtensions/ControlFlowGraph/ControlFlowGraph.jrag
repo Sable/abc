@@ -88,6 +88,7 @@ aspect ControlFlowGraph {
   eq ConstructorDecl.getConstructorInvocation().following() 
     = SmallSet.singleton((CFGNode)getBlock());
 
+  eq CatchClause.getParameter().following() = SmallSet.singleton((CFGNode)getBlock());
   // *** API predecessors ***
 
   coll SmallSet<CFGNode> CFGNode.pred() [SmallSet.mutable()] with add root BodyDecl;
@@ -683,7 +684,7 @@ aspect ControlFlowGraph {
   public SmallSet<CFGNode> ThrowStmt.targetIn(TryStmt stmt) {
     for(int i = 0; i < stmt.getNumCatchClause(); i++) 
       if(stmt.getCatchClause(i).handles(getExpr().type()))
-	return SmallSet.singleton((CFGNode)stmt.getCatchClause(i).getBlock());
+	return SmallSet.singleton((CFGNode)stmt.getCatchClause(i).getParameter());
     return stmt.hasFinally() ? SmallSet.singleton((CFGNode)stmt.getFinally()) : null;
   }
 
