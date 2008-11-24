@@ -21,20 +21,20 @@ aspect ExtractBlock {
 		Block new_block;
 		AdjustmentTable table;
 
-    public ExtractBlockRefactoring(Block block, int begin, int end) 
-        throws RefactoringException {
-      this.block = block;
-      if (end <= begin) {
-    	  int tmp = end;
-    	  end = begin;
-    	  begin = tmp;
-      }
-      this.begin = begin;
-      this.end = end;
-      if(begin < 0 || end >= block.getNumStmt() || end < begin)
-	throw new RefactoringException("indices out of range");
-      table = new AdjustmentTable();
-    }
+		public ExtractBlockRefactoring(Block block, int begin, int end) 
+		throws RefactoringException {
+			this.block = block;
+			if (end <= begin) {
+				int tmp = end;
+				end = begin;
+				begin = tmp;
+			}
+			this.begin = begin;
+			this.end = end;
+			if(begin < 0 || end >= block.getNumStmt() || end < begin)
+				throw new RefactoringException("indices out of range");
+			table = new AdjustmentTable();
+		}
 
 		public Block execute() throws RefactoringException {
 			block.lockAllAccesses(table);
@@ -61,6 +61,50 @@ aspect ExtractBlock {
 			block.programRoot().flushCaches();
 		}
 	}
+	
+	public Block Stmt.turnIntoBlock() throws RefactoringException {
+		if(getParent().getParent() instanceof Block) {
+			Block blk = (Block)getParent().getParent();
+			int idx = blk.getIndexOfStmt(this);
+			return blk.extractBlock(idx, idx);
+		} else {
+			if(!extractable())
+				throw new RefactoringException("not extractable");
+			ASTNode parent = getParent();
+			AdjustmentTable table = new AdjustmentTable();
+			table.addCFlow(this);
+			Block new_block = new Block(new List());
+			replaceWith(new_block);
+			new_block.addStmt(this);
+			parent.programRoot().flushCaches();
+			table.adjust();
+			return new_block;
+		}
+	}
+	
+	inh boolean Stmt.extractable();
+	eq ConstructorDecl.getConstructorInvocation().extractable() = false;
+	eq Block.getStmt(int i).extractable() = true;
+	eq IfStmt.getThen().extractable() = true;
+	eq IfStmt.getElse().extractable() = true;
+	eq WhileStmt.getStmt().extractable() = true;
+	eq DoStmt.getStmt().extractable() = true;
+	eq ForStmt.getInitStmt(int i).extractable() = false;
+	eq ForStmt.getUpdateStmt(int i).extractable() = false;
+	eq ForStmt.getStmt().extractable() = true;
+	eq EnhancedForStmt.getStmt().extractable() = true;
+	
+	// all places where the grammar prescribes a block are also not extractable
+	// this could be relaxed: we could wrap the block to be extracted into another block first
+	eq InstanceInitializer.getBlock().extractable() = false;
+	eq StaticInitializer.getBlock().extractable() = false;
+	eq ConstructorDecl.getBlock().extractable() = false;
+	eq MethodDecl.getBlock().extractable() = false;
+	eq SwitchStmt.getBlock().extractable() = false;
+	eq SynchronizedStmt.getBlock().extractable() = false;
+	eq TryStmt.getBlock().extractable() = false;
+	eq TryStmt.getFinally().extractable() = false;
+	eq CatchClause.getBlock().extractable() = false;
 
 	public void ASTNode.removeChild(ASTNode child) {
 		removeChild(getIndexOfChild(child));

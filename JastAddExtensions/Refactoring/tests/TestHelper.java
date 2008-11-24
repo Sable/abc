@@ -77,7 +77,7 @@ public class TestHelper {
         return r;
     }
 
-    static boolean covers(ASTNode r, FileRange rng) {
+    public static boolean covers(ASTNode r, FileRange rng) {
         int start = r.getStart();
         int end = r.getEnd();
         return covers(ASTNode.getLine(start), ASTNode.getColumn(start),
@@ -89,6 +89,16 @@ public class TestHelper {
         if(sl1 > sl2 || sl1 == sl2 && sc1 > sc2) return false;
         if(el1 < el2 || el1 == el2 && ec1 < ec2) return false;
         return true;
+    }
+    
+    public static boolean rightBefore(ASTNode n, FileRange rng) {
+    	int end = n.getEnd();
+    	return ASTNode.getLine(end) == rng.sl && ASTNode.getColumn(end) + 1 == rng.sc;
+    }
+	
+    public static boolean rightAfter(FileRange rng, ASTNode n) {
+    	int start = n.getStart();
+    	return rng.el == ASTNode.getLine(start) && rng.ec + 1 == ASTNode.getColumn(start);
     }
 	
     public static char[] wholeFile(String name) throws FileNotFoundException, IOException {

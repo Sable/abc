@@ -40,10 +40,13 @@ aspect ClosureConversion {
 	
 	public ParameterDeclaration ClosureInvocation.introduceInParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
 		TypeDecl type = var.type();
+		boolean isFinal = var.decl().isFinal();
 		ParameterDeclaration pd;
 		SimpleSet set = parameterDeclaration(var.name());
 		if(set.isEmpty()) {
-			pd = new ParameterDeclaration(type.getLockedAccess(table), var.name());
+			Modifiers modifiers = new Modifiers(isFinal ? new List().add(new Modifier("final")) 
+													    : new List());
+			pd = new ParameterDeclaration(modifiers, type.getLockedAccess(table), var.name());
 			addParameter(pd);
 			addArg(new VarAccess(var.name()));
 		} else {
