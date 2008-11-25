@@ -43,7 +43,7 @@ aspect EliminateOutParams {
 	}
 
 	public TypeAccess TypeDecl.getLockedAccess(AdjustmentTable table) {
-		TypeAccess acc = new TypeAccess(this.name());
+		TypeAccess acc = new TypeAccess("int");  // it doesn't really matter what we put here
 		acc.lockOn(this);
 		table.add(acc);
 		return acc;

@@ -2,7 +2,7 @@ aspect WrapExprIntoClosure {
 
 	public ClosureInvocation Expr.wrapIntoClosure() throws RefactoringException {
 		AdjustmentTable table = new AdjustmentTable();
-		List<Access> exns = computeUncaughtExceptions(table);
+		List<Access> exns = computeUncaughtUncheckedExceptions(table);
 		ClosureInvocation cl = 
 			new ClosureInvocation(
 					new List(),                      // parameters
