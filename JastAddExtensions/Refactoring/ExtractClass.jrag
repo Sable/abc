@@ -1,5 +1,4 @@
-/*
- * ExtractClass extracts fields into a new nested class.
+/** ExtractClass extracts fields into a new nested class.
  * If fields were initialised, their value is passed to 
  * the constructor of the new class.
  */
