@@ -9,10 +9,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import AST.ASTNode;
 import AST.Block;
 import AST.Callable;
 import AST.CompilationUnit;
 import AST.ConstructorDecl;
+import AST.Expr;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -81,16 +83,22 @@ public abstract class ExtractMethod extends TestCase {
         	assertNotNull(A);
         	CompilationUnit cu = A.compilationUnit();
         	assertNotNull(cu);
-        	Stmt from = TestHelper.findStmtFollowingComment(cu, "// from\n");
-        	assertNotNull(from);
-        	Stmt to = TestHelper.findStmtPrecedingComment(cu, "// to\n");
-        	assertNotNull(to);
-        	Block blk = from.hostBlock();
-        	int fromIndex = blk.getIndexOfStmt(from);
-        	assertTrue(fromIndex != -1);
-        	int toIndex = blk.getIndexOfStmt(to);
-        	assertTrue(toIndex != -1);
-        	blk.extractMethod("protected", "extracted", fromIndex, toIndex);
+        	ASTNode n = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
+        	if(n instanceof Expr) {
+        		Expr e = (Expr)n;
+        		e.extractMethod("protected", "extracted");
+        	} else {
+        		Stmt from = TestHelper.findStmtFollowingComment(cu, "// from\n");
+        		assertNotNull(from);
+        		Stmt to = TestHelper.findStmtPrecedingComment(cu, "// to\n");
+        		assertNotNull(to);
+        		Block blk = from.hostBlock();
+        		int fromIndex = blk.getIndexOfStmt(from);
+        		assertTrue(fromIndex != -1);
+        		int toIndex = blk.getIndexOfStmt(to);
+        		assertTrue(toIndex != -1);
+        		blk.extractMethod("protected", "extracted", fromIndex, toIndex);
+        	}
         	try {
         		char[] buf = TestHelper.wholeFile(resfile);
         		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n")) {

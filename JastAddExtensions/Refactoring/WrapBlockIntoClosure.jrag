@@ -42,7 +42,7 @@ aspect WrapBlockIntoClosure {
 			block.lockAllCFlow(table);
 			// create a closure without parameters returning void and throwing all
 			// uncaught checked exceptions of block
-			List<Access> exns = block.computeUncaughtUncheckedExceptions(table);
+			List<Access> exns = block.computeExceptionsToDeclare(table);
 			ClosureInvocation cl = 
 				new ClosureInvocation(
 						new List(),                      // parameters
@@ -78,14 +78,21 @@ aspect WrapBlockIntoClosure {
 
 	inh TypeDecl ClosureInvocation.returnType();
 
-	// return a list of locked type accesses to all uncaught checked exceptions in a subtree
-	public List<Access> ASTNode.computeUncaughtUncheckedExceptions(AdjustmentTable table) {
+	// return a list of locked type accesses to all exceptions in a subtree that should be declared
+	public List<Access> ASTNode.computeExceptionsToDeclare(AdjustmentTable table) {
 		List<Access> res = new List<Access>();
 		for(TypeDecl exn : uncaughtExceptions())
-			if(exn.isUncheckedException())
+			if(exn.shouldDeclareAsThrown())
 				res.add(exn.getLockedAccess(table));
 		return res;
 	}
+	
+	// this is what the JLS calls a checked exception; the definitions in JastAddJ confuse me...
+	inh lazy TypeDecl TypeDecl.typeThrowable();
+	syn boolean TypeDecl.shouldDeclareAsThrown()
+		= instanceOf(typeThrowable()) &&
+		  !instanceOf(typeRuntimeException()) &&
+		  !instanceOf(typeError());
 
 	inh TypeDecl ReturnStmt.typeVoid();
 	syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();

@@ -8,58 +8,68 @@ aspect Dataflow {
 			return null;
 		if(!isSource())
 			return SmallSet.empty();
-		LocalDeclaration decl = (LocalDeclaration)decl();
 		// we don't want the node to be its own data flow predecessor
 		SmallSet<CFGNode> result = SmallSet.empty();
 		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(decl));
+			result = result.union(pred.dataPredFor(this));
 		return result;
 	}
 
-	syn SmallSet<CFGNode> CFGNode.dataPredFor(LocalDeclaration decl)
-	circular [SmallSet.empty()];
+	syn SmallSet<CFGNode> CFGNode.dataPredFor(VarAccess var)
+		circular [SmallSet.empty()];
 
-	eq Stmt.dataPredFor(LocalDeclaration decl) {
+	eq Stmt.dataPredFor(VarAccess var) {
 		SmallSet<CFGNode> result = SmallSet.empty();
 		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(decl));
+			result = result.union(pred.dataPredFor(var));
 		return result;
 	}
 
 	// just a duplicate of the above; this is unfortunate but necessary
 	// we cannot give an equation for CFGNode.dataPredFor, since we
 	// then couldn't override it for ParameterDeclaration below
-	eq Expr.dataPredFor(LocalDeclaration decl) {
+	eq Expr.dataPredFor(VarAccess var) {
 		SmallSet<CFGNode> result = SmallSet.empty();
 		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(decl));
+			result = result.union(pred.dataPredFor(var));
 		return result;
 	}
 
-	eq VarAccess.dataPredFor(LocalDeclaration decl) {
-		if(decl() == decl)
-			if(isDest())
+	eq VarAccess.dataPredFor(VarAccess var) {
+		if(decl() == var.decl())
+			if(isDest() && !onLHSOfSameAssignment(var))
 				return SmallSet.singleton((CFGNode)this);
-		return super.dataPredFor(decl);
+		return super.dataPredFor(var);
+	}
+	
+	// little bugfix: in k = k + 1, we don't want the first 'k' to count
+	//                as a data predecessor of the second 'k', although
+	//                it is a control flow predecessor, resolves to the
+	//                same variable, and is in an assignment position
+	syn boolean VarAccess.onLHSOfSameAssignment(ASTNode n) {
+		if(!(getParent() instanceof AssignExpr))
+			return false;
+		AssignExpr assgn = (AssignExpr)getParent();
+		return n.beneath(assgn.getSource());
 	}
 
-	eq VariableDeclaration.dataPredFor(LocalDeclaration decl) {
-		if(this == decl)
-			if(hasInit())
+	eq VariableDeclaration.dataPredFor(VarAccess var) {
+		if(this == var.decl())
+			if(hasInit() || getParent() instanceof EnhancedForStmt)
 				return SmallSet.singleton((CFGNode)this);
 			else
 				return SmallSet.empty();
-		return super.dataPredFor(decl);
+		return super.dataPredFor(var);
 	}
 
-	eq ParameterDeclaration.dataPredFor(LocalDeclaration decl) {
-		if(this == decl)
+	eq ParameterDeclaration.dataPredFor(VarAccess var) {
+		if(this == var.decl())
 			return SmallSet.singleton((CFGNode)this);
 		// unfortunately, we can't just call super.dataPredFor(decl) here,
 		// so we copy again...
 		SmallSet<CFGNode> result = SmallSet.empty();
 		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(decl));
+			result = result.union(pred.dataPredFor(var));
 		return result;
 	}
 

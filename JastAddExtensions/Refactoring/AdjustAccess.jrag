@@ -79,6 +79,13 @@ aspect AdjustAccess {
 		return false;
 	}
 	
+	// array type accesses don't have to be locked, assuming their element type accesses
+	// will be locked (TODO: is this always the case?)
+	public void ArrayTypeAccess.lock() { }
+	public void ArrayTypeAccess.lockOn(TypeDecl target) { }
+	public void ArrayTypeAccess.unlock() { }
+	public void ArrayTypeAccess.unlockSafely() { }
+	
 	MethodAccess implements LockableAccess;
 	public MethodDecl MethodAccess.target;
 	public void MethodAccess.lock() { target = decl(); }

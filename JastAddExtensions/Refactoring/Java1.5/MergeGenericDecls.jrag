@@ -93,6 +93,128 @@ aspect MergeGenericDecls {
 		return null;
 	}
 
+	refine AdjustAccess public void TypeAccess.lock() {
+		target = decl().isRawType() ? decl().sourceTypeDecl() : decl();
+	}
+
+	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
+		TypeDecl td = target;
+		unlock();
+		TypeDecl decl = decl().isRawType() ? decl().sourceTypeDecl() : decl();
+		if(possiblyObscured() || decl != td) {
+			Access acc = access(td, nameType());
+			if(acc == null)
+				throw new RefactoringException("type cannot be accessed");
+			plugIn(acc);
+		}
+	}
+	
+	// AUGH!!! this is horrible...
+	refine AccessType public Access TypeDecl.accessTypeFromInside(TypeDecl td, NameType nt) {
+		if(td.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)td;
+			if(ptd.isRawType()) {
+				return refined(td.sourceTypeDecl(), nt);
+			} else {
+				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
+				if(base == null) return null;
+				List<Access> args = new List<Access>();
+				for(int i=0;i<ptd.getNumArgument();++i) {
+					Access arg = accessTypeFromInside(ptd.getArgument(i).type(), NameType.TYPE_NAME);
+					if(arg == null) return null;
+					args.add(arg);
+				}
+				return new ParTypeAccess(base, args);
+			}
+		} else {
+			return refined(td, nt);
+		}
+	}
+	
+	refine AccessType public Access BodyDecl.access(TypeDecl td, NameType nt) {
+		if(td.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)td;
+			if(ptd.isRawType()) {
+				return refined(td.sourceTypeDecl(), nt);
+			} else {
+				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
+				if(base == null) return null;
+				List<Access> args = new List<Access>();
+				for(int i=0;i<ptd.getNumArgument();++i) {
+					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
+					if(arg == null) return null;
+					args.add(arg);
+				}
+				return new ParTypeAccess(base, args);
+			}
+		} else {
+			return refined(td, nt);
+		}
+	}
+
+	refine AccessType public Access Stmt.access(TypeDecl td, NameType nt) {
+		if(td.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)td;
+			if(ptd.isRawType()) {
+				return refined(td.sourceTypeDecl(), nt);
+			} else {
+				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
+				if(base == null) return null;
+				List<Access> args = new List<Access>();
+				for(int i=0;i<ptd.getNumArgument();++i) {
+					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
+					if(arg == null) return null;
+					args.add(arg);
+				}
+				return new ParTypeAccess(base, args);
+			}
+		} else {
+			return refined(td, nt);
+		}
+	}
+	
+	refine AccessType public Access Expr.access(TypeDecl td, NameType nt) {
+		if(td.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)td;
+			if(ptd.isRawType()) {
+				return refined(td.sourceTypeDecl(), nt);
+			} else {
+				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
+				if(base == null) return null;
+				List<Access> args = new List<Access>();
+				for(int i=0;i<ptd.getNumArgument();++i) {
+					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
+					if(arg == null) return null;
+					args.add(arg);
+				}
+				return new ParTypeAccess(base, args);
+			}
+		} else {
+			return refined(td, nt);
+		}
+	}
+	
+	refine AccessType public Access Access.access(TypeDecl td, NameType nt) {
+		if(td.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)td;
+			if(ptd.isRawType()) {
+				return refined(td.sourceTypeDecl(), nt);
+			} else {
+				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
+				if(base == null) return null;
+				List<Access> args = new List<Access>();
+				for(int i=0;i<ptd.getNumArgument();++i) {
+					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
+					if(arg == null) return null;
+					args.add(arg);
+				}
+				return new ParTypeAccess(base, args);
+			}
+		} else {
+			return refined(td, nt);
+		}
+	}
+	
 	refine AdjustAccess public void VarAccess.lock() { target = decl().sourceVariableDecl(); }
 
 	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
@@ -107,19 +229,6 @@ aspect MergeGenericDecls {
 		if(acc == null)
 			throw new RefactoringException("variable cannot be accessed");
 		plugIn(acc);
-	}
-	
-	refine AdjustAccess public void TypeAccess.lock() { target = decl().sourceTypeDecl(); }
-
-	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
-		TypeDecl td = target;
-		unlock();
-		if(possiblyObscured() || decl().sourceTypeDecl() != td) {
-			Access acc = access(td, nameType());
-			if(acc == null)
-				throw new RefactoringException("type cannot be accessed");
-			plugIn(acc);
-		}
 	}
 	
 	refine AdjustAccess public void MethodAccess.lock() { target = decl().sourceMethodDecl(); }

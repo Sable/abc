@@ -5,6 +5,8 @@ public enum A {
   A2(),
 
 ;
+public A() {
+}
 }
 
 class B {

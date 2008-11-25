@@ -59,6 +59,7 @@ public abstract class RenameVariable extends TestCase {
         } catch(IOException ioe) {
         	fail("unable to read from file");
         } catch(RefactoringException rfe) {
+        	rfe.printStackTrace();
         	assertFalse(new File(resfile).exists());
         }
 	}
