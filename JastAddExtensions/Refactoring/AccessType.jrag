@@ -1,5 +1,4 @@
-/*
- * The inherited attribute accessType(td) computes a TypeAccessInfo which
+/** The inherited attribute accessType(td) computes a TypeAccessInfo which
  * describes how to access type td from the current location in the AST. This
  * TypeAccessInfo can in turn be used to construct an actual access.
  * 

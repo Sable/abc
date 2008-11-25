@@ -1,3 +1,5 @@
+// some attributes need to be refined to cope with generic, parameterized, and raw types
+
 aspect MergeGenericDecls {
   
 	// a coarser form of equality that considers, for example, a method from a generic

@@ -1,5 +1,4 @@
-/*
- * This is the central piece of machinery for the name-based refactorings: An 
+/** This is the central piece of machinery for the name-based refactorings: An 
  * adjustment table keeps track of a list of accesses and the declarations they point
  * to. After a refactoring is performed, the table's adjust() method is invoked
  * which tries to adjust all accesses in the table so that they still point to the
