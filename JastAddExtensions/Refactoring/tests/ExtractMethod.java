@@ -87,6 +87,9 @@ public abstract class ExtractMethod extends TestCase {
         	if(n instanceof Expr) {
         		Expr e = (Expr)n;
         		e.extractMethod("protected", "extracted");
+        	} else if(n instanceof Stmt) {
+        		Stmt s = (Stmt)n;
+        		s.extractMethod("protected", "extracted");
         	} else {
         		Stmt from = TestHelper.findStmtFollowingComment(cu, "// from\n");
         		assertNotNull(from);

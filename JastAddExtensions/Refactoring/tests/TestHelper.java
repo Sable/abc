@@ -138,17 +138,17 @@ public class TestHelper {
 		if (cu == null) return null;
 		FileRange fr = cu.findComment(comment);
 		if (fr == null) return null;
-		return findStmt(cu,fr.el);
+		return findFollowingStmt(cu,fr.el);
 	}
 	
 	public static Stmt findStmtPrecedingComment(CompilationUnit cu, String comment) {
 		if (cu == null) return null;
 		FileRange fr = cu.findComment(comment);
 		if (fr == null) return null;
-		return findStmt(cu, fr.el-1);
+		return findPrecedingStmt(cu, fr.el);
 	}
 	
-	public static Stmt findStmt(ASTNode n, int line) {
+	public static Stmt findFollowingStmt(ASTNode n, int line) {
 		if(n == null) return null;
 		if(n instanceof Stmt) {
 			int l = ASTNode.getLine(n.getStart());
@@ -156,7 +156,21 @@ public class TestHelper {
 				return (Stmt)n;
 		}
 		for(int i=0;i<n.getNumChild();++i) {
-			Stmt s = findStmt(n.getChild(i), line);
+			Stmt s = findFollowingStmt(n.getChild(i), line);
+			if(s != null) return s;
+		}
+		return null;
+	}
+	
+	public static Stmt findPrecedingStmt(ASTNode n, int line) {
+		if(n == null) return null;
+		if(n instanceof Stmt) {
+			int l = ASTNode.getLine(n.getEnd());
+			if(l == line || l == line-1)
+				return (Stmt)n;
+		}
+		for(int i=0;i<n.getNumChild();++i) {
+			Stmt s = findPrecedingStmt(n.getChild(i), line);
 			if(s != null) return s;
 		}
 		return null;

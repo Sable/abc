@@ -17,6 +17,18 @@ aspect Dataflow {
 
 	syn SmallSet<CFGNode> CFGNode.dataPredFor(VarAccess var)
 		circular [SmallSet.empty()];
+	
+	// account for variable references in local classes
+	// note that since such variables must be final, they can only have been defined in
+	// the surrounding method (not, for instance, in an initializer of the local class)
+	// for the same reason, we don't need to worry about this kind of thing in the
+	// dataSucc() computation below
+	eq EntryStmt.dataPredFor(VarAccess var) {
+		TypeDecl host = hostType();
+		if(host.isAnonymous() || host.isLocalClass())
+			return ((CFGNode)host.getParent()).dataPredFor(var);
+		return SmallSet.empty();
+	}
 
 	eq Stmt.dataPredFor(VarAccess var) {
 		SmallSet<CFGNode> result = SmallSet.empty();
@@ -37,22 +49,11 @@ aspect Dataflow {
 
 	eq VarAccess.dataPredFor(VarAccess var) {
 		if(decl() == var.decl())
-			if(isDest() && !onLHSOfSameAssignment(var))
+			if(isDest())
 				return SmallSet.singleton((CFGNode)this);
 		return super.dataPredFor(var);
 	}
 	
-	// little bugfix: in k = k + 1, we don't want the first 'k' to count
-	//                as a data predecessor of the second 'k', although
-	//                it is a control flow predecessor, resolves to the
-	//                same variable, and is in an assignment position
-	syn boolean VarAccess.onLHSOfSameAssignment(ASTNode n) {
-		if(!(getParent() instanceof AssignExpr))
-			return false;
-		AssignExpr assgn = (AssignExpr)getParent();
-		return n.beneath(assgn.getSource());
-	}
-
 	eq VariableDeclaration.dataPredFor(VarAccess var) {
 		if(this == var.decl())
 			if(hasInit() || getParent() instanceof EnhancedForStmt)
