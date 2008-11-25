@@ -121,10 +121,48 @@ aspect ControlFlowGraph {
     
     
   // *** API: first() ***
-  syn CFGNode Expr.first() = this; //lazy???   VarAccess/Literal
+  syn CFGNode Expr.first() = this; //lazy???   Literal
     
      	
   // *** Expressions ***   
+
+  // VarAccess
+  /* VarAccesses are easy, except when they occur on the LHS of an assignment
+   * Consider, e.g.,
+   *
+   *   i = i + 1
+   *
+   * Here, we want the second 'i' to appear before the first 'i' in the
+   * control flow. Our general rule is that if a variable access occurs in
+   * the destination position of an assignment, it is skipped over, and
+   * control flow only returns to it after the right hand side is evaluated.
+   */
+  eq VarAccess.first() {
+    if(!isDest())
+      return this;
+    AssignExpr assgn = modifyingAssignExpr();
+    if(assgn == null)
+      return this;
+    return assgn.getSource().first();
+  }
+  eq VarAccess.succ() {
+    if(!isDest())
+      return following();
+    AssignExpr assgn = modifyingAssignExpr();
+    if(assgn == null)
+      return following();
+    return SmallSet.singleton((CFGNode)assgn);
+  }
+
+  inh lazy AssignExpr VarAccess.modifyingAssignExpr();
+  eq Program.getChild().modifyingAssignExpr() = null;
+  eq TypeDecl.getChild().modifyingAssignExpr() = null;
+  eq AssignExpr.getDest().modifyingAssignExpr() = this;
+  eq PostfixExpr.getOperand().modifyingAssignExpr() = null;
+  eq PreIncExpr.getOperand().modifyingAssignExpr() = null;
+  eq PreDecExpr.getOperand().modifyingAssignExpr() = null;
+  eq ArrayAccess.getExpr().modifyingAssignExpr() = null;
+  eq ArrayTypeWithSizeAccess.getExpr().modifyingAssignExpr() = null;
 	
   // Unary
   eq Unary.first() = getOperand().first();
@@ -143,7 +181,27 @@ aspect ControlFlowGraph {
   // AssignExpr
   eq AssignExpr.first() = getDest().first();
   eq AssignExpr.getDest().following() = SmallSet.singleton((CFGNode)getSource().first());
-  eq AssignExpr.getSource().following() = SmallSet.singleton((CFGNode)this);
+  eq AssignExpr.getSource().following() {
+    VarAccess destloc = getDest().getDestLocation();
+    if(destloc == null)
+	return SmallSet.singleton((CFGNode)this);
+    else
+	return SmallSet.singleton((CFGNode)destloc);
+  }
+
+  // descend through ParExprs and AbstractDots to find a VarAccess
+  public VarAccess ASTNode.getDestLocation() {
+    return null;
+  }
+  public VarAccess ParExpr.getDestLocation() {
+    return getExpr().getDestLocation();
+  }
+  public VarAccess AbstractDot.getDestLocation() {
+    return getRight().getDestLocation();
+  }
+  public VarAccess VarAccess.getDestLocation() {
+    return this;
+  }
         
   //AssignSimpleExpr	
   //AssignMultiplicativeExpr	
@@ -190,13 +248,13 @@ aspect ControlFlowGraph {
   eq ClassInstanceExpr.getAccess().following() = SmallSet.empty();	
 		
   // Dot
-  eq Dot.first() = getLeft().first();
-  eq Dot.getLeft().following() = SmallSet.singleton((CFGNode)getRight().first());
-  eq Dot.getRight().following() = SmallSet.singleton((CFGNode)this);//following();
-	
+  eq AbstractDot.first() = getLeft().first();
+  eq AbstractDot.getLeft().following() = SmallSet.singleton((CFGNode)getRight().first());
+  eq AbstractDot.getRight().following() = SmallSet.singleton((CFGNode)this);
+
   // ArrayAccess
   eq ArrayAccess.first() = getExpr().first();
-  eq ArrayAccess.getExpr().following() = SmallSet.singleton((CFGNode)this);//following();
+  eq ArrayAccess.getExpr().following() = SmallSet.singleton((CFGNode)this);
 	
 	
   // ArrayCreationExpr
@@ -376,6 +434,17 @@ aspect ControlFlowGraph {
   eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
     SmallSet.singleton((CFGNode)getUpdateStmt(i + 1)) :  
     SmallSet.singleton((CFGNode)getCondition().first());
+
+  // enhanced for loop: first, the expression is evaluated (only once!);
+  //                    then, we go to the variable declaration (to express
+  //                    that the iterator is queried); next, we either
+  //                    go to the statement following the loop (iterator is
+  //                    done), or to the body statement; after finishing
+  //                    the body statement, we go back to the declaration
+  eq EnhancedForStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
+  eq EnhancedForStmt.getExpr().following() = SmallSet.singleton((CFGNode)getVariableDeclaration());
+  eq EnhancedForStmt.getVariableDeclaration().following() = following().union(getStmt());
+  eq EnhancedForStmt.getStmt().following() = SmallSet.singleton((CFGNode)getVariableDeclaration());
 
   // ExprStmt
   eq ExprStmt.succ() = SmallSet.singleton((CFGNode)getExpr().first());
