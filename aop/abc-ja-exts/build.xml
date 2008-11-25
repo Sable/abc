@@ -51,7 +51,7 @@
         <mkdir dir="${basedir}/classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
-               fork="true" memoryMaximumSize="256M" destdir="classes">
+               fork="true" memoryMaximumSize="512M" destdir="classes">
 	<classpath>
               <pathelement location="${polyglot.loc}"/>
               <pathelement location="${abc.loc}/classes"/>
