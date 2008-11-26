@@ -107,7 +107,7 @@ aspect WrapBlockIntoClosure {
 		refined();
 		for(ReturnStmt ret : returnStmts) {
 			if(ret.hasResult() && ret.type().isVoid()) {
-				if(ret.following().equals(ret.targetStmt(ret))) {
+				if(ret.following().equals(ret.returnTarget())) {
 					// we don't need a return at all
 					ret.replaceWith(new ExprStmt(ret.getResult()));
 				} else {

@@ -32,12 +32,11 @@ public abstract class InlineMethod extends TestCase {
         MethodAccess ma = (MethodAccess)node;
         try {
         	ma.inline();
-			String expected = new String(TestHelper.wholeFile(resfile));
-			String actual = p.toString();
-			if(!expected.equals(actual)) {
-				expected = new String(TestHelper.wholeFile(altfile));
-				assertEquals(expected, actual);
-			}
+        	String expected = new String(TestHelper.wholeFile(resfile));
+        	String actual = p.toString();
+        	if(!expected.equals(actual) && new File(altfile).exists())
+        		expected = new String(TestHelper.wholeFile(altfile));
+        	assertEquals(expected, actual);
 		} catch (RefactoringException e) {
 			e.printStackTrace();
 			assertFalse(name+" failed unexpectedly", new File(resfile).exists());
