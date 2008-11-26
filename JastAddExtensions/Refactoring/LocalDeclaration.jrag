@@ -5,8 +5,10 @@ aspect LocalDeclaration {
 	
 	interface LocalDeclaration extends Named { 
 		Access getTypeAccess();
-		String getID();
-		void setID(String id);
+		TypeDecl type();
+		String name();
+		void setID(String name);
+		boolean isFinal();
 		Block getBlock();
 		ParameterDeclaration asParameterDeclaration();
 		VariableDeclaration asVariableDeclaration();

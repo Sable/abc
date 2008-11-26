@@ -49,6 +49,7 @@ aspect Closures {
 
 	eq ClosureInvocation.isPureCFlowNode() = true;
 
+	// control flow for closure invocations
 	eq ClosureInvocation.first() = getNumArg() == 0 ? getBlock() : getArg(0).first();
 	eq ClosureInvocation.getArg(int i).following() 
 	  = i < getNumArg()-1 ? SmallSet.singleton((CFGNode)getArg(i+1).first()) 

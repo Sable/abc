@@ -2,6 +2,49 @@
 
 aspect Dataflow {
 
+	// liveness analysis
+	syn boolean CFGNode.live(LocalDeclaration decl) circular [false];
+	// standard backward propagation code; unfortunately we have to copy this three times...
+	eq Expr.live(LocalDeclaration decl) {
+		for(CFGNode n : succ())
+			if(n.live(decl))
+				return true;
+		return false;
+	}
+	eq Stmt.live(LocalDeclaration decl) {
+		for(CFGNode n : succ())
+			if(n.live(decl))
+				return true;
+		return false;
+	}
+	eq ParameterDeclaration.live(LocalDeclaration decl) {
+		if(this == decl)
+			return false;
+		for(CFGNode n : succ())
+			if(n.live(decl))
+				return true;
+		return false;
+	}
+	
+	// the actual meat of the definition
+	eq VariableDeclaration.live(LocalDeclaration decl) {
+		if(this == decl && hasInit())
+			return false;
+		return super.live(decl);
+	}
+	eq VarAccess.live(LocalDeclaration decl) {
+		if(decl() == decl) {
+			if(isSource())
+				return true;
+			if(isDest())
+				return false;
+		}
+		return super.live(decl);
+	}
+	
+	// in a callable belonging to a local/anonymous class, we might reference
+	// a local declaration from the method enclosing the class definition; 
+
 	// data flow predecessors
 	public SmallSet<CFGNode> VarAccess.dataPred() {
 		if(!(decl() instanceof LocalDeclaration))
@@ -18,17 +61,13 @@ aspect Dataflow {
 	syn SmallSet<CFGNode> CFGNode.dataPredFor(VarAccess var)
 		circular [SmallSet.empty()];
 	
-	// account for variable references in local classes
-	// note that since such variables must be final, they can only have been defined in
-	// the surrounding method (not, for instance, in an initializer of the local class)
-	// for the same reason, we don't need to worry about this kind of thing in the
-	// dataSucc() computation below
-	eq EntryStmt.dataPredFor(VarAccess var) {
-		TypeDecl host = hostType();
-		if(host.isAnonymous() || host.isLocalClass())
-			return ((CFGNode)host.getParent()).dataPredFor(var);
-		return SmallSet.empty();
-	}
+	syn boolean Block.isBodyDeclBlock()
+		= getParent() instanceof StaticInitializer
+		|| getParent() instanceof InstanceInitializer
+		|| getParent() instanceof ConstructorDecl
+		|| getParent().getParent() instanceof MethodDecl;
+
+	// TODO: we should account for references to local variables in anonymous/local classes
 
 	eq Stmt.dataPredFor(VarAccess var) {
 		SmallSet<CFGNode> result = SmallSet.empty();
@@ -120,7 +159,30 @@ aspect Dataflow {
 	public boolean VarAccess.mayRef(Variable v) {
 		return decl() == v;
 	}
+	
+	// checks if a subtree may define a variable
+	public boolean ASTNode.mayDef(Variable v) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null && child.mayDef(v))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean VarAccess.mayDef(Variable v) {
+		return decl() == v && isDest();
+	}
+	
+	public boolean VariableDeclaration.mayDef(Variable v) {
+		return this == v && hasInit();
+	}
+	
+	public boolean ParameterDeclaration.mayDef(Variable v) {
+		return this == v;
+	}
 
+	// extend the adjustment table to keep track of dataflow
 	private Map<VarAccess, SmallSet<CFGNode>> AdjustmentTable.dpreds;
 	private Map<VarAccess, SmallSet<VarAccess>> AdjustmentTable.dsuccs;
 

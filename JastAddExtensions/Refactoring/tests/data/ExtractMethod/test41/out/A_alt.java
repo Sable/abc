@@ -2,10 +2,10 @@ class A {
   void m() {
     boolean b = false;
     int i = 23;
-    i = extracted(b, i);
+    i = extracted(i, b);
     System.out.println(i);
   }
-  protected int extracted(boolean b, int i) {
+  protected int extracted(int i, boolean b) {
     if(b) 
       i = 42;
     return i;

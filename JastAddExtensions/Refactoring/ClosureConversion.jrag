@@ -1,89 +1,48 @@
 aspect ClosureConversion {
 	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
 		AdjustmentTable table = new AdjustmentTable();
-		java.util.Set<VarAccess> local_accesses = collectLocalAccesses();
-		for(VarAccess var : local_accesses)
-			introduceParameter(var, table);
+		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
+			introduceParameter(decl, table, liveAtEntry(decl), liveAtExit(decl) && mayDef((Variable)decl));
 		flushCaches();
-		for(VarAccess var : local_accesses)
-			localizeVariable(var, table);
+		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
+			introduceLocalVariable(decl, table);
+		flushCaches();
 		table.adjust();
 		return this;
 	}
 	
-	private boolean ClosureInvocation.hasIncomingDataflowEdge(VarAccess v) {
-		for(CFGNode u : v.dataPred())
-			if(!((ASTNode)u).beneath(this))
-				return true;
-		return false;
+	public boolean ClosureInvocation.liveAtEntry(LocalDeclaration decl) {
+		return getBlock().live(decl);
 	}
-
-	private boolean ClosureInvocation.hasOutgoingDataflowEdge(VarAccess v) {
-		for(CFGNode w : v.dataSucc())
-			if(!((ASTNode)w).beneath(this))
-				return true;
-		return false;
+	
+	public boolean ClosureInvocation.liveAtExit(LocalDeclaration decl) {
+		return this.live(decl);
 	}
-
+	
 	private boolean ClosureInvocation.declaredOutside(VarAccess v) {
 		return !((ASTNode)v.decl()).beneath(this);
 	}
 
-	public ParameterDeclaration ClosureInvocation.introduceParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
-		ParameterDeclaration pd = null;
-		if(hasIncomingDataflowEdge(var))
-			pd = introduceInParameter(var, table);
-		if(hasOutgoingDataflowEdge(var))
-			pd = introduceOutParameter(var, table);
+	public ParameterDeclaration ClosureInvocation.introduceParameter(LocalDeclaration decl, AdjustmentTable table, boolean isIn, boolean isOut) 
+			throws RefactoringException {
+		if(!isIn && !isOut)
+			return null;
+		List<Modifier> modlist = new List<Modifier>();
+		if(decl.isFinal())
+			modlist.add(new Modifier("final"));
+		if(isOut)
+			modlist.add(new Modifier(isIn ? "ref" : "out"));
+		Modifiers modifiers = new Modifiers(modlist);
+		ParameterDeclaration 
+		  pd = new ParameterDeclaration(modifiers, decl.type().getLockedAccess(table), decl.name());
+		addParameter(pd);
+		addArg(new VarAccess(decl.name()));
 		return pd;
 	}
 	
-	public ParameterDeclaration ClosureInvocation.introduceInParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
-		TypeDecl type = var.type();
-		boolean isFinal = var.decl().isFinal();
-		ParameterDeclaration pd;
-		SimpleSet set = parameterDeclaration(var.name());
-		if(set.isEmpty()) {
-			Modifiers modifiers = new Modifiers(isFinal ? new List().add(new Modifier("final")) 
-													    : new List());
-			pd = new ParameterDeclaration(modifiers, type.getLockedAccess(table), var.name());
-			addParameter(pd);
-			addArg(new VarAccess(var.name()));
-		} else {
-			pd = (ParameterDeclaration)set.iterator().next();
-			if(pd.isOut())
-				pd.makeRef();
-		}
-		return pd;
-	}
-	
-	public ParameterDeclaration ClosureInvocation.introduceOutParameter(VarAccess var, AdjustmentTable table) throws RefactoringException {
-		TypeDecl type = var.type();
-		ParameterDeclaration pd;
-		SimpleSet set = parameterDeclaration(var.name());
-		if(set.isEmpty()) {
-			pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))), 
-										  type.getLockedAccess(table), var.name());
-			addParameter(pd);
-			addArg(new VarAccess(var.name()));
-		} else {
-			pd = (ParameterDeclaration)set.iterator().next();
-			if(pd.isIn())
-				pd.makeRef();
-		}
-		return pd;
-	}
-	
-	public VariableDeclaration ClosureInvocation.localizeVariable(VarAccess var, AdjustmentTable table) throws RefactoringException {
-		if(declaredOutside(var))
-			return addLocalVariable(var, table);
-		return null;
-	}
-
-	private VariableDeclaration ClosureInvocation.addLocalVariable(VarAccess v, AdjustmentTable table) throws RefactoringException {
-		VariableDeclaration vd = new VariableDeclaration(v.type().getLockedAccess(table), v.name());
+	private VariableDeclaration ClosureInvocation.introduceLocalVariable(LocalDeclaration decl, AdjustmentTable table) throws RefactoringException {
+		VariableDeclaration vd = new VariableDeclaration(decl.type().getLockedAccess(table), decl.name());
 		getBlock().insertStmt(0, vd);
-		flushCaches();
 		return vd;
 	}
 
@@ -94,32 +53,24 @@ aspect ClosureConversion {
 		return p!=null;
 	}
 
-	public java.util.Set<VarAccess> ASTNode.collectLocalAccesses() {
-		java.util.Set<VarAccess> res = new HashSet<VarAccess>();
-		this.collectLocalAccesses(res);
+	// determine all local declarations referred to in this subtree, which are defined outside root
+	public java.util.Set<LocalDeclaration> ASTNode.collectCapturedLocalVars(ASTNode root) {
+		java.util.Set<LocalDeclaration> res = new HashSet<LocalDeclaration>();
+		collectCapturedLocalVars(res, root);
 		return res;
 	}
 
-	public void ASTNode.collectLocalAccesses(java.util.Set<VarAccess> res) {
+	public void ASTNode.collectCapturedLocalVars(java.util.Set<LocalDeclaration> res, ASTNode root) {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
 			if(child != null)
-				child.collectLocalAccesses(res);
+				child.collectCapturedLocalVars(res, root);
 		}
-	}
-	public void VarAccess.collectLocalAccesses(java.util.Set<VarAccess> res) {
-		if(decl() instanceof LocalDeclaration)
-			res.add(this);
-		super.collectLocalAccesses(res);
 	}
 	
-	public void ParameterDeclaration.makeRef() {
-		Modifiers mods = getModifiers();
-		for(int i=0;i<mods.getNumModifier();++i) {
-			Modifier mod = mods.getModifier(i);
-			if(mod.getID().equals("out"))
-				mods.getModifiers().removeChild(i);
-		}
-		mods.addModifier(new Modifier("ref"));
+	public void VarAccess.collectCapturedLocalVars(java.util.Set<LocalDeclaration> res, ASTNode root) {
+		if(decl() instanceof LocalDeclaration && !((ASTNode)decl()).beneath(root))
+			res.add((LocalDeclaration)decl());
+		super.collectCapturedLocalVars(res, root);
 	}
 }
