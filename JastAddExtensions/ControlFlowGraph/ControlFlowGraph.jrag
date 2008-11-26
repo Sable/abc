@@ -8,22 +8,29 @@ aspect ControlFlowGraph {
 
   // *** API: entry and exit ***
 
-  // artificial entry and exit statements using NTAs
-  syn nta Stmt BodyDecl.entry() = EntryStmt.get(this);
+  syn lazy CFGNode BodyDecl.entry() = null;
+  
+  eq ConstructorDecl.entry() {
+	  if(getNumParameter() > 0)
+		  return getParameter(0);
+	  if(hasConstructorInvocation())
+		  return getConstructorInvocation();
+	  return getBlock();
+  }
+  eq MethodDecl.entry() {
+	  if(getNumParameter() > 0)
+		  return getParameter(0);
+	  return hasBlock() ? getBlock() : exit();
+  }
+  eq InstanceInitializer.entry() = getBlock();
+  eq StaticInitializer.entry() = getBlock();
+  eq FieldDeclaration.entry() = hasInit() ? getInit() : null;
+  
+  // artificial exit node using NTAs
   syn nta Stmt BodyDecl.exit() = ExitStmt.get(this);
 
-  // make sure only one entry/exit node is ever constructed for every
-  // node; this makes the above attributes impervious to cache flushes
-  private static java.util.Map<ASTNode,EntryStmt> EntryStmt.map = new java.util.HashMap<ASTNode,EntryStmt>();
-  public static EntryStmt EntryStmt.get(ASTNode node) {
-    EntryStmt res = map.get(node);
-    if(res != null)
-      return res;
-    res = new EntryStmt();
-    map.put(node, res);
-    return res;
-  }
-  
+  // make sure only one exit node is ever constructed for every
+  // node; this makes the attribute impervious to cache flushes
   private static java.util.Map<ASTNode,ExitStmt> ExitStmt.map = new java.util.HashMap<ASTNode,ExitStmt>();
   public static ExitStmt ExitStmt.get(ASTNode node) {
     ExitStmt res = map.get(node);
@@ -54,16 +61,7 @@ aspect ControlFlowGraph {
   eq InstanceInitializer.getBlock().following() = SmallSet.singleton((CFGNode)exit());
   eq StaticInitializer.getBlock().following() = SmallSet.singleton((CFGNode)exit());
 
-  // insert block between entry and exit nodes
-  eq MethodDecl.entry().following() {
-    // first parameters, then block
-    if(getNumParameter() > 0)
-      return SmallSet.singleton((CFGNode)getParameter(0));
-    else if(hasBlock())
-      return SmallSet.singleton((CFGNode)getBlock());
-    else
-      return SmallSet.singleton((CFGNode)exit());
-  }
+  // insert block after parameters
   eq MethodDecl.getParameter(int i).following() {
     if(i + 1 < getNumParameter())
       return SmallSet.singleton((CFGNode)getParameter(i+1));
@@ -73,18 +71,13 @@ aspect ControlFlowGraph {
       return SmallSet.singleton((CFGNode)exit());
   }
 
-  eq InstanceInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
-  eq StaticInitializer.entry().following() = SmallSet.singleton((CFGNode)getBlock());
-
-  eq ConstructorDecl.entry().following() {
-    if(getNumParameter() > 0)
-      return SmallSet.singleton((CFGNode)getParameter(0));
-    else
-      return SmallSet.singleton((CFGNode)getConstructorInvocation());
+  eq ConstructorDecl.getParameter(int i).following() {
+	  if(i < getNumParameter() - 1)
+		  return SmallSet.singleton((CFGNode)getParameter(i+1));
+	  if(hasConstructorInvocation())
+		  return SmallSet.singleton((CFGNode)getConstructorInvocation());
+	  return SmallSet.singleton((CFGNode)getBlock());
   }
-  eq ConstructorDecl.getParameter(int i).following()
-    = i + 1 < getNumParameter() ? SmallSet.singleton((CFGNode)getParameter(i+1))
-                                : SmallSet.singleton((CFGNode)getConstructorInvocation());
   eq ConstructorDecl.getConstructorInvocation().following() 
     = SmallSet.singleton((CFGNode)getBlock());
 
