@@ -23,6 +23,23 @@ import AST.Variable;
 
 public class TestHelper {
 	
+	public static Program compileWithCP(String cp, String file) {
+		Frontend f = new Frontend() { 
+			protected void processErrors(Collection errors, CompilationUnit unit) { }
+			protected void processWarnings(Collection errors, CompilationUnit unit) { }
+		};
+		BytecodeReader br = new BytecodeParser();
+		JavaParser jp = new JavaParser() {
+            public CompilationUnit parse(java.io.InputStream is, String fileName) 
+            		throws java.io.IOException, beaver.Parser.Exception {
+                return new parser.JavaParser().parse(is, fileName);
+            }
+		};
+		if(f.process(new String[]{"-classpath", cp, file}, br, jp))
+			return f.getProgram();
+		return null;
+	}
+	
 	public static Program compile(String... files) {
 		List<String> sources = new LinkedList<String>();
 		List<String> jars = new LinkedList<String>();
