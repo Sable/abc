@@ -42,20 +42,11 @@ aspect ExtractClosureToMethod {
 		private Modifiers modifiers() {
 			List<Modifier> mods = new List<Modifier>();
 			mods.add(new Modifier(visibility));
-			if(bodydecl.isStatic())
+			if(closure.inStaticContext())
 				mods.add(new Modifier("static"));
 			return new Modifiers(mods);
 		}
 	}
-
-	syn boolean BodyDecl.isStatic();
-	eq ConstructorDecl.isStatic() = false;
-	eq InstanceInitializer.isStatic() = false;
-	eq StaticInitializer.isStatic() = true;
-	// MemberDecls already have an isStatic() method
-	eq DeclareParentsExtends.isStatic() = false;
-	eq DeclareParentsImplements.isStatic() = false;
-	eq DeclarePrecedence.isStatic() = false;
 
 	public MethodAccess MethodDecl.getLockedAccess(AdjustmentTable table, List<Expr> args) {
 		MethodAccess ma = new MethodAccess(name(), args);

@@ -42,9 +42,16 @@ aspect Dataflow {
 		return super.live(decl);
 	}
 	
-	// in a callable belonging to a local/anonymous class, we might reference
-	// a local declaration from the method enclosing the class definition; 
-
+	
+	// TODO: in a callable belonging to a local/anonymous class, we might reference
+	// a local declaration from the method enclosing the class definition; this should
+	// count as a live variable
+	syn boolean Block.isBodyDeclBlock()
+		= getParent() instanceof StaticInitializer
+			|| getParent() instanceof InstanceInitializer
+			|| getParent() instanceof ConstructorDecl
+			|| getParent().getParent() instanceof MethodDecl;
+	
 	// data flow predecessors
 	public SmallSet<CFGNode> VarAccess.dataPred() {
 		if(!(decl() instanceof LocalDeclaration))
@@ -61,14 +68,6 @@ aspect Dataflow {
 	syn SmallSet<CFGNode> CFGNode.dataPredFor(VarAccess var)
 		circular [SmallSet.empty()];
 	
-	syn boolean Block.isBodyDeclBlock()
-		= getParent() instanceof StaticInitializer
-		|| getParent() instanceof InstanceInitializer
-		|| getParent() instanceof ConstructorDecl
-		|| getParent().getParent() instanceof MethodDecl;
-
-	// TODO: we should account for references to local variables in anonymous/local classes
-
 	eq Stmt.dataPredFor(VarAccess var) {
 		SmallSet<CFGNode> result = SmallSet.empty();
 		for(CFGNode pred : pred())
