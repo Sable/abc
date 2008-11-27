@@ -33,8 +33,8 @@ aspect InlineAssignment {
 		table.adjust();
 	}
 	
-	public boolean VarAccess.hasSingleDataPred(CFGNode node) {
-		Iterator<CFGNode> dpreds = dataPred().iterator();
+	public boolean VarAccess.hasSingleDataPred(ASTNode node) {
+		Iterator<ASTNode> dpreds = dataPred().iterator();
 		return dpreds.hasNext() && dpreds.next() == node && !dpreds.hasNext();
 	}
 	

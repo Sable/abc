@@ -50,27 +50,27 @@ aspect Closures {
 	eq ClosureInvocation.isPureCFlowNode() = true;
 
 	// control flow for closure invocations
-	inh SmallSet<CFGNode> ClosureInvocation.throwTarget(TypeDecl exn);
+	inh SmallSet<ASTNode> ClosureInvocation.throwTarget(TypeDecl exn);
 	eq ClosureInvocation.first() = getNumArg() == 0 ? getBlock() : getArg(0).first();
 	eq ClosureInvocation.getArg(int i).following() 
-	  = i < getNumArg()-1 ? SmallSet.singleton((CFGNode)getArg(i+1).first()) 
-			  			  : SmallSet.singleton((CFGNode)getBlock());
-	eq ClosureInvocation.getBlock().following() = SmallSet.singleton((CFGNode)this);
-	eq ClosureInvocation.getReturnType().following() = SmallSet.singleton((CFGNode)this);
+	  = i < getNumArg()-1 ? singleNode(getArg(i+1).first()) 
+			  			  : singleNode(getBlock());
+	eq ClosureInvocation.getBlock().following() = singleNode(this);
+	eq ClosureInvocation.getReturnType().following() = singleNode(this);
 
 	eq ClosureInvocation.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
-	eq ClosureInvocation.getChild().returnTarget() = SmallSet.singleton((CFGNode)getReturnType());
+	eq ClosureInvocation.getChild().returnTarget() = singleNode(getReturnType());
 	eq ClosureInvocation.getChild().throwTarget(TypeDecl exn) = throwTarget(exn);
 
 	// all return statements inside the closure
-	syn lazy SmallSet<CFGNode> ClosureInvocation.returns() = getReturnType().pred();
+	syn lazy SmallSet<ASTNode> ClosureInvocation.returns() = getReturnType().pred();
 	// all final, non-return statements inside the closure
-	syn lazy SmallSet<CFGNode> ClosureInvocation.finals() {
-    	SmallSet<CFGNode> res = SmallSet.empty();
-    	for(CFGNode n : pred())
+	syn lazy SmallSet<Stmt> ClosureInvocation.finals() {
+    	SmallSet<Stmt> res = SmallSet.empty();
+    	for(ASTNode n : pred())
     		if(n instanceof Stmt && ((Stmt)n).canCompleteNormally())
-    			res.add(n);
+    			res.add((Stmt)n);
 		return res;  
 	}
 

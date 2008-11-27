@@ -38,7 +38,7 @@ public class WrapBlockInClosure extends TestCase {
 			e.printStackTrace();
 			assertFalse(name+" failed unexpectedly", new File(resfile).exists());
 		} catch (FileNotFoundException e) {
-			fail(name+" was supposed to fail but yielded result");
+			fail(name+" was supposed to fail but yielded result "+p);
 		} catch (IOException e) {
 			fail("unable to read from result file: "+e);
 		}

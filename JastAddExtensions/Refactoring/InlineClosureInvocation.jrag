@@ -7,7 +7,7 @@ aspect InlineClosureInvocation {
 		if(getParent() instanceof ExprStmt) {
 			String label = getBlock().pickFreshLabel("l");
 			java.util.Set<BreakStmt> breaks = new HashSet<BreakStmt>();
-			for(CFGNode node : returns()) {
+			for(ASTNode node : returns()) {
 				ReturnStmt ret = (ReturnStmt)node;
 				if(ret.hasResult())
 					throw new RefactoringException("cannot inline this closure");

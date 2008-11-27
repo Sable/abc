@@ -3,24 +3,11 @@
 aspect Dataflow {
 
 	// liveness analysis
-	syn boolean CFGNode.live(LocalDeclaration decl) circular [false];
-	// standard backward propagation code; unfortunately we have to copy this three times...
-	eq Expr.live(LocalDeclaration decl) {
-		for(CFGNode n : succ())
-			if(n.live(decl))
-				return true;
-		return false;
-	}
-	eq Stmt.live(LocalDeclaration decl) {
-		for(CFGNode n : succ())
-			if(n.live(decl))
-				return true;
-		return false;
-	}
-	eq ParameterDeclaration.live(LocalDeclaration decl) {
-		if(this == decl)
-			return false;
-		for(CFGNode n : succ())
+	syn boolean ASTNode.live(LocalDeclaration decl) circular [false];
+	
+	// standard backward propagation code
+	eq ASTNode.live(LocalDeclaration decl) {
+		for(ASTNode n : succ())
 			if(n.live(decl))
 				return true;
 		return false;
@@ -32,6 +19,7 @@ aspect Dataflow {
 			return false;
 		return super.live(decl);
 	}
+	
 	eq VarAccess.live(LocalDeclaration decl) {
 		if(decl() == decl) {
 			if(isSource())
@@ -42,45 +30,34 @@ aspect Dataflow {
 		return super.live(decl);
 	}
 	
-	
-	// TODO: in a callable belonging to a local/anonymous class, we might reference
-	// a local declaration from the method enclosing the class definition; this should
-	// count as a live variable
-	syn boolean Block.isBodyDeclBlock()
-		= getParent() instanceof StaticInitializer
-			|| getParent() instanceof InstanceInitializer
-			|| getParent() instanceof ConstructorDecl
-			|| getParent().getParent() instanceof MethodDecl;
+	// this is to catch references to local variables from the enclosing scope
+	// made in anonymous and local classes -- not too elegant...
+	eq TypeDecl.live(LocalDeclaration decl) {
+		for(BodyDecl bd : getBodyDecls())
+			if(bd.entry().live(decl))
+				return true;
+		return super.live(decl);
+	}
 	
 	// data flow predecessors
-	public SmallSet<CFGNode> VarAccess.dataPred() {
+	public SmallSet<ASTNode> VarAccess.dataPred() {
 		if(!(decl() instanceof LocalDeclaration))
 			return null;
 		if(!isSource())
 			return SmallSet.empty();
 		// we don't want the node to be its own data flow predecessor
-		SmallSet<CFGNode> result = SmallSet.empty();
-		for(CFGNode pred : pred())
+		SmallSet<ASTNode> result = SmallSet.empty();
+		for(ASTNode pred : pred())
 			result = result.union(pred.dataPredFor(this));
 		return result;
 	}
 
-	syn SmallSet<CFGNode> CFGNode.dataPredFor(VarAccess var)
+	syn SmallSet<ASTNode> ASTNode.dataPredFor(VarAccess var)
 		circular [SmallSet.empty()];
 	
-	eq Stmt.dataPredFor(VarAccess var) {
-		SmallSet<CFGNode> result = SmallSet.empty();
-		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(var));
-		return result;
-	}
-
-	// just a duplicate of the above; this is unfortunate but necessary
-	// we cannot give an equation for CFGNode.dataPredFor, since we
-	// then couldn't override it for ParameterDeclaration below
-	eq Expr.dataPredFor(VarAccess var) {
-		SmallSet<CFGNode> result = SmallSet.empty();
-		for(CFGNode pred : pred())
+	eq ASTNode.dataPredFor(VarAccess var) {
+		SmallSet<ASTNode> result = SmallSet.empty();
+		for(ASTNode pred : pred())
 			result = result.union(pred.dataPredFor(var));
 		return result;
 	}
@@ -88,14 +65,14 @@ aspect Dataflow {
 	eq VarAccess.dataPredFor(VarAccess var) {
 		if(decl() == var.decl())
 			if(isDest())
-				return SmallSet.singleton((CFGNode)this);
+				return singleNode(this);
 		return super.dataPredFor(var);
 	}
 	
 	eq VariableDeclaration.dataPredFor(VarAccess var) {
 		if(this == var.decl())
 			if(hasInit() || getParent() instanceof EnhancedForStmt)
-				return SmallSet.singleton((CFGNode)this);
+				return singleNode(this);
 			else
 				return SmallSet.empty();
 		return super.dataPredFor(var);
@@ -103,13 +80,8 @@ aspect Dataflow {
 
 	eq ParameterDeclaration.dataPredFor(VarAccess var) {
 		if(this == var.decl())
-			return SmallSet.singleton((CFGNode)this);
-		// unfortunately, we can't just call super.dataPredFor(decl) here,
-		// so we copy again...
-		SmallSet<CFGNode> result = SmallSet.empty();
-		for(CFGNode pred : pred())
-			result = result.union(pred.dataPredFor(var));
-		return result;
+			return singleNode(this);
+		return super.dataPredFor(var);
 	}
 
 	// data flow successors
@@ -122,15 +94,15 @@ aspect Dataflow {
 		// we don't want the node to be its own data flow successor, so we have
 		// to skip past it to its successors
 		SmallSet<VarAccess> result = SmallSet.empty();
-		for(CFGNode succ : succ())
+		for(ASTNode succ : succ())
 			result = result.union(succ.dataSuccFor(decl));
 		return result;
 	}
 
-	syn SmallSet<VarAccess> CFGNode.dataSuccFor(LocalDeclaration decl) 
+	syn SmallSet<VarAccess> ASTNode.dataSuccFor(LocalDeclaration decl) 
 			circular [SmallSet.empty()] {
 		SmallSet<VarAccess> result = SmallSet.empty();
-		for(CFGNode succ : succ())
+		for(ASTNode succ : succ())
 			result = result.union(succ.dataSuccFor(decl));
 		return result;
 	}
@@ -182,12 +154,12 @@ aspect Dataflow {
 	}
 
 	// extend the adjustment table to keep track of dataflow
-	private Map<VarAccess, SmallSet<CFGNode>> AdjustmentTable.dpreds;
+	private Map<VarAccess, SmallSet<ASTNode>> AdjustmentTable.dpreds;
 	private Map<VarAccess, SmallSet<VarAccess>> AdjustmentTable.dsuccs;
 
 	refine ControlFlow public AdjustmentTable.AdjustmentTable() {
 		refined();
-		dpreds = new HashMap<VarAccess, SmallSet<CFGNode>>();
+		dpreds = new HashMap<VarAccess, SmallSet<ASTNode>>();
 		dsuccs = new HashMap<VarAccess, SmallSet<VarAccess>>();
 	}
 
@@ -200,8 +172,8 @@ aspect Dataflow {
 		refined();
 		for(VarAccess node : dpreds.keySet()) {
 			if(!dpreds.get(node).equals(node.dataPred())) {
-				SmallSet<CFGNode> oldpred = dpreds.get(node);
-				SmallSet<CFGNode> newpred = node.dataPred();
+				SmallSet<ASTNode> oldpred = dpreds.get(node);
+				SmallSet<ASTNode> newpred = node.dataPred();
 				throw new RefactoringException("Could not preserve dflow into "+node);
 			}
 			if(!dsuccs.get(node).equals(node.dataSucc())) {
