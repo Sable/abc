@@ -1,6 +1,6 @@
 aspect ExtractClosureToMethod {
-	public void ClosureInvocation.extractToMethod(String visibility, String name) throws RefactoringException {
-		new ExtractClosureToMethodRefactoring(this, visibility, name).execute();
+	public MethodDecl ClosureInvocation.extractToMethod(String visibility, String name) throws RefactoringException {
+		return new ExtractClosureToMethodRefactoring(this, visibility, name).execute();
 	}
 
 	class ExtractClosureToMethodRefactoring {
@@ -20,7 +20,7 @@ aspect ExtractClosureToMethod {
 			this.table = new AdjustmentTable();
 		}
 
-		public void execute() throws RefactoringException {
+		public MethodDecl execute() throws RefactoringException {
 			closure.eliminateOutParams();
 			List<TypeVariable> tvars = bindTypeVariableUses();
 			closure.lockAllAccesses(table);
@@ -47,12 +47,13 @@ aspect ExtractClosureToMethod {
 			closure.replaceWith(ma);
 			typedecl.programRoot().flushCaches();
 			table.adjust();
+			return md;
 		}
 
 		private Modifiers modifiers() {
 			List<Modifier> mods = new List<Modifier>();
 			mods.add(new Modifier(visibility));
-			if(closure.inStaticContext())
+			if(closure.inStaticContext() || closure.inExplicitConstructorInvocation())
 				mods.add(new Modifier("static"));
 			return new Modifiers(mods);
 		}
@@ -83,6 +84,8 @@ aspect ExtractClosureToMethod {
 			return newvars;
 		}
 	}
+	
+	inh boolean ClosureInvocation.inExplicitConstructorInvocation();
 
 	public MethodAccess MethodDecl.getLockedAccess(AdjustmentTable table, List<Expr> args) {
 		MethodAccess ma = new MethodAccess(name(), args);

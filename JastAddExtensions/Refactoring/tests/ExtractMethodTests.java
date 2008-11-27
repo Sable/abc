@@ -161,4 +161,16 @@ public class ExtractMethodTests extends ExtractMethod {
 	public void test48() {
 		runExtractionTest2("test48");
 	}
+	public void test49() {
+		runExtractionTest2("test49");
+	}
+	public void test50() {
+		runExtractionTest2("test50");
+	}
+	public void test51() {
+		runExtractionTest2("test51");
+	}
+	public void test52() {
+		runExtractionTest2("test52");
+	}
 }

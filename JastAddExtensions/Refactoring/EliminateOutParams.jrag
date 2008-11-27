@@ -34,7 +34,7 @@ aspect EliminateOutParams {
 			}
 			closure.setReturnType(v.type().getLockedAccess(table));
 			closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
-			AssignExpr assgn = new AssignSimpleExpr(v, null);
+			AssignExpr assgn = new AssignSimpleExpr(new VarAccess(v.name()), null);
 			closure.replaceWith(assgn);
 			assgn.setSource(closure);
 			closure.programRoot().flushCaches();
