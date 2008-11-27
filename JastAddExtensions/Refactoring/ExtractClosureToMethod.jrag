@@ -22,14 +22,24 @@ aspect ExtractClosureToMethod {
 
 		public void execute() throws RefactoringException {
 			closure.eliminateOutParams();
+			List<TypeVariable> tvars = bindTypeVariableUses();
 			closure.lockAllAccesses(table);
 			MethodDecl md = 
-				new MethodDecl(modifiers(),
-						closure.getReturnType(), 
-						name, 
-						closure.getParameters(),  // there are no out or ref parameters anymore! 
-						closure.getExceptions(), 
-						new Opt(closure.getBlock()));
+				tvars.getNumChild() == 0 ?
+						new MethodDecl(modifiers(),
+									   closure.getReturnType(), 
+									   name, 
+									   closure.getParameters(),  // there are no out or ref parameters anymore! 
+									   closure.getExceptions(), 
+									   new Opt(closure.getBlock()))
+					:
+						new GenericMethodDecl(modifiers(),
+									   closure.getReturnType(),
+									   name,
+									   closure.getParameters(),
+									   closure.getExceptions(),
+									   new Opt(closure.getBlock()),
+									   tvars);
 			int index = typedecl.getBodyDeclList().getIndexOfChild(closure.hostBodyDecl());
 			assert(index!=-1);
 			typedecl.addMethod(index+1, md, false, false, false);
@@ -45,6 +55,32 @@ aspect ExtractClosureToMethod {
 			if(closure.inStaticContext())
 				mods.add(new Modifier("static"));
 			return new Modifiers(mods);
+		}
+		
+		// return the list of type variables of the surrounding body declaration; empty list
+		// if the body declaration is not a generic callable
+		private List<TypeVariable> getTypeVariables() {
+			if(bodydecl instanceof GenericMethodDecl)
+				return ((GenericMethodDecl)bodydecl).getTypeParameters();
+			else if(bodydecl instanceof GenericConstructorDecl)
+				return ((GenericConstructorDecl)bodydecl).getTypeParameters();
+			return new List<TypeVariable>();
+		}
+		
+		// duplicate the list of type variables, and lock all uses of the old type variables
+		// onto the new variables
+		// otherwise uses of the type variables in the extracted method will be unable to
+		// access their target, resulting in unnecessary rejections
+		private List<TypeVariable> bindTypeVariableUses() {
+			List<TypeVariable> oldvars = getTypeVariables();
+			List<TypeVariable> newvars = new List<TypeVariable>();
+			for(TypeVariable tv : oldvars) {
+				TypeVariable newvar = (TypeVariable)tv.fullCopy();
+				newvars.add(newvar);
+				for(TypeAccess acc : tv.uses())
+					acc.lockOn(newvar);
+			}
+			return newvars;
 		}
 	}
 

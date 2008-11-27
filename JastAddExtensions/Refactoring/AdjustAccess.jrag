@@ -21,7 +21,7 @@ aspect AdjustAccess {
 	
 	VarAccess implements LockableAccess;
 	public Variable VarAccess.target;
-	public void VarAccess.lock() { target = decl(); }
+	public void VarAccess.lock() { if(target == null) target = decl(); }
 	public void VarAccess.lockOn(Variable target) { this.target = target; }
 	public void VarAccess.unlock() { target = null; flushCache(); }
 	refine LookupVariable eq VarAccess.decl() {
@@ -45,7 +45,7 @@ aspect AdjustAccess {
 	
 	TypeAccess implements LockableAccess;
 	public TypeDecl TypeAccess.target;
-	public void TypeAccess.lock() { target = decl(); }
+	public void TypeAccess.lock() { if(target == null) target = decl(); }
 	public void TypeAccess.lockOn(TypeDecl target) { this.target = target; }
 	public void TypeAccess.unlock() { target = null; flushCache(); }
 	// TODO: this should actually refine LookupType.TypeAccess.decl(), but then
@@ -87,7 +87,7 @@ aspect AdjustAccess {
 	
 	MethodAccess implements LockableAccess;
 	public MethodDecl MethodAccess.target;
-	public void MethodAccess.lock() { target = decl(); }
+	public void MethodAccess.lock() { if(target == null) target = decl(); }
 	public void MethodAccess.lockOn(MethodDecl target) { this.target = target; }
 	public void MethodAccess.unlock() { target = null; flushCache(); }
 	refine LookupMethod eq MethodAccess.decl() {

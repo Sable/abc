@@ -3,6 +3,7 @@ aspect ClosureConversion {
 		AdjustmentTable table = new AdjustmentTable();
 		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
 			introduceParameter(decl, table, liveAtEntry(decl), liveAtExit(decl) && mayDef((Variable)decl));
+		putVarArgAtEnd();
 		flushCaches();
 		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
 			introduceLocalVariable(decl, table);
@@ -33,11 +34,37 @@ aspect ClosureConversion {
 		if(isOut)
 			modlist.add(new Modifier(isIn ? "ref" : "out"));
 		Modifiers modifiers = new Modifiers(modlist);
-		ParameterDeclaration 
-		  pd = new ParameterDeclaration(modifiers, decl.type().getLockedAccess(table), decl.name());
+		ParameterDeclaration pd;
+		// this should be done with a copy-and-lock
+		if(decl instanceof VariableArityParameterDeclaration) {
+			VariableArityParameterDeclaration vapd = (VariableArityParameterDeclaration)decl;
+			pd = new VariableArityParameterDeclaration(modifiers, vapd.getTypeAccess().type().getLockedAccess(table), decl.name());
+		} else {
+			pd = new ParameterDeclaration(modifiers, decl.type().getLockedAccess(table), decl.name());
+		}
 		addParameter(pd);
 		addArg(new VarAccess(decl.name()));
 		return pd;
+	}
+	
+	private void ClosureInvocation.putVarArgAtEnd() throws RefactoringException {
+		ParameterDeclaration varparm = null;
+		Expr vararg = null;
+		for(int i=0;i<getNumParameter();++i) {
+			if(getParameter(i).isVariableArity())
+				if(varparm == null) {
+					varparm = getParameter(i);
+					vararg = getArg(i);
+				} else {
+					throw new RefactoringException("there can be only one variable-arity argument");
+				}
+		}
+		if(varparm == null)
+			return;
+		getParameterList().removeChild(varparm);
+		getArgList().removeChild(vararg);
+		addParameter(varparm);
+		addArg(vararg);
 	}
 	
 	private VariableDeclaration ClosureInvocation.introduceLocalVariable(LocalDeclaration decl, AdjustmentTable table) throws RefactoringException {

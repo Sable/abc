@@ -29,6 +29,12 @@ aspect ASTUtil {
 			getChild(i).flushCaches();
 	}
 	
+	// no need to flush library compilation units
+	public void CompilationUnit.flushCaches() {
+		if(fromSource())
+			super.flushCaches();
+	}
+	
 	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
 		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
 	}

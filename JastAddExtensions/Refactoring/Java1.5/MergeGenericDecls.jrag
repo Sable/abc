@@ -96,7 +96,8 @@ aspect MergeGenericDecls {
 	}
 
 	refine AdjustAccess public void TypeAccess.lock() {
-		target = decl().isRawType() ? decl().sourceTypeDecl() : decl();
+		if(target == null)
+			target = decl().isRawType() ? decl().sourceTypeDecl() : decl();
 	}
 
 	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
@@ -128,6 +129,8 @@ aspect MergeGenericDecls {
 				}
 				return new ParTypeAccess(base, args);
 			}
+		} else if(td instanceof WildcardType) {
+			return new BoundTypeAccess("wildcard", "", td);
 		} else {
 			return refined(td, nt);
 		}
@@ -149,6 +152,8 @@ aspect MergeGenericDecls {
 				}
 				return new ParTypeAccess(base, args);
 			}
+		} else if(td instanceof WildcardType) {
+			return new BoundTypeAccess("wildcard", "", td);
 		} else {
 			return refined(td, nt);
 		}
@@ -170,6 +175,8 @@ aspect MergeGenericDecls {
 				}
 				return new ParTypeAccess(base, args);
 			}
+		} else if(td instanceof WildcardType) {
+			return new BoundTypeAccess("wildcard", "", td);
 		} else {
 			return refined(td, nt);
 		}
@@ -191,6 +198,8 @@ aspect MergeGenericDecls {
 				}
 				return new ParTypeAccess(base, args);
 			}
+		} else if(td instanceof WildcardType) {
+			return new BoundTypeAccess("wildcard", "", td);
 		} else {
 			return refined(td, nt);
 		}
@@ -212,12 +221,17 @@ aspect MergeGenericDecls {
 				}
 				return new ParTypeAccess(base, args);
 			}
+		} else if(td instanceof WildcardType) {
+			return new BoundTypeAccess("wildcard", "", td);
 		} else {
 			return refined(td, nt);
 		}
 	}
 	
-	refine AdjustAccess public void VarAccess.lock() { target = decl().sourceVariableDecl(); }
+	refine AdjustAccess public void VarAccess.lock() {
+		if(target == null)
+			target = decl().sourceVariableDecl(); 
+	}
 
 	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
 		Variable v = target;
@@ -233,7 +247,10 @@ aspect MergeGenericDecls {
 		plugIn(acc);
 	}
 	
-	refine AdjustAccess public void MethodAccess.lock() { target = decl().sourceMethodDecl(); }
+	refine AdjustAccess public void MethodAccess.lock() {
+		if(target == null)
+			target = decl().sourceMethodDecl(); 
+	}
 
 	refine AdjustAccess public void MethodAccess.unlockSafely() throws RefactoringException {
 		MethodDecl md = target;
