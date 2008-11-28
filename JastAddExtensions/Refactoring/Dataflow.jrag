@@ -39,6 +39,44 @@ aspect Dataflow {
 		return super.live(decl);
 	}
 	
+	// p.mayDefBefore(x, q): check whether there is a path from p to q
+	// containing a definition of x
+	syn boolean ASTNode.mayDefBefore(LocalDeclaration decl, ASTNode target) circular [false];
+	
+	// propagation
+	eq ASTNode.mayDefBefore(LocalDeclaration decl, ASTNode target) {
+		if(this == target)
+			return false;
+		for(ASTNode n : succ())
+			if(n.mayDefBefore(decl, target))
+				return true;
+		return false;
+	}
+	
+	eq VariableDeclaration.mayDefBefore(LocalDeclaration decl, ASTNode target) {
+		if(this == decl && hasInit())
+			return reachable(target);
+		return super.mayDefBefore(decl, target);
+	}
+	
+	eq VarAccess.mayDefBefore(LocalDeclaration decl, ASTNode target) {
+		if(decl() == decl && isDest())
+			return reachable(target);
+		return super.mayDefBefore(decl, target);
+	}
+	
+	// p.reachable(q): check whether there is a path from p to q
+	syn boolean ASTNode.reachable(ASTNode target) circular [false];
+	
+	eq ASTNode.reachable(ASTNode target) {
+		if(this == target)
+			return true;
+		for(ASTNode n : succ())
+			if(n.reachable(target))
+				return true;
+		return false;
+	}
+	
 	// data flow predecessors
 	public SmallSet<ASTNode> VarAccess.dataPred() {
 		if(!(decl() instanceof LocalDeclaration))
@@ -131,28 +169,6 @@ aspect Dataflow {
 		return decl() == v;
 	}
 	
-	// checks if a subtree may define a variable
-	public boolean ASTNode.mayDef(Variable v) {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null && child.mayDef(v))
-				return true;
-		}
-		return false;
-	}
-	
-	public boolean VarAccess.mayDef(Variable v) {
-		return decl() == v && isDest();
-	}
-	
-	public boolean VariableDeclaration.mayDef(Variable v) {
-		return this == v && hasInit();
-	}
-	
-	public boolean ParameterDeclaration.mayDef(Variable v) {
-		return this == v;
-	}
-
 	// extend the adjustment table to keep track of dataflow
 	private Map<VarAccess, SmallSet<ASTNode>> AdjustmentTable.dpreds;
 	private Map<VarAccess, SmallSet<VarAccess>> AdjustmentTable.dsuccs;

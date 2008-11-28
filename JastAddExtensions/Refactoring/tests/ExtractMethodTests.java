@@ -173,4 +173,7 @@ public class ExtractMethodTests extends ExtractMethod {
 	public void test52() {
 		runExtractionTest2("test52");
 	}
+	public void test53() {
+		runExtractionTest2("test53");
+	}
 }

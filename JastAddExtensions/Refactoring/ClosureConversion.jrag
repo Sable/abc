@@ -2,7 +2,7 @@ aspect ClosureConversion {
 	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
 		AdjustmentTable table = new AdjustmentTable();
 		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
-			introduceParameter(decl, table, liveAtEntry(decl), liveAtExit(decl) && mayDef((Variable)decl));
+			introduceParameter(decl, table, entry().live(decl), exit().live(decl) && entry().mayDefBefore(decl, exit()));
 		putVarArgAtEnd();
 		flushCaches();
 		for(LocalDeclaration decl : getBlock().collectCapturedLocalVars(this))
@@ -10,14 +10,6 @@ aspect ClosureConversion {
 		flushCaches();
 		table.adjust();
 		return this;
-	}
-	
-	public boolean ClosureInvocation.liveAtEntry(LocalDeclaration decl) {
-		return getBlock().live(decl);
-	}
-	
-	public boolean ClosureInvocation.liveAtExit(LocalDeclaration decl) {
-		return this.live(decl);
 	}
 	
 	private boolean ClosureInvocation.declaredOutside(VarAccess v) {

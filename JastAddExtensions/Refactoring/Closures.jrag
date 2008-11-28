@@ -52,11 +52,13 @@ aspect Closures {
 	// control flow for closure invocations
 	inh SmallSet<ASTNode> ClosureInvocation.throwTarget(TypeDecl exn);
 	eq ClosureInvocation.first() = getNumArg() == 0 ? getBlock() : getArg(0).first();
+	syn ASTNode ClosureInvocation.entry() = getBlock();
+	syn ASTNode ClosureInvocation.exit() = this;
 	eq ClosureInvocation.getArg(int i).following() 
 	  = i < getNumArg()-1 ? singleNode(getArg(i+1).first()) 
 			  			  : singleNode(getBlock());
-	eq ClosureInvocation.getBlock().following() = singleNode(this);
-	eq ClosureInvocation.getReturnType().following() = singleNode(this);
+	eq ClosureInvocation.getBlock().following() = singleNode(exit());
+	eq ClosureInvocation.getReturnType().following() = singleNode(exit());
 
 	eq ClosureInvocation.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
