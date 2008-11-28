@@ -512,15 +512,13 @@ aspect ControlFlowGraph {
 		for(ASTNode branch : branches) {
 			if(branch instanceof EmptyStmt) // can complete normally
 				succ = succ.union(following());
-			else if(branch instanceof BranchStmt)
-				succ = succ.union(((Stmt)branch).succ());
 			else
-				throw new RuntimeException("unexpected branch: "+branch);
+				succ = succ.union(branch.succ());
 		}   
 
 		return succ;
 	}
-
+	
 	// Propagate upwards
 	syn SmallSet<ASTNode> ASTNode.collectBranches() {
 		SmallSet<ASTNode> collectBranches = SmallSet.empty();

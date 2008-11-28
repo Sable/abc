@@ -7,47 +7,50 @@ aspect Exceptions {
       uncaughtExns = uncaughtExns.union(getChild(i).uncaughtExceptions());
     return uncaughtExns;
   }
+
   eq ThrowStmt.uncaughtExceptions() 
     = super.uncaughtExceptions().union(getExpr().type());
+
   eq TryStmt.uncaughtExceptions() {
     // Create a set containing the remaining throws after a throw-catch match
-    SmallSet<TypeDecl> uncaughtExns = getBlock().uncaughtExceptions();
-    SmallSet<TypeDecl> remainingExceptions = SmallSet.empty();
-    for(Iterator itr = uncaughtExns.iterator(); itr.hasNext();) {
-      TypeDecl exn = (TypeDecl)itr.next();
+    SmallSet<TypeDecl> res = SmallSet.empty();
+    for(TypeDecl exn : getBlock().uncaughtExceptions()) {
       boolean caught = false;
       for(int i = 0; i < getNumCatchClause() && !caught; i++)
-	caught = getCatchClause(i).handles(exn);
+	  caught = getCatchClause(i).handles(exn);
       if(!caught)
-	remainingExceptions = remainingExceptions.union(exn);
+	  res = res.union(exn);
     }
     // Add throws from catch blocks and finally
     for(int i = 0; i < getNumCatchClause(); i++)
-      remainingExceptions = remainingExceptions.union(getCatchClause(i).getBlock().uncaughtExceptions());
+      res = res.union(getCatchClause(i).getBlock().uncaughtExceptions());
     if (hasFinally())
-      remainingExceptions = remainingExceptions.union(getFinally().uncaughtExceptions());
-    return remainingExceptions;
+      res = res.union(getFinally().uncaughtExceptions());
+    return res;
   }
+
   eq MethodAccess.uncaughtExceptions() {
     SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;
   }
+
   eq ConstructorAccess.uncaughtExceptions() {
     SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;
   }
+
   eq ClassInstanceExpr.uncaughtExceptions() {
     SmallSet<TypeDecl> uncaughtExns = super.uncaughtExceptions();
     for(Access acc : decl().getExceptions())
       uncaughtExns = uncaughtExns.union(acc.type());
     return uncaughtExns;
   }
+
   eq TypeDecl.uncaughtExceptions() {
     return SmallSet.empty();
   }
-
 }
