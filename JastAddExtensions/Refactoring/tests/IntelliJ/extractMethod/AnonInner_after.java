@@ -2,24 +2,26 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class ExtractMethods { }
+/*public*/ class ExtractMethods { }
+
 abstract class MyButton
-        extends JButton
-        {
-    protected MyButton( String text ) {
-        super( text );
-    }
+extends JButton
+{
+	protected MyButton( String text ) {
+		super( text );
+	}
 }
 class Foo {
-    private JButton createOKButton() {
-        return new MyButton( "OK" ) {
-            public void actionPerformed( ActionEvent e ) {
-                newMethod();
-            }
-        };
-    }
-
-    private void newMethod() {
-        setVisible( false );
-    }
+	private JButton createOKButton() {
+		return new MyButton( "OK" ) {
+			public void actionPerformed( ActionEvent e ) {
+				newMethod();
+			}
+			
+			// moved inside anonymous class to make it compile
+			private void newMethod() {
+				setVisible( false );
+			}
+		};
+	}
 }

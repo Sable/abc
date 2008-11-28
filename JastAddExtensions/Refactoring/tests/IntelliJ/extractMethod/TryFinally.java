@@ -2,12 +2,13 @@ class TryFinally {
     int method() {
         String s = "abcd";
      
-        <selection>StringBuffer buffer = new StringBuffer();
+        /*[*/StringBuffer buffer = new StringBuffer();
         try {
             buffer.append(s);
             return buffer.length();
         } finally {
-            buffer.clear();
-        }</selection>
+	    // following line changed to make it compile
+            buffer.append("");
+        }/*]*/
     }
 }

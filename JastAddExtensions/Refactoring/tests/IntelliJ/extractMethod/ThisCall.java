@@ -3,6 +3,6 @@ public class A {
     }
 
     A() {
-        this(<selection>"a"</selection>);
+        this(/*[*/"a"/*]*/);
     }
 }

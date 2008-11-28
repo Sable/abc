@@ -1,8 +1,8 @@
 public class Test {
     public Object foo() {
         Object result = null;       // line1
-        <selection>if (test1()) return result;
-        if (test2()) return result;</selection>
+        /*[*/if (test1()) return result;
+        if (test2()) return result;/*]*/
         if (test3()) return result;  // line4
         return result;
     }

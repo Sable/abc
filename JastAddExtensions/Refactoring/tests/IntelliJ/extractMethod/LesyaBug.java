@@ -5,10 +5,10 @@ class A {
         try {
             OutputStream out = null;
 
-            <selection>try {
+            /*[*/try {
             } finally {
                 out.close();
-            }</selection>
+            }/*]*/
         } catch(Throwable t) {
         }
     }

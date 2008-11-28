@@ -5,8 +5,8 @@ class C extends D {
 
     {
         int i = 5;
-        <selection>myField = i;
-        myOtherField = i;</selection>
+        /*[*/myField = i;
+        myOtherField = i;/*]*/
 
         C c = new C();
 

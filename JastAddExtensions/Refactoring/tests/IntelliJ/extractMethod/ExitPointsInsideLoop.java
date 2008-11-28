@@ -1,9 +1,9 @@
 class s {
     void f(boolean b) {
         for (;;) {
-            <selection>if (b) {
+            /*[*/if (b) {
                 break;
-            }</selection>
+            }/*]*/
         }
     }
 }

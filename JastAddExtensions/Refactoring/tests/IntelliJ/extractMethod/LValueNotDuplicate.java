@@ -2,7 +2,7 @@ class UUU {
     int myValue;
 
     UUU() {
-        System.out.println(<selection>myValue</selection>);
+        System.out.println(/*[*/myValue/*]*/);
     }
 
     void init() {

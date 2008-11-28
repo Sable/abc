@@ -4,7 +4,7 @@ class A {
     private int s;
 
     public A(int i, int j) {
-        <selection>this.i = i;</selection>
+        /*[*/this.i = i;/*]*/
         this.j = j;
     }
 

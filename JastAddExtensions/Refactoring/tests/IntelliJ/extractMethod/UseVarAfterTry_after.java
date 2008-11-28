@@ -1,6 +1,7 @@
 class A {
     {
-        Object o;
+	// added initialization to make it compile
+        Object o = null;
 
         try {
             o = newMethod();
@@ -8,7 +9,8 @@ class A {
         catch (Exception e) {
         }
 
-        o.f();
+	// following line changed to make it compile
+        o.hashCode();
     }
 
     private Object newMethod() {
@@ -16,4 +18,7 @@ class A {
         o = foo();
         return o;
     }
+
+    // method added to make it compile
+    Object foo() { return null; }
 }

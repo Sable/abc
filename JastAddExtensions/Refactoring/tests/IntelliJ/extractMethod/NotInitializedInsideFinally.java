@@ -1,7 +1,7 @@
 class Tester {
     String x() {
         String o = "";
-<selection>
+/*[*/
         String s;
         try {
             s = o;
@@ -9,6 +9,6 @@ class Tester {
         finally {
 
         }
-        return s;</selection>
+        return s;/*]*/
     }
 }

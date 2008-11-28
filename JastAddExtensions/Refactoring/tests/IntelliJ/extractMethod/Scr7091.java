@@ -9,14 +9,14 @@ public class IdeaTestBug {
             while (isCheckCondition(y)) {
                 ++conditionsFound;
 
-                <selection>final Object[] temp = _map[y];
+                /*[*/final Object[] temp = _map[y];
                 for (int x = 0; x < temp.length; x++) {
                     temp[x] = null;
                 }
                 for (int yy = y + 1; yy < MAP_HEIGHT; ++yy) {
                     _map[yy - 1] = _map[yy];
                 }
-                _map[MAP_HEIGHT - 1] = temp;</selection>
+                _map[MAP_HEIGHT - 1] = temp;/*]*/
             }
         }
         return conditionsFound;

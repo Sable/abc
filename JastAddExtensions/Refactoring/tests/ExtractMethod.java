@@ -15,6 +15,7 @@ import AST.Callable;
 import AST.CompilationUnit;
 import AST.ConstructorDecl;
 import AST.Expr;
+import AST.FileRange;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -83,7 +84,10 @@ public abstract class ExtractMethod extends TestCase {
         	assertNotNull(A);
         	CompilationUnit cu = A.compilationUnit();
         	assertNotNull(cu);
-        	ASTNode n = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
+            FileRange startPos = cu.findComment("/*[*/");
+            FileRange endPos = cu.findComment("/*]*/");
+    		FileRange rng = startPos == null || endPos == null ? null : new FileRange("", startPos.el, startPos.ec, endPos.sl, endPos.ec);
+            ASTNode n = TestHelper.findFirstNodeInside(cu, rng);
         	if(n instanceof Expr) {
         		Expr e = (Expr)n;
         		e.extractMethod("protected", "extracted");

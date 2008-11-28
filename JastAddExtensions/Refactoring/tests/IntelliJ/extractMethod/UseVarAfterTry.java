@@ -1,13 +1,18 @@
 class A {
     {
-        Object o;
+	// added initialization to make it compile
+        Object o = null;
 
         try {
-            <selection>o = foo();</selection>
+            /*[*/o = foo();/*]*/
         }
         catch (Exception e) {
         }
 
-        o.f();
+	// following line changed to make it compile
+        o.hashCode();
     }
+
+    // method added to make it compile
+    Object foo() { return null; }
 }

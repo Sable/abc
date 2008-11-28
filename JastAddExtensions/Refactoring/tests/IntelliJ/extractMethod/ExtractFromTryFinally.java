@@ -2,7 +2,7 @@ public class S {
   {
     String s;
     try {
-      <selection>s = "";</selection>
+      /*[*/s = "";/*]*/
     } finally {
     }
     System.out.print(s);

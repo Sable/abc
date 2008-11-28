@@ -1,7 +1,7 @@
 class Test {
     int method() {
         return newMethod();
-        return 12;
+        /*return 12;*/
     }
 
     private int newMethod() {

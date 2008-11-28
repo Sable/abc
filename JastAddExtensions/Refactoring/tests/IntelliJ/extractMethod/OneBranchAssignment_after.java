@@ -1,6 +1,7 @@
 class A{
     public static Object test(Object a) {
-        boolean value;
+	// added initializer to make it compile
+        boolean value = false;
 
         if (a == null){
             value = newMethod();

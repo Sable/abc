@@ -1,9 +1,11 @@
 class Test{
-  public void foo() {
-    if (cond1){
-      <selection>if (cond2) return;</selection>
+    // added the following line to make it compile
+    boolean cond1, cond2, cond3;
+    public void foo() {
+	if (cond1){
+	    /*[*/if (cond2) return;/*]*/
+	}
+	else if (cond3){
+	}
     }
-    else if (cond3){
-    }
-  }
 }

@@ -1,8 +1,8 @@
 class C {
     String method(Object o) {
         System.out.println(o);
-        <selection>Integer i = new Integer(o.hashCode());
-        return i.toString();</selection>
+        /*[*/Integer i = new Integer(o.hashCode());
+        return i.toString();/*]*/
     }
 
     {

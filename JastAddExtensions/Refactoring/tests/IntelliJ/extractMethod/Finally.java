@@ -1,6 +1,13 @@
 class Test {
+    // added the following five lines to make it compile
+    Process process;
+    Thread myParsingThread;
+    class CompilerHandler { void processTerminated() { } };
+    CompilerHandler compilerHandler;
+    void someOtherCode() { }
+
     void method(){         
-        <selection>try {
+        /*[*/try {
             process.waitFor();
         }
         catch(InterruptedException e) {
@@ -16,7 +23,7 @@ class Test {
         }
         synchronized (this) {
             myParsingThread = null;
-        }</selection>
+        }/*]*/
         someOtherCode();
     }
 }

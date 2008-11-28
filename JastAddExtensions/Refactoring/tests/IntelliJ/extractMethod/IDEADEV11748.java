@@ -1,10 +1,10 @@
 class Test {
     public static String bar(int x , int y) {
         while (true) {
-            <selection>if (x == y) {
+            /*[*/if (x == y) {
                 continue;
             }
-            System.out.println("HW");</selection>
+            System.out.println("HW");/*]*/
         }
     }
 

@@ -4,8 +4,8 @@ public class Test {
             System.out.println("Text");
             return 0;
         } finally {
-            <selection>System.out.println("!!!");
-            return 1;</selection>
+            /*[*/System.out.println("!!!");
+            return 1;/*]*/
         }
     }
 }

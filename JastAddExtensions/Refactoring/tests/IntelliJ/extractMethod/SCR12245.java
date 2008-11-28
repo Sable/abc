@@ -4,7 +4,7 @@ public class A {
             private int a;
 
             public void run() {
-                <selection>a = 2</selection>;
+                /*[*/a = 2/*]*/;
             }
         };
     }

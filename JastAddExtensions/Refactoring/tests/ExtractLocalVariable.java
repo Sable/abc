@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.CompilationUnit;
 import AST.Expr;
+import AST.FileRange;
 import AST.Program;
 import AST.RefactoringException;
 import AST.Stmt;
@@ -26,7 +27,10 @@ public class ExtractLocalVariable extends TestCase {
         assertNotNull(p);
         CompilationUnit cu = p.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
-        ASTNode node = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
+        FileRange startPos = cu.findComment("/*[*/");
+        FileRange endPos = cu.findComment("/*]*/");
+		FileRange rng = new FileRange("", startPos.el, startPos.ec, endPos.sl, endPos.ec);
+        ASTNode node = TestHelper.findFirstNodeInside(cu, rng);
         assertTrue(node instanceof Expr);
         Expr expr = (Expr)node;
         try {

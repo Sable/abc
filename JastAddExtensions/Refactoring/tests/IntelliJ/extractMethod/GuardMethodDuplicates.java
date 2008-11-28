@@ -2,8 +2,8 @@ class Test
 {
     public Object foo() {
         Object result = null;
-        <selection>if(test1()) return null;
-        if(test2()) return null;</selection>
+        /*[*/if(test1()) return null;
+        if(test2()) return null;/*]*/
         return result;
     }
     public int foo1() {

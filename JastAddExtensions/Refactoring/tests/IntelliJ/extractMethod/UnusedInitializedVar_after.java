@@ -15,7 +15,7 @@ class Foo {
         return text;
     }
 
-    private void getString() {
+    private String getString() {
         return "hello";
     }
 }

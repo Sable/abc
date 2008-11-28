@@ -4,8 +4,8 @@ class C {
     {
         Object[] array;
 
-        <selection>List l1 = null;
-        l1 = new ArrayList(Arrays.asList(array));</selection>
+        /*[*/List l1 = null;
+        l1 = new ArrayList(Arrays.asList(array));/*]*/
 
         List l2 = null;
         l2 = new ArrayList(Arrays.asList(getObjects()));

@@ -4,6 +4,10 @@
 
 aspect ASTUtil {
 	
+	public boolean ASTNode.leftChildOfDot() {
+		return getParent() instanceof AbstractDot && ((AbstractDot)getParent()).getLeft() == this;
+	}
+	
 	// provide access to the program root
 	public Program ASTNode.programRoot() {
 		ASTNode p;

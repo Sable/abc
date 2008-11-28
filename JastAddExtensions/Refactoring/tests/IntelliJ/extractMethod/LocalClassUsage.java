@@ -1,7 +1,7 @@
 class Test{
   public void foo() {
-    <selection>class A {
-    }</selection>
+    /*[*/class A {
+    }/*]*/
     new A();
   }
 }

@@ -2,13 +2,13 @@ class Foo {
     private void bar() {
         String text = null;
         try {
-            <selection>text = getString();</selection>
+            /*[*/text = getString();/*]*/
         }
         catch(Exception e) {
             System.out.println(text);
         }
     }
-    private void getString() {
+    private String getString() {
         return "hello";
     }
 }

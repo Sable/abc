@@ -1,4 +1,11 @@
 class Test {
+    // added the following five lines to make it compile
+    Process process;
+    Thread myParsingThread;
+    class CompilerHandler { void processTerminated() { } };
+    CompilerHandler compilerHandler;
+    void someOtherCode() { }
+
     void method(){
         newMethod();
         someOtherCode();

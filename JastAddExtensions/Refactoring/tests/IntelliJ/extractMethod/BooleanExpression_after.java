@@ -6,4 +6,7 @@ class Test {
     private boolean newMethod(int i) {
         return i == 0;
     }
+
+    // added to make it compile
+	private boolean otherTests() { return false; }
 }

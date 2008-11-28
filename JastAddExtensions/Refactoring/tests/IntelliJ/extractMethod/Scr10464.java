@@ -1,6 +1,6 @@
 class Test {
     public Object method() {
-        <selection>bar();</selection>
+        /*[*/bar();/*]*/
         return null;
     }
 

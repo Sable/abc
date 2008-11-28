@@ -6,10 +6,11 @@ class Test {
             public void run() {
                 newMethod().println("Text");
             }
-        }
-    }
-
-    private static PrintStream newMethod() {
-        return System.out;
+	    
+	    // put method inside
+	    private PrintStream newMethod() {
+		return System.out;
+	    }
+        };
     }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.CompilationUnit;
+import AST.FileRange;
 import AST.MethodAccess;
 import AST.Program;
 import AST.RefactoringException;
@@ -27,7 +28,10 @@ public abstract class InlineMethod extends TestCase {
         assertNotNull(p);
         CompilationUnit cu = p.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
-        ASTNode node = TestHelper.findFirstNodeBetweenComments(cu, "/*[*/", "/*]*/");
+        FileRange startPos = cu.findComment("/*[*/");
+        FileRange endPos = cu.findComment("/*]*/");
+		FileRange rng = new FileRange("", startPos.el, startPos.ec, endPos.sl, endPos.ec);
+        ASTNode node = TestHelper.findFirstNodeInside(cu, rng);
         assertTrue(node instanceof MethodAccess);
         MethodAccess ma = (MethodAccess)node;
         try {

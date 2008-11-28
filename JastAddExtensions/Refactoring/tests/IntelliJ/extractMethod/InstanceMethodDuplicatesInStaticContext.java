@@ -8,7 +8,7 @@ class Class {
     }
 
     public int foo(int a, int b) {
-        <selection>int temp = a + b;
-        return temp * 2;</selection>
+        /*[*/int temp = a + b;
+        return temp * 2;/*]*/
     }
 }

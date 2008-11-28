@@ -12,8 +12,8 @@ class Test {
 
     public void method2()
     {
-        <selection>list1.add(null);
+        /*[*/list1.add(null);
         // add to list2
-        list2.add(true);</selection>
+        list2.add(true);/*]*/
     }
 }

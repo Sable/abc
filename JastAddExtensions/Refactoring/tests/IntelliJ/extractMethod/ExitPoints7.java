@@ -1,7 +1,7 @@
 class Foo {
    public Object createBean(Object parent) {
     try {
-      <selection>if (parent != null) {
+      /*[*/if (parent != null) {
         try {
         }
         catch (Exception e) {
@@ -10,7 +10,7 @@ class Foo {
       }
 
 
-      Object tag = null;</selection>
+      Object tag = null;/*]*/
 
       tag = foo(tag);
     }

@@ -11,7 +11,8 @@ class TryFinally {
             buffer.append(s);
             return buffer.length();
         } finally {
-            buffer.clear();
+	    // following line changed to make it compile
+            buffer.append("");
         }
     }
 }

@@ -193,69 +193,33 @@ public class TestHelper {
 		return null;
 	}
 	
-	public static ASTNode findFirstNodeBetweenComments(CompilationUnit cu, String start, String end) {
-		FileRange startrg = cu.findComment(start);
-		FileRange endrg = cu.findComment(end);
-		if(startrg == null || endrg == null)
-			return null;
-		if (endrg.startsBefore(startrg)) {
-			FileRange tmp = endrg;
-			endrg = startrg;
-			startrg = tmp;
-		}
-		int startline = startrg.el;
-		int startcol = startrg.ec;
-		int endline = endrg.sl;
-		int endcol = endrg.sc;
-		return findFirstNodeBetween(cu, startline, startcol, endline, endcol);
-	}
-
-	private static ASTNode findFirstNodeBetween(ASTNode n, int startline,
-			int startcol, int endline, int endcol) {
-		if(n == null) return null;
+	public static ASTNode findFirstNodeInside(ASTNode n, FileRange rng) {
+		if(n == null || rng == null) return null;
 		int start = n.getStart();
 		int end = n.getEnd();
 		if(!(n instanceof AST.List) && !(n instanceof Opt) &&
-				covers(startline, startcol, endline, endcol,
+				covers(rng.sl, rng.sc, rng.el, rng.ec,
 						ASTNode.getLine(start), ASTNode.getColumn(start),
 						ASTNode.getLine(end), ASTNode.getColumn(end)))
 			return n;
 		for(int i=0;i<n.getNumChild();++i) {
-			ASTNode s = findFirstNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
+			ASTNode s = findFirstNodeInside(n.getChild(i), rng);
 			if(s != null) return s;
 		}
 		return null;
 	}
 	
-	public static ASTNode findLastNodeBetweenComments(CompilationUnit cu, String start, String end) {
-		FileRange startrg = cu.findComment(start);
-		FileRange endrg = cu.findComment(end);
-		if(startrg == null || endrg == null)
-			return null;
-		if (endrg.startsBefore(startrg)) {
-			FileRange tmp = endrg;
-			endrg = startrg;
-			startrg = tmp;
-		}
-		int startline = startrg.el;
-		int startcol = startrg.ec;
-		int endline = endrg.sl;
-		int endcol = endrg.sc;
-		return findLastNodeBetween(cu, startline, startcol, endline, endcol);
-	}
-
-	private static ASTNode findLastNodeBetween(ASTNode n, int startline,
-			int startcol, int endline, int endcol) {
-		if(n == null) return null;
+	public static ASTNode findLastNodeInside(ASTNode n, FileRange rng) {
+		if(n == null || rng == null) return null;
 		int start = n.getStart();
 		int end = n.getEnd();
 		if(!(n instanceof AST.List) && !(n instanceof Opt) &&
-				covers(startline, startcol, endline, endcol,
+				covers(rng.sl, rng.sc, rng.el, rng.ec,
 						ASTNode.getLine(start), ASTNode.getColumn(start),
 						ASTNode.getLine(end), ASTNode.getColumn(end)))
 			return n;
 		for(int i=n.getNumChild()-1;i>=0;i--) {
-			ASTNode s = findLastNodeBetween(n.getChild(i), startline, startcol, endline, endcol);
+			ASTNode s = findLastNodeInside(n.getChild(i), rng);
 			if(s != null) return s;
 		}
 		return null;
