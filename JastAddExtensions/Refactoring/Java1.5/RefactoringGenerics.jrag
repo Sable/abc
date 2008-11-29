@@ -155,7 +155,7 @@ aspect RefactoringGenerics {
 		if(getBodyDecl(index).visibleTypeParameters()) {
 			acc = accessTypeVariable(td);
 			if(acc != null)
-				return acc;
+				return acc.moveInto(this);
 		}
 		acc = accessType(td);
 		if(acc != null) {
