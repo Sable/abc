@@ -12,7 +12,7 @@ aspect ControlFlow {
 		preds.put(node, node.weakPred());
 		succs.put(node, node.weakSucc());
 	}
-
+	
 	refine AdjustAccess public void AdjustmentTable.adjust() throws RefactoringException {
 		refined();
 		for(ASTNode node : preds.keySet()) {
@@ -34,6 +34,8 @@ aspect ControlFlow {
 	eq TypeAccess.isPureCFlowNode() = true;
 	eq ExprStmt.isPureCFlowNode() = true;
 	eq ReturnStmt.isPureCFlowNode() = true;
+	eq IfStmt.isPureCFlowNode() = true;
+	eq Literal.isPureCFlowNode() = true;    // this doesn't feel right...
 	// there could be many more here
 
 	syn lazy SmallSet<ASTNode> ASTNode.weakSucc() {

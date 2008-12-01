@@ -59,6 +59,13 @@ aspect Closures {
 			  			  : singleNode(getBlock());
 	eq ClosureInvocation.getBlock().following() = singleNode(exit());
 	eq ClosureInvocation.getReturnType().following() = singleNode(exit());
+	/*eq ClosureInvocation.succ() {
+		SmallSet<ASTNode> res = following();
+		for(Access exn : getExceptions())
+			res = res.union(throwTarget(exn.type()));
+		res = res.union(uncheckedExnTarget());
+		return res;
+	}*/
 
 	eq ClosureInvocation.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
@@ -67,12 +74,14 @@ aspect Closures {
 
 	// all return statements inside the closure
 	syn lazy SmallSet<ASTNode> ClosureInvocation.returns() = getReturnType().pred();
-	// all final, non-return statements inside the closure
-	syn lazy SmallSet<Stmt> ClosureInvocation.finals() {
-    	SmallSet<Stmt> res = SmallSet.empty();
-    	for(ASTNode n : pred())
-    		if(n instanceof Stmt && ((Stmt)n).canCompleteNormally())
-    			res.add((Stmt)n);
+	// all final, non-return nodes inside the closure
+	syn lazy SmallSet<ASTNode> ClosureInvocation.finals() {
+    	SmallSet<ASTNode> res = SmallSet.empty();
+    	for(ASTNode n : pred()) {
+    		if(n == getReturnType() || n instanceof Stmt && !((Stmt)n).canCompleteNormally())
+    			continue;
+    		res = res.union(n);
+    	}
 		return res;  
 	}
 

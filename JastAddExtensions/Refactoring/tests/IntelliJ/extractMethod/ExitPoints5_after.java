@@ -1,4 +1,8 @@
 class Test {
+    // added following two lines to make it compile
+    boolean cond1, cond2;
+    void doSomething() { }
+
     int method() {
         return newMethod();
         /*return 12;*/

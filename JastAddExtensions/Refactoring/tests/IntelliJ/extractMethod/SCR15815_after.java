@@ -1,4 +1,4 @@
-/*public*/ class Foo {
+public class Foo {
     static Foo f1 = new Foo(){
 	    public String toString() {
 		return newMethod();

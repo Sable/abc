@@ -22,57 +22,29 @@ aspect LocalDeclaration {
 	}
 	
 	public ParameterDeclaration VariableDeclaration.asParameterDeclaration() {
-		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+		ParameterDeclaration res = new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+		res.setModifiers((Modifiers)getModifiers().fullCopy());
+		return res;
 	}
 	
 	public VariableDeclaration ParameterDeclaration.asVariableDeclaration() {
-		return new VariableDeclaration((Access)getTypeAccess().fullCopy(), getID());
+		VariableDeclaration res = new VariableDeclaration((Access)getTypeAccess().fullCopy(), getID());
+		res.setModifiers((Modifiers)getModifiers().fullCopy());
+		return res;
 	}
 	
 	public VariableDeclaration VariableDeclaration.asVariableDeclaration() {
 		return (VariableDeclaration)fullCopy();
 	}
 	
-	inh java.util.Set Stmt.visibleLocalDecls();
-	inh java.util.Set CatchClause.visibleLocalDecls();
-	
-	eq CompilationUnit.getChild().visibleLocalDecls() = new HashSet();
-	eq TypeDecl.getChild().visibleLocalDecls() = new HashSet();
-	eq MethodDecl.getBlock().visibleLocalDecls() {
-		HashSet decls = new HashSet();
-		for(int i=0;i<getNumParameter();++i)
-			decls.add(getParameter(i));
-		return decls;
+	public ParameterDeclaration LocalDeclaration.asLockedParameterDeclaration(AdjustmentTable table);
+	public ParameterDeclaration ParameterDeclaration.asLockedParameterDeclaration(AdjustmentTable table) {
+		return (ParameterDeclaration)copyAndLock(table);
 	}
-	eq Block.getStmt(int k).visibleLocalDecls() {
-		java.util.Set decls = visibleLocalDecls();
-		decls.addAll(localDeclsBetween(0,k-1));
-		return decls;
-	}
-	eq CatchClause.getBlock().visibleLocalDecls() {
-		java.util.Set decls = visibleLocalDecls();
-		decls.add(getParameter());
-		return decls;
-	}
-	eq ForStmt.getStmt().visibleLocalDecls() {
-		java.util.Set decls = visibleLocalDecls();
-		for(int i=0;i<getNumInitStmt();++i)
-			if(getInitStmt(i) instanceof VariableDeclaration)
-				decls.add(getInitStmt(i));
-		return decls;
-	}
-	
-	public java.util.Set Block.localDecls() {
-		if(getNumStmt() == 0) return new HashSet();
-		return localDeclsBetween(0, getNumStmt()-1);
-	}
-	
-	syn java.util.Set Block.localDeclsBetween(int start, int end) {
-		HashSet decls = new HashSet();
-		for(int i=start;i<=end;++i)
-			if(getStmt(i) instanceof VariableDeclaration)
-				decls.add(getStmt(i));
-		return decls;
+	public ParameterDeclaration VariableDeclaration.asLockedParameterDeclaration(AdjustmentTable table) {
+		ParameterDeclaration res = new ParameterDeclaration(type().getLockedAccess(table), name());
+		res.setModifiers((Modifiers)getModifiers().fullCopy());
+		return res;
 	}
 
 	inh lazy Block ParameterDeclaration.getBlock();

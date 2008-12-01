@@ -5,7 +5,10 @@ import java.util.Iterator;
 
 /*public*/ class SCR27887 {
     public int publishx(OutputStream out, boolean includeCode) throws IOException {
-        newMethod();
+	// following two lines added to make it compile
+	Object repository = null;
+	Object included = null;
+        newMethod(repository, included);
         while(true){
           OutputStream os = null;
           try {
@@ -15,10 +18,7 @@ import java.util.Iterator;
         }
     }
 
-    private void newMethod() {
-	// following two lines added to make it compile
-	Object repository = null;
-	Object included = null;
+    private void newMethod(Object repository, Object included) {
         ScatteringDocBuilder docBuilder = new MyDocBuilder(repository, included);
     }
 }

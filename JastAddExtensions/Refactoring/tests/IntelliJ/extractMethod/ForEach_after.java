@@ -12,5 +12,5 @@ class Foo {
     }
 
     // added following definition to make it compile
-    String[] args() { return null; }
+    String[] getArgs() { return null; }
 }

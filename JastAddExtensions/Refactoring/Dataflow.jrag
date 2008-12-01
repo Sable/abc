@@ -1,7 +1,7 @@
 // some very simple dataflow analyses
 
 aspect Dataflow {
-
+	
 	// liveness analysis
 	syn boolean ASTNode.live(LocalDeclaration decl) circular [false];
 	

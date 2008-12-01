@@ -62,18 +62,49 @@ aspect WrapBlockIntoClosure {
 			// if there are no return statements, we're done
 			if(cl.returns().isEmpty())
 				return;
-			// if there is _a_ return statement, _all_ paths should return
-			if(!cl.finals().isEmpty())
-				throw new RefactoringException("some control paths return values, others don't");
-			// create return statement
-			cl.setReturnType(cl.returnType().getLockedAccess(table));
-			ReturnStmt ret = new ReturnStmt();
-			cl.getParent().replaceWith(ret);
-			ret.setResult(cl);
-			// ret might be a `return void' statement that needs fixing
-			table.addReturnVoid(ret);
+			// if all paths return, we can just wrap the call to the closure into a return itself
+			// otherwise we need to turn all 'return;' statements in the closure into 'return true;',
+			// make the return type of the closure boolean, append a 'return false;' statement,
+			// and wrap the whole closure into if(...) return;
+			if(cl.finals().isEmpty()) {
+				// create return statement
+				cl.setReturnType(cl.returnType().getLockedAccess(table));
+				ReturnStmt ret = new ReturnStmt();
+				cl.getParent().replaceWith(ret);
+				ret.setResult(cl);
+				// ret might be a `return void' statement that needs fixing
+				table.addReturnVoid(ret);
+/*			} else {
+				if(!cl.getReturnType().type().isVoid())
+					throw new RefactoringException("cannot fix control flow");
+				cl.setReturnType(new PrimitiveTypeAccess("boolean"));
+				cl.rewriteReturns();
+				cl.getBlock().addStmt(new ReturnStmt(new BooleanLiteral("false")));
+				IfStmt stmt = new IfStmt(null, new ReturnStmt());
+				cl.getParent().replaceWith(stmt);
+				stmt.setCondition(cl);
+				table.removeAllCFlow();         // ouch!!!*/
+			}
 			block.programRoot().flushCaches();
 		}
+	}
+	
+	public void AdjustmentTable.removeAllCFlow() {
+		preds.clear();
+		succs.clear();
+	}
+	
+	// turn all 'return' statements into 'return true'
+	public void ASTNode.rewriteReturns() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.rewriteReturns();
+		}
+	}
+	
+	public void ReturnStmt.rewriteReturns() {
+		setResult(new BooleanLiteral("true"));
 	}
 
 	inh TypeDecl ClosureInvocation.returnType();
