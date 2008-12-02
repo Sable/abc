@@ -1,120 +1,87 @@
 aspect ClosureConversion {
 	
 	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
-		return new ClosureConversionRefactoring(this).execute();
+		AdjustmentTable table = new AdjustmentTable();
+		java.util.Set<VarAccess> locals = localVarAccesses();
+		for(VarAccess v : locals)
+			closeOver(v, table);
+		putVarArgAtEnd();
+		programRoot().flushCaches();
+		for(VarAccess v : locals)
+			if(declaredOutside(v))
+				localize(v, table);
+		table.adjust();
+		return this;
 	}
 	
-	class ClosureConversionRefactoring {
-		ClosureInvocation cl;
-		AdjustmentTable table = new AdjustmentTable();
-		class Directionality {
-			boolean in;
-			boolean out;
+	public void ClosureInvocation.closeOver(VarAccess v, AdjustmentTable table) throws RefactoringException {
+		if(v.hasDataPredBefore(entry()))
+			addInParm((LocalDeclaration)v.decl(), table);
+		if(v.hasDataSuccAfter(exit()))
+			addOutParm((LocalDeclaration)v.decl(), table);
+		programRoot().flushCaches();
+	}
+	
+	private void ClosureInvocation.localize(VarAccess v, AdjustmentTable table) throws RefactoringException {
+		getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
+		programRoot().flushCaches();
+	}
+	
+	// add an input parameter having the same modifiers, name, and type as decl
+	private void ClosureInvocation.addInParm(LocalDeclaration decl, AdjustmentTable table) throws RefactoringException {
+		ParameterDeclaration parm = getParameter(decl.name());
+		if(parm == null) {
+			parm = decl.asLockedParameterDeclaration(table);
+			addParameter(parm);
+			addArg(new VarAccess(decl.name()));
 		}
-		java.util.Set<VarAccess> local_var_accesses;
-		Map<LocalDeclaration, Directionality> parms = new HashMap<LocalDeclaration, Directionality>();
-		
-		public ClosureConversionRefactoring(ClosureInvocation cl) {
-			this.cl = cl;
-			this.local_var_accesses = cl.localVarAccesses();
+		if(parm.isOut())
+			parm.makeRef();
+	}
+
+	// add an output parameter having the same modifiers, name, and type as decl
+	private void ClosureInvocation.addOutParm(LocalDeclaration decl, AdjustmentTable table) throws RefactoringException {
+		ParameterDeclaration parm = getParameter(decl.name());
+		if(parm == null) {
+			parm = decl.asLockedParameterDeclaration(table);
+			parm.getModifiers().addModifier(new Modifier("out"));
+			addParameter(parm);
+			addArg(new VarAccess(decl.name()));
 		}
-		
-		public ClosureInvocation execute() throws RefactoringException {
-			findParms();
-			addParms();
-			flushCaches();
-			addLocals();
-			flushCaches();
-			table.adjust();
-			return cl;
-		}
-		
-		private void flushCaches() {
-			cl.flushCaches();
-		}
-		
-		private void findParms() {
-			for(VarAccess v : local_var_accesses) {
-				if(hasIncomingDataflowEdge(v))
-					addInParm((LocalDeclaration)v.decl());
-				if(hasOutgoingDataflowEdge(v))
-					addOutParm((LocalDeclaration)v.decl());
-			}
-		}
-		
-		private boolean hasIncomingDataflowEdge(VarAccess v) {
-			return cl.entry().live((LocalDeclaration)v.decl());
-		}
-		
-		private boolean hasOutgoingDataflowEdge(VarAccess v) {
-			return v.isDest() && v.reachable(cl.exit()) 
-				&& cl.exit().live((LocalDeclaration)v.decl());
-		}
-		
-		private void addInParm(LocalDeclaration decl) {
-			Directionality dir = parms.get(decl);
-			if(dir == null)
-				dir = new Directionality();
-			dir.in = true;
-			parms.put(decl, dir);
-		}
-		
-		private void addOutParm(LocalDeclaration decl) {
-			Directionality dir = parms.get(decl);
-			if(dir == null)
-				dir = new Directionality();
-			dir.out = true;
-			parms.put(decl, dir);
-		}
-		
-		private void addParms() throws RefactoringException {
-			for(Map.Entry<LocalDeclaration, Directionality> e : parms.entrySet()) {
-				LocalDeclaration decl = e.getKey();
-				Directionality dir = e.getValue();
-				ParameterDeclaration parmdecl = decl.asLockedParameterDeclaration(table);
-				if(dir.in && dir.out)
-					parmdecl.getModifiers().addModifier(new Modifier("ref"));
-				else if(dir.out)
-					parmdecl.getModifiers().addModifier(new Modifier("out"));
-				cl.addParameter(parmdecl);
-				cl.addArg(new VarAccess(decl.name()));
-			}
-			putVarArgAtEnd();
-		}
-		
-		// shuffle parameters so that any variable arity parameter comes last 
-		private void putVarArgAtEnd() throws RefactoringException {
-			ParameterDeclaration varparm = null;
-			Expr vararg = null;
-			for(int i=0;i<cl.getNumParameter();++i) {
-				if(cl.getParameter(i).isVariableArity())
-					if(varparm == null) {
-						varparm = cl.getParameter(i);
-						vararg = cl.getArg(i);
-					} else {
-						throw new RefactoringException("there can be only one variable-arity argument");
-					}
-			}
-			if(varparm == null)
-				return;
-			cl.getParameterList().removeChild(varparm);
-			cl.getArgList().removeChild(vararg);
-			cl.addParameter(varparm);
-			cl.addArg(vararg);
-		}
-		
-		private void addLocals() throws RefactoringException {
-			for(VarAccess v : local_var_accesses) {
-				if(declaredOutside(v)) {
-					cl.getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
-					flushCaches();
+		if(!parm.isWrite())
+			parm.getModifiers().addModifier(new Modifier("ref"));
+	}
+	
+	private ParameterDeclaration ClosureInvocation.getParameter(String name) {
+		for(ParameterDeclaration pd : getParameters())
+			if(pd.name().equals(name))
+				return pd;
+		return null;
+	}
+			
+	// shuffle parameters so that any variable arity parameter comes last 
+	private void ClosureInvocation.putVarArgAtEnd() throws RefactoringException {
+		ParameterDeclaration varparm = null;
+		Expr vararg = null;
+		for(int i=0;i<getNumParameter();++i) {
+			if(getParameter(i).isVariableArity())
+				if(varparm == null) {
+					varparm = getParameter(i);
+					vararg = getArg(i);
+				} else {
+					throw new RefactoringException("there can be only one variable-arity argument");
 				}
-			}
 		}
-		
-		private boolean declaredOutside(VarAccess v) {
-			return !((ASTNode)v.decl()).beneath(cl);
-		}
+		if(varparm == null)
+			return;
+		getParameterList().removeChild(varparm);
+		getArgList().removeChild(vararg);
+		addParameter(varparm);
+		addArg(vararg);
+	}
+	
+	private boolean ClosureInvocation.declaredOutside(VarAccess v) {
+		return !((ASTNode)v.decl()).beneath(this);
 	}
 
 	public boolean ASTNode.beneath(ASTNode n) {
@@ -124,7 +91,7 @@ aspect ClosureConversion {
 		return p!=null;
 	}
 
-	// determine all local declarations referred to in this subtree, which are defined outside root
+	// determine all local declarations referred to in this subtree
 	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
 		java.util.Set<VarAccess> res = new HashSet<VarAccess>();
 		localVarAccesses(res);

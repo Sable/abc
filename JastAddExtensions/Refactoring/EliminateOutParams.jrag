@@ -24,6 +24,10 @@ aspect EliminateOutParams {
 			if(!(closure.getArg(idx) instanceof VarAccess))
 				throw new RefactoringException("cannot eliminate out parameter");
 			VarAccess v = (VarAccess)closure.getArg(idx);
+			VarAccess newv = new VarAccess(v.name());
+			closure.getBlock().addStmt(new ReturnStmt(newv));
+			closure.closeOver(newv, table);
+			closure.setReturnType(newv.type().getLockedAccess(table));
 			if(pd.isRef()) {
 				pd.makeIn();
 			} else {
@@ -32,8 +36,6 @@ aspect EliminateOutParams {
 				closure.removeParameter(idx);
 				closure.removeArg(idx);
 			}
-			closure.setReturnType(v.type().getLockedAccess(table));
-			closure.getBlock().addStmt(new ReturnStmt(new VarAccess(v.name())));
 			AssignExpr assgn = new AssignSimpleExpr(new VarAccess(v.name()), null);
 			closure.replaceWith(assgn);
 			assgn.setSource(closure);
@@ -76,11 +78,21 @@ aspect EliminateOutParams {
 	}
 	
 	public void ParameterDeclaration.makeIn() {
-		Modifiers mods = getModifiers();
-		for(int i=0;i<mods.getNumModifier();++i) {
-			Modifier mod = mods.getModifier(i);
-			if(mod.getID().equals("ref") || mod.getID().equals("out"))
-				mods.getModifiers().removeChild(i);
-		}
+		List<Modifier> newmods = new List<Modifier>();
+		for(Modifier mod : getModifiers().getModifierList())
+			if(!mod.getID().equals("ref") && !mod.getID().equals("out"))
+				newmods.add(mod);
+		getModifiers().setModifierList(newmods);
 	}
+
+	public void ParameterDeclaration.makeRef() {
+		for(Modifier mod : getModifiers().getModifierList()) {
+			if(mod.getID().equals("out")) {
+				mod.setID("ref");
+				return;
+			}
+		}
+		getModifiers().addModifier(new Modifier("ref"));
+	}
+
 }

@@ -59,30 +59,72 @@ aspect Closures {
 			  			  : singleNode(getBlock());
 	eq ClosureInvocation.getBlock().following() = singleNode(exit());
 	eq ClosureInvocation.getReturnType().following() = singleNode(exit());
-	/*eq ClosureInvocation.succ() {
-		SmallSet<ASTNode> res = following();
-		for(Access exn : getExceptions())
-			res = res.union(throwTarget(exn.type()));
-		res = res.union(uncheckedExnTarget());
-		return res;
-	}*/
 
 	eq ClosureInvocation.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().returnTarget() = singleNode(getReturnType());
 	eq ClosureInvocation.getChild().throwTarget(TypeDecl exn) = throwTarget(exn);
+	
+	// data flow for closure invocations: parameters are aliased
+	public VarAccess ClosureInvocation.unalias(VarAccess var) {
+		for(int i=0;i<getNumParameter();++i)
+			if(getParameter(i) == var.decl() && getArg(i) instanceof VarAccess)
+				return (VarAccess)getArg(i);
+		return var;
+	}
+	public LocalDeclaration ClosureInvocation.unalias(LocalDeclaration decl) {
+		for(int i=0;i<getNumParameter();++i)
+			if(getParameter(i) == decl && getArg(i) instanceof VarAccess &&
+					((VarAccess)getArg(i)).decl() instanceof LocalDeclaration)
+				return (LocalDeclaration)((VarAccess)getArg(i)).decl();
+		return decl;
+	}
+	
+	eq Block.dataPredFor(VarAccess var) {
+		if(getParent() instanceof ClosureInvocation) {
+			ClosureInvocation cl = (ClosureInvocation)getParent();
+			return super.dataPredFor(cl.unalias(var));
+		}
+		return super.dataPredFor(var);
+	}
+	eq ClosureInvocation.dataSuccFor(LocalDeclaration decl) {
+		return super.dataSuccFor(unalias(decl));
+	}
+	
+	// same for bounded dataflow
+	eq Block.hasDataPredBefore(VarAccess var, ASTNode n) {
+		if(getParent() instanceof ClosureInvocation) {
+			ClosureInvocation cl = (ClosureInvocation)getParent();
+			if(this == n)
+				return !dataPredFor(cl.unalias(var)).isEmpty();
+			return super.hasDataPredBefore(cl.unalias(var), n);
+		}
+		return super.hasDataPredBefore(var, n);
+	}	
+	eq ClosureInvocation.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
+		if(this == n)
+			return !dataSuccFor(unalias(decl)).isEmpty();
+		return super.hasDataSuccAfter(unalias(decl), n);
+	}
 
 	// all return statements inside the closure
-	syn lazy SmallSet<ASTNode> ClosureInvocation.returns() = getReturnType().pred();
-	// all final, non-return nodes inside the closure
-	syn lazy SmallSet<ASTNode> ClosureInvocation.finals() {
-    	SmallSet<ASTNode> res = SmallSet.empty();
+	syn lazy SmallSet<Stmt> ClosureInvocation.returns() = getReturnType().predStmt();
+	// all final, non-return statements inside the closure
+	syn lazy SmallSet<Stmt> ClosureInvocation.finals() {
+    	SmallSet<Stmt> res = SmallSet.empty();
     	for(ASTNode n : pred()) {
-    		if(n == getReturnType() || n instanceof Stmt && !((Stmt)n).canCompleteNormally())
+    		if(n == getReturnType())
     			continue;
-    		res = res.union(n);
+    		if(n instanceof Stmt) {
+    			if(((Stmt)n).canCompleteNormally())
+    				res = res.union((Stmt)n);
+    		} else {
+    			for(Stmt stmt : (SmallSet<Stmt>)n.predStmt())
+    				if(stmt.canCompleteNormally())
+    					res = res.union(stmt);
+    		}
     	}
-		return res;  
+    	return res;
 	}
 
 	// lookup and access is done as for methods

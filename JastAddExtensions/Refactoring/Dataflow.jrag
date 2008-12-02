@@ -155,6 +155,85 @@ aspect Dataflow {
 		return super.dataSuccFor(decl);
 	}
 
+	// v.hasDataPredBefore(n): is there some data predecessor p for v such that
+	// n is encountered along the path from v back to p?
+	public boolean VarAccess.hasDataPredBefore(ASTNode n) {
+		if(!(decl() instanceof LocalDeclaration) || !isSource())
+			return false;
+		// we don't want the node to be its own data flow predecessor
+		for(ASTNode pred : pred())
+			if(pred.hasDataPredBefore(this, n))
+				return true;
+		return false;
+	}
+
+	syn boolean ASTNode.hasDataPredBefore(VarAccess var, ASTNode n)
+		circular [false] {
+		if(this == n)
+			return !dataPredFor(var).isEmpty();
+		for(ASTNode pred : pred())
+			if(pred.hasDataPredBefore(var, n))
+				return true;
+		return false;
+	}
+
+	eq VarAccess.hasDataPredBefore(VarAccess var, ASTNode n) {
+		if(this == n)
+			return !dataPredFor(var).isEmpty();
+		if(decl() == var.decl())
+			if(isDest())
+				return false;
+		return super.hasDataPredBefore(var, n);
+	}
+	
+	eq VariableDeclaration.hasDataPredBefore(VarAccess var, ASTNode n) {
+		if(this == n)
+			return !dataPredFor(var).isEmpty();
+		if(this == var.decl())
+			return false;
+		return super.hasDataPredBefore(var, n);
+	}
+
+	eq ParameterDeclaration.hasDataPredBefore(VarAccess var, ASTNode n) {
+		if(this == n)
+			return !dataPredFor(var).isEmpty();
+		if(this == var.decl())
+			return false;
+		return super.hasDataPredBefore(var, n);
+	}
+	
+	// p.hasDataSuccAfter(n): is there a path from p to one of its data successors such
+	// that n occurs on the path?
+	public boolean VarAccess.hasDataSuccAfter(ASTNode n) {
+		if(!(decl() instanceof LocalDeclaration) || !isDest())
+			return false;
+		LocalDeclaration decl = (LocalDeclaration)decl();
+		// we don't want the node to be its own data flow successor, so we have
+		// to skip past it to its successors
+		for(ASTNode succ : succ())
+			if(succ.hasDataSuccAfter(decl, n))
+				return true;
+		return false;
+	}
+
+	syn boolean ASTNode.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) 
+			circular [false] {
+		if(this == n)
+			return !dataSuccFor(decl).isEmpty();
+		for(ASTNode succ : succ())
+			if(succ.hasDataSuccAfter(decl, n))
+				return true;
+		return false;
+	}
+
+	eq VarAccess.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
+		if(this == n)
+			return !dataSuccFor(decl).isEmpty();
+		if(decl() == decl && isDest())
+			return false;
+		return super.hasDataSuccAfter(decl, n);
+	}
+
 	// checks if a subtree may reference a variable in any way
 	public boolean ASTNode.mayRef(Variable v) {
 		for(int i=0;i<getNumChild();++i) {
