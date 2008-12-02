@@ -25,7 +25,7 @@ aspect ControlFlowGraph {
 	eq StaticInitializer.exit() = this;
 	
 	// although it is more convenient to formulate cflow attributes in terms of ASTNodes, we're
-	// actually not interested in getting control flow for _all_ nodes, only "control flow" nodes
+	// actually not interested in getting control flow for _all_ nodes, only "control flow nodes"
 	interface CFNode { }
 	Stmt implements CFNode;
 	Expr implements CFNode;
@@ -204,12 +204,12 @@ aspect ControlFlowGraph {
 	eq MethodAccess.getArg(int i).following() 
 		= singleNode(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
 	// a method may either return normally or throw exceptions
-	// TODO: include unchecked exceptions!
 	inh SmallSet<ASTNode> Expr.throwTarget(TypeDecl exn);
 	eq MethodAccess.succ() {
 		SmallSet<ASTNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
+		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 
@@ -221,6 +221,7 @@ aspect ControlFlowGraph {
 		SmallSet<ASTNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
+		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 
@@ -246,6 +247,7 @@ aspect ControlFlowGraph {
 		SmallSet<ASTNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
+		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 		
@@ -510,10 +512,17 @@ aspect ControlFlowGraph {
 		SmallSet<ASTNode> succ = SmallSet.empty();
 
 		for(ASTNode branch : branches) {
+			// TODO: this is very ugly
 			if(branch instanceof EmptyStmt) // can complete normally
 				succ = succ.union(following());
+			else if(branch instanceof BreakStmt)
+				succ = succ.union(breakTarget((BreakStmt)branch));
+			else if(branch instanceof ContinueStmt)
+				succ = succ.union(continueTarget((ContinueStmt)branch));
+			else if(branch instanceof ThrowStmt)
+				succ = succ.union(throwTarget(((ThrowStmt)branch).getExpr().type()));
 			else
-				succ = succ.union(branch.succ());
+				succ = succ.union(returnTarget());
 		}   
 
 		return succ;
@@ -606,18 +615,22 @@ aspect ControlFlowGraph {
 	inh SmallSet<ASTNode> Stmt.continueTarget(ContinueStmt stmt);
 	inh SmallSet<ASTNode> Stmt.returnTarget();
 	inh SmallSet<ASTNode> Stmt.throwTarget(TypeDecl exn);
+	inh lazy SmallSet<ASTNode> Expr.uncheckedExnTarget();        // target for throwing an unchecked exception
+	inh lazy SmallSet<ASTNode> Stmt.uncheckedExnTarget();
 
 	// default values
 	eq Program.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq Program.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq Program.getChild().returnTarget() = SmallSet.empty();
 	eq Program.getChild().throwTarget(TypeDecl exn) = SmallSet.empty();
+	eq Program.getChild().uncheckedExnTarget() = SmallSet.empty();
 
 	// type declarations are a barrier
 	eq TypeDecl.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq TypeDecl.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq TypeDecl.getChild().returnTarget() = SmallSet.empty();
 	eq TypeDecl.getChild().throwTarget(TypeDecl exn) = SmallSet.empty();
+	eq TypeDecl.getChild().uncheckedExnTarget() = SmallSet.empty();
 
 	// breaks and continues target BranchTargetStmts
 	eq BranchTargetStmt.getChild().breakTarget(BreakStmt stmt) 
@@ -630,6 +643,7 @@ aspect ControlFlowGraph {
 	eq BodyDecl.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq BodyDecl.getChild().returnTarget() = singleNode(exit());
 	eq BodyDecl.getChild().throwTarget(TypeDecl exn) = singleNode(exit());
+	eq BodyDecl.getChild().uncheckedExnTarget() = singleNode(exit());
 
 	// try statements and finally blocks
 	eq TryStmt.getBlock().breakTarget(BreakStmt stmt) 
@@ -644,6 +658,33 @@ aspect ControlFlowGraph {
 				return singleNode(getCatchClause(i).getParameter());
 		return hasFinally() ? singleNode(getFinally()) : throwTarget(exn);
 	}
+	
+	// all catch clauses that handle some unchecked exception are a possible target
+	// if there is a catch clause that can handle all unchecked exceptions, we stop
+	eq TryStmt.getBlock().uncheckedExnTarget() {
+		SmallSet<ASTNode> res = SmallSet.empty();
+		for(CatchClause clause : getCatchClauses()) {
+			if(clause.handlesAllUncheckedExceptions())
+				return res.union(clause.getParameter());
+			if(clause.handlesUncheckedException())
+				res = res.union(clause.getParameter());
+		}
+		return res.union(uncheckedExnTarget());
+	}
+	
+	// a catch clause handles all unchecked exceptions if it handles both RuntimeException
+	// and Error
+	inh TypeDecl CatchClause.typeRuntimeException();
+	inh TypeDecl CatchClause.typeError();
+	syn boolean CatchClause.handlesAllUncheckedExceptions() 
+		= handles(typeRuntimeException()) && handles(typeError());
+	
+	// a catch clause handles _some_ unchecked exception if it handles either RuntimeException
+	// or Error or its parameter type is an unchecked exception
+	syn boolean CatchClause.handlesUncheckedException()
+		= handles(typeRuntimeException()) || handles(typeError())
+			|| getParameter().type().instanceOf(typeRuntimeException())
+			|| getParameter().type().instanceOf(typeError());
 
 	// different statements have different targets for continue
 	syn ASTNode Stmt.targetForContinue() = this;
@@ -653,4 +694,27 @@ aspect ControlFlowGraph {
 		= getNumUpdateStmt() > 0 ? getUpdateStmt(0) : (hasCondition() ? getCondition().first() : getStmt());
 	eq EnhancedForStmt.targetForContinue() = getVariableDeclaration(); 
 	eq LabeledStmt.targetForContinue() = getStmt().targetForContinue();
+	
+	// convenience attributes: finding the preceding/succeeding statement
+	syn SmallSet<Stmt> ASTNode.succStmt() {
+		SmallSet<Stmt> res = new SmallSet<Stmt>();
+		for(ASTNode n : succ()) {
+			if(n instanceof Stmt)
+				res = res.union((Stmt)n);
+			else
+				res = res.union(n.succStmt());
+		}
+		return res;
+	}
+	
+	syn SmallSet<Stmt> ASTNode.predStmt() {
+		SmallSet<Stmt> res = new SmallSet<Stmt>();
+		for(ASTNode n : pred()) {
+			if(n instanceof Stmt)
+				res = res.union((Stmt)n);
+			else
+				res = res.union(n.predStmt());
+		}
+		return res;
+	}
 }
