@@ -30,9 +30,9 @@ aspect Statements {
   }
 
   public void ExprStmt.jimplify2(Body b) {
+    b.setLine(this);
     soot.Value value = getExpr().eval(b);
     if(value instanceof soot.jimple.InvokeExpr) {
-      b.setLine(this);
       b.add(Jimple.v().newInvokeStmt((soot.jimple.InvokeExpr)value));
     }
   }
