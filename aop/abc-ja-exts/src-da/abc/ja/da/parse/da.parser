@@ -29,8 +29,12 @@ BodyDecl aspect_body_declaration =
         {:
             return a;
         :}
-    ;
-
+    |
+        da_state_machine.a
+        {:
+            return a;
+        :}    
+;
 
 AdviceDependency advice_dependency =
         DEPENDENCY LBRACE STRONG advice_name_list.s SEMICOLON RBRACE
@@ -42,7 +46,66 @@ AdviceDependency advice_dependency =
 			return new AdviceDependency(s,w);
 		:}
 	;
+
+DAStateMachine da_state_machine =
+        DEPENDENCY LBRACE advice_name_list.a SEMICOLON state_list.s RBRACE
+        {:
+			return new DAStateMachine(a,s);
+		:}
+;	
 	
+List state_list =
+		state_desc.s
+		{:
+			return new List().add(s);
+		:}
+	|	state_list.l state_desc.s
+		{:	
+			l.add(s);
+			return l;
+		:}
+;
+
+StateAndEdges state_desc = 
+		modifiers.m? IDENTIFIER.i edge_list_opt.l
+		{:
+			boolean isInitial = new Modifiers(m).numModifier("initial")!=0;
+			boolean isFinal = new Modifiers(m).numModifier("final")!=0;
+			return new StateAndEdges(isInitial,isFinal,i,l);
+		:}
+;
+
+List edge_list_opt =
+		SEMICOLON
+		{:
+			return new List();
+		:}
+	|
+		COLON edge_list.l SEMICOLON
+		{:
+			return l;
+		:}
+;
+
+List edge_list =
+		edge.e
+		{:
+			return new List().add(e);
+		:}
+	|	
+		edge_list.l COMMA edge.e
+		{:
+			return l.add(e);
+		:}
+;
+			
+Edge edge =
+		IDENTIFIER.sym MINUS GT IDENTIFIER.to
+		{:
+			return new Edge(sym,to);
+		:}
+;		
+
 List advice_name_list =
 		advice_name.n
 		{:
@@ -161,9 +224,17 @@ AdviceSpec advice_spec =
   
   
 Modifier modifier =
-    DEPENDENT.x {:
-    	ParserTrace.parserTrace("dependent modifier");
-    	return new Modifier("dependent");
-    :}
+	    DEPENDENT.x
+	    {:
+	    	ParserTrace.parserTrace("dependent modifier");
+	    	return new Modifier("dependent");
+	    :}
+    |
+    	INITIAL.x	
+	    {:
+	    	ParserTrace.parserTrace("initial modifier");
+	    	return new Modifier("initial");
+	    :}
+	    /* "final" already exists */
 ;
   

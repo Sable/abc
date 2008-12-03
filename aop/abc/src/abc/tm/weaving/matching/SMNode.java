@@ -74,6 +74,10 @@ public class SMNode implements State {
         finalNode = isFinal;
     }
     
+    public SMNode(boolean isInitial, boolean isFinal) {
+    	this(null,isInitial,isFinal);
+    }
+    
     public void addIncomingEdge(SMEdge edge) {
         incoming.add(edge);
     }

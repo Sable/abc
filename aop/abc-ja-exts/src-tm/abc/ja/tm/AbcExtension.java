@@ -47,7 +47,6 @@ import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
-import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
  * @author Julian Tibble
@@ -56,8 +55,6 @@ import abc.weaving.weaver.ReweavingPass.ID;
  */
 public class AbcExtension extends abc.ja.eaj.AbcExtension
 {
-
-    protected static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -348,7 +345,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
         
         if (abc.main.Debug.v().useITDs) {
             OptionsParser.v().set_tag_instructions(true);
-            passes.add(new ReweavingPass(PASS_ITD_ANALYSIS,
+            passes.add(new ReweavingPass(abc.tm.AbcExtension.PASS_ITD_ANALYSIS,
                                          new ITDAnalysis()));
         }
     }

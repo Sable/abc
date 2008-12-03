@@ -68,6 +68,7 @@
                 <src path="${basedir}/src-eaj"/>
                 <src path="${basedir}/src-da"/>
                 <src path="${basedir}/src-om"/>
+	            <src path="${basedir}/src-tmwpopt"/>
                 <src path="${basedir}/generated"/>
         </javac>
 </target>
@@ -108,7 +109,7 @@
 
 <target name="gen-eaj" depends="eaj-parser,eaj-jrag"/>
 
-<target name="tm-jrag">
+<target name="tm-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
@@ -173,7 +174,7 @@
   </jastadd>
 </target>
 
-<target name="eaj-jrag">
+<target name="eaj-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
@@ -233,7 +234,7 @@
   </jastadd>
 </target>
 	
-<target name="da-jrag">
+<target name="da-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
@@ -298,7 +299,7 @@
   </jastadd>
 </target>	
 
-<target name="om-jrag">
+<target name="om-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
@@ -358,7 +359,7 @@
   </jastadd>
 </target>
 
-<target name="tm-parser">
+<target name="tm-parser" depends="settings">
   <property name="tm-parserdir" location="${basedir}/generated/abc/ja/tm/parse"/>
   <mkdir dir="${tm-parserdir}"/>
   <!-- generate the parser phase 1, create a full .lalr
@@ -392,7 +393,7 @@
           compress="no" useSwitch="yes"/>
 </target>
 
-<target name="eaj-parser">
+<target name="eaj-parser" depends="settings">
   <property name="eaj-parserdir" location="${basedir}/generated/abc/ja/eaj/parse"/>
   <mkdir dir="${eaj-parserdir}"/>
   <!-- generate the parser phase 1, create a full .lalr
@@ -425,7 +426,7 @@
           compress="no" useSwitch="yes"/>
 </target>
 	
-<target name="da-parser">
+<target name="da-parser" depends="settings">
   <property name="da-parserdir" location="${basedir}/generated/abc/ja/da/parse"/>
   <mkdir dir="${da-parserdir}"/>
   <!-- generate the parser phase 1, create a full .lalr
@@ -460,7 +461,7 @@
 </target>	
 
 	
-<target name="om-parser">
+<target name="om-parser" depends="settings">
   <property name="om-parserdir" location="${basedir}/generated/abc/ja/om/parse"/>
   <mkdir dir="${om-parserdir}"/>
   <!-- generate the parser phase 1, create a full .lalr

@@ -25,9 +25,6 @@ import java.util.List;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAInfo;
-import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
-import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
-import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -44,20 +41,15 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 {
     public static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
 	public static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
+    public static final ID DEPENDENT_ADVICE_INTRA_FLOWSENS = new ReweavingPass.ID("flow-sensitive intraprocedural analysis for dependent-advice");
     public static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
 
 	/** The dependent advice info for this extension. This encapsulates all information about advice dependencies in the backend. */
 	protected DAInfo daInfo;
 	
-	/** The quick check for dependent advice. */
-	protected DependentAdviceQuickCheck quickCheck;
-
-	/** The flow-insensitive analysis for dependent advice. */
-	protected DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis;
-
 	public AbcExtension() {
 		if(!OptionsParser.v().laststage().equals("quick")) {
-			//enable whole-program mode if we have anoy other stage but "quick"
+			//enable whole-program mode if we have any other stage but "quick"
 			OptionsParser.v().set_w(true);
 		}
 	}
@@ -105,12 +97,17 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
     			System.err.println("da: DISABLED ALL OPTIMIZATIONS FOR DEPENDENT ADVICE");
     	} else {
 	    	//quick check
-	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,quickCheck()));
+	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
 	   		
 	   		//flow-insensitive analysis, if enabled
 	    	if(!OptionsParser.v().laststage().equals("quick")) {
-	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,flowInsensitiveAnalysis()));
+	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
 	    	}
+	    	
+			if(!OptionsParser.v().laststage().equals("quick")
+			&& !OptionsParser.v().laststage().equals("flowins")) {
+				passes.add(new ReweavingPass(DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
+			}
 	    	
 	        //add a pass which just cleans up resources;
 	        //this is necessary in order to reset static fields for the test harness        
@@ -125,7 +122,7 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 	            @Override
 	            public void cleanup() {
 	                //reset state
-	                resetAnalysisDataStructures();
+	                getDependentAdviceInfo().resetAnalysisDataStructures();
 	            }
 	
 	        };
@@ -133,22 +130,6 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
     	} 
     }
     
-	/**
-	 * Creates the unique instance of the quick check. Extensions may override this method in order
-	 * to instantiate their own version of a quick check instead.
-	 */
-	protected DependentAdviceQuickCheck createQuickCheck() {
-		return new DependentAdviceQuickCheck();
-	}
-
-	/**
-	 * Creates the unique instance of the flow-insensitive analysis. Extensions may override this method in order
-	 * to instantiate their own version of the analysis instead.
-	 */
-	protected DependentAdviceFlowInsensitiveAnalysis createFlowInsensitiveAnalysis() {
-		return new DependentAdviceFlowInsensitiveAnalysis();
-	}
-	
 	/**
 	 * Creates the unique instance of the dependent advice info. Extensions may override this method in order
 	 * to instantiate their own version of this class instead.
@@ -167,30 +148,4 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
         return daInfo;
     }
     
-
-	/**
-	 * @inheritDoc
-	 */
-	public DependentAdviceQuickCheck quickCheck() {
-		if(quickCheck==null)
-			quickCheck = createQuickCheck();
-		return quickCheck;
-	}
-	
-	/**
-	 * @inheritDoc
-	 */
-	public DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis() {
-		if(flowInsensitiveAnalysis==null)
-			flowInsensitiveAnalysis = createFlowInsensitiveAnalysis();
-		return flowInsensitiveAnalysis;
-	}
-
-	/**
-	 * Resets all static data structures used for static tracematch optimizations.
-	 */
-	public void resetAnalysisDataStructures() {
-        WeavableMethods.reset();
-	}
-	
 }

@@ -19,16 +19,9 @@
 
 package abc.tmwpopt;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import polyglot.util.Position;
 import abc.da.HasDAInfo;
-import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
@@ -39,18 +32,9 @@ import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.TMWeaver;
-import abc.tmwpopt.fsanalysis.OutputDotGraphs;
-import abc.tmwpopt.fsanalysis.Ranking;
-import abc.tmwpopt.fsanalysis.Statistics;
-import abc.tmwpopt.fsanalysis.SymbolNames;
-import abc.tmwpopt.fsanalysis.ds.Constraint;
-import abc.tmwpopt.fsanalysis.ds.Disjunct;
-import abc.tmwpopt.fsanalysis.stages.IntraproceduralAnalysis;
-import abc.tmwpopt.tmtoda.PathInfoFinder;
-import abc.tmwpopt.tmtoda.PathInfoFinder.PathInfo;
+import abc.tmwpopt.tmtoda.TracePatternFromTM;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
-import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
  * Abc extension for static whole-program analysis of tracematches. This extension currently exists of three different
@@ -72,49 +56,42 @@ import abc.weaving.weaver.ReweavingPass.ID;
 public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 {
 	
-    protected static final ID TM_INTRA_FLOWSENS = new ReweavingPass.ID("flow-sensitive intraprocedural analysis for tracematches");
-	
 	/**
-	 * The abc.da extension that we use to conduct the quick-check and flow-insensitive analysis.
+	 * The abc.da extension that we use to conduct the various static whole-program analyses for tracematches.
 	 */
 	protected abc.da.AbcExtension daExtension = new abc.da.AbcExtension() {
 		@Override
-		public void resetAnalysisDataStructures() {
-			super.resetAnalysisDataStructures();
-			//when resetting data structures, make sure to reset our data structures, too
-			AbcExtension.this.resetAnalysisDataStructures();
-		}
-		
-		@Override
-		protected DependentAdviceFlowInsensitiveAnalysis createFlowInsensitiveAnalysis() {
-			return new DependentAdviceFlowInsensitiveAnalysis() {
+		protected DAInfo createDependentAdviceInfo() {
+			return new DAInfo() {
 				@Override
-				public void warn(Shadow s, String msg) {
-					//if this extension is enabled, only warn when removing shadows that belong to per-symbol advice
-					//(otherwise we would report for sync/some/body advice as well)
-					if(s.getAdviceDecl() instanceof PerSymbolTMAdviceDecl)
-						super.warn(s, msg);
+				protected DependentAdviceFlowInsensitiveAnalysis createFlowInsensitiveAnalysis() {
+					return new DependentAdviceFlowInsensitiveAnalysis() {
+						@Override
+						public void warn(Shadow s, String msg) {
+							//if this extension is enabled, only warn when removing shadows that belong to per-symbol advice
+							//(otherwise we would report for sync/some/body advice as well)
+							if(s.getAdviceDecl() instanceof PerSymbolTMAdviceDecl)
+								super.warn(s, msg);
+						}
+					};
 				}
-			};
-		}
-		
-		@Override
-		protected DependentAdviceQuickCheck createQuickCheck() {
-			return new DependentAdviceQuickCheck() {
-				protected void warnShadow(abc.weaving.matching.AdviceApplication aa) {
-					//if this extension is enabled, only warn when removing shadows that belong to per-symbol advice
-					//(otherwise we would report for sync/some/body advice as well)
-					if(aa.advice instanceof PerSymbolTMAdviceDecl) {
-						super.warnShadow(aa);
-					}
-				}
+				
+				@Override
+				protected DependentAdviceQuickCheck createQuickCheck() {
+					return new DependentAdviceQuickCheck() {
+						protected void warnShadow(abc.weaving.matching.AdviceApplication aa) {
+							//if this extension is enabled, only warn when removing shadows that belong to per-symbol advice
+							//(otherwise we would report for sync/some/body advice as well)
+							if(aa.advice instanceof PerSymbolTMAdviceDecl) {
+								super.warnShadow(aa);
+							}
+						}
+					};
+				}			
 			};
 		}
 	};
 
-	/** The flow-sensitive abstract interpretation that we use. */
-	protected IntraproceduralAnalysis flowSensitiveAnalysis;
-	
 	public AbcExtension() {
 		//if this extension is enabled, we want to warn the user about each individual shadow being removed
 		//by abc.da, and not just summary information
@@ -123,7 +100,7 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 		if(Debug.v().printTMAdviceDeps) Debug.v().printIndices = true;
 	}
 
-    protected void collectVersions(StringBuffer versions)
+    public void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
         versions.append(" with TraceMatching and Whole-Program Optimizations " +
@@ -144,144 +121,28 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 			@Override
 			public void weaveGenerateAspectMethods() {
 				super.weaveGenerateAspectMethods();
+				DAInfo daInfo = getDependentAdviceInfo();
 				//for each tracematch, register appropriate advice dependencies with abc.da
 				for (TraceMatch tm : ((TMGlobalAspectInfo)getGlobalAspectInfo()).getTraceMatches()) {
-					registerAdviceDependencies(tm);
+					//create dependency for tracematch pattern
+					daInfo.registerTracePattern(new TracePatternFromTM(tm));
+					
+					//register advice names
+					for(String sym: tm.getSymbols()) {
+						String adviceName = tm.getSymbolAdviceMethod(sym).getName();
+						daInfo.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
+					}
 				}
 			}
 		};
 	}
 	
     /**
-     * Registers all necessary advice dependencies for the given tracematch with the abc.da extension.
-     * @param tm a tracematch
+     * Registers the reweaving passes of the dependent-advice abc extension.
      */
-    protected void registerAdviceDependencies(TraceMatch tm) {
-    	DAInfo dai = getDependentAdviceInfo();
-    	
-		if(Debug.v().printTMAdviceDeps) {
-			System.out.println("=====================================================");
-			System.out.println("Symbol advice methods for tracematch "+tm.getName()+":");
-			for (String s : tm.getSymbols()) {
-				System.out.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
-			}
-			System.out.println("Sync advice method for tracematch "+tm.getName()+":");
-			System.out.println(tm.getSynchAdviceMethod().getName());
-			System.out.println("Some advice method for tracematch "+tm.getName()+":");
-			System.out.println(tm.getSomeAdviceMethod().getName());
-			System.out.println("Body advice method for tracematch "+tm.getName()+":");
-			System.out.println(tm.getBodyMethod().getName());
-			System.out.println("Advice Dependencies for tracematch "+tm.getName()+":");
-			System.out.println();
-		}
-
-		//register advice names
-		for(String sym: tm.getSymbols()) {
-			String adviceName = tm.getSymbolAdviceMethod(sym).getName();
-			dai.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
-		}
-		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSynchAdviceMethod().getName());
-		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSomeAdviceMethod().getName());
-		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getName()+"$body");
-		
-		//construct path infos and register dependencies
-		Set<PathInfo> pathInfos = new PathInfoFinder(tm).getPathInfos();
-    	for (PathInfo pathInfo : pathInfos) {
-			Map<String,List<String>> strongAdviceNameToVars = new HashMap<String, List<String>>();
-			Set<String> strongSymbols = new HashSet<String>(pathInfo.getDominatingLabels());
-			for (String strongSymbol : strongSymbols) {
-				List<String> variableOrder = tm.getVariableOrder(strongSymbol);
-				String adviceName = tm.getSymbolAdviceMethod(strongSymbol).getName();
-				strongAdviceNameToVars.put(adviceName, variableOrder);
-			}
-			
-			Map<String,List<String>> weakAdviceNameToVars = new HashMap<String, List<String>>();
-			Set<String> weakSymbols = new HashSet<String>(pathInfo.getSkipLoopLabels());
-			weakSymbols.removeAll(strongSymbols);	//symbols that are strong, may not be declared weak as well
-			for (String weakSymbol : weakSymbols) {
-				List<String> variableOrder = tm.getVariableOrder(weakSymbol);
-				String adviceName = tm.getSymbolAdviceMethod(weakSymbol).getName();
-				weakAdviceNameToVars.put(adviceName, variableOrder);
-			}
-			
-			//synch, some and body advice are also weak; they take no parameters
-			weakAdviceNameToVars.put(tm.getSynchAdviceMethod().getName(),Collections.<String>emptyList());
-			weakAdviceNameToVars.put(tm.getSomeAdviceMethod().getName(),Collections.<String>emptyList());
-			weakAdviceNameToVars.put(tm.getName()+"$body",Collections.<String>emptyList());
-			
-			AdviceDependency adviceDependency = new AdviceDependency(
-					strongAdviceNameToVars,
-					weakAdviceNameToVars,
-					tm.getContainer(),
-					Position.compilerGenerated()
-			);
-			dai.addAdviceDependency(adviceDependency);		
-			if(Debug.v().printTMAdviceDeps) {
-				System.out.println(adviceDependency);
-				System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
-			}
-		}
-		if(Debug.v().printTMAdviceDeps) {
-			System.out.println("====================================================");
-		}
+    @Override
+	public void createReweavingPasses(List<ReweavingPass> passes) {
+    	super.createReweavingPasses(passes);
+    	daExtension.createReweavingPasses(passes);
     }
-
-    
-	/**
-	 * Adds a reweaving pass for the flow-sensitive abstract interpretation (if enabled).
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void createReweavingPasses(List passes) {
-		super.createReweavingPasses(passes);
-		daExtension.createReweavingPasses(passes);
-		
-		if(!OptionsParser.v().laststage().equals("quick")
-		&& !OptionsParser.v().laststage().equals("flowins")) {
-			passes.add(new ReweavingPass(TM_INTRA_FLOWSENS,flowSensitiveAnalysis()));			
-		}
-	}
-	
-	/**
-	 * Returns the quick check of abc.da.
-	 */
-    	public DependentAdviceQuickCheck quickCheck() {
-		return daExtension.quickCheck();
-	}
-
-	/**
-	 * Returns the flow-insensitive analysis of abc.da.
-	 */
-	public DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis() {
-		return daExtension.flowInsensitiveAnalysis();
-	}
-	
-	/**
-	 * Creates a new {@link IntraproceduralAnalysis}. Other extensions may override this method
-	 * to create subclasses of {@link IntraproceduralAnalysis} instead.
-	 */
-	protected IntraproceduralAnalysis createFlowSensitiveAnalysis() {
-		return new IntraproceduralAnalysis();
-	}
-	
-	/**
-	 * Returns the singleton of the flow-sensitive abstract interpretation for tracematches.  
-	 */
-	public IntraproceduralAnalysis flowSensitiveAnalysis() {
-		if(flowSensitiveAnalysis==null)
-			flowSensitiveAnalysis = createFlowSensitiveAnalysis();
-		return flowSensitiveAnalysis;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public void resetAnalysisDataStructures() {
-		Ranking.reset();
-		Statistics.reset();
-		SymbolNames.reset();
-		Disjunct.reset();
-		Constraint.reset();
-		OutputDotGraphs.reset();
-	}
 }

@@ -21,10 +21,25 @@ package abc.da.weaving.aspectinfo;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
+import polyglot.util.Position;
+import abc.da.fianalysis.PathInfoFinder;
+import abc.da.fianalysis.PathInfoFinder.PathInfo;
+import abc.da.fsanalysis.ds.Constraint;
+import abc.da.fsanalysis.ds.Disjunct;
+import abc.da.fsanalysis.ranking.OutputDotGraphs;
+import abc.da.fsanalysis.ranking.Ranking;
+import abc.da.fsanalysis.ranking.Statistics;
+import abc.da.fsanalysis.util.SymbolNames;
+import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
+import abc.da.weaving.weaver.depadviceopt.DependentAdviceIntraproceduralAnalysis;
+import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
+import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -39,6 +54,16 @@ public class DAInfo {
 
 	protected Map<String,String> adviceMethodNameToAdviceShortName = new HashMap<String,String>();
 	protected Set<AdviceDependency> adviceDependencies = new HashSet<AdviceDependency>();
+	protected Set<TracePattern> tracePatterns = new HashSet<TracePattern>();
+
+	/** The quick check for dependent advice. */
+	protected DependentAdviceQuickCheck quickCheck;
+
+	/** The flow-insensitive analysis for dependent advice. */
+	protected DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis;
+	
+	/** The intraprocedural flow-sensitive analysis for dependent advice. */
+	protected DependentAdviceIntraproceduralAnalysis intraproceduralAnalysis;	
 	
 	/**
 	 * Registers a new advice dependency.
@@ -60,6 +85,89 @@ public class DAInfo {
 	public void registerDependentAdvice(String internalAdviceName) {
 		registerDependentAdvice(internalAdviceName,internalAdviceName);
 	}
+	
+    /**
+     * Registers all necessary advice dependencies for the given TracePattern with the abc.da extension.
+     * This method does <i>not</i> register dependent advice themselves, only dependencies between those.
+     * Call {@link #registerDependentAdvice(String)} or {@link #registerDependentAdvice(String, String)}
+     * to register a dependent advice. 
+     * @param tp a TracePattern
+     * @return A set that contains references to the dependencies that were registered for this TracePattern.
+     */
+    public Set<AdviceDependency> registerTracePattern(TracePattern tp) {
+    	Set<AdviceDependency> result = new HashSet<AdviceDependency>();
+//		if(Debug.v().printTMAdviceDeps) {
+//			System.out.println("=====================================================");
+//			System.out.println("Symbol advice methods for TracePattern "+tm.getName()+":");
+//			for (String s : tm.getSymbols()) {
+//				System.out.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
+//			}
+//			System.out.println("Sync advice method for TracePattern "+tm.getName()+":");
+//			System.out.println(tm.getSynchAdviceMethod().getName());
+//			System.out.println("Some advice method for TracePattern "+tm.getName()+":");
+//			System.out.println(tm.getSomeAdviceMethod().getName());
+//			System.out.println("Body advice method for TracePattern "+tm.getName()+":");
+//			System.out.println(tm.getBodyMethod().getName());
+//			System.out.println("Advice Dependencies for TracePattern "+tm.getName()+":");
+//			System.out.println();
+//		}
+		
+//		TracePattern tp = new TracePatternFromTM(tm);
+
+//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getSynchAdviceMethod().getName());
+//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getSomeAdviceMethod().getName());
+//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getName()+"$body");
+		
+		//construct path infos and register dependencies
+		Set<PathInfo> pathInfos = new PathInfoFinder(tp).getPathInfos();
+    	for (PathInfo pathInfo : pathInfos) {
+			Map<String,List<String>> strongAdviceNameToVars = new HashMap<String, List<String>>();
+			Set<String> strongSymbols = new HashSet<String>(pathInfo.getDominatingLabels());
+			for (String strongSymbol : strongSymbols) {
+				List<String> variableOrder = tp.getVariableOrder(strongSymbol);
+				String adviceName = tp.getSymbolAdviceMethod(strongSymbol).getName();
+				adviceName = replaceForHumanReadableName(tp.getContainer().getName()+"."+adviceName);
+				adviceName = adviceName.substring(adviceName.lastIndexOf(".")+1); //remove qualification
+				strongAdviceNameToVars.put(adviceName, variableOrder);
+			}
+			
+			Map<String,List<String>> weakAdviceNameToVars = new HashMap<String, List<String>>();
+			Set<String> weakSymbols = new HashSet<String>(pathInfo.getSkipLoopLabels());
+			weakSymbols.removeAll(strongSymbols);	//symbols that are strong, may not be declared weak as well
+			for (String weakSymbol : weakSymbols) {
+				List<String> variableOrder = tp.getVariableOrder(weakSymbol);
+				String adviceName = tp.getSymbolAdviceMethod(weakSymbol).getName();
+				adviceName = replaceForHumanReadableName(tp.getContainer().getName()+"."+adviceName);
+				adviceName = adviceName.substring(adviceName.lastIndexOf(".")+1); //remove qualification
+				weakAdviceNameToVars.put(adviceName, variableOrder);
+			}
+			
+//			//synch, some and body advice are also weak; they take no parameters
+//			weakAdviceNameToVars.put(tp.getSynchAdviceMethod().getName(),Collections.<String>emptyList());
+//			weakAdviceNameToVars.put(tp.getSomeAdviceMethod().getName(),Collections.<String>emptyList());
+//			weakAdviceNameToVars.put(tp.getName()+"$body",Collections.<String>emptyList());
+			
+			AdviceDependency adviceDependency = new AdviceDependency(
+					strongAdviceNameToVars,
+					weakAdviceNameToVars,
+					tp.getContainer(),
+					Position.compilerGenerated()
+			);
+			addAdviceDependency(adviceDependency);
+			result.add(adviceDependency);
+			if(Debug.v().printTMAdviceDeps) {
+				System.out.println(adviceDependency);
+				System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			}
+		}
+		if(Debug.v().printTMAdviceDeps) {
+			System.out.println("====================================================");
+		}
+		
+		addTracePattern(tp);
+		
+		return result; 
+    }
 	
 	/**
 	 * Registers a dependent advice and a human-readable name for it (the name given to it in the frontend and in the
@@ -163,4 +271,75 @@ public class DAInfo {
 		return !foundError;
 	}
 	
+	public Set<TracePattern> getTracePatterns() {
+		return Collections.unmodifiableSet(tracePatterns);
+	}
+	
+	protected void addTracePattern(TracePattern tp) {
+		tracePatterns.add(tp);
+	}
+
+	/**
+	 * Creates the unique instance of the quick check. Extensions may override this method in order
+	 * to instantiate their own version of a quick check instead.
+	 */
+	protected DependentAdviceQuickCheck createQuickCheck() {
+		return new DependentAdviceQuickCheck();
+	}
+	
+	/**
+	 * Creates the unique instance of the flow-insensitive analysis. Extensions may override this method in order
+	 * to instantiate their own version of the analysis instead.
+	 */
+	protected DependentAdviceFlowInsensitiveAnalysis createFlowInsensitiveAnalysis() {
+		return new DependentAdviceFlowInsensitiveAnalysis();
+	}
+
+	/**
+	 * Creates the unique instance of the flow-insensitive analysis. Extensions may override this method in order
+	 * to instantiate their own version of the analysis instead.
+	 */
+	protected DependentAdviceIntraproceduralAnalysis createIntraproceduralAnalysis() {
+		return new DependentAdviceIntraproceduralAnalysis();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public DependentAdviceQuickCheck quickCheck() {
+		if(quickCheck==null)
+			quickCheck = createQuickCheck();
+		return quickCheck;
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis() {
+		if(flowInsensitiveAnalysis==null)
+			flowInsensitiveAnalysis = createFlowInsensitiveAnalysis();
+		return flowInsensitiveAnalysis;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public DependentAdviceIntraproceduralAnalysis intraProceduralAnalysis() {
+		if(intraproceduralAnalysis==null)
+			intraproceduralAnalysis = createIntraproceduralAnalysis();
+		return intraproceduralAnalysis;
+	}
+	
+	/**
+	 * Resets all static data structures used for static tracematch optimizations.
+	 */
+	public void resetAnalysisDataStructures() {
+        WeavableMethods.reset();
+		Ranking.reset();
+		Statistics.reset();
+		SymbolNames.reset();
+		Disjunct.reset();
+		Constraint.reset();
+		OutputDotGraphs.reset();        
+	}
 }

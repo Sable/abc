@@ -89,6 +89,7 @@ aspect DefaultVariables {
 
  	//inherited attribute to make mapping available in an AdviceDependency
 	inh Map AdviceDependency.allAdviceNameToVars();
+	inh Map DAStateMachine.allAdviceNameToVars();
  	eq AspectDecl.getBodyDecl(int i).allAdviceNameToVars() = adviceNameToVars();  
 	eq BodyDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
 	eq TypeDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
@@ -97,6 +98,7 @@ aspect DefaultVariables {
  	inh Map AdviceNameAccess.allAdviceNameToVars(); 	 	
  	eq AdviceDependency.getStrongName(int j).allAdviceNameToVars() = allAdviceNameToVars(); 
  	eq AdviceDependency.getWeakName(int j).allAdviceNameToVars() = allAdviceNameToVars();
+ 	eq DAStateMachine.getSymbol(int j).allAdviceNameToVars() = allAdviceNameToVars(); 
 	
 	protected boolean AdviceNameAccess.hasDefaultVariables = false;
 	

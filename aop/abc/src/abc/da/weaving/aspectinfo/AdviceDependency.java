@@ -543,7 +543,8 @@ public class AdviceDependency {
 						changed = true;
 						
 						if(OptionsParser.v().warn_about_individual_shadows()) {
-							((HasDAInfo)Main.v().getAbcExtension()).flowInsensitiveAnalysis().warn(
+							DAInfo dependentAdviceInfo = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+							dependentAdviceInfo.flowInsensitiveAnalysis().warn(
 									shadow,
 									"Orphan shadow disabled by flow-insensitive analysis."
 							);

@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2008 Eric Bodden
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,20 +16,27 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.da;
+package abc.da.fsanalysis.callgraph;
 
-import abc.da.weaving.aspectinfo.DAInfo;
-import abc.main.AbcExtension;
+import soot.MethodOrMethodContext;
 
 /**
- * Abstract interface for an object that has information about advice dependencies.
- * (usually an {@link AbcExtension}).
+ * A predicate over a call graph node.
  * @author Eric Bodden
  */
-public interface HasDAInfo {
+public interface NodePredicate {
 
 	/**
-	 * Returns the {@link DAInfo} (a singleton instance).
+     * Returns <code>true</code> if the predicate holds for the node.
+	 * @param node some method or method context
+	 * @return <code>true</code> if the predicate matches the node
 	 */
-	public DAInfo getDependentAdviceInfo();
+	public boolean want(MethodOrMethodContext node);
+	
+	/**
+     * Returns <code>true</code> if children of this node should be visited.
+	 * @param node some method or method context
+	 * @return <code>true</code> if the predicate matches the node
+	 */
+	public boolean visitChildren(MethodOrMethodContext node);
 }

@@ -3,3 +3,9 @@ AdviceDependency: BodyDecl ::= StrongName:AdviceNameAccess* WeakName:AdviceNameA
 AdviceNameAccess ::= <AdviceNameRef:String> ArgVarRef*;
 
 ArgVarRef ::= <AdviceVar:String>;
+
+DAStateMachine: BodyDecl ::= Symbol:AdviceNameAccess* State:StateAndEdges*;
+
+StateAndEdges ::=  <Initial:boolean> <Final:boolean> <StateName:String> Edge*;
+
+Edge ::= <Symbol:String> <TargetStateName:String>;

@@ -78,6 +78,127 @@ aspect DependencyTypeChecks {
 		}
 	}	
 	
+    /* Performs the following type checks:
+     * - there must be at least one final and at least one initial state
+     * - every state must have a unique name
+     * - if names are unique then
+     *     - the target state and symbol of every transition must exist
+     *     - there may be no states unreachable from an initial state
+     *     - one must be able to reach a final state from every state
+     */
+	public void DAStateMachine.typeCheck() {
+		boolean foundFinal = false, foundInitial = false;
+		for(StateAndEdges s: getStates()) {
+			foundFinal |= s.getFinal();
+			foundInitial |= s.getInitial();
+		}
+		if(!foundFinal) {
+				error("State machine contains no final state.");
+		}
+		if(!foundInitial) {
+				error("State machine contains no initial state.");
+		}			
+
+		boolean unique = true;
+		java.util.Set<String> stateNames = new java.util.HashSet<String>();
+		for(StateAndEdges s: getStates()) {
+			if(!stateNames.add(s.getStateName())) {
+				s.error("Duplicate state name '"+s.getStateName()+"'.");
+				unique = false;
+			}
+		}
+
+		if(!unique) return; 
+
+		java.util.Map<String,StateAndEdges> nameToState = new java.util.HashMap<String,StateAndEdges>();
+		for(StateAndEdges s: getStates()) {
+			nameToState.put(s.getStateName(),s);
+		}
+				
+		java.util.Set<StateAndEdges> allStates = new java.util.HashSet<StateAndEdges>();
+		for(StateAndEdges s: getStates()) {
+			allStates.add(s);
+		}
+		
+		java.util.Set<StateAndEdges> reachable = new java.util.HashSet<StateAndEdges>();
+		for(StateAndEdges s: getStates()) {
+			if(s.getInitial()) {
+				reachable.add(s);
+			}
+		}		
+		
+		java.util.Set<String> symbols = new java.util.HashSet<String>();
+		for(AdviceNameAccess sym: getSymbols()) {
+			symbols.add(sym.getAdviceNameRef());
+		}
+		
+		java.util.Set<StateAndEdges> worklist = new java.util.HashSet<StateAndEdges>(reachable);
+
+		while(!worklist.isEmpty()) {
+			Iterator<StateAndEdges> it = worklist.iterator();
+			StateAndEdges s = it.next();
+			it.remove();
+			
+			for(Edge e: s.getEdges()) {
+				String symbol = e.getSymbol();
+				if(!symbols.contains(symbol))
+					e.error("Symbol '"+symbol+"' not declared.");
+			
+				String tgtName = e.getTargetStateName();
+				StateAndEdges tgt = nameToState.get(tgtName);
+				if(tgt==null) {
+					e.error("Target state '"+tgtName+"' does not exist.");
+				} else if(!reachable.contains(tgt)) {
+					reachable.add(tgt);
+					worklist.add(tgt);
+				}
+			}
+		}		
+		
+		java.util.Set<StateAndEdges> unreachable = new java.util.HashSet<StateAndEdges>(allStates);
+		unreachable.removeAll(reachable);
+		
+		for(StateAndEdges s: unreachable) {
+			s.error("State unreachable from any initial state.");
+		}
+		
+		for(StateAndEdges state: reachable) {
+
+			java.util.Set<StateAndEdges> visited = new java.util.HashSet<StateAndEdges>();
+
+			worklist = new java.util.HashSet<StateAndEdges>();
+			worklist.add(state);
+	
+			boolean foundFinalState = false;
+	
+			while(!worklist.isEmpty()) {
+				Iterator<StateAndEdges> it = worklist.iterator();
+				StateAndEdges s = it.next();
+				it.remove();
+				
+				if(s.getFinal()) {
+					foundFinalState = true;
+					break;
+				}
+				
+				for(Edge e: s.getEdges()) {
+					String tgtName = e.getTargetStateName();
+					StateAndEdges tgt = nameToState.get(tgtName);
+					if(tgt!=null && !visited.contains(tgt)) {
+						visited.add(tgt);
+						worklist.add(tgt);
+					}
+				}
+			}		
+			
+			if(!foundFinalState)
+				state.error("Cannot reach any final state from this state.");
+		}
+
+		
+
+	}	
+	
  	syn lazy java.util.List<String> AdviceNameAccess.adviceVars() {
  		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
  		return all.get(getAdviceNameRef());
@@ -105,11 +226,19 @@ aspect DependencyTypeChecks {
 		return res;
 	}
 	
-
+	syn lazy Bag<String> DAStateMachine.varCount() {
+		Bag<String> res = new HashBag<String>();
+		for(int i=0; i<getNumSymbol(); i++) {
+			AdviceNameAccess access = getSymbol(i);
+			res.addAll(access.varCount());
+		}
+		return res;
+	}
+	
 	inh Bag<String> AdviceNameAccess.allVarCount();
 	eq AdviceDependency.getStrongName(int i).allVarCount() = varCount(); 
 	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
-
+	eq DAStateMachine.getSymbol(int i).allVarCount() = varCount();
  	
  	syn lazy java.util.Collection<String> AdviceNameAccess.allAdviceNames() {
  		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();

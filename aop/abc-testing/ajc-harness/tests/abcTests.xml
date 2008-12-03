@@ -10791,6 +10791,28 @@
 	    	<message kind="error" line="7"/>
 		</compile>
     </ajc-test>
+    
+    <ajc-test num="1426" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice with state machine">
+        <compile files="DASMTypeChecks.java" options="-ext,abc.ja.da">
+	    	<message kind="warning" line="16"/>
+	    	<message kind="warning" line="16"/>
+	    	<message kind="warning" line="16"/>
+	    	<message kind="error" line="24"/>
+	    	<message kind="error" line="32"/>
+	    	<message kind="error" line="47"/>
+	    	<message kind="error" line="49"/>
+	    	<message kind="error" line="53"/>
+	    	<message kind="error" line="55"/>
+	    	<message kind="error" line="61"/>
+	    	<message kind="error" line="62"/>
+	    	<message kind="error" line="69"/>
+	    	<message kind="error" line="75"/>
+	    	<message kind="error" line="83"/>
+	    	<message kind="error" line="92"/>
+		</compile>
+    </ajc-test>
+    
 
     <ajc-test num="1430" dir="abctests/da/optimizations"
         title="Quick check for dependent advice">

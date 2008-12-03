@@ -24,6 +24,10 @@ import java.util.HashMap;
  */
 aspect DependentAdviceCodegen {
 
+    public int TypeDecl.daCounter = 0;
+	
+	syn lazy String DAStateMachine.name() =
+    	"daStateMachine$" + hostType().daCounter++;
 
 	//registers an advice dependency
 	public void AdviceDependency.jimplify2() {
@@ -39,13 +43,51 @@ aspect DependentAdviceCodegen {
 		
 		abc.da.weaving.aspectinfo.AdviceDependency ad =
 			new abc.da.weaving.aspectinfo.AdviceDependency(
-					stongAdviceToVars(),
+					strongAdviceToVars(),
 					weakAdviceToVars(),
 					gai.getAspect(getAspect().abcClass()),
 					pos()
 		);
 		
 		dai.addAdviceDependency(ad);
+	}
+	
+		
+	//registers a dependency state-machine
+	public void DAStateMachine.jimplify2() {
+		createAspectInfo();	
+	}
+
+	protected void DAStateMachine.createAspectInfo() {
+		abc.tm.weaving.matching.SimpleStateMachine sm = new abc.tm.weaving.matching.SimpleStateMachine();
+		Map<String,abc.tm.weaving.matching.State>
+			stateNameToAIState = new HashMap<String,abc.tm.weaving.matching.State>();
+		for(StateAndEdges s: getStates()) {
+			abc.tm.weaving.matching.State state = sm.newState();
+			state.setInitial(s.getInitial());
+			state.setFinal(s.getFinal());
+			stateNameToAIState.put(s.getStateName(),state);			
+		}	
+		for(StateAndEdges s: getStates()) {
+			abc.tm.weaving.matching.State from
+				= stateNameToAIState.get(s.getStateName());
+			for(Edge e: s.getEdges()) {
+				abc.tm.weaving.matching.State toState
+					= stateNameToAIState.get(e.getTargetStateName());
+				sm.newTransition(from,toState,e.getSymbol());
+			}			
+		}	
+		
+		abc.da.weaving.aspectinfo.TracePattern pat = new abc.da.weaving.aspectinfo.TracePatternFromSource(
+			aspectClass(),
+			symbolToVars(),
+			sm,
+			name());
+			
+		abc.da.weaving.aspectinfo.DAInfo dai =
+			((abc.da.HasDAInfo) abc.main.Main.v().getAbcExtension()).getDependentAdviceInfo();
+	
+		dai.registerTracePattern(pat);						
 	}
 	
 	
@@ -62,8 +104,8 @@ aspect DependentAdviceCodegen {
 
 		dai.registerDependentAdvice(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);
 	}
-	
-	syn Map<String,java.util.List<String>> AdviceDependency.stongAdviceToVars() {
+
+	syn Map<String,java.util.List<String>> AdviceDependency.strongAdviceToVars() {
 		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
 		for(AdviceNameAccess access: getStrongNames()) {
 			java.util.List<String> l = new ArrayList<String>();
@@ -78,6 +120,18 @@ aspect DependentAdviceCodegen {
 	syn Map<String,java.util.List<String>> AdviceDependency.weakAdviceToVars() {
 		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
 		for(AdviceNameAccess access: getWeakNames()) {
+			java.util.List<String> l = new ArrayList<String>();
+			for(ArgVarRef a: access.getArgVarRefs()) {
+				l.add(a.getAdviceVar());
+			}
+			res.put(access.getAdviceNameRef(),l);
+		}	
+		return res;
+	}
+
+	syn Map<String,java.util.List<String>> DAStateMachine.symbolToVars() {
+		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
+		for(AdviceNameAccess access: getSymbols()) {
 			java.util.List<String> l = new ArrayList<String>();
 			for(ArgVarRef a: access.getArgVarRefs()) {
 				l.add(a.getAdviceVar());

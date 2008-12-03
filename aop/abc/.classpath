@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry excluding="abc/main/AntTask.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="generated"/>
+	<classpathentry kind="src" path="testing-src"/>
 	<classpathentry kind="src" path="paddle-src"/>
 	<classpathentry kind="src" path="runtime-src"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="testing-src"/>
-	<classpathentry kind="src" path="util"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/libs"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+	<classpathentry kind="lib" path="lib/abc-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/abc-testing.jar"/>
+	<classpathentry kind="lib" path="lib/abc.jar">
+		<accessrules>
+			<accessrule kind="nonaccessible" pattern="abc/tm/weaving/weaver/tmanalysis/**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/abcJars"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/soot"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

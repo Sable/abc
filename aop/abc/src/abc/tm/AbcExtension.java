@@ -55,7 +55,7 @@ import abc.weaving.weaver.ReweavingPass.ID;
 public class AbcExtension extends abc.eaj.AbcExtension
 {
 
-    protected static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
+    public static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
 
     protected void collectVersions(StringBuffer versions)
     {

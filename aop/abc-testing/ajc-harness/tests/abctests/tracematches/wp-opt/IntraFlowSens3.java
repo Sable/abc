@@ -9,28 +9,28 @@ public class IntraFlowSens3 extends AbstractTest {
 		canMatch4();
 	}
 	
-	static void canMatch1() {
-		t1.a();
-		t1.x();
-		t1.b();
+	static void canMatch1() { //cannot match
+		t1.a();//can go
+		t1.x();//must stay because it could discard a partial match that started earlier
+		t1.b();//can go
 	}
 
 	static void canMatch2() {
-		t1.a();
+		t1.a();//must stay
 	}
 
 	static void canMatch3() {
-		t1.b();
+		t1.b();//must stay
 	}
 	
 	static void canMatch4() {
-		t1.a();
-		t1.x();
-		t1.b();
-		t2.a();
-		t2.x();
+		t1.a();//can go
+		t1.x();//must stay because it could discard a partial match that started earlier
+		t1.b();//can go
+		t2.a();//field (!) t2 is set in this method, so we only have weak information for t2
+		t2.x();//and hence we have to keep...
 		t2 = new IntraFlowSens3();
-		t2.b();
+		t2.b();//these guys alive
 	}
 
 }

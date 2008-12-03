@@ -287,6 +287,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
         lexer.addAspectJKeyword("dependent", new LexerAction_c(new Integer(Terminals.DEPENDENT)));
         lexer.addAspectJKeyword("strong", new LexerAction_c(new Integer(Terminals.STRONG),lexer.pointcut_state()));
         lexer.addAspectJKeyword("weak", new LexerAction_c(new Integer(Terminals.WEAK),lexer.pointcut_state()));
+        lexer.addAspectJKeyword("initial", new LexerAction_c(new Integer(Terminals.INITIAL)));
     }
     
     /**
@@ -301,12 +302,17 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     			System.err.println("da: DISABLED ALL OPTIMIZATIONS FOR DEPENDENT ADVICE");
     	} else {
 	    	//quick check
-	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,quickCheck()));
+	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
 	   		
 	   		//flow-insensitive analysis, if enabled
 	    	if(!OptionsParser.v().laststage().equals("quick")) {
-	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,flowInsensitiveAnalysis()));
+	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
 	    	}
+	    	
+			if(!OptionsParser.v().laststage().equals("quick")
+			&& !OptionsParser.v().laststage().equals("flowins")) {
+				passes.add(new ReweavingPass(abc.da.AbcExtension.DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
+			}
 	    	
 	        //add a pass which just cleans up resources;
 	        //this is necessary in order to reset static fields for the test harness        
@@ -321,12 +327,12 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 	            @Override
 	            public void cleanup() {
 	                //reset state
-	                resetAnalysisDataStructures();
+	                getDependentAdviceInfo().resetAnalysisDataStructures();
 	            }
 	
 	        };
-	        passes.add( new ReweavingPass(AFTER_ANALYSIS_CLEANUP , cleanup ) );
-    	}
+	        passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
+    	} 
     }
     
 	/**

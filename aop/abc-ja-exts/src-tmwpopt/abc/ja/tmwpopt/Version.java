@@ -16,20 +16,18 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.da;
 
-import abc.da.weaving.aspectinfo.DAInfo;
-import abc.main.AbcExtension;
+package abc.ja.tmwpopt;
 
 /**
- * Abstract interface for an object that has information about advice dependencies.
- * (usually an {@link AbcExtension}).
+ * Version information for tracematching extension
  * @author Eric Bodden
  */
-public interface HasDAInfo {
+public class Version extends abc.aspectj.Version {
+    public String name() { return "abc+ja+eaj+tracematching+wholeprogramopt"; }
 
-	/**
-	 * Returns the {@link DAInfo} (a singleton instance).
-	 */
-	public DAInfo getDependentAdviceInfo();
+    public int major() { return 0; }
+    public int minor() { return 1; }
+    public int patch_level() { return 1; }
+  
 }
