@@ -2,11 +2,12 @@ class YoYo {
     void bar () {}
     void f () {
         YoYo yoYoYo = foo();
-        <caret>yoYoYo.bar();
+        /*[*/yoYoYo/*]*/.bar();
     }
 
     private YoYoYo foo() {
-
+	// added to improve compilability
+	return null;
     }
     class YoYoYo extends YoYo {}
 }

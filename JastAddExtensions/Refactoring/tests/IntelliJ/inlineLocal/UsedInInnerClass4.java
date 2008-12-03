@@ -1,24 +1,27 @@
+// added imports for compilability
+import javax.swing.*;
+import java.awt.Dimension;
+
 public class IDEA17606 {
+    // inserted declaration for compilability
+    class Foo extends JComponent { }
 
     public void foo() {
-        final Preferences preferences = Preferences.getInstance();
+        final Preferences preferences = new Preferences();
         // try to inline 'preferences'
         final Bar bar = new Bar(preferences.getComponent());
         bar.toString();
 
-        ThreadUtils.run(new Runnable() {
+        new ThreadUtils().run(new Runnable() {
             public void run() {
                 final Foo foo = new Foo();
-                foo.setSize(<caret>preferences.getDimension().getSize());
+                foo.setSize(/*[*/preferences/*]*/.getDimension().getSize());
             }
         });
     }
 
+    // changed slightly for compilability
     class Preferences {
-	public static Preferences getInstance() {
-            return new Preferences();
-        }
-
 	public JComponent getComponent() {
             return null;
         }
@@ -33,8 +36,9 @@ public class IDEA17606 {
 	}
     }
 
+    // changed slightly for compilability
     class ThreadUtils {
-        public static void run(Runnable runnable) {
+        public void run(Runnable runnable) {
         }
     }
 }

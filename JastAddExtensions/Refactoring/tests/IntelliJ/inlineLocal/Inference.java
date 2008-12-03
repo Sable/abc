@@ -7,6 +7,6 @@ class Inference {
 
         {
            String v2 = new Inference().getX();
-           foo(<caret>v2);
+           foo(/*[*/v2/*]*/);
         }
 }

@@ -7,7 +7,7 @@ class Tester {
 
     void caller() {
         String[] thing = {"a", "b"};
-        method("", <caret>thing);
+        method("", /*[*/thing/*]*/);
         method1("", thing);
     }
 }

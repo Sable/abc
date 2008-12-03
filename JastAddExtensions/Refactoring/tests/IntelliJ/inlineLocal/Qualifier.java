@@ -4,7 +4,7 @@ class Outer {
     void foo() {
         new Runnable() {
             public void run() {
-                final String <caret>value = getValue();
+                /*[*/final String value = getValue()/*]*/;
                 doSomething(value);
             }
         };
