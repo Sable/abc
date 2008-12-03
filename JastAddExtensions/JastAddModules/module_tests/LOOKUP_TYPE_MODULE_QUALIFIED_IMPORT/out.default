@@ -239,34 +239,34 @@ module m1.m2, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m2
-	m2.BBDemand
-	m2.$pack2.Q
-	m2.BB
-	m2.BDemand
 	m2.B
 	m2.$pack.P
+	m2.$pack2.Q
+	m2.BB
+	m2.BBDemand
+	m2.BDemand
 Module: m3
-	m3.$pack.P
 	m3.C
+	m3.$pack.P
 Module: m1
+	m1.AA
+	m1.AAA
+	m1.A
+	m1.AAADemand
+	m1.$pack.P
 	m1.AADemand
 	m1.ADemand
-	m1.AAA
-	m1.AA
-	m1.A
-	m1.$pack.P
-	m1.AAADemand
 Module: jastadd$framework
 Module: m1.m2.m3
-	m1.m2.m3.$pack.P
 	m1.m2.m3.C
+	m1.m2.m3.$pack.P
 Module: m1.m2
-	m1.m2.BDemand
 	m1.m2.BB
-	m1.m2.BBDemand
 	m1.m2.$pack2.Q
 	m1.m2.B
 	m1.m2.$pack.P
+	m1.m2.BBDemand
+	m1.m2.BDemand
 
 ----------CU iterator----------
 m2.module, m3.module, m1.module, AA.java, AADemand.java, AAADemand.java, A.java, AAA.java, ADemand.java, m1pack/P.java, pack/PP.java, Main.java, pack/P.java, ../testlib/jastadd$framework.module, m3.module, C.java, m3pack/P.java, m2.module, BBDemand.java, m2pack/P.java, m2pack2/Q.java, BB.java, BDemand.java, B.java
