@@ -1,0 +1,55 @@
+The OSGi Service Platform \cite{OSGi4} is arguably the most developed and
+widely used module system for Java at this time. Its main modularity 
+construct is the bundle, a specification that applies to the set of class
+files that belong to a JAR. Most of the mechanisms
+described in the previous sections have been derived from existing usage
+of the OSGi platform, and the design of the type system is heavily
+influenced by the platform's bundle features. The platform's
+capabilities and shortcomings have already been expounded on in the 
+previous sections and the operations \textbf{replace} and \textbf{merge},
+module extension and module qualified type names add a significant amount of expressibility compared
+to OSGi.
+
+JSR 294: Improved Modularity Support in the Java$^{TM}$ Programming Language \cite{JSR294} and
+JSR 277: Java$^{TM}$ Module System \cite{JSR277} are two proposals to improve
+the Java programming language with modules. JSR 294, now merged with JSR 277, focused
+on development modules: structures that allowed for better information hiding within 
+a module. It contained the syntax for module membership.
+JSR 277 is more focused on deployment modules, and has the same set of design 
+concerns as OSGi bundles. JSR 277 modules are very similar to OSGi bundles,
+and have a similar set of advantages and disadvantages.
+
+.NET assemblies \cite{netassemblies} are generated modularization structures
+for the .NET framework. They handle versioning dependencies and security
+requirements, while also allowing for side-by-side execution of multiple
+versions of the same assembly.
+
+iJAM \cite{iJAM} has proposed the more flexible \texttt{import own}
+mechanism for module instantiation and renaming to solve several unintuitive class
+resolution results from JSR 294. Sharing of \texttt{own} instances was
+done through the renaming mechanism. The proposed type system improves
+on iJAM by having an explicit instance exporting construct,
+allowing for module qualified lookups and having the explicit module operators
+merge and replace.
+
+Peter Kriens is a staunch advocate of OSGi and his blog \cite{iJAMComments, superpackagesNoMore}
+contains insights on OSGi bundles that have been taken into consideration
+in the design of the module type system. His comments on split packages and
+the need for a more flexible class lookup mechanism led to the module declarations
+in the \texttt{package-info.java} and module qualified type names.
+
+The design of various other module systems have inspired several features in the 
+proposed type system. MJ modules \cite{corwinMJModules} provide an addition to
+the existing Java import declaration to include modules, which has led to module
+qualified imports. Typed components \cite{secotypedcomponents} proposed to
+view modules as types, but did not have the subtyping and replace operations.
+Component Nextgen \cite{componentnextgen} has parameterized interfaces for module imports,
+and Jiazzi \cite{mcdirmid01jiazzi} uses class import and export signatures, 
+both of which inspired the design of the weak module interface. Smart modules
+\cite{Ancona05smartmodules} and Hyper/J \cite{hyperj} proposed the merge operation, 
+but in the context of mixin and aspect composition. Module extension and shadowing is inspired by 
+virtual classes \cite{virtualclasses89}, which allows the extension of nested classes in a subclass.
+
+The implementation of the type system as a module-aware compiler was done in JastAdd \cite{jastadd},
+an aspect-oriented compiler construction framework. This has allowed for relatively
+rapid development and a simpler pass structure.

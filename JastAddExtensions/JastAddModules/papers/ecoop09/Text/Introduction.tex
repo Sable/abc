@@ -1,0 +1,54 @@
+Module systems for Java and similar languages have been designed 
+to deal with the shortcomings of the package as a modularity construct
+and the deeper problem of JAR hell, that is, the problems caused
+by wrong class lookup when there are multiple versions of a library
+in the classpath. Several module systems for Java-like languages 
+have been proposed \cite{javajars, OSGi4, netassemblies, JSR294, JSR277}
+that address these problems, and the design of these systems have
+revolved around the premise of a module as a container for classes
+with additional meta-data to distinguish different versions.
+
+However, the existing module systems still have limitations. Split packages, lack of
+the ability to express backward compatibility and limited extension
+features are common to the current module systems.
+
+Split packages \cite{iJAMComments} occur when 
+a package and its classes occur in more than one visible module. This
+causes the same ambiguous class lookup problems caused by JAR hell.
+This is a symptom of the lack of ability to specify module sharing
+and use.
+
+While substantial support for version constraints are supported
+for a module's clients at the point of import, current module 
+systems do not have a way for module providers to specify backward 
+compatibility (or lack thereof) in the module specification. 
+This information is usually found in release documentation and 
+it becomes the responsibility of a module's clients, who have comparatively
+less information than the module's providers, to update 
+their applications based on this information. 
+
+Existing module systems also have limited extension capabilities. Extending
+a module's functionality without access to its source code usually 
+requires predefined extensibility support coded in by the module's 
+providers, usually in the form of access to the points of a class' 
+instantiation. Without such explicit support, a client's only option
+is usually reimplementation of the parts that contain the instantiation, 
+and the use of wrapper classes to reuse and extend behavior.
+
+We propose that these problems can be solved by treating modules
+as object-oriented types over a set of classes. Split packages can 
+be handled by explicit definitions of module instance sharing and use.
+Module extension can be modeled by subtyping, and version constraints
+by interfaces. 
+
+The paper is organized as follows. First we describe the
+usage and shortcomings of existing module systems in section \ref{moduleops}. We then non-formally
+define a type system that contains relations and operations on module types 
+that closely resemble object-oriented types in section \ref{moduletypes}. 
+In section \ref{eval} we demonstrate that the type
+system is able to express existing usage of modules while providing new
+capabilities to handle split packages, backwards compatibility and module extension. The type system
+itself is implemented in a compiler made using the JastAdd\cite{jastadd} compiler construction
+framework, and is demonstrated on a small case study on JHotdraw 7.1 \cite{jhotdraw}.
+A short description of the implementation is included in section \ref{implementation}.
+The paper then ends with sections on related work and conclusions.

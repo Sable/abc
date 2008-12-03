@@ -1,0 +1,96 @@
+
+%
+%  $Description: Author guidelines and sample document in LaTeX 2.09$ 
+%
+%  $Author: ienne $
+%  $Date: 1995/09/15 15:20:59 $
+%  $Revision: 1.4 $
+%
+
+\documentclass{llncs}
+\usepackage{times}
+\usepackage{listings}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+\usepackage{cite}
+
+%\documentstyle[times,art10,twocolumn,latex8]{article}
+
+%------------------------------------------------------------------------- 
+% take the % away on next line to produce the final camera-ready version 
+\pagestyle{empty}
+
+%------------------------------------------------------------------------- 
+\begin{document}
+
+\title{Versioning Through Object-Oriented Module Relations}
+
+\author{Neil Ongkingco}
+\institute{Programming Tools Group,
+	\\Oxford Computing Laboratory, Univesity of Oxford
+	\\Wolfson Building, Parks Road, Oxford, UK
+	\\\email{neil.ongkingco@gmail.com}}
+
+
+\maketitle
+\thispagestyle{empty}
+
+\input{Text/Abstract}
+
+
+\lstset{numbers=left, columns=flexible, language=[AspectJ]Java, basicstyle=\small, numberstyle=\tiny, frame=tb}
+\lstset{
+morekeywords={own,module,export,as,merge,{module\_interface}, replace, with, overrides, singleton, supermodule},
+frame=tb,
+numbers=left,
+captionpos=t,
+tabsize=2
+}
+
+%------------------------------------------------------------------------- 
+\section{Introduction}
+\label{intro}
+\input{Text/Introduction}
+
+%------------------------------------------------------------------------- 
+\section{Module Operations}
+\label{moduleops}
+\input{Text/ModuleOperations}
+
+\section{Modules as Types}
+\label{moduletypes}
+\input{Text/ModulesAsTypes}
+
+\section{Evaluation}
+\label{eval}
+\input{Text/Modelling}
+
+%\Section{Case Study: JHotdraw}
+%\input{Text/CaseStudy}
+
+\section{Implementation}
+\label{implementation}
+\input{Text/Implementation}
+
+%------------------------------------------------------------------------ 
+\section{Related work}
+\label{related}
+\input{Text/Related}
+
+%\Section{Future work}
+%\input{Text/Future}
+
+%------------------------------------------------------------------------- 
+\section{Conclusions}
+\label{conclusions}
+\input{Text/Conclusions}
+
+\section{Acknowledgements}
+\label{ack}
+\input{Text/Acknowledgements}
+
+%------------------------------------------------------------------------- 
+\bibliographystyle{splncs}
+\bibliography{latex8}
+\end{document}
+

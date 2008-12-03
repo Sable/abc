@@ -1,0 +1,29 @@
+Treating modules as types provide a more elegant solution to JAR hell, as the module
+type errors occur at compile time, and load time errors will occur at the module level
+instead of the class level. This would make it a lot easier to diagnose and
+fix problems caused by wrong class lookups.
+
+Note that the syntax only represents the type system, it is not the only way
+to implement it. As mentioned, overriding is already implicitly implemented
+by versions. Other existing features such as loose coupling in OSGi can
+also be modeled, i.e. by using weak interfaces and a generated import and replace
+declaration. The type system is also not limited to
+the current implementation. For example, the import declaration can be 
+extended to use OSGi's extensive constraint features for packages and bundles.
+
+Separate compilation of modules with module interface dependencies would require
+the ability to compile and lookup module qualified names during runtime. We believe
+it is possible to do so with a classloader implementation of the module system. Reflection
+APIs would also require the context in which the lookup should be done in addition to
+the class' package and name. These are left as future work.
+
+The overrides declaration creates synthetic types for the overriden modules 
+if they are not present in the compilation. These types are currently very loose,
+in that they can be assigned to a module reference of any type. Tightening the
+constraints on synthetic types using information from overriding types is left
+as future work.
+
+Merge and replace are currently just used in the module's ``constructor'', that is, in
+the module's instantiation instructions. These may be extended to be executed in the context
+of a running repository, and may provide the basis for a language for module upgrades and replacement.
+

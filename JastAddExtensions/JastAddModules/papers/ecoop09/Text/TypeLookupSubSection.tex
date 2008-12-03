@@ -1,0 +1,61 @@
+\SubSection{Type Lookup Sequence}
+
+This module system, as with any module system for Java, changes the way that type
+references are looked up. The following pseudocode shows how type lookup is done in
+the type system defined above. 
+
+\begin{lstlisting}[caption = Type Lookup, tabsize=2, morekeywords={method}]
+//lookup for unqualified names in a CU
+method CU.lookup(typeName) {
+	//get the module of which the CU is a member
+	Module = CU.getParentModule();
+	if (Module != null) {
+		lookup classes in CU
+		lookup classes in single type imports
+		//lookup in module and its supertypes only
+		Module.lookup(null, CU.package(), typeName, false)
+		lookup classes in on-demand imports
+		//lookup in module, including direct imports
+		Module.lookup(null, CU.package(), typeName, true)
+		lookup primitive types
+		lookup automatic imports (java.lang)
+	} else {
+		normal java lookup
+	}
+}
+
+//lookup for qualified names
+//takes the module qualifier, package
+//qualifier and typeName of a type reference
+//and a boolean value lookInImports
+method Module.lookup(moduleName, packageName, 
+							typeName, lookInImports) {
+	if (special packageName (java.lang)) {
+		lookup in defaultmodule
+	}
+	if (moduleName == null) {
+		lookup in thismodule
+		lookup in each successive supertype
+		if (lookInImports) {
+			lookup in direct imports
+		}
+	} 
+	else {
+	//lookup through the module qualifier
+	contextModule = lookupModule(moduleName);
+	contextModule.lookup(``'', packageName, 
+												typeName, false);
+	}
+}
+\end{lstlisting}
+
+The lookup rules follow the Java way of looking up types,
+starting from the most local proceeding to the most global. Types are looked up
+first in the same compilation unit, then in the single type imports,
+then in the types that belong to the same package in the module and its supertype 
+modules, then the on-demand imports, then the member types of the same package
+in directly imported modules, and finally to the primitive types and the 
+implicit {\tt java.lang} imports. It was a conscious decision to make on-demand imports
+come first before the lookups to directly imported modules. This is because the on-demand import
+is closer to the type reference being resolved, being in the same source file instead of
+on a separate module specification file.

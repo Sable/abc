@@ -1,0 +1,16 @@
+Existing module systems for Java-like languages have been developed
+to handle JAR hell, but are unable to handle split packages,
+express backward compatibility constraints and module extension.
+
+The module type system presented in this paper is able to express the common operations
+in current use on Java modules, and allows the handling of split packages through
+module qualifiers, backward compatibility through overrides and module interfaces,
+and module extension through subtyping. We have
+also provided an implementation to demonstrate that it is
+possible to realize this type system in an actual Java compiler,
+and have demonstrated it on a small case study in JHotdraw.
+
+We believe that the system provides a good conceptual
+model for thinking about modules in Java and similar languages,
+and that the new features allowed by the type system are worthy
+of addition to any module system for Java-like languages.
