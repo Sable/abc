@@ -2,7 +2,7 @@ import java.util.*;
 
 class Foo {
     public void foo(Bar bar) {
-        for (Iterator it = bar.iterator(); it.hasNext();) {
+        for (Iterator it = bar./*[*/iterator()/*]*/; it.hasNext();) {
             final String o = (String) it.next();
         }
     }
@@ -14,7 +14,7 @@ class Bar<CN extends Bar> {
     /**
      * @deprecated
      */
-    public Iterator<CN> <caret>iterator() {
+    public Iterator<CN> iterator() {
         return getCns().iterator();
     }
 

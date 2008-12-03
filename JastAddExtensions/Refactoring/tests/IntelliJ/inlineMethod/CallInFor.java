@@ -1,12 +1,14 @@
+import java.util.*;
+
 public class C {
     public void doSomething() {
-        for (Iterator it = getSomeObjects().iterator(); it.hasNext();) {
+        for (Iterator it = /*[*/getSomeObjects()/*]*/.iterator(); it.hasNext();) {
             String text = (String)it.next();
             System.out.println("text = " + text);
         }
     }
 
-    private Collection <caret>getSomeObjects() {
+    private Collection getSomeObjects() {
         final String text = "hello";
         return getSomeObjects(text);
     }

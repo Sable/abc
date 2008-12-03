@@ -4,12 +4,12 @@ public class Try {
         return i;
     }
  
-    public synchronized int another<caret>() {
+    /*[*/public synchronized int another() {
         try {
             return Integer.parseInt("1");
         }
         catch (NumberFormatException ex) {
             throw ex;
         }
-    }
+    }/*]*/
 }

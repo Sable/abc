@@ -1,11 +1,11 @@
 class BugTest {
-    void <caret>f(String... s) {
+    void f(String... s) {
         for (String s1 : s) {
 
         }
     }
 
     {
-        f(new String[] {""});
+        /*[*/f(new String[] {""})/*]*/;
     }
 }

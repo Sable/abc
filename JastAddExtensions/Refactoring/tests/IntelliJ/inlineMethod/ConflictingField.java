@@ -1,11 +1,11 @@
 class Test {
     public int i;
 
-    public int <caret>getI() {
+    public int getI() {
         return i;
     }
 
     public void usage() {
-        int i = getI();
+        int i = /*[*/getI()/*]*/;
     }
 }

@@ -1,9 +1,9 @@
 class InlineMethodTest {
     public static InlineMethodTest createInstance() {
-        return new InlineMethodTest(0);
+        return new /*[*/InlineMethodTest(0)/*]*/;
     }
 
-    protected <caret>InlineMethodTest(int y) {
+    protected InlineMethodTest(int y) {
         this("hello world", y);
     }
 

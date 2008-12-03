@@ -2,13 +2,13 @@ class Base {
     protected int f;
 
 
-    public int <caret>getF() {
+    public int getF() {
         return f;
     }
 }
 
 class DRV extends Base {
     void f() {
-        int f1 = getF();
+        int f1 = /*[*/getF()/*]*/;
     }
 }

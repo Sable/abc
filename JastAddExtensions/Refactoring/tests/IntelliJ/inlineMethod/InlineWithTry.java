@@ -1,8 +1,8 @@
 class A {
     {
-        g();
+        /*[*/g()/*]*/;
     }
-    int <caret>g() {
+    int g() {
         try {
             return 0;
         } catch (Error e) {

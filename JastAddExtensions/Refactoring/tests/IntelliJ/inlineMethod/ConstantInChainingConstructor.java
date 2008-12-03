@@ -1,7 +1,7 @@
 class Test {
     public static final int ID=0;
 
-    public <caret>Test() {
+    public Test() {
         this(ID);
     }
 
@@ -11,6 +11,6 @@ class Test {
 
 class Rest {
     public static void test() {
-        new Test();
+        new /*[*/Test()/*]*/;
     }
 }

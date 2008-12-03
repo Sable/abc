@@ -1,7 +1,7 @@
 class A{
-  int field = foo();
+  int field = /*[*/foo()/*]*/;
 
-  int <caret>foo(){
+  int foo(){
     return 1;
   }
 }

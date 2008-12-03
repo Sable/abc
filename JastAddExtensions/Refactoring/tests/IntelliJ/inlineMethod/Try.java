@@ -1,10 +1,10 @@
 public class Try {
     public int test() {
-        int i = another();
+        int i = /*[*/another()/*]*/;
         return i;
     }
  
-    public int another<caret>() {
+    public int another() {
         try {
             return Integer.parseInt("1");
         }

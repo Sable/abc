@@ -79,6 +79,8 @@ public abstract class ExtractMethod extends TestCase {
         String altfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A_alt.java";
         try {
         	Program prog = TestHelper.compile(infile);
+        	/*System.out.println(prog);
+        	prog.flushCaches();*/
         	assertNotNull(prog);
         	TypeDecl A = prog.lookupType("", "A");
         	assertNotNull(A);

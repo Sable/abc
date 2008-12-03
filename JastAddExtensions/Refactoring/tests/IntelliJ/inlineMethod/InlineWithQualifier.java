@@ -1,9 +1,9 @@
 class Element {
     String id;
 
-    String <caret>getName() {
+    /*[*/String getName() {
         return getID();
-    }
+    }/*]*/
     String getID() {
         return id;
     }
@@ -18,7 +18,8 @@ class Element {
         return buffer.toString();
     }
     static Element toXML(Element element){
-        X el= new X("El")
+	// added semicolon for compilability
+        X el= new X("El");
         el.setAttribute("attr", element.getName());
         return el;
     }
@@ -30,4 +31,10 @@ class Usage {
         buffer.append(element.getName());
         return buffer.toString();
     }
+}
+
+// added following definition for compilability
+class X extends Element { 
+    X(String s) { } 
+    void setAttribute(String s, String v) { } 
 }

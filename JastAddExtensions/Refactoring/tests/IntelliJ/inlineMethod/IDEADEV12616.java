@@ -1,6 +1,6 @@
 class Test {
   public void foo() {
-      String s = <caret>bar();
+      String s = /*[*/bar()/*]*/;
   }
 
   private String bar() {

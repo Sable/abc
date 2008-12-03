@@ -4,7 +4,7 @@ public class ConstructedClass {
     ConstructedClass(int field) {
     }
 
-    public <caret>ConstructedClass(String keyword) {
+    /*[*/public ConstructedClass(String keyword) {
 	this(keyword.length());
-    }
+    }/*]*/
 }

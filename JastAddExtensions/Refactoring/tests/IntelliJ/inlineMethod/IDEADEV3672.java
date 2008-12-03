@@ -1,6 +1,6 @@
 class Tester1 {
     void caller() {
-        <caret>method(); 
+        /*[*/method()/*]*/; 
     }
     void method() {
         new Runnable() {

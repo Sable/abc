@@ -3,7 +3,7 @@ public class Scr10884 {
                 return 1;
         }
         Y bar() {
-            return new Y(<caret>foo()) {
+            return new Y(/*[*/foo()/*]*/) {
 	    };
         }
 }

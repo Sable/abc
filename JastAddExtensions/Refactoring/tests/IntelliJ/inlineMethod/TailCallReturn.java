@@ -7,6 +7,6 @@ class A {
     }
 
     public String method(boolean b) {
-        return <caret>toInline(b);
+        return /*[*/toInline(b)/*]*/;
     }
 }

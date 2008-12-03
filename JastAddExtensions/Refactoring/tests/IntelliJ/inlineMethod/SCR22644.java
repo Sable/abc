@@ -1,7 +1,7 @@
 public class SuperClass {
-    public void <caret>doSomething() {
+    /*[*/public void doSomething() {
         UtilClass.doSomething(this);
-    }
+    }/*]*/
 }
 
 public class SubClass extends SuperClass {

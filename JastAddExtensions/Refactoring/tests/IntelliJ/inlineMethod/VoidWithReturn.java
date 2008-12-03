@@ -1,9 +1,9 @@
 class Test {
     void method() {
-        otherMethod();
+        /*[*/otherMethod()/*]*/;
         System.out.println("Here");
     }
-    void otherMethod<caret>() {
+    void otherMethod() {
         return;
     }
 }

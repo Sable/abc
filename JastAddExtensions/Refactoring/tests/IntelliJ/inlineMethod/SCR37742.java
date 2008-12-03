@@ -7,6 +7,6 @@ class Test {
     }
 
     void bar () {
-        <caret>foo(new String());
+        /*[*/foo(new String())/*]*/;
     }
 }

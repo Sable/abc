@@ -7,6 +7,7 @@ class A {
     }
 
     public String method(boolean b) {
-        <caret>toInline(b);
+	// added return for compilability
+        return /*[*/toInline(b)/*]*/;
     }
 }

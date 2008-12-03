@@ -8,6 +8,6 @@ public class Varargs {
     }
 
     public void foo() {
-        String s = <caret>joinStrings("", "i", "d", "e", "a");
+        String s = /*[*/joinStrings("", "i", "d", "e", "a")/*]*/;
     }
 }

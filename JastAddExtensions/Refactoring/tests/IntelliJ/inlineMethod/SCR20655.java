@@ -1,7 +1,7 @@
 class Super {
-  public void message<caret>() {
-    System.out.println(this);
-  }
+    /*[*/public void message() {
+	System.out.println(this);
+    }/*]*/
 }
 
 class Sub extends Super {

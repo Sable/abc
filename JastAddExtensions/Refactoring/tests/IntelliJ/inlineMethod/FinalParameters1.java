@@ -2,9 +2,9 @@ class Test {
     void method(Object x) {
         String s = null;
         s = (String) x;
-	toInline(s.length());
+	/*[*/toInline(s.length())/*]*/;
     }
-    void toIn<caret>line(final int i) {
+    void toInline(final int i) {
         Runnable r = new Runnable() {
             public void run() {
                 System.out.println(i);

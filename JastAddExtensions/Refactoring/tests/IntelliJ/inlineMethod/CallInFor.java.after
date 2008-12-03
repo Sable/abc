@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class C {
     public void doSomething() {
         final String text1 = "hello";

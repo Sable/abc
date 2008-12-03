@@ -6,12 +6,13 @@ class Base {
 }
 
 class Derived extends Base {
-    String <caret>getName() {
+    String getName() {
         return getID();
     }
     
     static void usage(Derived element) {
         StringBuffer buffer = new StringBuffer();
-        buffer.add(element.getName());
+	// changed add to append in next line for compilability
+        buffer.append(element./*[*/getName()/*]*/);
     }
 }

@@ -1,10 +1,10 @@
 class A {
 
     Integer f(int i) {
-        return g(i);
+        return /*[*/g(i)/*]*/;
     }
 
-    Integer <caret>g(int i) {
+    Integer g(int i) {
         if (i > 0) {
             return new Integer(i);
         }

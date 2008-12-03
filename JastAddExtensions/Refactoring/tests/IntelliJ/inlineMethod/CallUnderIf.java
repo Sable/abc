@@ -4,10 +4,10 @@ public class Foo {
 
     public void usage() {
         if (myI != null)
-            method(myI);
+            /*[*/method(myI)/*]*/;
     }
 
-    void me<caret>thod(Integer i) {
+    void method(Integer i) {
         System.out.println(getComponent(myI) + getComponent(i));
     }
 

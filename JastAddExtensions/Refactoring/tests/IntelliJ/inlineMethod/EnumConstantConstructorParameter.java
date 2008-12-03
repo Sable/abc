@@ -1,5 +1,5 @@
 public enum EEE {
-    a(<caret>doTest());
+    a(/*[*/doTest()/*]*/);
 
     EEE(String s) {
     }
