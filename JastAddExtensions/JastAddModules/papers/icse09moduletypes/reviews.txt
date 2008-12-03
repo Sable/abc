@@ -1,0 +1,198 @@
+Dear Neil,
+
+Thank you for your submission to ICSE 2009. The program committee met
+on November 14-15 to consider the submissions to the Research Paper 
+track.  We regret to inform you that we could not accept your paper,
+
+  "Modules as Object-Oriented Types"
+
+for inclusion in the conference program.  The competition was strong: 
+only 50 of the 405 submissions were accepted, giving an acceptance 
+rate of 12.3%.  The overall quality of the submissions this year was 
+very high, and the Program Committee had a difficult time selecting 
+from among the many high caliber papers.
+
+You might consider revising your paper and submitting it to either 
+the New Ideas and Emerging Results track (if the reviewers are positive
+about your work but comment on weak evaluation) or the Research Demos
+track (if your paper presents a tool). Both of these tracks have 
+deadlines of December 5, 2008.  Information about their calls for 
+papers can be found on the conference web page.
+
+We enclose the reviews of your paper, and hope that you find them
+useful for revising your paper.
+
+Thank you again for your submission, and we hope that you will plan 
+to attend the conference, which will be held May 16-24 in Vancouver, 
+Canada.
+
+
+Sincerely,
+
+Joanne M. Atlee and Paola Inverardi
+Program Committee Co-Chairs
+ICSE 2009
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=
+
+First reviewer's review:
+
+          >>> Summary of the submission <<<
+
+This paper proposes to handle collections of Java classes as modules typed in
+an object-oriented way. It then informally defines relations and operations on
+these types, such as subtyping, overriding, or merging. These relations and
+operations are shown to model common module operations and constraints now in
+use while adding new capabilities, such as backward compatibility constraints,
+fine-grained module sharing specifications and module extension. The type
+system itself is implemented in a module-enabled compiler for Java using
+JastAdd, an aspect-oriented compiler framework, and is demonstrated on a small
+case study on JHotdraw.
+
+          >>> Evaluation <<<
+
+It is clear that the SE community in is deep need of a properly defined and
+practically usable modularity concept defined at coarser grain than the notion
+of class. The usual notion of package (as in Java), a simple container of
+classes with little added semantics, is way too light for that (that's the
+problem leading to the JAR hell).
+
+So this paper makes an interesting step into that direction, by proposing a
+type system on collection of classes, and showing how it can be helpful to
+solve a number of issues in deploying and evolving collections of Java
+classes. Furthermore, as a very strong point, there appears to be an
+implementation of the ideas presented in the paper.
+
+However the type system is proposed at an informal level only, concentrating
+on the user's point of view and on the Java syntax extensions. This makes it
+difficult to get an high level picture of the semantics of the typing
+system. Furthermore, knowing the great difficulty in correctly dealing with
+substitutability with group of classes (see the works related to Scala, or
+even
+to substitutability of parameterized Java5 classes), this does not inspire
+confidence in the soundness of a type system presented at that level of
+abstraction (the devil as always is in the details).
+
+It could also be interesting to discuss this work in relation with the notion
+of package merge in MOF and UML, and also the notion of "model type" and model
+type matching and substitutability. There are indeed other examples of module
+systems for handling collections of classes at a more abstract level that
+containers with meta-data.
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Second reviewer's review:
+
+          >>> Summary of the submission <<<
+
+Describes a module system for Java in which modules are treated like classes in
+an inheritance hierarchy, and have a number of composition operators, such as
+override, merge and replace. Discusses how this approach can realize the
+benefits provided by some existing Java module systems such as OSGi, and some
+additional ones also. Briefly describes an implementation done with package
+name mangling (rather than modified runtime class loading).
+
+          >>> Evaluation <<<
+
++ An interesting approach to modules in Java (though the idea of modules as
+types in itself is not new)
++ Appealing integration of a number of good features of Java module systems
++ Good case study and discussion
+
+- A lot of features and rules are described, each with some explanation and
+justification, and each seems reasonable. But I was left without a clear
+picture to completeness or correctness. How do I know that this set of features
+is what is really needed, and that they work well together? Are there Java
+modularization problems that the approach does not solve? Most type system
+papers have a formal part to prove that the type system really does work; I
+hesitate to insist on that, but something is needed by way of validation.
+
+- The problem of split packages is never really explained. There is a reference
+to details, but this issue is mentioned often enough later in the paper that
+section 2.1 should contain a brief explanation f what the problem really is
+(i.e., why do packages that are split across modules cause trouble?).
+
+- The related work sections does a good job of giving credit for various ideas
+that went into or influenced the proposal presented in the paper, but it does
+not describe them or why they are not good enough (except for OSGi and to some
+extent iJAM). It also does not discuss any other systems, such as AHEAD (or the
+precursor, mixin-layers (Batory)) or other work in the aspect-oriented field
+(which has a different emphasis, but touches many of the same points in pursuit
+of extensibility).
+
+- The prototype implementation is a fine starting point, but an implementation
+involving runtime classloaders is needed to give confidence that this approach
+is viable for real Java systems.
+
+- If modules are OO types, I would expect their to be some relationship between
+them and the other types (classes and interfaces) in the OO software. For
+example, do they become first-class entities, enabling reflection? This issue
+is not even mentioned (I understand that solving it is probably another whole
+research project).
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Third reviewer's review:
+
+          >>> Summary of the submission <<<
+
+The paper presents a flexible module system for Java, with advanced features
+such as renaming, import/export, subtyping, and overriding. These features
+are presented and explained using a single running example (JHotdraw). The work
+has been implemented using the extensible JastAdd compiler framework.
+
+          >>> Evaluation <<<
+
+The presentation of this paper is overly informal and immature. I applaud the
+author for conducting such a detailed case study, but I think that a more
+formal exposition of the semantics of the module system is required. My
+recommendation to the author is to revise this paper in a way where the
+language is presented formally first (including the statement of properties of
+the module system), followed by a discussion of the JHotdraw case study. 
+
+As a general comment, I think it is good that the language features are
+explained using concrete examples. But in many cases, the example is not
+explained well enough, and the author should try to explain *why* the feature
+is needed in each example. 
+
+Detailed suggestions:
+
+ - page 1: is JAR hell a term that has been used before? If so, please support
+it with a citation
+
+ - page 1: "split packages" need to be explained more precisely.
+
+ - "non-formally" ==> "informally"
+
+ - page 2: a somewhat more detailed review of OSGi bundles and JSR 277 would be
+helpful
+
+ - page 2: "java" ==> "Java"
+
+ - section 2.4 feels too vague. in particular, the terms "parent-then-self" and
+"self-then-parent" need more explanation
+
+ - page 3: at this point, it still isn't completely clear what is meant by the
+split packages problem. A concrete example would be helpful
+
+ - page 3: why would cycles involving singleton modules be useful?
+
+ - page 4: please explain why indirection is needed
+
+ - listing 1: what is meant by on-demand importing?
+
+ - I don't understand the last paragraph of section 3.5. It seems to me that
+one could override class Action and only override the method that needs to be
+changed, just like you do in listing 3. I must be missing the point here
+
+ - page 6: "change over" ==> "update"
+
+ - listing 4: please explain and motivate the use of singleton here
+
+ - the feature in section 3.10 sounds a lot like structural typing. Please
+explain the correspondence
+
+ - related work seems a bit short
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
