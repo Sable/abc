@@ -91,9 +91,7 @@ aspect Dataflow {
 	}
 
 	syn SmallSet<ASTNode> ASTNode.dataPredFor(VarAccess var)
-		circular [SmallSet.empty()];
-	
-	eq ASTNode.dataPredFor(VarAccess var) {
+		circular [SmallSet.empty()] {
 		SmallSet<ASTNode> result = SmallSet.empty();
 		for(ASTNode pred : pred())
 			result = result.union(pred.dataPredFor(var));
@@ -120,6 +118,14 @@ aspect Dataflow {
 		if(this == var.decl())
 			return singleNode(this);
 		return super.dataPredFor(var);
+	}
+	
+	// this is to take care of local variables accessed inside a local/anonymous class
+	inh TypeDecl Modifiers.hostType();
+	eq Modifiers.dataPredFor(VarAccess var) {
+    	if(hostType().isLocalClass() || hostType().isAnonymous())
+    		return hostType().dataPredFor(var);
+    	return super.dataPredFor(var);
 	}
 
 	// data flow successors
@@ -202,6 +208,14 @@ aspect Dataflow {
 		return super.hasDataPredBefore(var, n);
 	}
 	
+	eq Modifiers.hasDataPredBefore(VarAccess var, ASTNode n) {
+		if(this == n)
+			return !dataPredFor(var).isEmpty();
+    	if(hostType().isLocalClass() || hostType().isAnonymous())
+    		return hostType().hasDataPredBefore(var, n);
+    	return super.hasDataPredBefore(var, n);
+	}
+
 	// p.hasDataSuccAfter(n): is there a path from p to one of its data successors such
 	// that n occurs on the path?
 	public boolean VarAccess.hasDataSuccAfter(ASTNode n) {

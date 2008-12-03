@@ -23,7 +23,12 @@ aspect ClosureConversion {
 	}
 	
 	private void ClosureInvocation.localize(VarAccess v, AdjustmentTable table) throws RefactoringException {
-		getBlock().insertStmt(0, new VariableDeclaration(v.type().getLockedAccess(table), v.name()));
+		if(!(v.decl() instanceof LocalDeclaration))
+			return;
+		LocalDeclaration vdecl = (LocalDeclaration)v.decl();
+		VariableDeclaration decl = new VariableDeclaration(vdecl.type().getLockedAccess(table), vdecl.name());
+		decl.setModifiers((Modifiers)vdecl.getModifiers().fullCopy());
+		getBlock().insertStmt(0, decl);
 		programRoot().flushCaches();
 	}
 	

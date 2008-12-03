@@ -35,7 +35,6 @@ aspect ControlFlow {
 	eq ExprStmt.isPureCFlowNode() = true;
 	eq ReturnStmt.isPureCFlowNode() = true;
 	eq IfStmt.isPureCFlowNode() = true;
-	eq Literal.isPureCFlowNode() = true;    // this doesn't feel right...
 	// there could be many more here
 
 	syn lazy SmallSet<ASTNode> ASTNode.weakSucc() {

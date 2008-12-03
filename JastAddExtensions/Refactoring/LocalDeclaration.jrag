@@ -8,7 +8,7 @@ aspect LocalDeclaration {
 		TypeDecl type();
 		String name();
 		void setID(String name);
-		boolean isFinal();
+		Modifiers getModifiers();
 		Block getBlock();
 		ParameterDeclaration asParameterDeclaration();
 		VariableDeclaration asVariableDeclaration();
