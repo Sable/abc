@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JHotdraw SVG Sample Application
+Bundle-SymbolicName: org.jhotdraw.samples.svg
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.jhotdraw.samples.svg,
+ org.jhotdraw.samples.svg.action,
+ org.jhotdraw.samples.svg.figures,
+ org.jhotdraw.samples.svg.io
+Require-Bundle: org.jhotdraw,
+ net.n3.nanoxml,
+ org.apache.batik

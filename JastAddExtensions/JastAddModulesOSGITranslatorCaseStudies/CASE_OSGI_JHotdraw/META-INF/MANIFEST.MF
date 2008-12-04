@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JHotdraw GUI Application Framework
+Bundle-SymbolicName: org.jhotdraw
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.jhotdraw,
+ org.jhotdraw.app,
+ org.jhotdraw.app.action,
+ org.jhotdraw.beans,
+ org.jhotdraw.draw,
+ org.jhotdraw.draw.action,
+ org.jhotdraw.geom,
+ org.jhotdraw.gui,
+ org.jhotdraw.gui.datatransfer,
+ org.jhotdraw.gui.event,
+ org.jhotdraw.io,
+ org.jhotdraw.svg,
+ org.jhotdraw.undo,
+ org.jhotdraw.util,
+ org.jhotdraw.util.prefs,
+ org.jhotdraw.xml,
+ org.jhotdraw.xml.css
+Import-Package: net.n3.nanoxml

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Batik fragment for JHotdraw taken from v1.6
+Bundle-SymbolicName: org.apache.batik
+Bundle-Version: 1.6.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.apache.batik,
+ org.apache.batik.ext.awt,
+ org.apache.batik.ext.awt.image,
+ org.apache.batik.ext.awt.image.renderable,
+ org.apache.batik.ext.awt.image.rendered,
+ org.apache.batik.util
