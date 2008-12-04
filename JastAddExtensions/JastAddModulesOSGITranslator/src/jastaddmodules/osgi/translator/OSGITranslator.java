@@ -16,39 +16,25 @@ import org.osgi.framework.BundleException;
 public class OSGITranslator {
 	public static void main(String[] args) {
 		StateObjectFactory bundleDescriptorFactory = StateObjectFactory.defaultFactory;
+		
+		StaticBundleEnvironment environment = new StaticBundleEnvironment();
+		StaticBundleCollector collector = new StaticBundleCollector(environment);
 		for (String arg : args) {
 			if (!arg.toUpperCase().endsWith(".MF")) {
 				continue;
 			}
 			File manifestFile = new File(arg);
 			try {
-				Dictionary manifestDictionary = Headers.parseManifest(new FileInputStream(manifestFile));
-				BundleDescription bundleDesc = 
-					bundleDescriptorFactory.createBundleDescription(null, 
-							manifestDictionary, manifestFile.getAbsolutePath(), 0);
-				System.out.println("Bundle symbolic name: " + bundleDesc.getSymbolicName());
-				System.out.println("Bundle version: " + bundleDesc.getVersion().toString());
-				System.out.println("Exported packages: ");
-				for (ExportPackageDescription packageDesc :  bundleDesc.getExportPackages()) {
-					System.out.print("\t");
-					System.out.println(packageDesc.getName());
-				}
-				System.out.println("Required bundles: ");
-				for (BundleSpecification requiredBundle: bundleDesc.getRequiredBundles()) {
-					System.out.print("\t");
-					System.out.println(requiredBundle.getName() + 
-							" version: " + requiredBundle.getVersionRange().getMinimum() + 
-							" to " + requiredBundle.getVersionRange().getMaximum());
-				}
-				System.out.println("Imported bundles: ");
-				for (ImportPackageSpecification packageDesc : bundleDesc.getImportPackages()) {
-					System.out.println("\t" + packageDesc.getName());
-				}
+				collector.addBundleFile(manifestFile);
 			} catch (BundleException e) {
 				System.err.println("Error opening manifest file: " + manifestFile.getAbsolutePath() + " : " + e);
 			} catch (IOException e) {
 				System.err.println("Error opening manifest file: " + manifestFile.getAbsolutePath() + " : " + e);
 			}
 		}
+		for (BundleDescription bundle : environment.getAllBundles()) {
+			System.out.println(bundle);
+		}
+		
 	}
 }

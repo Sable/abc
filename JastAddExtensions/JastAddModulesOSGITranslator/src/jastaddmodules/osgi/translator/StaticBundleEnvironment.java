@@ -1,8 +1,11 @@
 package jastaddmodules.osgi.translator;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 import org.eclipse.osgi.service.resolver.BundleDescription;
@@ -29,6 +32,14 @@ public class StaticBundleEnvironment {
 	public BundleDescription getBundle(String symbolicName, Version version) {
 		BundleBucket bucket = getBundleBucket(symbolicName);
 		return bucket.getBundle(version);
+	}
+	
+	public Collection<BundleDescription> getAllBundles() {
+		Collection<BundleDescription> ret = new LinkedList<BundleDescription>();
+		for (BundleBucket bucket : bundleMap.values()) {
+			ret.addAll(bucket.getAllBundles());
+		}
+		return Collections.unmodifiableCollection(ret);
 	}
 	
 	BundleBucket getBundleBucket(String symbolicName) {
@@ -85,6 +96,10 @@ public class StaticBundleEnvironment {
 				}
 			}
 			return null;
+		}
+		
+		public Collection<BundleDescription> getAllBundles() {
+			return Collections.unmodifiableSortedSet(bundles);
 		}
 	}
 }

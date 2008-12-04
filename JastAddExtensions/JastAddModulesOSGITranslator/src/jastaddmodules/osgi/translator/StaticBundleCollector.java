@@ -11,26 +11,32 @@ import org.eclipse.osgi.service.resolver.StateObjectFactory;
 import org.osgi.framework.BundleException;
 
 public class StaticBundleCollector {
-	StaticBundleEnvironment environment = new StaticBundleEnvironment();
+	StaticBundleEnvironment environment;
 
-	public StaticBundleCollector() {
+	public StaticBundleCollector(StaticBundleEnvironment environment) {
+		this.environment = environment;
 	}
 	
-	public StaticBundleCollector(String[] files) throws BundleException, IOException {
+	public StaticBundleCollector(String[] files, StaticBundleEnvironment environment) throws BundleException, IOException {
+		this.environment = environment;
 		for (String file: files) {
 			addBundleFile(file);
 		}
 	}
 
-	public void addBundleFile(String file) throws BundleException, IOException {
+	public void addBundleFile(File file) throws BundleException, IOException {
 		StateObjectFactory bundleDescriptorFactory = StateObjectFactory.defaultFactory;
-		File manifestFile = new File(file);
 		Dictionary manifestDictionary = Headers
-				.parseManifest(new FileInputStream(manifestFile));
+				.parseManifest(new FileInputStream(file));
 		BundleDescription bundleDesc = bundleDescriptorFactory
 				.createBundleDescription(null, manifestDictionary,
-						manifestFile.getAbsolutePath(), 0);
+						file.getAbsolutePath(), 0);
 		environment.addBundle(bundleDesc);
+	}
+	
+	public void addBundleFile(String file) throws BundleException, IOException {
+		File manifestFile = new File(file);
+		addBundleFile(manifestFile);
 	}
 
 	public StaticBundleEnvironment getBundleEnvironment() {
