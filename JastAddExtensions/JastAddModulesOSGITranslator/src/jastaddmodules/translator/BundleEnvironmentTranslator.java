@@ -1,4 +1,4 @@
-package jastaddmodules.osgi.translator;
+package jastaddmodules.translator;
 
 public class BundleEnvironmentTranslator {
 	

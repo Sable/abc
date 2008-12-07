@@ -1,4 +1,4 @@
-package jastaddmodules.osgi.translator;
+package jastaddmodules.translator.osgi;
 
 import java.util.Collection;
 import java.util.Collections;

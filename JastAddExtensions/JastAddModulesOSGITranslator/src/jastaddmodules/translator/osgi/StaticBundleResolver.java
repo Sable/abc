@@ -1,4 +1,4 @@
-package jastaddmodules.osgi.translator;
+package jastaddmodules.translator.osgi;
 
 public class StaticBundleResolver {
 	protected StaticBundleEnvironment env;

@@ -1,4 +1,7 @@
-package jastaddmodules.osgi.translator;
+package jastaddmodules.translator;
+
+import jastaddmodules.translator.osgi.StaticBundleCollector;
+import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,8 +36,30 @@ public class OSGITranslator {
 			}
 		}
 		for (BundleDescription bundle : environment.getAllBundles()) {
-			System.out.println(bundle);
+			System.out.println("--------------------------");
+			System.out.println(prettyPrint(bundle));
 		}
 		
+	}
+	
+	public static String prettyPrint(BundleDescription bundle) {
+		String ret = "";
+		
+		ret += "Bundle name: " + bundle.getSymbolicName() + "\n";
+		ret += "Version: " + bundle.getVersion() + "\n";
+		ret += "Exported packages: \n";
+		for (ExportPackageDescription packageDesc : bundle.getExportPackages()) {
+			ret += "\t" + packageDesc.getName() + "\n";
+		}
+		ret += "Required bundles: \n";
+		for (BundleSpecification bundleSpec : bundle.getRequiredBundles()) {
+			ret += "\t" + bundleSpec.toString() + "\n";
+		}
+		ret += "Imported packages: \n";
+		for (ImportPackageSpecification packageSpec : bundle.getImportPackages()) {
+			ret += "\t" + packageSpec.getName();
+		}
+		
+		return ret;
 	}
 }

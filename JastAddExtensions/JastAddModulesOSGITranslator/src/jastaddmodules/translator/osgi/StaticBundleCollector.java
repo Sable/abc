@@ -1,4 +1,4 @@
-package jastaddmodules.osgi.translator;
+package jastaddmodules.translator.osgi;
 
 import java.io.File;
 import java.io.FileInputStream;
