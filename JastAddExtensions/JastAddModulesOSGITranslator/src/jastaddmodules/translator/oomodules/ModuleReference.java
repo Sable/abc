@@ -25,7 +25,6 @@ public class ModuleReference {
 				return null;
 			}
 		}
-
 	}
 	
 	public String toString() {

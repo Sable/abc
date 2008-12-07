@@ -7,6 +7,10 @@ import java.util.List;
 public class ConcreteModule extends AbstractModule {
 	protected List<ReplaceDeclaration> replaces = new LinkedList<ReplaceDeclaration>();
 	
+	public ConcreteModule(String name) {
+		super(name);
+	}
+	
 	public ConcreteModule(String name, 
 			ConcreteModule superModule, 
 			Collection<ModuleInterface> implementedInterfaces,
