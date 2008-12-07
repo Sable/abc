@@ -3,5 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JastAddModulesOSGITranslator
 Bundle-SymbolicName: JastAddModulesOSGITranslator
 Bundle-Version: 1.0.0
-Export-Package: jastaddmodules.translator
+Export-Package: jastaddmodules.translator,
+ jastaddmodules.translator.oomodules,
+ jastaddmodules.translator.osgi
 Require-Bundle: org.eclipse.osgi;bundle-version="3.4.0"
