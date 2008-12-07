@@ -35,10 +35,15 @@ public class OSGITranslator {
 				System.err.println("Error opening manifest file: " + manifestFile.getAbsolutePath() + " : " + e);
 			}
 		}
+
 		for (BundleDescription bundle : environment.getAllBundles()) {
-			System.out.println("--------------------------");
+			System.out.println("----------------------------------------");
 			System.out.println(prettyPrint(bundle));
 		}
+		//Translation
+		System.out.println("--------------Translation---------------");
+		BundleEnvironmentTranslator translator = new BundleEnvironmentTranslator(environment);
+		translator.translate();
 		
 	}
 	
