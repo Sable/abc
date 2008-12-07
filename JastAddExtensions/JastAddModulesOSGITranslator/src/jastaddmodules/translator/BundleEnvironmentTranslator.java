@@ -38,6 +38,7 @@ public class BundleEnvironmentTranslator {
 	HashMap<BundleDescription, AbstractModule> bundleMap = new HashMap<BundleDescription, AbstractModule>();
 	HashMap<String, ModuleInterface> rbInterfaceMap = new HashMap<String, ModuleInterface>();
 	
+	
 	public BundleEnvironmentTranslator(StaticBundleEnvironment bundleEnv) {
 		this.bundleEnv = bundleEnv;
 	}
@@ -101,8 +102,12 @@ public class BundleEnvironmentTranslator {
 	//PASS---------------------------------------------------------
 	protected void generateRBInterfaces() {
 		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
+			AbstractModule module = bundleMap.get(bundle);
+			assert (module != null) : "No matching module for bundle " + bundle;
 			for (BundleSpecification reqSpec : bundle.getRequiredBundles()) {
-				makeNewRBInterface(reqSpec.getName(), reqSpec.getVersionRange());
+				ModuleInterface rbInterface = 
+					makeNewRBInterface(reqSpec.getName(), reqSpec.getVersionRange());
+				module.addImportedModule(rbInterface, rbInterface.getName());
 			}
 		}
 	}
@@ -180,7 +185,6 @@ public class BundleEnvironmentTranslator {
 		}
 		return ret;
 	}
-	
 	
 	private Collection<String> getImportedPackages(BundleDescription bundle) {
 		Collection<String> ret = new LinkedList<String>();
