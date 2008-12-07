@@ -21,9 +21,21 @@ public class StaticBundleEnvironment {
 		bucket.addBundle(bundle);
 	}
 	
+	//returns latest bundle that matches the range
 	public BundleDescription getBundle(String symbolicName, VersionRange range) {
 		BundleBucket bucket = getBundleBucket(symbolicName);
+		if (bucket == null) {
+			return null;
+		}
 		return bucket.getBundle(range);
+	}
+	
+	public Collection<BundleDescription> getBundles(String symbolicName, VersionRange range) {
+		BundleBucket bucket = getBundleBucket(symbolicName);
+		if (bucket == null) {
+			return null;
+		}
+		return bucket.getBundles(range);
 	}
 	
 	public BundleDescription getBundle(String symbolicName, Version version) {
@@ -46,5 +58,9 @@ public class StaticBundleEnvironment {
 			bundleMap.put(symbolicName, ret);
 		}
 		return ret;
+	}
+	
+	public Collection<BundleBucket> getAllBundleBuckets() {
+		return Collections.unmodifiableCollection(bundleMap.values());
 	}
 }

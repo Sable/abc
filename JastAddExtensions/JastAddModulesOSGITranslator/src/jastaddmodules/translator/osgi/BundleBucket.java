@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.osgi.service.resolver.BundleDescription;
@@ -57,7 +59,19 @@ public class BundleBucket {
 		return null;
 	}
 	
-	public Collection<BundleDescription> getAllBundles() {
+	//gets all the bundles that match the range
+	public Collection<BundleDescription> getBundles(VersionRange range) {
+		Collection<BundleDescription> ret = new LinkedList<BundleDescription>();
+		for (Iterator<BundleDescription> iter = bundles.descendingIterator(); iter.hasNext(); ) {
+			BundleDescription currBundle = iter.next(); 
+			if (range.isIncluded(currBundle.getVersion())) {
+				ret.add(currBundle);
+			}
+		}
+		return ret;
+	}
+	
+	public SortedSet<BundleDescription> getAllBundles() {
 		return Collections.unmodifiableSortedSet(bundles);
 	}
 }

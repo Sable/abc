@@ -11,15 +11,17 @@ public abstract class AbstractModule {
 	
 	protected Collection<String> exportedPackages;
 	protected Collection<ModuleImport> importedModules;
+	protected boolean exportAllPackages = false;
 	
 	protected String name;
 	
-	public AbstractModule(String name) {
+	public AbstractModule(String name, boolean exportAllPackages) {
 		this.name = name;
 		implementedInterfaces = new LinkedList<AbstractModule>();
 		overridenModules = new LinkedList<AbstractModule>();
 		exportedPackages = new LinkedList<String>();
 		importedModules = new LinkedList<ModuleImport>();
+		this.exportAllPackages = exportAllPackages;
 	}
 	
 	protected abstract String getModuleKeyword();
@@ -46,10 +48,14 @@ public abstract class AbstractModule {
 		exportedPackages.add(packageName);
 	}
 	
+	public void addExportedPackages(Collection<String> packageNames) {
+		exportedPackages.addAll(packageNames);
+	}
+	
 	public void addImportedModule(AbstractModule importedModuleType, String alias) {
 		this.importedModules.add(new ModuleImport(this, importedModuleType, alias));
 	}
-
+	
 	public Collection<ModuleImport> getImportedModules() {
 		return importedModules;
 	}
@@ -60,6 +66,10 @@ public abstract class AbstractModule {
 	
 	public void addOverridenModule(AbstractModule module) {
 		this.overridenModules.add(module);
+	}
+	
+	public void addOverridenModules(Collection<AbstractModule> module) {
+		this.overridenModules.addAll(module);
 	}
 
 	public ModuleImport findImportedModule(String alias) {
@@ -83,22 +93,22 @@ public abstract class AbstractModule {
 			ret += "\n\textends " + superModule.getName();
 		}
 		if (implementedInterfaces.size() > 0) {
-			ret += "\n\timplements ";
+			ret += "\n\timplements\n\t\t";
 			boolean first = true;
 			for (AbstractModule module : implementedInterfaces) {
 				if (!first) {
-					ret += ",";
+					ret += "\n\t\t,";
 				}
 				ret += module.getName();
 				first = false;
 			}
 		}
 		if (overridenModules.size() > 0) {
-			ret += "\n\toverrides ";
+			ret += "\n\toverrides\n\t\t";
 			boolean first = true;
 			for (AbstractModule module : overridenModules) {
 				if (!first) {
-					ret += ",";
+					ret += "\n\t\t,";
 				}
 				ret += module.getName();
 				first = false;

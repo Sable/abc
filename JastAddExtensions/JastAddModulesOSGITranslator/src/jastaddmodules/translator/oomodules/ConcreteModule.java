@@ -8,7 +8,7 @@ public class ConcreteModule extends AbstractModule {
 	protected List<ReplaceDeclaration> replaces = new LinkedList<ReplaceDeclaration>();
 	
 	public ConcreteModule(String name) {
-		super(name);
+		super(name, false);
 	}
 	
 	public ConcreteModule(String name, 
@@ -16,7 +16,7 @@ public class ConcreteModule extends AbstractModule {
 			Collection<ModuleInterface> implementedInterfaces,
 			Collection<AbstractModule> overridenModules, 
 			Collection<String> exportedPackages) {
-		super(name);
+		super(name, false);
 		this.superModule = superModule;
 		if (implementedInterfaces != null) {
 			this.implementedInterfaces = 
