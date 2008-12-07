@@ -3,6 +3,7 @@ package jastaddmodules.translator;
 import jastaddmodules.translator.oomodules.AbstractModule;
 import jastaddmodules.translator.oomodules.ConcreteModule;
 import jastaddmodules.translator.oomodules.ModuleInterface;
+import jastaddmodules.translator.oomodules.WeakModuleInterface;
 import jastaddmodules.translator.osgi.BundleBucket;
 import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
@@ -37,7 +38,7 @@ public class BundleEnvironmentTranslator {
 	StaticBundleEnvironment bundleEnv;
 	HashMap<BundleDescription, AbstractModule> bundleMap = new HashMap<BundleDescription, AbstractModule>();
 	HashMap<String, ModuleInterface> rbInterfaceMap = new HashMap<String, ModuleInterface>();
-	
+	HashMap<String, WeakModuleInterface> ipInterfaceMap = new HashMap<String, WeakModuleInterface>();
 	
 	public BundleEnvironmentTranslator(StaticBundleEnvironment bundleEnv) {
 		this.bundleEnv = bundleEnv;
@@ -58,6 +59,10 @@ public class BundleEnvironmentTranslator {
 		for (AbstractModule moduleInterface : rbInterfaceMap.values()) {
 			System.out.println("//----------------------------------------");
 			System.out.print(moduleInterface.toString());
+		}
+		for (AbstractModule weakModuleInterface : ipInterfaceMap.values()) {
+			System.out.println("//----------------------------------------");
+			System.out.print(weakModuleInterface.toString());
 		}
 	}
 	
@@ -168,10 +173,40 @@ public class BundleEnvironmentTranslator {
 		return ret;
 	}
 	
+	//PASS---------------------------------------------------------
 	protected void generateIPInterfaces() {
 		//TODO: Implement
+		int counter = 0;
+		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
+			AbstractModule module = bundleMap.get(bundle);
+			assert (module != null) : "Module not found for bundle " + bundle;
+			if (bundle.getImportPackages().length > 0) {
+				ModuleInterface newInterface = makeIPInterface(bundle, counter);
+				module.addImportedModule(newInterface, newInterface.getName());
+				counter ++;
+			}
+		}
 	}
 	
+	//create a weak module interface, which exports the packages that the context imports
+	protected WeakModuleInterface makeIPInterface(BundleDescription context, int counter) {
+		String interfaceName = makeIPInterfaceName(context, counter);
+		assert (ipInterfaceMap.get(interfaceName) == null) : "Weak interface of the same name already exists: " + interfaceName; 
+		WeakModuleInterface ret = new WeakModuleInterface(interfaceName);
+		ret.addExportedPackages(getImportedPackages(context));
+		ipInterfaceMap.put(ret.getName(), ret);
+		return ret;
+	}
+	
+	protected String makeIPInterfaceName(BundleDescription context, int counter) { 
+		String ret = "";
+		
+		ret += "WI_internal_" + context.getSymbolicName() + "_ctr_" + counter;
+		
+		return ret;
+	}
+	
+	//PASS---------------------------------------------------------
 	protected void generateSystemModule() {
 		//TODO: Implement
 	}
