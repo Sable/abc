@@ -67,7 +67,7 @@ public class OSGITranslator {
 		}
 		ret += "Imported packages: \n";
 		for (ImportPackageSpecification packageSpec : bundle.getImportPackages()) {
-			ret += "\t" + packageSpec.getName();
+			ret += "\t" + packageSpec.getName() + "\n";
 		}
 		
 		return ret;
