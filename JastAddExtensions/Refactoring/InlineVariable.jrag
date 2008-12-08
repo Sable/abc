@@ -1,5 +1,4 @@
 aspect InlineVariable {
-	
 	public void VariableDeclaration.inline() throws RefactoringException {
 		AssignSimpleExpr assgn = split();
 		if(assgn != null)
@@ -8,4 +7,21 @@ aspect InlineVariable {
 			throw new RefactoringException("not all uses could be eliminated");
 	}
 	
+    public void VarAccess.inline() throws RefactoringException {
+    	if(!(decl() instanceof LocalDeclaration))
+    		throw new RefactoringException("cannot inline non-local definitions");
+    	SmallSet<ASTNode> pred = this.dataPred();
+    	if(!pred.isSingleton())
+    		throw new RefactoringException("ambiguous dataflow");
+    	ASTNode nd = pred.iterator().next();
+    	if(nd instanceof VariableDeclaration) {
+    		((VariableDeclaration)nd).inline();
+    	} else {
+    		VarAccess va = (VarAccess)nd;
+    		if(va.getParent() instanceof AssignSimpleExpr)
+    			((AssignSimpleExpr)va.getParent()).inline();
+    		else
+    			throw new RefactoringException("cannot inline this assignment");
+    	}
+    }
 }

@@ -4,10 +4,23 @@
 
 aspect ASTUtil {
 	
-	public boolean ASTNode.leftChildOfDot() {
-		return getParent() instanceof AbstractDot && ((AbstractDot)getParent()).getLeft() == this;
+	// some convenience methods to index children by reference instead of numeric index
+	public void ASTNode.removeChild(ASTNode child) {
+		removeChild(getIndexOfChild(child));
 	}
-	
+
+	public void Block.removeStmt(Stmt stmt) {
+		getStmtList().removeChild(stmt);
+	}
+
+	public void Block.removeStmt(int idx) {
+		getStmtList().removeChild(idx);
+	}
+
+	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
+		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
+	}
+
 	// provide access to the program root
 	public Program ASTNode.programRoot() {
 		ASTNode p;
@@ -39,10 +52,6 @@ aspect ASTUtil {
 			super.flushCaches();
 	}
 	
-	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
-		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
-	}
-
     public void FieldDeclaration.makePrivate() throws RefactoringException {
         if(isPrivate())
             return;
@@ -62,23 +71,6 @@ aspect ASTUtil {
     	parent.setChild(newnode, parent.getIndexOfChild(this));
     }
     
-    // this method is not very well-behaved if start and end are not valid indices
-    protected void ASTNode.replaceRange(ASTNode node, int start, int end) {
-        if(children == null) {
-        	children = new ASTNode[1];
-            children[0] = node;
-        } else {
-            ASTNode c[] = new ASTNode[children.length - (end-start)];
-            System.arraycopy(children, 0, c, 0, start);
-            c[start] = node;
-            if(end+1 < children.length)
-              System.arraycopy(children, end+1, c, start+1, children.length-end-1);
-            children = c;
-        }
-        numChildren -= end-start;
-        if(node != null) { node.setParent(this); node.childIndex = start; }
-    }
-    
     public void ASTNode.moveChild(int src, int trg) {
     	ASTNode tmp = children[src];
     	children[src] = children[trg];
@@ -96,15 +88,6 @@ aspect ASTUtil {
     	getStmtList().moveChild(old_idx, new_idx);
     }
     
-    public Block Block.pullTogether(int start, int end) throws RefactoringException {
-    	List stmts = new List();
-    	for(int i=start;i<=end;++i)
-    		stmts.add(getStmt(i));
-	Block new_block = new Block(stmts);
-    	getStmtList().replaceRange(new_block, start, end);
-	return new_block;
-    }
-
 	public String CompilationUnit.getID() {
 	    char pathsep = File.separatorChar;
 	    String path = pathName();

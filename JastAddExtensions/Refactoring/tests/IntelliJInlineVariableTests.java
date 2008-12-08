@@ -6,9 +6,9 @@ import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.CompilationUnit;
 import AST.FileRange;
-import AST.MethodAccess;
 import AST.Program;
 import AST.RefactoringException;
+import AST.VarAccess;
 import AST.VariableDeclaration;
 
 public class IntelliJInlineVariableTests extends TestCase {
@@ -33,9 +33,12 @@ public class IntelliJInlineVariableTests extends TestCase {
 		FileRange rng = new FileRange("", start.el, start.ec, end.sl, end.sc);
 		ASTNode nd = TestHelper.findFirstNodeInside(cu, rng);
 		try {
-			assertTrue(nd instanceof VariableDeclaration);
-			VariableDeclaration var = (VariableDeclaration)nd;
-			var.inline();
+			if(nd instanceof VariableDeclaration) {
+				((VariableDeclaration)nd).inline();
+			} else {
+				assertTrue(nd instanceof VarAccess);
+				((VarAccess)nd).inline();
+			}
 		} catch(RefactoringException rfe) {
 			if(new File(outfile).exists())
 				fail(rfe.getMessage());

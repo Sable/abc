@@ -1,4 +1,7 @@
 class A {
+    // next line inserted for compilability
+    class MyObject { }
+
     void foo(final MyObject obj) {
         new Runnable() {
             public void run() {

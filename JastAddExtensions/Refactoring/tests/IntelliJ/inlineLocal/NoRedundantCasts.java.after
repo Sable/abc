@@ -5,7 +5,8 @@ class YoYo {
     }
 
     private YoYoYo foo() {
-
+	// added to improve compilability
+	return null;
     }
     class YoYoYo extends YoYo {}
 }

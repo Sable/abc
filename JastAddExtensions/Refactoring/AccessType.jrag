@@ -258,7 +258,7 @@ aspect AccessType {
 	public Access TypeDecl.accessTypeFromInside(TypeDecl td, NameType nt) {
 		if(td.isArrayDecl()) {
 			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = accessTypeFromInside(arr.elementType(), nt);
+			Access acc = accessTypeFromInside(arr.componentType(), nt);
 			if(acc == null) return null;
 			return new ArrayTypeAccess(acc);
 		} else {
@@ -271,7 +271,7 @@ aspect AccessType {
 	public Access BodyDecl.access(TypeDecl td, NameType nt) {
 		if(td.isArrayDecl()) {
 			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.elementType(), nt);
+			Access acc = access(arr.componentType(), nt);
 			if(acc == null) return null;
 			return new ArrayTypeAccess(acc);
 		} else {
@@ -284,7 +284,7 @@ aspect AccessType {
 	public Access Stmt.access(TypeDecl td, NameType nt) {
 		if(td.isArrayDecl()) {
 			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.elementType(), nt);
+			Access acc = access(arr.componentType(), nt);
 			if(acc == null) return null;
 			return new ArrayTypeAccess(acc);
 		} else {
@@ -297,7 +297,7 @@ aspect AccessType {
 	public Access Expr.access(TypeDecl td, NameType nt) {
 		if(td.isArrayDecl()) {
 			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.elementType(), nt);
+			Access acc = access(arr.componentType(), nt);
 			if(acc == null) return null;
 			return new ArrayTypeAccess(acc);
 		} else {
@@ -310,7 +310,7 @@ aspect AccessType {
 	public Access Access.access(TypeDecl td, NameType nt) {
 		if(td.isArrayDecl()) {
 			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.elementType(), nt);
+			Access acc = access(arr.componentType(), nt);
 			if(acc == null) return null;
 			return new ArrayTypeAccess(acc);
 		} else {

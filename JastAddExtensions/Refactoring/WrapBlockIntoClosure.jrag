@@ -89,7 +89,7 @@ aspect WrapBlockIntoClosure {
 		}
 	}
 	
-	public void AdjustmentTable.removeAllCFlow() {
+/*	public void AdjustmentTable.removeAllCFlow() {
 		preds.clear();
 		succs.clear();
 	}
@@ -105,7 +105,7 @@ aspect WrapBlockIntoClosure {
 	
 	public void ReturnStmt.rewriteReturns() {
 		setResult(new BooleanLiteral("true"));
-	}
+	} */
 
 	inh TypeDecl ClosureInvocation.returnType();
 

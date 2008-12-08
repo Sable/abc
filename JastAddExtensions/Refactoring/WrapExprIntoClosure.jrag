@@ -11,7 +11,9 @@ aspect WrapExprIntoClosure {
 					null,                            // body (to be filled in shortly)
 					new List<Expr>());               // arguments
 		this.replaceWith(cl);
-		cl.setBlock(new Block(new List().add(new ReturnStmt(this))));
+		ReturnStmt ret = new ReturnStmt(this);
+		table.addReturnVoid(ret);
+		cl.setBlock(new Block(new List().add(ret)));
 		programRoot().flushCaches();
 		table.adjust();
 		return cl;

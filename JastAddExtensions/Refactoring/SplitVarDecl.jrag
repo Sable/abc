@@ -21,17 +21,24 @@ aspect SplitVarDecl {
   public AssignSimpleExpr VariableDeclaration.split() throws RefactoringException {
     if(!hasInit())
       return null;  // we could throw an exception here, but I think it's better this way
-    if(getInit().isArrayInit())
-    	throw new RefactoringException("cannot split declaration with array initializer");
+    AdjustmentTable table = new AdjustmentTable();
+    Expr init;
+    // if the RHS is an array initializer, it has to be wrapped into an array creation expression
+    if(getInit().isArrayInit()) {
+    	init = new ArrayCreationExpr(type().getLockedAccess(table), new Opt(getInit()));
+    } else {
+    	init = getInit();
+    }
     if(!(getParent().getParent() instanceof Block))
       throw new RefactoringException("cannot split declarations outside blocks");
     Block block = (Block)getParent().getParent();
     int idx = block.getIndexOfStmt(this);
     assert(idx != -1);
-    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), getInit());
+    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), init);
     this.setInitOpt(new Opt());
     block.insertStmt(idx+1, new ExprStmt(assgn));
-    block.flushCaches();
+    block.programRoot().flushCaches();
+    table.adjust();
     return assgn;
   }
 

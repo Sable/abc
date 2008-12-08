@@ -39,7 +39,7 @@ public class IntelliJExtractMethodTests extends TestCase {
 		try {
 			if(from instanceof Expr) {
 				if(from != to) {
-					if(to instanceof Access && to.leftChildOfDot() && from.leftChildOfDot() &&
+					if(to instanceof Access && isLeftChildOfDot(to) && isLeftChildOfDot(from) &&
 							((AbstractDot)from.getParent()).getRight() == to.getParent()) {
 						AbstractDot toParent = (AbstractDot)to.getParent();
 						AbstractDot fromParent = (AbstractDot)from.getParent();
@@ -73,6 +73,11 @@ public class IntelliJExtractMethodTests extends TestCase {
 		Program outprog = TestHelper.compile(outfile);
 		assertNotNull(outprog);
 		assertEquals(outprog.toString(), prog.toString());
+	}
+	
+	private static boolean isLeftChildOfDot(ASTNode n) {
+		return n.getParent() instanceof AbstractDot &&
+				((AbstractDot)n.getParent()).getLeft() == n;
 	}
 	
 	public void runDuplicateTest(String name) {
