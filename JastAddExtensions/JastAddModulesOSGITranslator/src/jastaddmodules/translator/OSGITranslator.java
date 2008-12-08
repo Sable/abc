@@ -43,7 +43,12 @@ public class OSGITranslator {
 		//Translation
 		System.out.println("--------------Translation---------------");
 		BundleEnvironmentTranslator translator = new BundleEnvironmentTranslator(environment);
-		translator.translate();
+		try {
+			translator.translate();
+		} catch (IOException e) {
+			System.err.println("Exception on translate: " + e);
+			e.printStackTrace();
+		}
 		
 	}
 	

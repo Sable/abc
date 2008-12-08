@@ -7,6 +7,10 @@ import jastaddmodules.translator.oomodules.WeakModuleInterface;
 import jastaddmodules.translator.osgi.BundleBucket;
 import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +22,7 @@ import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.osgi.service.resolver.ImportPackageSpecification;
 import org.eclipse.osgi.service.resolver.VersionRange;
+import org.osgi.framework.Version;
 
 public class BundleEnvironmentTranslator {
 	//Passes: 
@@ -45,7 +50,7 @@ public class BundleEnvironmentTranslator {
 		this.bundleEnv = bundleEnv;
 	}
 	
-	public void translate() {
+	public void translate() throws IOException{
 		generateOOModules();
 		generateOverrides();
 		generateRBInterfaces();
@@ -56,15 +61,25 @@ public class BundleEnvironmentTranslator {
 		for (AbstractModule module : bundleMap.values()) {
 			System.out.println("//----------------------------------------");
 			System.out.print(module.toString());
+			dumpModuleToFile(module);
 		}
 		for (AbstractModule moduleInterface : rbInterfaceMap.values()) {
 			System.out.println("//----------------------------------------");
 			System.out.print(moduleInterface.toString());
+			dumpModuleToFile(moduleInterface);
 		}
 		for (AbstractModule weakModuleInterface : ipInterfaceMap.values()) {
 			System.out.println("//----------------------------------------");
 			System.out.print(weakModuleInterface.toString());
+			dumpModuleToFile(weakModuleInterface);
 		}
+	}
+	
+	protected void dumpModuleToFile(AbstractModule module) throws IOException {
+		String moduleFileName = module.getName() + ".module";
+		PrintStream printout = new PrintStream(new File(moduleFileName));
+		printout.print(module.toString());
+		printout.close();
 	}
 	
 	//PASS---------------------------------------------------------
@@ -86,7 +101,7 @@ public class BundleEnvironmentTranslator {
 	}
 	
 	private String makeBundleOOName(BundleDescription bundle) {
-		return bundle.getName() + "_" + bundle.getVersion().toString();
+		return bundle.getName() + "_" + getVersionString(bundle.getVersion());
 	}
 	
 	//PASS---------------------------------------------------------
@@ -155,21 +170,21 @@ public class BundleEnvironmentTranslator {
 	protected String makeRBInterfaceName(String symbolicName, VersionRange range) {
 		String ret = "";
 		
-		//return is I_internal_symbolicName_v_minver_maxver. The _ before minver and maxver is doubled
-		//if they are exclusive i.e., com.xyz (1.6,1.7] is encoded as com.xyz_v__1.6_1.7
+		//return is I_internal_symbolicName_v__minver__maxver. The __ before minver and maxver is doubled
+		//if they are exclusive i.e., com.xyz (1.6,1.7] is encoded as com.xyz_v____1_6__1_7
 		ret += "I_internal_" + symbolicName + "_v";
 		if (range.getIncludeMinimum()) {
-			ret += "_";
-		} else {
 			ret += "__";
+		} else {
+			ret += "____";
 		}
-		ret += range.getMinimum().toString();
+		ret += getVersionString(range.getMinimum());
 		if (range.getIncludeMaximum()) {
-			ret += "_";
-		} else {
 			ret += "__";
+		} else {
+			ret += "____";
 		}
-		ret += range.getMaximum().toString();
+		ret += getVersionString(range.getMaximum());
 		
 		return ret;
 	}
@@ -202,7 +217,7 @@ public class BundleEnvironmentTranslator {
 	protected String makeIPInterfaceName(BundleDescription context, int counter) { 
 		String ret = "";
 		
-		ret += "WI_importpackage_" + context.getSymbolicName() + "_v_" + context.getVersion() +  "_ctr_" + counter;
+		ret += "WI_importpackage_" + context.getSymbolicName() + "_v_" + getVersionString(context.getVersion()) +  "_ctr_" + counter;
 		
 		return ret;
 	}
@@ -228,5 +243,9 @@ public class BundleEnvironmentTranslator {
 			ret.add(packageDesc.getName());
 		}
 		return ret;
+	}
+	
+	private String getVersionString(Version version) {
+		return version.toString().replace('.', '_');
 	}
 }
