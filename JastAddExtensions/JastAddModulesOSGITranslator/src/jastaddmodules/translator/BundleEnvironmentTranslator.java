@@ -254,7 +254,7 @@ public class BundleEnvironmentTranslator {
 		return version.toString().replace('.', '_');
 	}
 	
-	//uses a heuristic to partition the set of imported packages. Uses the first two
+	//uses a heuristic to partition the set of imported packages. Uses the first three
 	//segments of the package name to group packages into separate weak interface
 	//groups. Is not perfect, but would be enough for the case study
 	private Collection<Collection<String>> partitionImportedPackages(Collection<String> importedPackages) {
@@ -273,8 +273,8 @@ public class BundleEnvironmentTranslator {
 	
 	public String getFirstPackageSegments(String packageName) {
 		String[] segments = packageName.split("\\.");
-		if (segments.length >=2) {
-			return segments[0] + "." + segments[1];
+		if (segments.length >=3) {
+			return segments[0] + "." + segments[1] + "." + segments[2];
 		} else {
 			return packageName;
 		}
