@@ -2,7 +2,9 @@ package jastaddmodules.translator;
 
 import jastaddmodules.translator.oomodules.AbstractModule;
 import jastaddmodules.translator.oomodules.ConcreteModule;
+import jastaddmodules.translator.oomodules.ModuleImport;
 import jastaddmodules.translator.oomodules.ModuleInterface;
+import jastaddmodules.translator.oomodules.ReplaceDeclaration;
 import jastaddmodules.translator.oomodules.WeakModuleInterface;
 import jastaddmodules.translator.osgi.BundleBucket;
 import jastaddmodules.translator.osgi.StaticBundleEnvironment;
@@ -74,6 +76,9 @@ public class BundleEnvironmentTranslator {
 			System.out.print(weakModuleInterface.toString());
 			dumpModuleToFile(weakModuleInterface);
 		}
+		System.out.println("//----------------------------------------");
+		System.out.print(systemModule.toString());
+		dumpModuleToFile(systemModule);
 	}
 	
 	protected void dumpModuleToFile(AbstractModule module) throws IOException {
@@ -98,7 +103,7 @@ public class BundleEnvironmentTranslator {
 	}
 	
 	protected AbstractModule createOOModuleFromBundle(BundleDescription bundle) {
-		return new ConcreteModule(makeBundleOOName(bundle));
+		return new ConcreteModule(makeBundleOOName(bundle), bundle);
 	}
 	
 	private String makeBundleOOName(BundleDescription bundle) {
@@ -128,7 +133,7 @@ public class BundleEnvironmentTranslator {
 			assert (module != null) : "No matching module for bundle " + bundle;
 			for (BundleSpecification reqSpec : bundle.getRequiredBundles()) {
 				ModuleInterface rbInterface = 
-					makeNewRBInterface(reqSpec.getName(), reqSpec.getVersionRange());
+					makeNewRBInterface(reqSpec);
 				module.addImportedModule(rbInterface, rbInterface.getName());
 			}
 		}
@@ -139,13 +144,15 @@ public class BundleEnvironmentTranslator {
 		return ret;
 	}
 	
-	protected ModuleInterface makeNewRBInterface(String symbolicName, VersionRange range) {
+	protected ModuleInterface makeNewRBInterface(BundleSpecification reqSpec) {
+		String symbolicName = reqSpec.getName();
+		VersionRange range = reqSpec.getVersionRange();
 		String interfaceName = makeRBInterfaceName(symbolicName, range);
 		//if already created, return the existing interface
 		if (getRBInterface(interfaceName) != null) {
 			return getRBInterface(interfaceName);
 		}
-		ModuleInterface ret = new ModuleInterface(interfaceName);
+		ModuleInterface ret = new ModuleInterface(interfaceName, reqSpec);
 		rbInterfaceMap.put(interfaceName, ret);
 		
 		//create the exported packages from the intersection of the packages that are
@@ -192,7 +199,6 @@ public class BundleEnvironmentTranslator {
 	
 	//PASS---------------------------------------------------------
 	protected void generateIPInterfaces() {
-		//TODO: Implement
 		int counter = 0;
 		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
 			AbstractModule module = bundleMap.get(bundle);
@@ -230,8 +236,14 @@ public class BundleEnvironmentTranslator {
 	//PASS---------------------------------------------------------
 	protected void generateSystemModule() {
 		//TODO: Implement
+		this.systemModule = new ConcreteModule("system", null);
+		//import an instance of every concrete module
+		for (AbstractModule module : bundleMap.values()) {
+			this.systemModule.addImportedModule(module, module.getName());
+		}
+		//wiring, replace every import in the concrete modules with the resolved
+		//module
 	}
-	
 	
 	//Util methods
 	private Collection<String> getExportedPackages(BundleDescription bundle) {

@@ -4,11 +4,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.osgi.service.resolver.BundleDescription;
+
 public class ConcreteModule extends AbstractModule {
 	protected List<ReplaceDeclaration> replaces = new LinkedList<ReplaceDeclaration>();
 	
-	public ConcreteModule(String name) {
+	BundleDescription srcBundle; //bundle from which this module was generated
+	
+	public ConcreteModule(String name, BundleDescription srcBundle) {
 		super(name, false);
+		this.srcBundle = srcBundle;
 	}
 	
 	public ConcreteModule(String name, 
@@ -52,5 +57,10 @@ public class ConcreteModule extends AbstractModule {
 		}
 		
 		return ret;
+	}
+	
+	@Override
+	public boolean implementedBy(AbstractModule module) {
+		return false;
 	}
 }

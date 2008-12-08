@@ -3,10 +3,14 @@ package jastaddmodules.translator.oomodules;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.eclipse.osgi.service.resolver.BundleSpecification;
+
 public class ModuleInterface extends AbstractModule {
 	
-	public ModuleInterface(String name) {
+	BundleSpecification srcRequire;
+	public ModuleInterface(String name, BundleSpecification srcRequire) {
 		super(name, false);
+		this.srcRequire = srcRequire;
 	}
 	
 	public ModuleInterface(String name, boolean exportAllPackages) {
@@ -26,5 +30,10 @@ public class ModuleInterface extends AbstractModule {
 	@Override
 	protected String getModuleKeyword() {
 		return "module_interface";
+	}
+	
+	@Override
+	public boolean implementedBy(AbstractModule module) {
+		return module.getImplementedInterfaces().contains(this);
 	}
 }

@@ -141,4 +141,11 @@ public abstract class AbstractModule {
 		
 		return ret;
 	}
+	
+	//simple non-transitive for now, should be fine for the case study (and for OSGI
+	//in general)
+	public abstract boolean implementedBy(AbstractModule module);
+	
+	
+	
 }
