@@ -202,7 +202,7 @@ public class BundleEnvironmentTranslator {
 	protected String makeIPInterfaceName(BundleDescription context, int counter) { 
 		String ret = "";
 		
-		ret += "WI_internal_" + context.getSymbolicName() + "_ctr_" + counter;
+		ret += "WI_importpackage_" + context.getSymbolicName() + "_v_" + context.getVersion() +  "_ctr_" + counter;
 		
 		return ret;
 	}
