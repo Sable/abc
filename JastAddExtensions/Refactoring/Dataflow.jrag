@@ -85,6 +85,12 @@ aspect Dataflow {
 		}
 		return super.dataSuccFor(decl);
 	}
+	
+	eq VariableDeclaration.dataSuccFor(LocalDeclaration decl) {
+		if(this == decl)
+			return SmallSet.empty();
+		return super.dataSuccFor(decl);
+	}
 
 	// v.hasDataPredBefore(n): is there some data predecessor p for v such that
 	// n is encountered along the path from v back to p?
@@ -169,6 +175,14 @@ aspect Dataflow {
 		if(this == n)
 			return !dataSuccFor(decl).isEmpty();
 		if(decl() == decl && isDest())
+			return false;
+		return super.hasDataSuccAfter(decl, n);
+	}
+
+	eq VariableDeclaration.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
+		if(this == n)
+			return !dataSuccFor(decl).isEmpty();
+		if(this == decl)
 			return false;
 		return super.hasDataSuccAfter(decl, n);
 	}
