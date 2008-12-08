@@ -39,6 +39,7 @@ public class BundleEnvironmentTranslator {
 	HashMap<BundleDescription, AbstractModule> bundleMap = new HashMap<BundleDescription, AbstractModule>();
 	HashMap<String, ModuleInterface> rbInterfaceMap = new HashMap<String, ModuleInterface>();
 	HashMap<String, WeakModuleInterface> ipInterfaceMap = new HashMap<String, WeakModuleInterface>();
+	ConcreteModule systemModule; //filled in by the last pass, contains the replace declarations that links the interfaces to the 
 	
 	public BundleEnvironmentTranslator(StaticBundleEnvironment bundleEnv) {
 		this.bundleEnv = bundleEnv;
