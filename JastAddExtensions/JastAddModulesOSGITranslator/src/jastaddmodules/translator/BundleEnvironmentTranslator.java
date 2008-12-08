@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -197,19 +198,23 @@ public class BundleEnvironmentTranslator {
 			AbstractModule module = bundleMap.get(bundle);
 			assert (module != null) : "Module not found for bundle " + bundle;
 			if (bundle.getImportPackages().length > 0) {
-				ModuleInterface newInterface = makeIPInterface(bundle, counter);
-				module.addImportedModule(newInterface, newInterface.getName());
-				counter ++;
+				Collection<Collection<String>> partitions = partitionImportedPackages(getImportedPackages(bundle));
+				for (Collection<String> partition : partitions) {
+					ModuleInterface newInterface = makeIPInterface(bundle, partition, counter);
+					module.addImportedModule(newInterface, newInterface.getName());
+					counter ++;
+				}
 			}
 		}
 	}
 	
 	//create a weak module interface, which exports the packages that the context imports
-	protected WeakModuleInterface makeIPInterface(BundleDescription context, int counter) {
+	protected WeakModuleInterface makeIPInterface(BundleDescription context, Collection<String> importedPackages, int counter) {
 		String interfaceName = makeIPInterfaceName(context, counter);
 		assert (ipInterfaceMap.get(interfaceName) == null) : "Weak interface of the same name already exists: " + interfaceName; 
 		WeakModuleInterface ret = new WeakModuleInterface(interfaceName);
-		ret.addExportedPackages(getImportedPackages(context));
+		
+		ret.addExportedPackages(importedPackages);
 		ipInterfaceMap.put(ret.getName(), ret);
 		return ret;
 	}
@@ -248,4 +253,31 @@ public class BundleEnvironmentTranslator {
 	private String getVersionString(Version version) {
 		return version.toString().replace('.', '_');
 	}
+	
+	//uses a heuristic to partition the set of imported packages. Uses the first two
+	//segments of the package name to group packages into separate weak interface
+	//groups. Is not perfect, but would be enough for the case study
+	private Collection<Collection<String>> partitionImportedPackages(Collection<String> importedPackages) {
+		HashMap<String, Collection<String>> partitionMap = new HashMap<String, Collection<String>>();
+		for (String packageName : importedPackages) {
+			String partName = getFirstPackageSegments(packageName);
+			Collection<String> partition = partitionMap.get(partName);
+			if (partition == null) {
+				partition = new HashSet<String>();
+				partitionMap.put(partName, partition);
+			}
+			partition.add(packageName);
+		}
+		return partitionMap.values();
+	}
+	
+	public String getFirstPackageSegments(String packageName) {
+		String[] segments = packageName.split("\\.");
+		if (segments.length >=2) {
+			return segments[0] + "." + segments[1];
+		} else {
+			return packageName;
+		}
+	}
+	
 }
