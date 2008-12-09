@@ -27,39 +27,46 @@ import org.eclipse.osgi.service.resolver.VersionRange;
 import org.osgi.framework.Version;
 
 public class BundleEnvironmentTranslator {
-	//Passes: 
-	//	generateOOModules -> creates an AbstractModule instance for each BundleInstance (includes exported packages)
-	//	generateOverrides -> generates the overrides relations from the versions.
-	//						implicit assumption that a higher version overrides a lower version
-	//	generateRBInterfaces -> creates ModuleInterfaces derived from the required 
-	//							bundle constraints, and adds these as imports and 
-	//							implements in the appropriate modules
-	//	generateIPInterfaces -> creates WeakModuleInterfaces derived from the import
-	//							package declarations
-	//	generateSystemModule -> generates the top level system module, which does the
-	//							wiring using replace declarations to fill in
-	//							the interface references with an actual module. Should
-	//							take into consideration the singleton attribute of
-	//							bundles
-	
+	// Passes:
+	// generateOOModules -> creates an AbstractModule instance for each
+	// BundleInstance (includes exported packages)
+	// generateOverrides -> generates the overrides relations from the versions.
+	// implicit assumption that a higher version overrides a lower version
+	// generateRBInterfaces -> creates ModuleInterfaces derived from the
+	// required
+	// bundle constraints, and adds these as imports and
+	// implements in the appropriate modules
+	// generateIPInterfaces -> creates WeakModuleInterfaces derived from the
+	// import
+	// package declarations
+	// generateSystemModule -> generates the top level system module, which does
+	// the
+	// wiring using replace declarations to fill in
+	// the interface references with an actual module. Should
+	// take into consideration the singleton attribute of
+	// bundles
+
 	StaticBundleEnvironment bundleEnv;
 	HashMap<BundleDescription, AbstractModule> bundleMap = new HashMap<BundleDescription, AbstractModule>();
 	HashMap<String, ModuleInterface> rbInterfaceMap = new HashMap<String, ModuleInterface>();
 	HashMap<String, WeakModuleInterface> ipInterfaceMap = new HashMap<String, WeakModuleInterface>();
-	ConcreteModule systemModule; //filled in by the last pass, contains the replace declarations that links the interfaces to the 
-	
+	ConcreteModule systemModule; // filled in by the last pass, contains the
+
+	// replace declarations that links the
+	// interfaces to the
+
 	public BundleEnvironmentTranslator(StaticBundleEnvironment bundleEnv) {
 		this.bundleEnv = bundleEnv;
 	}
-	
+
 	public void translate() throws IOException, BundleTranslationException {
 		generateOOModules();
 		generateOverrides();
 		generateRBInterfaces();
 		generateIPInterfaces();
 		generateSystemModule();
-		
-		//DEBUG
+
+		// DEBUG
 		for (AbstractModule module : bundleMap.values()) {
 			System.out.println("//----------------------------------------");
 			System.out.print(module.toString());
@@ -79,93 +86,97 @@ public class BundleEnvironmentTranslator {
 		System.out.print(systemModule.toString());
 		dumpModuleToFile(systemModule);
 	}
-	
+
 	protected void dumpModuleToFile(AbstractModule module) throws IOException {
 		String moduleFileName = module.getName() + ".module";
 		PrintStream printout = new PrintStream(new File(moduleFileName));
 		printout.print(module.toString());
 		printout.close();
 	}
-	
-	//PASS---------------------------------------------------------
+
+	// PASS---------------------------------------------------------
 	protected void generateOOModules() {
 		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
-			assert (bundleMap.get(bundle) == null) : "Entry already present for " + bundle;
+			assert (bundleMap.get(bundle) == null) : "Entry already present for "
+					+ bundle;
 			AbstractModule module = createOOModuleFromBundle(bundle);
-			//exported packages
+			// exported packages
 			for (ExportPackageDescription epd : bundle.getExportPackages()) {
 				module.addExportedPackage(epd.getName());
 			}
-			
+
 			bundleMap.put(bundle, module);
 		}
 	}
-	
+
 	protected AbstractModule createOOModuleFromBundle(BundleDescription bundle) {
 		return new ConcreteModule(makeBundleOOName(bundle), bundle);
 	}
-	
+
 	private String makeBundleOOName(BundleDescription bundle) {
 		return bundle.getName() + "_" + getVersionString(bundle.getVersion());
 	}
-	
-	//PASS---------------------------------------------------------
+
+	// PASS---------------------------------------------------------
 	protected void generateOverrides() {
 		for (BundleBucket bucket : bundleEnv.getAllBundleBuckets()) {
 			List<AbstractModule> prevModules = new LinkedList<AbstractModule>();
-			for (Iterator<BundleDescription> iter = bucket.getAllBundles().iterator();
-					iter.hasNext(); ) {
+			for (Iterator<BundleDescription> iter = bucket.getAllBundles()
+					.iterator(); iter.hasNext();) {
 				BundleDescription bundle = iter.next();
 				AbstractModule module = bundleMap.get(bundle);
 				assert (module != null) : "Not found in bundle map: " + bundle;
-				
+
 				module.addOverridenModules(prevModules);
 				prevModules.add(module);
 			}
 		}
 	}
-	
-	//PASS---------------------------------------------------------
+
+	// PASS---------------------------------------------------------
 	protected void generateRBInterfaces() {
 		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
 			AbstractModule module = bundleMap.get(bundle);
 			assert (module != null) : "No matching module for bundle " + bundle;
 			for (BundleSpecification reqSpec : bundle.getRequiredBundles()) {
-				ModuleInterface rbInterface = 
-					makeNewRBInterface(reqSpec);
+				ModuleInterface rbInterface = makeNewRBInterface(reqSpec);
 				module.addImportedModule(rbInterface, rbInterface.getName());
 			}
 		}
 	}
-	
+
 	protected ModuleInterface getRBInterface(String interfaceName) {
 		ModuleInterface ret = rbInterfaceMap.get(interfaceName);
 		return ret;
 	}
-	
+
 	protected ModuleInterface makeNewRBInterface(BundleSpecification reqSpec) {
 		String symbolicName = reqSpec.getName();
 		VersionRange range = reqSpec.getVersionRange();
 		String interfaceName = makeRBInterfaceName(symbolicName, range);
-		//if already created, return the existing interface
+		// if already created, return the existing interface
 		if (getRBInterface(interfaceName) != null) {
 			return getRBInterface(interfaceName);
 		}
 		ModuleInterface ret = new ModuleInterface(interfaceName, reqSpec);
 		rbInterfaceMap.put(interfaceName, ret);
-		
-		//create the exported packages from the intersection of the packages that are
-		//exported by the visible bundles that are available. Also, add the interface
-		//to the implements list of the matching modules
+
+		// create the exported packages from the intersection of the packages
+		// that are
+		// exported by the visible bundles that are available. Also, add the
+		// interface
+		// to the implements list of the matching modules
 		boolean first = true;
-		for (BundleDescription bundle: bundleEnv.getBundles(symbolicName, range)) {
-			//export package conjunction
+		for (BundleDescription bundle : bundleEnv.getBundles(symbolicName,
+				range)) {
+			// export package conjunction
 			if (first) {
 				ret.addExportedPackages(getExportedPackages(bundle));
 			} else {
-				ret.getExportedPackages().retainAll(getExportedPackages(bundle));
+				ret.getExportedPackages()
+						.retainAll(getExportedPackages(bundle));
 			}
-			//interface implements
+			// interface implements
 			AbstractModule module = bundleMap.get(bundle);
 			assert (module != null) : "Module not found for bundle " + bundle;
 			module.addImplementedInterface(ret);
@@ -173,12 +184,14 @@ public class BundleEnvironmentTranslator {
 		}
 		return ret;
 	}
-	
+
 	protected String makeRBInterfaceName(String symbolicName, VersionRange range) {
 		String ret = "";
-		
-		//return is I_internal_symbolicName_v__minver__maxver. The __ before minver and maxver is doubled
-		//if they are exclusive i.e., com.xyz (1.6,1.7] is encoded as com.xyz_v____1_6__1_7
+
+		// return is I_internal_symbolicName_v__minver__maxver. The __ before
+		// minver and maxver is doubled
+		// if they are exclusive i.e., com.xyz (1.6,1.7] is encoded as
+		// com.xyz_v____1_6__1_7
 		ret += "I_internal_" + symbolicName + "_v";
 		if (range.getIncludeMinimum()) {
 			ret += "__";
@@ -192,11 +205,11 @@ public class BundleEnvironmentTranslator {
 			ret += "____";
 		}
 		ret += getVersionString(range.getMaximum());
-		
+
 		return ret;
 	}
-	
-	//PASS---------------------------------------------------------
+
+	// PASS---------------------------------------------------------
 	protected void generateIPInterfaces() {
 		int counter = 0;
 		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
@@ -205,70 +218,158 @@ public class BundleEnvironmentTranslator {
 			if (bundle.getImportPackages().length > 0) {
 				Collection<Collection<String>> partitions = partitionImportedPackages(getImportedPackages(bundle));
 				for (Collection<String> partition : partitions) {
-					ModuleInterface newInterface = makeIPInterface(bundle, partition, counter);
-					module.addImportedModule(newInterface, newInterface.getName());
-					counter ++;
+					ModuleInterface newInterface = makeIPInterface(bundle,
+							partition, counter);
+					module.addImportedModule(newInterface, newInterface
+							.getName());
+					counter++;
 				}
 			}
 		}
 	}
-	
-	//create a weak module interface, which exports the packages that the context imports
-	protected WeakModuleInterface makeIPInterface(BundleDescription context, Collection<String> importedPackages, int counter) {
+
+	// create a weak module interface, which exports the packages that the
+	// context imports
+	protected WeakModuleInterface makeIPInterface(BundleDescription context,
+			Collection<String> importedPackages, int counter) {
 		String interfaceName = makeIPInterfaceName(context, counter);
-		assert (ipInterfaceMap.get(interfaceName) == null) : "Weak interface of the same name already exists: " + interfaceName; 
+		assert (ipInterfaceMap.get(interfaceName) == null) : "Weak interface of the same name already exists: "
+				+ interfaceName;
 		WeakModuleInterface ret = new WeakModuleInterface(interfaceName);
-		
+
 		ret.addExportedPackages(importedPackages);
 		ipInterfaceMap.put(ret.getName(), ret);
 		return ret;
 	}
-	
-	protected String makeIPInterfaceName(BundleDescription context, int counter) { 
+
+	protected String makeIPInterfaceName(BundleDescription context, int counter) {
 		String ret = "";
-		
-		ret += "WI_importpackage_" + context.getSymbolicName() + "_v_" + getVersionString(context.getVersion()) +  "_ctr_" + counter;
-		
+
+		ret += "WI_importpackage_" + context.getSymbolicName() + "_v_"
+				+ getVersionString(context.getVersion()) + "_ctr_" + counter;
+
 		return ret;
 	}
-	
-	//PASS---------------------------------------------------------
+
+	// PASS---------------------------------------------------------
 	protected void generateSystemModule() throws BundleTranslationException {
-		//TODO: Implement
+		// TODO: Implement
 		this.systemModule = new ConcreteModule("system", null);
-		//import an instance of every concrete module
+		// import an instance of every concrete module
 		for (AbstractModule module : bundleMap.values()) {
 			this.systemModule.addImportedModule(module, module.getName());
 		}
-		//wiring, replace every import in the concrete modules with the resolved
-		//module
-		//replace ordinary interfaces introduced by require bundle
-		for (AbstractModule module: bundleMap.values()) {
+		// wiring, replace every import in the concrete modules with the
+		// resolved
+		// module
+
+		for (AbstractModule module : bundleMap.values()) {
 			for (ModuleImport moduleImport : module.getImportedModules()) {
-				if (moduleImport.getImportedModule() instanceof ModuleInterface && 
-						! (moduleImport.getImportedModule() instanceof WeakModuleInterface)) {
-					//resolve the import
-					ModuleInterface replaceTarget = (ModuleInterface) moduleImport.getImportedModule();
-					BundleDescription resolvedRequire = bundleEnv.resolve(replaceTarget.getSrcRequire());
+				// TODO: refactor to remove instanceof
+				// replace ordinary interfaces introduced by require bundle
+				if (moduleImport.getImportedModule() instanceof ModuleInterface
+						&& !(moduleImport.getImportedModule() instanceof WeakModuleInterface)) {
+					// resolve the import
+					ModuleInterface replaceTarget = (ModuleInterface) moduleImport
+							.getImportedModule();
+					BundleDescription resolvedRequire = bundleEnv
+							.resolve(replaceTarget.getSrcRequire());
 					if (resolvedRequire == null) {
-						throw new BundleTranslationException("Unable to resolve required bundle " + 
-								replaceTarget.getSrcRequire() + " in bundle " + ((ConcreteModule)module).getSrcBundle());
+						throw new BundleTranslationException(
+								"Unable to resolve required bundle "
+										+ replaceTarget.getSrcRequire()
+										+ " in bundle "
+										+ ((ConcreteModule) module)
+												.getSrcBundle());
 					}
-					AbstractModule replacementModule = bundleMap.get(resolvedRequire);
-					assert (replacementModule != null) : "Unable to find module for bundle " + resolvedRequire;
-					
-					//add the replace statement in the system module
-					systemModule.addReplace(module.getName() + ModuleReference.MODULE_SEPARATOR + replaceTarget.getName(), replacementModule.getName());
+					AbstractModule replacementModule = bundleMap
+							.get(resolvedRequire);
+					assert (replacementModule != null) : "Unable to find module for bundle "
+							+ resolvedRequire;
+
+					// add the replace statement in the system module
+					systemModule.addReplace(module.getName()
+							+ ModuleReference.MODULE_SEPARATOR
+							+ replaceTarget.getName(), replacementModule
+							.getName());
+				}
+				// replace ordinary interfaces introduced by require bundle
+				else if (moduleImport.getImportedModule() instanceof WeakModuleInterface) {
+					WeakModuleInterface replaceTarget = (WeakModuleInterface) moduleImport
+							.getImportedModule();
+					BundleDescription resolvedIP = resolveImplementingBundle(replaceTarget);
+					if (resolvedIP == null) {
+						String packages = "";
+						for (String packageName : replaceTarget.getExportedPackages()) {
+							packages += packageName + " ";
+						}
+						throw new BundleTranslationException(
+								"Unable to wire bundle "
+										+ ((ConcreteModule) module)
+												.getSrcBundle()
+										+ " imported packages " + packages);
+					}
+					AbstractModule replacementModule = bundleMap
+							.get(resolvedIP);
+					assert (replacementModule != null) : "Unable to find module for bundle "
+							+ resolvedIP;
+
+					// add the replace to the system module
+					systemModule.addReplace(module.getName()
+							+ ModuleReference.MODULE_SEPARATOR
+							+ replaceTarget.getName(), replacementModule
+							.getName());
+
 				}
 			}
 		}
-		
-		//replace weak interfaces
+
 	}
 
-	
-	
-	//Util methods
+	private BundleDescription resolveImplementingBundle(
+			WeakModuleInterface weakInterface) {
+		Collection<BundleDescription> ret = new LinkedList<BundleDescription>();
+
+		// go through non-singleton bundles first, if one matches the interface,
+		// resolve it and return it
+		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
+			if (bundle.isSingleton()) {
+				continue;
+			}
+			AbstractModule module = bundleMap.get(bundle);
+			assert (module != null) : "No module found for bundle " + bundle;
+			if (weakInterface.implementedBy(module)) {
+				BundleDescription resolvedBundle = bundleEnv.resolve(bundle
+						.getSymbolicName(), new VersionRange(bundle
+						.getVersion(), true, bundle.getVersion(), true));
+				if (resolvedBundle != null) {
+					return resolvedBundle;
+				}
+			}
+		}
+
+		// then go through the singleton bundles, resolving every bundle until
+		// a non-null return
+		for (BundleDescription bundle : bundleEnv.getAllBundles()) {
+			if (!bundle.isSingleton()) {
+				continue;
+			}
+			AbstractModule module = bundleMap.get(bundle);
+			assert (module != null) : "No module found for bundle " + bundle;
+			if (weakInterface.implementedBy(module)) {
+				BundleDescription resolvedBundle = bundleEnv.resolve(bundle
+						.getSymbolicName(), new VersionRange(bundle
+						.getVersion(), true, bundle.getVersion(), true));
+				if (resolvedBundle != null) {
+					return resolvedBundle;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	// Util methods
 	private Collection<String> getExportedPackages(BundleDescription bundle) {
 		Collection<String> ret = new LinkedList<String>();
 		for (ExportPackageDescription packageDesc : bundle.getExportPackages()) {
@@ -276,23 +377,27 @@ public class BundleEnvironmentTranslator {
 		}
 		return ret;
 	}
-	
+
 	private Collection<String> getImportedPackages(BundleDescription bundle) {
 		Collection<String> ret = new LinkedList<String>();
-		for (ImportPackageSpecification packageDesc : bundle.getImportPackages()) {
+		for (ImportPackageSpecification packageDesc : bundle
+				.getImportPackages()) {
 			ret.add(packageDesc.getName());
 		}
 		return ret;
 	}
-	
+
 	private String getVersionString(Version version) {
 		return version.toString().replace('.', '_');
 	}
-	
-	//uses a heuristic to partition the set of imported packages. Uses the first three
-	//segments of the package name to group packages into separate weak interface
-	//groups. Is not perfect, but would be enough for the case study
-	private Collection<Collection<String>> partitionImportedPackages(Collection<String> importedPackages) {
+
+	// uses a heuristic to partition the set of imported packages. Uses the
+	// first three
+	// segments of the package name to group packages into separate weak
+	// interface
+	// groups. Is not perfect, but would be enough for the case study
+	private Collection<Collection<String>> partitionImportedPackages(
+			Collection<String> importedPackages) {
 		HashMap<String, Collection<String>> partitionMap = new HashMap<String, Collection<String>>();
 		for (String packageName : importedPackages) {
 			String partName = getFirstPackageSegments(packageName);
@@ -305,14 +410,14 @@ public class BundleEnvironmentTranslator {
 		}
 		return partitionMap.values();
 	}
-	
+
 	public String getFirstPackageSegments(String packageName) {
 		String[] segments = packageName.split("\\.");
-		if (segments.length >=3) {
+		if (segments.length >= 3) {
 			return segments[0] + "." + segments[1] + "." + segments[2];
 		} else {
 			return packageName;
 		}
 	}
-	
+
 }
