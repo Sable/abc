@@ -25,6 +25,7 @@ public class Main {
     
     /** Creates a new instance. */
     public static void main(String[] args) {
+    	System.out.println(org.apache.batik.Version.version);
         Application app;
         String os = System.getProperty("os.name").toLowerCase();
         if (os.startsWith("mac")) {
