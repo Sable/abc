@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.BundleSpecification;
@@ -13,6 +14,8 @@ import org.osgi.framework.Version;
 public class StaticBundleEnvironment {
 	
 	HashMap<String, BundleBucket> bundleMap = new HashMap<String, BundleBucket>();
+	//Stores the singletons that have already been resolved. 
+	HashMap<String, BundleDescription> singletonMap = new HashMap<String, BundleDescription>();
 	
 	public StaticBundleEnvironment() {
 	}
@@ -68,8 +71,35 @@ public class StaticBundleEnvironment {
 	public BundleDescription resolve(BundleSpecification requireSpec) {
 		BundleDescription ret;
 		BundleBucket bucket = bundleMap.get(requireSpec.getName());
-		/*Collection<BundleDescription> matchingBundles = 
-			bucket.getBundles(requireSpec.getVersionRange());*/
-		return bucket.getBundle(requireSpec.getVersionRange());
+
+		List<BundleDescription> matchingBundles = 
+			bucket.getBundles(requireSpec.getVersionRange());
+		if (matchingBundles.size() == 0) {
+			return null;
+		}
+		
+		//try to get a non-singleton first
+		for (BundleDescription bundle : matchingBundles) {
+			if (bundle.isSingleton()) {
+				continue;
+			}
+			return bundle;
+		}
+		//if all are singletons, check first if the singleton is already set, and
+		//return null if that doesn't fall in the version range
+		//otherwise, return the singleton
+		ret = singletonMap.get(requireSpec.getName());
+		if (ret != null) {
+			if (requireSpec.getVersionRange().isIncluded(ret.getVersion())) {
+				return ret;
+			} else {
+				return null;
+			}
+		} else {
+			ret = matchingBundles.get(0); //get the first bundle (which would be the latest version)
+			singletonMap.put(ret.getSymbolicName(), ret);
+			return ret;
+		}
+		
 	}
 }

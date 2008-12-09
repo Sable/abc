@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,8 +21,6 @@ import org.osgi.framework.Version;
 public class BundleBucket {
 	private String symbolicName;
 
-	
-	
 	TreeSet<BundleDescription> bundles = new TreeSet<BundleDescription>(new Comparator<BundleDescription>() {
 		public int compare(BundleDescription o1, BundleDescription o2) {
 			return o1.getVersion().compareTo(o2.getVersion());
@@ -62,8 +61,9 @@ public class BundleBucket {
 	}
 	
 	//gets all the bundles that match the range
-	public Collection<BundleDescription> getBundles(VersionRange range) {
-		Collection<BundleDescription> ret = new LinkedList<BundleDescription>();
+	//returns the bundles in descending order
+	public List<BundleDescription> getBundles(VersionRange range) {
+		List<BundleDescription> ret = new LinkedList<BundleDescription>();
 		for (Iterator<BundleDescription> iter = bundles.descendingIterator(); iter.hasNext(); ) {
 			BundleDescription currBundle = iter.next(); 
 			if (range.isIncluded(currBundle.getVersion())) {

@@ -5,13 +5,11 @@ import jastaddmodules.translator.oomodules.ConcreteModule;
 import jastaddmodules.translator.oomodules.ModuleImport;
 import jastaddmodules.translator.oomodules.ModuleInterface;
 import jastaddmodules.translator.oomodules.ModuleReference;
-import jastaddmodules.translator.oomodules.ReplaceDeclaration;
 import jastaddmodules.translator.oomodules.WeakModuleInterface;
 import jastaddmodules.translator.osgi.BundleBucket;
 import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;

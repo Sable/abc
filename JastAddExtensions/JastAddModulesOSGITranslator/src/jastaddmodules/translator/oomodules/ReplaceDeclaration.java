@@ -16,7 +16,7 @@ public class ReplaceDeclaration {
 	public String toString() {
 		String ret = "";
 		
-		ret += "replace " + dest + " with " + src;
+		ret += "replace " + dest + "\n\twith " + src;
 		
 		return ret;
 	}
