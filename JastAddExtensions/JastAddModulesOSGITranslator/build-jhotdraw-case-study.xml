@@ -2,7 +2,19 @@
 <project name="jastaddmodules_task_test" default="translate">
 	<property name="org.eclipse.osgi" value="C:/Program Files/eclipse/3.4b/eclipse/plugins/org.eclipse.osgi_3.4.0.v20080605-1900.jar" />
 	<property name="destdir" value="translate.out" />
-
+	
+	<property name="batik1.6" value="../CASE_OSGI_Batik_1.6"/>
+	<property name="batik1.8pre" value="../CASE_OSGI_Batik_1.8pre"/>
+	<property name="batik1.6jhotdraw" value="../CASE_OSGI_Batik_JHotdraw"/>
+	<property name="jhotdraw" value="../CASE_OSGI_JHotdraw"/>
+	<property name="sample.draw" value="../CASE_OSGI_JHotdrawSampleDraw"/>
+	<property name="sample.net" value="../CASE_OSGI_JHotdrawSampleNet"/>
+	<property name="sample.odg" value="../CASE_OSGI_JHotdrawSampleODG"/>
+	<property name="sample.pert" value="../CASE_OSGI_JHotdrawSamplePert"/>
+	<property name="sample.svg" value="../CASE_OSGI_JHotdrawSampleSVG"/>
+	<property name="sample.teddy" value="../CASE_OSGI_JHotdrawSampleTeddy"/>
+	<property name="nanoxml" value="../CASE_OSGI_Nanoxml"/>
+	
 	<taskdef resource="jastaddmodules/translator/anttask/tasks.properties">
 		<classpath>
 			<pathelement path="./bin" />
@@ -12,58 +24,58 @@
 
 	<target name="translate" depends="clean">
 		<jastaddmodules.osgi.translate destdir="${destdir}">
-			<bundle manifest="../CASE_OSGI_Batik_1.6/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_Batik_1.6">
+			<bundle manifest="${batik1.6}/META-INF/MANIFEST.MF">
+				<fileset dir="${batik1.6}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_Batik_1.8pre/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_Batik_1.8pre">
+			<bundle manifest="${batik1.8pre}/META-INF/MANIFEST.MF">
+				<fileset dir="${batik1.8pre}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_Batik_JHotdraw/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_Batik_JHotdraw">
+			<bundle manifest="${batik1.6jhotdraw}/META-INF/MANIFEST.MF">
+				<fileset dir="${batik1.6jhotdraw}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdraw/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdraw">
+			<bundle manifest="${jhotdraw}/META-INF/MANIFEST.MF">
+				<fileset dir="${jhotdraw}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSampleDraw/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSampleDraw">
+			<bundle manifest="${sample.draw}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.draw}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSampleNet/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSampleNet">
+			<bundle manifest="${sample.net}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.net}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSampleODG/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSampleODG">
+			<bundle manifest="${sample.odg}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.odg}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSamplePert/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSamplePert">
+			<bundle manifest="${sample.pert}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.pert}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSampleSVG/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSampleSVG">
+			<bundle manifest="${sample.svg}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.svg}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_JHotdrawSampleTeddy/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_JHotdrawSampleTeddy">
+			<bundle manifest="${sample.teddy}/META-INF/MANIFEST.MF">
+				<fileset dir="${sample.teddy}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
-			<bundle manifest="../CASE_OSGI_Nanoxml/META-INF/MANIFEST.MF">
-				<fileset dir="../CASE_OSGI_Nanoxml">
+			<bundle manifest="${nanoxml}/META-INF/MANIFEST.MF">
+				<fileset dir="${nanoxml}">
 					<include name="**/*.java" />
 				</fileset>
 			</bundle>
