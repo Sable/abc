@@ -31,11 +31,11 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.getAccess().access((TypeDecl)m, NameType.AMBIGUOUS_NAME);
+        	res = ((TypeDecl)m).access(id.getAccess(), NameType.AMBIGUOUS_NAME);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
-        	res = acc.access((TypeDecl)m, acc.nameType());
+        	res = ((TypeDecl)m).access(acc, acc.nameType());
         }
         if(expected == null) {
         	assertNull(res);
@@ -55,11 +55,11 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.getAccess().access(td, NameType.TYPE_NAME);
+        	res = td.access(id.getAccess(), NameType.TYPE_NAME);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
-        	res = acc.access(td, acc.nameType());
+        	res = td.access(acc, acc.nameType());
         }
         if(expected == null) {
         	assertNull(res);

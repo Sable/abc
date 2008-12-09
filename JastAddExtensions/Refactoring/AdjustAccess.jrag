@@ -59,7 +59,7 @@ aspect AdjustAccess {
 		TypeDecl td = target;
 		unlock();
 		if(possiblyObscured() || decl() != td) {
-			Access acc = access(td, nameType());
+			Access acc = td.access(this, nameType());
 			if(acc == null)
 				throw new RefactoringException("type cannot be accessed");
 			plugIn(acc);
@@ -100,7 +100,7 @@ aspect AdjustAccess {
 		unlock();
 		if(md == decl())
 			return;
-		Access acc = access(md, (List<Expr>)getArgs().fullCopy());
+		Access acc = md.access(this, (List<Expr>)getArgs().fullCopy());
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
 		plugIn(acc);

@@ -64,7 +64,7 @@ aspect AccessVariableITD {
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, NameType nt) {
-				return Expr.this.access(td, nt);
+				return td.access(Expr.this, nt);
 			}
 		};
 	}
@@ -83,7 +83,7 @@ aspect AccessVariableITD {
 				return Access.this.lookupVariable(name); 
 			}
 			public Access accessType(TypeDecl td, NameType nt) {
-				return Access.this.access(td, nt);
+				return td.access(Access.this, nt);
 			}
 		};
 	}

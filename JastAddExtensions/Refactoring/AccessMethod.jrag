@@ -109,14 +109,16 @@ aspect AccessMethod {
 		}
 		return null;
 	}
-	
-	public Access Access.access(MethodDecl md, List args) {
-		MethodAccessInfo acc = accessMethod(md);
+
+	public Access MethodDecl.access(Access src, List args) {
+		MethodAccessInfo acc = src.accessMethod(this);
 		if(acc == null) return null;
-		if(isQualified())
-			return acc.computeQualifiedAccess(unqualifiedScope().getNamingContext(), qualifier().type(),
-										      getCompleteQualifier(), args);
+		if(src.isQualified())
+			return acc.computeQualifiedAccess(src.unqualifiedScope().getNamingContext(), 
+					src.qualifier().type(), src.getCompleteQualifier(), args);
 		else
-			return acc.computeAccess(getNamingContext(), args);
+			return acc.computeAccess(src.getNamingContext(), args);
 	}
+	/*public Access Access.access(MethodDecl md, List args) {
+	}*/
 }

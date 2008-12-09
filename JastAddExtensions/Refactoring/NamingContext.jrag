@@ -39,7 +39,7 @@ aspect NamingContext {
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, NameType nt) {
-				return Expr.this.access(td, nt);
+				return td.access(Expr.this, nt);
 			}
 		};
 	}
@@ -53,7 +53,7 @@ aspect NamingContext {
 			public SimpleSet lookupType(String name) { return Stmt.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Stmt.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, NameType nt) {
-				return Stmt.this.access(td, nt);
+				return td.access(Stmt.this, nt);
 			}
 		};
 	}
@@ -72,7 +72,7 @@ aspect NamingContext {
 				return Access.this.lookupVariable(name); 
 			}
 			public Access accessType(TypeDecl td, NameType nt) {
-				return Access.this.access(td, nt);
+				return td.access(Access.this, nt);
 			}
 		};
 	}
@@ -86,7 +86,7 @@ aspect NamingContext {
 			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, NameType nt) {
-				return BodyDecl.this.access(td, nt);
+				return td.access(BodyDecl.this, nt);
 			}
 		};
 	}
@@ -122,9 +122,17 @@ aspect NamingContext {
 				return list;
 			}
 			public Access accessType(TypeDecl td, NameType nt) {
-				return TypeDecl.this.accessTypeFromInside(td, nt);
+				return td.accessFromInside(TypeDecl.this, nt);
 			}
 		};
 	}
+	
+	interface NamingSite {
+		NamingContext getNamingContext();
+		public TypeAccessInfo accessType(TypeDecl td);
+	}
+	Expr implements NamingSite;
+	Stmt implements NamingSite;
+	BodyDecl implements NamingSite;
 	
 }

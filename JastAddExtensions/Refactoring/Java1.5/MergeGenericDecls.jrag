@@ -105,127 +105,55 @@ aspect MergeGenericDecls {
 		unlock();
 		TypeDecl decl = decl().isRawType() ? decl().sourceTypeDecl() : decl();
 		if(possiblyObscured() || decl != td) {
-			Access acc = access(td, nameType());
+			Access acc = td.access(this, nameType());
 			if(acc == null)
 				throw new RefactoringException("type cannot be accessed");
 			plugIn(acc);
 		}
 	}
 	
-	// AUGH!!! this is horrible...
-	refine AccessType public Access TypeDecl.accessTypeFromInside(TypeDecl td, NameType nt) {
-		if(td.isParameterizedType()) {
-			ParTypeDecl ptd = (ParTypeDecl)td;
-			if(ptd.isRawType()) {
-				return refined(td.sourceTypeDecl(), nt);
-			} else {
-				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
-				if(base == null) return null;
-				List<Access> args = new List<Access>();
-				for(int i=0;i<ptd.getNumArgument();++i) {
-					Access arg = accessTypeFromInside(ptd.getArgument(i).type(), NameType.TYPE_NAME);
-					if(arg == null) return null;
-					args.add(arg);
-				}
-				return new ParTypeAccess(base, args);
-			}
-		} else if(td instanceof WildcardType) {
-			return new BoundTypeAccess("wildcard", "", td);
-		} else {
-			return refined(td, nt);
+	public Access ParTypeDecl.accessFromInside(TypeDecl src, NameType nt) {
+		if(isRawType())
+			return sourceTypeDecl().accessFromInside(src, nt);
+		Access base = sourceTypeDecl().accessFromInside(src, NameType.TYPE_NAME);
+		if(base == null) return null;
+		List<Access> args = new List<Access>();
+		for(int i=0;i<getNumArgument();++i) {
+			Access arg = getArgument(i).type().accessFromInside(src, NameType.TYPE_NAME);
+			if(arg == null) return null;
+			args.add(arg);
 		}
+		return new ParTypeAccess(base, args);
 	}
 	
-	refine AccessType public Access BodyDecl.access(TypeDecl td, NameType nt) {
-		if(td.isParameterizedType()) {
-			ParTypeDecl ptd = (ParTypeDecl)td;
-			if(ptd.isRawType()) {
-				return refined(td.sourceTypeDecl(), nt);
-			} else {
-				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
-				if(base == null) return null;
-				List<Access> args = new List<Access>();
-				for(int i=0;i<ptd.getNumArgument();++i) {
-					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
-					if(arg == null) return null;
-					args.add(arg);
-				}
-				return new ParTypeAccess(base, args);
-			}
-		} else if(td instanceof WildcardType) {
-			return new BoundTypeAccess("wildcard", "", td);
-		} else {
-			return refined(td, nt);
-		}
+	public Access WildcardType.accessFromInside(TypeDecl src, NameType nt) {
+		return new BoundTypeAccess("wildcard", "", this);
 	}
 
-	refine AccessType public Access Stmt.access(TypeDecl td, NameType nt) {
-		if(td.isParameterizedType()) {
-			ParTypeDecl ptd = (ParTypeDecl)td;
-			if(ptd.isRawType()) {
-				return refined(td.sourceTypeDecl(), nt);
-			} else {
-				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
-				if(base == null) return null;
-				List<Access> args = new List<Access>();
-				for(int i=0;i<ptd.getNumArgument();++i) {
-					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
-					if(arg == null) return null;
-					args.add(arg);
-				}
-				return new ParTypeAccess(base, args);
-			}
-		} else if(td instanceof WildcardType) {
-			return new BoundTypeAccess("wildcard", "", td);
-		} else {
-			return refined(td, nt);
+	public Access ParTypeDecl.access(NamingSite src, NameType nt) {
+		if(isRawType())
+			return super.access(src, nt);
+		Access base = sourceTypeDecl().access(src, NameType.TYPE_NAME);
+		if(base == null) return null;
+		List<Access> args = new List<Access>();
+		for(int i=0;i<getNumArgument();++i) {
+			Access arg = getArgument(i).type().access(src, NameType.TYPE_NAME);
+			if(arg == null) return null;
+			args.add(arg);
 		}
+		return new ParTypeAccess(base, args);
 	}
 	
-	refine AccessType public Access Expr.access(TypeDecl td, NameType nt) {
-		if(td.isParameterizedType()) {
-			ParTypeDecl ptd = (ParTypeDecl)td;
-			if(ptd.isRawType()) {
-				return refined(td.sourceTypeDecl(), nt);
-			} else {
-				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
-				if(base == null) return null;
-				List<Access> args = new List<Access>();
-				for(int i=0;i<ptd.getNumArgument();++i) {
-					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
-					if(arg == null) return null;
-					args.add(arg);
-				}
-				return new ParTypeAccess(base, args);
-			}
-		} else if(td instanceof WildcardType) {
-			return new BoundTypeAccess("wildcard", "", td);
-		} else {
-			return refined(td, nt);
-		}
+	public Access WildcardType.access(NamingSite src, NameType nt) {
+		return new BoundTypeAccess("wildcard", "", this);
 	}
 	
-	refine AccessType public Access Access.access(TypeDecl td, NameType nt) {
-		if(td.isParameterizedType()) {
-			ParTypeDecl ptd = (ParTypeDecl)td;
-			if(ptd.isRawType()) {
-				return refined(td.sourceTypeDecl(), nt);
-			} else {
-				Access base = refined(td.sourceTypeDecl(), NameType.TYPE_NAME);
-				if(base == null) return null;
-				List<Access> args = new List<Access>();
-				for(int i=0;i<ptd.getNumArgument();++i) {
-					Access arg = access(ptd.getArgument(i).type(), NameType.TYPE_NAME);
-					if(arg == null) return null;
-					args.add(arg);
-				}
-				return new ParTypeAccess(base, args);
-			}
-		} else if(td instanceof WildcardType) {
-			return new BoundTypeAccess("wildcard", "", td);
-		} else {
-			return refined(td, nt);
-		}
+	public Access ParTypeDecl.access(Access src, NameType nt) {
+		return access((NamingSite)src, nt);
+	}
+	
+	public Access WildcardType.access(Access src, NameType nt) {
+		return new BoundTypeAccess("wildcard", "", this);
 	}
 	
 	refine AdjustAccess public void VarAccess.lock() {
@@ -257,7 +185,7 @@ aspect MergeGenericDecls {
 		unlock();
 		if(decl().sourceMethodDecl() == md)
 			return;
-		Access acc = access(md, (List<Expr>)getArgs().fullCopy());
+		Access acc = md.access(this, (List<Expr>)getArgs().fullCopy());
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
 		plugIn(acc);

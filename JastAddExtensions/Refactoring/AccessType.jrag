@@ -255,73 +255,42 @@ aspect AccessType {
 	}
 	
 	// convenience methods to compute accesses at different nodes
-	public Access TypeDecl.accessTypeFromInside(TypeDecl td, NameType nt) {
-		if(td.isArrayDecl()) {
-			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = accessTypeFromInside(arr.componentType(), nt);
-			if(acc == null) return null;
-			return new ArrayTypeAccess(acc);
-		} else {
-			TypeAccessInfo acc = accessTypeFromInside(td);
-			if(acc == null) return null;
-			return acc.computeAccess(getMemberNamingContext(), nt);
-		}
+	public Access TypeDecl.accessFromInside(TypeDecl src, NameType nt) {
+		TypeAccessInfo acc = src.accessTypeFromInside(this);
+		if(acc == null) return null;
+		return acc.computeAccess(getMemberNamingContext(), nt);
 	}
 	
-	public Access BodyDecl.access(TypeDecl td, NameType nt) {
-		if(td.isArrayDecl()) {
-			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.componentType(), nt);
-			if(acc == null) return null;
-			return new ArrayTypeAccess(acc);
-		} else {
-			TypeAccessInfo acc = accessType(td);
-			if(acc == null) return null;
-			return acc.computeAccess(getNamingContext(), nt);
-		}
-	}
-
-	public Access Stmt.access(TypeDecl td, NameType nt) {
-		if(td.isArrayDecl()) {
-			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.componentType(), nt);
-			if(acc == null) return null;
-			return new ArrayTypeAccess(acc);
-		} else {
-			TypeAccessInfo acc = accessType(td);
-			if(acc == null) return null;
-			return acc.computeAccess(getNamingContext(), nt);
-		}
+	public Access ArrayDecl.accessFromInside(TypeDecl src, NameType nt) {
+		Access acc = componentType().accessFromInside(src, nt);
+		if(acc == null) return null;
+		return new ArrayTypeAccess(acc);
 	}
 	
-	public Access Expr.access(TypeDecl td, NameType nt) {
-		if(td.isArrayDecl()) {
-			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.componentType(), nt);
-			if(acc == null) return null;
-			return new ArrayTypeAccess(acc);
-		} else {
-			TypeAccessInfo acc = accessType(td);
-			if(acc == null) return null;
-			return acc.computeAccess(getNamingContext(), nt);
-		}
+	public Access TypeDecl.access(NamingSite src, NameType nt) {
+		TypeAccessInfo acc = src.accessType(this);
+		if(acc == null) return null;
+		return acc.computeAccess(src.getNamingContext(), nt);
 	}
 	
-	public Access Access.access(TypeDecl td, NameType nt) {
-		if(td.isArrayDecl()) {
-			ArrayDecl arr = (ArrayDecl)td;
-			Access acc = access(arr.componentType(), nt);
-			if(acc == null) return null;
-			return new ArrayTypeAccess(acc);
-		} else {
-			TypeAccessInfo acc = accessType(td);
-			if(acc == null) return null;
-			if(isQualified())
-				return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(), qualifier().type(),
-						                          nt, getCompleteQualifier());
-			else
-				return acc.computeAccess(getNamingContext(), nt);
-		}
+	public Access ArrayDecl.access(NamingSite src, NameType nt) {
+		Access acc = componentType().access(src, nt);
+		if(acc == null) return null;
+		return new ArrayTypeAccess(acc);
+	}
+	
+	public Access TypeDecl.access(Access src, NameType nt) {
+		TypeAccessInfo acc = src.accessType(this);
+		if(acc == null) return null;
+		if(src.isQualified())
+			return acc.computeQualifiedAccess(src.qualifier().type().getMemberNamingContext(), 
+									src.qualifier().type(), nt, src.getCompleteQualifier());
+		else
+			return acc.computeAccess(src.getNamingContext(), nt);
+	}
+	
+	public Access ArrayDecl.access(Access src, NameType nt) {
+		return access((NamingSite)src, nt);
 	}
 	
 }
