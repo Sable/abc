@@ -71,10 +71,8 @@
 	</target>
 
 	<target name="clean">
-		<delete>
-			<fileset dir="${destdir}" includes="**/*"/>
-		</delete>
-		<delete dir="${destdir}"/>
+
+		<delete dir="${destdir}" quiet="true"/>
 	</target>
 
 </project>
