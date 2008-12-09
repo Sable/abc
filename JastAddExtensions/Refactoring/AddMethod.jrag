@@ -20,7 +20,7 @@ aspect AddMethod {
 	public void ClassDecl.addMethod(int index, MethodDecl md, 
 				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
 			throws RefactoringException {
-        AdjustmentTable table = new AdjustmentTable();
+        AdjustmentTable table = new AdjustmentTable(programRoot());
         // collect all uses of methods of the same name
         for(Iterator i=unqualifiedLookupMethod(md.getID()).iterator();i.hasNext();) {
             MethodDecl m = (MethodDecl)i.next();

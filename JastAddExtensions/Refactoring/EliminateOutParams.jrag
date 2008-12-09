@@ -9,7 +9,7 @@ aspect EliminateOutParams {
 
 		public EliminateOutParamsRefactoring(ClosureInvocation closure) {
 			this.closure = closure;
-			table = new AdjustmentTable();
+			table = new AdjustmentTable(closure.programRoot());
 		}
 
 		public void execute() throws RefactoringException {
@@ -23,9 +23,12 @@ aspect EliminateOutParams {
 			ParameterDeclaration pd = closure.getParameter(idx);
 			if(!(closure.getArg(idx) instanceof VarAccess))
 				throw new RefactoringException("cannot eliminate out parameter");
+			if(hasOutgoingDataflowEdgeThroughException(pd))
+				throw new RefactoringException("cannot eliminate out parameter");
 			VarAccess v = (VarAccess)closure.getArg(idx);
 			VarAccess newv = new VarAccess(v.name());
 			closure.getBlock().addStmt(new ReturnStmt(newv));
+			closure.programRoot().flushCaches();
 			closure.closeOver(newv, table);
 			closure.setReturnType(newv.type().getLockedAccess(table));
 			if(pd.isRef()) {
@@ -41,6 +44,19 @@ aspect EliminateOutParams {
 			assgn.setSource(closure);
 			closure.programRoot().flushCaches();
 			table.adjust();
+		}
+		
+		// determine if any use of this variable has an outgoing data flow edge that crosses one of the exception
+		// exits; in that case, we cannot eliminate this output parameter (see test58)
+		private boolean hasOutgoingDataflowEdgeThroughException(Variable v) {
+			for(VarAccess acc : v.collectedUses()) {
+				for(Access exn : closure.getExceptions())
+					if(acc.hasDataSuccAfter(exn))
+						return true;
+				if(acc.hasDataSuccAfter(closure.uncheckedExceptionExit()))
+					return true;
+			}
+			return false;
 		}
 	}
 

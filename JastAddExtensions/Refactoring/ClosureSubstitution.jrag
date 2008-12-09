@@ -2,7 +2,7 @@ aspect ClosureSubstitution {
 	
 	public ClosureInvocation ClosureInvocation.subst() throws RefactoringException {
 		renameAway();
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		for(int i=getNumParameter()-1;i>=0;--i) {
 			RefactoringException exn = getParameter(i).inline(table);
 			if(exn != null)
@@ -50,7 +50,7 @@ aspect ClosureSubstitution {
 	
 	//// rename all parameters and local variables to avoid clashes with surrounding locals
 	private void ClosureInvocation.renameAway() throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		lockAll(table);
 		java.util.Set<LocalDeclaration> vars = new java.util.HashSet<LocalDeclaration>();
 		collectLocalDeclarations(vars);

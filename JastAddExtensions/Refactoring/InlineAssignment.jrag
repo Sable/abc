@@ -15,7 +15,7 @@ aspect InlineAssignment {
 		SmallSet<VarAccess> dsuccs = v.dataSucc();
 		// check that all the data successors have this as their only data predecessor and are not destinations
 		// and replace them by copies of the RHS
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		for(VarAccess w : dsuccs) {
 			rhs.lockAllDFlow(table);
 			rhs.lockAllAccesses(table);
@@ -40,7 +40,7 @@ aspect InlineAssignment {
 	
 	public void AssignSimpleExpr.makeConversionExplicit() throws RefactoringException {
 		if(getDest().type() != getSource().type()) {
-			AdjustmentTable table = new AdjustmentTable();
+			AdjustmentTable table = new AdjustmentTable(programRoot());
 			setSource(new CastExpr(getDest().type().getLockedAccess(table), getSource()));
 			programRoot().flushCaches();
 			table.adjust();

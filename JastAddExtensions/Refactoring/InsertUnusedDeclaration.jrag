@@ -8,7 +8,7 @@ aspect InsertUnusedDeclaration {
 	      if(!block.canIntroduceLocal(decl.name()))
 	    	  throw new RefactoringException("local variable of same name exists");
 	      // ensure that bindings are preserved
-	      AdjustmentTable table = new AdjustmentTable();
+	      AdjustmentTable table = new AdjustmentTable(programRoot());
 	      block.lockAllAccesses(table);
 	      int idx = block.getIndexOfStmt(this);
 	      block.insertStmt(idx, decl);

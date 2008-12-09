@@ -44,7 +44,7 @@ aspect RenameParameter {
 	}
 	
 	private AdjustmentTable ParameterDeclaration.findEndangeredVarAccesses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredVarAccesses(table, name(), new_name);
 		return table;
 	}

@@ -27,7 +27,7 @@ aspect RenameLocalVariable {
 	}
 	
 	private AdjustmentTable VariableDeclaration.findEndangeredVarAccesses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredVarAccesses(table, name(), new_name);
 		return table;
 	}

@@ -9,7 +9,7 @@ aspect Encapsulate {
 
 	public void FieldDeclaration.encapsulate() throws RefactoringException {
 		Collection uses = uses();
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		Accessors accessors = new Accessors(this);
 		makePrivate();
 		RefactoringException rfe;

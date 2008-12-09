@@ -25,7 +25,7 @@ aspect RenameField {
 	}
 
 	private AdjustmentTable FieldDeclaration.findEndangeredVarAccesses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredVarAccesses(table, name(), new_name);
 		return table;
 	}

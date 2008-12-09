@@ -205,8 +205,8 @@ aspect Dataflow {
 	private Map<VarAccess, SmallSet<ASTNode>> AdjustmentTable.dpreds;
 	private Map<VarAccess, SmallSet<VarAccess>> AdjustmentTable.dsuccs;
 
-	refine ControlFlow public AdjustmentTable.AdjustmentTable() {
-		refined();
+	refine ControlFlow public AdjustmentTable.AdjustmentTable(Program program) {
+		refined(program);
 		dpreds = new HashMap<VarAccess, SmallSet<ASTNode>>();
 		dsuccs = new HashMap<VarAccess, SmallSet<VarAccess>>();
 	}

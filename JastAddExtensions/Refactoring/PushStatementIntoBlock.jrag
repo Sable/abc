@@ -17,7 +17,7 @@ aspect PushStatementIntoBlock {
 			this.stmt = stmt;
 			this.following_block = (Block)stmt.subsequentStmt();
 			this.idx = parent_block.getIndexOfStmt(stmt);
-			this.table = new AdjustmentTable();
+			this.table = new AdjustmentTable(parent_block.programRoot());
 		}
 
 		public boolean execute() throws RefactoringException {

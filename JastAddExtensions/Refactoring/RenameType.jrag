@@ -12,15 +12,10 @@ aspect RenameType {
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		String old_name = getID();
-//TIME long time = System.currentTimeMillis();
 		AdjustmentTable table = findEndangeredTypeAccesses(new_name);
-//TIME System.out.println("endangered accesses: "+table.size());
-//TIME System.out.println("time to find: "+(System.currentTimeMillis()-time));
 		changeID(new_name);
 		programRoot().flushCaches();
-//TIME time = System.currentTimeMillis();
 		table.adjust();
-//TIME System.out.println("adjustment: "+(System.currentTimeMillis()-time));
 		// for toplevel types, we might need to change the name of the containing
 		// compilation unit
 		if(isTopLevelType() && cu.getID().equals(old_name)) {
@@ -39,7 +34,7 @@ aspect RenameType {
 	}
 	
 	private AdjustmentTable TypeDecl.findEndangeredTypeAccesses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredTypeAccesses(table, name(), new_name);
 		return table;
 	}

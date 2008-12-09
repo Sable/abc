@@ -8,7 +8,7 @@ aspect ExtractClass {
 		ClassDecl wrapperClass = this.createNewStaticMemberClassWithDefaultConstructor(newClassName);
 		FieldDeclaration wrapperField = this.createNewPublicMemberField(wrapperClass.createBoundAccess(), newFieldName);
 		// wrap all fds into wrapperClass
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		ArrayList<FieldDeclaration> wrappedFields = new ArrayList<FieldDeclaration>();
 		for (FieldDeclaration fd: fds) {
 			if (fd.getModifiers().isStatic()) {
@@ -26,7 +26,7 @@ aspect ExtractClass {
 	}
 	
 	public ClassDecl ClassDecl.createNewStaticMemberClassWithDefaultConstructor(String className) throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredTypeAccesses(table, className, className);
 		Modifiers modifiers = new Modifiers();
 		modifiers.addModifier(new Modifier("static"));
@@ -39,7 +39,7 @@ aspect ExtractClass {
 	}
 	
 	public FieldDeclaration ClassDecl.createNewPublicMemberField(Access typeAccess, String fieldName) throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		programRoot().findEndangeredVarAccesses(table, fieldName, fieldName);
 		Expr expr = new ClassInstanceExpr(typeAccess, new List(), new Opt()); 
 		Modifiers modifiers = new Modifiers();

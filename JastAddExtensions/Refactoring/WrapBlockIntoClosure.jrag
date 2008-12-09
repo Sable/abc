@@ -35,7 +35,7 @@ aspect WrapBlockIntoClosure {
 
 		public WrapBlockIntoClosureRefactoring(Block block) {
 			this.block = block;
-			this.table = new AdjustmentTable();
+			this.table = new AdjustmentTable(block.programRoot());
 		}
 
 		public ClosureInvocation execute() throws RefactoringException {

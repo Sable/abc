@@ -3,7 +3,7 @@ aspect InlineMethodToClosure {
 	public ClosureInvocation MethodAccess.inlineToClosure() throws RefactoringException {
 		if(!decl().overriders().isEmpty())
 			throw new RefactoringException("ambiguous inline");
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		MethodDecl md = decl();
 		MethodDecl mdcp = (MethodDecl)decl().fullCopy();
 		md.lockAll(table);

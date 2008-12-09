@@ -23,7 +23,7 @@ aspect ExtractAssignment {
 		}
 		
 		public VariableDeclaration execute() throws RefactoringException {
-			AdjustmentTable table = new AdjustmentTable();
+			AdjustmentTable table = new AdjustmentTable(block.programRoot());
 			expr.lockAllDFlow(table);
 			expr.replaceWith(var.createLockedVarAccess(table));
 			block.insertStmt(index, AssignExpr.asStmt(var.createLockedVarAccess(table), expr));

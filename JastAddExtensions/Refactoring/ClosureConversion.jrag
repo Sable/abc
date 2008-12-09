@@ -1,7 +1,7 @@
 aspect ClosureConversion {
 	
 	public ClosureInvocation ClosureInvocation.convert() throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		java.util.Set<VarAccess> locals = localVarAccesses();
 		for(VarAccess v : locals)
 			closeOver(v, table);
@@ -15,11 +15,24 @@ aspect ClosureConversion {
 	}
 	
 	public void ClosureInvocation.closeOver(VarAccess v, AdjustmentTable table) throws RefactoringException {
-		if(v.hasDataPredBefore(entry()))
+		if(hasIncomingDataflowEdge(v))
 			addInParm((LocalDeclaration)v.decl(), table);
-		if(v.hasDataSuccAfter(exit()))
+		if(hasOutgoingDataflowEdge(v))
 			addOutParm((LocalDeclaration)v.decl(), table);
 		programRoot().flushCaches();
+	}
+	
+	private boolean ClosureInvocation.hasIncomingDataflowEdge(VarAccess v) {
+		return v.hasDataPredBefore(entry());
+	}
+	
+	private boolean ClosureInvocation.hasOutgoingDataflowEdge(VarAccess v) {
+		if(v.hasDataSuccAfter(exit()))
+			return true;
+		for(Access acc : getExceptions())
+			if(v.hasDataSuccAfter(acc))
+				return true;
+		return v.hasDataSuccAfter(uncheckedExceptionExit());
 	}
 	
 	private void ClosureInvocation.localize(VarAccess v, AdjustmentTable table) throws RefactoringException {

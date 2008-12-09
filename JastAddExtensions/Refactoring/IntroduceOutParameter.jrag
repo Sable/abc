@@ -7,7 +7,7 @@ aspect IntroduceOutParameter {
 		if(!(parent.getDest() instanceof VarAccess))
 			throw new RefactoringException("cannot introduce non-variable out parameter");
 		VarAccess v = (VarAccess)parent.getDest();
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		getBlock().lockAll(table);
 		setReturnType(new PrimitiveTypeAccess("void"));
 		String parmname = this.pickFreshVarName(v.name());

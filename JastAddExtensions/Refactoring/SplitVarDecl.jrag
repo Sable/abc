@@ -21,7 +21,7 @@ aspect SplitVarDecl {
   public AssignSimpleExpr VariableDeclaration.split() throws RefactoringException {
     if(!hasInit())
       return null;  // we could throw an exception here, but I think it's better this way
-    AdjustmentTable table = new AdjustmentTable();
+    AdjustmentTable table = new AdjustmentTable(programRoot());
     Expr init;
     // if the RHS is an array initializer, it has to be wrapped into an array creation expression
     if(getInit().isArrayInit()) {

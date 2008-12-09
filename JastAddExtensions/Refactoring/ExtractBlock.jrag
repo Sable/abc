@@ -10,7 +10,7 @@
 aspect ExtractBlock {
 
 	public Block Block.extractBlock(int begin, int end) throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		
 		// ensure indices make sense
 		if(end <= begin) { int tmp = end; end = begin; begin = tmp;	}
@@ -19,7 +19,7 @@ aspect ExtractBlock {
 
 		// lock; create new block
 		lockAllAccesses(table);
-		new_block = new Block(new List());
+		Block new_block = new Block(new List());
 		insertStmt(end+1, new_block);
 		
 		// push statements into block

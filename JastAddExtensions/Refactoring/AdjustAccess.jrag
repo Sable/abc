@@ -133,10 +133,16 @@ aspect AdjustAccess {
 	
 	class AdjustmentTable {
 		private java.util.List<LockableAccess> adjustments;
+		private Program root;
 	}
 	
-	public AdjustmentTable.AdjustmentTable() {
+	public AdjustmentTable.AdjustmentTable(Program root) {
 		adjustments = new LinkedList<LockableAccess>();
+		this.root = root;
+	}
+	
+	public void AdjustmentTable.flushCaches() {
+		root.flushCaches();
 	}
 	
 	public int AdjustmentTable.size() {

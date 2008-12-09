@@ -1,6 +1,6 @@
 aspect ExtractLocalVariable {
 	public VariableDeclaration Expr.extractLocalVariable(String name) throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
 		VariableDeclaration decl = insertUnused(new VariableDeclaration(type().getLockedAccess(table), name)).extractAssignment(this).merge();
 		table.adjust();
 		return decl;

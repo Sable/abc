@@ -8,7 +8,7 @@ aspect TurnStatementIntoBlock {
 			if(!extractable())
 				throw new RefactoringException("not extractable");
 			ASTNode parent = getParent();
-			AdjustmentTable table = new AdjustmentTable();
+			AdjustmentTable table = new AdjustmentTable(programRoot());
 			table.addCFlow(this);
 			Block new_block = new Block(new List());
 			replaceWith(new_block);

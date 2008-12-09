@@ -32,6 +32,12 @@ aspect Closures {
 		s.append(")");
 	}
 	
+	public boolean Access.isDeclaredClosureException() {
+		if(!(getParent().getParent() instanceof ClosureInvocation))
+			return false;
+		return ((ClosureInvocation)getParent().getParent()).getExceptions() == getParent();
+	}
+	
 	// equations for some attributes defined elsewhere
 	eq ClosureInvocation.getParameter().getBlock() = getBlock();
 
@@ -47,24 +53,40 @@ aspect Closures {
 
 	eq ClosureInvocation.type() = getReturnType().type();
 
-	eq ClosureInvocation.isPureCFlowNode() = true;
-
 	// control flow for closure invocations
 	inh SmallSet<ASTNode> ClosureInvocation.throwTarget(TypeDecl exn);
+	
+	// artificial node to represent throws of uncaught exceptions
+	private final ExitStmt ClosureInvocation.uncheckedExceptionExit = new ExitStmt();
+	syn nta Stmt ClosureInvocation.uncheckedExceptionExit() = uncheckedExceptionExit;
+	
 	eq ClosureInvocation.first() = getNumArg() == 0 ? getBlock() : getArg(0).first();
+	
 	syn ASTNode ClosureInvocation.entry() = getBlock();
 	syn ASTNode ClosureInvocation.exit() = this;
-	eq ClosureInvocation.getArg(int i).following() 
-	  = i < getNumArg()-1 ? singleNode(getArg(i+1).first()) 
-			  			  : singleNode(getBlock());
+	
+	eq ClosureInvocation.getArg(int i).following() = i < getNumArg()-1 ? singleNode(getArg(i+1).first()) 
+			  			  											   : singleNode(getBlock());
 	eq ClosureInvocation.getBlock().following() = singleNode(exit());
 	eq ClosureInvocation.getReturnType().following() = singleNode(exit());
+	eq ClosureInvocation.getException(int i).following() = throwTarget(getException(i).type());
+	eq ClosureInvocation.uncheckedExceptionExit().following() = uncheckedExnTarget();
 
 	eq ClosureInvocation.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().returnTarget() = singleNode(getReturnType());
-	eq ClosureInvocation.getChild().throwTarget(TypeDecl exn) = throwTarget(exn);
-	
+	eq ClosureInvocation.getChild().throwTarget(TypeDecl exn) {
+		// TODO: this will behave weirdly if there are overlapping exception types...
+		for(Access acc : getExceptions())
+			if(exn.instanceOf(acc.type()))
+				return singleNode(acc);
+		return singleNode(uncheckedExceptionExit());
+	}
+	eq ClosureInvocation.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+
+	eq ExitStmt.isPureCFlowNode() = true;
+	eq ClosureInvocation.isPureCFlowNode() = true;
+
 	// data flow for closure invocations: parameters are aliased
 	public VarAccess ClosureInvocation.unalias(VarAccess var) {
 		for(int i=0;i<getNumParameter();++i)
@@ -90,6 +112,20 @@ aspect Closures {
 	eq ClosureInvocation.dataSuccFor(LocalDeclaration decl) {
 		return super.dataSuccFor(unalias(decl));
 	}
+	eq Access.dataSuccFor(LocalDeclaration decl) {
+		if(isDeclaredClosureException()) {
+			ClosureInvocation cl = (ClosureInvocation)getParent().getParent();
+			return super.dataSuccFor(cl.unalias(decl));
+		}
+		return super.dataSuccFor(decl);
+	}
+	eq ExitStmt.dataSuccFor(LocalDeclaration decl) {
+		if(getParent() instanceof ClosureInvocation) {
+			ClosureInvocation cl = (ClosureInvocation)getParent();
+			return super.dataSuccFor(cl.unalias(decl));
+		}
+		return super.dataSuccFor(decl);
+	}
 	
 	// same for bounded dataflow
 	eq Block.hasDataPredBefore(VarAccess var, ASTNode n) {
@@ -105,6 +141,24 @@ aspect Closures {
 		if(this == n)
 			return !dataSuccFor(unalias(decl)).isEmpty();
 		return super.hasDataSuccAfter(unalias(decl), n);
+	}
+	eq Access.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
+		if(isDeclaredClosureException()) {
+			ClosureInvocation cl = (ClosureInvocation)getParent().getParent();
+			if(this == n)
+				return !dataSuccFor(cl.unalias(decl)).isEmpty();
+			return super.hasDataSuccAfter(cl.unalias(decl), n);
+		}
+		return super.hasDataSuccAfter(decl, n);
+	}
+	eq ExitStmt.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
+		if(getParent() instanceof ClosureInvocation) {
+			ClosureInvocation cl = (ClosureInvocation)getParent();
+			if(this == n)
+				return !dataSuccFor(cl.unalias(decl)).isEmpty();
+			return super.hasDataSuccAfter(cl.unalias(decl), n);
+		}
+		return super.hasDataSuccAfter(decl, n);
 	}
 
 	// all return statements inside the closure

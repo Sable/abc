@@ -17,7 +17,7 @@ aspect ExtractClosureToMethod {
 			this.name = name;
 			this.bodydecl = closure.hostBodyDecl();
 			this.typedecl = bodydecl.hostType();
-			this.table = new AdjustmentTable();
+			this.table = new AdjustmentTable(typedecl.programRoot());
 		}
 
 		public MethodDecl execute() throws RefactoringException {
