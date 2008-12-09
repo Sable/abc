@@ -65,37 +65,6 @@
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
-        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
-        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
-        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
-        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
-        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
-        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
-        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
-        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-	</ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start" abccomment="ideally we'd get the message at line 6, but 12 is about the best we can do.                      6 isn't reported in the bytecode anywhere, so there's no hope of that.                      ajc does the same as us.">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
-        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
-        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
 <ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
         <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
             <message text="no sources specified" kind="error"></message>
