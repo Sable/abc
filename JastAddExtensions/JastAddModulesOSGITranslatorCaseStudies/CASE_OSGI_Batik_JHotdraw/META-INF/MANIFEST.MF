@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Batik fragment for JHotdraw included in JHotdraw
-Bundle-SymbolicName: org.apache.batik
+Bundle-SymbolicName: org.apache.batik;singleton:=true
 Bundle-Version: 1.6.0.jhotdraw
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.apache.batik,
