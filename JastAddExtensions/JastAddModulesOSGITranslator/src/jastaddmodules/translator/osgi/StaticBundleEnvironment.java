@@ -69,11 +69,16 @@ public class StaticBundleEnvironment {
 	}
 	
 	public BundleDescription resolve(BundleSpecification requireSpec) {
+		return resolve(requireSpec.getName(), requireSpec.getVersionRange());
+	}
+	
+	
+	public BundleDescription resolve(String symbolicName, VersionRange range) {
 		BundleDescription ret;
-		BundleBucket bucket = bundleMap.get(requireSpec.getName());
+		BundleBucket bucket = bundleMap.get(symbolicName);
 
 		List<BundleDescription> matchingBundles = 
-			bucket.getBundles(requireSpec.getVersionRange());
+			bucket.getBundles(range);
 		if (matchingBundles.size() == 0) {
 			return null;
 		}
@@ -88,9 +93,9 @@ public class StaticBundleEnvironment {
 		//if all are singletons, check first if the singleton is already set, and
 		//return null if that doesn't fall in the version range
 		//otherwise, return the singleton
-		ret = singletonMap.get(requireSpec.getName());
+		ret = singletonMap.get(symbolicName);
 		if (ret != null) {
-			if (requireSpec.getVersionRange().isIncluded(ret.getVersion())) {
+			if (range.isIncluded(ret.getVersion())) {
 				return ret;
 			} else {
 				return null;
