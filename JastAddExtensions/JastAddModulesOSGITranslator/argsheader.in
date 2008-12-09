@@ -3,5 +3,7 @@ system
 -classpath 
 ../../CASE_OSGI_JHotdraw/lib/java_30.zip;../../CASE_OSGI_JHotdraw/lib/MRJAdapter.jar;../../CASE_OSGI_JHotdraw/lib/quaqua.jar;../../CASE_OSGI_JHotdraw/lib/swing-layout.jar;../../CASE_OSGI_JHotdraw/lib/swing-worker.jar
 -d
-jastadd-build
+.
+-mainclass
+system::org.jhotdraw.samples.svg_1_0_0::org.jhotdraw.samples.svg.Main
 -debug
