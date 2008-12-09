@@ -108,13 +108,38 @@
 		<copy todir="${destdir}/org/jhotdraw/app">
 			<fileset file="${jhotdraw}/src/org/jhotdraw/app/Label*.properties" />
 		</copy>
+		<copy todir="${destdir}/org/jhotdraw/samples/draw">
+			<fileset file="${sample.draw}/src/org/jhotdraw/samples/draw/Label*.properties" />
+		</copy>
+		
 		<copy todir="${destdir}/org/jhotdraw/samples/svg">
 			<fileset file="${sample.svg}/src/org/jhotdraw/samples/svg/Label*.properties" />
 		</copy>
+		
+        <copy todir="${destdir}/org/jhotdraw/samples/net">
+            <fileset file="${sample.net}/src/org/jhotdraw/samples/net/Label*.properties"/>
+        </copy>
+        <copy todir="${destdir}/org/jhotdraw/samples/net/images">
+            <fileset file="${sample.net}/src/org/jhotdraw/samples/net/images/*.png"/>
+        </copy>
+		
+        <copy todir="${destdir}/org/jhotdraw/samples/odg">
+            <fileset file="${sample.odg}/src/org/jhotdraw/samples/odg/Label*.properties"/>
+        </copy>
+		
+        <copy todir="${destdir}/org/jhotdraw/samples/pert">
+            <fileset file="${sample.pert}/src/org/jhotdraw/samples/pert/Label*.properties"/>
+        </copy>
+        <copy todir="${destdir}/org/jhotdraw/samples/pert/images">
+            <fileset file="${sample.pert}/src/org/jhotdraw/samples/pert/images/*.png"/>
+        </copy>
+		
+        <copy todir="${destdir}/org/jhotdraw/samples/teddy">
+            <fileset file="${sample.teddy}/src/org/jhotdraw/samples/teddy/Label*.properties"/>
+        </copy> 
 	</target>
 
 	<target name="clean">
-
 		<delete dir="${destdir}" quiet="true" />
 	</target>
 
