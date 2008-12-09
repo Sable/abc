@@ -7,13 +7,16 @@ import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Dictionary;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.osgi.framework.util.Headers;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
@@ -88,6 +91,52 @@ public class OSGITranslator {
 			System.out.println(module.toString());
 			dumpModuleToFile(module, destdir);
 		}
+		
+		//dump the other files, prepend java files with the module declaration
+		for (Bundle bundle : bundles) {
+			BundleDescription bundleDesc = collector.getBundleFromFile(bundle.getManifestFile());
+			if (bundleDesc == null) {
+				throw new BundleTranslationException("Cannot find bundle description for manifest file " + bundle.getManifestFile());
+			}
+			AbstractModule module = translator.getModuleFromBundle(bundleDesc);
+			if (module == null) {
+				throw new BundleTranslationException("Cannot find translated module for bundle " + bundleDesc);
+			}
+			for (FileSet fileSet : bundle.getFileSets()) {
+				for (Iterator iter =  fileSet.iterator(); iter.hasNext(); ) {
+					FileResource file = (FileResource) iter.next();
+					FileInputStream in = new FileInputStream(file.getFile());
+					File outFile = new File(getOutFileName(module, destdir, fileSet, file.getFile()));
+					if (!outFile.getParentFile().exists()) {
+						boolean b = outFile.getParentFile().mkdirs();
+						if (!b) {
+							throw new BundleTranslationException("Cannot create directories for " + outFile.getParentFile());
+						}
+					}
+					FileOutputStream out = new FileOutputStream(outFile);
+					if (file.getFile().getAbsolutePath().endsWith(".java")) {
+						String moduleDecl = "module " + module.getName() + ";\n";
+						out.write(moduleDecl.getBytes());
+					} 
+					byte[] buffer = new byte[1024];
+					int read = 0;
+					while ((read = in.read(buffer)) > 0) {
+						out.write(buffer, 0, read);
+					}
+					in.close();
+					out.close();
+				}
+			}
+		}
+	}
+	
+	public static String getOutFileName(AbstractModule module, String destdir, FileSet fileSet, File inFile) {
+		if (!destdir.endsWith(File.separator) && destdir.length() > 0) {
+			destdir += File.separator;
+		}
+		destdir += module.getName() + File.separator;
+		return destdir + inFile.getAbsolutePath().substring(
+				fileSet.getDir().getAbsolutePath().length() + 1);
 	}
 	
 	public static String prettyPrint(BundleDescription bundle) {

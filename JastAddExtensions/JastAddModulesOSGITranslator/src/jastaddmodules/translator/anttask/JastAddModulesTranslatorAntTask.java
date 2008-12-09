@@ -50,6 +50,8 @@ public class JastAddModulesTranslatorAntTask extends Task {
 		try {
 			OSGITranslator.translate(bundles, destdir);
 		} catch (Exception e) {
+			System.err.println(e);
+			e.printStackTrace();
 			throw new BuildException(e);
 		}
 		System.out.println("Done.");

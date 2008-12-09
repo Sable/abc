@@ -47,7 +47,7 @@ public class StaticBundleCollector {
 		return environment;
 	}
 	
-	public BundleDescription getBundleFromAbsoluteFileName(String absoluteFileName) {
-		return fileToBundleMap.get(absoluteFileName);
+	public BundleDescription getBundleFromFile(File file) {
+		return fileToBundleMap.get(file.getAbsolutePath());
 	}
 }

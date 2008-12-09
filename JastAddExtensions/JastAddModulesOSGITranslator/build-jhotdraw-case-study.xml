@@ -10,7 +10,7 @@
 		</classpath>
 	</taskdef>
 
-	<target name="translate">
+	<target name="translate" depends="clean">
 		<jastaddmodules.osgi.translate destdir="${destdir}">
 			<bundle manifest="../CASE_OSGI_Batik_1.6/META-INF/MANIFEST.MF">
 				<fileset dir="../CASE_OSGI_Batik_1.6">
@@ -74,6 +74,7 @@
 		<delete>
 			<fileset dir="${destdir}" includes="**/*"/>
 		</delete>
+		<delete dir="${destdir}"/>
 	</target>
 
 </project>
