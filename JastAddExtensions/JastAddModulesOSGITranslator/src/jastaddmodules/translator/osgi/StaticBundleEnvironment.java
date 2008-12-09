@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.eclipse.osgi.service.resolver.VersionRange;
 import org.osgi.framework.Version;
 
@@ -62,5 +63,13 @@ public class StaticBundleEnvironment {
 	
 	public Collection<BundleBucket> getAllBundleBuckets() {
 		return Collections.unmodifiableCollection(bundleMap.values());
+	}
+	
+	public BundleDescription resolve(BundleSpecification requireSpec) {
+		BundleDescription ret;
+		BundleBucket bucket = bundleMap.get(requireSpec.getName());
+		/*Collection<BundleDescription> matchingBundles = 
+			bucket.getBundles(requireSpec.getVersionRange());*/
+		return bucket.getBundle(requireSpec.getVersionRange());
 	}
 }

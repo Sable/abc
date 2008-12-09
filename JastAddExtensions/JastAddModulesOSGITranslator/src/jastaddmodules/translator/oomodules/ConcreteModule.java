@@ -48,6 +48,11 @@ public class ConcreteModule extends AbstractModule {
 		this.replaces.add(replace);
 	}
 	
+	public void addReplace(String dest, String src) {
+		ReplaceDeclaration replace = new ReplaceDeclaration(this, new ModuleReference(this, dest), new ModuleReference(this,src));
+		this.replaces.add(replace);
+	}
+	
 	public String toString() {
 		String ret = super.toString();
 		
@@ -63,4 +68,10 @@ public class ConcreteModule extends AbstractModule {
 	public boolean implementedBy(AbstractModule module) {
 		return false;
 	}
+
+	public BundleDescription getSrcBundle() {
+		return srcBundle;
+	}
+	
+	
 }

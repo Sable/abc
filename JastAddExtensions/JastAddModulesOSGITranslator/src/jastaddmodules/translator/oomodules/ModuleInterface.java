@@ -36,4 +36,10 @@ public class ModuleInterface extends AbstractModule {
 	public boolean implementedBy(AbstractModule module) {
 		return module.getImplementedInterfaces().contains(this);
 	}
+
+	public BundleSpecification getSrcRequire() {
+		return srcRequire;
+	}
+	
+	
 }

@@ -48,6 +48,9 @@ public class OSGITranslator {
 		} catch (IOException e) {
 			System.err.println("Exception on translate: " + e);
 			e.printStackTrace();
+		} catch (BundleTranslationException e) {
+			System.err.println("Exception on translate: " + e);
+			e.printStackTrace();
 		}
 		
 	}

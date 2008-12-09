@@ -27,7 +27,7 @@ public class ModuleImport {
 	public String toString() {
 		String ret = "";
 		
-		ret += "import own " + importedModule.getName() + " as " + alias;
+		ret += "import own " + importedModule.getName() + " export as " + alias;
 		
 		return ret;
 	}

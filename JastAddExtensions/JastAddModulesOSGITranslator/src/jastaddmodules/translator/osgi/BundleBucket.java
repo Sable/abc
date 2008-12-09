@@ -20,6 +20,8 @@ import org.osgi.framework.Version;
 public class BundleBucket {
 	private String symbolicName;
 
+	
+	
 	TreeSet<BundleDescription> bundles = new TreeSet<BundleDescription>(new Comparator<BundleDescription>() {
 		public int compare(BundleDescription o1, BundleDescription o2) {
 			return o1.getVersion().compareTo(o2.getVersion());

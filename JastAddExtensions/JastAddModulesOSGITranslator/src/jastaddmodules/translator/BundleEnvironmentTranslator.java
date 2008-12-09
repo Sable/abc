@@ -4,6 +4,7 @@ import jastaddmodules.translator.oomodules.AbstractModule;
 import jastaddmodules.translator.oomodules.ConcreteModule;
 import jastaddmodules.translator.oomodules.ModuleImport;
 import jastaddmodules.translator.oomodules.ModuleInterface;
+import jastaddmodules.translator.oomodules.ModuleReference;
 import jastaddmodules.translator.oomodules.ReplaceDeclaration;
 import jastaddmodules.translator.oomodules.WeakModuleInterface;
 import jastaddmodules.translator.osgi.BundleBucket;
@@ -53,7 +54,7 @@ public class BundleEnvironmentTranslator {
 		this.bundleEnv = bundleEnv;
 	}
 	
-	public void translate() throws IOException{
+	public void translate() throws IOException, BundleTranslationException {
 		generateOOModules();
 		generateOverrides();
 		generateRBInterfaces();
@@ -234,7 +235,7 @@ public class BundleEnvironmentTranslator {
 	}
 	
 	//PASS---------------------------------------------------------
-	protected void generateSystemModule() {
+	protected void generateSystemModule() throws BundleTranslationException {
 		//TODO: Implement
 		this.systemModule = new ConcreteModule("system", null);
 		//import an instance of every concrete module
@@ -243,7 +244,31 @@ public class BundleEnvironmentTranslator {
 		}
 		//wiring, replace every import in the concrete modules with the resolved
 		//module
+		//replace ordinary interfaces introduced by require bundle
+		for (AbstractModule module: bundleMap.values()) {
+			for (ModuleImport moduleImport : module.getImportedModules()) {
+				if (moduleImport.getImportedModule() instanceof ModuleInterface && 
+						! (moduleImport.getImportedModule() instanceof WeakModuleInterface)) {
+					//resolve the import
+					ModuleInterface replaceTarget = (ModuleInterface) moduleImport.getImportedModule();
+					BundleDescription resolvedRequire = bundleEnv.resolve(replaceTarget.getSrcRequire());
+					if (resolvedRequire == null) {
+						throw new BundleTranslationException("Unable to resolve required bundle " + 
+								replaceTarget.getSrcRequire() + " in bundle " + ((ConcreteModule)module).getSrcBundle());
+					}
+					AbstractModule replacementModule = bundleMap.get(resolvedRequire);
+					assert (replacementModule != null) : "Unable to find module for bundle " + resolvedRequire;
+					
+					//add the replace statement in the system module
+					systemModule.addReplace(module.getName() + ModuleReference.MODULE_SEPARATOR + replaceTarget.getName(), replacementModule.getName());
+				}
+			}
+		}
+		
+		//replace weak interfaces
 	}
+
+	
 	
 	//Util methods
 	private Collection<String> getExportedPackages(BundleDescription bundle) {
