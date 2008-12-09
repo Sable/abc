@@ -63,7 +63,8 @@ aspect PushStatementIntoBlock {
 	}
 
 	syn lazy boolean Stmt.inBlock() 
-	= getParent() != null && getParent().getParent() instanceof Block;
+		= getParent() != null && getParent().getParent() instanceof Block;
+	
 	public Stmt Stmt.subsequentStmt() {
 		int idx = getParent().getIndexOfChild(this);
 		if(idx == -1 || idx >= getParent().getNumChild() - 1)
