@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jastaddmodules_task_test" default="translate">
+	<property name="org.eclipse.osgi" value="C:/Program Files/eclipse/3.4b/eclipse/plugins/org.eclipse.osgi_3.4.0.v20080605-1900.jar" />
+	<property name="destdir" value="translate.out" />
+
+	<taskdef resource="jastaddmodules/translator/anttask/tasks.properties">
+		<classpath>
+			<pathelement path="./bin" />
+			<pathelement path="${org.eclipse.osgi}" />
+		</classpath>
+	</taskdef>
+
+	<target name="translate">
+		<jastaddmodules.osgi.translate destdir="${destdir}">
+			<bundle manifest="../CASE_OSGI_Batik_1.6/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_Batik_1.6">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_Batik_1.8pre/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_Batik_1.8pre">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_Batik_JHotdraw/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_Batik_JHotdraw">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdraw/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdraw">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSampleDraw/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSampleDraw">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSampleNet/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSampleNet">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSampleODG/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSampleODG">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSamplePert/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSamplePert">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSampleSVG/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSampleSVG">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_JHotdrawSampleTeddy/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_JHotdrawSampleTeddy">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+			<bundle manifest="../CASE_OSGI_Nanoxml/META-INF/MANIFEST.MF">
+				<fileset dir="../CASE_OSGI_Nanoxml">
+					<include name="**/*.java" />
+				</fileset>
+			</bundle>
+		</jastaddmodules.osgi.translate>
+	</target>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="${destdir}" includes="**/*"/>
+		</delete>
+	</target>
+
+</project>
