@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Dictionary;
+import java.util.HashMap;
 
 import org.eclipse.osgi.framework.util.Headers;
 import org.eclipse.osgi.service.resolver.BundleDescription;
@@ -12,7 +13,9 @@ import org.osgi.framework.BundleException;
 
 public class StaticBundleCollector {
 	StaticBundleEnvironment environment;
-
+	//absolute file path to bundle mapping
+	HashMap<String, BundleDescription> fileToBundleMap = new HashMap<String, BundleDescription>();
+	
 	public StaticBundleCollector(StaticBundleEnvironment environment) {
 		this.environment = environment;
 	}
@@ -32,6 +35,7 @@ public class StaticBundleCollector {
 				.createBundleDescription(null, manifestDictionary,
 						file.getAbsolutePath(), 0);
 		environment.addBundle(bundleDesc);
+		fileToBundleMap.put(file.getAbsolutePath(), bundleDesc);
 	}
 	
 	public void addBundleFile(String file) throws BundleException, IOException {
@@ -41,5 +45,9 @@ public class StaticBundleCollector {
 
 	public StaticBundleEnvironment getBundleEnvironment() {
 		return environment;
+	}
+	
+	public BundleDescription getBundleFromAbsoluteFileName(String absoluteFileName) {
+		return fileToBundleMap.get(absoluteFileName);
 	}
 }

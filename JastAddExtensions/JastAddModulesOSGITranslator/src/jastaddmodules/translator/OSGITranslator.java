@@ -1,12 +1,17 @@
 package jastaddmodules.translator;
 
+import jastaddmodules.translator.anttask.Bundle;
+import jastaddmodules.translator.oomodules.AbstractModule;
 import jastaddmodules.translator.osgi.StaticBundleCollector;
 import jastaddmodules.translator.osgi.StaticBundleEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Dictionary;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.osgi.framework.util.Headers;
 import org.eclipse.osgi.service.resolver.BundleDescription;
@@ -18,15 +23,18 @@ import org.osgi.framework.BundleException;
 
 public class OSGITranslator {
 	public static void main(String[] args) {
-		StateObjectFactory bundleDescriptorFactory = StateObjectFactory.defaultFactory;
-		
+		translate(args, "");
+	}
+	
+	//debug mode
+	public static void translate(String files[], String destdir) {
 		StaticBundleEnvironment environment = new StaticBundleEnvironment();
 		StaticBundleCollector collector = new StaticBundleCollector(environment);
-		for (String arg : args) {
-			if (!arg.toUpperCase().endsWith(".MF")) {
+		for (String file : files) {
+			if (!file.toUpperCase().endsWith(".MF")) {
 				continue;
 			}
-			File manifestFile = new File(arg);
+			File manifestFile = new File(file);
 			try {
 				collector.addBundleFile(manifestFile);
 			} catch (BundleException e) {
@@ -44,7 +52,11 @@ public class OSGITranslator {
 		System.out.println("--------------Translation---------------");
 		BundleEnvironmentTranslator translator = new BundleEnvironmentTranslator(environment);
 		try {
-			translator.translate();
+			List<AbstractModule> modules = translator.translate("");
+			for (AbstractModule module : modules) {
+				System.out.println(module.toString());
+				dumpModuleToFile(module, destdir);
+			}
 		} catch (IOException e) {
 			System.err.println("Exception on translate: " + e);
 			e.printStackTrace();
@@ -52,7 +64,30 @@ public class OSGITranslator {
 			System.err.println("Exception on translate: " + e);
 			e.printStackTrace();
 		}
+	}
+	
+	//For the ant task
+	public static void translate(LinkedList<Bundle> bundles, String destdir) throws BundleTranslationException, IOException, BundleException {
+		File destDirFile = new File(destdir);
+		if (!destDirFile.exists()) {
+			boolean result = destDirFile.mkdirs();
+			if (!result) {
+				throw new BundleTranslationException("Cannot create destination directory " + destdir);
+			}
+		}
 		
+		StaticBundleEnvironment environment = new StaticBundleEnvironment();
+		StaticBundleCollector collector = new StaticBundleCollector(environment);
+		for (Bundle bundle : bundles) {
+			collector.addBundleFile(bundle.getManifestFile());
+		}
+		BundleEnvironmentTranslator translator = new BundleEnvironmentTranslator(environment);
+		
+		List<AbstractModule> modules = translator.translate("");
+		for (AbstractModule module : modules) {
+			System.out.println(module.toString());
+			dumpModuleToFile(module, destdir);
+		}
 	}
 	
 	public static String prettyPrint(BundleDescription bundle) {
@@ -74,5 +109,15 @@ public class OSGITranslator {
 		}
 		
 		return ret;
+	}
+	
+	private static void dumpModuleToFile(AbstractModule module, String destdir) throws IOException {
+		String moduleFileName = module.getName() + ".module";
+		if (destdir.length()> 0 && !destdir.endsWith(File.separator)) {
+			destdir += File.separator;
+		}
+		PrintStream printout = new PrintStream(new File(destdir + moduleFileName));
+		printout.print(module.toString());
+		printout.close();
 	}
 }

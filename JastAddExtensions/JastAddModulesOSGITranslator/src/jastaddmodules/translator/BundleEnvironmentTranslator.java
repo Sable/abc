@@ -55,40 +55,23 @@ public class BundleEnvironmentTranslator {
 		this.bundleEnv = bundleEnv;
 	}
 
-	public void translate() throws IOException, BundleTranslationException {
+	public List<AbstractModule> translate(String destdir) throws IOException, BundleTranslationException {
+		LinkedList<AbstractModule> ret = new LinkedList<AbstractModule>();
 		generateOOModules();
 		generateOverrides();
 		generateRBInterfaces();
 		generateIPInterfaces();
 		generateSystemModule();
 
-		// DEBUG
-		for (AbstractModule module : bundleMap.values()) {
-			System.out.println("//----------------------------------------");
-			System.out.print(module.toString());
-			dumpModuleToFile(module);
-		}
-		for (AbstractModule moduleInterface : rbInterfaceMap.values()) {
-			System.out.println("//----------------------------------------");
-			System.out.print(moduleInterface.toString());
-			dumpModuleToFile(moduleInterface);
-		}
-		for (AbstractModule weakModuleInterface : ipInterfaceMap.values()) {
-			System.out.println("//----------------------------------------");
-			System.out.print(weakModuleInterface.toString());
-			dumpModuleToFile(weakModuleInterface);
-		}
-		System.out.println("//----------------------------------------");
-		System.out.print(systemModule.toString());
-		dumpModuleToFile(systemModule);
+		ret.addAll(bundleMap.values());
+		ret.addAll(rbInterfaceMap.values());
+		ret.addAll(ipInterfaceMap.values());
+		ret.add(systemModule);
+		
+		return ret;
 	}
 
-	protected void dumpModuleToFile(AbstractModule module) throws IOException {
-		String moduleFileName = module.getName() + ".module";
-		PrintStream printout = new PrintStream(new File(moduleFileName));
-		printout.print(module.toString());
-		printout.close();
-	}
+
 
 	// PASS---------------------------------------------------------
 	protected void generateOOModules() {
@@ -342,7 +325,7 @@ public class BundleEnvironmentTranslator {
 					return resolvedBundle;
 				}
 			}
-		}
+		} 
 
 		// then go through the singleton bundles, resolving every bundle until
 		// a non-null return
@@ -415,5 +398,8 @@ public class BundleEnvironmentTranslator {
 			return packageName;
 		}
 	}
-
+	
+	public AbstractModule getModuleFromBundle(BundleDescription bundleDesc) { 
+		return bundleMap.get(bundleDesc);
+	}
 }
