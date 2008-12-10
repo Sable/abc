@@ -65,6 +65,7 @@ public class IntelliJExtractMethodTests extends TestCase {
 				blk.extractMethod("private", "newMethod", fromIdx, toIdx);
 			}
 		} catch(RefactoringException rfe) {
+			rfe.printStackTrace();
 			if(new File(outfile).exists())
 				fail(rfe.getMessage());
 			else
@@ -106,7 +107,7 @@ public class IntelliJExtractMethodTests extends TestCase {
 //    public void testExitPoints1() { runTest("ExitPoints1"); }
 //    public void testExitPoints2() { runTest("ExitPoints2"); }
 //    public void testExitPoints3() { runTest("ExitPoints3"); }
-    public void testExitPoints4() { runTest("ExitPoints4"); }
+//    public void testExitPoints4() { runTest("ExitPoints4"); }
 //    public void testExitPoints5() { runTest("ExitPoints5"); }
 //    public void testExitPoints6() { runTest("ExitPoints6"); }
 //    public void testExitPoints7() { runTest("ExitPoints7"); }

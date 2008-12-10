@@ -40,6 +40,8 @@ aspect ExtractClosureToMethod {
 									   closure.getExceptions(),
 									   new Opt(closure.getBlock()),
 									   tvars);
+			// it is generally not a good idea to have the same node at two different places in the tree...
+			closure.setBlock(new Block(new List()));
 			int index = typedecl.getBodyDeclList().getIndexOfChild(closure.hostBodyDecl());
 			assert(index!=-1);
 			typedecl.addMethod(index+1, md, false, false, false);
