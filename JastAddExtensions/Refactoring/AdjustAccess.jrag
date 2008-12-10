@@ -100,10 +100,12 @@ aspect AdjustAccess {
 		unlock();
 		if(md == decl())
 			return;
-		Access acc = md.access(this, (List<Expr>)getArgs().fullCopy());
+		AdjustmentTable table = new AdjustmentTable(programRoot());
+		Access acc = md.access(this, getArgs(), table);
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
 		plugIn(acc);
+		table.adjust();
 	}
 	
 	PackageAccess implements LockableAccess;

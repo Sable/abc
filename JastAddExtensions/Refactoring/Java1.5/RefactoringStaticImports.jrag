@@ -27,14 +27,14 @@ aspect RefactoringStaticImports {
 				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
 					MethodDecl md2 = (MethodDecl)iter.next();
 					if(md == md2)
-						return new MethodAccessInfo(md.hostType(), md.hostType(), false, md);
+						return new MethodAccessInfo(md.hostType(), md.hostType(), false, new HashSet(), md);
 				}
 		for(ImportDecl i : getImportDecls())
 			if(i.isOnDemand())
 				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
 					MethodDecl md2 = (MethodDecl)iter.next();
 					if(md == md2)
-						return new MethodAccessInfo(md.hostType(), md.hostType(), false, md);
+						return new MethodAccessInfo(md.hostType(), md.hostType(), false, new HashSet(), md);
 				}
 		return accessMethod(md);
 	}

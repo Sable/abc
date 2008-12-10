@@ -15,8 +15,11 @@ aspect MergeGenericDecls {
 	refine AccessMethod	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
 		for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
 			MethodDecl m = (MethodDecl)iter.next();
-			if(m.sameSourceDeclAs(md))
-				return new MethodAccessInfo(this, this, false, md); 
+			if(m.sameSourceDeclAs(md)) {
+				Collection competitors = memberMethods(md.name());
+				competitors.remove(md);
+				return new MethodAccessInfo(this, this, false, competitors, md);
+			}
 		}
 		return null;
 	}
@@ -185,14 +188,16 @@ aspect MergeGenericDecls {
 		unlock();
 		if(decl().sourceMethodDecl() == md)
 			return;
-		Access acc = md.access(this, (List<Expr>)getArgs().fullCopy());
+		AdjustmentTable table = new AdjustmentTable(programRoot());
+		Access acc = md.access(this, getArgs(), table);
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
 		plugIn(acc);
+		table.adjust();
 	}
 	
-	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type, Expr qualifier, List args) {
-		MethodAccess ma = new MethodAccess(target.name(), args);
+	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type, Expr qualifier, List args, AdjustmentTable table) {
+		MethodAccess ma = constructAccess(args, table);
 		if(needsQualifier) {
 			if(!target.isStatic())
 				return null;
@@ -203,11 +208,8 @@ aspect MergeGenericDecls {
 					return null;
 			if(source == bend && source.sameSourceDeclAs(qual_type))
 				return qualifier.qualifiesAccess(ma);
-			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
-				if(upper != null && bend.sameSourceDeclAs(qual_type))
-					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
-			}
+			else if(!qualifier.isTypeAccess() && bend.sameSourceDeclAs(qual_type))
+				return new ParExpr(new CastExpr(source.getLockedAccess(table), qualifier)).qualifiesAccess(ma);
 			return null;
 		} else {
 			return qualifier.qualifiesAccess(ma);

@@ -1,11 +1,43 @@
 aspect MethodAccessInfo {
 	
 	class MethodAccessInfo extends AccessInfo<MethodDecl> {
-		
+		private Collection<MethodDecl> competitors;
 		public MethodAccessInfo(TypeDecl source, TypeDecl bend, 
-									boolean needsQualifier,	MethodDecl target) {
+						boolean needsQualifier,	Collection<MethodDecl> competitors, 
+						MethodDecl target) {
 			super(source, bend, needsQualifier, target);
+			this.competitors = competitors;
 		}
+	}
+	
+	protected MethodAccess MethodAccessInfo.constructAccess(List<Expr> args, AdjustmentTable table) {
+		// check if any of the competitors is more specific than the target for
+		// this argument list; then we need casts
+		List<Expr> new_args = (List<Expr>)args.fullCopy();
+		for(MethodDecl cand : competitors) {
+			if(cand.applicableTo(args) && cand.moreSpecificThan(target)) {
+				insertCasts(new_args, table);
+				break;
+			}
+		}
+		return new MethodAccess(target.name(), new_args);
+	}
+	
+	protected void MethodAccessInfo.insertCasts(List<Expr> args, AdjustmentTable table) {
+		for(int i=0;i<target.getNumParameter();++i) {
+			TypeDecl tp = target.getParameter(i).type();
+			Expr arg = args.getChild(i);
+			args.setChild(new CastExpr(tp.getLockedAccess(table), arg), i);
+		}
+	}
+	
+	public boolean MethodDecl.applicableTo(List<Expr> args) {
+		if(getNumParameter() != args.getNumChild())
+			return false;
+		for(int i=0;i<getNumParameter();++i)
+			if(!args.getChild(i).type().instanceOf(getParameter(i).type()))
+				return false;
+		return true;
 	}
 
 	public MethodAccessInfo MethodAccessInfo.moveDownTo(TypeDecl td) {
@@ -23,57 +55,49 @@ aspect MethodAccessInfo {
 		return this;
 	}
 		
-	public Access MethodAccessInfo.computeAccess(NamingContext ctxt, List args) {
+	public Access MethodAccessInfo.computeAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
 		if(needsQualifier) {
 			if(target.isStatic())
-				return computeStaticAccess(ctxt, args);
+				return computeStaticAccess(ctxt, args, table);
 			if(ctxt.isStatic())
 				return null;
 			if(source == bend) {
-				return computeThisAccess(ctxt, args);
+				return computeThisAccess(ctxt, args, table);
 			} else if(bend instanceof ClassDecl && 
 						source == ((ClassDecl)bend).superclass()) {
-				return computeSuperAccess(ctxt, args);
+				return computeSuperAccess(ctxt, args, table);
 			} else {
 				return null;
 			}
 		} else {
-			return new MethodAccess(target.name(), args);
+			return constructAccess(args, table);
 		}
 	}
 	
-	public Access MethodAccessInfo.computeStaticAccess(NamingContext ctxt, List args) {
-		MethodAccess ma = new MethodAccess(target.name(), args);
-		Access source_acc = ctxt.accessType(source, NameType.EXPRESSION_NAME);
-		if(source_acc == null) return null;
-		return source_acc.qualifiesAccess(ma);
+	public Access MethodAccessInfo.computeStaticAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
+		MethodAccess ma = constructAccess(args, table);
+		return source.getLockedAccess(table).qualifiesAccess(ma);
 	}
 	
-	public Access MethodAccessInfo.computeThisAccess(NamingContext ctxt, List args) {
-		MethodAccess ma = new MethodAccess(target.name(), args);
-		if(source == ctxt.enclosingType()) {
+	public Access MethodAccessInfo.computeThisAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
+		MethodAccess ma = constructAccess(args, table);
+		if(source == ctxt.enclosingType())
 			return ma;
-		} else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.TYPE_NAME);
-			if(outer == null) return null;
-			return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
-		}
+		else
+			return bend.getLockedAccess(table).qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
 	}
 	
-	public Access MethodAccessInfo.computeSuperAccess(NamingContext ctxt, List args) {
-		MethodAccess ma = new MethodAccess(target.name(), args);
+	public Access MethodAccessInfo.computeSuperAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
+		MethodAccess ma = constructAccess(args, table);
 		if(bend == ctxt.enclosingType())
 			return new SuperAccess("super").qualifiesAccess(ma);
-		else {
-			Access outer = ctxt.unqualifiedCtxt().accessType(bend, NameType.PACKAGE_OR_TYPE_NAME);
-			if(outer == null) return null;
-			return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
-		}
+		else
+			return bend.getLockedAccess(table).qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
 	}
 	
 	public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type, 
-	       	      					      Expr qualifier, List args) {
-		MethodAccess ma = new MethodAccess(target.name(), args);
+	       	      					      Expr qualifier, List args, AdjustmentTable table) {
+		MethodAccess ma = constructAccess(args, table);
 		if(needsQualifier) {
 			if(!target.isStatic())
 				return null;
@@ -84,11 +108,8 @@ aspect MethodAccessInfo {
 					return null;
 			if(source == bend && source == qual_type)
 				return qualifier.qualifiesAccess(ma);
-			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.accessType(source, NameType.PACKAGE_OR_TYPE_NAME);
-				if(upper != null && bend == qual_type)
-					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
-			}
+			else if(!qualifier.isTypeAccess() && bend == qual_type)
+				return new ParExpr(new CastExpr(source.getLockedAccess(table), qualifier)).qualifiesAccess(ma);
 			return null;
 		} else {
 			return qualifier.qualifiesAccess(ma);

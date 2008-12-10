@@ -15,7 +15,8 @@ aspect ControlFlow {
 	
 	refine AdjustAccess public void AdjustmentTable.adjust() throws RefactoringException {
 		refined();
-		flushCaches();
+		if(!preds.isEmpty())
+			flushCaches();
 		for(ASTNode node : preds.keySet()) {
 			if(!preds.get(node).equals(node.weakPred())) {
 				SmallSet<ASTNode> oldpred = preds.get(node);

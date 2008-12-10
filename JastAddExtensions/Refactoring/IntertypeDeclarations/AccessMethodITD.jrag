@@ -47,8 +47,11 @@ aspect AccessMethodITD {
 				if(md2.zappedByAny((SimpleSet)localMethodsSignatureMap().
 									get(md.signature())))
 					return null;
-				else
-					return new MethodAccessInfo(this, this, false, md);
+				else {
+					Collection competitors = memberMethods(md.name());
+					competitors.remove(md);
+					return new MethodAccessInfo(this, this, false, competitors, md);
+				}
 			else if(md2.zaps(md))
 				return null;
 		}
@@ -69,16 +72,16 @@ aspect AccessMethodITD {
 	// we have to avoid refering to the enclosing aspect as "this" (or "super")
 	// if that would happen, we just reject
 
-	refine MethodAccessInfo public Access MethodAccessInfo.computeThisAccess(NamingContext ctxt, List args) {
+	refine MethodAccessInfo public Access MethodAccessInfo.computeThisAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
 		if(bend instanceof AspectDecl)
 			return null;
-		return MethodAccessInfo.MethodAccessInfo.computeThisAccess(ctxt, args);
+		return MethodAccessInfo.MethodAccessInfo.computeThisAccess(ctxt, args, table);
 	}
 		
-	refine MethodAccessInfo public Access MethodAccessInfo.computeSuperAccess(NamingContext ctxt, List args) {
+	refine MethodAccessInfo public Access MethodAccessInfo.computeSuperAccess(NamingContext ctxt, List<Expr> args, AdjustmentTable table) {
 		if(bend instanceof AspectDecl)
 			return null;
-		return MethodAccessInfo.MethodAccessInfo.computeSuperAccess(ctxt, args);
+		return MethodAccessInfo.MethodAccessInfo.computeSuperAccess(ctxt, args, table);
 	}
 
 }
