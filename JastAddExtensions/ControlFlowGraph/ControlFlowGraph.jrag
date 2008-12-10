@@ -37,6 +37,9 @@ aspect ControlFlowGraph {
 	// branches, throws and other control flow into account
 	inh lazy SmallSet<ASTNode> CFNode.following();
 	syn lazy SmallSet<ASTNode> ASTNode.succ();
+	
+	// subtrees have "first" nodes from where evaluation starts
+	syn ASTNode ASTNode.first() = this;     
 
 	// predecessors are computed as inverses of successors
 	coll SmallSet<ASTNode> ASTNode.pred() [SmallSet.mutable()] with add root BodyDecl;
@@ -108,9 +111,6 @@ aspect ControlFlowGraph {
 	// control flow for static initializers: first the block, then the exit node
 	eq StaticInitializer.getBlock().following() = singleNode(exit());
 			
-	// expressions have a "first" subnode, from where evaluation starts
-	syn ASTNode Expr.first() = this; 
-    
 	// VarAccess
 	/* VarAccesses are easy, except when they occur on the LHS of an assignment
 	 * Consider, e.g.,
@@ -638,12 +638,38 @@ aspect ControlFlowGraph {
 	eq BranchTargetStmt.getChild().continueTarget(ContinueStmt stmt)
 		= this.targetOf(stmt) ? singleNode(targetForContinue()) : continueTarget(stmt);
 
-	// body declarations are a barrier
+	// body declarations are a barrier	
 	eq BodyDecl.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq BodyDecl.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq BodyDecl.getChild().returnTarget() = singleNode(exit());
 	eq BodyDecl.getChild().throwTarget(TypeDecl exn) = singleNode(exit());
 	eq BodyDecl.getChild().uncheckedExnTarget() = singleNode(exit());
+	
+	// for method declarations, we can be a bit more precise
+	eq MethodDecl.getChild().throwTarget(TypeDecl exn) {
+		// this selects (somewhat arbitrarily) the left-most matching exception type
+		for(Access acc : getExceptions())
+			if(exn.instanceOf(acc.type()))
+				return singleNode(acc);
+		return SmallSet.empty();
+	}
+	eq MethodDecl.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+	
+	// same for constructor declarations
+	eq ConstructorDecl.getChild().throwTarget(TypeDecl exn) {
+		// this selects (somewhat arbitrarily) the left-most matching exception type
+		for(Access acc : getExceptions())
+			if(exn.instanceOf(acc.type()))
+				return singleNode(acc);
+		return SmallSet.empty();
+	}
+	eq ConstructorDecl.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+	
+	// artificial node to represent throws of uncaught exceptions
+	private final ExitStmt MethodDecl.uncheckedExceptionExit = new ExitStmt();
+	private final ExitStmt ConstructorDecl.uncheckedExceptionExit = new ExitStmt();
+	syn nta Stmt MethodDecl.uncheckedExceptionExit() = uncheckedExceptionExit;
+	syn nta Stmt ConstructorDecl.uncheckedExceptionExit() = uncheckedExceptionExit;
 
 	// try statements and finally blocks
 	eq TryStmt.getBlock().breakTarget(BreakStmt stmt) 

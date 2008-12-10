@@ -253,6 +253,7 @@ class BitSet {
       public SmallSet compl(Object element) { return this; }
       public SmallSet intersect(SmallSet set) { return this; }
       public boolean isEmpty() { return true; }
+      public boolean isSingleton() { return false; }
     };
     @SuppressWarnings("unchecked")
     public static <T> SmallSet<T> full() { return fullSet; }
@@ -269,6 +270,7 @@ class BitSet {
       }
       public SmallSet intersect(SmallSet set) { return set; }
       public boolean isEmpty() { return false; }
+      public boolean isSingleton() { return false; }
     };
 
     protected SmallSet() {
@@ -335,6 +337,9 @@ class BitSet {
 
     public boolean isEmpty() {
       return set.isEmpty();
+    }
+    public boolean isSingleton() {
+      return set.size() == 1;
     }
     public void add(SmallSet<T> set) {
       this.set.addAll(set.set);
