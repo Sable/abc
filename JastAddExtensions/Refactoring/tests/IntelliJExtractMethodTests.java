@@ -147,7 +147,7 @@ public class IntelliJExtractMethodTests extends TestCase {
 //    public void testScr10464() { runTest("Scr10464"); }
 //    public void testSCR12245() { runTest("SCR12245"); }
 //    public void testSCR15815() { runTest("SCR15815"); }
-    public void testSCR27887() { runTest("SCR27887"); }
+//    public void testSCR27887() { runTest("SCR27887"); }
 //    public void testSCR28427() { runTest("SCR28427"); }
 //    public void testSCR32924() { runTest("SCR32924"); }
 //    public void testScr6241() { runTest("Scr6241"); }

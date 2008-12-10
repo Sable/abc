@@ -119,6 +119,4 @@ aspect AccessMethod {
 		else
 			return acc.computeAccess(src.getNamingContext(), args);
 	}
-	/*public Access Access.access(MethodDecl md, List args) {
-	}*/
 }

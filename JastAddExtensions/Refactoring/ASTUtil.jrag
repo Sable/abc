@@ -1,8 +1,20 @@
 /*
- * some utility methods
+ * some utility methods (aka the dirty underwear)
  */
 
 aspect ASTUtil {
+	
+	// a silly little hack to avoid spurious recomputation of the array type
+	private String TypeDecl.arrayType_cached_name;
+	private TypeDecl TypeDecl.arrayType_cached;
+	refine GenericsArrays eq TypeDecl.arrayType() {
+		if(arrayType_cached == null || !name().equals(arrayType_cached_name)) {
+			TypeDecl arr = refined();
+			arrayType_cached_name = name();
+			arrayType_cached = arr;
+		}
+		return arrayType_cached;
+	}
 	
 	// some convenience methods to index children by reference instead of numeric index
 	public void ASTNode.removeChild(ASTNode child) {
