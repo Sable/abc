@@ -76,11 +76,11 @@ aspect Closures {
 	eq ClosureInvocation.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
 	eq ClosureInvocation.getChild().returnTarget() = singleNode(getReturnType());
 	eq ClosureInvocation.getChild().throwTarget(TypeDecl exn) {
-		// TODO: this will behave weirdly if there are overlapping exception types...
+		// this selects (somewhat arbitrarily) the left-most matching exception type
 		for(Access acc : getExceptions())
 			if(exn.instanceOf(acc.type()))
 				return singleNode(acc);
-		return singleNode(uncheckedExceptionExit());
+		return SmallSet.empty();
 	}
 	eq ClosureInvocation.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
 

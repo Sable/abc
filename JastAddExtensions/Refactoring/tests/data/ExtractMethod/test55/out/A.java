@@ -1,18 +1,21 @@
-/* from the IntelliJ test suite */
-
 class A {
-    private void bar() {
-        String text = null;
-        try {
-            // from
-	    text = getString();
-	    // to
-        }
-        catch(Exception e) {
-            System.out.println(text);
-        }
+  private void bar() {
+    String text = null;
+    try {
+      extracted();
     }
-    private String getString() {
-        return "hello";
+    catch (Exception e) {
+      System.out.println(text);
     }
+  }
+  protected void extracted() {
+    String text;
+    text = getString();
+  }
+  private String getString() {
+    return "hello";
+  }
+  A() {
+    super();
+  }
 }
