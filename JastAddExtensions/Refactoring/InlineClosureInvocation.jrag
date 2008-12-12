@@ -1,6 +1,6 @@
 aspect InlineClosureInvocation {
 	
-	public void ClosureInvocation.inline() throws RefactoringException {
+	public ASTNode ClosureInvocation.inline() throws RefactoringException {
 		Program root = programRoot();
 		if(getNumParameter() > 0)
 			throw new RefactoringException("cannot inline this closure");
@@ -20,13 +20,17 @@ aspect InlineClosureInvocation {
 			root.flushCaches();
 			for(BreakStmt brk : breaks)
 				brk.removeUseless();
-			body.removeUselessLabel();
+			return body.removeUselessLabel();
 		} else if(isExprClosure()) {
-			replaceWith(getExpr());
+			Expr expr = getExpr();
+			replaceWith(expr);
 			root.flushCaches();
+			return expr;
 		} else if(getParent() instanceof ReturnStmt) {
-			getParent().replaceWith(getBlock());
+			Block block = getBlock();
+			getParent().replaceWith(block);
 			root.flushCaches();
+			return block;
 		} else {
 			throw new RefactoringException("cannot inline this closure");
 		}
@@ -60,12 +64,13 @@ aspect InlineClosureInvocation {
 	eq ForStmt.getStmt().delete() { setStmt(new EmptyStmt()); return null; }
 	eq EnhancedForStmt.getStmt().delete() { setStmt(new EmptyStmt()); return null; }
 	
-	public boolean LabeledStmt.removeUselessLabel() throws RefactoringException {
+	public Stmt LabeledStmt.removeUselessLabel() throws RefactoringException {
 		if(uses().isEmpty()) {
-			replaceWith(getStmt());
-			return true;
+			Stmt stmt = getStmt();
+			replaceWith(stmt);
+			return stmt;
 		}
-		return false;
+		return this;
 	}
 	
 	inh LabeledStmt Block.lookupLabel(String name);

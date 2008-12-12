@@ -10,10 +10,10 @@ aspect IntroduceOutParameter {
 		AdjustmentTable table = new AdjustmentTable(programRoot());
 		getBlock().lockAll(table);
 		setReturnType(new PrimitiveTypeAccess("void"));
-		String parmname = this.pickFreshVarName(v.name());
 		ParameterDeclaration pd = new ParameterDeclaration(new Modifiers(new List().add(new Modifier("out"))),
 				v.type().getLockedAccess(table),
-				parmname);
+				"x");
+		table.add(pd);
 		addParameter(pd);
 		addArg(new VarAccess(v.name()));
 		getBlock().addAssignToReturns(pd, table);

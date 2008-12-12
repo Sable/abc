@@ -46,6 +46,7 @@ aspect Closures {
 			return new RefactoringException("parameter of the same name exists");
 		if(!getBlock().canIntroduceLocal(new_name))
 			return new RefactoringException("local variable of the same name exists");
+		return null;
 	}
 
 	// we're not interested in reachability checking for closure invocations

@@ -1,0 +1,17 @@
+aspect InlineBlock {
+	public void Block.inline() throws RefactoringException {
+		if(!(getParent().getParent() instanceof Block))
+			return;
+		Block parent_block = (Block)getParent().getParent();
+		AdjustmentTable table = new AdjustmentTable(programRoot());
+		parent_block.lockAllAccesses(table);
+		
+		// pull statements from block
+		for(int i = getNumStmt();i>0;--i)
+			getStmt(0).pullFromBlock();
+		
+		parent_block.removeStmt(this);
+		parent_block.programRoot().flushCaches();
+		table.adjust();
+	}
+}

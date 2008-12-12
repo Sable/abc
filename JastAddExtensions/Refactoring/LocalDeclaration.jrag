@@ -46,6 +46,16 @@ aspect LocalDeclaration {
 		res.setModifiers((Modifiers)getModifiers().fullCopy());
 		return res;
 	}
+	
+	public VariableDeclaration LocalDeclaration.asLockedVariableDeclaration(AdjustmentTable table);
+	public VariableDeclaration ParameterDeclaration.asLockedVariableDeclaration(AdjustmentTable table) {
+		VariableDeclaration res = new VariableDeclaration(type().getLockedAccess(table), name());
+		res.setModifiers((Modifiers)getModifiers().fullCopy());
+		return res;
+	}
+	public VariableDeclaration VariableDeclaration.asLockedVariableDeclaration(AdjustmentTable table) {
+		return (VariableDeclaration)copyAndLock(table);
+	}
 
 	inh lazy Block ParameterDeclaration.getBlock();
 	eq MethodDecl.getParameter().getBlock() = getBlock();

@@ -75,6 +75,7 @@
 		<fileset file="${Refactoring}/VarAccessInfo.jrag"/>
 		<fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
 		<fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/LocalDeclaration.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
@@ -86,8 +87,7 @@
 			<exclude name="MethodAccessInfo.jrag"/>
 			<exclude name="TypeAccessInfo.jrag"/>
 			<exclude name="XML/**/*"/>
-			<exclude name="Java1.5/MakeGenericMethod.jrag"/>
-			<exclude name="MakeMethod.jrag"/>
+			<exclude name="LocalDeclaration.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

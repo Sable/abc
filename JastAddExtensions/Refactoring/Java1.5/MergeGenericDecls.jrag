@@ -105,6 +105,9 @@ aspect MergeGenericDecls {
 
 	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
 		TypeDecl td = target;
+		// check if it has been handled already
+		if(td == null)
+			return;
 		unlock();
 		TypeDecl decl = decl().isRawType() ? decl().sourceTypeDecl() : decl();
 		if(possiblyObscured() || decl != td) {
@@ -166,6 +169,9 @@ aspect MergeGenericDecls {
 
 	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
 		Variable v = target;
+		// check if it has been handled already
+		if(v == null)
+			return;
 		// check that target is visible and can be accessed
 		if(!v.accessibleFrom(this))
 			throw new RefactoringException("variable is not accessible");
@@ -185,6 +191,9 @@ aspect MergeGenericDecls {
 
 	refine AdjustAccess public void MethodAccess.unlockSafely() throws RefactoringException {
 		MethodDecl md = target;
+		// check if it has been handled already
+		if(md == null)
+			return;
 		unlock();
 		if(decl().sourceMethodDecl() == md)
 			return;

@@ -1,8 +1,8 @@
 aspect ClosureSubstitution {
 	
 	public ClosureInvocation ClosureInvocation.subst() throws RefactoringException {
-		renameAway();
 		AdjustmentTable table = new AdjustmentTable(programRoot());
+		getBlock().lockAllLocalDeclarations(table);
 		for(int i=getNumParameter()-1;i>=0;--i) {
 			RefactoringException exn = getParameter(i).inline(table);
 			if(exn != null)
@@ -14,7 +14,6 @@ aspect ClosureSubstitution {
 	}
 	
 	inh RefactoringException ParameterDeclaration.inline(AdjustmentTable table);
-	
 	eq ClosureInvocation.getParameter(int i).inline(AdjustmentTable table) {
 		ParameterDeclaration pd = getParameter(i);
 		Expr arg = getArg(i);
@@ -24,7 +23,9 @@ aspect ClosureSubstitution {
 				arg.lockAll(table);
 				removeParameter(i);
 				removeArg(i);
-				VariableDeclaration newdecl = new VariableDeclaration(type.getLockedAccess(table), pd.name(), arg);
+				VariableDeclaration newdecl = pd.asLockedVariableDeclaration(table);
+				newdecl.setInit(arg);
+				table.add(newdecl);
 				getBlock().insertStmt(0, newdecl);
 			} else {
 				if(!(arg instanceof VarAccess))
@@ -45,56 +46,72 @@ aspect ClosureSubstitution {
 		return null;
 	}
 	eq Program.getChild().inline(AdjustmentTable table) {
-		throw new RuntimeException("Cannot inline non-closure parameters");
+		return new RefactoringException("Cannot inline non-closure parameters");
 	}
 	
-	//// rename all parameters and local variables to avoid clashes with surrounding locals
-	private void ClosureInvocation.renameAway() throws RefactoringException {
-		AdjustmentTable table = new AdjustmentTable(programRoot());
-		lockAll(table);
-		java.util.Set<LocalDeclaration> vars = new java.util.HashSet<LocalDeclaration>();
-		collectLocalDeclarations(vars);
-		for(LocalDeclaration v : vars)
-			if(nameClash(v.getID()))
-				v.setID(pickFreshVarName(v.getID()));
-		programRoot().flushCaches();
-		table.adjust();
-	}
-	
-	public void ASTNode.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
+	// enter all local declarations in this subtree into the table
+	public void ASTNode.lockAllLocalDeclarations(AdjustmentTable table) {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
 			if(child != null)
-				child.collectLocalDeclarations(res);
+				child.lockAllLocalDeclarations(table);
 		}
 	}
+	public void LocalDeclaration.lockAllLocalDeclarations(AdjustmentTable table) {
+		table.add(this);
+	}
+	public void TypeDecl.lockAllLocalDeclarations(AdjustmentTable table) { }
 	
-	public void VariableDeclaration.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
-		res.add(this);
+	
+	// adjusting local declarations
+	private java.util.Set<LocalDeclaration> AdjustmentTable.locked_declarations = new HashSet<LocalDeclaration>();
+	public void AdjustmentTable.add(LocalDeclaration decl) {
+		decl.lock();
+		locked_declarations.add(decl);
 	}
 	
-	public void ParameterDeclaration.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
-		res.add(this);
+	refine Dataflow public void AdjustmentTable.adjust() throws RefactoringException {
+		for(LocalDeclaration decl : locked_declarations)
+			decl.unlockSafely();
+		refined();
 	}
 	
-	public void TypeDecl.collectLocalDeclarations(java.util.Set<LocalDeclaration> res) {
-		// cut off
+	// TODO: this would be a lot nicer if we could refine methods defined on interfaces...
+	private boolean VariableDeclaration.locked;
+	private boolean ParameterDeclaration.locked;
+	public void LocalDeclaration.lock() { locked = true; }
+	public void LocalDeclaration.unlock() { locked = false; }
+	public void LocalDeclaration.unlockSafely() throws RefactoringException {
+		if(nameClash(name()))
+			rename(pickFreshName());
+		unlock();
 	}
 	
-	private boolean ClosureInvocation.nameClash(String name) {
-		SimpleSet set = lookupVariable(name);
+	// locked variable declarations don't collide with other names (ugly duplication!)
+	refine LocalVarNesting public boolean ParameterDeclaration.canIntroduceLocal(String name) {
+		if(locked)
+			return true;
+		return refined(name);
+	}
+	refine LocalVarNesting public boolean VariableDeclaration.canIntroduceLocal(String name) {
+		if(locked)
+			return true;
+		return refined(name);
+	}
+	
+	public boolean LocalDeclaration.nameClash(String name) {
+		BodyDecl bd = hostBodyDecl();
+		SimpleSet set = bd.lookupVariable(name);
 		if(set.isEmpty())
-			return !canIntroduceLocal(name);
-		Variable v = (Variable)set.iterator().next();
-		return v.isLocal();
+			return !bd.canIntroduceLocal(name);
+		for(Iterator iter=set.iterator();iter.hasNext();)
+			if(iter.next() instanceof LocalDeclaration)
+				return true;
+		return false;
 	}
 	
-	syn lazy boolean Variable.isLocal();
-	eq FieldDeclaration.isLocal() = false;
-	eq ParameterDeclaration.isLocal() = true;
-	eq VariableDeclaration.isLocal() = true;
-	
-	private String ClosureInvocation.pickFreshVarName(String base) {
+	public String LocalDeclaration.pickFreshName() {
+		String base = name();
 		for(int i=0;;++i)
 			if(!nameClash(base+i))
 				return base+i;

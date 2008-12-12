@@ -1,7 +1,9 @@
 aspect InlineMethod {
 	
 	public void MethodAccess.inline() throws RefactoringException {
-		inlineToClosure().introduceOutParameter().subst().inline();
+		ASTNode n = inlineToClosure().introduceOutParameter().subst().inline();
+		if(n instanceof Block)
+			((Block)n).inline();
 	}
 	
 }

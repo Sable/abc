@@ -13,23 +13,26 @@ aspect LocalVarNesting {
 	public boolean ASTNode.canIntroduceLocal(String name) {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
-			if(child != null)
-				if(!child.canIntroduceLocal(name))
-					return false;
+			if(child != null && !child.canIntroduceLocal(name))
+				return false;
 		}
 		return true;
 	}
 	
+	// TODO: this should only be defined once, on LocalDeclaration
+	public boolean ParameterDeclaration.canIntroduceLocal(String name) {
+		if(name.equals(name()))
+			return false;
+		return super.canIntroduceLocal(name);
+	}
 	public boolean VariableDeclaration.canIntroduceLocal(String name) {
 		if(name.equals(name()))
 			return false;
 		return super.canIntroduceLocal(name);
 	}
 	
-	public boolean ParameterDeclaration.canIntroduceLocal(String name) {
-		if(name.equals(name()))
-			return false;
-		return super.canIntroduceLocal(name);
+	public boolean TypeDecl.canIntroduceLocal(String name) {
+		return true;
 	}
 	
 	// check whether this subtree contains a conflicting label
