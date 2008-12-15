@@ -28,7 +28,7 @@ import org.osgi.framework.Version;
 
 public class BundleEnvironmentTranslator {
 	// Passes:
-	// generateOOModules -> creates an AbstractModule instance for each
+	// generateOOModules -> creates an ConcreteModule instance for each
 	// 		BundleInstance (includes exported packages)
 	// generateOverrides -> generates the overrides relations from the versions.
 	// 		implicit assumption that a higher version overrides a lower version
