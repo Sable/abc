@@ -1,18 +1,18 @@
 \begin{abstract}
 
-Module versioning as currently implemented in existing module systems such as
-OSGi bundles and .net assemblies for Java-like languages depend on a flat
-constraint system that for the most part uses only the version number to
-determine compatibility. Current module systems now in use also lack the
-capability to deliver patches to assemblies without redeploying the entire module or modifying the module destructively by unpacking the existing module and 
-repackaging it with the patch changes. Other issues such as split Java packages
-(packages that are present in more than one module) are present in OSGi
-bundles, which can cause runtime exceptions that are difficult to diagnose and
-debug. This paper proposes a novel module system which address these issues. The module system itself is derived from features present in object-oriented languages, and an implementation of the module system on Java as well as
-a small case study is provided. The module system is compared to OSGi bundles,
-a module system for Java in widespread use, and a translation from OSGi bundles
-to modules in the proposed system is implemented to demonstrate that the module
-system can express the constraints specified in OSGi bundles while allowing new
-functionality such as patching through module extension.
+Module versioning as currently implemented in existing module systems for 
+Java-like languages depend on a flat constraint systems that for the most 
+part use only the version number to determine compatibility. Current module 
+systems now in use also lack the
+capability to deliver patches to assemblies without a complete replacement or
+a destructive update. This paper proposes a novel module 
+system which address these issues. The module system itself is derived from 
+features present in object-oriented languages, and an implementation of the 
+module system on Java as well as a small case study is provided. The module 
+system is compared to OSGi bundles, a module system for Java in widespread use, 
+and a translation from OSGi bundles to modules in the proposed system is 
+implemented to demonstrate that the module system can express the constraints 
+specified in OSGi bundles while allowing new functionality such as patching 
+through module extension.
 
 \end{abstract}
