@@ -21,12 +21,37 @@ import AST.RefactoringException;
 import AST.Stmt;
 import AST.TypeDecl;
 
-public abstract class ExtractMethod extends TestCase {
+public class ExtractMethod extends TestCase {
 	
 	private static String TEST_BASE = "ExtractMethod";
 
 	public ExtractMethod(String arg0) {
 		super(arg0);
+	}
+	
+	public static void main(String[] args) throws RefactoringException {
+		Program prog = TestHelper.compile(args);
+		Stmt from = null, to = null;
+		for(CompilationUnit cu : prog.getCompilationUnits()) {
+			if(!cu.fromSource())
+				continue;
+    		from = TestHelper.findStmtFollowingComment(cu, "// from\n");
+    		if(from == null) continue;
+    		to = TestHelper.findStmtPrecedingComment(cu, "// to\n");
+    		if(to == null) continue;
+		}
+		if(from == null || to == null)
+			throw new Error("couldn't find region to extract");
+   		Block blk = from.hostBlock();
+   		int fromIndex = blk.getIndexOfStmt(from);
+   		int toIndex = blk.getIndexOfStmt(to);
+   		if(fromIndex == -1 || toIndex == -1)
+   			throw new Error("couldn't find region to extract");
+   		long start = System.currentTimeMillis();
+   		blk.extractMethod("protected", "extracted", fromIndex, toIndex);
+   		long end = System.currentTimeMillis();
+   		System.out.println(prog);
+   		System.out.println(end-start);
 	}
 	
 	public void runExtractionTest(String name) {

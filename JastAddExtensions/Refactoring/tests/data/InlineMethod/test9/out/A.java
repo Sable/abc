@@ -1,9 +1,7 @@
 class A {
   void m() {
     int x = 23;
-    {
-      System.out.println(this.x);
-    }
+    System.out.println(this.x);
   }
   int x = 42;
   void n() {

@@ -3,7 +3,23 @@
  */
 
 aspect ASTUtil {
+
+	// is this beneath n?
+	public boolean ASTNode.beneath(ASTNode n) {
+		ASTNode p;
+		for(p=this;p!=n&&p!=null;p=p.getParent())
+			;
+		return p!=null;
+	}
 	
+	// is this above all the nodes in s?
+	public boolean ASTNode.aboveAll(SmallSet<? extends ASTNode> s) {
+		for(ASTNode n : s)
+			if(!n.beneath(this))
+				return false;
+		return true;
+	}
+
 	// a silly little hack to avoid spurious recomputation of the array type
 	private String TypeDecl.arrayType_cached_name;
 	private TypeDecl TypeDecl.arrayType_cached;

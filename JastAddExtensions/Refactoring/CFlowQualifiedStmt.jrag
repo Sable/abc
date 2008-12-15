@@ -1,0 +1,38 @@
+aspect CFlowQualifiedStmt {
+	public void CFlowQualifiedStmt.toString(StringBuffer s) {
+		s.append(indent());
+		s.append(getLabel() + "^");
+		getStmt().toString(s);
+	}
+	
+	inh LabeledStmt CFlowQualifiedStmt.lookupLabel(String name);
+	syn lazy LabeledStmt CFlowQualifiedStmt.getQualifier() = lookupLabel(getLabel());
+	
+	// cflow qualified stmts count as uses of their labels
+	CFlowQualifiedStmt contributes this to LabeledStmt.uses() for getQualifier();
+	
+	eq CFlowQualifiedStmt.succ() = singleNode(getStmt());
+	eq CFlowQualifiedStmt.getStmt().following() = following();
+	
+	eq CFlowQualifiedStmt.getStmt().breakTarget(BreakStmt stmt) = getQualifier().breakTarget(stmt);
+	eq CFlowQualifiedStmt.getStmt().continueTarget(ContinueStmt stmt) = getQualifier().continueTarget(stmt);
+	eq CFlowQualifiedStmt.getStmt().returnTarget() = getQualifier().returnTarget();
+	eq CFlowQualifiedStmt.getStmt().throwTarget(TypeDecl exn) = getQualifier().throwTarget(exn);
+	
+	eq CFlowQualifiedStmt.isPureCFlowNode() = true;
+	
+	public CFlowQualifiedStmt Stmt.qualify(String label) throws RefactoringException {
+		CFlowQualifiedStmt stmt = new CFlowQualifiedStmt(label, null);
+		replaceWith(stmt);
+		stmt.setStmt(this);
+		programRoot().flushCaches();
+		return stmt;
+	}
+	
+	public Stmt CFlowQualifiedStmt.unqualify() throws RefactoringException {
+		Stmt stmt = getStmt();
+		replaceWith(stmt);
+		programRoot().flushCaches();
+		return stmt;
+	}
+}

@@ -7,108 +7,52 @@
     into a closure application statement
 
       <pre>
-      (λ () throws e_1, ..., e_m { b_1, ..., b_n }) ();
+      (() : T throws e_1, ..., e_m => { b_1, ..., b_n }) ();
       </pre>
-
-    which is optionally itself wrapped into a block, if the original block does not
-    itself occur inside a larger block.
 
     Exceptions e_1, ..., e_m are all uncaught exceptions thrown in the block.
     The refactoring ensures that control flow stays intact. In particular, if the
     block contains any break, continue, or return statements with target outside
     the block, the refactoring will be rejected.
 
-    A possible future optimisation would be to allow the case where all control
-    paths of the block end in a return statement, and then wrap the generated
-    application into a return statement.
+    Return type T will normally be void, except if the whole block cannot complete
+    normally, in which case it will be the return type of the enclosing method
+    and the application statement is wrapped into a return statement.
  */
 
 aspect WrapBlockIntoClosure {
 
 	public ClosureInvocation Block.wrapIntoClosure() throws RefactoringException {
-		return new WrapBlockIntoClosureRefactoring(this).execute();
-	}
-
-	class WrapBlockIntoClosureRefactoring {
-		private Block block;
-		private AdjustmentTable table;
-
-		public WrapBlockIntoClosureRefactoring(Block block) {
-			this.block = block;
-			this.table = new AdjustmentTable(block.programRoot());
+		AdjustmentTable table = new AdjustmentTable(programRoot());
+		lockAllCFlow(table);
+		
+		// create a closure without parameters returning and throwing all
+		// uncaught checked exceptions of block
+		// if the block cannot complete normally, we need to set the return type
+		List<Access> exns = computeExceptionsToDeclare(table);
+		Access rettype = canCompleteNormally() ? new PrimitiveTypeAccess("void")
+			                                   : returnType().getLockedAccess(table);
+		ClosureInvocation cl = 
+			new ClosureInvocation(
+					new List(),         // parameters
+					rettype, 	        // return type
+					exns,               // thrown exceptions
+					null,               // body (to be filled in shortly)
+					new List<Expr>());  // arguments
+		if(canCompleteNormally()) {
+			replaceWith(new ExprStmt(cl));
+		} else {
+			ReturnStmt ret = new ReturnStmt(cl);
+			table.addReturnVoid(ret);
+			replaceWith(ret);
 		}
-
-		public ClosureInvocation execute() throws RefactoringException {
-			block.lockAllCFlow(table);
-			// create a closure without parameters returning void and throwing all
-			// uncaught checked exceptions of block
-			List<Access> exns = block.computeExceptionsToDeclare(table);
-			ClosureInvocation cl = 
-				new ClosureInvocation(
-						new List(),                      // parameters
-						new PrimitiveTypeAccess("void"), // return type
-						exns,                            // thrown exceptions
-						null,                            // body (to be filled in shortly)
-						new List<Expr>());               // arguments
-			block.replaceWith(new ExprStmt(cl));
-			cl.setBlock(block);
-			block.programRoot().flushCaches();
-			fixReturnType(cl);
-			table.adjust();
-			return cl;
-		}
-
-		private void fixReturnType(ClosureInvocation cl) throws RefactoringException {
-			// if there are no return statements, we're done
-			if(cl.returns().isEmpty())
-				return;
-			// if all paths return, we can just wrap the call to the closure into a return itself
-			// otherwise we need to turn all 'return;' statements in the closure into 'return true;',
-			// make the return type of the closure boolean, append a 'return false;' statement,
-			// and wrap the whole closure into if(...) return;
-			if(cl.finals().isEmpty()) {
-				// create return statement
-				cl.setReturnType(cl.returnType().getLockedAccess(table));
-				ReturnStmt ret = new ReturnStmt();
-				cl.getParent().replaceWith(ret);
-				ret.setResult(cl);
-				// ret might be a `return void' statement that needs fixing
-				table.addReturnVoid(ret);
-/*			} else {
-				if(!cl.getReturnType().type().isVoid())
-					throw new RefactoringException("cannot fix control flow");
-				cl.setReturnType(new PrimitiveTypeAccess("boolean"));
-				cl.rewriteReturns();
-				cl.getBlock().addStmt(new ReturnStmt(new BooleanLiteral("false")));
-				IfStmt stmt = new IfStmt(null, new ReturnStmt());
-				cl.getParent().replaceWith(stmt);
-				stmt.setCondition(cl);
-				table.removeAllCFlow();         // ouch!!!*/
-			}
-			block.programRoot().flushCaches();
-		}
+		cl.setBlock(this);
+		programRoot().flushCaches();
+		
+		table.adjust();
+		return cl;
 	}
 	
-/*	public void AdjustmentTable.removeAllCFlow() {
-		preds.clear();
-		succs.clear();
-	}
-	
-	// turn all 'return' statements into 'return true'
-	public void ASTNode.rewriteReturns() {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.rewriteReturns();
-		}
-	}
-	
-	public void ReturnStmt.rewriteReturns() {
-		setResult(new BooleanLiteral("true"));
-	} */
-
-	inh TypeDecl ClosureInvocation.returnType();
-
 	// return a list of locked type accesses to all exceptions in a subtree that should be declared
 	public List<Access> ASTNode.computeExceptionsToDeclare(AdjustmentTable table) {
 		List<Access> res = new List<Access>();
@@ -125,45 +69,9 @@ aspect WrapBlockIntoClosure {
 		  !instanceOf(typeRuntimeException()) &&
 		  !instanceOf(typeError());
 
+	inh TypeDecl Block.returnType();
+	inh TypeDecl ClosureInvocation.returnType();
 	inh TypeDecl ReturnStmt.typeVoid();
 	syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();
-
-	private java.util.Set<ReturnStmt> AdjustmentTable.returnStmts = new java.util.HashSet<ReturnStmt>();
-	public void AdjustmentTable.addReturnVoid(ReturnStmt ret) {
-		returnStmts.add(ret);
-	}
-
-	// replace return void statements by expr stmt + return
-	refine ControlFlow public void AdjustmentTable.adjust() throws RefactoringException {
-		refined();
-		for(ReturnStmt ret : returnStmts) {
-			if(ret.hasResult() && ret.type().isVoid()) {
-				if(ret.following().equals(ret.returnTarget())) {
-					// we don't need a return at all
-					ret.replaceWith(new ExprStmt(ret.getResult()));
-				} else {
-					boolean inBlock = ret.getParent().getParent() instanceof Block;
-					if(inBlock) {
-						// if we're in a block, simply plug in a return statement
-						Block block = (Block)ret.getParent().getParent();
-						int idx = block.getIndexOfStmt(ret);
-						block.setStmt(new ExprStmt(ret.getResult()), idx);
-						block.insertStmt(idx+1, new ReturnStmt());
-					} else {
-						// otherwise, make a block with a return statement in it
-						ret.replaceWith(
-								new Block(
-										new List().add(
-												new ExprStmt(ret.getResult())
-										).add(
-												new ReturnStmt()
-										)
-								)
-						);
-					}
-				}
-			}
-		}
-	}
 
 }

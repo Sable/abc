@@ -1,6 +1,9 @@
 aspect WrapExprIntoClosure {
 
 	public ClosureInvocation Expr.wrapIntoClosure() throws RefactoringException {
+		// method calls are not valid in places where a constant expression is expected
+		if(mustBeConstant())
+			throw new RefactoringException("this expression must be constant, cannot be extracted to method");
 		AdjustmentTable table = new AdjustmentTable(programRoot());
 		List<Access> exns = computeExceptionsToDeclare(table);
 		ClosureInvocation cl = 
@@ -18,5 +21,11 @@ aspect WrapExprIntoClosure {
 		table.adjust();
 		return cl;
 	}
+	
+	inh boolean Expr.mustBeConstant();
+	eq Program.getChild().mustBeConstant() = false;
+	eq ConstCase.getValue().mustBeConstant() = true;
+	eq TypeDecl.getChild().mustBeConstant() = false;
+	// there should be some more here...
 
 }

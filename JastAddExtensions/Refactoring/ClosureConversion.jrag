@@ -102,13 +102,6 @@ aspect ClosureConversion {
 		return !((ASTNode)v.decl()).beneath(this);
 	}
 
-	public boolean ASTNode.beneath(ASTNode n) {
-		ASTNode p;
-		for(p=this;p!=n&&p!=null;p=p.getParent())
-			;
-		return p!=null;
-	}
-
 	// determine all local declarations referred to in this subtree
 	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
 		java.util.Set<VarAccess> res = new HashSet<VarAccess>();

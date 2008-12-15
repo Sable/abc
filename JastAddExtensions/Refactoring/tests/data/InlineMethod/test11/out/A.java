@@ -1,11 +1,9 @@
 class A {
   void m() {
     int j;
-    {
-      int i0 = 23;
-      System.out.println("here");
-      j = i0 = 42;
-    }
+    int i = 23;
+    System.out.println("here");
+    j = i = 42;
     System.out.println("back");
   }
   int n(int i) {

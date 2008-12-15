@@ -49,7 +49,7 @@ public class TestHelper {
 			else
 				sources.add(n);
 		Frontend f = new Frontend() { 
-			protected void processErrors(Collection errors, CompilationUnit unit) { }
+			//protected void processErrors(Collection errors, CompilationUnit unit) { }
 			protected void processWarnings(Collection errors, CompilationUnit unit) { }
 		};
 		BytecodeReader br = new BytecodeParser();

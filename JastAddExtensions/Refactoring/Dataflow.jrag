@@ -216,7 +216,7 @@ aspect Dataflow {
 		dsuccs.put(v, v.dataSucc());
 	}
 
-	refine WrapBlockIntoClosure public void AdjustmentTable.adjust() throws RefactoringException {
+	refine ReturnVoid public void AdjustmentTable.adjust() throws RefactoringException {
 		refined();
 		for(VarAccess node : dpreds.keySet()) {
 			if(!dpreds.get(node).equals(node.dataPred())) {
