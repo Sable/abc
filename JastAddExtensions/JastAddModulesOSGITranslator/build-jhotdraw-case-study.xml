@@ -80,6 +80,7 @@
 				</fileset>
 			</bundle>
 		</jastaddmodules.osgi.translate>
+		
 		<!--copy data files-->
 		<copy todir="${destdir}/org/jhotdraw/app/action/images">
 			<fileset dir="${jhotdraw}/src/org/jhotdraw/app/action/images" />
