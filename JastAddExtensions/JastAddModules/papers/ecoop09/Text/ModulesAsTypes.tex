@@ -1,12 +1,13 @@
 %------------------------------------------------------------------------- 
 
 We propose that the limitations of existing systems detailed in the previous section
-can be solved by defining a type system on modules. 
-We now non-formally define a type system over collections of classes. 
-A module is a collection of classes, and we consider it to be the type of 
-the collection of classes that belong to it. We then proceed to define
+can be solved by defining a object-oriented relationships on modules. 
+We consider a module as a collection of classes, and it acts as the encapsulation
+structure for the collection. We then proceed to define
 relations and operations on modules and, in a later section, show how
-these model current module usage. 
+these model current module usage. Due to lack of space, the full grammar for
+the module system is not included in the paper, and can be found at
+\textit{http://progtools.comlab.ox.ac.uk/members/neil}.
 
 Most of the examples in this section are abridged versions taken from the JHotdraw case study. 
 JHotdraw\cite{jhotdraw} is a small framework for drawing applications. It
@@ -15,7 +16,7 @@ uses the \texttt{net.n3.nanoxml} library for xml parsing, and part of
 provides a set of sample applications that demonstrate use of the framework.
 Handling JHotdraw's dependencies on the two libraries as well as the dependencies
 of the sample applications on JHotdraw and each other provide a small but
-suitable testbed to evaluate the usefulness of the module type system.
+suitable testbed to evaluate the usefulness of the module system.
 The case study is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}. 
 
 \subsection{Declaration and Membership}
@@ -29,9 +30,9 @@ declaration:
 module org.jhotdraw; ...
 \end{lstlisting}
 
-Membership of a compilation unit is 
-declared by adding a module declaration. If a package declaration is present, 
-the package name is used as the package name of the file within the module.
+Class membership is declared by having a module declaration at the compilation unit where 
+the class appears.  If a package declaration is present, 
+the package name is used as the package name of the class within the module.
 
 \begin{lstlisting}
 //File Gradient.java
@@ -40,8 +41,8 @@ package org.jhotdraw.samples.svg;
 public interface Gradient extends Cloneable { ... }
 \end{lstlisting}
 
-Split packages cause hard to find problems in current module systems\cite{iJAMComments}. To avoid this, 
-a way to specify package membership in a module allowed by declaring the module membership
+Module membership can also be declared over an entire package. Package membership in a module 
+is declared by having a module declaration
 in the {\tt package-info.java} file of that package.
 
 \begin{lstlisting}
@@ -52,10 +53,9 @@ module org.jhotdraw;
 package org.jhotdraw.app.action;
 \end{lstlisting}
 
-If the module membership specified in a compilation unit's {\tt package-info.java}
+If the module declaration specified in a compilation unit's {\tt package-info.java}
 file is in conflict with that specified in the file itself, the membership
-declared in the file takes precedence, but a warning is issued to flag a possibly
-split package.
+declared in the file takes precedence, but a warning is issued.
 
 %------------------------------------------------------------------------- 
 \subsection{Imports}
@@ -236,9 +236,9 @@ true for \texttt{org.apache.batik.Version}, and as the example shows,
 the module qualified names can also be used in import declarations.
 
 Module qualifiers allow a developer to explicitly define from which module
-to load the class. This enables to disambiguation of ambiguous type
-lookups that are caused by split packages, or by a module importing
-two different versions of the same module.
+to load the class. This enables the disambiguation of ambiguous type
+lookups caused by a module importing two different versions of the same module, or
+by split packages (i.e. a package that occurs in more than one of the imported modules).
 
 The module qualifiers are relative and are looked up in the context 
 of the module that contains them. This removes the need for globally
@@ -271,38 +271,41 @@ if these do exist, it is necessary to use the module qualified name to access
 these classes to avoid an ambiguous type error.
 
 %------------------------------------------------------------------------ 
-\subsection{Subtyping}
+\subsection{Submodules}
 
 Current module systems have limited means of changing a module's behavior through
-extension. We now define a subtyping relation on the module type to address this limitation. 
-A module is declared to be the subtype of another module by using the \textbf{extends} keyword:
+extension. We now define a module extension through a submodule to address this limitation. 
+A module is declared to be the submodule of another module by using the \textbf{extends} keyword:
 
 \begin{lstlisting}
-module defaultsample.defaultjhotdraw 
-	extends org.jhotdraw;
+module defaultsample.defaultjhotdraw extends org.jhotdraw;
 \end{lstlisting}
 
-A subtype module inherits all the import declarations and export package declarations 
+A submodule inherits all the import declarations and export package declarations 
 of its parent module, and can add some more of its own. It also inherits the member 
-compilation units (and the types therein) of its supertype.
+compilation units (and the types therein) of its supermodule.
 
-If a subtype module contains a type with the identical package and type name
-to another type which is a member of its supertype module, 
-this shadows the type in the supertype module for all type references that
-originate from the subtype module, and any other modules that import an
-instance of the subtype module.
+If a submodule contains a type with the identical package and type name
+to another type which is a member of its supermodule, 
+this shadows the type in the supermodule for all type references that
+originate from the submodule, and any other modules that import an
+instance of the submodule.
 
-The following example demonstrates module subtyping and shadowing. The module
+Instantiating a submodule creates a name-mangled instance of the module's supermodules,
+which are searched when an access to a member type of a submodule is attempted. These
+supermodule instances are unique to the submodule instance and can only be accessed
+through the submodule. This is true even for singleton modules.
+
+The following example demonstrates submodules and shadowing. The module
 \texttt{defaultsample.defaultjhotdraw} extends the module \texttt{org.jhotdraw}. 
 It also contains the class \texttt{org.jhotdraw.app.action.AboutAction},
-which overrides a class with the same package and name in the supertype module.
-The new \texttt{AboutAction} extends the version in the supertype module and
+which overrides a class with the same package and name in the supermodule.
+The new \texttt{AboutAction} extends the version in the supermodule and
 changes the message of the about dialog.
 
 \begin{lstlisting}[caption=Module Subtyping]
 //file defaultsample.defaultjhotdraw.module 
-module defaultsample.defaultjhotdraw 
-	extends org.jhotdraw;
+module defaultsample.defaultjhotdraw extends org.jhotdraw;
 //the batik and nanoxml imports are 
 //inherited from org.jhotdraw
 export package *;
@@ -341,25 +344,40 @@ public class AboutAction
 \end{lstlisting}
 
 As the example shows, the overriding \texttt{AboutAction} class extends the
-overridden class in the supertype module by using the special 
+overridden class in the supermodule by using the special 
 \texttt{supermodule::} module qualifier to access the overridden class. It
 then redefines the only method required to change the behavior as required.
 All lookups for the class \texttt{AboutAction} now resolve to the overriding
-class, including those in the classes that belong to the supertype module.
+class, including those in the classes that belong to the supermodule.
 
-Without module subtyping, changing \texttt{AboutAction} without access to the source
+Without submodules, changing \texttt{AboutAction} without access to the source
 would require extending the class and reimplementing the method 
 that instantiates it. Module extension allows the same extension without
 any reimplementation except for the code that actually changes the behavior of the overridden class.
 Module extension can be used as an alternative to existing OO extension patterns when they
-are not explicitly supported.
+are not explicitly supported. 
+
+Overriding classes in submodules, as a general rule, should only change the implementation 
+of a class, not its interface. As an example, overriding an abstract class in a submodule by adding
+a new abstract method will cause all existing classes that are subtypes of the 
+abstract class to break, even the ones that are in the supermodule. This is not always
+the case however: for example, one can override an abstract class and change its interface
+as long as one is sure to also override all subtypes of that class, and that the
+abstract class is not used outside the module. For this reason no constraints are checked
+on the structure of the overriding class in the submodule.
+
+Submodules can also be used to patch an existing module without
+destructive modification. Patching is done by creating a submodule
+and overriding the classes that require modification. The submodule can
+then be used instead of the original module, while also allowing the
+unpatched module to exist in its original state.
 
 %------------------------------------------------------------------------- 
 \subsection{Overrides}
 
-Subtyping allows extension or patching of a module without actually
+Submodules allow extension or patching of a module without actually
 rebuilding a completely new module. However, it does have the disadvantage
-of being dependent on the existence of its supertype modules. To get
+of being dependent on the existence of its supermodules. To get
 around this limitation, we define the \textbf{overrides} relation to allow
 a module to completely replace another module. A module is declared
 to override another using the \textbf{overrides} keyword:
@@ -369,14 +387,14 @@ module org.apache.batik1_8pre
 	overrides org.apache.batik1_6, org.apache.batik1_7;
 \end{lstlisting}
 
-Unlike subtyping, an overriding module does not inherit anything from the
+Unlike submodules, an overriding module does not inherit anything from the
 modules it overrides, and does not even need any of the overriden modules to
 be present in the compile. However, it \textit{must} provide the same exported modules
 and packages as its overridden modules to satisfy the external and internal
 clients of these modules. 
 
-As is expected, override is inherited by subtype modules. This allows a subtype
-of an overriding module to override the same modules as its supertype.
+As is expected, override is inherited by submodules. This allows a submodule
+of an overriding module to override the same modules as its supermodule.
 
 Declaring an overriding module does not automatically change over all references
 to the overridden module to use the overriding module. This is done using the
@@ -387,9 +405,7 @@ an example of the use of \textbf{overrides}.
 \subsection{Replace}
 
 One of the common operations on modules is replacing an older version of a
-dependency with a newer one. In current module systems, this is a global operation,
-the new versions are added to the repository and the clients then use the latest
-compatible version available. Since the proposed module type system allows for instances
+dependency with a newer one. Since the proposed module system allows for instances
 of a module that are local to its client, we define an operation \textbf{replace} which
 changes the target of a list of module references in the context of a module:
 
@@ -399,32 +415,34 @@ replace m1, m2::m3, m4, ... with <moduleexpr>;
 
 The replace operation changes a list of module references to point to an instance
 defined by a module expression. A module expression may be a module reference to
-an existing instance, a reference to the singleton instance of a module type, or
-a new \textbf{own} instance of a module type.
+an existing instance, a reference to the singleton instance of a module, or
+a new \textbf{own} instance of a module.
 
 \begin{lstlisting}[caption=Module Expressions for Replace]
 //replace with an existing reference
 import own org.apache.batik1_6 as mybatik;
 replace jhotdraw::batik with mybatik;
 //replace with a the singleton instance
-replace jhotdraw::batik 
-	with singleton org.apache.batik1_6;
+replace jhotdraw::batik with singleton org.apache.batik1_6;
 //replace with a new instance of a module
 replace jhotdraw::batik with own org.apache.batik1_6;
 \end{lstlisting}
 
-A module reference can be replaced with a module expression if its static type
-is the same, is a supertype or is overridden by the type of the module expression.
+A module reference can be replaced with a module expression if its type
+is the same, is a supermodule or is overridden by the module expression.
 
-Replace declarations are also inherited by subtype modules. The replace sequence for a
-module is given by a list of its supertype's replaces, starting from the farthest
-ancestor. There is no way to exclude a supertype's replaces, as
+Replace declarations are also inherited by submodules. The replace sequence for a
+module is given by a list of its supermodule's replaces, starting from the farthest
+ancestor. There is no way to exclude a supermodule's replaces, as
 this may reduce the module signature (the set of module references available) of
-the supertype module, which could cause the internal and external clients of
-the supertype to break.
+the supermodule, which could cause the internal and external clients of
+the supermodule to break.
 
-It should be noted that an instance created using the \textbf{own} module expression is not
-implicitly imported by the module to which the replace declaration belongs. This
+It should be noted that an instance created using the \textbf{own} module expression in 
+a replace declaration is not
+implicitly imported by the module to which the replace declaration belongs (that is, the member
+classes of the module containing the replace declaration do not have direct access to the
+classes in the instance created by the own expression). This
 is useful when updating the dependencies of an import when the module itself
 does not require the same dependency.
 
@@ -480,7 +498,7 @@ replace jhotdraw::batik
 	with own org.apache.batik1_8pre;
 \end{lstlisting}
 
-The example shows how a subtype module can replace a supertype module
+The example shows how a submodule can replace a supermodule
 reference, and how an overriding module can replace a overridden module
 that is not part of the build.
 
@@ -524,16 +542,16 @@ merge alias, anotheralias export as m1 newmerge;
 then any replace that targets \texttt{newmerge} also update the references
 in the merge declaration of \texttt{alias}.
 
-The merge operation requires that the type of the created reference be replace
-compatible with all the references in the merge list, as the instance will
+The merge operation requires that the type of the created reference be 
+replace-compatible with all the references in the merge list, as the instance will
 have to be assigned to each of the references. Similar to replaces, merges 
-are also implicitly inherited by subtype modules.
+are also implicitly inherited by submodules.
 
 The following example taken from the JHotdraw case study shows \textbf{merge}
 can be used to make sure that common dependencies between an importer and
 an imported module can be made to point to the same module instance. The
 application \texttt{samples.svg} imports the jhotdraw framework through
-its supertype module \texttt{samples.defaultsample}, and then merges
+its supermodule \texttt{samples.defaultsample}, and then merges
 its own \texttt{batik} dependency with that of the imported \texttt{jhotdraw}.
 Another application \texttt{samples.odg} imports \texttt{samples.svg}, 
 and then merges its own instance of jhotdraw with that of the SVG application, 
@@ -551,8 +569,7 @@ import own org.apache.batik1_6 export as batik;
 ...
 //merge this module's batik import with
 //that of the imported jhotdraw's
-merge jhotdraw::batik, batik 
-	export as org.apache.batik1_6 batik;
+merge jhotdraw::batik, batik export as org.apache.batik1_6 batik;
 ...
 
 //file samples.odg.module
@@ -561,8 +578,7 @@ import own samples.svg as svg;
 ...
 //merge this module's jhotdraw with svg's
 //jhotdraw
-merge svg::jhotdraw, jhotdraw 
-	export as defaultsample.defaultjhotdraw jhotdraw;
+merge svg::jhotdraw, jhotdraw export as defaultsample.defaultjhotdraw jhotdraw;
 //replace svg's batik with a new version
 //this also updates jhotdraw's batik through
 //the merge declaration in svg
@@ -573,14 +589,14 @@ replace svg::batik with own org.apache.batik1_8pre;
 The merge in line 12 allows the clients of \texttt{samples.svg}
 the ability to update all of its \texttt{batik} dependencies
 in a single replace declaration, as the \texttt{samples.odg}
-application does in line 27. Similarly, the \texttt{samples.odg} application
-uses merge in for the same purpose in line 22, allowing any importers
+application does in line 25. Similarly, the \texttt{samples.odg} application
+uses merge in for the same purpose in line 21, allowing any importers
 to merge its own \texttt{jhotdraw} import with that of \texttt{samples.odg}.
 The recursive nature of merge allows replaces to propagate through deep
 import graphs of real applications. 
 
-Without the merge, \texttt{samples.odg}
-would have been forced to perform replace both references to the \texttt{batik} dependency
+Without the merge, \texttt{samples.odg} would have been forced to perform 
+replace both references to the \texttt{batik} dependency
 in JHotdraw and the SVG sample, a system that would be infeasible in larger projects
 with more shared dependencies.
 
@@ -593,7 +609,7 @@ issued.
 
 \subsection{Module Interfaces}
 
-Extending the object-oriented metaphor, with module types being classes, we 
+Extending the object-oriented metaphor, with modules being classes, we 
 now define \textit{module interfaces}, which act similarly to interfaces in Java. A module
 interface contains no imports, replaces, merges or even member classes, but they
 are allowed to have a set of export package declarations. A module implementing
@@ -683,7 +699,7 @@ replace batik with own org.jhotdraw.batikfragment;
 %module instance creation. However, cycles of singleton imports are allowed.
 
 %Subtyping is single inheritance, as in Java. This avoids ambiguous replace and
-%merge inheritance order in a subtype module.
+%merge inheritance order in a submodule.
 
 %Merges cannot be done on singleton instances or modules accessed through a
 %singleton instance. This is to make sure that other clients using the singleton
@@ -692,9 +708,9 @@ replace batik with own org.jhotdraw.batikfragment;
 %As with merges, replace targets can not be a singleton instance or a module
 %accessed through a singleton instance, for similar reasons. 
 
-%Merges can only be done on subtype modules in the same path to the root module in
-%the subtype tree. Furthermore, this should not change the module export signature
-%of the module being subtyped. This is to guarantee that both internal and external
+%Merges can only be done on submodules in the same path to the root module in
+%the submodule tree. Furthermore, this should not change the module export signature
+%of the module being submoduled. This is to guarantee that both internal and external
 %clients of the module can still rely on their module qualified lookups.
 
 %Exported packages in non-interface modules imply that there are classes that actually 

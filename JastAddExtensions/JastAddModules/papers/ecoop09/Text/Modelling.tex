@@ -1,7 +1,7 @@
-The type system just described is very flexible, and not only does it
+The module system just described is very flexible, and not only does it
 allow us to model current operations and constraints on modules, it also
-allows the expression of new constraints using the type system. The following
-sections go into more detail on how the type system can be used.
+allows the expression of new constraints using the module system. The following
+sections go into more detail on how the module system can be used.
 
 \subsection{Composition}
 
@@ -22,7 +22,7 @@ Given their flexibility,
 there are many anti-patterns for the use of merge and replace, one of which
 is directly replacing a merged member instead of using the merged reference.
 Developing patterns and identifying anti-patterns for these operations will be
-crucial for the successful deployment of the type system for real-world applications.
+crucial for the successful deployment of the module system for real-world applications.
 
 As mentioned previously, module-less classes are considered to be part 
 of the ``default module'', and its singleton instance is implicitly 
@@ -39,7 +39,7 @@ the OSGi \texttt{extends} feature.
 Split packages become less of an issue, as they can be 
 avoided by using module qualified type references.
 
-Nesting is a feature that is conspicuously absent in the type system. This
+Nesting is a feature that is conspicuously absent in the module system. This
 is primarily because Java class nesting idiom does not transfer very well to
 nested modules: nested modules are usually very tightly coupled, unlike nested
 classes. This is left as future work, and there are already some proposals
@@ -50,8 +50,8 @@ and initiatives in this area, such as JSR 294 and the OSGi core expert group.
 Overriding can be used to model versioning. It is already done
 implicitly by current usage of existing module systems: newer versions  
 override past versions as long as they are backward compatible.
-However, the type system allows additional constraints to be specified using
-types. Non-backward compatibility can be modeled by not specifying a
+However, the module system allows additional constraints to be specified using
+module relationships. Non-backward compatibility can be modeled by not specifying a
 previous version in the overrides list.
 
 \begin{lstlisting}[caption=Versioning Using Overrides]
@@ -68,7 +68,7 @@ module appv2_0;
 \end{lstlisting}
 
 In this manner backward compatibility can now be expressed in 
-and checked by the type system, instead of just being written
+and checked by the module system, instead of just being written
 down in separate documentation.
 
 Extends allows specialization and patch releases that do not contain 
@@ -103,15 +103,15 @@ in a similar manner that empty interfaces are used in Java to mark classes
 that satisfy a certain property.
 
 It should be noted that extends, implements and overrides are all orthogonal,
-so a module can be a subtype of another module, override a set of modules and
+so a module can be a submodule of another module, override a set of modules and
 implement a set of interfaces. This allows a module author to reuse portions
-of the supertype module, specify certain properties that the module satisfies
+of the supermodule, specify certain properties that the module satisfies
 using module interfaces, and specify a set of modules it overrides.
 
 These extends, implements and overrides declarations do not have to be explicit.
 Common usage of existing module systems mostly already assume a that a 
 module overrides another module of the same name if its version 
-number is higher. Existing module systems can generate these version-related types 
+number is higher. Existing module systems can generate these version-related interfaces 
 internally, while still allowing explicit declarations for patch releases 
 using extends and using module interfaces for expressing non-version
 related constraints. Alternatively, weak interfaces can be modified to include
@@ -135,7 +135,8 @@ to be given the same status as class files in Java.
 
 Import own is derived directly from iJAM, and is improved with an explicit exporting 
 mechanism and a module lookup system using module qualifiers. Singleton module instances mirror
-OSGi singletons. The module qualifier in type references and
+OSGi singletons, with the additional constraint of their dependencies being unmodifiable. 
+The module qualifier in type references and
 imports allow fine-grained selection of the class to load in contrast
 to fixed loading strategies. They also allow for module lookups relative to
 a module's context, decoupling modules from globally named module instances.
@@ -147,11 +148,11 @@ lazily would be required to reduce the number of dependencies, and is left as fu
 
 \subsection{Further Implications}
 
-It must be emphasized that the syntax only represents the type system; it is not the only way
+It must be emphasized that the syntax only represents the module system; it is not the only way
 to implement it. As mentioned, overriding is already implicitly implemented
 by versions. Other existing features such as loose coupling in OSGi can
 also be modeled, i.e. by using weak interfaces and a generated import and replace
-declaration. The type system's imports may also be extended using the already well-developed
+declaration. The module system's imports may also be extended using the already well-developed
 constraints in existing module systems, or vice versa: weak interfaces can be extended
 to include more than package signatures (e.g. user-defined constraints).
 
@@ -162,8 +163,8 @@ APIs would also require the context in which the lookup should be done in additi
 the class' package and name. These are left as future work.
 
 %Comment out, lack of space
-%The overrides declaration creates synthetic types for the overridden modules 
-%if they are not present in the compilation. These types are currently very loose,
+%The overrides declaration creates synthetic modules for the overridden modules 
+%if they are not present in the compilation. These modules are currently very loose,
 %in that they can be assigned to a module reference of any type. Tightening the
-%constraints on synthetic types using information from overriding types is left
+%constraints on synthetic modules using information from overriding types is left
 %as future work.

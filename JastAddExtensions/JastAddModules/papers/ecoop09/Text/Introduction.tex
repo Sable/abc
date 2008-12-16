@@ -8,8 +8,8 @@ that address these problems, and the design of these systems have
 revolved around the premise of a module as a container for classes
 with additional meta-data to distinguish different versions.
 
-However, the existing module systems still have limitations. Split packages, lack of
-the ability to express backward compatibility and limited extension
+However, the existing module systems still have limitations. Split packages, 
+limited ability to express backward compatibility and extension
 features are common to the current module systems.
 
 Split packages \cite{iJAMComments} occur when 
@@ -33,22 +33,28 @@ requires predefined extensibility support coded in by the module's
 providers, usually in the form of access to the points of a class' 
 instantiation. Without such explicit support, a client's only option
 is usually reimplementation of the parts that contain the instantiation, 
-and the use of wrapper classes to reuse and extend behavior.
+and the use of wrapper classes to reuse and extend behavior. This also
+extends to patching, where most often the only option is releasing the 
+entirety of a module including the changes, or a destructive update
+on the existing module.
 
-We propose that these problems can be solved by treating modules
-as object-oriented types over a set of classes. Split packages can 
+We propose that these problems can be solved having object-oriented relationships
+between modules akin to those found between classes. Split packages can 
 be handled by explicit definitions of module instance sharing and use.
-Module extension can be modeled by subtyping, and version constraints
-by interfaces. 
+Module extension can be modeled by submodules, and version constraints
+by module interfaces. 
 
 The paper is organized as follows. First we describe the
-usage and shortcomings of existing module systems in section \ref{moduleops}. We then non-formally
-define a type system that contains relations and operations on module types 
+usage and shortcomings of existing module systems in section \ref{moduleops}. We then 
+define a module system that contains relations and operations 
 that closely resemble object-oriented types in section \ref{moduletypes}. 
-In section \ref{eval} we demonstrate that the type
+In section \ref{eval} we demonstrate that the module
 system is able to express existing usage of modules while providing new
-capabilities to handle split packages, backwards compatibility and module extension. The type system
+capabilities to handle split packages, backwards compatibility and module extension. The module system
 itself is implemented in a compiler made using the JastAdd\cite{jastadd} compiler construction
 framework, and is demonstrated on a small case study on JHotdraw 7.1 \cite{jhotdraw}.
+To demonstrate that the module system contains the functionality provided by existing
+module systems, we provide a translation from OSGi bundles, a module system in widespread
+use for Java, into the proposed module system in section \ref{translation}.
 A short description of the implementation is included in section \ref{implementation}.
 The paper then ends with sections on related work and conclusions.

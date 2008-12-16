@@ -1,10 +1,17 @@
-There are several existing module systems that have been proposed or
+This section details the functionality provided by existing module systems that
 are in use for Java and other similar languages. 
-Several \cite{javajars, OSGi4, netassemblies} have been in use in industry 
-applications for several years now, and common operations on modules
-can be derived from their usage. 
+Several \cite{javajars, OSGi4, netassemblies} have been successfully used in industry 
+applications for several years now and should provide a reasonable baseline
+for the abilities that the proposed module system should have. This section will also
+highlight the shortcomings of existing systems, which will be addressed by the
+proposed system.
 
 \subsection{Composition}
+
+Composition is the most basic functionality expected of a module system. There
+should be a way for a member of a module to access and be accessed by members of
+another module. Ideally, the module system should also have the ability to limit
+these accesses to allow for information hiding and loose coupling.
 
 In Java, the classpath provides the most basic level of module composition. 
 The classpath provides a list of libraries that are
@@ -33,9 +40,61 @@ versions of a class. OSGi bundles, the JSR 277 Java Module System
 proposal and .NET assemblies have extensive mechanisms for allowing a 
 module's client to specify the versions of a module that it supports.
 
-However, as previously stated, these constraints are defined at the module's
-clients. There is currently no mechanism for a module's providers to define
-backward compatibility or feature support in the module specification.
+Versioning constraints in OSGi are specified at the point of import. The
+listing below shows a sample OSGi bundle \texttt{org.jhotdraw.samples.svg}
+that imports the bundles \texttt{org.jhotdraw}, \texttt{net.n3.nanoxml} and
+\texttt{org.apache.batik}. It further specifies a version constraint on
+the \texttt{batik} import, that its version should be 1.6 (inclusive) as
+a minimum, and 1.9 (exclusive) as a maximum.
+
+\begin{lstlisting}[caption=OSGi Bundle Version Constraints]
+Bundle-Name: JHotdraw SVG Sample Application
+Bundle-SymbolicName: org.jhotdraw.samples.svg
+Bundle-Version: 1.0.0
+...
+Require-Bundle: org.jhotdraw,
+ net.n3.nanoxml,
+ org.apache.batik;bundle-version="[1.6.0,1.9.0)"
+\end{lstlisting}
+
+In .net assemblies, an application depends on the specific version of the 
+dependencies it is compiled with, unless it is overriden by a configuration
+file. Old versions can be updated to new versions through version redirection,
+which is specified in the configuration file. The following example, taken
+from the .net MSDN pages, demonstrate version redirection.
+
+\begin{lstlisting}[caption=.net Assemblies Version Redirection]
+<configuration>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="myAssembly" publicKeyToken="32ab4ba45e0a69a1" 
+        	culture="en-us" />
+        <!-- Redirect references to myAssembly v1.0.0.0 to use v2.0.0.0-->
+        <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+</configuration>
+\end{lstlisting}
+
+Redirection in .net assemblies may also be specified by the publisher of the
+assembly instead of the client. The syntax for the publisher policy is identical
+to that above, and becomes the default binding policy for all clients of the assembly.
+It can be disabled, however, to allow a client to manually specify the version of
+a dependency to use.
+
+However, these constraints are limited to using only the version of the module.
+It provides no way to define support for features, for example, where each feature 
+will have different backward compatibility specifications across versions. 
+Clients will have to manually cross reference the feature documentation with the version releases
+to determine which version of a dependency can be used.
+
+\subsection{Extension}
+
+\cite{patchingosgi} patching osgi bundles
+
+\cite{reflexil} \cite{monocecil} .net assembly patching by assembly manipulation.
 
 \subsection{Imports and Exports}
 

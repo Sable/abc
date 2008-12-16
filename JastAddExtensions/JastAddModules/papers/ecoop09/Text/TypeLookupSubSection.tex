@@ -1,4 +1,4 @@
-\SubSection{Type Lookup Sequence}
+\subsection{Type Lookup Sequence}
 
 This module system, as with any module system for Java, changes the way that type
 references are looked up. The following pseudocode shows how type lookup is done in
@@ -12,7 +12,7 @@ method CU.lookup(typeName) {
 	if (Module != null) {
 		lookup classes in CU
 		lookup classes in single type imports
-		//lookup in module and its supertypes only
+		//lookup in module and its supermodules only
 		Module.lookup(null, CU.package(), typeName, false)
 		lookup classes in on-demand imports
 		//lookup in module, including direct imports
@@ -24,10 +24,8 @@ method CU.lookup(typeName) {
 	}
 }
 
-//lookup for qualified names
-//takes the module qualifier, package
-//qualifier and typeName of a type reference
-//and a boolean value lookInImports
+//Lookup for qualified names. Takes the module qualifier, package
+//qualifier and typeName of a type reference and a boolean value lookInImports
 method Module.lookup(moduleName, packageName, 
 							typeName, lookInImports) {
 	if (special packageName (java.lang)) {
@@ -35,7 +33,7 @@ method Module.lookup(moduleName, packageName,
 	}
 	if (moduleName == null) {
 		lookup in thismodule
-		lookup in each successive supertype
+		lookup in each successive supermodule
 		if (lookInImports) {
 			lookup in direct imports
 		}
@@ -43,8 +41,7 @@ method Module.lookup(moduleName, packageName,
 	else {
 	//lookup through the module qualifier
 	contextModule = lookupModule(moduleName);
-	contextModule.lookup(``'', packageName, 
-												typeName, false);
+	contextModule.lookup(``'', packageName, typeName, false);
 	}
 }
 \end{lstlisting}
@@ -52,8 +49,8 @@ method Module.lookup(moduleName, packageName,
 The lookup rules follow the Java way of looking up types,
 starting from the most local proceeding to the most global. Types are looked up
 first in the same compilation unit, then in the single type imports,
-then in the types that belong to the same package in the module and its supertype 
-modules, then the on-demand imports, then the member types of the same package
+then in the types that belong to the same package in the module and its supermodules, 
+then the on-demand imports, then the member types of the same package
 in directly imported modules, and finally to the primitive types and the 
 implicit {\tt java.lang} imports. It was a conscious decision to make on-demand imports
 come first before the lookups to directly imported modules. This is because the on-demand import
