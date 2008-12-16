@@ -36,7 +36,7 @@ aspect ControlFlow {
 	eq TypeAccess.isPureCFlowNode() = true;
 	eq ExprStmt.isPureCFlowNode() = true;
 	eq ReturnStmt.isPureCFlowNode() = true;
-	eq IfStmt.isPureCFlowNode() = true;
+	eq LabeledStmt.isPureCFlowNode() = true;
 	// there could be many more here
 
 	syn lazy SmallSet<ASTNode> ASTNode.weakSucc() {

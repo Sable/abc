@@ -34,4 +34,7 @@ public class WrapBlockInClosureTests extends WrapBlockInClosure {
 	public void test7() {
 		runWrappingTest("test7");
 	}
+	public void test8() {
+		runWrappingTest("test8");
+	}
 }

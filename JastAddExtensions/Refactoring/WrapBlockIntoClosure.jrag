@@ -23,6 +23,10 @@
 aspect WrapBlockIntoClosure {
 
 	public ClosureInvocation Block.wrapIntoClosure() throws RefactoringException {
+		return wrapIntoClosure(false);
+	}
+	
+	public ClosureInvocation Block.wrapIntoClosure(boolean fancy) throws RefactoringException {
 		AdjustmentTable table = new AdjustmentTable(programRoot());
 		lockAllCFlow(table);
 		
@@ -39,17 +43,36 @@ aspect WrapBlockIntoClosure {
 					exns,               // thrown exceptions
 					null,               // body (to be filled in shortly)
 					new List<Expr>());  // arguments
+		Stmt stmt;
 		if(canCompleteNormally()) {
-			replaceWith(new ExprStmt(cl));
+			replaceWith(stmt = new ExprStmt(cl));
 		} else {
 			ReturnStmt ret = new ReturnStmt(cl);
 			table.addReturnVoid(ret);
-			replaceWith(ret);
+			replaceWith(stmt = ret);
 		}
 		cl.setBlock(this);
 		programRoot().flushCaches();
 		
+		// qualify escaping statements
+		LabeledStmt lblstmt = null;
+		if(fancy) {
+			Collection<Stmt> escapingStmts = cl.getBlock().findEscapingStmts(cl);
+			if(!escapingStmts.isEmpty()) {
+				String lbl = cl.getBlock().pickFreshLabel("l");
+				lblstmt = new LabeledStmt(lbl, null);
+				stmt.replaceWith(lblstmt);
+				lblstmt.setStmt(stmt);
+				for(Stmt s : escapingStmts)
+					table.addQualifiedCFlow(s.qualify(lbl));
+				programRoot().flushCaches();
+			}
+		}
+		
+		// adjust
 		table.adjust();
+		if(lblstmt != null)
+			lblstmt.removeUselessLabel();
 		return cl;
 	}
 	
@@ -61,6 +84,37 @@ aspect WrapBlockIntoClosure {
 				res.add(exn.getLockedAccess(table));
 		return res;
 	}
+	
+	// find all statements with an outgoing cflow edge
+	public java.util.Set<Stmt> ASTNode.findEscapingStmts(ASTNode root) {
+		java.util.Set<Stmt> res = new HashSet<Stmt>();
+		findEscapingStmts(root, res);
+		return res;
+	}
+	
+	public void ASTNode.findEscapingStmts(ASTNode root, Collection<Stmt> res) { 
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.findEscapingStmts(root, res);
+		}
+	}
+	
+	public void BreakStmt.findEscapingStmts(ASTNode root, Collection<Stmt> res) {
+		if(!targetStmt().beneath(root))
+			res.add(this);
+	}
+	
+	public void ContinueStmt.findEscapingStmts(ASTNode root, Collection<Stmt> res) {
+		if(!targetStmt().beneath(root))
+			res.add(this);
+	}
+	
+	public void ReturnStmt.findEscapingStmts(ASTNode root, Collection<Stmt> res) {
+		res.add(this);
+	}
+	
+	// same for continue and return
 	
 	// this is what the JLS calls a checked exception; the definitions in JastAddJ confuse me...
 	inh lazy TypeDecl TypeDecl.typeThrowable();

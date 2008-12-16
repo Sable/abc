@@ -81,6 +81,8 @@ aspect Closures {
 		for(Access acc : getExceptions())
 			if(exn.instanceOf(acc.type()))
 				return singleNode(acc);
+		if(exn.isCheckedException())	// JastAddJ's definition of checked/unchecked is confused...
+			return singleNode(uncheckedExceptionExit());
 		return SmallSet.empty();
 	}
 	eq ClosureInvocation.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());

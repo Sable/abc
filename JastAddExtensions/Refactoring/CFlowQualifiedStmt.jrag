@@ -29,10 +29,98 @@ aspect CFlowQualifiedStmt {
 		return stmt;
 	}
 	
-	public Stmt CFlowQualifiedStmt.unqualify() throws RefactoringException {
-		Stmt stmt = getStmt();
-		replaceWith(stmt);
-		programRoot().flushCaches();
-		return stmt;
+	// add a CU for cflow exceptions
+	private boolean Program.cflowExnsInitialised = false;
+	refine LookupType eq Program.lookupType(String packageName, String typeName) {
+		addCFlowExnTypes();
+		return refined(packageName, typeName);
 	}
+	private void Program.addCFlowExnTypes() {
+		if(!cflowExnsInitialised) {
+			List<TypeDecl> types = new List<TypeDecl>();
+			TypeDecl breakExn = new ClassDecl(new Modifiers(new List<Modifier>().add(new Modifier("public"))), "BreakException",
+					new Opt<Access>(new TypeAccess("java.lang", "RuntimeException")), new List<Access>(), new List<BodyDecl>());
+			TypeDecl continueExn = new ClassDecl(new Modifiers(new List<Modifier>().add(new Modifier("public"))), "ContinueException",
+					new Opt<Access>(new TypeAccess("java.lang", "RuntimeException")), new List<Access>(), new List<BodyDecl>());
+			TypeDecl returnExn = new ClassDecl(new Modifiers(new List<Modifier>().add(new Modifier("public"))), "ReturnException",
+					new Opt<Access>(new TypeAccess("java.lang", "RuntimeException")), new List<Access>(), 
+					new List<BodyDecl>().add(
+							new FieldDeclaration(new Modifiers(new List<Modifier>().add(new Modifier("public"))),
+									             new TypeAccess("java.lang", "Object"),
+									             "value")
+					));
+			types.add(breakExn);
+			types.add(continueExn);
+			types.add(returnExn);
+			CompilationUnit cu = new CompilationUnit("org.jastadd.cflow", new List<ImportDecl>(), types);
+			this.addCompilationUnit(cu);
+			cflowExnsInitialised = true;
+		}
+	}
+	
+	// the exception corresponding to a statement
+	syn TypeDecl Stmt.getCFlowExn() = null;
+	eq CFlowQualifiedStmt.getCFlowExn() = getStmt().getCFlowExn();
+	eq BreakStmt.getCFlowExn() = hasLabel() ? null : lookupType("org.jastadd.cflow", "BreakException");
+	eq ContinueStmt.getCFlowExn() = hasLabel() ? null : lookupType("org.jastadd.cflow", "ContinueException");
+	eq ReturnStmt.getCFlowExn() = hasResult() ? null : lookupType("org.jastadd.cflow", "ReturnException");
+	
+	syn List<Expr> Stmt.getCFlowExnArgs() = new List<Expr>();
+	
+	syn Stmt Stmt.onlyCFlow(String parmname) = null;
+	eq BreakStmt.onlyCFlow(String parmname) = hasLabel() ? null : new BreakStmt();
+	eq ContinueStmt.onlyCFlow(String parmname) = hasLabel() ? null : new ContinueStmt();
+	eq ReturnStmt.onlyCFlow(String parmname) {
+		if(hasResult())
+			return new ReturnStmt(new CastExpr(getResult().type().createQualifiedAccess(),
+					new VarAccess(parmname).qualifiesAccess(new VarAccess("value"))));
+		else
+			return new ReturnStmt();
+	}
+	
+	// eliminating cflow qualified statements
+	private java.util.Set<CFlowQualifiedStmt> AdjustmentTable.cflowtab = new java.util.HashSet<CFlowQualifiedStmt>();
+	public void AdjustmentTable.addQualifiedCFlow(CFlowQualifiedStmt stmt) {
+		cflowtab.add(stmt);
+	}
+	refine ClosureSubstitution public void AdjustmentTable.adjust() throws RefactoringException {
+		refined();
+		for(CFlowQualifiedStmt stmt : cflowtab) {
+			Stmt orig = stmt.getStmt();
+			SmallSet<ASTNode> succ = orig.weakSucc();
+			LabeledStmt qual = stmt.getQualifier();
+			stmt.replaceWith(orig);
+			flushCaches();
+			if(orig.weakSucc().equals(succ))
+				continue;
+			TryStmt trystmt = getTryStmt(qual);
+			TypeDecl exn = stmt.getCFlowExn();
+			if(exn == null)
+				throw new RefactoringException("cannot turn cflow into exception");
+			if(!trystmt.hasCatchClause(exn)) {
+				ParameterDeclaration parm = new ParameterDeclaration(exn.createQualifiedAccess(), "e");
+				trystmt.addCatchClause(new CatchClause(parm, new Block(new List<Stmt>().add(orig.onlyCFlow(parm.name())))));
+			}
+			ThrowStmt thrw = new ThrowStmt(new ClassInstanceExpr(exn.createQualifiedAccess(), orig.getCFlowExnArgs()));
+			orig.replaceWith(thrw);
+			flushCaches();
+		}
+	}
+	public boolean TryStmt.hasCatchClause(TypeDecl exn) {
+		for(CatchClause cc : getCatchClauses())
+			if(cc.handles(exn))
+				return true;
+		return false;
+	}
+	private java.util.Map<LabeledStmt, TryStmt> AdjustmentTable.trys = new java.util.HashMap<LabeledStmt, TryStmt>();
+	private TryStmt AdjustmentTable.getTryStmt(LabeledStmt stmt) {
+		TryStmt trystmt = trys.get(stmt);
+		if(trystmt == null) {
+			trystmt = new TryStmt(stmt.getStmt().asBlock(), new List<CatchClause>(), new Opt<Block>());
+			stmt.setStmt(trystmt);
+			trys.put(stmt, trystmt);
+		}
+		return trystmt;
+	}
+	
 }

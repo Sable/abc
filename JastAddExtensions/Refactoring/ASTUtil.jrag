@@ -3,6 +3,10 @@
  */
 
 aspect ASTUtil {
+	
+	// wrap statement into block if necessary (use with care!)
+	public Block Stmt.asBlock() { return new Block(new List<Stmt>().add(this)); }
+	public Block Block.asBlock() { return this; }
 
 	// is this beneath n?
 	public boolean ASTNode.beneath(ASTNode n) {
