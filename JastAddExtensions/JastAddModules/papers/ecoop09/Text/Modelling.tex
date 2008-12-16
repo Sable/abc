@@ -13,7 +13,7 @@ a class instead of just loading (or failing to load) the wrong class at runtime.
 The \textbf{replace} and \textbf{merge} operations allow fine-grained
 definition of shared modules that is not possible with existing
 module systems. The closest feature that allows similar functionality
-is the OSGi \texttt{uses} directive that enforces a common classloader
+is the OSGi \textit{uses} directive that enforces a common classloader
 between packages. Replace and merge, however, are imperative operations, and it would
 be desirable, or even necessary, to have some sort of module-aware 
 debugging environment when errors arise. 
@@ -34,7 +34,7 @@ modeled as being members of special modules (bootmodule and javalib),
 which are given preference during lookup (bootmodule first, then javalib,
 then everything else using the lookup rules for modules). Membership
 in these special modules will probably be implemented in a similar way to
-the OSGi \texttt{extends} feature.
+the OSGi \textit{extends} feature.
 
 Split packages become less of an issue, as they can be 
 avoided by using module qualified type references.
@@ -127,8 +127,8 @@ inserting an import and replace module declaration in the module that contained 
 declaration.
 
 Packages, however, are still just class modifiers. A possibly useful addition to 
-\texttt{package-info.java} is an annotation \texttt{@RequiredClass("classname")}
-that checks the existence of a class in a package, and for \texttt{package-info}
+\textit{package-info.java} is an annotation \texttt{@RequiredClass("classname")}
+that checks the existence of a class in a package, and for \textit{package-info}
 to be given the same status as class files in Java.
 
 \subsection{Instantiation}

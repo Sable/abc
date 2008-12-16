@@ -11,8 +11,8 @@ the module system is not included in the paper, and can be found at
 
 Most of the examples in this section are abridged versions taken from the JHotdraw case study. 
 JHotdraw\cite{jhotdraw} is a small framework for drawing applications. It
-uses the \texttt{net.n3.nanoxml} library for xml parsing, and part of 
-\texttt{org.apache.batik} for scalable vector graphics support. It also
+uses the \textit{net.n3.nanoxml} library for xml parsing, and part of 
+\textit{org.apache.batik} for scalable vector graphics support. It also
 provides a set of sample applications that demonstrate use of the framework.
 Handling JHotdraw's dependencies on the two libraries as well as the dependencies
 of the sample applications on JHotdraw and each other provide a small but
@@ -155,7 +155,7 @@ export package *;
 
 Type references can now be qualified with module names to explicitly
 identify the module that contains the class. Module qualifiers
-are separated from package and type names by the \texttt{::} separator,
+are separated from package and type names by the \textit{::} separator,
 and also allows for indirection. For example, given the following module:
 
 \begin{lstlisting}
@@ -165,21 +165,21 @@ import own org.apache.batik export as batik;
 export package *;
 \end{lstlisting}
 
-The class \texttt{org.jhotdraw.Version} in the module \texttt{org.jhotdraw}
+The class \textit{org.jhotdraw.Version} in the module \textit{org.jhotdraw}
 can be accessed as
 \begin{lstlisting}
 org.jhotdraw::org.jhotdraw.Version
 \end{lstlisting}
-Classes in \texttt{nanoxml} and \texttt{batik} can be accessed by indirection:
+Classes in \textit{nanoxml} and \textit{batik} can be accessed by indirection:
 \begin{lstlisting}
 org.jhotdraw::nanoxml::net.n3.nanoxml.Version
 org.jhotdraw::batik::org.apache.batik.Version
 \end{lstlisting}
 
-In the following example, a sample application \texttt{org.jhotdraw.samples.simple}
+In the following example, a sample application \textit{org.jhotdraw.samples.simple}
 uses the Jhotdraw framework by importing its own instance of the module
-\texttt{org.jhotdraw}. The module \texttt{org.jhotdraw} itself uses the 
-two libraries \texttt{net.n3.nanoxml} and \texttt{org.apache.batik}, and
+\textit{org.jhotdraw}. The module \textit{org.jhotdraw} itself uses the 
+two libraries \textit{net.n3.nanoxml} and \textit{org.apache.batik}, and
 exports them so that other modules can also access their classes. The 
 application then gets the versions of JHotdraw and its dependencies.
 
@@ -224,15 +224,15 @@ public class Main {
 }
 \end{lstlisting}
 
-The class \texttt{org.jhotdraw.Version} can be accessed without
+The class \textit{org.jhotdraw.Version} can be accessed without
 a module qualifier since it is a member of the JHotdraw module, 
 which is directly imported by the application Simple. To access
 the versions of JHotdraw's dependencies, the type names have to
 be qualified with the module qualifier that denotes their parent
-module. As \texttt{net.n3.nanoxml.Version} is not a direct import,
-it needs to be qualified with \texttt{jhotdraw::nanoxml::}, which
-points to the \texttt{nanoxml} import of JHotdraw. The same is
-true for \texttt{org.apache.batik.Version}, and as the example shows,
+module. As \textit{net.n3.nanoxml.Version} is not a direct import,
+it needs to be qualified with \textit{jhotdraw::nanoxml::}, which
+points to the \textit{nanoxml} import of JHotdraw. The same is
+true for \textit{org.apache.batik.Version}, and as the example shows,
 the module qualified names can also be used in import declarations.
 
 Module qualifiers allow a developer to explicitly define from which module
@@ -297,10 +297,10 @@ supermodule instances are unique to the submodule instance and can only be acces
 through the submodule. This is true even for singleton modules.
 
 The following example demonstrates submodules and shadowing. The module
-\texttt{defaultsample.defaultjhotdraw} extends the module \texttt{org.jhotdraw}. 
-It also contains the class \texttt{org.jhotdraw.app.action.AboutAction},
+\textit{defaultsample.defaultjhotdraw} extends the module \textit{org.jhotdraw}. 
+It also contains the class \textit{org.jhotdraw.app.action.AboutAction},
 which overrides a class with the same package and name in the supermodule.
-The new \texttt{AboutAction} extends the version in the supermodule and
+The new \textit{AboutAction} extends the version in the supermodule and
 changes the message of the about dialog.
 
 \begin{lstlisting}[caption=Module Subtyping]
@@ -343,14 +343,14 @@ public class AboutAction
 
 \end{lstlisting}
 
-As the example shows, the overriding \texttt{AboutAction} class extends the
+As the example shows, the overriding \textit{AboutAction} class extends the
 overridden class in the supermodule by using the special 
-\texttt{supermodule::} module qualifier to access the overridden class. It
+\textit{supermodule::} module qualifier to access the overridden class. It
 then redefines the only method required to change the behavior as required.
-All lookups for the class \texttt{AboutAction} now resolve to the overriding
+All lookups for the class \textit{AboutAction} now resolve to the overriding
 class, including those in the classes that belong to the supermodule.
 
-Without submodules, changing \texttt{AboutAction} without access to the source
+Without submodules, changing \textit{AboutAction} without access to the source
 would require extending the class and reimplementing the method 
 that instantiates it. Module extension allows the same extension without
 any reimplementation except for the code that actually changes the behavior of the overridden class.
@@ -448,12 +448,12 @@ does not require the same dependency.
 
 The following example taken from the JHotdraw case study shows how replace can
 be used to update a dependency to a more recent version. The example contains
-the sample JHotdraw applications \texttt{samples.net} and \texttt{samples.netold}, 
-where \texttt{samples.net} is a newer version of the other application. They both 
-derive from \texttt{samples.defaultsample}, which imports \texttt{defaultsample.defaultjhotdraw} 
-from the extends example in the previous section. The sample \texttt{netold} updates 
-the \texttt{batik} dependency of \texttt{jhotdraw} to the 1.7 version of batik.
-The newer \texttt{net} then re-updates the same dependency to the 1.8pre version of batik.
+the sample JHotdraw applications \textit{samples.net} and \textit{samples.netold}, 
+where \textit{samples.net} is a newer version of the other application. They both 
+derive from \textit{samples.defaultsample}, which imports \textit{defaultsample.defaultjhotdraw} 
+from the extends example in the previous section. The sample \textit{netold} updates 
+the \textit{batik} dependency of \textit{jhotdraw} to the 1.7 version of batik.
+The newer \textit{net} then re-updates the same dependency to the 1.8pre version of batik.
 It should be noted that in this compile, the 1.7 version of batik does not exist, and
 is expected to be replaced by the 1.8pre version.
 
@@ -530,17 +530,17 @@ merge m1,m2::m3,m4 [export] as mtype alias;
 \end{lstlisting}
 
 Similar to an \textbf{own} import declaration, a merge declaration creates
-a module reference named \texttt{alias} with type \texttt{mtype},
-points this to a \textbf{own} instance of type \texttt{mtype}, and then replaces all
+a module reference named \textit{alias} with type \textit{mtype},
+points this to a \textbf{own} instance of type \textit{mtype}, and then replaces all
 the module references in the list with the newly created instance. Furthermore,
-any further replaces that target \texttt{alias} will also update all
-the references in the list. This also works recursively: if \texttt{alias}
+any further replaces that target \textit{alias} will also update all
+the references in the list. This also works recursively: if \textit{alias}
 is targeted by another merge 
 \begin{lstlisting}
 merge alias, anotheralias export as m1 newmerge;
 \end{lstlisting}
-then any replace that targets \texttt{newmerge} also update the references
-in the merge declaration of \texttt{alias}.
+then any replace that targets \textit{newmerge} also update the references
+in the merge declaration of \textit{alias}.
 
 The merge operation requires that the type of the created reference be 
 replace-compatible with all the references in the merge list, as the instance will
@@ -550,12 +550,12 @@ are also implicitly inherited by submodules.
 The following example taken from the JHotdraw case study shows \textbf{merge}
 can be used to make sure that common dependencies between an importer and
 an imported module can be made to point to the same module instance. The
-application \texttt{samples.svg} imports the jhotdraw framework through
-its supermodule \texttt{samples.defaultsample}, and then merges
-its own \texttt{batik} dependency with that of the imported \texttt{jhotdraw}.
-Another application \texttt{samples.odg} imports \texttt{samples.svg}, 
+application \textit{samples.svg} imports the jhotdraw framework through
+its supermodule \textit{samples.defaultsample}, and then merges
+its own \textit{batik} dependency with that of the imported \textit{jhotdraw}.
+Another application \textit{samples.odg} imports \textit{samples.svg}, 
 and then merges its own instance of jhotdraw with that of the SVG application, 
-while also updating the import's \texttt{batik} dependency with a newer version.
+while also updating the import's \textit{batik} dependency with a newer version.
 
 \begin{lstlisting}[caption=Merge]
 //file org.jhotdraw.module
@@ -586,17 +586,17 @@ replace svg::batik with own org.apache.batik1_8pre;
 \end{lstlisting}
 
 
-The merge in line 12 allows the clients of \texttt{samples.svg}
-the ability to update all of its \texttt{batik} dependencies
-in a single replace declaration, as the \texttt{samples.odg}
-application does in line 25. Similarly, the \texttt{samples.odg} application
+The merge in line 12 allows the clients of \textit{samples.svg}
+the ability to update all of its \textit{batik} dependencies
+in a single replace declaration, as the \textit{samples.odg}
+application does in line 25. Similarly, the \textit{samples.odg} application
 uses merge in for the same purpose in line 21, allowing any importers
-to merge its own \texttt{jhotdraw} import with that of \texttt{samples.odg}.
+to merge its own \textit{jhotdraw} import with that of \textit{samples.odg}.
 The recursive nature of merge allows replaces to propagate through deep
 import graphs of real applications. 
 
-Without the merge, \texttt{samples.odg} would have been forced to perform 
-replace both references to the \texttt{batik} dependency
+Without the merge, \textit{samples.odg} would have been forced to perform 
+replace both references to the \textit{batik} dependency
 in JHotdraw and the SVG sample, a system that would be infeasible in larger projects
 with more shared dependencies.
 
@@ -619,18 +619,14 @@ a module interface must contain and export the packages specified in the interfa
 //file org.apache.batik.module
 module_interface org.apache.batik;
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt,	org.apache.batik;
 
 //file org.jhotdraw.batikfragment.module
 //this implements the interface above
 module org.jhotdraw.batikfragment 
 	implements org.apache.batik;
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt,	org.apache.batik;
 
 //file org.jhotdraw.module
 module org.jhotdraw;
@@ -662,23 +658,19 @@ by all modules that satisfy its export package signature \cite{mcdirmid01jiazzi,
 even if these modules did not explicitly declare that they implemented the interface.
 
 The interface in the example above can be weakened, which allows the use
-of the \texttt{batik} libraries without them explicitly implementing the interface.
+of the \textit{batik} libraries without them explicitly implementing the interface.
 
 \begin{lstlisting}[caption=Weak Interfaces]
 //file org.apache.batik.module
 weak_module_interface org.apache.batik;
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,	
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt,	org.apache.batik;
 
 //file org.jhotdraw.batikfragment.module
 //no longer explicitly implements the interface
 module org.jhotdraw.batikfragment;
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt, 
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt, org.apache.batik;
 	
 //file org.jhotdraw.module
 module org.jhotdraw;
@@ -695,7 +687,7 @@ replace batik with own org.jhotdraw.batikfragment;
 %section on constraints, now part of the indivudual sections where they apply
 %\SubSection{Constraints on Modules}
 
-%Cycles involving \texttt{import own} are not allowed, as this leads to an infinite loop of
+%Cycles involving \textit{import own} are not allowed, as this leads to an infinite loop of
 %module instance creation. However, cycles of singleton imports are allowed.
 
 %Subtyping is single inheritance, as in Java. This avoids ambiguous replace and

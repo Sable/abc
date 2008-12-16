@@ -24,9 +24,9 @@ for the .NET framework. They handle versioning dependencies and security
 requirements, while also allowing for side-by-side execution of multiple
 versions of the same assembly.
 
-iJAM \cite{iJAM} has proposed the more flexible \texttt{import own}
+iJAM \cite{iJAM} has proposed the more flexible \textit{import own}
 mechanism for module instantiation and renaming to solve several unintuitive class
-resolution results from JSR 294. Sharing of \texttt{own} instances was
+resolution results from JSR 294. Sharing of \textit{own} instances was
 done through the renaming mechanism. The proposed type system improves
 on iJAM by having an explicit instance exporting construct,
 allowing for module qualified lookups and having the explicit module operators
@@ -36,7 +36,7 @@ Peter Kriens is a staunch advocate of OSGi and his blog \cite{iJAMComments, supe
 contains insights on OSGi bundles that have been taken into consideration
 in the design of the module type system. His comments on split packages and
 the need for a more flexible class lookup mechanism led to the module declarations
-in the \texttt{package-info.java} and module qualified type names.
+in the \textit{package-info.java} and module qualified type names.
 
 The design of various other module systems have inspired several features in the 
 proposed type system. MJ modules \cite{corwinMJModules} provide an addition to

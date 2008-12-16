@@ -10,7 +10,7 @@ proposed system.
 
 Composition is the most basic functionality expected of a module system. There
 should be a way for a member of a module to access and be accessed by members of
-another module. Ideally, the module system should also have the ability to limit
+another module. The module system should also have the ability to limit
 these accesses to allow for information hiding and loose coupling.
 
 In Java, the classpath provides the most basic level of module composition. 
@@ -41,10 +41,10 @@ proposal and .NET assemblies have extensive mechanisms for allowing a
 module's client to specify the versions of a module that it supports.
 
 Versioning constraints in OSGi are specified at the point of import. The
-listing below shows a sample OSGi bundle \texttt{org.jhotdraw.samples.svg}
-that imports the bundles \texttt{org.jhotdraw}, \texttt{net.n3.nanoxml} and
-\texttt{org.apache.batik}. It further specifies a version constraint on
-the \texttt{batik} import, that its version should be 1.6 (inclusive) as
+listing below shows a sample OSGi bundle \textit{org.jhotdraw.samples.svg}
+that imports the bundles \textit{org.jhotdraw}, \textit{net.n3.nanoxml} and
+\textit{org.apache.batik}. It further specifies a version constraint on
+the \textit{batik} import, that its version should be 1.6 (inclusive) as
 a minimum, and 1.9 (exclusive) as a maximum.
 
 \begin{lstlisting}[caption=OSGi Bundle Version Constraints]
