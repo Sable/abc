@@ -3,12 +3,11 @@ are in use for Java and other similar languages.
 Several \cite{javajars, OSGi4, netassemblies} have been successfully used in industry 
 applications for several years now and should provide a reasonable baseline
 for the abilities that the proposed module system should have. This section will also
-highlight the shortcomings of existing systems, which will be addressed by the
-proposed system.
+highlight the shortcomings of existing system, which will be addressed in later sections.
 
 \subsection{Composition}
 
-Composition is the most basic functionality expected of a module system. There
+Composition is the most basic functionality required of a module system. There
 should be a way for a member of a module to access and be accessed by members of
 another module. The module system should also have the ability to limit
 these accesses to allow for information hiding and loose coupling.
@@ -58,7 +57,7 @@ Require-Bundle: org.jhotdraw,
 \end{lstlisting}
 
 In .net assemblies, an application depends on the specific version of the 
-dependencies it is compiled with, unless it is overriden by a configuration
+dependencies it is compiled with, unless it is overridden by a configuration
 file. Old versions can be updated to new versions through version redirection,
 which is specified in the configuration file. The following example, taken
 from the .net MSDN pages, demonstrate version redirection.
@@ -92,9 +91,23 @@ to determine which version of a dependency can be used.
 
 \subsection{Extension}
 
-\cite{patchingosgi} patching osgi bundles
+Module systems in current use such as OSGi bundles and .net assemblies do not 
+have explicit support for module patching and extension. A method for patching OSGi bundles
+involve using bundle fragments (which were designed for localization, not extension)
+to add and shadow classes in a bundle \cite{patchingosgi}. This process, however, is
+a destructive (but reversible) update, as a bundle fragment is treated as part of its 
+host bundle. As long as the bundle fragment is deployed in the system, all references 
+to the host bundle will be affected by the patch. It is, however, reversible as 
+removing the patch fragment will revert the host bundle to its original configuration.
 
-\cite{reflexil} \cite{monocecil} .net assembly patching by assembly manipulation.
+At the time this paper is being written, there is no explicitly supported method for
+patching .net assemblies. There are tools that allow for manual assembly patching 
+\cite{reflexil, monocecil}, but as with OSGi, these are destructive updates.
+
+Allowing for patches and extensions that can coexist with the original module has the
+advantage of smaller patch sizes (important if the size of the module being patched is
+large), and the ability to create variants of a module without affecting the current
+clients of the module.
 
 \subsection{Imports and Exports}
 
@@ -103,7 +116,7 @@ the module requires and provides, respectively. This affects class
 visibility outside the module and is used to enhance information hiding. 
 
 The most basic form of export is the {\tt public} modifier in Java. Only
-public modified classes, methods or fields are available outside a java package.
+public modified classes, methods or fields are available outside a Java package.
 
 OSGi bundles and JSR 277 modules allow a user to specify a set of package imports 
 and exports that specifies the modules required packages, and the set of packages 

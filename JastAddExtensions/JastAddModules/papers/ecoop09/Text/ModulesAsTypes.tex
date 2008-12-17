@@ -123,9 +123,7 @@ Exported packages are declared in the {\tt .module} file:
 module org.jhotdraw.batikfragment;
 //allow other modules access to types in these packages
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt,	org.apache.batik;
 \end{lstlisting}
 
 You may also export all the packages that belong to a module by using
@@ -193,9 +191,7 @@ export package *;
 //File org.apache.batik.module
 module org.apache.batik;
 export package 
-	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,
-	org.apache.batik;
+	org.apache.batik.ext.awt.image,	org.apache.batik.ext.awt,	org.apache.batik;
 
 //File net.n3.nanoxml
 module net.n3.nanoxml;
@@ -214,11 +210,9 @@ package org.jhotdraw.samples.simple;
 import jhotdraw::batik::org.apache.batik.*;
 public class Main {
 	//direct imports don't need a qualifier
-	String jhotdrawVersion = 
-		org.jhotdraw.Version.version;
+	String jhotdrawVersion = org.jhotdraw.Version.version;
 	//module qualified type name
-	String nanoXMLVersion = 
-		jhotdraw::nanoxml::net.n3.nanoxml.Version.version;
+	String nanoXMLVersion = jhotdraw::nanoxml::net.n3.nanoxml.Version.version;
 	//from the on-demand import
 	String batikVersion = Version.version;
 }
@@ -330,14 +324,11 @@ import batik::org.apache.batik.Version;
 //This class shadows the class
 //org.jhotdraw::org.jhotdraw.app.action.AboutAction
 public class AboutAction 
-	extends 
-	supermodule::org.jhotdraw.app.action.AboutAction {
+	extends supermodule::org.jhotdraw.app.action.AboutAction {
 	public void actionPerformed(ActionEvent evt) {
 		...
 		//add batik version to about message
-		JOptionPane.showMessageDialog(...
-			+ "Batik version " + Version.version,
-			...);
+		JOptionPane.showMessageDialog(...	+ "Batik version " + Version.version,	...);
 	}
 }
 
@@ -383,8 +374,7 @@ a module to completely replace another module. A module is declared
 to override another using the \textbf{overrides} keyword:
 
 \begin{lstlisting}
-module org.apache.batik1_8pre 
-	overrides org.apache.batik1_6, org.apache.batik1_7;
+module org.apache.batik1_8pre overrides org.apache.batik1_6, org.apache.batik1_7;
 \end{lstlisting}
 
 Unlike submodules, an overriding module does not inherit anything from the
@@ -459,16 +449,14 @@ is expected to be replaced by the 1.8pre version.
 
 \begin{lstlisting}[caption=Replace]
 //file net.n3.nanoxmlv2_2_1_4patch.module
-module net.n3.nanoxmlv2_2_1_4patch 
-	extends net.n3.nanoxml;
+module net.n3.nanoxmlv2_2_1_4patch extends net.n3.nanoxml;
 
 //file org.apache.batik1_6.module
 module org.apache.batik1_6;
 ...
 
 //file org.apache.batik1_8pre.module
-module org.apache.batik1_8pre 
-	overrides org.apache.batik1_6, org.apache.batik1_7;
+module org.apache.batik1_8pre overrides org.apache.batik1_6, org.apache.batik1_7;
 ...
 
 //file org.jhotdraw.module
@@ -478,24 +466,20 @@ import own org.apache.batik1_6 export as batik;
 
 //file samples.defaultsample.module
 module samples.defaultsample;
-import own defaultsample.defaultjhotdraw 
-	export as jhotdraw;
+import own defaultsample.defaultjhotdraw export as jhotdraw;
 //replace nanoxml with a patched version
-replace jhotdraw::nanoxml 
-	with own net.n3.nanoxmlv2_2_1_4patch;
+replace jhotdraw::nanoxml with own net.n3.nanoxmlv2_2_1_4patch;
 export package *;
 
 //file samples.netold.module
 module samples.netold extends samples.defaultsample;
 //update to batik version 1.7, which is not in the build
-replace jhotdraw::batik 
-	with own org.apache.batik1_7;
+replace jhotdraw::batik with own org.apache.batik1_7;
 
 //file samples.net.module
 module samples.net extends samples.netold;
 //update to batik version 1.8
-replace jhotdraw::batik
-	with own org.apache.batik1_8pre;
+replace jhotdraw::batik	with own org.apache.batik1_8pre;
 \end{lstlisting}
 
 The example shows how a submodule can replace a supermodule
