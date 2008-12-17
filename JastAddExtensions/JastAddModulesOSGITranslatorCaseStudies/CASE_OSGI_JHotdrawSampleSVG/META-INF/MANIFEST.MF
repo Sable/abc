@@ -10,5 +10,4 @@ Export-Package: org.jhotdraw.samples.svg,
  org.jhotdraw.samples.svg.io
 Require-Bundle: org.jhotdraw,
  net.n3.nanoxml,
- org.apache.batik;bundle-version="1.6.0"
-Bundle-Activator: org.jhotdraw.samples.svg.osgi.Activator
+ org.apache.batik;bundle-version="[1.6.0,1.9.0)"
