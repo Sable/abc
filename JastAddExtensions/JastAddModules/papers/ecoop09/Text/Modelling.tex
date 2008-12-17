@@ -86,16 +86,13 @@ range or are feature compatible implement the same interface.
 module appv1 implements appv1to2, supportsfeature1;
 
 //file appv2.module
-module appv2 implements appv1to2, appv2to4, 
-	supportsfeature1;
+module appv2 implements appv1to2, appv2to4, supportsfeature1;
 
 //file appv3.module
-module appv3 implements appv2to4, 
-	supportsfeature1, supportsfeature2; //new feature
+module appv3 implements appv2to4, supportsfeature1, supportsfeature2; //new feature
 
 //file appv4.module
-module appv4 implements appv2to4, 
-	supportsfeature2; //no longer supports feature1
+module appv4 implements appv2to4, supportsfeature2; //no longer supports feature1
 \end{lstlisting}
 
 In general, interfaces can be used as a tag for any arbitrary constraint, 
@@ -152,9 +149,11 @@ It must be emphasized that the syntax only represents the module system; it is n
 to implement it. As mentioned, overriding is already implicitly implemented
 by versions. Other existing features such as loose coupling in OSGi can
 also be modeled, i.e. by using weak interfaces and a generated import and replace
-declaration. The module system's imports may also be extended using the already well-developed
+declaration. Section \ref{translation} shows how this is done when translating OSGi bundles to modules.
+
+The module system's imports may also be extended using the already well-developed
 constraints in existing module systems, or vice versa: weak interfaces can be extended
-to include more than package signatures (e.g. user-defined constraints).
+to include more than package signatures (e.g. user-defined constraints). 
 
 Separate compilation of modules with module interface dependencies would require
 the ability to compile and lookup module qualified names during runtime. We believe
