@@ -1,5 +1,5 @@
-This section details the functionality provided by existing module systems that
-are in use for Java and other similar languages. 
+This section provides an overview of the functionality provided by existing module systems currently 
+in use for Java and other similar languages. 
 Several \cite{javajars, OSGi4, netassemblies} have been successfully used in industry 
 applications for several years now and would provide a reasonable baseline
 for the abilities that the proposed module system should possess. This section will also
@@ -51,8 +51,7 @@ Bundle-Name: JHotdraw SVG Sample Application
 Bundle-SymbolicName: org.jhotdraw.samples.svg
 Bundle-Version: 1.0.0
 ...
-Require-Bundle: org.jhotdraw,
- net.n3.nanoxml,
+Require-Bundle: org.jhotdraw, net.n3.nanoxml,
  org.apache.batik;bundle-version="[1.6.0,1.9.0)"
 \end{lstlisting}
 
@@ -60,24 +59,18 @@ In .NET assemblies, an application depends on the specific version of the
 dependencies it is compiled with, unless it is overridden by a configuration
 file. Old versions can be updated to new versions through version redirection,
 which is specified in the configuration file. The following example, taken
-from the .net MSDN pages, demonstrate version redirection.
+from the .NET MSDN pages, demonstrate version redirection.
 
-\begin{lstlisting}[caption=.net Assemblies Version Redirection]
-<configuration>
-  <runtime>
-    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
-      <dependentAssembly>
-        <assemblyIdentity name="myAssembly" publicKeyToken="32ab4ba45e0a69a1" 
-        	culture="en-us" />
-        <!-- Redirect references to myAssembly v1.0.0.0 to use v2.0.0.0-->
-        <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />
-      </dependentAssembly>
-    </assemblyBinding>
-  </runtime>
-</configuration>
+\begin{lstlisting}[caption=.NET Assemblies Version Redirection]
+<dependentAssembly>
+  <assemblyIdentity name="myAssembly" publicKeyToken="32ab4ba45e0a69a1" 
+	   	culture="en-us" />
+  <!-- Redirect references to myAssembly v1.0.0.0 to use v2.0.0.0-->
+  <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />
+</dependentAssembly>
 \end{lstlisting}
 
-Redirection in .net assemblies may also be specified by the publisher of the
+Redirection in .NET assemblies may also be specified by the publisher of the
 assembly instead of the client. The syntax for the publisher policy is identical
 to that above, and becomes the default binding policy for all clients of the assembly.
 It can be disabled, however, to allow a client to manually specify the version of
@@ -85,7 +78,7 @@ a dependency to use.
 
 \subsection{Extension}
 
-Module systems in current use such as OSGi bundles and .net assemblies do not 
+Module systems in current use such as OSGi bundles and .NET assemblies do not 
 have explicit support for module patching and extension. A method for patching OSGi bundles
 involve using bundle fragments (which were designed for localization, not extension)
 to add and shadow classes in a bundle \cite{patchingosgi}. This process, however, is
@@ -95,7 +88,7 @@ to the host bundle will be affected by the patch. It is, however, reversible as
 removing the patch fragment will revert the host bundle to its original configuration.
 
 At the time this paper is being written, there is no explicitly supported method for
-patching .net assemblies. There are tools that allow for manual assembly patching 
+patching .NET assemblies. There are tools that allow for manual assembly patching 
 \cite{reflexil, monocecil}, but as with OSGi, these are destructive updates.
 
 Allowing for patches and extensions that can coexist with the original module has the
