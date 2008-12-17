@@ -21,7 +21,7 @@ be loaded from the wrong library. This is JAR hell. Bugs caused by JAR hell
 can be difficult to diagnose as the error occurs below the module level, as 
 a class cast exception or an invalid method or field access.
 
-Java module systems have more or less been built as solutions to JAR hell. 
+Module versioning systems have more or less been built as solutions to JAR hell. 
 OSGi \cite{OSGi4} bundles, JSR 277 modules \cite{JSR277} and .NET assemblies \cite{netassemblies}
 have import declarations to define required modules or packages, and use constraints 
 to make sure that the modules used by an application satisfy the 
