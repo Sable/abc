@@ -12,7 +12,7 @@ OSGi bundle constraints are stored in a JAR manifest file, and has the
 general format
 
 \begin{lstlisting}
-attribute : value [;constraint]
+attribute : value [;directive]
 \end{lstlisting}
 
 A bundle has a \textit{symbolic name} which acts as the unique identifier for that bundle, 
@@ -64,13 +64,124 @@ Bundle-SymbolicName: org.apache.batik;singleton:=true
 \end{lstlisting}
 
 %wiring
-Upon instantiation, the OSGi framework \textit{wires} the bundle to its dependencies.
-It connects the bundle instance to a specific instance of its bundle dependency, making
+Upon instantiation, the OSGi framework \textit{wires} a bundle to its dependencies.
+Wiring involves connecting the bundle instance to a specific instance of its bundle dependency, making
 sure that any constraints are satisfied. If it is unable to find a bundle to wire to a
 dependency, the instantiation of the bundle fails.
 
 \subsection{Translation}
 
+Translation from OSGi bundles to modules in the proposed system has two general phases:
+first the generation of modules and module interfaces that correspond to the bundles and
+their \textit{Require-Bundle} and \textit{Import-Package} entries, and then the generation of
+a \textit{system} module, which wires each module to its dependencies.
+
+\subsubsection{Bundle to Module Mapping}
+
 %bundle to module mapping
+Each bundle is translated to a module declaration with a name that contains the bundle's
+symbolic name and version. This turns every bundle version into a first class entity which
+can be referenced by using the module-level language specified in section \ref{moduletypes}.
+The generated module will contain the same set of exported packages as the bundle.
+
+The next step is to generate a non-weak module interface for each unique \textit{symbolicName, versionConstraint}
+pair in the set of \textit{Require-Bundle} entries for the entire compilation. These will be inserted 
+as import module declarations in the translated modules, and all modules that satisfy the \textit{versionConstraint}
+will be made to implement the generated interface.
+
+Translating the \textit{Import-Package} entries first involve partitioning the set of imported 
+packages into sets that belong to a single module, and then converting each these partitions into
+weak module interfaces. This partitioning is done by a heuristic: packages that have the same first
+three segments belong to the same partition. If a package name has less than three segments, then
+it belongs to its own partition. As an example, the set of packages\\
+\[
+\{net.n3.nanoxml, org.jhotdraw, org.jhotdraw.app, org.jhotdraw.app.action\}
+\]
+is partitioned into\\
+\[\{net.n3.nanoxml\}, \{org.jhotdraw\}, \\ \{org.jhotdraw.app, org.jhotdraw.app.action\}\]
+
+This partition is necessary to ensure that the packages are wired to the same module. OSGi provides
+the \textit{uses} directive to specify this, but we exclude processing this directive during translation 
+for the sake of simplicity.
+
+The following example demonstrates the module generation procedure. The example contains three bundles
+\textit{org.jhotdraw}, \textit{net.n3.nanoxml} and \textit{org.apache.batik}. The bundle \textit{org.jhotdraw}
+depends on the other two modules, explicitly on \textit{org.apache.batik} through a \textit{Require-Bundle}, 
+and implicitly on \textit{net.n3.nanoxml} through an \textit{Import-Package} entry.
+
+\begin{lstlisting}[caption=Bundle Translation Example]
+Bundle-SymbolicName: org.jhotdraw
+Bundle-Version: 1.0.0
+Import-Package: net.n3.nanoxml
+Require-Bundle: org.apache.batik;bundle-version="[1.6.0,1.8.0)"
+Export-Package: org.jhotdraw, org.jhotdraw.app, ...
+...
+Bundle-SymbolicName: org.apache.batik;singleton:=true
+Bundle-Version: 1.8.0.pre
+Export-Package: org.apache.batik, org.apache.batik.ext.awt,...
+...
+Bundle-SymbolicName: net.n3.nanoxml
+Bundle-Version: 1.0.0
+Export-Package: net.n3.nanoxml
+\end{lstlisting}
+
+Following the algorithm outlined above, the bundles are translated to the following set of modules:
+
+\begin{lstlisting}[caption=Translated Bundles]
+//file org.jhotdraw_1_0_0.module
+//translated from bundle org.jhotdraw, version 1.0.0
+module org.jhotdraw_1_0_0;
+import own I_org.apache.batik_v_1_6_0__1_8_0 export as I_org.apache.batik_v_1_6_0__1_8_0;
+import own WI_importpackage_org.jhotdraw_0 export as WI_importpackage_org.jhotdraw_0;
+export package org.jhotdraw, org.jhotdraw.app, ...;
+
+//file org.apache.batik_1_8_0_pre.module
+//translated from org.apache.batik, version 1.8.0.pre
+module org.apache.batik_1_8_0_pre	implements I_org.apache.batik_v_1_6_0__1_8_0;
+export package org.apache.batik, org.apache.batik.ext.awt,...;
+
+//file net.n3.nanoxml_1_0_0.module
+//translated from bundle net.n3.nanoxml, version 1.0.0
+module net.n3.nanoxml_1_0_0;
+export package net.n3.nanoxml;
+
+//file I_org.apache.batik_v_1_6_0__1_8_0.module
+//generated from a Require-Bundle entry
+module_interface I_org.apache.batik_v_1_6_0__1_8_0;
+export package org.apache.batik, org.apache.batik.ext.awt, ...;
+
+//file WI_importpackage_org.jhotdraw_0.module
+//generated from Import-Packge entry
+weak_module_interface WI_importpackage_org.jhotdraw_0;
+export package net.n3.nanoxml;
+\end{lstlisting}
+
+\subsubsection{System Module Generation}
 
 %wiring
+To simulate the wiring done by the OSGi runtime, a top-level module \textit{system} that imports all 
+the concrete modules is generated and populated with the apppropriate \textit{replace} declarations to connect modules to
+their dependencies. The generation of the \textit{system} module also takes \textit{singleton}
+bundles into account.
+
+Continuing the example above, the following \textit{system} module is generated by the translation:
+
+\begin{lstlisting}[caption=Generated System Module]
+module system;
+import own org.jhotdraw_1_0_0 export as org.jhotdraw_1_0_0;
+import own net.n3.nanoxml_1_0_0 export as net.n3.nanoxml_1_0_0;
+import own org.apache.batik_1_8_0_pre export as org.apache.batik_1_8_0_pre;
+
+replace org.jhotdraw_1_0_0::I_org.apache.batik_v_1_6_0__1_8_0
+	with org.apache.batik_1_8_0_pre;
+replace replace org.jhotdraw_1_0_0::WI_importpackage_org.jhotdraw_0
+	with net.n3.nanoxml_1_0_0;
+\end{lstlisting}
+
+The translation demonstrates that the proposed module system can express the basic import
+constraints in OSGi bundles. There are also additional matching criteria such as
+export package attributes that are supported by OSGi, but it is also possible to simulate
+these by generating the appropriate set of module interfaces.
+
+The translation itself is used on a case study on JHotdraw modified to use OSGi bundles,
+which is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}.

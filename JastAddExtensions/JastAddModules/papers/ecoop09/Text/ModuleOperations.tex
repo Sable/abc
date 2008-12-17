@@ -1,8 +1,8 @@
 This section details the functionality provided by existing module systems that
 are in use for Java and other similar languages. 
 Several \cite{javajars, OSGi4, netassemblies} have been successfully used in industry 
-applications for several years now and should provide a reasonable baseline
-for the abilities that the proposed module system should have. This section will also
+applications for several years now and would provide a reasonable baseline
+for the abilities that the proposed module system should possess. This section will also
 highlight the shortcomings of existing system, which will be addressed in later sections.
 
 \subsection{Composition}
@@ -56,7 +56,7 @@ Require-Bundle: org.jhotdraw,
  org.apache.batik;bundle-version="[1.6.0,1.9.0)"
 \end{lstlisting}
 
-In .net assemblies, an application depends on the specific version of the 
+In .NET assemblies, an application depends on the specific version of the 
 dependencies it is compiled with, unless it is overridden by a configuration
 file. Old versions can be updated to new versions through version redirection,
 which is specified in the configuration file. The following example, taken
@@ -82,12 +82,6 @@ assembly instead of the client. The syntax for the publisher policy is identical
 to that above, and becomes the default binding policy for all clients of the assembly.
 It can be disabled, however, to allow a client to manually specify the version of
 a dependency to use.
-
-However, these constraints are limited to using only the version of the module.
-It provides no way to define support for features, for example, where each feature 
-will have different backward compatibility specifications across versions. 
-Clients will have to manually cross reference the feature documentation with the version releases
-to determine which version of a dependency can be used.
 
 \subsection{Extension}
 

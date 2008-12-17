@@ -50,7 +50,14 @@ both of which inspired the design of the weak module interface. Smart modules
 but in the context of mixin and aspect composition. Module extension and shadowing is inspired by 
 virtual classes \cite{virtualclasses89}, which allows the extension of nested classes in a subclass.
 
-\cite{keris05} Keris (extension structure and a lot of the syntax)
+Keris \cite{keris05} is a language designed to provide extensibility to components
+through the use of virtual classes. It wires a module to its dependencies implicitly,
+matching the names of modules available at a certain context to the set of an imported
+module's required components. It was not, however, designed to take versions and multiple instances
+into account. It assumes that there is only ever one instance
+of one module, and is therefore unable to handle an environment where multiple instances and versions
+of a module are present. This is also true for the systems mentioned above \cite{corwinMJModules, secotypedcomponents, componentnextgen, mcdirmid01jiazzi, Ancona05smartmodules}, which were designed for composition
+and extensibility, but not for versioning.
 
 The implementation of the type system as a module-aware compiler was done in JastAdd \cite{jastadd},
 an aspect-oriented compiler construction framework. This has allowed for relatively
