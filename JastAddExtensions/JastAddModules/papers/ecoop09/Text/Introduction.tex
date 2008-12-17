@@ -8,13 +8,23 @@
 
 %
 
+The contributions of this paper are as follows:
+
+\begin{enumerate}
+\item  The definition of object-oriented relations and operations on modules to 
+handle extension and versioning;
+\item The implementation of the module system as a Java extension and a
+small case study to demonstrate the system's features;
+\item A translation from OSGi bundles to the proposed system's modules to
+demonstrate that the proposed system can express OSGi's bundle composition constraints.
+\end{enumerate}
+
 The paper is organized as follows. First we describe the
 usage and shortcomings of existing module systems in section \ref{moduleops}. 
-We then define a module system that contains relations and operations 
-that closely resemble object-oriented types in section \ref{moduletypes}. 
+We then follow with an example-drive description of the proposed module system in section \ref{moduletypes}. 
 In section \ref{eval} we demonstrate that the module
 system is able to express existing usage of modules while providing new
-capabilities to handle split packages, backwards compatibility and module extension. The module system
+capabilities to handle module replacement and merging. The module system
 itself is implemented in a compiler made using the JastAdd\cite{jastadd} compiler construction
 framework, and is demonstrated on a small case study on JHotdraw 7.1 \cite{jhotdraw}.
 To demonstrate that the module system contains the functionality provided by existing

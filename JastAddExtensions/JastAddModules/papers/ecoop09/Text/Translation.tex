@@ -1,14 +1,12 @@
 As a further demonstration of the proposed module system's ability to 
 express module specifications that are present in existing systems, 
 we provide a simple translation from OSGi bundles to the proposed modules.
-The translation is then run on a JHotdraw project refactored to use
-OSGi bundles.
 
 \subsection{OSGi Bundles}
 
 First we provide a brief description of OSGi bundle system, and its basic
 features that relate to bundle composition and the constraints thereon.
-OSGi bundle constraints are stored in a JAR manifest file, and has the
+OSGi bundle entries are stored in a JAR manifest file, and has the
 general format
 
 \begin{lstlisting}
@@ -110,16 +108,19 @@ depends on the other two modules, explicitly on \textit{org.apache.batik} throug
 and implicitly on \textit{net.n3.nanoxml} through an \textit{Import-Package} entry.
 
 \begin{lstlisting}[caption=Bundle Translation Example]
+//bundle org.jhotdraw
 Bundle-SymbolicName: org.jhotdraw
 Bundle-Version: 1.0.0
 Import-Package: net.n3.nanoxml
 Require-Bundle: org.apache.batik;bundle-version="[1.6.0,1.8.0)"
 Export-Package: org.jhotdraw, org.jhotdraw.app, ...
 ...
+//bundle org.apache.batik
 Bundle-SymbolicName: org.apache.batik;singleton:=true
 Bundle-Version: 1.8.0.pre
 Export-Package: org.apache.batik, org.apache.batik.ext.awt,...
 ...
+//bundle net.n3.nanoxml
 Bundle-SymbolicName: net.n3.nanoxml
 Bundle-Version: 1.0.0
 Export-Package: net.n3.nanoxml
@@ -183,5 +184,6 @@ constraints in OSGi bundles. There are also additional matching criteria such as
 export package attributes that are supported by OSGi, but it is also possible to simulate
 these by generating the appropriate set of module interfaces.
 
-The translation itself is used on a case study on JHotdraw modified to use OSGi bundles,
-which is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}.
+The translation itself is used on a case study on JHotdraw modified to use OSGi bundles.
+Both the implementation of the translation and the translation case study are available at
+\textit{http://progtools.comlab.ox.ac.uk/members/neil}.

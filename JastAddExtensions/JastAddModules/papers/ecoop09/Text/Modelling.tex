@@ -36,9 +36,6 @@ then everything else using the lookup rules for modules). Membership
 in these special modules will probably be implemented in a similar way to
 the OSGi \textit{extends} feature.
 
-Split packages become less of an issue, as they can be 
-avoided by using module qualified type references.
-
 Nesting is a feature that is conspicuously absent in the module system. This
 is primarily because Java class nesting idiom does not transfer very well to
 nested modules: nested modules are usually very tightly coupled, unlike nested
@@ -113,6 +110,8 @@ internally, while still allowing explicit declarations for patch releases
 using extends and using module interfaces for expressing non-version
 related constraints. Alternatively, weak interfaces can be modified to include
 versions as part of its constraints, instead of just the set of exposed packages.
+As a demonstration, section \ref{translation} shows how OSGi bundles can be
+translated into modules using the methods outlined above.
 
 \subsection{Imports and Exports}
 
@@ -121,12 +120,8 @@ OSGi's loose coupling using export and import packages can be simulated by
 the module system internally generating a weak interface that satisfies the import
 package specification, finding a visible module that matches that weak interface, and
 inserting an import and replace module declaration in the module that contained the import package
-declaration.
-
-Packages, however, are still just class modifiers. A possibly useful addition to 
-\textit{package-info.java} is an annotation \texttt{@RequiredClass("classname")}
-that checks the existence of a class in a package, and for \textit{package-info}
-to be given the same status as class files in Java.
+declaration. This is demonstrated in section \ref{translation} when OSGi bundles are 
+translated into modules.
 
 \subsection{Instantiation}
 
