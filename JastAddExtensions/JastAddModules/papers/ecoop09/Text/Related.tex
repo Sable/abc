@@ -22,7 +22,10 @@ and have a similar set of advantages and disadvantages.
 .NET assemblies \cite{netassemblies} are generated modularization structures
 for the .NET framework. They handle versioning dependencies and security
 requirements, while also allowing for side-by-side execution of multiple
-versions of the same assembly.
+versions of the same assembly. Assemblies also allow version redirection
+similar to the functionality of \textbf{replace}. Assemblies, however,
+do not provide a method for patching or extending a module without 
+complete replacement.
 
 iJAM \cite{iJAM} has proposed the more flexible \textit{import own}
 mechanism for module instantiation and renaming to solve several unintuitive class
