@@ -64,9 +64,13 @@ Bundle-SymbolicName: org.apache.batik;singleton:=true
 \end{lstlisting}
 
 %wiring
+Upon instantiation, the OSGi framework \textit{wires} the bundle to its dependencies.
+It connects the bundle instance to a specific instance of its bundle dependency, making
+sure that any constraints are satisfied. If it is unable to find a bundle to wire to a
+dependency, the instantiation of the bundle fails.
 
+\subsection{Translation}
 
+%bundle to module mapping
 
-\subsection{Bundle to Module Mapping}
-
-\subsection{Wiring}
+%wiring
