@@ -1,7 +1,7 @@
 %------------------------------------------------------------------------- 
 
 We propose that the limitations of existing systems detailed in the previous section
-can be solved by defining a object-oriented relationships on modules. 
+can be solved by defining a object-oriented relationships and operations on modules. 
 We consider a module as a collection of classes, and it acts as the encapsulation
 structure for the collection. We then proceed to define
 relations and operations on modules and, in a later section, show how
@@ -132,7 +132,6 @@ the default package in a module.
 
 \begin{lstlisting}
 module org.jhotdraw;
-...
 //export all packages
 export package *;
 \end{lstlisting}
@@ -253,9 +252,7 @@ module somemodule;
 package mypackage;
 //import from the default module
 import ::javax.swing.Action;
-class MyClass {
-	Action a = new Action(){...};
-}
+class MyClass {	Action a = new Action(){...}; }
 \end{lstlisting}
 
 One can still use ordinary \textit{packagename.TypeName} accesses to types in
@@ -300,8 +297,7 @@ changes the message of the about dialog.
 \begin{lstlisting}[caption=Module Subtyping]
 //file defaultsample.defaultjhotdraw.module 
 module defaultsample.defaultjhotdraw extends org.jhotdraw;
-//the batik and nanoxml imports are 
-//inherited from org.jhotdraw
+//the batik and nanoxml imports are inherited from org.jhotdraw
 export package *;
 
 //file org/jhotdraw/app/action/AboutAction.java
@@ -309,9 +305,7 @@ module org.jhotdraw;
 package org.jhotdraw.app.action;
 //this class will be overridden
 public class AboutAction extends AbstractApplicationAction {
-	...
 	public void actionPerformed(ActionEvent evt) {
-		...
 		JOptionPane.showMessageDialog(...);
 	}
 }
@@ -320,11 +314,9 @@ public class AboutAction extends AbstractApplicationAction {
 module defaultsample.defaultjhotdraw;
 package org.jhotdraw.app.action;
 import batik::org.apache.batik.Version;
-//This class shadows the class
-//org.jhotdraw::org.jhotdraw.app.action.AboutAction
+//This class shadows the class org.jhotdraw::org.jhotdraw.app.action.AboutAction
 public class AboutAction extends supermodule::org.jhotdraw.app.action.AboutAction {
 	public void actionPerformed(ActionEvent evt) {
-		...
 		//add batik version to about message
 		JOptionPane.showMessageDialog(...	+ "Batik version " + Version.version,	...);
 	}
