@@ -1,12 +1,71 @@
-We provide a simple translation from OSGi bundles to the proposed modules
-to show that it can express the constraints specified in bundles.
+As a further demonstration of the proposed module system's ability to 
+express module specifications that are present in existing systems, 
+we provide a simple translation from OSGi bundles to the proposed modules.
+The translation is then run on a JHotdraw project refactored to use
+OSGi bundles.
 
 \subsection{OSGi Bundles}
 
+First we provide a brief description of OSGi bundle system, and its basic
+features that relate to bundle composition and the constraints thereon.
+OSGi bundle constraints are stored in a JAR manifest file, and has the
+general format
+
+\begin{lstlisting}
+attribute : value [;constraint]
+\end{lstlisting}
+
+A bundle has a \textit{symbolic name} which acts as the unique identifier for that bundle, 
+and can also contain a more descriptive name.
+It also has a version number which is used to distinguish differing versions of
+a bundle with the same symbolic name, as well as a list of exported packages.
+ The bundle infomation stored in the
+manifest file applies to all classes that reside in the JAR. The following example
+bundle information has the symbolic name \textit{org.apache.batik}, version \textit{1.6.0},
+and exports a set of packages.
+
 %basic bundle (symbolic-name, version, singleton}
+\begin{lstlisting}[caption=Basic OSGi bundle]
+Bundle-Name: Batik fragment for JHotdraw taken from v1.6
+Bundle-SymbolicName: org.apache.batik
+Bundle-Version: 1.6.0
+Export-Package: org.apache.batik, org.apache.batik.ext.awt,
+ org.apache.batik.ext.awt.image, org.apache.batik.ext.awt.image.renderable,
+ org.apache.batik.ext.awt.image.rendered, org.apache.batik.util
+\end{lstlisting}
+
 %require-bundle
 %import-package
+Module composition can be done in two ways: first through a \textit{Require-Bundle}
+entry which explicitly contains the symbolic name of the bundle dependency, or an
+\textit{Import-Package} entry which only contains a set of package names, and leaves
+it up the to framework which bundle to use to satisfy the dependency. The \textit{Require-Bundle}
+entry may also have a version constraint, which is a range of versions that can satisfy
+the dependency.
+
+\begin{lstlisting}[caption=Require-bundle and Import-package]
+Bundle-Name: JHotdraw GUI Application Framework
+Bundle-SymbolicName: org.jhotdraw
+Bundle-Version: 1.0.0
+Require-Bundle: net.n3.nanoxml;bundle-version="[1.0.0,2.0.0)"
+Import-Package: org.apache.batik, org.apache.batik.ext.awt,
+ org.apache.batik.ext.awt.image, org.apache.batik.ext.awt.image.renderable,
+ org.apache.batik.ext.awt.image.rendered
+\end{lstlisting}
+
+%singleton
+Bundles may also be declared \textit{singleton}, which means that for all
+singleton bundles with the same symblic name, only one instance is allowed to
+exist. This, however, does not affect non-singleton bundles, even if they have
+the same symbolic name.
+
+\begin{lstlisting}[caption=Singleton Bundle]
+Bundle-SymbolicName: org.apache.batik;singleton:=true
+\end{lstlisting}
+
 %wiring
+
+
 
 \subsection{Bundle to Module Mapping}
 
