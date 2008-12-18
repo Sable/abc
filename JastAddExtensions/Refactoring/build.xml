@@ -227,6 +227,7 @@
     <!-- delete all .class files recursively -->
     <delete>
       <fileset dir="." includes="**/*.class"/>
+      <fileset file="JastAddJRefactoring.tar.gz"/>
     </delete>
 </target>
 
@@ -244,14 +245,23 @@
     </delete>
 </target>
 
-<target name="jar" depends="build">
-  <jar destfile="org.jastadd.refactoring.jar" basedir=".">
-    <include name="AST/*.class"/>
-    <include name="beaver/*.class"/>
-    <include name="parser/*.class"/>
-    <include name="scanner/*.class"/>
-    <include name="tests/TestHelper*.class"/>
-  </jar>
+<target name="dist" depends="clean">
+  <tar destfile="JastAddJRefactoring.tar.gz" compression="gzip">
+    <tarfileset dir=".."
+		prefix="JastAddJRefactoring/">
+      <include name="Java1.4Frontend/**"/>
+      <include name="Java1.5Frontend/**"/>
+      <include name="IntertypeDeclarations/**"/>
+      <include name="ControlFlowGraph/Nodes.ast"/>
+      <include name="ControlFlowGraph/ControlFlowGraph.jrag"/>
+      <include name="ControlFlowGraph/Sets.jrag"/>
+      <include name="ControlFlowGraph/Exceptions.jrag"/>
+      <include name="Refactoring/**"/>
+      <exclude name="Refactoring/XML/**"/>
+      <exclude name="Refactoring/tests/IntelliJ/**"/>
+      <exclude name="**/*.class"/>
+    </tarfileset>
+  </tar>
 </target>
 
 <target name="test" depends="build">
