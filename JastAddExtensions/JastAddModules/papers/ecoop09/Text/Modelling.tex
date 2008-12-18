@@ -3,7 +3,7 @@ allow us to model current operations and constraints on modules, it also
 allows the expression of new constraints using the module system. The following
 sections go into more detail on how the module system can be used.
 
-\subsection{Composition}
+\subsection{Composition and Information Hiding}
 
 A module's classpath is modeled by its module imports. Imports also have the advantage
 of allowing a choice in which class to load, and in causing an
@@ -14,7 +14,11 @@ The \textbf{replace} and \textbf{merge} operations allow fine-grained
 definition of shared modules that is not possible with existing
 module systems. The closest feature that allows similar functionality
 is the OSGi \textit{uses} directive that enforces a common classloader
-between packages. Replace and merge, however, are imperative operations, and it would
+between packages. Merge, in particular, allows for maitaining consistency
+of shared dependencies in a manner that is not supported in existing
+module systems.
+
+Replace and merge, however, are imperative operations, and it would
 be desirable, or even necessary, to have some sort of module-aware 
 debugging environment when errors arise. 
 
@@ -35,6 +39,14 @@ which are given preference during lookup (bootmodule first, then javalib,
 then everything else using the lookup rules for modules). Membership
 in these special modules will probably be implemented in a similar way to
 the OSGi \textit{extends} feature.
+
+Imports and exports are directly implemented by module imports and export package.
+OSGi's loose coupling using export and import packages can be simulated by
+the module system internally generating a weak interface that satisfies the import
+package specification, finding a visible module that matches that weak interface, and
+inserting an import and replace module declaration in the module that contained the import package
+declaration. This is demonstrated in section \ref{translation} when OSGi bundles are 
+translated into modules.
 
 Nesting is a feature that is conspicuously absent in the module system. This
 is primarily because Java class nesting idiom does not transfer very well to
@@ -113,15 +125,7 @@ versions as part of its constraints, instead of just the set of exposed packages
 As a demonstration, section \ref{translation} shows how OSGi bundles can be
 translated into modules using the methods outlined above.
 
-\subsection{Imports and Exports}
 
-Imports and exports are directly implemented by module imports and export package.
-OSGi's loose coupling using export and import packages can be simulated by
-the module system internally generating a weak interface that satisfies the import
-package specification, finding a visible module that matches that weak interface, and
-inserting an import and replace module declaration in the module that contained the import package
-declaration. This is demonstrated in section \ref{translation} when OSGi bundles are 
-translated into modules.
 
 \subsection{Instantiation}
 

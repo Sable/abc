@@ -5,7 +5,7 @@ applications for several years now and would provide a reasonable baseline
 for the abilities that the proposed module system should possess. This section will also
 highlight the shortcomings of existing system, which will be addressed in later sections.
 
-\subsection{Composition}
+\subsection{Composition and Information Hiding}
 
 Composition is the most basic functionality required of a module system. There
 should be a way for a member of a module to access and be accessed by members of
@@ -26,6 +26,23 @@ OSGi \cite{OSGi4} bundles, JSR 277 modules \cite{JSR277} and .NET assemblies \ci
 have import declarations to define required modules or packages, and use constraints 
 to make sure that the modules used by an application satisfy the 
 application's requirements. 
+
+Information hiding and composition in current module systems is
+implemented as a set of imports and exports.
+The set of a module's imports and exports specify the packages (or types) that
+the module requires and provides, respectively. This affects class
+visibility outside the module and is used to enhance information hiding. 
+
+The most basic form of export is the {\tt public} modifier in Java. Only
+public modified classes, methods or fields are available outside a Java package.
+
+OSGi bundles and JSR 277 modules allow a user to specify a set of package imports 
+and exports that specifies the modules required packages, and the set of packages 
+it makes available outside the module. They also both allow a module
+to explicitly import another bundle/module and its packages.
+
+Component Nextgen \cite{componentnextgen} uses interfaces for modules, which
+specify a parameterized signature of classes that a module provides.
 
 \subsection{Versioning}
 Adding versions as meta-data to modules is the common solution to multiple
@@ -90,23 +107,6 @@ Allowing for patches and extensions that can coexist with the original module ha
 advantage of smaller patch sizes (important if the size of the module being patched is
 large), and the ability to create variants of a module without affecting the current
 clients of the module.
-
-\subsection{Imports and Exports}
-
-The set of a module's imports and exports specify the packages (or types) that
-the module requires and provides, respectively. This affects class
-visibility outside the module and is used to enhance information hiding. 
-
-The most basic form of export is the {\tt public} modifier in Java. Only
-public modified classes, methods or fields are available outside a Java package.
-
-OSGi bundles and JSR 277 modules allow a user to specify a set of package imports 
-and exports that specifies the modules required packages, and the set of packages 
-it makes available outside the module. They also both allow a module
-to explicitly import another bundle/module and its packages.
-
-Component Nextgen \cite{componentnextgen} uses interfaces for modules, which
-specify a parameterized signature of classes that a module provides.
 
 \subsection{Instantiation}
 With increasingly large and complex systems that involve a large number of components,

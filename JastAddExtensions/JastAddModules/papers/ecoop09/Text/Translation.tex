@@ -14,7 +14,7 @@ attribute : value [;directive]
 \end{lstlisting}
 
 A bundle has a \textit{symbolic name} which acts as the unique identifier for that bundle, 
-and can also contain a more descriptive name.
+and can also contain a more descriptive \textit{name}.
 It also has a version number which is used to distinguish differing versions of
 a bundle with the same symbolic name, as well as a list of exported packages.
  The bundle infomation stored in the
@@ -78,7 +78,7 @@ a \textit{system} module, which wires each module to its dependencies.
 
 %bundle to module mapping
 Each bundle is translated to a module declaration with a name that contains the bundle's
-symbolic name and version. This turns every bundle version into a first class entity which
+symbolic name and version. This turns every bundle version into an entity which
 can be referenced by using the module-level language specified in section \ref{moduletypes}.
 The generated module will contain the same set of exported packages as the bundle.
 
