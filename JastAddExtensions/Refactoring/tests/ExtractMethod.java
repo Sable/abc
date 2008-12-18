@@ -47,11 +47,8 @@ public class ExtractMethod extends TestCase {
    		int toIndex = blk.getIndexOfStmt(to);
    		if(fromIndex == -1 || toIndex == -1)
    			throw new Error("couldn't find region to extract");
-   		long start = System.currentTimeMillis();
    		blk.extractMethod("protected", "extracted", fromIndex, toIndex);
-   		long end = System.currentTimeMillis();
    		System.out.println(prog);
-   		System.out.println(end-start);
 	}
 	
 	public void runExtractionTest(String name) {

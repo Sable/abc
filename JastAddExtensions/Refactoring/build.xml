@@ -69,25 +69,25 @@
 			<include name="Sets.jrag"/>
 			<include name="Exceptions.jrag"/>
 		</fileset>
-		<fileset file="${Refactoring}/Callable.jadd"/>
-		<fileset file="${Refactoring}/Scope.jadd"/>
-		<fileset file="${Refactoring}/AccessInfo.jrag"/>
-		<fileset file="${Refactoring}/VarAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/LocalDeclaration.jrag"/>
+		<fileset file="${Refactoring}/util/Callable.jadd"/>
+		<fileset file="${Refactoring}/Naming/AccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/VarAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/MethodAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/TypeAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/util/LocalDeclaration.jrag"/>
+		<fileset file="${Refactoring}/Naming/AdjustAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
 			<include name="**/*.jrag"/>
-			<exclude name="Callable.jadd"/>
-			<exclude name="Scope.jadd"/>
-			<exclude name="Uses.jrag"/>
-			<exclude name="VarAccessInfo.jrag"/>
-			<exclude name="MethodAccessInfo.jrag"/>
-			<exclude name="TypeAccessInfo.jrag"/>
+			<exclude name="util/Callable.jadd"/>
+			<exclude name="util/Uses.jrag"/>
+			<exclude name="Naming/VarAccessInfo.jrag"/>
+			<exclude name="Naming/MethodAccessInfo.jrag"/>
+			<exclude name="Naming/TypeAccessInfo.jrag"/>
 			<exclude name="XML/**/*"/>
-			<exclude name="LocalDeclaration.jrag"/>
+			<exclude name="util/LocalDeclaration.jrag"/>
+			<exclude name="Naming/AdjustAccess.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -101,16 +101,16 @@
 <target name="scanner1.4">
   <!-- compose the scanner -->
   <concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
-    <filelist dir=".">
-        <file name="preamble.flex"/>
+    <filelist dir="${Refactoring}">
+        <file name="util/preamble.flex"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}/scanner">
       <file name="macros.flex"/>
       <file name="rules_preamble.flex"/>
     </filelist>
-    <filelist dir=".">
-      <file name="WhiteSpace.flex"/>
-      <file name="Comments.flex"/>
+    <filelist dir="${Refactoring}">
+      <file name="util/WhiteSpace.flex"/>
+      <file name="util/Comments.flex"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}/scanner">
       <file name="Keywords.flex"/>
@@ -129,8 +129,8 @@
 <target name="scanner1.5">
   <mkdir dir="scanner"/>
   <concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
-    <filelist dir=".">
-      <file name="preamble.flex"/>
+    <filelist dir="${Refactoring}">
+      <file name="util/preamble.flex"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}/scanner">
       <file name="macros.flex"/>
@@ -141,9 +141,9 @@
     <filelist dir="${Java1.4Frontend}/scanner">
       <file name="rules_preamble.flex"/>
     </filelist>
-    <filelist dir=".">
-      <file name="WhiteSpace.flex"/>
-      <file name="Comments.flex"/>
+    <filelist dir="${Refactoring}">
+      <file name="util/WhiteSpace.flex"/>
+      <file name="util/Comments.flex"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}/scanner">
       <file name="Keywords.flex"/>
@@ -180,8 +180,8 @@
   <mkdir dir="parser"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" binary="true" force="false">
-    <filelist dir=".">
-      <file name="preamble.parser"/>
+    <filelist dir="${Refactoring}">
+      <file name="util/preamble.parser"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}">
       <file name="parser/java14.parser"/>
@@ -200,8 +200,8 @@
   <mkdir dir="parser"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" binary="true" force="false">
-    <filelist dir=".">
-      <file name="preamble.parser"/>
+    <filelist dir="${Refactoring}">
+      <file name="util/preamble.parser"/>
     </filelist>
     <filelist dir="${Java1.4Frontend}">
       <file name="parser/java14.parser"/>
@@ -228,8 +228,6 @@
     <delete>
       <fileset dir="." includes="**/*.class"/>
     </delete>
-    <delete file="JavaCompiler.jar"/>
-	  <delete file="Java1.5Backend-src.jar"/>
 </target>
 
 <!-- remove generated source files and .class files -->
