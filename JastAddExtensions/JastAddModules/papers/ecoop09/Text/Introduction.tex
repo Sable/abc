@@ -6,7 +6,37 @@
 
 %Limited and cumbersome support for constraints at the publisher side
 
-%
+%Scope: only the module system and constraints, not deployment/framework
+
+There has been renewed interest in module systems for Java-like languages in recent
+years, particularly with the adoption of OSGi \cite{OSGi4} for the Eclipse \cite{eclipse}
+client platform and on several server applications, and the impending inclusion
+of a module system \cite{JSR277, JSR294} in Java 7. The .NET Framework uses \textit{assemblies} \cite{netassemblies}
+for the same purpose. In these systems, a module is
+a collection of classes (and possibly resources) and a set of data and directives that specify how the collection
+accesses or is accessed by other modules. 
+
+A crucial feature that these systems have
+is versioning: that is, the ability to handle multiple versions of the same module.
+These module systems provide a mechanism for a module's client to specify which version
+(or range of versions) of a dependency a client expects for it to function properly.
+They provide a system to update a deployed module to a more recent version in case of upgrades or patches.
+
+As it is possible for two client modules to share types from a dependency, these module systems also provide a way to ensure that these clients are connected to the same instance
+of the dependency; that is, if modules \textit{X} and \textit{Y} use a class \textit{C} from \textit{Z}, the module system
+must ensure that \textit{X} and \textit{Y} are connected to the exact same instance of \textit{Z}, 
+otherwise assigning an instance of \textit{C} created in \textit{Y} to a reference declared in \textit{X}
+would cause a type error. 
+
+However, the constructs provided in these systems are cumbersome to use when maintaining
+consistency of shared dependencies over large numbers of modules, or are too restrictive and
+do not allow the coexistence of multiple versions of a module in order to maintain consistency.
+These module systems also do not provide the ability to do a non-destructive extension or patch to a module.
+
+This paper contains a proposed module system for Java-like languages that addresses these issues.
+Versioning and extension will be accomplished by defining object-oriented relationships between modules akin
+to those between object-oriented classes. We also define the operators \textbf{replace} and \textbf{merge}
+to allow for updating modules and maintaining consistency of shared dependencies.
 
 The contributions of this paper are:
 

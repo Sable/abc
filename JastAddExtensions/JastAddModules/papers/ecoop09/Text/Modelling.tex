@@ -41,12 +41,9 @@ in these special modules will probably be implemented in a similar way to
 the OSGi \textit{extends} feature.
 
 Imports and exports are directly implemented by module imports and export package.
-OSGi's loose coupling using export and import packages can be simulated by
-the module system internally generating a weak interface that satisfies the import
-package specification, finding a visible module that matches that weak interface, and
-inserting an import and replace module declaration in the module that contained the import package
-declaration. This is demonstrated in section \ref{translation} when OSGi bundles are 
-translated into modules.
+Section \ref{translation} details a translation from OSGi modules to
+the modules proposed system. The translation itself is automatic and has been
+implemented as a Java program.
 
 Nesting is a feature that is conspicuously absent in the module system. This
 is primarily because Java class nesting idiom does not transfer very well to
@@ -92,16 +89,13 @@ range or are feature compatible implement the same interface.
 
 \begin{lstlisting}[caption=Interfaces as Properties]
 //file appv1.module
-module appv1 implements appv1to2, supportsfeature1;
-
+module appv1 implements appv1to2, supportsfeature1;...
 //file appv2.module
-module appv2 implements appv1to2, appv2to4, supportsfeature1;
-
+module appv2 implements appv1to2, appv2to4, supportsfeature1;...
 //file appv3.module
-module appv3 implements appv2to4, supportsfeature1, supportsfeature2; //new feature
-
+module appv3 implements appv2to4, supportsfeature1, supportsfeature2; ...//new feature
 //file appv4.module
-module appv4 implements appv2to4, supportsfeature2; //no longer supports feature1
+module appv4 implements appv2to4, supportsfeature2; ...//no longer supports feature1
 \end{lstlisting}
 
 In general, interfaces can be used as a tag for any arbitrary constraint, 
@@ -152,7 +146,7 @@ declaration. Section \ref{translation} shows how this is done when translating O
 
 The module system's imports may also be extended using the already well-developed
 constraints in existing module systems, or vice versa: weak interfaces can be extended
-to include more than package signatures (e.g. user-defined constraints). 
+to include more than package signatures (e.g. OSGi's attribute matching). 
 
 Separate compilation of modules with module interface dependencies would require
 the ability to compile and lookup module qualified names during runtime. We believe

@@ -33,9 +33,6 @@ The set of a module's imports and exports specify the packages (or types) that
 the module requires and provides, respectively. This affects class
 visibility outside the module and is used to enhance information hiding. 
 
-The most basic form of export is the {\tt public} modifier in Java. Only
-public modified classes, methods or fields are available outside a Java package.
-
 OSGi bundles and JSR 277 modules allow a user to specify a set of package imports 
 and exports that specifies the modules required packages, and the set of packages 
 it makes available outside the module. They also both allow a module
@@ -63,7 +60,15 @@ Bundle-SymbolicName: org.jhotdraw.samples.svg
 Bundle-Version: 1.0.0
 ...
 Require-Bundle: org.jhotdraw, net.n3.nanoxml,
- org.apache.batik;bundle-version="[1.6.0,1.9.0)"
+    org.apache.batik;bundle-version="[1.6.0,1.9.0)"
+\end{lstlisting}
+
+To ensure that clients of a bundle are using the same instance, a bundle can be declared
+\textit{singleton}. For a given symbilic name, only once instance of a singleton
+bundle is allowed to exist, ensuring that its clients all point to the same bundle instance.
+
+\begin{lstlisting}[caption=OSGi Singleton]
+Bundle-SymbolicName: org.apache.batik;singleton:=true
 \end{lstlisting}
 
 In .NET assemblies, an application depends on the specific version of the 
@@ -87,6 +92,17 @@ assembly instead of the client. The syntax for the publisher policy is identical
 to that above, and becomes the default binding policy for all clients of the assembly.
 It can be disabled, however, to allow a client to manually specify the version of
 a dependency to use.
+
+These constructs, however, have limitations. In OSGi, singleton bundles to ensure
+consistency of a shared dependency, but make it impossible to use two versions of
+a bundle. As an example, say a bundle \textit{Z} is a singleton, and it is required
+by the bundles \textit{X} and \textit{Y}. However, \textit{X} and \textit{Y} require 
+different versions of the bundle, and cannot be both satisfied with a single bundle version.
+The .NET version redirection becomes extremely cumbersome to use as systems get larger: you
+not only are responsible for redirecting your direct dependencies, but also your indirect
+dependencies (i.e. the dependencies of your dependencies) if you wish to share types. You
+would need to put in a redirect element for every previous version that you wish to replace
+with a newer one.
 
 \subsection{Extension}
 
@@ -126,9 +142,3 @@ However, type lookup when there are multiple instances of the same module are st
 reliant of fixed lookup orders: {\it self-then-parent} for iJAM and the reverse for JSR 294.
 Real world applications require more flexibility than is provided by a single fixed
 lookup rule \cite{iJAMComments}.
-
-Having multiple instances of modules also brings up the issue of the consistency of 
-dependencies shared between two modules. For example, if modules \textit{A}
-and \textit{B} both depend on \textit{C} and are expected to share types from \texttt{C}, 
-they should depend on the exact same instance of \texttt{C}. Otherwise, the shared types
-would not be compatible, as they are from different class spaces (i.e. loaded by different classloaders in Java).

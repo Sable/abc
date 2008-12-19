@@ -55,7 +55,8 @@ Import-Package: org.apache.batik, org.apache.batik.ext.awt,
 Bundles may also be declared \textit{singleton}, which means that for all
 singleton bundles with the same symblic name, only one instance is allowed to
 exist. This, however, does not affect non-singleton bundles, even if they have
-the same symbolic name.
+the same symbolic name. The \textit{singleton} directive is used to ensure that
+all the clients of a bundle use a single version to avoid type errors at runtime.
 
 \begin{lstlisting}[caption=Singleton Bundle]
 Bundle-SymbolicName: org.apache.batik;singleton:=true
@@ -98,7 +99,7 @@ it belongs to its own partition. As an example, the set of packages\\
 is partitioned into\\
 \[\{net.n3.nanoxml\}, \{org.jhotdraw\}, \\ \{org.jhotdraw.app, org.jhotdraw.app.action\}\]
 
-This partition is necessary to ensure that the packages are wired to the same module. OSGi provides
+This partition is necessary to ensure that related packages are wired to the same module. OSGi provides
 the \textit{uses} directive to specify this, but we exclude processing this directive during translation 
 for the sake of simplicity.
 

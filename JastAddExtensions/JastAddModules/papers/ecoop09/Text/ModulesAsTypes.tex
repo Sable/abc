@@ -1,7 +1,7 @@
 %------------------------------------------------------------------------- 
 
 We propose that the limitations of existing systems detailed in the previous section
-can be solved by defining a object-oriented relationships and operations on modules. 
+can be solved by defining object-oriented relationships and operations on modules. 
 We consider a module as a collection of classes, and it acts as the encapsulation
 structure for the collection. We then proceed to define
 relations and operations on modules and, in a later section, show how
@@ -43,17 +43,16 @@ public interface Gradient extends Cloneable { ... }
 
 Module membership can also be declared over an entire package. Package membership in a module 
 is declared by having a module declaration
-in the {\tt package-info.java} file of that package.
+in the \textit{package-info.java} file of that package.
 
 \begin{lstlisting}
 //File org/jhotdraw/app/action/package-info.java
-//all classes in package org.jhotdraw.app.action also
-//belong to module org.jhotdraw
+//all classes in package org.jhotdraw.app.action also belong to module org.jhotdraw
 module org.jhotdraw;
 package org.jhotdraw.app.action;
 \end{lstlisting}
 
-If the module declaration specified in a compilation unit's {\tt package-info.java}
+If the module declaration specified in a compilation unit's \textit{package-info.java}
 file is in conflict with that specified in the file itself, the membership
 declared in the file takes precedence, but a warning is issued.
 
@@ -91,8 +90,7 @@ modules to access that instance. To allow access to other modules, the import
 must be exported:
 
 \begin{lstlisting}
-//imports an own instance, and makes it available to
-//other modules
+//imports an own instance, and makes it available to other modules
 import own org.jhotdraw export as jhotdraw;
 \end{lstlisting}
 
@@ -114,8 +112,8 @@ singleton modules, however, are allowed.
 
 We allow exported packages similar to {\tt export-package} in OSGi bundles. Unlike OSGi, however,
 exporting a package does not automatically allow other modules to gain
-access to these packages. A module A must first import another module B
-before gaining access to B's exported packages.
+access to these packages. A module \textit{A} must first import another module \textit{B}
+before gaining access to \textit{B}'s exported packages.
 
 Exported packages are declared in the {\tt .module} file:
 

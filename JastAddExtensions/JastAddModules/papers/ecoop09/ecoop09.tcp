@@ -6,7 +6,7 @@ Version=4
 MainFile=ecoop09.tex
 UseBibTeX=1
 UseMakeIndex=0
-ActiveProfile=LaTeX => DVI
+ActiveProfile=LaTeX => PDF
 ProjectLanguage=en
 ProjectDialect=US
 
