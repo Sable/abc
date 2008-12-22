@@ -246,8 +246,8 @@
 </target>
 
 <target name="dist" depends="clean">
-  <tar destfile="JastAddJRefactoring.tar.gz" compression="gzip">
-    <tarfileset dir=".."
+  <jar destfile="Refactoring.jar">
+    <zipfileset dir=".."
 		prefix="JastAddJRefactoring/">
       <include name="Java1.4Frontend/**"/>
       <include name="Java1.5Frontend/**"/>
@@ -260,8 +260,8 @@
       <exclude name="Refactoring/XML/**"/>
       <exclude name="Refactoring/tests/IntelliJ/**"/>
       <exclude name="**/*.class"/>
-    </tarfileset>
-  </tar>
+    </zipfileset>
+  </jar>
 </target>
 
 <target name="test" depends="build">
