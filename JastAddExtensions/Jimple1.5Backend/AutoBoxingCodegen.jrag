@@ -9,51 +9,52 @@
 
 aspect AutoBoxingCodegen {
   // Code generation for Boxing Conversion
-  public soot.Value BooleanType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+  public soot.Value BooleanType.emitCastTo(Body b, soot.Value v, TypeDecl type, ASTNode location) {
     if(type == this)
       return v;
     else if(type.unboxed() == this || type.isObject())
-      return boxed().emitBoxingOperation(b, v);
+      return boxed().emitBoxingOperation(b, v, location);
     else
       return v;
   }
-  public soot.Value NumericType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+  public soot.Value NumericType.emitCastTo(Body b, soot.Value v, TypeDecl type, ASTNode location) {
     if(type.isUnknown()) throw new Error("Trying to cast to Unknown");
     if(type == this)
       return v;
     if((isLong() || this instanceof FloatingPointType) && type.isIntegralType()) {
-      v = soot.jimple.Jimple.v().newCastExpr(
-        asImmediate(b, v), typeInt().getSootType());
-      return typeInt().emitCastTo(b, v, type);
+      v = b.newCastExpr(
+        asImmediate(b, v), typeInt().getSootType(), location);
+      return typeInt().emitCastTo(b, v, type, location);
     }
     else if(type instanceof NumericType) {
-      return soot.jimple.Jimple.v().newCastExpr(
+      return b.newCastExpr(
         asImmediate(b, v),
-        type.getSootType()
+        type.getSootType(),
+        location
       );
     }
     else if(!type.isNumericType())
-      return emitCastTo(b, v, boxed());
+      return emitCastTo(b, v, boxed(), location);
     else
-      return boxed().emitBoxingOperation(b, emitCastTo(b, v, type.unboxed()));
+      return boxed().emitBoxingOperation(b, emitCastTo(b, v, type.unboxed(), location), location);
   }
 
   refine EmitJimple public soot.Value TypeDecl.emitCastTo(Body b, Expr expr, TypeDecl type) {
     if(type instanceof LUBType || type instanceof GLBType || type instanceof AbstractWildcardType)
       type = typeObject();
     else if(expr.isConstant() && isPrimitive() && type.isReferenceType())
-    	  return boxed().emitBoxingOperation(b, emitConstant(cast(expr.constant())));
+    	  return boxed().emitBoxingOperation(b, emitConstant(cast(expr.constant())), expr);
     else if(expr.isConstant() && !expr.type().isEnumDecl()) {
       if(type.isPrimitive())
         return emitConstant(type.cast(expr.constant()));
       else
         return emitConstant(expr.constant());
     }
-    return emitCastTo(b, expr.eval(b), type);
+    return emitCastTo(b, expr.eval(b), type, expr);
   }
 
 
-  protected soot.Value TypeDecl.emitBoxingOperation(Body b, soot.Value v) {
+  protected soot.Value TypeDecl.emitBoxingOperation(Body b, soot.Value v, ASTNode location) {
     // Box the value on the stack into this Reference type
     ArrayList parameters = new ArrayList();
     parameters.add(unboxed().getSootType());
@@ -66,20 +67,20 @@ aspect AutoBoxingCodegen {
     );
     ArrayList args = new ArrayList();
     args.add(asLocal(b, v));
-    return Jimple.v().newStaticInvokeExpr(ref, args);
+    return b.newStaticInvokeExpr(ref, args, location);
   }
 
   // Code generation for Unboxing Conversion
-  public soot.Value ReferenceType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+  public soot.Value ReferenceType.emitCastTo(Body b, soot.Value v, TypeDecl type, ASTNode location) {
     if(this == type)
       return v;
     else if(type instanceof PrimitiveType)
-      return type.boxed().emitUnboxingOperation(b, emitCastTo(b, v, type.boxed()));
+      return type.boxed().emitUnboxingOperation(b, emitCastTo(b, v, type.boxed(), location), location);
     else 
-      return super.emitCastTo(b, v, type);
+      return super.emitCastTo(b, v, type, location);
   }
 
-  protected soot.Value TypeDecl.emitUnboxingOperation(Body b, soot.Value v) {
+  protected soot.Value TypeDecl.emitUnboxingOperation(Body b, soot.Value v, ASTNode location) {
     // Unbox the value on the stack from this Reference type
     SootMethodRef ref = Scene.v().makeMethodRef(
       getSootClassDecl(),
@@ -88,7 +89,7 @@ aspect AutoBoxingCodegen {
       unboxed().getSootType(),
       false
     );
-    return Jimple.v().newVirtualInvokeExpr(asLocal(b, v), ref, new ArrayList());
+    return b.newVirtualInvokeExpr(asLocal(b, v), ref, new ArrayList(), location);
   }
 
   // Generate unboxing code for conditions
@@ -100,15 +101,17 @@ aspect AutoBoxingCodegen {
     if(type().isReferenceType()) {
       b.setLine(this);
       b.add(
-        Jimple.v().newIfStmt(
-          Jimple.v().newEqExpr(
-            asImmediate(b, type().emitUnboxingOperation(b, eval(b))),
-            BooleanType.emitConstant(false)
+        b.newIfStmt(
+          b.newEqExpr(
+            asImmediate(b, type().emitUnboxingOperation(b, eval(b), this)),
+            BooleanType.emitConstant(false),
+            this
           ),
-          false_label()
+          false_label(),
+          this
         )
       );
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
 
     }
     else

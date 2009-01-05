@@ -29,86 +29,100 @@ aspect EnhancedForToBytecode {
       getVariableDeclaration().local = parameter;
       b.addLabel(cond_label());
       b.add(
-        Jimple.v().newIfStmt(
-          Jimple.v().newGeExpr(
+        b.newIfStmt(
+          b.newGeExpr(
             asImmediate(b, index),
-            asImmediate(b, Jimple.v().newLengthExpr(asImmediate(b, array)))
+            asImmediate(b, b.newLengthExpr(asImmediate(b, array), this)),
+            this
           ),
-          end_label()
+          end_label(),
+          this
         )
       );
       b.add(
-        Jimple.v().newAssignStmt(
+        b.newAssignStmt(
           parameter,
           asRValue(b,
             getExpr().type().elementType().emitCastTo(b,
               asLocal(b,
-                Jimple.v().newArrayRef(
+                b.newArrayRef(
                   array,
-                  index
+                  index,
+                  this
                 )
               ),
-              getVariableDeclaration().type()
+              getVariableDeclaration().type(),
+              this
             )
-          )
+          ),
+          this
         )
       );
       getStmt().jimplify2(b);
       b.addLabel(update_label());
       b.add(
-        Jimple.v().newAssignStmt(
+        b.newAssignStmt(
           index,
-          Jimple.v().newAddExpr(
+          b.newAddExpr(
             index,
-            soot.jimple.IntConstant.v(1)
-          )
+            soot.jimple.IntConstant.v(1),
+            this
+          ),
+          this
         )
       );
-      b.add(Jimple.v().newGotoStmt(cond_label()));
+      b.add(b.newGotoStmt(cond_label(), this));
       b.addLabel(end_label());
     }
     else {
       soot.Local iterator = asLocal(b,
-        Jimple.v().newInterfaceInvokeExpr(
+        b.newInterfaceInvokeExpr(
           asLocal(b, getExpr().eval(b)),
           iteratorMethod().sootRef(),
-          new ArrayList()
+          new ArrayList(),
+          this
         )
       );
       soot.Local parameter = b.newLocal(getVariableDeclaration().name(), getVariableDeclaration().type().getSootType());
       getVariableDeclaration().local = parameter;
       b.addLabel(cond_label());
       b.add(
-        Jimple.v().newIfStmt(
-          Jimple.v().newEqExpr(
+        b.newIfStmt(
+          b.newEqExpr(
             asImmediate(b, 
-              Jimple.v().newInterfaceInvokeExpr(
+              b.newInterfaceInvokeExpr(
                 iterator,
                 hasNextMethod().sootRef(),
-                new ArrayList()
+                new ArrayList(),
+                this
               )
             ),
-            BooleanType.emitConstant(false)
+            BooleanType.emitConstant(false),
+            this
           ),
-          end_label()
+          end_label(),
+          this
         )
       );
       b.add(
-        Jimple.v().newAssignStmt(
+        b.newAssignStmt(
           parameter,
           nextMethod().type().emitCastTo(b,
-            Jimple.v().newInterfaceInvokeExpr(
+            b.newInterfaceInvokeExpr(
               iterator,
               nextMethod().sootRef(),
-              new ArrayList()
+              new ArrayList(),
+              this
             ),
-            getVariableDeclaration().type()
-          )
+            getVariableDeclaration().type(),
+            this
+          ),
+          this
         )
       );
       getStmt().jimplify2(b);
       b.addLabel(update_label());
-      b.add(Jimple.v().newGotoStmt(cond_label()));
+      b.add(b.newGotoStmt(cond_label(), this));
       b.addLabel(end_label());
 
 

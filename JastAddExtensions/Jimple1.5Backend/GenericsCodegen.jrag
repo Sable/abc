@@ -41,32 +41,32 @@ aspect GenericsCodegen {
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = ((FieldDeclaration)v).erasedField();
       if(f.hostType().isArrayDecl() && f.name().equals("length")) {
-        return Jimple.v().newLengthExpr(asImmediate(b, createLoadQualifier(b)));
+        return b.newLengthExpr(asImmediate(b, createLoadQualifier(b)), this);
       }
       if(f.isStatic()) {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
         if(requiresAccessor()) {
           ArrayList list = new ArrayList();
-          result =  Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType().erasure()).sootRef(), list);
+          result =  b.newStaticInvokeExpr(f.createAccessor(fieldQualifierType().erasure()).sootRef(), list, this);
         }
         else
-          result = Jimple.v().newStaticFieldRef(sootRef());
+          result = b.newStaticFieldRef(sootRef(), this);
       }
       else {
         if(requiresAccessor()) {
           soot.Local base = base(b);
           ArrayList list = new ArrayList();
           list.add(base);
-          result = Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType().erasure()).sootRef(), list);
+          result = b.newStaticInvokeExpr(f.createAccessor(fieldQualifierType().erasure()).sootRef(), list, this);
         }
         else {
           soot.Local base = createLoadQualifier(b);
-          result = Jimple.v().newInstanceFieldRef(base, sootRef());
+          result = b.newInstanceFieldRef(base, sootRef(), this);
         }
       }
       if(f.type() != v.type())
-        result = f.type().emitCastTo(b, result, v.type());
+        result = f.type().emitCastTo(b, result, v.type(), this);
       return result;
     }
     else
@@ -83,7 +83,7 @@ aspect GenericsCodegen {
     return ref;
   }
 
-  refine Expressions public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+  refine Expressions public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location) {
     Variable v = decl();
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = ((FieldDeclaration)v).erasedField();
@@ -91,18 +91,18 @@ aspect GenericsCodegen {
         if(f.isStatic()) {
           ArrayList list = new ArrayList();
           list.add(rvalue);
-          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType().erasure()).sootRef(), list));
+          return asLocal(b, b.newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType().erasure()).sootRef(), list, this));
         }
         else {
           soot.Local base = base(b);
           ArrayList list = new ArrayList();
           list.add(base);
           list.add(asLocal(b, rvalue, lvalue.getType()));
-          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType().erasure()).sootRef(), list));
+          return asLocal(b, b.newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType().erasure()).sootRef(), list, this));
         }
       }
     }
-    return refined(b, lvalue, rvalue);
+    return refined(b, lvalue, rvalue, location);
   }
 
   refine Expressions public soot.Local VarAccess.createLoadQualifier(Body b) {
@@ -147,14 +147,14 @@ aspect GenericsCodegen {
       if(!hostType().instanceOf(prevExpr().type())) {
         MethodDecl m = decl.createSuperAccessor(superAccessorTarget());
         if(methodQualifierType().isInterfaceDecl())
-          result = Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
+          result = b.newInterfaceInvokeExpr(left, m.sootRef(), list, this);
         else
-          result = Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
+          result = b.newVirtualInvokeExpr(left, m.sootRef(), list, this);
       }
       else
-        result = Jimple.v().newSpecialInvokeExpr(left, sootRef(), list);
+        result = b.newSpecialInvokeExpr(left, sootRef(), list, this);
       if(decl.type() != decl().type())
-        result = decl.type().emitCastTo(b, result, decl().type());
+        result = decl.type().emitCastTo(b, result, decl().type(), this);
       return type().isVoid() ? result : asLocal(b, result);
     }
     else {
@@ -163,18 +163,18 @@ aspect GenericsCodegen {
         Local left = asLocal(b, createLoadQualifier(b));
         ArrayList list = buildArgList(b);
         if(methodQualifierType().isInterfaceDecl())
-          result = Jimple.v().newInterfaceInvokeExpr(left, sootRef(), list);
+          result = b.newInterfaceInvokeExpr(left, sootRef(), list, this);
         else
-          result = Jimple.v().newVirtualInvokeExpr(left, sootRef(), list);
+          result = b.newVirtualInvokeExpr(left, sootRef(), list, this);
       }
       else {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
         ArrayList list = buildArgList(b);
-        result = Jimple.v().newStaticInvokeExpr(sootRef(), list);
+        result = b.newStaticInvokeExpr(sootRef(), list, this);
       }
       if(decl.type() != decl().type())
-        result = decl.type().emitCastTo(b, result, decl().type());
+        result = decl.type().emitCastTo(b, result, decl().type(), this);
       return type().isVoid() ? result : asLocal(b, result);
     }
   }
@@ -224,12 +224,12 @@ aspect GenericsCodegen {
     // this$0
     if(c.needsEnclosing())
       list.add(asImmediate(b,
-        Jimple.v().newParameterRef(hostType().enclosingType().getSootType(), index++)
+        b.newParameterRef(hostType().enclosingType().getSootType(), index++, this)
       ));
     if(c.needsSuperEnclosing()) {
       TypeDecl superClass = ((ClassDecl)hostType()).superclass();
       list.add(asImmediate(b,
-        Jimple.v().newParameterRef(superClass.enclosingType().getSootType(), index++)
+        b.newParameterRef(superClass.enclosingType().getSootType(), index++, this)
       ));
     }
     // args
@@ -240,14 +240,15 @@ aspect GenericsCodegen {
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(base, decl().erasedConstructor().createAccessor().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(base, decl().erasedConstructor().createAccessor().sootRef(), list, this),
+          this
         )
       );
       return base;
     }
     else {
-      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+      return b.newSpecialInvokeExpr(base, c.sootRef(), list, this);
     }
   }
 
@@ -266,9 +267,9 @@ aspect GenericsCodegen {
         if(hostType().needsSuperEnclosing()) {
           soot.Type type = ((ClassDecl)hostType()).superclass().enclosingType().getSootType();
           if(hostType().needsEnclosing())
-            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 1)));
+            list.add(asImmediate(b, b.newParameterRef(type, 1, this)));
           else
-            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 0)));
+            list.add(asImmediate(b, b.newParameterRef(type, 0, this)));
         }
         else {
           list.add(emitThis(b, superConstructorQualifier(c.hostType().enclosingType())));
@@ -284,14 +285,15 @@ aspect GenericsCodegen {
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(base, decl().erasedConstructor().createAccessor().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(base, decl().erasedConstructor().createAccessor().sootRef(), list, this),
+          this
         )
       );
       return base;
     }
     else {
-      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+      return b.newSpecialInvokeExpr(base, c.sootRef(), list, this);
     }
   }
 
