@@ -108,10 +108,10 @@ aspect BooleanExpressions {
     soot.jimple.Stmt end_label = newLabel();
     b.addLabel(false_label());
     Local result = b.newTemp(soot.BooleanType.v());
-    b.add(Jimple.v().newAssignStmt(result, BooleanType.emitConstant(false)));
-    b.add(Jimple.v().newGotoStmt(end_label));
+    b.add(b.newAssignStmt(result, BooleanType.emitConstant(false), this));
+    b.add(b.newGotoStmt(end_label, this));
     b.addLabel(true_label());
-    b.add(Jimple.v().newAssignStmt(result, BooleanType.emitConstant(true)));
+    b.add(b.newAssignStmt(result, BooleanType.emitConstant(true), this));
     b.addLabel(end_label);
     return result;
   }
@@ -126,23 +126,25 @@ aspect BooleanExpressions {
       getCondition().emitEvalBranch(b);
       if(getCondition().canBeTrue()) {
         b.addLabel(then_branch_label());
-        b.add(Jimple.v().newAssignStmt(result,
+        b.add(b.newAssignStmt(result,
           getTrueExpr().type().emitCastTo(b,
             getTrueExpr(),
             type()
-          )
+          ),
+          this
         ));
         if(getCondition().canBeFalse()) {
-          b.add(Jimple.v().newGotoStmt(endBranch));
+          b.add(b.newGotoStmt(endBranch, this));
         }
       }
       if(getCondition().canBeFalse()) {
         b.addLabel(else_branch_label());
-        b.add(Jimple.v().newAssignStmt(result,
+        b.add(b.newAssignStmt(result,
           getFalseExpr().type().emitCastTo(b,
             getFalseExpr(),
             type()
-          )
+          ),
+          this
         ));
       }
       b.addLabel(endBranch);
@@ -156,20 +158,22 @@ aspect BooleanExpressions {
   public void Expr.emitEvalBranch(Body b) {
     b.setLine(this);
     if(isTrue())
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
     else if(isFalse())
-      b.add(Jimple.v().newGotoStmt(false_label()));
+      b.add(b.newGotoStmt(false_label(), this));
     else {
       b.add(
-        Jimple.v().newIfStmt(
-          Jimple.v().newEqExpr(
+        b.newIfStmt(
+          b.newEqExpr(
             asImmediate(b, eval(b)),
-            BooleanType.emitConstant(false)
+            BooleanType.emitConstant(false),
+            this
           ),
-          false_label()
+          false_label(),
+          this
         )
       );
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
     }
   }
   
@@ -184,7 +188,7 @@ aspect BooleanExpressions {
     if(getLeftOperand().canBeTrue()) {
       getRightOperand().emitEvalBranch(b);
       if(getRightOperand().canBeTrue())
-        b.add(Jimple.v().newGotoStmt(true_label()));
+        b.add(b.newGotoStmt(true_label(), this));
     }
   }
   syn lazy soot.jimple.Stmt AndLogicalExpr.next_test_label() = newLabel();
@@ -196,7 +200,7 @@ aspect BooleanExpressions {
     if(getLeftOperand().canBeFalse()) {
       getRightOperand().emitEvalBranch(b);
       if(getRightOperand().canBeFalse())
-        b.add(Jimple.v().newGotoStmt(false_label()));
+        b.add(b.newGotoStmt(false_label(), this));
     }
   }
 
@@ -209,21 +213,21 @@ aspect BooleanExpressions {
     b.addLabel(then_branch_label());
     if(getCondition().canBeTrue()) {
       getTrueExpr().emitEvalBranch(b);
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
     }  
     b.addLabel(else_branch_label());
     if(getCondition().canBeFalse()) {
       getFalseExpr().emitEvalBranch(b);
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
     }
   }
   
   public void RelationalExpr.emitEvalBranch(Body b) {
     b.setLine(this);
     if(isTrue())
-      b.add(Jimple.v().newGotoStmt(true_label()));
+      b.add(b.newGotoStmt(true_label(), this));
     else if(isFalse())
-      b.add(Jimple.v().newGotoStmt(false_label()));
+      b.add(b.newGotoStmt(false_label(), this));
     else {
       soot.Value left;
       soot.Value right;
@@ -242,32 +246,32 @@ aspect BooleanExpressions {
           Local l;
           if(type.isDouble() || type.isFloat()) {
             if(this instanceof GEExpr || this instanceof GTExpr) {
-              l = asLocal(b, soot.jimple.Jimple.v().newCmplExpr(asImmediate(b, left), asImmediate(b, right)));
+              l = asLocal(b, b.newCmplExpr(asImmediate(b, left), asImmediate(b, right), this));
             }
             else {
-              l = asLocal(b, soot.jimple.Jimple.v().newCmpgExpr(asImmediate(b, left), asImmediate(b, right)));
+              l = asLocal(b, b.newCmpgExpr(asImmediate(b, left), asImmediate(b, right), this));
             }
           }
           else {
-            l = asLocal(b, soot.jimple.Jimple.v().newCmpExpr(asImmediate(b, left), asImmediate(b, right)));
+            l = asLocal(b, b.newCmpExpr(asImmediate(b, left), asImmediate(b, right), this));
           }
-          b.add(Jimple.v().newIfStmt(comparisonInv(b, l, BooleanType.emitConstant(false)), false_label()));
-          b.add(Jimple.v().newGotoStmt(true_label()));
+          b.add(b.newIfStmt(comparisonInv(b, l, BooleanType.emitConstant(false)), false_label(), this));
+          b.add(b.newGotoStmt(true_label(), this));
         }
         else {
-          b.add(Jimple.v().newIfStmt(comparison(b, left, right), true_label()));
-          b.add(Jimple.v().newGotoStmt(false_label()));
-          //b.add(Jimple.v().newIfStmt(comparisonInv(b, left, right), false_label()));
-          //b.add(Jimple.v().newGotoStmt(true_label()));
+          b.add(b.newIfStmt(comparison(b, left, right), true_label(), this));
+          b.add(b.newGotoStmt(false_label(), this));
+          //b.add(b.newIfStmt(comparisonInv(b, left, right), false_label(), this));
+          //b.add(b.newGotoStmt(true_label(), this));
         }
       }
       else {
         left = getLeftOperand().eval(b);
         right = getRightOperand().eval(b);
-        b.add(Jimple.v().newIfStmt(comparison(b, left, right), true_label()));
-        b.add(Jimple.v().newGotoStmt(false_label()));
-        //b.add(Jimple.v().newIfStmt(comparisonInv(b, left, right), false_label()));
-        //b.add(Jimple.v().newGotoStmt(true_label()));
+        b.add(b.newIfStmt(comparison(b, left, right), true_label(), this));
+        b.add(b.newGotoStmt(false_label(), this));
+        //b.add(b.newIfStmt(comparisonInv(b, left, right), false_label(), this));
+        //b.add(b.newGotoStmt(true_label(), this));
       }
     }
   }
@@ -276,43 +280,43 @@ aspect BooleanExpressions {
     throw new Error("comparison not supported for " + getClass().getName());
   }
   public soot.Value LTExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newLtExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newLtExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value LEExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newLeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newLeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value GEExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newGeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newGeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value GTExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newGtExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newGtExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value EQExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newEqExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newEqExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value NEExpr.comparison(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newNeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newNeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
 
   public soot.Value RelationalExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
     throw new Error("comparisonInv not supported for " + getClass().getName());
   }
   public soot.Value LTExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newGeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newGeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value LEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newGtExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newGtExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value GEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newLtExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newLtExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value GTExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newLeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newLeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value EQExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newNeExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newNeExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
   public soot.Value NEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
-    return Jimple.v().newEqExpr(asImmediate(b, left), asImmediate(b, right));
+    return b.newEqExpr(asImmediate(b, left), asImmediate(b, right), this);
   }
 }

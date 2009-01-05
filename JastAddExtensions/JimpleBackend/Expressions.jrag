@@ -55,7 +55,7 @@ aspect Expressions {
         getDest().type()
       )
     );
-    return getDest().emitStore(b, lvalue, asImmediate(b, rvalue));
+    return getDest().emitStore(b, lvalue, asImmediate(b, rvalue), this);
   }
 
   // compound assign expression
@@ -69,13 +69,14 @@ aspect Expressions {
       type = dest;
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
-    Value value = b.newTemp(dest.emitCastTo(b, v, type));
+    Value value = b.newTemp(dest.emitCastTo(b, v, type, this));
     Value rvalue = source.emitCastTo(b, getSource(), type);
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
-      dest
+      dest,
+      getDest()
     ));
-    getDest().emitStore(b, lvalue, result);
+    getDest().emitStore(b, lvalue, result, this);
     return result;
   }
 
@@ -90,30 +91,33 @@ aspect Expressions {
       Value v = asImmediate(b, lvalue);
 
       // new StringBuffer(left)
-      Local local = b.newTemp(Jimple.v().newNewExpr(
-        lookupType("java.lang", "StringBuffer").sootRef()));
+      Local local = b.newTemp(b.newNewExpr(
+        lookupType("java.lang", "StringBuffer").sootRef(), this));
       b.setLine(this);
-      b.add(Jimple.v().newInvokeStmt(
-        Jimple.v().newSpecialInvokeExpr(local, 
+      b.add(b.newInvokeStmt(
+        b.newSpecialInvokeExpr(local, 
           Scene.v().getMethod("<java.lang.StringBuffer: void <init>(java.lang.String)>").makeRef(),
-          v
-        )));
+          v,
+          this
+        ), this));
 
       // append right
       Local rightResult = b.newTemp(
-        Jimple.v().newVirtualInvokeExpr(local,
+        b.newVirtualInvokeExpr(local,
           lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { source.stringPromotion() }).sootRef(),
-          asImmediate(b, getSource().eval(b))
+          asImmediate(b, getSource().eval(b)),
+          this
         ));
 
       // toString
       Local result = b.newTemp(
-        Jimple.v().newVirtualInvokeExpr(rightResult,
-          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef()
+        b.newVirtualInvokeExpr(rightResult,
+          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef(),
+          this
         ));
   
       Value v2 = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
-      getDest().emitStore(b, v2, result);
+      getDest().emitStore(b, v2, result, this);
       return result;
     }
     else {
@@ -129,13 +133,14 @@ aspect Expressions {
 
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
-    Value value = b.newTemp(dest.emitCastTo(b, v, type));
+    Value value = b.newTemp(dest.emitCastTo(b, v, type, getDest()));
     Value rvalue = source.emitCastTo(b, getSource(), typeInt());
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
-      dest
+      dest,
+      getDest()
     ));
-    getDest().emitStore(b, lvalue, result);
+    getDest().emitStore(b, lvalue, result, this);
     return result;
   }
 
@@ -149,37 +154,37 @@ aspect Expressions {
     throw new Error("Operation createAssignOp is not implemented for " + getClass().getName());
   }
   public soot.Value AssignMulExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return asImmediate(b, Jimple.v().newMulExpr(asImmediate(b, fst), asImmediate(b, snd)));
+    return asImmediate(b, b.newMulExpr(asImmediate(b, fst), asImmediate(b, snd), this));
   }
   public soot.Value AssignDivExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newDivExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newDivExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignModExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newRemExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newRemExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignPlusExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newAddExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newAddExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignMinusExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newSubExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newSubExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignLShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newShlExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newShlExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignRShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newShrExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newShrExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignURShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newUshrExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newUshrExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignAndExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newAndExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newAndExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignXorExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newXorExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newXorExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
   public soot.Value AssignOrExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
-    return Jimple.v().newOrExpr(asImmediate(b, fst), asImmediate(b, snd));
+    return b.newOrExpr(asImmediate(b, fst), asImmediate(b, snd), this);
   }
 
   public soot.Value AbstractDot.eval(Body b) {
@@ -205,28 +210,28 @@ aspect Expressions {
     else if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
       if(f.hostType().isArrayDecl() && f.name().equals("length")) {
-        return Jimple.v().newLengthExpr(asImmediate(b, createLoadQualifier(b)));
+        return b.newLengthExpr(asImmediate(b, createLoadQualifier(b)), this);
       }
       if(f.isStatic()) {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
         if(requiresAccessor()) {
           ArrayList list = new ArrayList();
-          return Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list);
+          return b.newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list, this);
         }
         else
-          return Jimple.v().newStaticFieldRef(sootRef());
+          return b.newStaticFieldRef(sootRef(), this);
       }
       else {
         if(requiresAccessor()) {
           soot.Local base = base(b);
           ArrayList list = new ArrayList();
           list.add(base);
-          return Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list);
+          return b.newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list, this);
         }
         else {
           soot.Local base = createLoadQualifier(b);
-          return Jimple.v().newInstanceFieldRef(base, sootRef());
+          return b.newInstanceFieldRef(base, sootRef(), this);
         }
       }
     }
@@ -248,20 +253,21 @@ aspect Expressions {
 
   syn lazy soot.Local VarAccess.base(Body b) = asLocal(b, createLoadQualifier(b));
 
-  public soot.Value AbstractDot.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
-    return lastAccess().emitStore(b, lvalue, rvalue);
+  public soot.Value AbstractDot.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location) {
+    return lastAccess().emitStore(b, lvalue, rvalue, location);
   }
-  public soot.Value Expr.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+  public soot.Value Expr.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location) {
     b.setLine(this);
     b.add(
-      Jimple.v().newAssignStmt(
+      b.newAssignStmt(
         lvalue,
-        asLocal(b, rvalue, lvalue.getType())
+        asLocal(b, rvalue, lvalue.getType()),
+        location
       )
     );
     return rvalue;
   }
-  public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+  public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location) {
     Variable v = decl();
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
@@ -269,18 +275,18 @@ aspect Expressions {
         if(f.isStatic()) {
           ArrayList list = new ArrayList();
           list.add(rvalue);
-          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list));
+          return asLocal(b, b.newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list, location));
         }
         else {
           soot.Local base = base(b);
           ArrayList list = new ArrayList();
           list.add(base);
           list.add(asLocal(b, rvalue, lvalue.getType()));
-          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list));
+          return asLocal(b, b.newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list, location));
         }
       }
     }
-    return super.emitStore(b, lvalue, rvalue);
+    return super.emitStore(b, lvalue, rvalue, location);
   }
 
   inh boolean Access.inExplicitConstructorInvocation();
@@ -290,9 +296,10 @@ aspect Expressions {
       return ((ParameterDeclaration)c.parameterDeclaration(v.name()).iterator().next()).local;
     }
     else {
-      return Jimple.v().newInstanceFieldRef(
+      return b.newInstanceFieldRef(
         b.emitThis(hostType()),
-        Scene.v().makeFieldRef(hostType().getSootClassDecl(), "val$" + v.name(), v.type().getSootType(), false)
+        Scene.v().makeFieldRef(hostType().getSootClassDecl(), "val$" + v.name(), v.type().getSootType(), false),
+        this
         //hostType().getSootClassDecl().getField("val$" + v.name(), v.type().getSootType()).makeRef()
       );
     }
@@ -338,12 +345,12 @@ aspect Expressions {
       if(!hostType().instanceOf(prevExpr().type())) {
         MethodDecl m = decl().createSuperAccessor(superAccessorTarget());
         if(methodQualifierType().isInterfaceDecl())
-          result = Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
+          result = b.newInterfaceInvokeExpr(left, m.sootRef(), list, this);
         else
-          result = Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
+          result = b.newVirtualInvokeExpr(left, m.sootRef(), list, this);
       }
       else
-        result = Jimple.v().newSpecialInvokeExpr(left, sootRef(), list);
+        result = b.newSpecialInvokeExpr(left, sootRef(), list, this);
       return type().isVoid() ? result : asLocal(b, result);
     }
     else {
@@ -352,15 +359,15 @@ aspect Expressions {
         Local left = asLocal(b, createLoadQualifier(b));
         ArrayList list = buildArgList(b);
         if(methodQualifierType().isInterfaceDecl())
-          result = Jimple.v().newInterfaceInvokeExpr(left, sootRef(), list);
+          result = b.newInterfaceInvokeExpr(left, sootRef(), list, this);
         else
-          result = Jimple.v().newVirtualInvokeExpr(left, sootRef(), list);
+          result = b.newVirtualInvokeExpr(left, sootRef(), list, this);
       }
       else {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
         ArrayList list = buildArgList(b);
-        result = Jimple.v().newStaticInvokeExpr(sootRef(), list);
+        result = b.newStaticInvokeExpr(sootRef(), list, this);
       }
       return type().isVoid() ? result : asLocal(b, result);
     }
@@ -403,9 +410,10 @@ aspect Expressions {
   public soot.Value ArrayAccess.eval(Body b) {
     soot.Value arrayRef = b.newTemp(prevExpr().eval(b));
     soot.Value arrayIndex = b.newTemp(getExpr().eval(b));
-    return Jimple.v().newArrayRef(
+    return b.newArrayRef(
       asLocal(b, arrayRef),
-      asImmediate(b, arrayIndex)
+      asImmediate(b, arrayIndex),
+      this
     );
   }
 
@@ -428,7 +436,7 @@ aspect Expressions {
       Local base;
       if(inExplicitConstructorInvocation()) {
         base = asLocal(b,
-          Jimple.v().newParameterRef(enclosing.enclosingType().getSootType(), 0)
+          b.newParameterRef(enclosing.enclosingType().getSootType(), 0, this)
         );
         enclosing = enclosing.enclosing();
       }
@@ -438,12 +446,14 @@ aspect Expressions {
       while(enclosing != targetDecl) {
         Local next = b.newTemp(enclosing.enclosingType().getSootType());
         b.add(
-          Jimple.v().newAssignStmt(
+          b.newAssignStmt(
             next,
-            Jimple.v().newInstanceFieldRef(
+            b.newInstanceFieldRef(
               base,
-              enclosing.getSootField("this$0", enclosing.enclosingType()).makeRef()
-            )
+              enclosing.getSootField("this$0", enclosing.enclosingType()).makeRef(),
+              this
+            ),
+            this
           )
         );
         base = next;
@@ -464,12 +474,12 @@ aspect Expressions {
     // this$0
     if(c.needsEnclosing())
       list.add(asImmediate(b,
-        Jimple.v().newParameterRef(hostType().enclosingType().getSootType(), index++)
+        b.newParameterRef(hostType().enclosingType().getSootType(), index++, this)
       ));
     if(c.needsSuperEnclosing()) {
       TypeDecl superClass = ((ClassDecl)hostType()).superclass();
       list.add(asImmediate(b,
-        Jimple.v().newParameterRef(superClass.enclosingType().getSootType(), index++)
+        b.newParameterRef(superClass.enclosingType().getSootType(), index++, this)
       ));
     }
     // args
@@ -480,14 +490,15 @@ aspect Expressions {
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list, this),
+          this
         )
       );
       return base;
     }
     else {
-      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+      return b.newSpecialInvokeExpr(base, c.sootRef(), list, this);
     }
   }
 
@@ -506,9 +517,9 @@ aspect Expressions {
         if(hostType().needsSuperEnclosing()) {
           soot.Type type = ((ClassDecl)hostType()).superclass().enclosingType().getSootType();
           if(hostType().needsEnclosing())
-            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 1)));
+            list.add(asImmediate(b, b.newParameterRef(type, 1, this)));
           else
-            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 0)));
+            list.add(asImmediate(b, b.newParameterRef(type, 0, this)));
         }
         else {
           list.add(emitThis(b, superConstructorQualifier(c.hostType().enclosingType())));
@@ -524,14 +535,15 @@ aspect Expressions {
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list, this),
+          this
         )
       );
       return base;
     }
     else {
-      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+      return b.newSpecialInvokeExpr(base, c.sootRef(), list, this);
     }
   }
 
@@ -546,11 +558,13 @@ aspect Expressions {
     if(hasPrevExpr()) {
       Local base = asLocal(b, prevExpr().eval(b));
       b.setLine(this);
-      b.add(Jimple.v().newInvokeStmt(
-        Jimple.v().newVirtualInvokeExpr(
+      b.add(b.newInvokeStmt(
+        b.newVirtualInvokeExpr(
           base, 
-          Scene.v().getMethod("<java.lang.Object: java.lang.Class getClass()>").makeRef()
-        )
+          Scene.v().getMethod("<java.lang.Object: java.lang.Class getClass()>").makeRef(),
+          this
+        ),
+        this
       ));
       return base;
     }
@@ -563,7 +577,7 @@ aspect Expressions {
   }
 
   public soot.Value ClassInstanceExpr.eval(Body b) {
-    Local local = asLocal(b, Jimple.v().newNewExpr(type().sootRef()));
+    Local local = asLocal(b, b.newNewExpr(type().sootRef(), this));
     ArrayList list = new ArrayList();
 
      // 15.9.2 first part
@@ -597,8 +611,9 @@ aspect Expressions {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
       b.setLine(this);
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(local, decl().createAccessor().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(local, decl().createAccessor().sootRef(), list, this),
+          this
         )
       );
       return local;
@@ -606,8 +621,9 @@ aspect Expressions {
     else {
       b.setLine(this);
       b.add(
-        Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(local, decl().sootRef(), list)
+        b.newInvokeStmt(
+          b.newSpecialInvokeExpr(local, decl().sootRef(), list, this),
+          this
         )
       );
       return local;
@@ -623,15 +639,17 @@ aspect Expressions {
       getTypeAccess().addArraySize(b, list);
       if(numArrays() == 1) {
         soot.Value size = (soot.Value)list.get(0);
-        return Jimple.v().newNewArrayExpr(
+        return b.newNewArrayExpr(
           type().componentType().getSootType(),
-          asImmediate(b, size)
+          asImmediate(b, size),
+          this
         );
       }
       else {
-        return Jimple.v().newNewMultiArrayExpr(
+        return b.newNewMultiArrayExpr(
           (soot.ArrayType)type().getSootType(),
-          list
+          list,
+          this
         );
       }
     }
@@ -649,9 +667,10 @@ aspect Expressions {
 
   public soot.Value ArrayInit.eval(Body b) {
     soot.Value size = IntType.emitConstant(getNumInit());
-    Local array = asLocal(b, Jimple.v().newNewArrayExpr(
+    Local array = asLocal(b, b.newNewArrayExpr(
       type().componentType().getSootType(),
-      asImmediate(b, size)
+      asImmediate(b, size),
+      this
     ));
     for(int i = 0; i < getNumInit(); i++) {
       Value rvalue = 
@@ -660,9 +679,9 @@ aspect Expressions {
           expectedType()
         );
       Value index = IntType.emitConstant(i);
-      Value lvalue = Jimple.v().newArrayRef(array, index);
+      Value lvalue = b.newArrayRef(array, index, getInit(i));
       b.setLine(this);
-      b.add(Jimple.v().newAssignStmt(lvalue, asImmediate(b, rvalue)));
+      b.add(b.newAssignStmt(lvalue, asImmediate(b, rvalue), getInit(i)));
     }
     return array;
   }
@@ -671,15 +690,16 @@ aspect Expressions {
     return super.eval(b);
   }
   public soot.Value MinusExpr.eval(Body b) { 
-    return Jimple.v().newNegExpr(asImmediate(b, getOperand().eval(b)));
+    return b.newNegExpr(asImmediate(b, getOperand().eval(b)), this);
   }
   public soot.Value PlusExpr.eval(Body b) { return getOperand().eval(b); }
   public soot.Value BitNotExpr.eval(Body b) {
     soot.Value v = IntType.emitConstant(-1);
     soot.Local result = asLocal(b,
-      soot.jimple.Jimple.v().newXorExpr(
-        asImmediate(b, typeInt().emitCastTo(b, v, type())),
-        asImmediate(b, getOperand().eval(b))
+      b.newXorExpr(
+        asImmediate(b, typeInt().emitCastTo(b, v, type(), this)),
+        asImmediate(b, getOperand().eval(b)),
+        this
       )
     );
     return result;
@@ -691,8 +711,8 @@ aspect Expressions {
       return emitConstant(constant());
     soot.Value operand = getExpr().eval(b);
     if (operand == NullConstant.v())
-        return getExpr().type().emitCastTo(b, operand, type());
-    return getExpr().type().emitCastTo(b, asLocal(b, operand), type());
+        return getExpr().type().emitCastTo(b, operand, type(), this);
+    return getExpr().type().emitCastTo(b, asLocal(b, operand), type(), this);
   }
 
   public static soot.Value ASTNode.emitConstant(Constant constant) {
@@ -717,13 +737,14 @@ aspect Expressions {
     soot.Value lvalue = getOperand().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     TypeDecl type = getOperand().type().binaryNumericPromotion(typeInt());
-    Value value = b.newTemp(getOperand().type().emitCastTo(b, v, type));
-    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type);
+    Value value = b.newTemp(getOperand().type().emitCastTo(b, v, type, getOperand()));
+    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type, this);
     Value sum = asRValue(b, type.emitCastTo(b,
-      Jimple.v().newAddExpr(asImmediate(b, value), asImmediate(b, rvalue)),
-      getOperand().type()
+      b.newAddExpr(asImmediate(b, value), asImmediate(b, rvalue), this),
+      getOperand().type(),
+      this
     ));
-    getOperand().emitStore(b, lvalue, sum);
+    getOperand().emitStore(b, lvalue, sum, this);
     return value;
   }
 
@@ -734,13 +755,14 @@ aspect Expressions {
     soot.Value lvalue = getOperand().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     TypeDecl type = getOperand().type().binaryNumericPromotion(typeInt());
-    Value value = getOperand().type().emitCastTo(b, v, type);
-    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type);
+    Value value = getOperand().type().emitCastTo(b, v, type, getOperand());
+    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type, this);
     Value result = asLocal(b, type.emitCastTo(b,
-      Jimple.v().newAddExpr(asImmediate(b, value), asImmediate(b, rvalue)),
-      getOperand().type()
+      b.newAddExpr(asImmediate(b, value), asImmediate(b, rvalue), this),
+      getOperand().type(),
+      this
     ));
-    getOperand().emitStore(b, lvalue, result);
+    getOperand().emitStore(b, lvalue, result, this);
     return result;
   }
 
@@ -781,37 +803,37 @@ aspect Expressions {
     throw new Error("emitOperation not implemented in " + getClass().getName());
   }
   public soot.Value AddExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newAddExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newAddExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value SubExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newSubExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newSubExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value MulExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newMulExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newMulExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value DivExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newDivExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newDivExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value ModExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newRemExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newRemExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value LShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newShlExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newShlExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value RShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newShrExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newShrExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value URShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newUshrExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newUshrExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value OrBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newOrExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newOrExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value AndBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newAndExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newAndExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
   public soot.Value XorBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
-    return asLocal(b, Jimple.v().newXorExpr(asImmediate(b, left), asImmediate(b, right)));
+    return asLocal(b, b.newXorExpr(asImmediate(b, left), asImmediate(b, right), this));
   }
 
   public soot.Value AddExpr.eval(Body b) {
@@ -821,40 +843,44 @@ aspect Expressions {
       Local v;
       if(firstStringAddPart()) {
         // new StringBuffer
-        v = b.newTemp(Jimple.v().newNewExpr(
-          lookupType("java.lang", "StringBuffer").sootRef()));
+        v = b.newTemp(b.newNewExpr(
+          lookupType("java.lang", "StringBuffer").sootRef(), this));
         b.setLine(this);
-        b.add(Jimple.v().newInvokeStmt(
-          Jimple.v().newSpecialInvokeExpr(v, 
-          Scene.v().getMethod("<java.lang.StringBuffer: void <init>()>").makeRef()
-        )));
+        b.add(b.newInvokeStmt(
+          b.newSpecialInvokeExpr(v, 
+          Scene.v().getMethod("<java.lang.StringBuffer: void <init>()>").makeRef(),
+          this
+        ), this));
         b.setLine(this);
-        b.add(Jimple.v().newInvokeStmt(
-          Jimple.v().newVirtualInvokeExpr(v,
+        b.add(b.newInvokeStmt(
+          b.newVirtualInvokeExpr(v,
             lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { getLeftOperand().type().stringPromotion() }).sootRef(),
-            asImmediate(b, getLeftOperand().eval(b))
-          )));
+            asImmediate(b, getLeftOperand().eval(b)),
+            this
+          ), this));
       }
       else
         v = (Local)getLeftOperand().eval(b);
       // append
       b.setLine(this);
-      b.add(Jimple.v().newInvokeStmt(
-        Jimple.v().newVirtualInvokeExpr(v,
+      b.add(b.newInvokeStmt(
+        b.newVirtualInvokeExpr(v,
           lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { getRightOperand().type().stringPromotion() }).sootRef(),
-          asImmediate(b, getRightOperand().eval(b))
-        )));
+          asImmediate(b, getRightOperand().eval(b)),
+          this
+        ), this));
       if(lastStringAddPart()) {
         return b.newTemp(
-          Jimple.v().newVirtualInvokeExpr(v,
-            Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef()
+          b.newVirtualInvokeExpr(v,
+            Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef(),
+            this
         ));
       }
       else
         return v;
     }
     else 
-    return soot.jimple.Jimple.v().newAddExpr(
+    return b.newAddExpr(
       b.newTemp(
         getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
           getLeftOperand(),
@@ -866,16 +892,18 @@ aspect Expressions {
           getRightOperand(),
           type()
         )
-      )
+      ),
+      this
     );
   }
 
   // See BooleanExpressions.jrag for the evaluation of conditionals
 
   public soot.Value InstanceOfExpr.eval(Body b) {
-    return Jimple.v().newInstanceOfExpr(
+    return b.newInstanceOfExpr(
       asImmediate(b, getExpr().eval(b)),
-      getTypeAccess().type().getSootType()
+      getTypeAccess().type().getSootType(),
+      this
     );
   }
 
@@ -885,7 +913,7 @@ aspect Expressions {
       TypeDecl typeDecl = lookupType("java.lang", prevExpr().type().primitiveClassName());
       SimpleSet c = typeDecl.memberFields("TYPE");
       FieldDeclaration f = (FieldDeclaration)c.iterator().next();
-      return Jimple.v().newStaticFieldRef(f.sootRef());
+      return b.newStaticFieldRef(f.sootRef(), this);
     }
     else {
       FieldDeclaration f = hostType().topLevelType().createStaticClassField(prevExpr().type().referenceClassFieldName());
@@ -895,31 +923,34 @@ aspect Expressions {
       soot.jimple.Stmt next_label = b.newLabel();
       soot.jimple.Stmt end_label = b.newLabel();
       Local result = b.newTemp(type().getSootType());
-      Local ref = asLocal(b, Jimple.v().newStaticFieldRef(f.sootRef()));
+      Local ref = asLocal(b, b.newStaticFieldRef(f.sootRef(), this));
       b.setLine(this);
       b.add(
-        Jimple.v().newIfStmt(
-          Jimple.v().newNeExpr(ref, soot.jimple.NullConstant.v()),
-          next_label
+        b.newIfStmt(
+          b.newNeExpr(ref, soot.jimple.NullConstant.v(), this),
+          next_label,
+          this
         )
       );
       // emit string literal
         
       ArrayList list = new ArrayList();
       list.add(new StringLiteral(prevExpr().type().jvmName()).eval(b));
-      Local l = asLocal(b, Jimple.v().newStaticInvokeExpr(m.sootRef(), list));
+      Local l = asLocal(b, b.newStaticInvokeExpr(m.sootRef(), list, this));
       b.setLine(this);
-      b.add(Jimple.v().newAssignStmt(
-        Jimple.v().newStaticFieldRef(f.sootRef()),
-        l
+      b.add(b.newAssignStmt(
+        b.newStaticFieldRef(f.sootRef(), this),
+        l,
+        this
       ));
       b.setLine(this);
-      b.add(Jimple.v().newAssignStmt(result, l));
-      b.add(Jimple.v().newGotoStmt(end_label));
+      b.add(b.newAssignStmt(result, l, this));
+      b.add(b.newGotoStmt(end_label, this));
       b.addLabel(next_label);
-      b.add(Jimple.v().newAssignStmt(
+      b.add(b.newAssignStmt(
         result,
-        Jimple.v().newStaticFieldRef(f.sootRef())
+        b.newStaticFieldRef(f.sootRef(), this),
+        this
       ));
       b.addLabel(end_label);
       return result;
