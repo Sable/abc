@@ -30,21 +30,23 @@ aspect IntertypeJimple15 {
         ArrayList list = new ArrayList();
 
         if (fieldQualifierType().isInterfaceDecl()) {
-          return Jimple.v().newInterfaceInvokeExpr(
+          return b.newInterfaceInvokeExpr(
             base,
             f.createInterfaceGetter().sootRef(),
-            list);
+            list,
+            this);
         }
-        return Jimple.v().newInstanceFieldRef(
+        return b.newInstanceFieldRef(
           base,
-          f.introducedSootRef(fieldQualifierType()));
+          f.introducedSootRef(fieldQualifierType()),
+          this);
       }
     }
     return refined(b);
 
   }
-  refine IntertypeJimple public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue)
-  to refine GenericsCodegen public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+  refine IntertypeJimple public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location)
+  to refine GenericsCodegen public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue, ASTNode location) {
     if(decl() instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
 
@@ -55,14 +57,15 @@ aspect IntertypeJimple15 {
 
         if (fieldQualifierType().isInterfaceDecl()) {
           return asLocal(b,
-            Jimple.v().newInterfaceInvokeExpr(
+            b.newInterfaceInvokeExpr(
               base,
               f.createInterfaceSetter().sootRef(),
-              list));
+              list,
+              location));
         }
       }
     }
-    return refined(b, lvalue, rvalue);
+    return refined(b, lvalue, rvalue, location);
   }
 
   refine VariableArityParametersCodegen public void MethodAccess.transformation()
