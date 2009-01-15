@@ -86,6 +86,9 @@
 			<include name="**/*.jrag"/>
 			<exclude name="util/Callable.jadd"/>
 			<exclude name="util/Uses.jrag"/>
+			<exclude name="util/JastAddJComments.jrag"/>
+			<exclude name="util/JastAddJOffsets.jrag"/>
+			<exclude name="util/FlushCaches.jrag"/>
 			<exclude name="Naming/VarAccessInfo.jrag"/>
 			<exclude name="Naming/MethodAccessInfo.jrag"/>
 			<exclude name="Naming/TypeAccessInfo.jrag"/>
@@ -98,6 +101,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+			<exclude name="**/ASTUtil.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
