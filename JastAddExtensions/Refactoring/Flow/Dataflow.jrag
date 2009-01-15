@@ -46,7 +46,6 @@ aspect Dataflow {
 	}
 	
 	// this is to take care of local variables accessed inside a local/anonymous class
-	inh TypeDecl Modifiers.hostType();
 	eq Modifiers.dataPredFor(VarAccess var) {
     	if(hostType().isLocalClass() || hostType().isAnonymous())
     		return hostType().dataPredFor(var);
