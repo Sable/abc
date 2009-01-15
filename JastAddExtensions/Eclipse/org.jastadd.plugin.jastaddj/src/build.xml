@@ -12,7 +12,7 @@
 <property name="tools" value="../../Java1.4Frontend/tools"/>
 
 <property name="Refactoring" value="../../Refactoring"/>
-<property name="Analyses" value="../../Analyses"/>
+<property name="ControlFlowGraph" value="../../ControlFlowGraph"/>
 	
 <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
 <taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="../../Java1.4Frontend/tools/JFlex.jar"/>
@@ -67,31 +67,32 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset file="${Analyses}/LocalDeclaration.jrag"/>
-		<fileset dir="${Analyses}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
-			<exclude name="LocalDeclaration.jrag"/>
-			<exclude name="ASTUtil.jrag"/>
+		<fileset dir="${ControlFlowGraph}">
+		        <include name="Nodes.ast"/>
+			<include name="ControlFlowGraph.jrag"/>
+			<include name="Sets.jrag"/>
+			<include name="Exceptions.jrag"/>
 		</fileset>
-		<fileset file="${Refactoring}/Methodoid.jadd"/>
-		<fileset file="${Refactoring}/Scope.jadd"/>
-		<fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/VarAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/util/Callable.jadd"/>
+		<fileset file="${Refactoring}/Naming/AccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/VarAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/MethodAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/Naming/TypeAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/util/LocalDeclaration.jrag"/>
+		<fileset file="${Refactoring}/Naming/AdjustAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
 			<include name="**/*.jrag"/>
+			<exclude name="util/Callable.jadd"/>
+			<exclude name="util/Uses.jrag"/>
+			<exclude name="Naming/VarAccessInfo.jrag"/>
+			<exclude name="Naming/MethodAccessInfo.jrag"/>
+			<exclude name="Naming/TypeAccessInfo.jrag"/>
 			<exclude name="XML/**/*"/>
-			<exclude name="Methodoid.jadd"/>
-			<exclude name="Scope.jadd"/>
-			<exclude name="Uses.jrag"/>
-			<exclude name="TypeAccessInfo.jrag"/>
-			<exclude name="VarAccessInfo.jrag"/>
-			<exclude name="MethodAccessInfo.jrag"/>
-			<exclude name="IntertypeDeclarations/*.jrag"/>
+			<exclude name="util/LocalDeclaration.jrag"/>
+			<exclude name="Naming/AdjustAccess.jrag"/>
+			<exclude name="IntertypeDeclarations/**/*"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
