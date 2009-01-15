@@ -3,7 +3,7 @@ aspect JastAddJFindImplementsNode {
 	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJFindImplementsNode;
 		
 		
-	coll HashSet TypeDecl.implementors() [new HashSet()] with add;
+	coll HashSet TypeDecl.implementors() [new HashSet()] with add root Program;
 	syn Collection TypeDecl.directImplements() = Collections.EMPTY_LIST;
 	eq InterfaceDecl.directImplements() {
 		HashSet set = new HashSet();

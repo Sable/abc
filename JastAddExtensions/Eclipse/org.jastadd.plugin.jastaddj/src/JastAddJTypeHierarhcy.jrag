@@ -1,7 +1,7 @@
 aspect JastAddJTypeHierarhcy {
 	TypeDecl implements org.jastadd.plugin.jastaddj.AST.IJastAddJTypeHierarhcyNode;
 		
-	coll HashSet TypeDecl.subtypes() [new HashSet()] with add;
+	coll HashSet TypeDecl.subtypes() [new HashSet()] with add root Program;
 	syn Collection TypeDecl.directSupertypes() = Collections.EMPTY_LIST;
 	eq InterfaceDecl.directSupertypes() {
 		HashSet set = new HashSet();

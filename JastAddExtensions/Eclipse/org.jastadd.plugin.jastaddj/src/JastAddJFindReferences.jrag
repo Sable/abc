@@ -2,10 +2,10 @@ aspect JastAddJFindReferencesNode {
 	
 	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 		
-	coll HashSet TypeDecl.references() [new HashSet()] with add;
+	coll HashSet TypeDecl.references() [new HashSet()] with add root Program;
 	TypeAccess contributes this to TypeDecl.references() for decl();
 	
-	coll HashSet MethodDecl.references() [new HashSet()] with add;
+	coll HashSet MethodDecl.references() [new HashSet()] with add root Program;
 	MethodAccess contributes this to MethodDecl.references() for decl();
 	
 	syn Collection ASTNode.references() = Collections.EMPTY_LIST;
