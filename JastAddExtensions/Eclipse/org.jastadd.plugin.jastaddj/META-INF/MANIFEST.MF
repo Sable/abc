@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JastAddJ Plug-in
 Bundle-SymbolicName: org.jastadd.plugin.jastaddj;singleton:=true
 Bundle-Version: 1.0.1
-Bundle-Activator: org.jastadd.plugin.jastaddj.JastAddJActivator
+Bundle-Activator: org.jastadd.plugin.jastaddj.Activator
 Bundle-Localization: plugin
 Bundle-ClassPath: bin/
 Require-Bundle: org.jastadd.plugin;visibility:=reexport,
@@ -25,12 +25,15 @@ Require-Bundle: org.jastadd.plugin;visibility:=reexport,
  org.eclipse.ltk.ui.refactoring;visibility:=reexport,
  org.eclipse.core.expressions;visibility:=reexport,
  org.eclipse.jdt.core;visibility:=reexport,
- org.eclipse.pde.runtime
+ org.eclipse.pde.runtime,
+ org.eclipse.ui.console;bundle-version="3.3.0"
 Eclipse-LazyStart: true
 Export-Package: org.jastadd.plugin.jastaddj,
  org.jastadd.plugin.jastaddj.AST,
  org.jastadd.plugin.jastaddj.builder,
  org.jastadd.plugin.jastaddj.builder.ui,
+ org.jastadd.plugin.jastaddj.compiler,
+ org.jastadd.plugin.jastaddj.compiler.recovery,
  org.jastadd.plugin.jastaddj.completion,
  org.jastadd.plugin.jastaddj.editor,
  org.jastadd.plugin.jastaddj.editor.actions,
@@ -39,10 +42,10 @@ Export-Package: org.jastadd.plugin.jastaddj,
  org.jastadd.plugin.jastaddj.explorer,
  org.jastadd.plugin.jastaddj.launcher,
  org.jastadd.plugin.jastaddj.launcher.classpaths,
- org.jastadd.plugin.jastaddj.model,
  org.jastadd.plugin.jastaddj.nature,
- org.jastadd.plugin.jastaddj.navigator,
  org.jastadd.plugin.jastaddj.perspective,
+ org.jastadd.plugin.jastaddj.util,
  org.jastadd.plugin.jastaddj.wizards,
  parser,
  scanner
+Import-Package: org.eclipse.ui.views.contentoutline

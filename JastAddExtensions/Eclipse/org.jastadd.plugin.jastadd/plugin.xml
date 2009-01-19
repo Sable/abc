@@ -56,11 +56,6 @@
 
 	<!-- Register the JastAdd model -->
 	
-	<extension point="org.jastadd.plugin.model.JastAddModelProvider"
-        id="org.jastadd.plugin.jastadd.Model"
-        name="JastAddModel">
-		<provider class="org.jastadd.plugin.jastadd.Model"/>
- 	</extension>
  	
  	
  
@@ -163,5 +158,11 @@
 		</action>
 	</editorContribution>
 	</extension>
+ <extension
+       point="org.jastadd.plugin.compilers">
+    <compiler
+          class="org.jastadd.plugin.jastadd.JastAddCompiler">
+    </compiler>
+ </extension>
 	
 </plugin>

@@ -16,7 +16,7 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
+import org.jastadd.plugin.util.ColorRegistry;
 
 public class JastAddJScanner extends RuleBasedScanner {
 	
@@ -35,12 +35,12 @@ public class JastAddJScanner extends RuleBasedScanner {
 		}
 	}
 
-	public JastAddJScanner(JastAddColors colors) {
+	public JastAddJScanner(ColorRegistry colors) {
 		this.colors = colors;
 		registerRules();
 	}
 
-	protected JastAddColors colors;
+	protected ColorRegistry colors;
 
 	protected Token defaultToken;
 	protected Token keywordToken;

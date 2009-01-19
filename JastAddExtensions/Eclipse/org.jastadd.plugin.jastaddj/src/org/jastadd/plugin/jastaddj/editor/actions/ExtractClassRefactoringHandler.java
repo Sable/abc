@@ -2,11 +2,11 @@ package org.jastadd.plugin.jastaddj.editor.actions;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
 import org.jastadd.plugin.jastaddj.refactor.extractClass.*;
-import org.jastadd.plugin.refactor.RefactoringSaveHelper;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
+import org.jastadd.plugin.util.RefactoringSaveHelper;
 
-public class ExtractClassRefactoringHandler extends JastAddActionDelegate {
+public class ExtractClassRefactoringHandler extends AbstractBaseActionDelegate {
 	@Override
 	public void run(IAction action) {
 		try {
@@ -14,8 +14,8 @@ public class ExtractClassRefactoringHandler extends JastAddActionDelegate {
 					this.activeEditorPart().getSite().getShell()))
 				return;
 
-			ExtractClassRefactoring refactoring = new ExtractClassRefactoring(this
-					.activeModel(), this.activeEditorPart(), this
+			ExtractClassRefactoring refactoring = new ExtractClassRefactoring(
+					this.activeEditorPart(), this
 					.activeEditorFile(), this.activeSelection(), this
 					.selectedNode());
 			ExtractClassWizard wizard = new ExtractClassWizard(refactoring,

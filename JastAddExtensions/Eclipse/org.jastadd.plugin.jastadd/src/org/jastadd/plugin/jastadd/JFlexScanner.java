@@ -5,12 +5,12 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
+import org.jastadd.plugin.util.ColorRegistry;
 
 public class JFlexScanner extends JastAddJScanner {
 	
-	public JFlexScanner(JastAddColors colors) {
+	public JFlexScanner(ColorRegistry colors) {
 		super(colors);
 	}
 

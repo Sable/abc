@@ -4,26 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Label;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.providers.JastAddBaseOnDemandTreeContentProvider;
-import org.jastadd.plugin.providers.JastAddBaseOnDemandTreeLabelProvider;
-import org.jastadd.plugin.providers.model.JastAddOnDemandTreeItem;
-import org.jastadd.plugin.util.JastAddOnDemandNodeDoubleClickOpener;
-import org.jastadd.plugin.view.JastAddBaseHierarchyView;
+import org.jastadd.plugin.search.JastAddOnDemandTreeItem;
+import org.jastadd.plugin.ui.view.AbstractBaseHierarchyView;
+import org.jastadd.plugin.ui.view.BaseOnDemandTreeContentProvider;
+import org.jastadd.plugin.ui.view.BaseOnDemandTreeLabelProvider;
 
 public class JastAddJReferenceHierarchyView extends
-		JastAddBaseHierarchyView<IJastAddNode> {
+		AbstractBaseHierarchyView<IJastAddNode> {
 	public static String VIEW_ID = "org.jastadd.plugin.output.JastAddJReferenceHierarchy";
 
 	public static IJastAddNode filterNode(IJastAddNode input) {
@@ -55,7 +49,7 @@ public class JastAddJReferenceHierarchyView extends
 	protected void configureTreeViewer(TreeViewer treeViewer) {
 		treeViewer.setContentProvider(new MyContentProvider());
 		treeViewer.setLabelProvider(new MyLabelProvider());
-		treeViewer.addDoubleClickListener(new JastAddOnDemandNodeDoubleClickOpener());
+		treeViewer.addDoubleClickListener(new JastAddJOnDemandNodeDoubleClickOpener());
 	}
 
 	public void setInput(IJastAddNode input) {
@@ -67,7 +61,7 @@ public class JastAddJReferenceHierarchyView extends
 	}
 
 	private static class MyContentProvider extends
-			JastAddBaseOnDemandTreeContentProvider<IJastAddNode> {
+			BaseOnDemandTreeContentProvider<IJastAddNode> {
 		protected Collection<JastAddOnDemandTreeItem<IJastAddNode>> computeChildren(
 				JastAddOnDemandTreeItem<IJastAddNode> item) {
 			Collection<JastAddOnDemandTreeItem<IJastAddNode>> result = new ArrayList<JastAddOnDemandTreeItem<IJastAddNode>>();
@@ -95,7 +89,7 @@ public class JastAddJReferenceHierarchyView extends
 	}
 
 	private static class MyLabelProvider extends
-			JastAddBaseOnDemandTreeLabelProvider<IJastAddNode> {
+			BaseOnDemandTreeLabelProvider<IJastAddNode> {
 		protected Image computeImage(JastAddOnDemandTreeItem<IJastAddNode> item) {
 			IJastAddNode node = item.value;
 			synchronized (node.treeLockObject()) {

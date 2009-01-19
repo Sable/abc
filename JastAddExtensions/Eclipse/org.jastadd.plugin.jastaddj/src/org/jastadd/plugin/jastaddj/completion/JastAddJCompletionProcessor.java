@@ -1,5 +1,6 @@
 package org.jastadd.plugin.jastaddj.completion;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,14 +18,31 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.jastadd.plugin.AST.ICompletionNode;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.model.JastAddModel.FileInfo;
+import org.jastadd.plugin.compiler.ast.ICompletionNode;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.recovery.LexicalNode;
+import org.jastadd.plugin.compiler.recovery.Recovery;
+import org.jastadd.plugin.compiler.recovery.RecoveryLexer;
+import org.jastadd.plugin.compiler.recovery.SOF;
+import org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler;
+import org.jastadd.plugin.jastaddj.compiler.recovery.JavaLexerIII;
+import org.jastadd.plugin.util.FileInfo;
+import org.jastadd.plugin.util.FileInfoMap;
+import org.jastadd.plugin.util.NodeLocator;
+
+import AST.ASTNode;
+import AST.Access;
+import AST.Expr;
+import AST.MethodAccess;
+import AST.ParExpr;
 
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
+	
+	private RecoveryLexer lexer;
+	
+	public JastAddJCompletionProcessor() {
+		lexer = new JavaLexerIII();
+	}
 	
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		return computeCompletionProposals(viewer.getDocument(), documentOffset);
@@ -127,21 +145,80 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 	private Collection computeProposal(int documentOffset, IDocument document, StringBuffer buf, String filter, String leftContent, boolean withDot) 
 			throws BadLocationException, IOException, Exception, CoreException {
 
+		/*
 		JastAddModel model = JastAddModelProvider.getModel(document);
 		if (model != null) {
-			FileInfo fileInfo = model.documentToFileInfo(document);
-			if(fileInfo != null) {
-				IProject project = fileInfo.getProject();
-				String fileName = fileInfo.getPath().toOSString();
-				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-				if(model instanceof JastAddJModel)
-					return ((JastAddJModel)model).recoverAndCompletion(documentOffset, buf, project, 
-							fileName, node, filter, leftContent);
-			}			
-		}
+		*/
+		FileInfo fileInfo = FileInfoMap.documentToFileInfo(document);
+		if(fileInfo != null) {
+			IProject project = fileInfo.getProject();
+			String fileName = fileInfo.getPath().toOSString();
+			IJastAddNode node = NodeLocator.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			return recoverAndCompletion(documentOffset, buf, project, fileName, node, filter, leftContent);
+		}			
+		//}
 
 		return new ArrayList();
 	}
+	
+	public Collection recoverAndCompletion(int documentOffset, StringBuffer buf, 
+			IProject project, String fileName, IJastAddNode node, String filter, 
+			String leftContent) throws IOException, Exception {
+
+		if (node == null) {
+			// Try recovery
+			SOF sof = lexer.parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			documentOffset += recoveryNode.getInterval().getPushOffset();			
+			node = NodeLocator.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			if (node == null) {
+				System.out.println("Structural recovery failed");
+				return new ArrayList();
+			}
+		}
+
+		synchronized (node.treeLockObject()) {
+			if (node instanceof Access) {
+				Access n = (Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(filter);
+			} else if (node instanceof ASTNode) {
+				ASTNode n = (ASTNode) node;
+				System.out.println("Manual recovery");
+				Expr newNode;
+				if (leftContent.length() != 0) {
+					String nameWithParan = "(" + leftContent + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(
+							nameWithParan.getBytes());
+					scanner.JavaScanner scanner = new scanner.JavaScanner(
+							new scanner.Unicode(is));
+					newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+							scanner, parser.JavaParser.AltGoals.expression))
+							.getExprNoTransform();
+					newNode = newNode.qualifiesAccess(new MethodAccess("X",
+							new AST.List()));
+				} else {
+					newNode = new MethodAccess("X", new AST.List());
+				}
+
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(filter);
+			}
+			return new ArrayList();
+		}
+	}
+
 
 /*
 	private Collection computeProposal(int documentOffset, String[] linePart, IDocument document, String content) 

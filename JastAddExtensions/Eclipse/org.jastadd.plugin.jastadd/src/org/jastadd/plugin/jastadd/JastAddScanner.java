@@ -5,14 +5,14 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
+import org.jastadd.plugin.util.ColorRegistry;
 
 public class JastAddScanner extends JastAddJScanner implements ITokenScanner {
 
 	protected Token aspectToken;
 	
-	public JastAddScanner(JastAddColors colors) {
+	public JastAddScanner(ColorRegistry colors) {
 		super(colors);
 	}
 	

@@ -9,9 +9,8 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
-import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
-import org.jastadd.plugin.model.JastAddModel;
 
 import AST.MethodDecl;
 import AST.TypeDecl;
@@ -19,16 +18,14 @@ import AST.Variable;
 
 public class RenameRefactoring extends Refactoring {
 
-	private JastAddModel model;
 	private IJastAddNode selectedNode;
 	private String name;
 	private RefactoringStatus status;
 	private Change changes;
 
-	public RenameRefactoring(JastAddModel model, IEditorPart editorPart,
+	public RenameRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
-		this.model = model;
 		this.selectedNode = selectedNode;
 	}
 
@@ -54,7 +51,7 @@ public class RenameRefactoring extends Refactoring {
 			return status;
 		status = new RefactoringStatus();
 		if(selectedNode instanceof IJastAddJRenameConditionNode)
-			changes = ((IJastAddJRenameConditionNode)selectedNode).checkRenameConditions(name, status, model);
+			changes = ((IJastAddJRenameConditionNode)selectedNode).checkRenameConditions(name, status);
 		return status;
 	}
 

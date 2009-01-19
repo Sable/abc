@@ -1,28 +1,9 @@
 package org.jastadd.plugin.jastaddj.editor.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IInformationControl;
-import org.eclipse.jface.text.IInformationControlCreator;
-import org.eclipse.jface.text.contentassist.ContentAssistant;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
-import org.eclipse.jface.text.contentassist.IContentAssistant;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.editors.text.TextEditor;
-import org.jastadd.plugin.editor.JastAddTextPresenter;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
-import org.jastadd.plugin.information.JastAddInformationPresenter;
-import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
-import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 
-public class CompletionHandler extends JastAddActionDelegate {
+public class CompletionHandler extends AbstractBaseActionDelegate {
 	
 	@Override
 	public void run(IAction action) {

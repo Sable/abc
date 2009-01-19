@@ -18,15 +18,12 @@ import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.ui.IEditorPart;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
 public class InsertCrapRefactoring extends Refactoring {
 	private IEditorPart editorPart;
 
 	private IFile editorFile;
-
-	private JastAddModel model;
 
 	private ISelection selection;
 
@@ -34,10 +31,9 @@ public class InsertCrapRefactoring extends Refactoring {
 
 	private boolean isEnhanced;
 
-	public InsertCrapRefactoring(JastAddModel model, IEditorPart editorPart,
+	public InsertCrapRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
-		this.model = model;
 		this.editorPart = editorPart; {
 		this.editorFile = editorFile; // aaaa
 		this.selection = selection;

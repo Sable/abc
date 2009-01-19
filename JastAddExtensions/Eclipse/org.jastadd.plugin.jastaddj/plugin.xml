@@ -55,12 +55,6 @@
            name="JastAddJ">
      </category>
      <view
-		class = "org.jastadd.plugin.jastaddj.navigator.JastAddJNavigator"
-		id = "org.jastadd.plugin.explore.JastAddJNavigator"
-		category="org.eclipse.ui.jastaddj"		
-		name = "JastAddJ Navigator">
-	 </view>
-     <view
 		class = "org.jastadd.plugin.jastaddj.explorer.JastAddJExplorer"
 		id = "org.jastadd.plugin.explore.JastAddJExplorer"
 		icon = "icons/eview16/package.gif"
@@ -86,11 +80,11 @@
 	<!-- Core Search Management -->
 
 	<extension point = "org.eclipse.search.searchResultViewPages"
-		id = "org.jastadd.plugin.SearchResultPage">
+		id = "org.jastadd.plugin.jastaddj.SearchResultPage">
 	<viewPage
-		id = "org.jastadd.plugin.search.JastAddSearchResultPage"
+		id = "org.jastadd.plugin.jastaddj.search.ResultPage"
 		searchResultClass = "org.jastadd.plugin.search.JastAddSearchResult"
-		class = "org.jastadd.plugin.search.JastAddSearchResultPage">
+		class = "org.jastadd.plugin.jastaddj.search.JastAddJSearchResultPage">
 	</viewPage>
 	</extension>
 
@@ -329,10 +323,10 @@
     <!-- JastAddJ model -->
 	
  <extension
-       id="org.jastadd.plugin.model.JastAddJModel"
-       name="JastAddJModel"
-       point="org.jastadd.plugin.model.JastAddModelProvider">
-    <provider class="org.jastadd.plugin.jastaddj.model.JastAddJModel"/>
+       point="org.jastadd.plugin.compilers">
+    <compiler
+          class="org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler">
+    </compiler>
  </extension>
 	
 </plugin>

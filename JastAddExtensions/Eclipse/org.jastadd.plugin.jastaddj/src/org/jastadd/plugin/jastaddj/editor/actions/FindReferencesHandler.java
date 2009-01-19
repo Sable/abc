@@ -6,14 +6,14 @@ import java.util.Collection;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.NewSearchUI;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 import org.jastadd.plugin.search.JastAddSearchQuery;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 
-public class FindReferencesHandler extends JastAddActionDelegate {
+public class FindReferencesHandler extends AbstractBaseActionDelegate {
 
 	@Override
 	public void run(IAction action) {

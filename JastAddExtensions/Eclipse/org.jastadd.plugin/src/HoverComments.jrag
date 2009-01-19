@@ -1,8 +1,19 @@
+import org.jastadd.plugin.compiler.ast.IHoverNode;
+
 aspect HoverComments {
+
+	/* 
+	 * The IHoverNode interface need to be implemented by ASTNode
+	 * for the AST to provide text hover support
+	 */  
+	ASTNode implements IHoverNode;
   
-  ASTNode implements org.jastadd.plugin.AST.IHoverNode;
-  
-  syn String ASTNode.hoverComment() = "[" + ASTNode.getLine(getStart()) + "," + ASTNode.getColumn(getStart()) + "->" + 
-       ASTNode.getLine(getEnd()) + "," + ASTNode.getColumn(getEnd()) + "]";
- 
+  	/*
+  	 * Default behavior is to show line and column information
+  	 */
+  	syn String ASTNode.hoverComment() = 
+  		"[" + ASTNode.getLine(getStart()) + 
+  		"," + ASTNode.getColumn(getStart()) + 
+  		"->" + ASTNode.getLine(getEnd()) + "," + 
+  		ASTNode.getColumn(getEnd()) + "]";
 }

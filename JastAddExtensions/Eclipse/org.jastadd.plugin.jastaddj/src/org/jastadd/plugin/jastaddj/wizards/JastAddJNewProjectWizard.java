@@ -11,9 +11,9 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathEntry;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
-import org.jastadd.plugin.wizards.JastAddNewProjectWizard;
+import org.jastadd.plugin.ui.AbstractBaseProjectWizard;
 
-public class JastAddJNewProjectWizard extends JastAddNewProjectWizard {
+public class JastAddJNewProjectWizard extends AbstractBaseProjectWizard {
 
 	@Override
 	protected String createProjectPageDescription() {

@@ -1,0 +1,15 @@
+aspect JastAddJCore {
+
+	/* 
+	 * The AST node corresponding to the root node of the project AST
+	 * need to set isProjectAST() to true.
+	 */
+	eq Program.isProjectAST() = true;	
+	
+	 
+	/* 
+	 * CompilationUnit corresponds to a file and should be used for look up
+	 */
+	eq CompilationUnit.hasLookupKey() = true;
+	eq CompilationUnit.lookupKey() = pathName();	
+}

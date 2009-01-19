@@ -11,8 +11,7 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
 import AST.ASTChange;
 import AST.ChangeAccumulator;
@@ -21,15 +20,13 @@ import AST.RefactoringException;
 
 public class PushDownMethodRefactoring extends Refactoring {
 
-	private JastAddModel model;
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
 
-	public PushDownMethodRefactoring(JastAddModel model, IEditorPart editorPart,
+	public PushDownMethodRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
-		this.model = model;
 		this.selectedNode = selectedNode;
 	}
 
@@ -58,7 +55,7 @@ public class PushDownMethodRefactoring extends Refactoring {
 			Stack<ASTChange> ch = m.programRoot().cloneUndoStack();
 			m.programRoot().undo();
 			ChangeAccumulator accu = new ChangeAccumulator("PushDownMethod");
-			accu.addAllEdits(model, ch.iterator());
+			accu.addAllEdits(ch.iterator());
 			changes = accu.getChange();
 		} catch (RefactoringException rfe) {
 			status.addFatalError(rfe.getMessage());

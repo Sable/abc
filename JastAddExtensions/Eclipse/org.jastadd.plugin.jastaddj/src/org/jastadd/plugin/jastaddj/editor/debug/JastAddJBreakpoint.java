@@ -12,7 +12,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.jdt.debug.core.JDIDebugModel;
 import org.eclipse.jdt.internal.debug.core.breakpoints.JavaLineBreakpoint;
-import org.jastadd.plugin.model.JastAddModel.FileInfo;
+import org.jastadd.plugin.util.FileInfo;
 
 public class JastAddJBreakpoint extends JavaLineBreakpoint {
 

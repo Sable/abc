@@ -4,15 +4,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Label;
-import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJTypeHierarhcyNode;
-import org.jastadd.plugin.providers.JastAddLabelProvider;
-import org.jastadd.plugin.providers.JastAddOnDemandTreeLabelProviderAdapter;
-import org.jastadd.plugin.util.JastAddOnDemandNodeDoubleClickOpener;
-import org.jastadd.plugin.view.JastAddBaseHierarchyView;
+import org.jastadd.plugin.ui.view.AbstractBaseHierarchyView;
+import org.jastadd.plugin.ui.view.JastAddLabelProvider;
+import org.jastadd.plugin.ui.view.JastAddOnDemandTreeLabelProviderAdapter;
 
-public class JastAddJTypeHierarchyView extends JastAddBaseHierarchyView<IJastAddNode> {
+public class JastAddJTypeHierarchyView extends AbstractBaseHierarchyView<IJastAddNode> {
 	public static String VIEW_ID = "org.jastadd.plugin.explore.JastAddJTypeHierarchy";
 	private LabelProvider labelProvider = new JastAddLabelProvider(new LabelProvider());
 	
@@ -44,7 +43,7 @@ public class JastAddJTypeHierarchyView extends JastAddBaseHierarchyView<IJastAdd
 	protected void configureTreeViewer(TreeViewer treeViewer) {
 		treeViewer.setContentProvider(new JastAddJTypeHierarchyContentProvider());
 		treeViewer.setLabelProvider(new JastAddOnDemandTreeLabelProviderAdapter(labelProvider));
-		treeViewer.addDoubleClickListener(new JastAddOnDemandNodeDoubleClickOpener());
+		treeViewer.addDoubleClickListener(new JastAddJOnDemandNodeDoubleClickOpener());
 	}
 
 	public void setInput(IJastAddNode input) {

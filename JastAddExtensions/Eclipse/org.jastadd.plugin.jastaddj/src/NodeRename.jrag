@@ -8,7 +8,7 @@ aspect NodeRename {
 	
 	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
 	
-	public Change ASTNode.checkRenameConditions(String name, RefactoringStatus status, JastAddModel model) {
+	public Change ASTNode.checkRenameConditions(String name, RefactoringStatus status) {
 		ASTNode n = this;
 		if(n != null) {
 			try {
@@ -16,7 +16,7 @@ aspect NodeRename {
 				Stack ch = n.programRoot().cloneUndoStack();
 				n.programRoot().undo();
 				ChangeAccumulator accu = new ChangeAccumulator("Rename");
-				accu.addAllEdits(model, ch.iterator());
+				accu.addAllEdits(ch.iterator());
 				return accu.getChange();
 			} catch (RefactoringException rfe) {
 				status.addFatalError(rfe.getMessage());

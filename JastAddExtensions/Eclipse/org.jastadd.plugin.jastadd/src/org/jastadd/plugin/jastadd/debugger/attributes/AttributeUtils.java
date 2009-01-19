@@ -1,6 +1,8 @@
 package org.jastadd.plugin.jastadd.debugger.attributes;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,13 +28,21 @@ import org.eclipse.zest.core.widgets.GraphItem;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutEntity;
 import org.jastadd.plugin.jastadd.Activator;
-import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.debugger.attributes.visualization.structure.ASTGraphNode;
+import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
+import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ClassDecl;
+import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
+import org.jastadd.plugin.jastadd.generated.AST.Program;
+import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.jastaddj.AST.IProgram;
+import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 /**
  * General utility class for the jastadd debugging views. 
@@ -79,6 +89,7 @@ public class AttributeUtils {
 	 * @param project
 	 * @return
 	 */
+	/*
 	public static Model getModel(IProject project) {
 		if (project.exists()) {
 			List<JastAddModel> models = JastAddModelProvider.getModels(project);
@@ -91,6 +102,33 @@ public class AttributeUtils {
 		}
 		return null;
 	}
+	*/
+	
+	public static LinkedList<ASTChild> lookupASTChildren(IProject project, String packageName) {
+		LinkedList<ASTChild> childList = new LinkedList<ASTChild>();
+		
+		//synchronized (getASTRootForLock(project)) {
+			TypeDecl decl = getTypeDecl(project, packageName);
+
+			if (decl == null) {
+				// We didn't find a match, so we return an empty list
+				return childList;
+			}
+
+			if(decl instanceof ASTDecl) {
+				ASTDecl astDecl = (ASTDecl)decl;
+				for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+					ASTChild c = (ASTChild)iter.next();
+					childList.add(c);				
+				}
+			}
+			/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+			}*/
+			return childList;
+		//}
+	}
+
 	
 	/**
 	 * Gets the attributes associated with this node
@@ -104,26 +142,163 @@ public class AttributeUtils {
 		// Get the launch attributes of the launch associated with this variable
 		IProject project = AttributeUtils.getProject(parentValue);
 
-		Model model = getModel(project);
+		//Model model = getModel(project);
 		
-		if (model != null && parentValue.getJavaType() != null) {
-			synchronized(model.getASTRootForLock(project)) {
-				atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
-			}
+		//if (model != null && parentValue.getJavaType() != null) {
+		if (parentValue.getJavaType() != null) {
+			//synchronized(model.getASTRootForLock(project)) {
+				atts = lookupJVMName(project, parentValue.getJavaType().getName());
+			//}
 		}
 		
 		return atts;
 	}
 	
 	public static boolean isSubType(String superType, String subType, IProject project) {
-		Model model = getModel(project);
-		TypeDecl superDecl = model.getTypeDecl(project, superType);
-		TypeDecl subDecl = model.getTypeDecl(project, subType);
+		//Model model = getModel(project);
+		TypeDecl superDecl = getTypeDecl(project, superType);
+		TypeDecl subDecl = getTypeDecl(project, subType);
 		if (subDecl instanceof ClassDecl) {
 			return superDecl.isSupertypeOfClassDecl((ClassDecl) subDecl);
 		}
 		return false;
 	}
+	
+	public static ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
+		ArrayList<AttributeDecl> nameList = new ArrayList<AttributeDecl>();
+		//synchronized (getASTRootForLock(project)) {
+			TypeDecl decl = getTypeDecl(project, packageName);
+
+			if (decl == null) {
+				// We didn't find a match, so we return an empty list
+				return nameList;
+			}
+
+			// Find attribute declaration
+			AttributeDecl aDecl = null;
+			//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
+			//	System.out.println("Strange");
+			for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
+				MethodDecl mDecl = (MethodDecl)itr.next();
+				//	System.out.println(mDecl.signature());
+				if (mDecl instanceof AttributeDecl) {
+					aDecl = (AttributeDecl)mDecl;
+					nameList.add(aDecl);
+				}
+			}
+			if(decl instanceof ASTDecl) {
+				ASTDecl astDecl = (ASTDecl)decl;
+				for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+					ASTChild c = (ASTChild)iter.next();
+					if(c instanceof ASTElementChild) {
+						// A ::= B;
+
+					}
+					else if(c instanceof ASTListChild) {
+						// A ::= B*
+
+					}
+					else if(c instanceof ASTOptionalChild) {
+						// A ::= [B]
+
+					}
+					else if(c instanceof ASTTokenChild) {
+						// A ::= <ID:String>
+
+					}
+
+				}
+			}
+			/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+			}*/
+			return nameList;
+		//}
+	}
+
+	public static TypeDecl getTypeDecl(IProject project, String packageName) {
+		IProgram p = BuildUtil.getProgram(project);
+		if (!(p instanceof Program))
+			return null;
+		Program program = (Program)p;
+		
+		synchronized (p.treeLockObject()) {
+
+			int packageEndIndex = packageName.lastIndexOf('.');
+			String tName = packageName.substring(packageEndIndex+1, packageName.length());
+			if (packageEndIndex > 1) {
+				packageName = packageName.substring(0, packageEndIndex);
+			} else {
+				packageName = "";
+			}
+			String innerName = "";
+			int index = tName.indexOf('$');
+			if (index > 0) {
+				innerName = tName.substring(index + 1, tName.length());
+				tName = tName.substring(0, index);
+			}
+
+			// Find outermost class
+			TypeDecl decl = null;
+			boolean keepOnLooking = true;
+			while (keepOnLooking) {
+				decl = program.lookupType(packageName, tName);
+				if (decl != null) {
+					keepOnLooking = false;
+				} else {
+					index = innerName.indexOf('$');
+					if (index < 0) {
+						// Search failed -- Cannot find a type declaration and 
+						// there are no $ left in the type name
+						return null;
+					} else {
+						tName += "$" + innerName.substring(0, index);
+						innerName = innerName.substring(index + 1);
+					}
+				}
+			}
+
+			// Find innermost class
+			if (innerName.length() > 0) {
+				keepOnLooking = true;
+				String nextInnerName = innerName;
+				innerName = "";
+				while (keepOnLooking) {
+					// Try another name if possible
+					if (nextInnerName.length() > 0) {
+						index = nextInnerName.indexOf('$');
+						if (index > 0) {
+							innerName += "$" + nextInnerName.substring(0, index);
+							nextInnerName = nextInnerName.substring(index + 1);
+						} else {
+							innerName = nextInnerName;
+							nextInnerName = "";
+						}
+					} else {
+						// No more names to test and we haven't found a match
+						return null;
+					}
+					SimpleSet typeSet = decl.memberTypes(innerName);
+					if (!typeSet.isEmpty()) {
+						if (typeSet.size() > 1) {
+							// TODO This should not happen ... Report this?
+						}
+						for (Iterator itr = typeSet.iterator(); itr.hasNext();) {
+							decl = (TypeDecl)itr.next();
+						}
+						// No more inner classes to find
+						if (nextInnerName.length() == 0) {
+							keepOnLooking = false;
+						} else {
+							innerName = "";
+						}
+					}	
+				}
+			}
+			return decl;
+		}
+	}
+
 	
 	/**
 	 * Relays each new node (e.g each node with pos (0,0)) in nodes with respect to the current

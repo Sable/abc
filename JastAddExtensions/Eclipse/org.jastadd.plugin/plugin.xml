@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="org.jastadd.plugin.model.JastAddModelProvider" name="Model Provider" schema="schema/org.jastadd.plugin.model.ModelProvider.exsd"/>
+   <extension-point id="org.jastadd.plugin.compilers" name="JastAdd Compiler" schema="schema/org.jastadd.plugin.compiler.exsd"/>
    <extension
-         id="org.jastadd.plugin.builder.JastAddBuilder"
+         id="org.jastadd.plugin.Builder"
          name="JastAddBuilder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="false"
             isConfigurable="false">
-         <run class="org.jastadd.plugin.builder.JastAddBuilder"/>
+         <run class="org.jastadd.plugin.Builder"/>
       </builder>
    </extension>
 

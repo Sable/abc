@@ -15,7 +15,6 @@ import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
 import org.eclipse.swt.widgets.Shell;
-import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeUtils;
 import org.jastadd.plugin.jastadd.debugger.attributes.DebugIterable;
 import org.jastadd.plugin.jastadd.debugger.attributes.visualization.structure.Edge.AttributeEdge;
@@ -235,11 +234,13 @@ public class ASTGraphNode {
 					// Get the children
 					IVariable[] listVariables = childrenVariable.getValue().getVariables();
 
+					/*
 					Model model = AttributeUtils.getModel(project);
 
 					if (model != null) {
 						synchronized(model) {
-							List<ASTChild> astChildren = model.lookupASTChildren(project, value.getReferenceTypeName());
+						*/
+							List<ASTChild> astChildren = AttributeUtils.lookupASTChildren(project, value.getReferenceTypeName());
 
 							// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
 							// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
@@ -313,8 +314,8 @@ public class ASTGraphNode {
 								}
 							}
 						}
-					}
-				}
+					//}
+				//}
 				expanded = true;
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block

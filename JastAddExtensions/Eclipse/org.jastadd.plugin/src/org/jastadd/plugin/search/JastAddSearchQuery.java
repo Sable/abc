@@ -56,7 +56,7 @@ public class JastAddSearchQuery implements ISearchQuery {
 		}
 
 		public String getPlugin() {
-			return org.jastadd.plugin.JastAddActivator.PLUGIN_ID;
+			return org.jastadd.plugin.Activator.PLUGIN_ID;
 		}
 
 		public int getSeverity() {

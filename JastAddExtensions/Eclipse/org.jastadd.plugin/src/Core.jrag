@@ -1,7 +1,16 @@
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IASTNode;
+
 aspect Core {
 
-	ASTNode implements org.jastadd.plugin.AST.IJastAddNode;
+	/*
+	 * The IJastAddNode interface must be implemented by ASTNode
+	 */
+	ASTNode implements IJastAddNode;
   
+  	/*
+  	 * Default implementations for column and line methods
+  	 */
 	public int ASTNode.getBeginColumn() {
 		return getColumn(getStart());
 	}
@@ -15,5 +24,65 @@ aspect Core {
 		return getLine(getEnd());
 	} 
 	
+	/*
+	 * The default behavior for treeLockObject() is to return the state object
+	 */
 	syn Object ASTNode.treeLockObject() = state();
+		
+	
+	/*
+	 * The IASTNode interface must be implemented by ASTNode
+	 */
+	ASTNode implements IASTNode;
+	
+	/*
+	 * Default behavior is that a node is not the root of the project AST
+	 */
+	syn boolean ASTNode.isProjectAST() = false;  
+	
+	/*
+	 * Default behavior for hasLookupKey() and lookupKey() in the IASTNode interface.
+	 */
+	 syn boolean ASTNode.hasLookupKey() = false;
+	 syn String ASTNode.lookupKey() = null;
+		
+	/*
+	 * Default behavior for the replaceWith(IASTNode) method in the IASTNode interface.
+	 */ 
+	public void ASTNode.replaceWith(IASTNode node) {
+		ASTNode child = (ASTNode)node;
+		ASTNode parent = getParent();
+		if (parent != null) {
+			int index = parent.getIndexOfChild(this);
+			parent.setChild(child, index);
+		}
+	}
+	
+	/*
+	 * Default behavior for lookupChildAST(String key) in the IASTNode interface
+	 */
+	syn IASTNode ASTNode.lookupChildAST(String key) {
+		if (hasLookupKey() && lookupKey().equals(key)) {
+			return this;
+		}
+		for (int i = 0; i < getNumChild(); i++) {
+			IASTNode childMatch = getChild(i).lookupChildAST(key);
+			if (childMatch != null) {
+				return childMatch;
+			}
+		}
+		return null;
+	}
+	
+	/* 
+	 * The flushAttributes() method in the IASTNode interface.
+	 */
+	public void ASTNode.flushAttributes() {
+		flushCache();
+    	for (int i = 0; i < getNumChild(); i++) {
+      		if (getChildNoTransform(i) != null) {
+        		getChildNoTransform(i).flushAttributes(); 
+        	}
+        }
+	}
 }

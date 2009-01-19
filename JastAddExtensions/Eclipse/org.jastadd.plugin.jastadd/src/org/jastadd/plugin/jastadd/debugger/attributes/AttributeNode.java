@@ -19,12 +19,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
 
 public abstract class AttributeNode {
 
@@ -129,44 +126,46 @@ public abstract class AttributeNode {
 			// Get the children
 			IVariable[] listVariables = childrenVariable.getValue().getVariables();
 
+			/*
 			Model model = getModel(project);
 
 			if (model != null) {
 				synchronized(model.getASTRootForLock(project)) {
-					List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
+			 */
+			List<ASTChild> astChildren = AttributeUtils.lookupASTChildren(project, parent.getReferenceTypeName());
 
-					if (parent instanceof IJavaObject) {
+			if (parent instanceof IJavaObject) {
 
-						// Since the array in memory doesn't always reflect the number of children,
-						// we have to execute "getNumChildren" to find out how many we actually iterate over
-						IJavaObject object = (IJavaObject) parent;
-						IJavaValue intNumberOfChildren = object.sendMessage("getNumChild", "()I", new IJavaValue[0], thread, null);
+				// Since the array in memory doesn't always reflect the number of children,
+				// we have to execute "getNumChildren" to find out how many we actually iterate over
+				IJavaObject object = (IJavaObject) parent;
+				IJavaValue intNumberOfChildren = object.sendMessage("getNumChild", "()I", new IJavaValue[0], thread, null);
 
-						if (intNumberOfChildren instanceof IJavaPrimitiveValue) {
-							int numberOfChildren = ((IJavaPrimitiveValue) intNumberOfChildren).getIntValue();
+				if (intNumberOfChildren instanceof IJavaPrimitiveValue) {
+					int numberOfChildren = ((IJavaPrimitiveValue) intNumberOfChildren).getIntValue();
 
 
-							// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
-							// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
-							int variablePos = 0;
-							for (int astPos = 0; astPos < numberOfChildren; astPos++) {
-								ASTChild child = astChildren.get(astPos);
-								if (child instanceof ASTTokenChild) {
+					// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
+					// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
+					int variablePos = 0;
+					for (int astPos = 0; astPos < numberOfChildren; astPos++) {
+						ASTChild child = astChildren.get(astPos);
+						if (child instanceof ASTTokenChild) {
 
-									// If this is a token, the value is stored in memory at token$value
-									IVariable childVariable = getVariable(child.name() + "$value", parent.getVariables());
-									if (childVariable != null) {
-										children.add(new AttributeChildNode((IJavaVariable) childVariable, child, this));
-									}
-
-								} else {
-									children.add(new AttributeChildNode((IJavaVariable) listVariables[variablePos], child, this));
-									variablePos++;
-								}
+							// If this is a token, the value is stored in memory at token$value
+							IVariable childVariable = getVariable(child.name() + "$value", parent.getVariables());
+							if (childVariable != null) {
+								children.add(new AttributeChildNode((IJavaVariable) childVariable, child, this));
 							}
+
+						} else {
+							children.add(new AttributeChildNode((IJavaVariable) listVariables[variablePos], child, this));
+							variablePos++;
 						}
 					}
 				}
+				//			}
+		//		}
 			}
 		}
 		return children;
@@ -180,6 +179,7 @@ public abstract class AttributeNode {
 	 * @param project
 	 * @return
 	 */
+	/*
 	private static Model getModel(IProject project) {
 		if (project.exists()) {
 			List<JastAddModel> models = JastAddModelProvider.getModels(project);
@@ -192,6 +192,7 @@ public abstract class AttributeNode {
 		}
 		return null;
 	}
+	*/
 
 	public Image getImage() {
 		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/genericvariable_obj.gif");

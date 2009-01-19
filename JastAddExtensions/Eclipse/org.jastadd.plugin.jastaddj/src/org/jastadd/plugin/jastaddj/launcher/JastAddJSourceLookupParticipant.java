@@ -14,7 +14,7 @@ import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 /**
  * A source lookup participant that searches for Java source code.
@@ -26,13 +26,13 @@ import org.jastadd.plugin.jastaddj.model.JastAddJModel;
  */
 public class JastAddJSourceLookupParticipant extends AbstractSourceLookupParticipant {
 	private IProject project;
-	private JastAddJModel model;
+	//private JastAddJModel model;
 	private JastAddJBuildConfiguration buildConfiguration;
 	
-	public JastAddJSourceLookupParticipant(IProject project, JastAddJModel model, JastAddJBuildConfiguration buildConfiguration) {
+	public JastAddJSourceLookupParticipant(IProject project/*, JastAddJModel model*/, JastAddJBuildConfiguration buildConfiguration) {
 		super();
 		this.project = project;
-		this.model = model;
+		//this.model = model;
 		this.buildConfiguration = buildConfiguration;
 	}
 	
@@ -149,7 +149,7 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 		List<ISourceContainer> result = new ArrayList<ISourceContainer>();		
 		ISourceLookupDirector director = getDirector();		
 		if (director != null) {
-			model.populateSourceContainers(project, buildConfiguration, result);
+			BuildUtil.populateSourceContainers(project, buildConfiguration, result);
 		}
 		return result.toArray(new ISourceContainer[0]);
 	}

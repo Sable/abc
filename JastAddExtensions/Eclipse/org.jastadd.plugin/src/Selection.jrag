@@ -1,7 +1,16 @@
+import org.jastadd.plugin.compiler.ast.ISelectionNode;
+
 aspect Selection {
 
-	ASTNode implements org.jastadd.plugin.AST.ISelectionNode;
+	/*
+	 * The ISelectionNode interface need to be implemented by ASTNode
+	 * for the AST to provide selection support
+	 */
+	ASTNode implements ISelectionNode;
 	
+	/*
+	 * Default behavior for selection line and column information
+	 */
 	syn int ASTNode.selectionLine() = getBeginLine();
 	syn int ASTNode.selectionColumn() = getBeginColumn();
 	syn int ASTNode.selectionLength() = getEndColumn() - selectionColumn() + 1;

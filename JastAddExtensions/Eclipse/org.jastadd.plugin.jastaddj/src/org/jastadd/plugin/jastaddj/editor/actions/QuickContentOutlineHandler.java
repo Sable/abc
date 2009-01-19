@@ -7,35 +7,35 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
-import org.jastadd.plugin.editor.JastAddEditor;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
-import org.jastadd.plugin.information.JastAddInformationControl;
-import org.jastadd.plugin.information.JastAddInformationPresenter;
-import org.jastadd.plugin.information.JastAddInformationProvider;
-import org.jastadd.plugin.model.JastAddEditorConfiguration;
+import org.eclipse.ui.IEditorPart;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
+import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.util.FileUtil;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
+import org.jastadd.plugin.ui.popup.AbstractBaseTreeInformationControl;
+import org.jastadd.plugin.ui.popup.AbstractBaseInformationPresenter;
+import org.jastadd.plugin.ui.popup.AbstractBaseInformationProvider;
+import org.jastadd.plugin.ui.view.JastAddContentProvider;
+import org.jastadd.plugin.ui.view.JastAddLabelProvider;
 
-public class QuickContentOutlineHandler extends JastAddActionDelegate {
+public class QuickContentOutlineHandler extends AbstractBaseActionDelegate {
 
 	@Override
 	public void run(IAction action) {
 		IInformationControlCreator informationControlCreator = new IInformationControlCreator() {
 			public IInformationControl createInformationControl(
 					Shell parent) {
-				return new JastAddInformationControl(parent,
+				return new AbstractBaseTreeInformationControl(parent,
 						"Outline") {
 					protected void configure() {
-						JastAddEditorConfiguration config = activeEditorConfiguration();
-						if (config != null) {
-							treeViewer.setContentProvider(config.getContentProvider());
-							treeViewer.setLabelProvider(config.getLabelProvider());
-						}
+						treeViewer.setContentProvider(new JastAddContentProvider());
+						treeViewer.setLabelProvider(new JastAddLabelProvider());
 					}
 					
 					protected void gotoSelectedElement() {
 						IJastAddNode source = (IJastAddNode)((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-						activeModel().openFile(source);
+						FileUtil.openFile(source);
 					}
 					
 					public void setInput(Object input) {
@@ -53,16 +53,22 @@ public class QuickContentOutlineHandler extends JastAddActionDelegate {
 			}
 
 		};
-		JastAddInformationPresenter informationManager = new JastAddInformationPresenter(
+		AbstractBaseInformationPresenter informationManager = new AbstractBaseInformationPresenter(
 				informationControlCreator) {
 			protected void setInformationProviders() {
-				setInformationProvider(new JastAddInformationProvider() {
+				setInformationProvider(new AbstractBaseInformationProvider() {
 					public IJastAddNode filterNode(IJastAddNode node) {
 						return node;
 					}
 				}, IDocument.DEFAULT_CONTENT_TYPE);
 			}
 		};
-		informationManager.run((JastAddEditor) this.activeEditorPart());
+		
+		IEditorPart part = activeEditorPart();
+		if (part instanceof JastAddJEditor) {
+			JastAddJEditor editor = (JastAddJEditor)part;
+			editor.showInformationPresenter(informationManager);
+			//informationManager.run((JastAddEditor) this.activeEditorPart());
+		}
 	}
 }

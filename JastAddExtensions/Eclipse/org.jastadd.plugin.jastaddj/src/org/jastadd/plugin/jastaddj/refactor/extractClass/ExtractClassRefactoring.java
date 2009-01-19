@@ -14,8 +14,7 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
 import AST.ASTChange;
 import AST.BodyDecl;
@@ -29,7 +28,6 @@ import AST.RefactoringException;
 
 public class ExtractClassRefactoring extends Refactoring {
 
-	private JastAddModel model;
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
@@ -37,10 +35,9 @@ public class ExtractClassRefactoring extends Refactoring {
 	private String newClassName = "newClassName";
 	private String newFieldName = "newFieldName";
 
-	public ExtractClassRefactoring(JastAddModel model, IEditorPart editorPart,
+	public ExtractClassRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
-		this.model = model;
 		this.selectedNode = selectedNode;
 		this.fds = new ArrayList<FieldDeclaration>();
 		if(selectedNode instanceof ClassDecl) {
@@ -105,7 +102,7 @@ public class ExtractClassRefactoring extends Refactoring {
 			insertFieldChange.updateText();
 			cd.programRoot().undo();
 			ChangeAccumulator accu = new ChangeAccumulator("ExtractClass");
-			accu.addAllEdits(model, ch.iterator());
+			accu.addAllEdits(ch.iterator());
 			changes = accu.getChange();
 		} catch (RefactoringException rfe) {
 			status.addFatalError(rfe.getMessage());

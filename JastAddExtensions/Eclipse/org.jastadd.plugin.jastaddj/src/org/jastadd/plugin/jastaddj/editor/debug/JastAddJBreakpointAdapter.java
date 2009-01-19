@@ -3,7 +3,6 @@ package org.jastadd.plugin.jastaddj.editor.debug;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -15,15 +14,13 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.ITypeDecl;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.model.JastAddModel.FileInfo;
-import org.jastadd.plugin.resources.JastAddStorageAnnotationModel;
+import org.jastadd.plugin.ui.editor.BaseMarkerAnnotationModel;
+import org.jastadd.plugin.util.FileInfo;
+import org.jastadd.plugin.util.FileInfoMap;
+import org.jastadd.plugin.util.NodeLocator;
 
 public class JastAddJBreakpointAdapter implements
 		IToggleBreakpointsTargetExtension {
@@ -47,6 +44,7 @@ public class JastAddJBreakpointAdapter implements
 			int lineNumber = textSelection.getStartLine();
 			IPath storagePath = null;
 
+			/*
 			JastAddModel model = null;
 			if (editorInput instanceof FileEditorInput) {
 				IFile file = ((FileEditorInput) editorInput).getFile();
@@ -56,10 +54,11 @@ public class JastAddJBreakpointAdapter implements
 				model = storageInput.getModel();
 				storagePath = storageInput.getStorage().getFullPath();
 			}
+			*/
 
-			if (model != null) {
+			//if (model != null) {
 				
-				IJastAddNode node = model.findNodeInDocument(model
+				IJastAddNode node = NodeLocator.findNodeInDocument(FileInfoMap
 						.buildFileInfo(editorInput), lineNumber + 1, 1);
 
 				while (node != null && !(node instanceof ITypeDecl))
@@ -86,7 +85,7 @@ public class JastAddJBreakpointAdapter implements
 				*/
 
 				// Remove if exists
-				FileInfo info = model.buildFileInfo(editorInput);
+				FileInfo info = FileInfoMap.buildFileInfo(editorInput);
 				IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
 				for (int i = 0; i < breakpoints.length; i++) {
 					IBreakpoint breakpoint = breakpoints[i];
@@ -102,11 +101,11 @@ public class JastAddJBreakpointAdapter implements
 				// Add 
 				Map<String, Object> attributes = new HashMap<String, Object>();
 				if (storagePath != null)
-					attributes.put(JastAddStorageAnnotationModel.STORAGE_PATH, storagePath);
+					attributes.put(BaseMarkerAnnotationModel.STORAGE_PATH, storagePath);
 				IBreakpoint lineBreakpoint = new JastAddJBreakpoint(resource, typeName, info, lineNumber + 1, attributes); 
 				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 			}
-		}
+		//}
 
 	}
 

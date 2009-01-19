@@ -1,15 +1,15 @@
 package org.jastadd.plugin.jastaddj.editor.actions;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.swt.widgets.Display;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.jastaddj.Activator;
 import org.jastadd.plugin.jastaddj.view.JastAddJTypeHierarchyView;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 
-public class TypeHierarchyHandler extends JastAddActionDelegate {
+public class TypeHierarchyHandler extends AbstractBaseActionDelegate {
 
 	@Override
 	public void run(IAction action) {
@@ -18,7 +18,11 @@ public class TypeHierarchyHandler extends JastAddActionDelegate {
 			try {
 				JastAddJTypeHierarchyView.activate(selectedNode);
 			} catch (CoreException e) {
-				JastAddModelProvider.getModel(selectedNode).logCoreException(e);
+				String message = "Failed to show type hierarchy"; 
+				IStatus status = new Status(IStatus.ERROR, 
+						Activator.JASTADDJ_PLUGIN_ID,
+						IStatus.ERROR, message, e);
+				Activator.INSTANCE.getLog().log(status);
 			}	
 	}
 }

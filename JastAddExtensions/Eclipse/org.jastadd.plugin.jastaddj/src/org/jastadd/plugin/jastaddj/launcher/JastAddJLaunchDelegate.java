@@ -38,14 +38,13 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 	
 	protected IProject[] fOrderedProjects;
 	private IProject project;
-	private JastAddJModel model;
+	//private JastAddJModel model;
 	private JastAddJBuildConfiguration buildConfiguration;
 	
 	
@@ -244,10 +243,12 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		if (project == null)
 			return false;
+		/*
 		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
 		if (model == null)
 			return false;
-		buildConfiguration = model.readBuildConfiguration(project);
+		*/
+		buildConfiguration = BuildUtil.readBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return false;
 		
@@ -294,7 +295,7 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 		String[] defaultClassPath = new String[] { path };
 		
 		List<String> classPath = new ArrayList<String>();
-		model.populateClassPath(project, buildConfiguration, classPath);
+		BuildUtil.populateClassPath(project, buildConfiguration, classPath);
 		return classPath.toArray(new String[0]);
 	}
 
@@ -304,7 +305,7 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 			ILaunchConfiguration configuration) throws CoreException {
 		//  set default source locator if none specified
 		if (launch.getSourceLocator() == null) {
-			ISourceLookupDirector sourceLocator = new JastAddJSourceLookupDirector(project, model, buildConfiguration);
+			ISourceLookupDirector sourceLocator = new JastAddJSourceLookupDirector(project/*, model*/, buildConfiguration);
 			sourceLocator
 					.setSourcePathComputer(getLaunchManager()
 							.getSourcePathComputer(
@@ -321,7 +322,7 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 	}
 	
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		return model.getVMInstall(project, buildConfiguration);
+		return BuildUtil.getVMInstall(project, buildConfiguration);
 	}
 /*
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration)

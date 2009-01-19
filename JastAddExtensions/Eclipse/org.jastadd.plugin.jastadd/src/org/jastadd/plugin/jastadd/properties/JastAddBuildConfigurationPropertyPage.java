@@ -5,8 +5,6 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.jastadd.plugin.jastaddj.builder.ui.JastAddJBuildConfigurationPropertyPage;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddBuildConfigurationPropertyPage extends JastAddJBuildConfigurationPropertyPage {
 		
@@ -22,7 +20,7 @@ public class JastAddBuildConfigurationPropertyPage extends JastAddJBuildConfigur
 	protected void initContents() {
 		super.initContents();
 		project = (IProject) getElement().getAdapter(IProject.class);
-		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
+		//model = JastAddModelProvider.getModel(project, JastAddJModel.class);
 		buildConfiguration = new JastAddBuildConfiguration(project);		
 	}
 	

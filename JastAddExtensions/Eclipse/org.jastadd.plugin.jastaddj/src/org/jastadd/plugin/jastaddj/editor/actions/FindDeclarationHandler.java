@@ -4,18 +4,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.search.ui.ISearchQuery;
-import org.eclipse.search.ui.NewSearchUI;
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
-import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.search.JastAddSearchQuery;
+import org.jastadd.plugin.jastaddj.util.FileUtil;
+import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 
 import AST.TypeDecl;
 
-public class FindDeclarationHandler extends JastAddActionDelegate {
+public class FindDeclarationHandler extends AbstractBaseActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
@@ -29,10 +26,12 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 			Collection<IJastAddNode> declarations = new LinkedList<IJastAddNode>();
 			declarations.add(target);
 		
+			/*
 			JastAddModel model = activeModel();
 			if (model == null) 
 				return;
-			model.openFile(target);
+			*/
+			FileUtil.openFile(target);
 			
 			StringBuffer s = new StringBuffer();
 			s.append("Declaration of ");

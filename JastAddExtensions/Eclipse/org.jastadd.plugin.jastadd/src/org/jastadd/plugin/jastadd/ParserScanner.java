@@ -1,12 +1,12 @@
 package org.jastadd.plugin.jastadd;
 
 import org.eclipse.jface.text.rules.MultiLineRule;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
+import org.jastadd.plugin.util.ColorRegistry;
 
 public class ParserScanner extends JastAddJScanner {
 	
-	public ParserScanner(JastAddColors colors) {
+	public ParserScanner(ColorRegistry colors) {
 		super(colors);
 	}
 

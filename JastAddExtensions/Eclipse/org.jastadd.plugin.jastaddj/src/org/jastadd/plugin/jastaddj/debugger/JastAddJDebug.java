@@ -9,7 +9,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.jdt.debug.core.IJavaThread;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
+import org.jastadd.plugin.jastaddj.Activator;
 
 /**
  * Ensures we don't stop in a frame which is invalid.
@@ -31,8 +31,8 @@ public class JastAddJDebug implements IDebugEventSetListener {
 							stackFrame.getThread().stepReturn();
 						}
 					} catch (DebugException e) {
-						ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
-						log.log(new Status(IStatus.ERROR, JastAddJActivator.JASTADDJ_PLUGIN_ID, e.getLocalizedMessage(), e));
+						ILog log = Platform.getLog(Activator.getInstance().getBundle());
+						log.log(new Status(IStatus.ERROR, Activator.JASTADDJ_PLUGIN_ID, e.getLocalizedMessage(), e));
 					}
 					
 				}

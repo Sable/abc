@@ -3,9 +3,9 @@ package org.jastadd.plugin.jastaddj.AST;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
-import org.jastadd.plugin.model.repair.*;
+import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
+import org.jastadd.plugin.compiler.recovery.*;
 
 public interface IProgram extends IJastAddNode {
 	Iterator compilationUnitIterator();

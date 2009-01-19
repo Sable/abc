@@ -1,11 +1,23 @@
+import org.jastadd.plugin.compiler.ast.IFoldingNode;
+
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.BadLocationException;
 
 aspect Folding {
 
-	ASTNode implements org.jastadd.plugin.AST.IFoldingNode;
+	/* 
+	 * The IFoldingNode interface need to be implemented by ASTNode
+	 * for the AST to provide support for folding
+	 */
+	ASTNode implements IFoldingNode;
 
+	/*
+	 * The default behavior for foldingPositions(..) is to collect
+	 * all folding information from descendants and to put the 
+	 * information in a list which is returned.
+	 * Uses information provided by the IJastAddNode interface. 
+	 */
 	syn ArrayList ASTNode.foldingPositions(IDocument document) {
 		ArrayList list = new ArrayList();
 		if (hasFolding()) {
@@ -29,6 +41,8 @@ aspect Folding {
 		return list;
 	}
 	
+	/*
+	 * Default behavior is no folding
+	 */
 	syn boolean ASTNode.hasFolding() = false;
-	
 }

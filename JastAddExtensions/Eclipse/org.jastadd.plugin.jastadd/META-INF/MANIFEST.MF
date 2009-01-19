@@ -16,3 +16,4 @@ Bundle-ClassPath: libs/beaver.jar,
  .,
  libs/beaver-rt.jar,
  libs/JastAddParser.jar
+Import-Package: org.eclipse.ui.views.contentoutline

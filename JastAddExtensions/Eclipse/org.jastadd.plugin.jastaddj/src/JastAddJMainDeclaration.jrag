@@ -1,4 +1,4 @@
-import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
 
 aspect MainDeclaration {
   

@@ -1,13 +1,25 @@
+import org.jastadd.plugin.compiler.ast.ICompletionNode;
+
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.swt.graphics.Image;
+
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Collections;
 
 aspect Completion {
 
-	ASTNode implements org.jastadd.plugin.AST.ICompletionNode;
+	/*
+	 * The ICompletionNode interface must be implemented by ASTNode for 
+	 * the AST to provide completion proposals
+	 */
+	ASTNode implements ICompletionNode;
 
+	/*
+	 * Default behavior for the getCompletionProposal(...) method in the
+	 * ICompletionNode interface is to put together attribute values
+	 * into a CompletionProposal.
+	 */
 	syn CompletionProposal ASTNode.getCompletionProposal(String filter, int documentOffset, boolean keepDot) {
 		String label = completionLabel();
 		Image image = contentOutlineImage();
@@ -23,10 +35,29 @@ aspect Completion {
                  filter.length(), cursorOffset, image, label, null, comment);
 	}
 
+	/* 
+	 * Default behavior for completionLabel() is to return the name of the node class
+	 */
 	syn String ASTNode.completionLabel() = this.getClass().getName();
+	
+	/*
+	 * Default behavior is to return class name
+	 */
 	syn String ASTNode.completionProposal() = this.getClass().getName();
+	
+	/*
+	 * Default behavior is to equal the offset with the length of the
+	 * String value from completionProposal()
+	 */
    	syn int ASTNode.completionProposalOffset() = completionProposal().length();
+   	
+    /*
+     * Default behavior is an empty list
+     */	
 	syn Collection ASTNode.completion(String filter) = Collections.EMPTY_LIST;
+	
+	/*
+	 * Default completion comment is null
+	 */
 	syn String ASTNode.completionComment() = null;
-   
 }

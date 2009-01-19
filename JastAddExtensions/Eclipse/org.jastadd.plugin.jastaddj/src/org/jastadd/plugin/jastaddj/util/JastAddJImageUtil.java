@@ -3,10 +3,10 @@ package org.jastadd.plugin.jastaddj.util;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
-import org.jastadd.plugin.util.JastAddBaseImageUtil;
+import org.jastadd.plugin.jastaddj.Activator;
+import org.jastadd.plugin.util.BaseImageUtil;
 
-public class JastAddJImageUtil extends JastAddBaseImageUtil {
+public class JastAddJImageUtil extends BaseImageUtil {
 	private final static IPath ICONS_PATH = new Path("icons/");
 	
 	private static final String T_OBJ= "obj16";
@@ -18,11 +18,11 @@ public class JastAddJImageUtil extends JastAddBaseImageUtil {
 	}
 	
 	public static Image getImage(String key) {
-		return JastAddBaseImageUtil.getImage(key);
+		return BaseImageUtil.getImage(key);
 	}
 	
 	private static void registerImage(String key, String prefix, String name) {
 		IPath path= ICONS_PATH.append(prefix).append(name);
-		registerImage(key, JastAddJActivator.getInstance().getBundle(), path);
+		registerImage(key, Activator.getInstance().getBundle(), path);
 	}
 }

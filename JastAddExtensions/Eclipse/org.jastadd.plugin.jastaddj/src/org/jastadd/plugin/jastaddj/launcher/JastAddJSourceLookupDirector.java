@@ -22,9 +22,12 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.Activator;
+import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler;
+import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.util.JastAddStorageEditorInput;
 
 public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector implements ISourcePresentation {
 	
@@ -39,13 +42,13 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 	}
 
 	private IProject project;
-	private JastAddJModel model;
+	//private JastAddJModel model;
 	private JastAddJBuildConfiguration buildConfiguration;
 	
-	public JastAddJSourceLookupDirector(IProject project, JastAddJModel model, JastAddJBuildConfiguration buildConfiguration) {
+	public JastAddJSourceLookupDirector(IProject project, /*JastAddJModel model, */JastAddJBuildConfiguration buildConfiguration) {
 		super();
 		this.project = project;
-		this.model = model;
+		//this.model = model;
 		this.buildConfiguration = buildConfiguration;
 	}	
 	
@@ -53,7 +56,7 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#initializeParticipants()
 	 */
 	public void initializeParticipants() {
-		addParticipants(new ISourceLookupParticipant[] {new JastAddJSourceLookupParticipant(project, model, buildConfiguration)});
+		addParticipants(new ISourceLookupParticipant[] {new JastAddJSourceLookupParticipant(project/*, model*/, buildConfiguration)});
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#supportsSourceContainerType(org.eclipse.debug.internal.core.sourcelookup.ISourceContainerType)
@@ -71,17 +74,19 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 
 		if (item instanceof JastAddJFileStorage) {
 			IFile file = ((JastAddJFileStorage)item).getFile();
-			if (model.isModelFor(file))
-				return new FileEditorInput(file);
-			else
-				return new JastAddStorageEditorInput(project, new LocalFileStorage(file.getRawLocation().toFile()), model);
+			for (ICompiler compiler : Activator.getRegisteredCompilers()) {
+				if (compiler.canCompile(file)) {
+					return new FileEditorInput(file);
+				}
+			}
+			return new JastAddStorageEditorInput(project, new LocalFileStorage(file.getRawLocation().toFile()));
 		}
 		
 		if (item instanceof LocalFileStorage)
-			return new JastAddStorageEditorInput(project, (IStorage)item, model);
+			return new JastAddStorageEditorInput(project, (IStorage)item);
 		
 		if (item instanceof ZipEntryStorage)
-			return new JastAddStorageEditorInput(project, (IStorage)item, model);
+			return new JastAddStorageEditorInput(project, (IStorage)item);
 		
 		return null;
 	}
@@ -90,7 +95,7 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		IEditorRegistry editorReg = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor[] descriptors = editorReg.getEditors(input.getName());
 		for(IEditorDescriptor descriptor : descriptors) 
-			if (descriptor.getId().equals(model.getEditorID()))
+			if (descriptor.getId().equals(JastAddJEditor.EDITOR_ID))
 				return descriptor.getId();
 		return descriptors.length > 0 ? descriptors[0].getId() : null;
      }

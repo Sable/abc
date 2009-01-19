@@ -2,9 +2,8 @@ package org.jastadd.plugin.jastaddj.launcher;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.Activator;
+import org.jastadd.plugin.compiler.ICompiler;
 
 public class JastAddJLaunchableTester extends PropertyTester {
 	private static final String IS_JASTADDJ_PROJECT = "isJastAddJProject";
@@ -15,7 +14,11 @@ public class JastAddJLaunchableTester extends PropertyTester {
 			if (!(receiver instanceof IProject))
 				return false;
 			IProject project = (IProject)receiver;
-			return JastAddModelProvider.getModel(project, JastAddJModel.class) != null;
+			for (ICompiler compiler : Activator.getRegisteredCompilers()) {
+				if (compiler.canCompile(project)) {
+					return true;
+				}
+			}
 		}
 
 		return false;

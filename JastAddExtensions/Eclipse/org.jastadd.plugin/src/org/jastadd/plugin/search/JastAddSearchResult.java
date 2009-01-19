@@ -8,9 +8,6 @@ import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.IEditorMatchAdapter;
 import org.eclipse.search.ui.text.IFileMatchAdapter;
-import org.jastadd.plugin.providers.model.JastAddNode;
-import org.jastadd.plugin.providers.model.JastAddTreeFactory;
-
 
 public class JastAddSearchResult extends AbstractTextSearchResult implements ISearchResult {
 

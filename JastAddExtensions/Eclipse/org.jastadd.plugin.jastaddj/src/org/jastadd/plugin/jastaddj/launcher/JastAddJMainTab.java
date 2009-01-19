@@ -30,9 +30,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IClassDecl;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.jastaddj.AST.IProgram;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
+import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 
@@ -41,12 +43,12 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 	private Button projButton;
 	private Button mainClassButton;
 	
-	private JastAddJModel model;
+	//private JastAddJModel model;
 	
 	
-	public JastAddJMainTab(JastAddJModel model) {
+	public JastAddJMainTab() {
 		super();
-		this.model = model;
+		//this.model = model;
 	}
 
 	public void createControl(Composite parent) {
@@ -237,15 +239,26 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 			dialog.setMessage(LauncherMessages.JavaMainTab_Choose_a_main__type_to_launch__12);
 			
 			// Fill with values
-			if (model != null) {
-				IOutlineNode[] mainTypes = model.getMainTypes(project);
-				if (mainTypes.length == 0) {
-					// Show message: No main types in this project
-					System.out.println("No main types in this project");
-					return;
-				} 
-				dialog.setElements(mainTypes);
+			//if (model != null) {
+				
+			JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
+			if (buildConfiguration != null) {
+				IProgram program = BuildUtil.getProgram(project);
+				if (program != null) {
+					IOutlineNode[] mainTypes = program.mainTypes();
+					if (mainTypes.length == 0) {
+						// Show message: No main types in this project
+						System.out.println("No main types in this project");
+						return;
+					} 
+					dialog.setElements(mainTypes);
+				} else {
+					dialog.setElements(new IOutlineNode[0]);
+				}
+			} else {
+				dialog.setElements(new IOutlineNode[0]);
 			}
+			//}
 
 			if (dialog.open() == Window.CANCEL) {
 				return;

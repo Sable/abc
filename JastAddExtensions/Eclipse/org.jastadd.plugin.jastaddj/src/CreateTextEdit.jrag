@@ -2,7 +2,6 @@ import java.util.Iterator;
 
 import org.eclipse.ltk.core.refactoring.*;
 import org.eclipse.core.resources.IFile;
-import org.jastadd.plugin.model.JastAddModel;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.ISourceModifier;
 import org.eclipse.text.edits.MoveSourceEdit;
@@ -19,6 +18,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ltk.core.refactoring.Change;
+import org.jastadd.plugin.jastaddj.util.FileUtil;
 
 aspect CreateTextEdit {
 	
@@ -98,9 +98,9 @@ aspect CreateTextEdit {
 
 		// creates the TextChanges corresponding to the ASTChanges in some iterator
 		// and adds them to the accumulator
-		public void addAllEdits(JastAddModel model, Iterator/*<ASTChange>*/ iter) {
+		public void addAllEdits(Iterator/*<ASTChange>*/ iter) {
 			while(iter.hasNext())
-				((ASTChange)iter.next()).createTextEdit(model, this);
+				((ASTChange)iter.next()).createTextEdit(this);
 		}
 		
 		// directly add a non-TextChange
@@ -115,7 +115,7 @@ aspect CreateTextEdit {
 	
 	// every ASTChange should be able to create a text edit that corresponds to
 	// its action; however, this method is as yet unimplemented for some changes...
-	public void ASTChange.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+	public void ASTChange.createTextEdit(ChangeAccumulator accu) {
 		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
 	}
 	
@@ -125,71 +125,65 @@ aspect CreateTextEdit {
 		Changes.ReplaceNode.ReplaceNode(before, after);
 		this.afterText = after.toString();
 	}
-	public void ReplaceNode.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+	public void ReplaceNode.createTextEdit(ChangeAccumulator accu) {
 		int offset = before.getBeginOffset();
 		int length = before.getEndOffset() - offset + 1;
-		accu.addEdit(model.getFile(after), offset, length, afterText);
+		accu.addEdit(FileUtil.getFile(after), offset, length, afterText);
 	}
 
-	public void Rename.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-		entity.createRenameTextEdit(model, accu, old_name, new_name);
+	public void Rename.createTextEdit(ChangeAccumulator accu) {
+		entity.createRenameTextEdit(accu, old_name, new_name);
 	}
 	
 	// creates a TextEdit corresponding to a rename of this entity
-	public void Named.createRenameTextEdit(JastAddModel model, ChangeAccumulator accu, 
+	public void Named.createRenameTextEdit(ChangeAccumulator accu, 
 			String old_name, String new_name);
 
-	public void VariableDeclaration.createRenameTextEdit(JastAddModel model, 
-				ChangeAccumulator accu, String old_name, String new_name) {
+	public void VariableDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void ParameterDeclaration.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
+	public void ParameterDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void FieldDeclaration.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
+	public void FieldDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void MethodDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
+	public void MethodDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void ConstructorDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
+	public void ConstructorDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void TypeDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
+	public void TypeDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
-		accu.addEdit(model.getFile(this), offset, length, new_name);
+		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
 	}
 
-	public void CompilationUnit.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String old_name, String new_name) {
-		IFile file = model.getFile(this);
+	public void CompilationUnit.createRenameTextEdit(ChangeAccumulator accu, 
+			String old_name, String new_name) {
+		IFile file = FileUtil.getFile(this);
 		accu.addChange(new RenameCompilationUnitChange(file, old_name, new_name));
 	}
 	
@@ -302,9 +296,9 @@ aspect CreateTextEdit {
 		
 	}
 	
-	public void MoveMethod.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-		IFile origfile = model.getFile(origin);
-		IFile destfile = model.getFile(destination);
+	public void MoveMethod.createTextEdit(ChangeAccumulator accu) {
+		IFile origfile = FileUtil.getFile(origin);
+		IFile destfile = FileUtil.getFile(destination);
 		int origoffset = method.getBeginOffset();
 		int origlength = method.getEndOffset() - origoffset + 1;
 		int destoffset = destination.possibleInsertOffset();
@@ -316,8 +310,8 @@ aspect CreateTextEdit {
 		accu.addEdit(destfile, cte);
 	}
 
-	public void ChangeFieldModifiers.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-    	IFile file = model.getFile(field);
+	public void ChangeFieldModifiers.createTextEdit(ChangeAccumulator accu) {
+    	IFile file = FileUtil.getFile(field);
     	int offset = old_modifiers.getBeginOffset();
     	if(offset == -1)
     		offset = field.getBeginOffset();
@@ -332,8 +326,8 @@ aspect CreateTextEdit {
 		Changes.InsertBodyDecl.InsertBodyDecl(td, bd);
 		this.bdText = bd.toString();
 	}
-	public void InsertBodyDecl.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-		IFile file = model.getFile(td);
+	public void InsertBodyDecl.createTextEdit(ChangeAccumulator accu) {
+		IFile file = FileUtil.getFile(td);
 		int destoffset = td.possibleInsertOffset();
 		accu.addEdit(file, destoffset, 0, bdText);
 	}
@@ -341,8 +335,8 @@ aspect CreateTextEdit {
 		this.bdText = bd.toString();
 	}
 	
-	public void RemoveBodyDecl.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-    	IFile file = model.getFile(td);
+	public void RemoveBodyDecl.createTextEdit(ChangeAccumulator accu) {
+    	IFile file = FileUtil.getFile(td);
     	int offset = bd.getBeginOffset();
     	int length = bd.getEndOffset() - offset + 1;
     	accu.addEdit(file, offset, length, "");

@@ -20,12 +20,12 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.jastaddj.util.BuildUtil;
+import org.jastadd.plugin.jastaddj.util.WorkspaceUtil;
 
 public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 	protected IProject project;
-	protected JastAddJModel model;
+	//protected JastAddJModel model;
 	protected JastAddJBuildConfiguration buildConfiguration;
 
 	protected boolean needsSave = false;
@@ -51,18 +51,18 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 	protected void initContents() {
 		// Collect data
 		project = (IProject) getElement().getAdapter(IProject.class);
-		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
+		//model = JastAddModelProvider.getModel(project, JastAddJModel.class);
 		try {
-			buildConfiguration = model.readBuildConfiguration(project).copy();
+			buildConfiguration = BuildUtil.readBuildConfiguration(project).copy();
 		}
 		catch(CoreException e) {
-			buildConfiguration = model.getDefaultBuildConfiguration();
+			buildConfiguration = BuildUtil.getDefaultBuildConfiguration();
 			needsSave = true;
 		}
 	}
 
 	protected void doSave() throws CoreException {
-		model.writeBuildConfiguration(project, buildConfiguration);
+		BuildUtil.writeBuildConfiguration(project, buildConfiguration);
 	}
 
 	
@@ -119,7 +119,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 					}
 				}, new NullProgressMonitor());
 			} catch (CoreException e) {
-				model.displayError(e, getShell(), "Error!",
+				WorkspaceUtil.displayError(e, getShell(), "Error!",
 						"Failed saving build configuration!");
 				return false;
 			}			
