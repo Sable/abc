@@ -44,6 +44,7 @@ import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
+import org.jastadd.plugin.registry.ASTRegistry;
 import org.jastadd.plugin.util.FileInfoMap;
 import org.jastadd.plugin.util.JastAddStorageEditorInput;
 import org.jastadd.plugin.util.NodeLocator;
@@ -169,13 +170,16 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 					
 					String path = file.getRawLocation().toOSString();
 					IProject project = file.getProject();
-					IASTNode ast = Activator.getASTRegistry().lookupAST(path, project);
-					
-					if (ast != null && ast instanceof IJastAddNode) {
-						IJastAddNode node = (IJastAddNode)ast;
-						return filter(jastAddContentProvider.getChildren(node));
+					ASTRegistry reg = Activator.getASTRegistry();
+					if (reg != null) {
+						IASTNode ast = reg.lookupAST(path, project);
+
+						if (ast != null && ast instanceof IJastAddNode) {
+							IJastAddNode node = (IJastAddNode)ast;
+							return filter(jastAddContentProvider.getChildren(node));
+						}
 					}
-					
+
 					/*
 					JastAddModel model = JastAddModelProvider.getModel(file);
 					if (model != null) {

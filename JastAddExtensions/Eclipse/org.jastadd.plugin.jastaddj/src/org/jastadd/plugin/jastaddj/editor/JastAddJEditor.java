@@ -39,6 +39,7 @@ import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.ReconcilingStrategy;
 import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.compiler.ast.IASTNode;
@@ -79,7 +80,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	private ReconcilingStrategy fStrategy;
 	
 	// ASTRegistry listener fields
-	private ASTRegistry fRegistry;
 	private IASTNode fRoot;
 	private String fKey;
 	private IProject fProject;
@@ -91,7 +91,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	 * Creates a new JastAddJ editor
 	 */
 	public JastAddJEditor() {
-		fRegistry = org.jastadd.plugin.Activator.getASTRegistry();
 		fOutlinePage = new JastAddJContentOutlinePage(this); 
 		fStrategy = new ReconcilingStrategy();//new ReconcilingStrategy(model);
 	}
@@ -150,13 +149,19 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	
 	@Override
 	public void childASTChanged(IProject project, String key) {
-		fRoot = fRegistry.lookupAST(fKey, fProject);
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg == null)
+			return;
+		fRoot = reg.lookupAST(fKey, fProject);
 		update();
 	}
 
 	@Override
 	public void projectASTChanged(IProject project) {
-		fRoot = fRegistry.lookupAST(fKey, fProject);
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg == null)
+			return;
+		fRoot = reg.lookupAST(fKey, fProject);
 		update();
 	}
 	
@@ -165,8 +170,12 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	 * @param fInput The new file input
 	 */
 	private void resetAST(IFileEditorInput fInput) {
-		// Reset 
-		fRegistry.removeListener(this);
+		// Reset
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg == null)
+			return;
+		
+		reg.removeListener(this);
 		fRoot = null;
 		fProject = null;
 		fKey = null;
@@ -176,9 +185,9 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 			IFile file = fInput.getFile();
 			fKey = file.getRawLocation().toOSString();
 			fProject = file.getProject();			
-			fRoot = fRegistry.lookupAST(fKey, fProject);
+			fRoot = reg.lookupAST(fKey, fProject);
 			if (fRoot != null) {
-				fRegistry.addListener(this, fProject, fKey);
+				reg.addListener(this, fProject, fKey);
 			}
 			update();
 		}

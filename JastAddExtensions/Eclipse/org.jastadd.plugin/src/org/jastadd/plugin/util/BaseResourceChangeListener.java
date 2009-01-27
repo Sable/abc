@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.jastadd.plugin.Activator;
+import org.jastadd.plugin.registry.ASTRegistry;
 
 public class BaseResourceChangeListener implements IResourceChangeListener {
 	
@@ -40,7 +41,9 @@ public class BaseResourceChangeListener implements IResourceChangeListener {
 	protected void updateProject(IResourceChangeEvent event, IProject project) {
 		
 		if (event.getType() == IResourceChangeEvent.PRE_CLOSE && event.getResource() == project) {
-			Activator.getASTRegistry().discardAST(project);
+			ASTRegistry reg = Activator.getASTRegistry();
+			if (reg != null)
+				reg.discardAST(project);
 			projectResourceChanged(project, event, event.getDelta() != null ? event.getDelta().findMember(new Path(project.getName())) : null);
 		}
 		

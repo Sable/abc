@@ -14,6 +14,7 @@ import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IError;
+import org.jastadd.plugin.registry.ASTRegistry;
 
 /**
  * Abstract compiler implementation of  the ICompiler interface required by the
@@ -63,8 +64,9 @@ public abstract class AbstractCompiler implements ICompiler {
 	@Override
 	public void compile(IProject project, IProgressMonitor monitor) {
 		IASTNode root = compileToProjectAST(project, monitor);
-		if (root != null && root.isProjectAST()) {
-			Activator.getASTRegistry().updateProjectAST(root, project);
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg != null && root != null && root.isProjectAST()) {
+			reg.updateProjectAST(root, project);
 		}
 	}
 	
@@ -74,10 +76,11 @@ public abstract class AbstractCompiler implements ICompiler {
 	 */
 	@Override
 	public void compile(IProject project, Collection<IFile> changedFiles, IProgressMonitor monitor) {
+		ASTRegistry reg = Activator.getASTRegistry();
 		for (IFile file : changedFiles) {
 			IASTNode node = compileToAST(file);
-			if (node != null && node.hasLookupKey()) {
-				Activator.getASTRegistry().updateAST(node, node.lookupKey(), file);
+			if (reg != null && node != null && node.hasLookupKey()) {
+				reg.updateAST(node, node.lookupKey(), file);
 			}
 		}
 	}
@@ -89,8 +92,9 @@ public abstract class AbstractCompiler implements ICompiler {
 	@Override
 	public void compile(IDocument document, DirtyRegion dirtyRegion, IRegion region, IFile file) {
 		IASTNode node = compileToAST(document, dirtyRegion, region, file);
-		if (node != null && node.hasLookupKey()) {
-			Activator.getASTRegistry().updateAST(node, node.lookupKey(), file);
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg != null && node != null && node.hasLookupKey()) {
+			reg.updateAST(node, node.lookupKey(), file);
 		}
 	}
 	

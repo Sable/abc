@@ -67,6 +67,8 @@ public class Activator extends AbstractUIPlugin {
 	 * @return The shared AST registry
 	 */
 	public static ASTRegistry getASTRegistry() {
+		if (plugin == null)
+			return null;
 		return plugin.astRegistry();
 	}
 

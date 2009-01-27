@@ -6,6 +6,7 @@ import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.registry.ASTRegistry;
 
 public class NodeLocator {
 	
@@ -47,7 +48,11 @@ public class NodeLocator {
 	}
 	
 	public static IJastAddNode findNodeInDocument(IProject project, String fileName, IDocument document, int line, int column) {
-		IASTNode ast = Activator.getASTRegistry().lookupAST(fileName, project);
+		ASTRegistry reg = Activator.getASTRegistry();
+		if (reg == null)
+			return null;
+		
+		IASTNode ast = reg.lookupAST(fileName, project);
 		if (ast == null) {
 			// TODO Build a new AST by calling the appropriate compiler
 		}  
