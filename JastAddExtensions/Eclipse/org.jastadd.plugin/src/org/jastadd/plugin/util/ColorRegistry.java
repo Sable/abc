@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Display;
 public class ColorRegistry {
 	private HashMap<RGB,Color> colors = new HashMap<RGB,Color>();
 	
+	@SuppressWarnings("unchecked")
 	public void dispose() {
 		Iterator iter = colors.values().iterator();
 		while(iter.hasNext()) {

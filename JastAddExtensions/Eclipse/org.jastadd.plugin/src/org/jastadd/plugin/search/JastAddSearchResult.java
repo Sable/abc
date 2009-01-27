@@ -15,6 +15,7 @@ public class JastAddSearchResult extends AbstractTextSearchResult implements ISe
 	private Collection<JastAddNode> fResults;
 	private String label;
 
+	@SuppressWarnings("unchecked")
 	public JastAddSearchResult(JastAddSearchQuery query, Collection results, String label) {
 		fQuery = query;
 		this.label = label;

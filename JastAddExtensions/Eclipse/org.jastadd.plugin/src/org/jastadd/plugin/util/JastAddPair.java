@@ -11,6 +11,7 @@ public class JastAddPair<First, Second> {
 		this.second = second;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean equals(Object object) {
 		if (!(object instanceof JastAddPair))
 			return false;

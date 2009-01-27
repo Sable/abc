@@ -48,11 +48,13 @@ import org.jastadd.plugin.util.FileInfoMap;
 import org.jastadd.plugin.util.JastAddStorageEditorInput;
 import org.jastadd.plugin.util.NodeLocator;
 
+@SuppressWarnings("restriction")
 public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 		IShowInTarget {
 
 	protected void initResourceComparator() {
 		setComparator(new ResourceComparator(ResourceComparator.NAME) {
+			@SuppressWarnings("unchecked")
 			protected int compareNames(IResource resource1, IResource resource2) {
 				Comparator<String> comp = getComparator();
 				return comp.compare(resource1.getFullPath().toString(),
@@ -527,12 +529,13 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 	protected abstract void openFile(IFile file);
 
 
+	@SuppressWarnings("unchecked")
 	public boolean show(ShowInContext context) {
 		ArrayList<Object> toSelect = new ArrayList<Object>();
 		ISelection sel = context.getSelection();
 		if (sel instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) sel;
-			for (Iterator<Object> i = ssel.iterator(); i.hasNext();) {
+			for (Iterator i = ssel.iterator(); i.hasNext();) {
 				Object o = i.next();
 				if (o instanceof IResource) {
 					toSelect.add(o);
@@ -623,11 +626,12 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private StructuredSelection convertSelection(ISelection selection) {
 		ArrayList<Object> list = new ArrayList<Object>();
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
-			for (Iterator<Object> i = ssel.iterator(); i.hasNext();) {
+			for (Iterator i = ssel.iterator(); i.hasNext();) {
 				Object o = i.next();
 				if (o instanceof IResource) {
 					list.add(o);

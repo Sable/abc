@@ -20,6 +20,7 @@ public abstract class AbstractBaseHierarchyView<T> extends ViewPart {
 	protected Composite composite;
 	protected Composite parentComposite;
 
+	@SuppressWarnings("unchecked")
 	protected static AbstractBaseHierarchyView activate(String viewID) throws CoreException {
 		AbstractBaseHierarchyView view = (AbstractBaseHierarchyView) PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow().getActivePage()

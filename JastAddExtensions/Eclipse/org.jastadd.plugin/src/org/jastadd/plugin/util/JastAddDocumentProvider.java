@@ -1,6 +1,5 @@
 package org.jastadd.plugin.util;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IAnnotationModel;
@@ -12,16 +11,10 @@ public class JastAddDocumentProvider extends FileDocumentProvider {
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
 		if(element instanceof IFileEditorInput) {
-			IFile file = ((IFileEditorInput)element).getFile();
-			/*
-			JastAddModel model = JastAddModelProvider.getModel(file);
-			if(model != null)
-			*/
 			FileInfoMap.linkFileInfoToDoc(FileInfoMap.buildFileInfo((IFileEditorInput)element), document);
 		}
 		else if (element instanceof JastAddStorageEditorInput) {
 			JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)element;
-			//JastAddModel model = storageInput.getModel(); 
 			FileInfoMap.linkFileInfoToDoc(FileInfoMap.buildFileInfo(storageInput), document);
 		}
 		

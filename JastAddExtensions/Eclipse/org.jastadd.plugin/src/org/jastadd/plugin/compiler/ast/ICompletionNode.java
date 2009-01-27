@@ -14,7 +14,8 @@ public interface ICompletionNode {
 
     public int completionProposalOffset();
 
-    public Collection completion(String filter);
+    @SuppressWarnings("unchecked")
+	public Collection completion(String filter);
 
     public String completionComment();
 }

@@ -1,8 +1,5 @@
 package org.jastadd.plugin.compiler.ast;
 
-import org.eclipse.core.resources.IResource;
-
-
 /**
  * This interface must be implemented by all nodes in the AST, hence should be
  * implemented by ASTNode. Required by the org.jastadd.plugin.compile.ICompiler interface

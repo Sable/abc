@@ -13,10 +13,12 @@ public abstract class BaseOnDemandTreeContentProvider<T> implements ITreeContent
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object[] getElements(Object inputElement) {
 		return new Object[] { new JastAddOnDemandTreeItem<T>((T)inputElement, null)};
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object[] getChildren(Object parentElement) {
 		JastAddOnDemandTreeItem<T> parentItem = (JastAddOnDemandTreeItem<T>) parentElement;
 
@@ -26,6 +28,7 @@ public abstract class BaseOnDemandTreeContentProvider<T> implements ITreeContent
 		return parentItem.children.toArray();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getParent(Object element) {
 		return ((JastAddOnDemandTreeItem<T>) element).parent;
 	}

@@ -17,10 +17,10 @@ public abstract class AbstractBaseInformationControl extends
 		IInformationControlExtension2 {
 
 	public AbstractBaseInformationControl(Shell parent, int shellStyle,
-			boolean takeFocusOnOpen, boolean persistBounds,
+			boolean takeFocusOnOpen, boolean persistSize, boolean persistLocation,
 			boolean showDialogMenu, boolean showPersistAction,
 			String titleText, String infoText) {
-		super(parent, shellStyle, takeFocusOnOpen, persistBounds,
+		super(parent, shellStyle, takeFocusOnOpen, persistSize, persistLocation,
 				showDialogMenu, showPersistAction, titleText, infoText);
 	}
 

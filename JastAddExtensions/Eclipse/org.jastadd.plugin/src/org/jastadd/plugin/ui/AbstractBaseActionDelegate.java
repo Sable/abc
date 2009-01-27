@@ -77,7 +77,7 @@ public abstract class AbstractBaseActionDelegate extends AbstractHandler impleme
 				}
 			}
 			else if (input instanceof JastAddStorageEditorInput) {
-				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+				//JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
 				ISelection selection = activeSelection();
 				if(selection instanceof ITextSelection) {
 					return NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(input), ((ITextSelection)selection).getOffset());

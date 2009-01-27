@@ -106,6 +106,7 @@ public class BaseTextPresenter implements DefaultInformationControl.IInformation
 		}
 	}
 			
+	@SuppressWarnings("unchecked")
 	protected void adaptTextPresentation(TextPresentation presentation, int offset, int insertLength) {
 
 		int yoursStart= offset;
@@ -142,6 +143,7 @@ public class BaseTextPresenter implements DefaultInformationControl.IInformation
 		fCounter += length;
 	}
 	
+	/*
 	private String getIndent(String line) {
 		int length= line.length();
 
@@ -150,6 +152,7 @@ public class BaseTextPresenter implements DefaultInformationControl.IInformation
 
 		return (i == length ? line : line.substring(0, i)) + " "; //$NON-NLS-1$
 	}
+	*/
 
 	private String trim(StringBuffer buffer, TextPresentation presentation) {
 

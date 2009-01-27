@@ -32,7 +32,7 @@ public abstract class AbstractBaseTreeInformationControl extends AbstractBaseInf
 
 	public AbstractBaseTreeInformationControl(Shell parent, String title,
 			int shellStyle, int treeStyle, int treeWidth, int treeHeight) {
-		super(parent, shellStyle, true, false, false, false, null, null);
+		super(parent, shellStyle, true, false, false, false, false, null, null);
 
 		this.treeStyle = treeStyle;
 		this.treeWidth = treeWidth;

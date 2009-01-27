@@ -12,6 +12,7 @@ public class JastAddSearchQuery implements ISearchQuery {
 
 	private JastAddSearchResult result;
 	
+	@SuppressWarnings("unchecked")
 	public JastAddSearchQuery(Collection coll, String label) {
 		result = new JastAddSearchResult(this, coll, label);
 	}

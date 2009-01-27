@@ -18,6 +18,7 @@ import org.eclipse.jface.text.source.projection.AnnotationBag;
 
 public class BaseAnnotationHover implements IAnnotationHover {
 
+	@SuppressWarnings("unchecked")
 	public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
 		List javaAnnotations= getAnnotationsForLine(sourceViewer, lineNumber);
 		if (javaAnnotations != null) {
@@ -52,6 +53,7 @@ public class BaseAnnotationHover implements IAnnotationHover {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List getAnnotationsForLine(ISourceViewer viewer, int line) {
 		IAnnotationModel model= getAnnotationModel(viewer);
 		if (model == null)
@@ -99,6 +101,7 @@ public class BaseAnnotationHover implements IAnnotationHover {
 		return viewer.getAnnotationModel();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean isDuplicateAnnotation(Map messagesAtPosition, Position position, String message) {
 		if (messagesAtPosition.containsKey(position)) {
 			Object value= messagesAtPosition.get(position);
@@ -122,6 +125,7 @@ public class BaseAnnotationHover implements IAnnotationHover {
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean includeAnnotation(Annotation annotation, Position position, HashMap messagesAtPosition) {
 		String text= annotation.getText();
 		return (text != null && !isDuplicateAnnotation(messagesAtPosition, position, text));
@@ -141,6 +145,7 @@ public class BaseAnnotationHover implements IAnnotationHover {
 		return message;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected String formatMultipleMessages(List messages) {
 		StringBuffer buffer= new StringBuffer();
 		buffer.append("Multiple Markers"); //$NON-NLS-1$

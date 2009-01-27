@@ -23,6 +23,7 @@ public class JastAddNode {
 		return !children.isEmpty();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Collection getChildren() {
 		return children;
 	}

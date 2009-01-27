@@ -12,5 +12,6 @@ public interface IOutlineNode {
 
     public boolean hasVisibleChildren();
 
-    public ArrayList outlineChildren();
+    @SuppressWarnings("unchecked")
+	public ArrayList outlineChildren();
 }

@@ -3,17 +3,14 @@ package org.jastadd.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
-
 import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.registry.ASTRegistry;
-import org.jastadd.plugin.util.BaseResourceChangeListener;
+import org.osgi.framework.BundleContext;
 
 /**
  * The activator class which controls the plug-in life cycle
