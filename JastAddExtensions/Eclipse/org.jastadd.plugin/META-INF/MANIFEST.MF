@@ -21,7 +21,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.views,
  org.eclipse.ui.console
-Eclipse-LazyStart: true
+Eclipse-ActivationPolicy: true
 Export-Package: org.jastadd.plugin,
  org.jastadd.plugin.compiler,
  org.jastadd.plugin.compiler.ast,
