@@ -9,8 +9,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 
-import org.jastadd.plugin.compiler.ast.IError;
-
 /**
  * Compiler interface required by the org.jastadd.plugin.compiler extension point:
  * 
