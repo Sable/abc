@@ -58,7 +58,6 @@ import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler;
 import org.jastadd.plugin.jastaddj.util.BuildUtil;
-import org.jastadd.plugin.jastaddj.util.FileUtil;
 import org.jastadd.plugin.jastaddj.util.BuildUtil.ProgramInfo;
 import org.jastadd.plugin.util.NodeLocator;
 
