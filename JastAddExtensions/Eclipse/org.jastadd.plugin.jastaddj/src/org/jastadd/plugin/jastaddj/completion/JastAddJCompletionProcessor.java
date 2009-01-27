@@ -24,7 +24,6 @@ import org.jastadd.plugin.compiler.recovery.LexicalNode;
 import org.jastadd.plugin.compiler.recovery.Recovery;
 import org.jastadd.plugin.compiler.recovery.RecoveryLexer;
 import org.jastadd.plugin.compiler.recovery.SOF;
-import org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler;
 import org.jastadd.plugin.jastaddj.compiler.recovery.JavaLexerIII;
 import org.jastadd.plugin.util.FileInfo;
 import org.jastadd.plugin.util.FileInfoMap;
@@ -145,10 +144,6 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 	private Collection computeProposal(int documentOffset, IDocument document, StringBuffer buf, String filter, String leftContent, boolean withDot) 
 			throws BadLocationException, IOException, Exception, CoreException {
 
-		/*
-		JastAddModel model = JastAddModelProvider.getModel(document);
-		if (model != null) {
-		*/
 		FileInfo fileInfo = FileInfoMap.documentToFileInfo(document);
 		if(fileInfo != null) {
 			IProject project = fileInfo.getProject();
@@ -156,7 +151,6 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 			IJastAddNode node = NodeLocator.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			return recoverAndCompletion(documentOffset, buf, project, fileName, node, filter, leftContent);
 		}			
-		//}
 
 		return new ArrayList();
 	}
@@ -166,6 +160,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 			String leftContent) throws IOException, Exception {
 
 		if (node == null) {
+			System.out.println("Structural recovery");
 			// Try recovery
 			SOF sof = lexer.parse(buf);
 			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);

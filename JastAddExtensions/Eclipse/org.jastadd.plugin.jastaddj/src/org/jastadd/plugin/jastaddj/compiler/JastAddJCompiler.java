@@ -310,12 +310,17 @@ public class JastAddJCompiler extends AbstractCompiler {
 		            	}
 					 */
 					return unit;
+				} else {
+					if (keepOn == 1) {
+						System.out.println("Bridge parsing failed");
+					}
 				}
 			} catch (Throwable e) {
 				/* Catch parse exceptions and try to recover */
 			}
 
 			if (keepOn > 1) {	
+				System.out.println("Applying bridge parsing");
 				SOF sof = fLexer.parse(buf);
 				Recovery.doRecovery(sof);
 				buf = Recovery.prettyPrint(sof);
