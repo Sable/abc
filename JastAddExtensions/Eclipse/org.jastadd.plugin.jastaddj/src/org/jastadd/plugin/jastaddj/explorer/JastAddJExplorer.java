@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -14,6 +15,7 @@ import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
@@ -22,25 +24,32 @@ import org.eclipse.ui.actions.OpenFileAction;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.IShowInTarget;
+import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.util.BuildUtil;
 import org.jastadd.plugin.jastaddj.util.EditorUtil;
 import org.jastadd.plugin.jastaddj.util.FileUtil;
+import org.jastadd.plugin.registry.IASTRegistryListener;
 import org.jastadd.plugin.ui.view.AbstractBaseExplorer;
 import org.jastadd.plugin.ui.view.JastAddContentProvider;
 import org.jastadd.plugin.ui.view.JastAddLabelProvider;
 
-public class JastAddJExplorer extends AbstractBaseExplorer implements
-		IShowInTarget {
+import org.jastadd.plugin.compiler.ast.IASTNode;
+
+@SuppressWarnings("restriction")
+public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTarget {
+	
 	public static final String VIEW_ID = "org.jastadd.plugin.explore.JastAddJExplorer";
 
+	
 	private ITreeContentProvider contentProvider = new MyContentProvider();
+	
 	private ILabelProvider labelProvider = new DecoratingLabelProvider(
 			new DecoratingLabelProvider(new MyLabelProvider(), getPlugin()
 					.getWorkbench().getDecoratorManager().getLabelDecorator()),
 			new MyProblemLabelDecorator());
 
-	private Map<IPath, IContainer> sourceRootMap;	
+	private Map<IPath, IContainer> sourceRootMap;
 	
 	protected void initContentProvider(TreeViewer viewer) {
 		viewer.setContentProvider(contentProvider);
@@ -58,37 +67,80 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements
 		}
 		return sourceRootMap.get(resourcePath);
 	}
+	
 
-	public class MyContentProvider extends BaseContentProvider { //implements JastAddModelListener {
+	public class MyContentProvider extends BaseContentProvider implements IASTRegistryListener { 
 		public MyContentProvider() {
 			super(new BaseWorkbenchContentProvider(),
 					new JastAddContentProvider());
+			Activator.getASTRegistry().addListener(this);
 		}
 
 		private void loadModelInfo() {
 			sourceRootMap = new HashMap<IPath, IContainer>();
-			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
-					.getProjects();
-			for (IProject project : projects) {
-				
-				/*
-				JastAddJModel model = JastAddModelProvider.getModel(project,
-						JastAddJModel.class);
-				if (model == null)
-					continue;
-				model.addListener(this);
-				*/
-				
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (IProject project : projects) {				
 				BuildUtil.addSourceRoots(project, sourceRootMap);
 			}
 		}
+		
+		@Override
+		public void childASTChanged(IProject project, String key) {
+			//updateIfExpanded(project, key);
+			doViewerRefresh();
+		}
 
-		private void releaseModelInfo() {
-			/*
-			for (JastAddModel model : JastAddModelProvider.getModels())
-					model.removeListener(this);
-			*/
+		@Override
+		public void projectASTChanged(IProject project) {
+			//updateIfExpanded(project, null);
+			doViewerRefresh();
+		}
+		
+		/**
+		 * Updates AST which have been expanded
+		 * @param project The project which changed
+		 * @param key The key of the concerned AST
+		 */
+		protected void updateIfExpanded(IProject project, String key) {
+			
+			TreeViewer viewer = getTreeViewer();
+			
+			// Locate project among expanded paths
+			TreePath[] path = viewer.getExpandedTreePaths();
+			for (int i = 0; i < path.length; i++) {
 				
+				// Walk through path
+				for (int j = 0; j < path[i].getSegmentCount(); j++) {
+					Object obj = path[i].getSegment(j);
+					// Check project
+					if (obj instanceof IProject) {
+						IProject p = (IProject)obj;
+						// If this is an other project skip this path
+						if (!p.equals(project)) {
+							break;
+						}
+					}
+					// For the first node of type IASTNode 
+					if (obj instanceof IASTNode) {
+						IASTNode node = (IASTNode)obj;
+						// If the node as a lookup. Update if there's 
+						// a key match or if there's no key
+						if (node.hasLookupKey() && (key == null
+								|| node.lookupKey().equals(key))) {
+							Object parent = i > 0 ? path[i].getSegment(j-1) :  node;
+							// Refresh the viewer from this root and down wards
+							viewer.refresh(parent);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		
+
+
+		private void releaseModelInfo() {				
 			sourceRootMap = null;
 		}
 
@@ -108,10 +160,12 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements
 			super.dispose();
 		}
 
+		/*
 		public void modelChangedEvent() {
 			reloadModelInfo();
 			doViewerRefresh();
 		}
+		*/
 	}
 
 	private class MyLabelProvider extends BaseLabelProvider {
@@ -134,7 +188,7 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements
 	private class MyProblemLabelDecorator extends BaseProblemLabelDecorator {
 	}
 
-	private String[] extension = new String[] { ".project", "*.java.dummy", "*.class" };
+	private String[] extension = new String[] { "*.class" };
 	
 	@Override
 	protected boolean filterInView(IResource resource) {
@@ -144,6 +198,14 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements
 				if (file.getFileExtension().equals(extension[i])) {
 					return true;
 				}
+			}
+			// Files starting with a dot
+			if (file.getFullPath().lastSegment().startsWith("."))
+				return true;
+		} else if (resource instanceof IFolder) {
+			IFolder folder = (IFolder)resource;
+			if (folder.getName().equals("bin")) {
+				return true;	
 			}
 		}
 		return false;
@@ -171,4 +233,5 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements
 		if (action.isEnabled())
 			action.run();
 	}
+
 }

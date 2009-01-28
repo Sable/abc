@@ -73,12 +73,6 @@ public class Activator extends AbstractUIPlugin {
 				}
 			}
 		}
-		/*
-		if (model != null) {
-			JastAddModelProvider.removeModel(model);
-			model = null;
-		}
-		*/
 	}
 
 	

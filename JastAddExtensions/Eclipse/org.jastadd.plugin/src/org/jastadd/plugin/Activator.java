@@ -25,9 +25,6 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 
-	// The AST registry
-	private ASTRegistry astRegistry;
-	
 	/**
 	 * Constructs an Activator which sets up the AST registry
 	 */
@@ -61,18 +58,17 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
+
+	// The AST registry
+	private static ASTRegistry astRegistry;
 	
 	/** 
 	 * Returns the shared AST registry
 	 * @return The shared AST registry
 	 */
 	public static ASTRegistry getASTRegistry() {
-		if (plugin == null)
-			return null;
-		return plugin.astRegistry();
-	}
-
-	private ASTRegistry astRegistry() {
+		if (astRegistry == null)
+			return astRegistry = new ASTRegistry();
 		return astRegistry;
 	}
 	

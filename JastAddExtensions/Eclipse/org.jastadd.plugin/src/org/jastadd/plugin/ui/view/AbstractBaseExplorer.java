@@ -161,35 +161,26 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 
 			IResource resource = (IResource) element;
 			if(resource != null) {
-			IContainer sourceRoot = findSourceRoot(resource);
-			if (sourceRoot != null) {
-				if (resource instanceof IContainer) {
-					return filter(getSourceRootItemChildren(resource, sourceRoot));
-				} else if (resource instanceof IFile) {
-					IFile file = (IFile) resource;
-					
-					String path = file.getRawLocation().toOSString();
-					IProject project = file.getProject();
-					ASTRegistry reg = Activator.getASTRegistry();
-					if (reg != null) {
-						IASTNode ast = reg.lookupAST(path, project);
+				IContainer sourceRoot = findSourceRoot(resource);
+				if (sourceRoot != null) {
+					if (resource instanceof IContainer) {
+						return filter(getSourceRootItemChildren(resource, sourceRoot));
+					} else if (resource instanceof IFile) {
+						IFile file = (IFile) resource;
 
-						if (ast != null && ast instanceof IJastAddNode) {
-							IJastAddNode node = (IJastAddNode)ast;
-							return filter(jastAddContentProvider.getChildren(node));
+						String path = file.getRawLocation().toOSString();
+						IProject project = file.getProject();
+						ASTRegistry reg = Activator.getASTRegistry();
+						if (reg != null) {
+							IASTNode ast = reg.lookupAST(path, project);
+
+							if (ast != null && ast instanceof IJastAddNode) {
+								IJastAddNode node = (IJastAddNode)ast;
+								return filter(jastAddContentProvider.getChildren(node));
+							}
 						}
 					}
-
-					/*
-					JastAddModel model = JastAddModelProvider.getModel(file);
-					if (model != null) {
-						// More synchronization here?
-						IJastAddNode node = model.getTreeRoot(FileInfoMap.buildFileInfo(file));
-						return filter(jastAddContentProvider.getChildren(node));
-					}
-				*/
 				}
-			}
 			}
 
 			return filter(resourceContentProvider.getChildren(element));
@@ -208,10 +199,6 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 					return parent;
 				else {
 					return getParentResourceForNode(node);
-					/*
-					JastAddModel model = JastAddModelProvider.getModel(node);
-					return model.getFile(node);
-					*/
 				}
 			}
 
@@ -370,25 +357,12 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 		}
 
 		protected Image decorateJastAddNodeImage(Image image, IJastAddNode node) {
-			/*
-			JastAddModel model = JastAddModelProvider.getModel(node);
-			if (model == null)
-				return image;
-			*/
 
 			IResource resource = getParentResourceForNode(node);
 			if (resource == null)
 				return image;
-			/*
-			IFile file = model.getFile(node);
-			if (file == null)
-				return image;
-			*/
-
 			int severity = IMarker.SEVERITY_INFO;
 			try {
-				//IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true,
-				//		IResource.DEPTH_ZERO);
 				IMarker[] markers = resource.findMarkers(IMarker.PROBLEM, true,
 						IResource.DEPTH_ZERO);
 
@@ -479,19 +453,12 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 		if (element instanceof IJastAddNode) {
 			IJastAddNode node = (IJastAddNode) element;
 			openEditorForNode(node);
-			/*
-			JastAddModel model = JastAddModelProvider.getModel(node);
-			if (model != null)
-				model.openFile(node);
-			*/
 		} else if (element instanceof IFile) {
 			IFile file = (IFile) element;
 			openFile(file);
 		} else
 			super.handleOpen(event);
 	}
-	
-	//protected JastAddModel model;
 	
 	protected Object[] filter(Object[] children) {
 		ArrayList<Object> childList = new ArrayList<Object>();
@@ -504,26 +471,7 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 				}
 			} else {
 				childList.add(children[i]);
-			}
-			
-			/*
-			if (model == null && children[i] instanceof IProject) {
-				IProject project = (IProject)children[i];
-				Collection<JastAddModel> modelList = JastAddModelProvider.getModels(project);
-				for (JastAddModel m : modelList) {
-					model = m;
-					// Can there be more than one possible model?
-				}
-			}
-			if (model != null && children[i] instanceof IResource) {	
-				IResource res = (IResource)children[i];
-				if (!model.filterInExplorer(res.getName())) {
-					childList.add(res);
-				}
-			} else {
-				childList.add(children[i]);
-			}
-			*/
+			}			
 		}
 		return childList.toArray();
 	}
@@ -581,10 +529,6 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 			
 			if (file != null) {
 				IJastAddNode parent = null;
-				/*
-				JastAddModel model = JastAddModelProvider.getModel(file);
-				if (model != null) {
-				*/
 				IJastAddNode node = NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(file), tsel.getOffset());
 				synchronized (node.treeLockObject()) {
 					if (node != null) {
@@ -595,7 +539,6 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 							parent = parent.getParent();
 					}
 				}
-				//}
 				if (parent != null)
 					toSelect.add(parent);
 				else

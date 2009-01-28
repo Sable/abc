@@ -150,8 +150,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	@Override
 	public void childASTChanged(IProject project, String key) {
 		ASTRegistry reg = Activator.getASTRegistry();
-		if (reg == null)
-			return;
 		fRoot = reg.lookupAST(fKey, fProject);
 		update();
 	}
@@ -159,8 +157,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	@Override
 	public void projectASTChanged(IProject project) {
 		ASTRegistry reg = Activator.getASTRegistry();
-		if (reg == null)
-			return;
 		fRoot = reg.lookupAST(fKey, fProject);
 		update();
 	}
@@ -172,9 +168,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	private void resetAST(IFileEditorInput fInput) {
 		// Reset
 		ASTRegistry reg = Activator.getASTRegistry();
-		if (reg == null)
-			return;
-		
 		reg.removeListener(this);
 		fRoot = null;
 		fProject = null;
@@ -184,11 +177,9 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		if (fInput != null) {
 			IFile file = fInput.getFile();
 			fKey = file.getRawLocation().toOSString();
-			fProject = file.getProject();			
+			fProject = file.getProject();
+			reg.addListener(this, fProject, fKey);
 			fRoot = reg.lookupAST(fKey, fProject);
-			if (fRoot != null) {
-				reg.addListener(this, fProject, fKey);
-			}
 			update();
 		}
 	}
