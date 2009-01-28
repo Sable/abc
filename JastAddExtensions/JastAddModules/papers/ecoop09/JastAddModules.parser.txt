@@ -101,8 +101,6 @@ module_access_list =
 	|
 	module_access_list ',' module_access
 
-
-
 modifier = 
 	'module' //for module private access (not in ecoop paper)
 
