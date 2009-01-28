@@ -1,13 +1,10 @@
 package org.jastadd.plugin.jastaddj.compiler;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -19,15 +16,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.jastadd.plugin.compiler.AbstractCompiler;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IError;
-import org.jastadd.plugin.compiler.ast.IJastAddNode;
-import org.jastadd.plugin.compiler.recovery.LexicalNode;
 import org.jastadd.plugin.compiler.recovery.Recovery;
 import org.jastadd.plugin.compiler.recovery.RecoveryLexer;
 import org.jastadd.plugin.compiler.recovery.SOF;
@@ -38,17 +32,10 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.compiler.recovery.JavaLexerIII;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.jastaddj.util.BuildUtil;
-import org.jastadd.plugin.jastaddj.util.BuildUtil.ProgramInfo;
-import org.jastadd.plugin.util.NodeLocator;
 
-import AST.ASTNode;
-import AST.Access;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
-import AST.Expr;
 import AST.JavaParser;
-import AST.MethodAccess;
-import AST.ParExpr;
 import AST.Program;
 
 public class JastAddJCompiler extends AbstractCompiler {
@@ -251,6 +238,8 @@ public class JastAddJCompiler extends AbstractCompiler {
 			addSourceFileWithRecovery(project, program, document, fileName);
 		 */
 	}
+	
+	
 	
 	/*
 	 * (non-Javadoc)
