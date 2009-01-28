@@ -1,8 +1,8 @@
 //Module declarations in .java files. These add to the normal java definitions, and do not replace them
 compilation_unit =
 	module_decl modifiers package_declaration import_declarations? type_declarations?
-    |
-    module_decl package_declaration import_declarations? type_declarations? 
+	|
+	module_decl package_declaration import_declarations? type_declarations? 
 	|
 	module_decl import_declarations? type_declarations? 
 
@@ -12,24 +12,24 @@ module_compilation_unit =
 
 //references to a module. See name_decl below
 module_access =
-	name_decl.n
+	name_decl
 	
 //name declaration modifications
-name = //these are also used for java type accesses
+name = //these are also used for java type accesses (including import declarations)
 	simple_name
 	|
 	qualified_name
 	
 simple_name =
-    IDENTIFIER
-    
+	IDENTIFIER
+
 qualified_name = //has additions to allow module qualified type accesses in .java files
-    name '.' simple_name
-    |
+	name '.' simple_name
+	|
 	name '::' simple_name
 	|
 	'::' name //for default module
-    
+
 name_decl = //these are also used for java package declarations
 	simple_name_decl
 	| 
@@ -106,10 +106,6 @@ module_access_list =
 modifier = 
 	'module' //for module private access (not in ecoop paper)
 
-//for on-demand imports left of the *
-type_import_on_demand_declaration = 
-    'import' name '.' '::' ';'
-    
 module_export_package =
 	'export' 'package' module_package_decl_list
 	|
