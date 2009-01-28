@@ -1,0 +1,128 @@
+//Module declarations in .java files. These add to the normal java definitions, and do not replace them
+compilation_unit =
+	module_decl modifiers package_declaration import_declarations? type_declarations?
+    |
+    module_decl package_declaration import_declarations? type_declarations? 
+	|
+	module_decl import_declarations? type_declarations? 
+
+//.module files
+module_compilation_unit = 
+	module_decl module_member_list? 
+
+//references to a module. See name_decl below
+module_access =
+	name_decl.n
+	
+//name declaration modifications
+name = //these are also used for java type accesses
+	simple_name
+	|
+	qualified_name
+	
+simple_name =
+    IDENTIFIER
+    
+qualified_name = //has additions to allow module qualified type accesses in .java files
+    name '.' simple_name
+    |
+	name '::' simple_name
+	|
+	'::' name //for default module
+    
+name_decl = //these are also used for java package declarations
+	simple_name_decl
+	| 
+	qualified_name_decl
+	
+simple_name_decl =
+	IDENTIFIER
+	 
+qualified_name_decl =
+	name '.' simple_name
+	|
+	name_decl '::' IDENTIFIER //modification to include the module separator '::'
+		
+module_decl =
+	'module' module_access module_decl_extends_opt module_decl_implements module_decl_overrides ';'
+	|
+	'module_interface' module_access module_decl_extends_opt ';'
+	|
+	'weak_module_interface' module_access module_decl_extends_opt ';'
+
+module_decl_extends_opt =
+	//empty
+	|
+	'extends' module_access
+
+module_decl_implements =
+	//empty
+	|
+	'implements' module_access_list
+
+module_decl_overrides =
+	//empty
+	|
+	'overrides' module_access_list
+
+module_member_list =
+	module_member
+	|
+	module_member_list module_member
+
+module_member =
+	module_import_decl
+	|
+	module_merge_decl
+	|
+	module_replace_decl
+	|
+	module_export_package
+
+module_import_decl =
+	'import' module_access ';'
+	|
+	'import' 'own' module_access ';'
+	|
+	'import' 'own' module_access 'as' module_access ';'
+	|
+	'import' 'own' module_access 'export' 'as' module_access ';'
+
+module_merge_decl =
+	'merge' module_access_list 'as' module_access module_access ';'
+	|
+	'merge' module_access_list 'export' 'as' module_access module_access ';'
+
+module_replace_decl =
+	'replace' module_access_list 'with' module_expr ';'
+
+module_access_list =
+	module_access
+	|
+	module_access_list ',' module_access
+
+
+
+modifier = 
+	'module' //for module private access (not in ecoop paper)
+
+//for on-demand imports left of the *
+type_import_on_demand_declaration = 
+    'import' name '.' '::' ';'
+    
+module_export_package =
+	'export' 'package' module_package_decl_list
+	|
+	'export' 'package' '*'
+	
+module_package_decl_list =
+	name_decl
+	|
+	module_package_decl_list ',' name_decl
+	
+module_expr = //expressions used in the with clause of a replace
+	module_access
+	|
+	'singleton' module_access
+	|
+	'own' module_access
