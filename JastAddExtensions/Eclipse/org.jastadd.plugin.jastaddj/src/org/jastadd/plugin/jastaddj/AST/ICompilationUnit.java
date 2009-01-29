@@ -12,4 +12,5 @@ public interface ICompilationUnit extends IJastAddNode {
 	void errorCheck(Collection errors, Collection warnings);
 	void transformation();
 	void generateClassfile();
+	int offset(int line, int column);
 }

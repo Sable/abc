@@ -49,4 +49,5 @@ public interface IError {
 	 * @return The end offset of the error
 	 */
 	public int getEndOffset();
+	
 }

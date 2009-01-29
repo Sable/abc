@@ -35,6 +35,7 @@ import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 import AST.BytecodeParser;
 import AST.CompilationUnit;
+import AST.IDEProblem;
 import AST.JavaParser;
 import AST.Program;
 
@@ -139,7 +140,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 				// Parse errors
 				Collection errors = unit.parseErrors();
 				boolean hasErrors = !errors.isEmpty();
-				updateErrorMarkers(unitFile, errors, PARSE_ERROR_MARKER_ID);
+				updateErrorMarkers(unitFile, errors, PARSE_ERROR_MARKER_ID, unit);
 				errors.clear();
 
 				// Semantic errors
@@ -148,7 +149,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 					unit.errorCheck(errors, warnings);
 					hasErrors = !errors.isEmpty();
 					errors.addAll(warnings);
-					updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID);
+					updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
 				}
 
 				// Generate bytecode
@@ -183,6 +184,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 		 */
 		return (IASTNode)program;
 	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -205,7 +207,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 			// node is added to the registry. The method calling this one could be
 			// overidden to add such behavior
 			Collection<IError> errors = unit.parseErrors();
-			updateErrorMarkers(file, errors, PARSE_ERROR_MARKER_ID);
+			updateErrorMarkers(file, errors, PARSE_ERROR_MARKER_ID, unit);
 			return (IASTNode)unit;
 		}
 		return null;
@@ -239,8 +241,28 @@ public class JastAddJCompiler extends AbstractCompiler {
 		 */
 	}
 	
-	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.compiler.AbstractCompiler#displaySemanticErrors(org.jastadd.plugin.compiler.ast.IASTNode, org.eclipse.core.resources.IFile)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void displaySemanticErrors(IASTNode node, IFile file) {
+		if (!(node instanceof ICompilationUnit)) {
+			return;
+		}
+		ICompilationUnit unit = (ICompilationUnit)node;	
+		Collection warnings = new LinkedList();
+		Collection errors = new LinkedList();
+		unit.errorCheck(errors, warnings);
+		errors.addAll(warnings);
+		if (!errors.isEmpty()) {
+			updateErrorMarkers(file, errors, ERROR_MARKER_ID, unit);
+		} else {
+			deleteErrorMarkers(file, ERROR_MARKER_ID);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.AbstractCompiler#compileToAST(org.eclipse.core.resources.IFile)
@@ -251,6 +273,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 	}
 	
 	/*
+	 * Change from the default error marker to the parser error marker for lexical and syntactic errors
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.AbstractCompiler#addErrorMarker(org.eclipse.core.resources.IResource, org.jastadd.plugin.compiler.ast.IError, java.lang.String)
 	 */
@@ -260,6 +283,30 @@ public class JastAddJCompiler extends AbstractCompiler {
 		if (error.getKind() == IError.LEXICAL || error.getKind() == IError.SYNTACTIC)
 			markerID = PARSE_ERROR_MARKER_ID;
 		super.addErrorMarker(resource, error, markerID);
+	}
+
+		
+	/**
+	 * Converts line and column information to offsets in errors using the offset
+	 * converter provided by ICompilationUnit
+	 * @param resource The resource to put markers on
+	 * @param errorList The list of errors
+	 * @param markerID The marker ID to use
+	 * @param unit The compilation unit with offset information
+	 */
+	protected void updateErrorMarkers(IResource resource,
+			Collection<IError> errorList, String markerID, ICompilationUnit unit) {
+		for (IError error : errorList) {
+			// Convert column,line to start end offsets
+			if (error instanceof IDEProblem) {
+				IDEProblem problem = (IDEProblem)error;
+				int startOffset = unit.offset(problem.line(), problem.column());
+				int endOffset = unit.offset(problem.endLine(), problem.endColumn());
+				problem.setStartOffset(startOffset);
+				problem.setEndOffset(endOffset);
+			}
+		}
+		super.updateErrorMarkers(resource, errorList, markerID);
 	}
 	
 	/**

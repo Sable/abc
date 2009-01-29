@@ -96,6 +96,16 @@ public abstract class AbstractCompiler implements ICompiler {
 		if (reg != null && node != null && node.hasLookupKey()) {
 			reg.updateAST(node, node.lookupKey(), file);
 		}
+		displaySemanticErrors(node, file);
+	}
+	
+	/**
+	 * Called after a document has been compiled and added to the AST registry. 
+	 * Override to collect and display semantic errors
+	 * @param node The new root node
+	 * @param file The corresponding file
+	 */
+	protected void displaySemanticErrors(IASTNode node, IFile file) {
 	}
 	
 	/**

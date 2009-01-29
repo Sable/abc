@@ -170,11 +170,27 @@ aspect Compile {
 		public int getLine() {
 			return problem.line();
 		}
+		
+		protected int startOffset = -1;
+		protected int endOffset = -1;
+		
+		public void setStartOffset(int offset) {
+			startOffset = offset;
+		}
+		
+		public void setEndOffset(int offset) {
+			endOffset = offset;
+		}
+		
 		public int getStartOffset() {
-			return problem.column();
+			if (startOffset < 0) 
+				return problem.column();
+			return startOffset;
 		}
 		public int getEndOffset() {
-			return problem.endColumn();
+			if (endOffset < 0)
+				return problem.endColumn();
+			return endOffset;
 		}
 		public String getMessage() {
 			return problem.message();
