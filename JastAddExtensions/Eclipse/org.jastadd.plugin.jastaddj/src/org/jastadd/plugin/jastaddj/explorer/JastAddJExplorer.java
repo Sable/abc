@@ -12,10 +12,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
@@ -33,8 +33,6 @@ import org.jastadd.plugin.registry.IASTRegistryListener;
 import org.jastadd.plugin.ui.view.AbstractBaseExplorer;
 import org.jastadd.plugin.ui.view.JastAddContentProvider;
 import org.jastadd.plugin.ui.view.JastAddLabelProvider;
-
-import org.jastadd.plugin.compiler.ast.IASTNode;
 
 @SuppressWarnings("restriction")
 public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTarget {
@@ -101,6 +99,7 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 		 * @param project The project which changed
 		 * @param key The key of the concerned AST
 		 */
+		/*
 		protected void updateIfExpanded(IProject project, String key) {
 			
 			TreeViewer viewer = getTreeViewer();
@@ -136,7 +135,8 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 				}
 			}
 		}
-
+		*/
+		
 		
 
 
@@ -233,5 +233,4 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 		if (action.isEnabled())
 			action.run();
 	}
-
 }

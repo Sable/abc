@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.ui.viewsupport.ImageImageDescriptor;
 import org.eclipse.jdt.ui.JavaElementImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -458,6 +459,19 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 			openFile(file);
 		} else
 			super.handleOpen(event);
+	}
+	
+	@Override
+	protected void handleDoubleClick(DoubleClickEvent event) {
+		super.handleDoubleClick(event);
+		
+        IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+        Object element = selection.getFirstElement();
+        
+        if (selection.size() == 1 && (element instanceof IJastAddNode)) {
+        	IJastAddNode node = (IJastAddNode)element;
+        	openEditorForNode(node);
+		}
 	}
 	
 	protected Object[] filter(Object[] children) {

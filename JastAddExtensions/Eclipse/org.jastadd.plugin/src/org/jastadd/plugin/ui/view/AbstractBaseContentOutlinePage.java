@@ -15,9 +15,8 @@ import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
 public abstract class AbstractBaseContentOutlinePage extends ContentOutlinePage {
 	
-	//private IEditorInput fInput;
-	private AbstractTextEditor fTextEditor;
-	private IASTNode fRoot;
+	protected AbstractTextEditor fTextEditor;
+	protected IASTNode fRoot;
 	private ITreeContentProvider fContentProvider;
 	private IBaseLabelProvider fLabelProvider;
 
@@ -77,12 +76,25 @@ public abstract class AbstractBaseContentOutlinePage extends ContentOutlinePage 
 			Object obj = structSelect.getFirstElement();
 			if (obj instanceof IJastAddNode) {
 				IJastAddNode node = (IJastAddNode)obj;
-				openFileForNode(node);
+				
+				highlightNodeInEditor(node);
+				
+				//openFileForNode(node);
 			}
 		}
 	}
 	
+	/**
+	 * Opens the file containing the given node 
+	 * @param node The node
+	 */
 	protected abstract void openFileForNode(IJastAddNode node);
+	
+	/**
+	 * Highlights the text corresponding to the given node
+	 * @param node The node
+	 */
+	protected abstract void highlightNodeInEditor(IJastAddNode node);
 	
 
 	/**

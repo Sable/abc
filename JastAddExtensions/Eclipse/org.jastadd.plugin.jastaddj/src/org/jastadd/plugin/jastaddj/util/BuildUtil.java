@@ -467,6 +467,4 @@ public class BuildUtil {
 					inclusionPatterns, exclusionPatterns, false);
 		}
 	}
-
-
 }

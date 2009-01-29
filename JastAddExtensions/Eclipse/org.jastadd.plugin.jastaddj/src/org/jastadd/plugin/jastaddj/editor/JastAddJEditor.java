@@ -287,13 +287,6 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	@Override
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
-			/*
-			if (fOutlinePage == null) {
-				fOutlinePage =  new JastAddJContentOutlinePage(this);
-				if (getEditorInput() != null)
-					fOutlinePage.setInput(getEditorInput());
-			}
-			*/
 			return fOutlinePage;
 		} else if (IToggleBreakpointsTarget.class.equals(required)) {
 			if (breakpointAdapter == null) {

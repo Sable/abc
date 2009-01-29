@@ -31,6 +31,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.compiler.ICompiler;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
@@ -90,12 +91,10 @@ public class FileUtil {
 	protected static void openFile(ICompilationUnit unit, int line, int column,
 			int length) {
 		try {
-			IProject project = BuildUtil.getProject(unit);
-			
 			String pathName = unit.pathName();
 			String relativeName = unit.relativeName();
-			
-			if (project == null || pathName == null || relativeName == null) return;
+			if (pathName == null || relativeName == null) 
+				return;
 			
 			// Try to work as with resource
 			if (pathName.equals(relativeName)) {
@@ -108,6 +107,10 @@ public class FileUtil {
 					}
 				}
 			}
+			
+			IProject project = BuildUtil.getProject(unit);
+			if (project == null)
+				return;
 			
 			// Try to work as with class file 
 			if (relativeName.endsWith(".class")) {
