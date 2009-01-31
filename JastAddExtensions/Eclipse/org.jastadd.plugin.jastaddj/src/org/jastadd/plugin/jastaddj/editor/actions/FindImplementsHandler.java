@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.NewSearchUI;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
@@ -27,7 +28,7 @@ public class FindImplementsHandler extends AbstractBaseActionDelegate {
 				Collection references = new ArrayList();
 				StringBuffer s = new StringBuffer();
 				s.append("Implementors of ");
-				synchronized (node.treeLockObject()) {
+				synchronized (((IASTNode)node).treeLockObject()) {
 					references = decl.implementors();
 					if(node instanceof IOutlineNode) {
 						s.append(((IOutlineNode)node).contentOutlineLabel());

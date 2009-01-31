@@ -62,7 +62,8 @@ aspect Core {
 	 * Default behavior for lookupChildAST(String key) in the IASTNode interface
 	 */
 	syn IASTNode ASTNode.lookupChildAST(String key) {
-		if (hasLookupKey() && lookupKey().equals(key)) {
+	    String thisKey = lookupKey();
+		if (hasLookupKey() && thisKey != null && thisKey.equals(key)) {
 			return this;
 		}
 		for (int i = 0; i < getNumChild(); i++) {

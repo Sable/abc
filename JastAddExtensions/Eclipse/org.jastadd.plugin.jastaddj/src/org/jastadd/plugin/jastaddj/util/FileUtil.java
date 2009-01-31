@@ -44,7 +44,7 @@ import org.jastadd.plugin.util.JastAddStorageEditorInput;
 public class FileUtil {
 	
 	public static IFile getFile(IJastAddNode node) {
-		synchronized(node.treeLockObject()) {
+		synchronized(((IASTNode)node).treeLockObject()) {
 			IJastAddNode root = node;
 			while (root != null && !(root instanceof ICompilationUnit))
 				root = root.getParent();

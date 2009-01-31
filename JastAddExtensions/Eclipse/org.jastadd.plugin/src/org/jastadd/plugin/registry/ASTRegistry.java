@@ -45,8 +45,10 @@ public class ASTRegistry {
 		public void updateChildAST(IASTNode node, String key) {
 			IASTNode child = ast.lookupChildAST(key);
 			if (child != null) {
-				ast.flushAttributes();
-				child.replaceWith(node);
+				//synchronized(ast.treeLockObject()) {
+					ast.flushAttributes();
+					child.replaceWith(node);
+				//}
 			}
 		}
 	}

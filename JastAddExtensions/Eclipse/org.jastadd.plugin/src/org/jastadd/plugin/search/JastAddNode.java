@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.swt.graphics.Image;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 
@@ -39,8 +40,8 @@ public class JastAddNode {
 	}
 	
 	public String getLabel() {
-		if (node instanceof IOutlineNode) {
-			synchronized (node.treeLockObject()) {
+		if (node instanceof IOutlineNode && node instanceof IASTNode) {
+			synchronized (((IASTNode)node).treeLockObject()) {
 				return ((IOutlineNode)node).contentOutlineLabel();
 			}
 		}
@@ -48,8 +49,8 @@ public class JastAddNode {
 	}
 	
 	public Image getImage() {
-		if (node instanceof IOutlineNode) {
-			synchronized (node.treeLockObject()) {
+		if (node instanceof IOutlineNode && node instanceof IASTNode) {
+			synchronized (((IASTNode)node).treeLockObject()) {
 				return ((IOutlineNode)node).contentOutlineImage();
 			}
 		}

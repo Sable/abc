@@ -27,6 +27,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.jastadd.plugin.compiler.ICompiler;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.Activator;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
@@ -147,7 +148,7 @@ public class BuildUtil {
 	protected void reinitProgram(IProject project, IProgram program,
 			JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program) program;
-		synchronized (program.treeLockObject()) {
+		synchronized (((IASTNode)program).treeLockObject()) {
 			// Init
 			program.initOptions();
 			program.addKeyValueOption("-classpath");
@@ -337,7 +338,7 @@ public class BuildUtil {
 					+ buildConfiguration.outputPath);
 		else
 			options.add(projectPath);
-		synchronized (program.treeLockObject()) {
+		synchronized (((IASTNode)program).treeLockObject()) {
 			program.addOptions(options.toArray(new String[0]));
 		}
 	}

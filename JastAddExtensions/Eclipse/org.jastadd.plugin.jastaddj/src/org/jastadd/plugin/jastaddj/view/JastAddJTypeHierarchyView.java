@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Label;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJTypeHierarhcyNode;
@@ -20,7 +21,7 @@ public class JastAddJTypeHierarchyView extends AbstractBaseHierarchyView<IJastAd
 			return null;
 		if (!(input instanceof IJastAddJFindDeclarationNode))
 			return null;
-		synchronized (input.treeLockObject()) {
+		synchronized (((IASTNode)input).treeLockObject()) {
 			input = ((IJastAddJFindDeclarationNode) input).declaration();
 			if (!(input instanceof IJastAddJTypeHierarhcyNode))
 				return null;

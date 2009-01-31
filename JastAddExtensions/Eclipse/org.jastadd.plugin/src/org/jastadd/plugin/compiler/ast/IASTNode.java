@@ -50,4 +50,16 @@ public interface IASTNode {
 	 * @param node The node to replace this node with.
 	 */
 	public void replaceWith(IASTNode node);
+	
+	
+	/**
+	 * Lock object used for synchronization when an AST is updated in the registry.
+	 * Should be the same for the whole project AST and used for synchronization at
+	 * attribute access. The reason being that the AST containing attribute values
+	 * could be updated at the same time that attribute values are requested. 
+	 * @return The lock object for this project AST
+	 */
+	public Object treeLockObject();
+	
+
 }

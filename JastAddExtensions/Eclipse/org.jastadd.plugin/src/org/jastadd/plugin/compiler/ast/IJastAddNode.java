@@ -15,6 +15,4 @@ public interface IJastAddNode {
 	public int getBeginOffset();
 	public int getEndOffset();
 	
-	public Object treeLockObject();
-	
 }

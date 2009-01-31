@@ -18,6 +18,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.ICompletionNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.recovery.LexicalNode;
@@ -174,7 +175,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 			}
 		}
 
-		synchronized (node.treeLockObject()) {
+		synchronized (((IASTNode)node).treeLockObject()) {
 			if (node instanceof Access) {
 				Access n = (Access) node;
 				System.out.println("Automatic recovery");

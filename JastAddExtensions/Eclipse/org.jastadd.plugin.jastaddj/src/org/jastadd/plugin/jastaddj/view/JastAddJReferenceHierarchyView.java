@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Label;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
@@ -25,7 +26,7 @@ public class JastAddJReferenceHierarchyView extends
 			return null;
 		if (!(input instanceof IJastAddJFindDeclarationNode))
 			return null;
-		synchronized (input.treeLockObject()) {
+		synchronized (((IASTNode)input).treeLockObject()) {
 			input = ((IJastAddJFindDeclarationNode) input).declaration();
 			if (input == null
 					|| !((IJastAddJFindReferencesNode) input).canHaveReferences())
@@ -66,7 +67,7 @@ public class JastAddJReferenceHierarchyView extends
 				JastAddOnDemandTreeItem<IJastAddNode> item) {
 			Collection<JastAddOnDemandTreeItem<IJastAddNode>> result = new ArrayList<JastAddOnDemandTreeItem<IJastAddNode>>();
 			IJastAddNode node = item.value;
-			synchronized (node.treeLockObject()) {
+			synchronized (((IASTNode)node).treeLockObject()) {
 				while (node != null
 						&& !((IJastAddJFindReferencesNode) node)
 						.canHaveReferences()) {
@@ -92,7 +93,7 @@ public class JastAddJReferenceHierarchyView extends
 			BaseOnDemandTreeLabelProvider<IJastAddNode> {
 		protected Image computeImage(JastAddOnDemandTreeItem<IJastAddNode> item) {
 			IJastAddNode node = item.value;
-			synchronized (node.treeLockObject()) {
+			synchronized (((IASTNode)node).treeLockObject()) {
 				while (node != null) {
 					if (node instanceof IOutlineNode) {
 						Image image = ((IOutlineNode) node).contentOutlineImage();
@@ -114,7 +115,7 @@ public class JastAddJReferenceHierarchyView extends
 	private static String formatNode(IJastAddNode node) {
 		StringBuffer buffer = new StringBuffer();
 		boolean hadOutlineNode = false;
-		synchronized (node.treeLockObject()) {
+		synchronized (((IASTNode)node).treeLockObject()) {
 			while (node != null) {
 				if (node instanceof IOutlineNode
 						&& ((IOutlineNode) node).showInContentOutline()) {

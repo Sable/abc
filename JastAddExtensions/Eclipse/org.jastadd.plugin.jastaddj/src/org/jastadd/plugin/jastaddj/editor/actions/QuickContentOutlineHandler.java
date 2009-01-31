@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
@@ -41,7 +42,7 @@ public class QuickContentOutlineHandler extends AbstractBaseActionDelegate {
 					public void setInput(Object input) {
 						super.setInput(activeEditorPart().getEditorInput());
 						IJastAddNode node = (IJastAddNode)input;
-						synchronized (node.treeLockObject()) {
+						synchronized (((IASTNode)node).treeLockObject()) {
 							while (node != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
 								node = node.getParent();					
 							if (node != null) {

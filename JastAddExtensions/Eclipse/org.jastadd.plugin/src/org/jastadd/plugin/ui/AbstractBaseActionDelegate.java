@@ -5,6 +5,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -19,6 +20,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.util.FileInfo;
 import org.jastadd.plugin.util.FileInfoMap;
 import org.jastadd.plugin.util.JastAddStorageEditorInput;
 import org.jastadd.plugin.util.NodeLocator;
@@ -114,6 +116,49 @@ public abstract class AbstractBaseActionDelegate extends AbstractHandler impleme
 		if (editorPart == null) return null;
 		selection = provider.getSelection();
 		return selection;
+	}
+	
+	protected ITextSelection activeTextSelection() {
+		IEditorPart editorPart = activeEditorPart();
+		if (editorPart != null) {
+			IEditorInput input = editorPart.getEditorInput();
+			if (input instanceof IFileEditorInput) {
+				IFileEditorInput fileInput = (IFileEditorInput)input;
+				IFile file = fileInput.getFile();
+				ISelection selection = activeSelection();
+				if(selection instanceof ITextSelection && file != null) {
+					return (ITextSelection)selection;
+				}
+			}
+		}
+		return null;
+	}
+	
+	protected IFile activeFile() {
+		IEditorPart editorPart = activeEditorPart();
+		if (editorPart != null) {
+			IEditorInput input = editorPart.getEditorInput();
+			if (input instanceof IFileEditorInput) {
+				IFileEditorInput fileInput = (IFileEditorInput)input;
+				IFile file = fileInput.getFile();
+				if(file != null) {
+					return file;
+				}
+			}
+		}
+		return null;
+		
+	}
+	
+	protected IDocument activeDocument() {
+		IEditorPart editorPart = activeEditorPart();
+		if (editorPart != null) {
+			IEditorInput input = editorPart.getEditorInput();
+			FileInfo info = FileInfoMap.buildFileInfo(input);
+			IDocument document = FileInfoMap.fileInfoToDocument(info);
+			return document;
+		}
+		return null;
 	}
 	
 	/*

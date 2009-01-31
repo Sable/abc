@@ -18,7 +18,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -28,9 +27,6 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionDelegate;
@@ -153,6 +149,7 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	
 	@Override
 	public void childASTChanged(IProject project, String key) {
+		System.out.println("JastAddJEditor.childASTChanged, project=" + project.getName() + ", key=" + key);
 		ASTRegistry reg = Activator.getASTRegistry();
 		fRoot = reg.lookupAST(fKey, fProject);
 		update();
@@ -160,6 +157,7 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 
 	@Override
 	public void projectASTChanged(IProject project) {
+		System.out.println("JastAddJEditor.projectASTChanged, project=" + project.getName());
 		ASTRegistry reg = Activator.getASTRegistry();
 		fRoot = reg.lookupAST(fKey, fProject);
 		update();

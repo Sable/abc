@@ -65,7 +65,7 @@ public class NodeLocator {
 		return null;
 	}	
 	
-	protected static IJastAddNode findLocation(IJastAddNode node, int line, int column) {
+	public static IJastAddNode findLocation(IJastAddNode node, int line, int column) {
 		if(node == null) return null;
 		int beginLine = node.getBeginLine();
 		int beginColumn = node.getBeginColumn();

@@ -11,7 +11,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.registry.ASTRegistry;
 import org.osgi.framework.BundleContext;
-
+ 
 /**
  * The activator class which controls the plug-in life cycle
  * 

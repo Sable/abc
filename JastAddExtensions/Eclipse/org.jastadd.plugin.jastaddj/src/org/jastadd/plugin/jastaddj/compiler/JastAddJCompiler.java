@@ -436,7 +436,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 	protected void reinitProgram(IProject project, IProgram program,
 			JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program) program;
-		synchronized (program.treeLockObject()) {
+		synchronized (((IASTNode)program).treeLockObject()) {
 			// Init
 			program.initOptions();
 			program.addKeyValueOption("-classpath");

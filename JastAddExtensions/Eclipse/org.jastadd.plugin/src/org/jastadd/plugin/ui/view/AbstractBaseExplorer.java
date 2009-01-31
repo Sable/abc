@@ -544,7 +544,7 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 			if (file != null) {
 				IJastAddNode parent = null;
 				IJastAddNode node = NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(file), tsel.getOffset());
-				synchronized (node.treeLockObject()) {
+				synchronized (((IASTNode)node).treeLockObject()) {
 					if (node != null) {
 						parent = node;
 						while (parent != null

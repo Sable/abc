@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 
@@ -32,7 +33,7 @@ public class JastAddTreeFactory {
 		Collection<JastAddNode> roots = new HashSet<JastAddNode>();
 		for(IJastAddNode n : results) {
 			IJastAddNode child = n;
-			synchronized (child.treeLockObject()) {
+			synchronized (((IASTNode)child).treeLockObject()) {
 				while(n.getParent() != null) {
 					if(n.getParent() instanceof IOutlineNode && 
 							((IOutlineNode)n.getParent()).showInContentOutline()) {

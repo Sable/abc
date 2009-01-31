@@ -2,6 +2,7 @@ package org.jastadd.plugin.ui.view;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 
@@ -84,7 +85,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	@Override
 	public boolean hasChildren(Object element) {
 		if(element instanceof IOutlineNode) {
-			synchronized (((IJastAddNode)element).treeLockObject()) {
+			synchronized (((IASTNode)element).treeLockObject()) {
 				return !((IOutlineNode)element).outlineChildren().isEmpty();
 			}
 		}
