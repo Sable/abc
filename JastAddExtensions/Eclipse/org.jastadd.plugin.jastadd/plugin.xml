@@ -22,7 +22,7 @@
 		id = "org.jastadd.plugin.jastadd.Nature"
 		name = "JastAdd Nature">
 	<runtime>
-		<run class = "org.jastadd.plugin.jastadd.Nature"/>
+		<run class = "org.jastadd.plugin.jastadd.JastAddNature"/>
 	</runtime>
 	<builder id = "org.jastadd.plugin.builder.JastAddBuilder"/>
 	</extension>

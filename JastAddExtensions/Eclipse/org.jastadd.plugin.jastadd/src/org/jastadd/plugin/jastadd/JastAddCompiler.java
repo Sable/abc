@@ -309,7 +309,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 		
 	public boolean isModelFor(IProject project) {
 		try {
-			if (project != null && project.isOpen() && project.isNatureEnabled(Nature.NATURE_ID)) {
+			if (project != null && project.isOpen() && project.isNatureEnabled(JastAddNature.NATURE_ID)) {
 				return true;
 			}
 		} catch (CoreException e) {
@@ -414,7 +414,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 	
 	public String getNatureID() {
 		//return JastAddNature.NATURE_ID;
-		return Nature.NATURE_ID;
+		return JastAddNature.NATURE_ID;
 	}
 	
 	public JastAddCompiler() {
@@ -473,14 +473,14 @@ public class JastAddCompiler extends JastAddJCompiler {
 			options.add("-package");
 			options.add(buildConfig.jastadd.getPackage());
 		}
-		synchronized (program.treeLockObject()) {
+		synchronized (((IASTNode)program).treeLockObject()) {
 			program.addOptions(options.toArray(new String[0]));
 		}
 	}
 	
 	@Override
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
-		synchronized (program.treeLockObject()) {
+		synchronized (((IASTNode)program).treeLockObject()) {
 			Program realProgram = (Program)program;
 			// Init
 			realProgram.options().initOptions();
@@ -585,7 +585,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 			return null;
 		Program program = (Program)p;
 		
-		synchronized (p.treeLockObject()) {
+		synchronized (((IASTNode)p).treeLockObject()) {
 
 			int packageEndIndex = packageName.lastIndexOf('.');
 			String tName = packageName.substring(packageEndIndex+1, packageName.length());
@@ -1045,7 +1045,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 			}
 		}
 
-		synchronized (node.treeLockObject()) {			
+		synchronized (((IASTNode)node).treeLockObject()) {			
 			if (node instanceof org.jastadd.plugin.jastadd.generated.AST.Access) {
 				org.jastadd.plugin.jastadd.generated.AST.Access n = 
 					(org.jastadd.plugin.jastadd.generated.AST.Access) node;

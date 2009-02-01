@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.Platform;
 import org.jastadd.plugin.jastaddj.wizards.JastAddJNewProjectWizard;
 import org.osgi.framework.Bundle;
 
+import org.jastadd.plugin.jastadd.JastAddNature;
+
 public class NewProjectWizard extends JastAddJNewProjectWizard {
 	@Override protected String createProjectPageDescription() {
 		return "JastAdd Project";
@@ -24,7 +26,7 @@ public class NewProjectWizard extends JastAddJNewProjectWizard {
 	}
 
 	@Override protected String getNatureID() {
-		return Nature.NATURE_ID;
+		return JastAddNature.NATURE_ID;
 	}
 	
 	protected void populateProject(IProject project, IProgressMonitor monitor) throws CoreException {

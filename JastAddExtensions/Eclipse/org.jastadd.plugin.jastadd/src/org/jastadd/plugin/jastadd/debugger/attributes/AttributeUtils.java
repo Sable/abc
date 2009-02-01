@@ -27,6 +27,7 @@ import org.eclipse.zest.core.viewers.GraphViewer;
 import org.eclipse.zest.core.widgets.GraphItem;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutEntity;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.debugger.attributes.visualization.structure.ASTGraphNode;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
@@ -222,7 +223,7 @@ public class AttributeUtils {
 			return null;
 		Program program = (Program)p;
 		
-		synchronized (p.treeLockObject()) {
+		synchronized (((IASTNode)p).treeLockObject()) {
 
 			int packageEndIndex = packageName.lastIndexOf('.');
 			String tName = packageName.substring(packageEndIndex+1, packageName.length());
