@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.jflex;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.MultiLineRule;

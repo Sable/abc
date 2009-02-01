@@ -10,7 +10,7 @@
 		preferredPerspectives = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		project = "true"
 		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
-		class = "org.jastadd.plugin.jastadd.NewProjectWizard">
+		class = "org.jastadd.plugin.jastadd.wizards.NewProjectWizard">
  		<description>Create a New JastAdd Project</description>
 		<selection class = "org.eclipse.core.resources.IResource"/>
 	</wizard>
@@ -63,7 +63,7 @@
 	<!-- JastAdd Aspect Editor -->
 
 	<editor
-		class = "org.jastadd.plugin.jastadd.AspectEditor"
+		class = "org.jastadd.plugin.jastadd.editor.aspects.AspectEditor"
 		extensions = "jrag,jadd"
 		icon = "icons/obj16/jrag.gif"
 		id = "org.jastadd.plugin.jastadd.AspectEditor"
@@ -73,31 +73,31 @@
 	
     <!-- JastAdd Grammar Editor -->
  	<editor
-		class = "org.jastadd.plugin.jastadd.ASTEditor"
+		class = "org.jastadd.plugin.jastadd.editor.grammar.ASTEditor"
 		extensions = "ast"
 		icon = "icons/obj16/ast.gif"
 		id = "org.jastadd.plugin.jastadd.ASTEditor"
-		contributorClass="org.jastadd.plugin.jastadd.ASTEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.editor.grammar.ASTEditorContributor"  
 		name = "JastAdd Grammar Editor">
 	</editor>
 	
 	<!-- JFlex Editor -->
  	<editor
-		class = "org.jastadd.plugin.jastadd.JFlexEditor"
+		class = "org.jastadd.plugin.jastadd.editor.jflex.JFlexEditor"
 		extensions = "flex"
 		icon = "icons/obj16/flex.gif"
 		id = "org.jastadd.plugin.jastadd.JFlexEditor"
-		contributorClass="org.jastadd.plugin.jastadd.JFlexEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.editor.jflex.JFlexEditorContributor"  
 		name = "JFlex Editor">
 	</editor>
 	
 	<!-- Parser Editor -->
  	<editor
-		class = "org.jastadd.plugin.jastadd.ParserEditor"
+		class = "org.jastadd.plugin.jastadd.editor.parser.ParserEditor"
 		extensions = "parser"
 		icon = "icons/obj16/parser.gif"
 		id = "org.jastadd.plugin.jastadd.ParserEditor"
-		contributorClass="org.jastadd.plugin.jastadd.ParserEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.editor.parser.ParserEditorContributor"  
 		name = "Parser Editor">
 	</editor>
 	</extension>

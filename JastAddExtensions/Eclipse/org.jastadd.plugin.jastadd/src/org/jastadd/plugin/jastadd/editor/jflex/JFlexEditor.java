@@ -1,20 +1,19 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.jflex;
 
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-public class ASTEditor extends AbstractDecoratedTextEditor {
-	
-	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.ASTEditor";
-	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ASTEditorContext";
+public class JFlexEditor extends AbstractDecoratedTextEditor {
+	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.JFlexEditor";
+	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.JFlexEditorContext";
 	
 	
 	// TODO modify this editor to look like JastAddJ and remove model when possible
 	/*
-	
-	public String getEditorContextID() {
-		return EDITOR_CONTEXT_ID;
-	}
 
+	public String getEditorContextID() {
+		return JFlexEditor.EDITOR_CONTEXT_ID;
+	}
+	
 	protected class JastAddResourceBundle extends ResourceBundle {
 
 		private HashMap<String,String> map = new HashMap<String,String>();
@@ -121,9 +120,11 @@ public class ASTEditor extends AbstractDecoratedTextEditor {
 	}
 
 
+
 	 // Overriden method from AbstractDecoratedTextEditor. Adds projection support
 	 // which provides folding in the editor. Activates the JastAdd editor context which activates
 	 // commands and keybindings related to the context.
+	 
 	
 	@Override
 	public void createPartControl(Composite parent) {
@@ -183,7 +184,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor {
 	}
 
 	
-	// Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
+	 // Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
 	 // support for folding.
 	 
 	@Override
@@ -197,7 +198,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor {
 	}
 
 	
-	// ControlCreator class used when creating the hover window for collapsed folding markers 
+	 // ControlCreator class used when creating the hover window for collapsed folding markers 
 	 
 	private class JastAddControlCreator implements IInformationControlCreator {
 		public IInformationControl createInformationControl(Shell shell) {
@@ -245,6 +246,6 @@ public class ASTEditor extends AbstractDecoratedTextEditor {
 		action.setText(text);
 		action.setActionDefinitionId(definitionId);
 		return action;
-	}
-	*/	
+	}	
+	*/
 }

@@ -35,7 +35,6 @@ public class Activator extends AbstractUIPlugin {
         ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
 	}
 	
-	//protected JastAddModel model;
 	protected List<Runnable> stopHandlers = new ArrayList<Runnable>();
 	
 	public void addStopHandler(Runnable stopHandler) {
@@ -61,12 +60,6 @@ public class Activator extends AbstractUIPlugin {
 				}
 			}
 		}
-		/*
-		if (model != null) {
-			JastAddModelProvider.removeModel(model);
-			model = null;
-		}
-		*/
 	}
 	
 }

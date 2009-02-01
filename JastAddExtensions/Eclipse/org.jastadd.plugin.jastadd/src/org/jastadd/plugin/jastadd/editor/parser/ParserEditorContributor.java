@@ -1,23 +1,26 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.parser;
 
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 
-public class ASTEditorContributor  extends BasicTextEditorActionContributor {
+public class ParserEditorContributor extends BasicTextEditorActionContributor {
 
+	
 	/*
 	protected String getEditorContextID() {
-		return ASTEditor.EDITOR_CONTEXT_ID;
+		return ParserEditor.EDITOR_CONTEXT_ID;
 	}
 
 	protected String getEditorID() {
-		return ASTEditor.EDITOR_ID;
+		return ParserEditor.EDITOR_ID;
 	}
 
 	protected void registerStopHandler(Runnable stopHandler) {
 		Activator.INSTANCE.addStopHandler(stopHandler);
 	}
-
 	
+	
+	
+
 	public void init(IActionBars bars) {
 		super.init(bars);
 		String editorID = getEditorID();
@@ -58,12 +61,12 @@ public class ASTEditorContributor  extends BasicTextEditorActionContributor {
 		}
 
 		public void editorChanged(IEditorPart editor) {
-			if (!(editor instanceof ASTEditor)) {
+			if (!(editor instanceof ParserEditor)) {
 				currentConf = null;
 				this.setEnabled(false);
 				return;
 			}
-			currentConf = modelToConf.get(((ASTEditor)editor).getModel());
+			currentConf = modelToConf.get(((ParserEditor)editor).getModel());
 			if (currentConf != null) {
 				this.setText(currentConf.text);
 				this.setActionDefinitionId(currentConf.definitionId);
@@ -194,7 +197,7 @@ public class ASTEditorContributor  extends BasicTextEditorActionContributor {
 				.getAdapter(IHandlerService.class);
 		return handlerService.activateHandler(commandId, handler);
 	}
-	
+
 	protected String getActiveBindingsScheme() {
 		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench()
 				.getAdapter(IBindingService.class);
@@ -288,7 +291,5 @@ public class ASTEditorContributor  extends BasicTextEditorActionContributor {
 		if (action != null)
 			menuManager.insertAfter("additions", action);
 	}
-	
-*/
-	
+	*/
 }

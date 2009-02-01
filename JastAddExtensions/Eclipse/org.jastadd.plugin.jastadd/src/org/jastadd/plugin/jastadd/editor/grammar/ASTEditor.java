@@ -1,28 +1,15 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.grammar;
 
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-public class ParserEditor extends AbstractDecoratedTextEditor { //implements IASTRegistryListener {
+public class ASTEditor extends AbstractDecoratedTextEditor {
 	
-	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.ParserEditor";
-	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ParserEditorContext";
+	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.ASTEditor";
+	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ASTEditorContext";
 	
+	
+	// TODO modify this editor to look like JastAddJ and remove model when possible
 	/*
-	// Reconciling strategy
-	private ReconcilingStrategy fStrategy;
-	
-	// ASTRegistry listener fields
-	private ASTRegistry fRegistry;
-	private IASTNode fRoot;
-	private String fKey;
-	private IProject fProject;
-	
-	public ParserEditor() {
-		fRegistry = org.jastadd.plugin.Activator.getASTRegistry();
-		fOutlinePage = new JastAddContentOutlinePage(this, model); 
-		fStrategy = new ReconcilingStrategy();//new ReconcilingStrategy(model);
-	}
-	
 	
 	public String getEditorContextID() {
 		return EDITOR_CONTEXT_ID;
@@ -92,52 +79,6 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 
 	@Override
 	protected void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-
-		IFileEditorInput fInput = null;
-		if (input instanceof IFileEditorInput) {
-			fInput = (IFileEditorInput)input;
-			
-			// TODO Remove when model is replaced
-			// No need to create and set a new source viewer at every doSetInput
-			//IFile file = fInput.getFile();
-			//model = JastAddModelProvider.getModel(file);
-			//setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model, file));
-			 
-		}
-		
-		// TODO Remove?
-		else if (input instanceof JastAddStorageEditorInput) {
-			// No need to create and set a new source viewer at every doSetInput
-			//JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
-			//model = storageInput.getModel();
-			//setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));
-			
-		}
-		
-		// Update AST
-		resetAST(fInput);
-		// Update file in reconciling strategy
-		fStrategy.setFile(fInput.getFile());
-
-		
-		//if (input instanceof IFileEditorInput) {
-		//	IFileEditorInput fileInput = (IFileEditorInput)input;
-		//	IFile file = fileInput.getFile();
-		//	model = JastAddModelProvider.getModel(file);
-		//	setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model, file));
-		//}
-		//else if (input instanceof JastAddStorageEditorInput) {
-		//	JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
-		//	model = storageInput.getModel();
-		//	setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));
-		//}		
-		//super.doSetInput(input);
-		
-	}
-
-	
-	protected void doSetInput(IEditorInput input) throws CoreException {
 		if (input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
 			IFile file = fileInput.getFile();
@@ -152,115 +93,20 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 		super.doSetInput(input);
 	}
 
-	
-	// ASTRegistry listener methods
-	
-	@Override
-	public void childASTChanged(IProject project, String key) {
-		fRoot = fRegistry.lookupAST(fKey, fProject);
-		update();
-	}
-
-	@Override
-	public void projectASTChanged(IProject project) {
-		fRoot = fRegistry.lookupAST(fKey, fProject);
-		update();
-	}
-	
-	//
-	 // Update to the AST corresponding to the file input
-	 //@param fInput The new file input
-	 //
-	private void resetAST(IFileEditorInput fInput) {
-		// Reset 
-		fRegistry.removeListener(this);
-		fRoot = null;
-		fProject = null;
-		fKey = null;
-		
-		// Update
-		if (fInput != null) {
-			IFile file = fInput.getFile();
-			fKey = file.getRawLocation().toOSString();
-			fProject = file.getProject();			
-			fRoot = fRegistry.lookupAST(fKey, fProject);
-			if (fRoot != null) {
-				fRegistry.addListener(this, fProject, fKey);
-			}
-			update();
-		}
-	}
-	
-	
-	///
-	 // Updates the outline and the view
-	 //
-	private void update() {
-		// Update outline
-		fOutlinePage.updateAST(fRoot);
-		// Update folding
-		updateProjectionAnnotations();
-	}
-	
-
-	
-	//
-	 // Update projection annotations
-	 //
-	private void updateProjectionAnnotations() {
-		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
-		if (viewer == null) {
-			return;
-		}
-		
-		// Enable projection
-		viewer.enableProjection();
-
-		// Collect old annotations
-		ProjectionAnnotationModel annotationModel = viewer.getProjectionAnnotationModel();
-		if (model == null) {
-			return;
-		}
-		Collection<Annotation> oldAnnotations = new ArrayList<Annotation>();
-		for (Iterator<Annotation> itr = annotationModel.getAnnotationIterator(); itr.hasNext();) {
-			oldAnnotations.add(itr.next());
-		}
-
-		// Collect new annotations
-		HashMap<Annotation,Object> newAnnotations = new HashMap<Annotation,Object>();
-		
-		if (fRoot != null && fRoot instanceof IFoldingNode) {
-			
-			IFoldingNode node = (IFoldingNode)fRoot;
-			IDocument document = getSourceViewer().getDocument();
-			Collection<Position> positions = node.foldingPositions(document);
-			for (Position pos : positions) {
-				ProjectionAnnotation annotation = new ProjectionAnnotation();
-				annotation.markExpanded();
-				newAnnotations.put(annotation, pos);
-			}
-		}
-
-		// Update annotations
-		annotationModel.modifyAnnotations(oldAnnotations.toArray(new Annotation[] {}), newAnnotations, null);
-	}
-
-
-
-	// 
-	 // Overriden method from TextEditor which adds a JastAdd specific SourceViewerConfiguration
+	 
+	// Overriden method from TextEditor which adds a JastAdd specific SourceViewerConfiguration
 	 // and DocumentProvider.
-	 //
+	 
 	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();		
 		setDocumentProvider(new JastAddDocumentProvider());
 	}
 
-	//
-	 // Overriden method from TextEditor which adds a JastAdd specific ContentOutline and
+	
+	// Overriden method from TextEditor which adds a JastAdd specific ContentOutline and
 	 // BreakpointAdapter.
-	 //
+	 
 	@Override
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
@@ -275,14 +121,11 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 	}
 
 
-	//
 	 // Overriden method from AbstractDecoratedTextEditor. Adds projection support
 	 // which provides folding in the editor. Activates the JastAdd editor context which activates
 	 // commands and keybindings related to the context.
-	 //
 	
 	@Override
-	
 	public void createPartControl(Composite parent) {
 		setEditorContextMenuId(getEditorSite().getId());
 
@@ -308,9 +151,9 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 			contextActivation = contextService.activateContext(getEditorContextID());
 		}
 	}
+
 	
-	
-	//Overriden method from TextEditor which removes listeners and contexts. 
+	 // Overriden method from TextEditor which removes listeners and contexts. 
 	 
 	@Override 
 	public void dispose() {
@@ -340,7 +183,7 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 	}
 
 	
-	 // Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
+	// Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
 	 // support for folding.
 	 
 	@Override
@@ -403,5 +246,5 @@ public class ParserEditor extends AbstractDecoratedTextEditor { //implements IAS
 		action.setActionDefinitionId(definitionId);
 		return action;
 	}
-*/
+	*/	
 }

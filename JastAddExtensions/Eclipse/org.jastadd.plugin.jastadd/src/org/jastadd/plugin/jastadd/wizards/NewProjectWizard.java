@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.wizards;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Platform;
 import org.jastadd.plugin.jastaddj.wizards.JastAddJNewProjectWizard;
 import org.osgi.framework.Bundle;
 
+import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.JastAddNature;
 
 public class NewProjectWizard extends JastAddJNewProjectWizard {

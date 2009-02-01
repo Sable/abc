@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.parser;
 
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;

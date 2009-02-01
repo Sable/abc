@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.grammar;
 
 import java.util.ArrayList;
 import java.util.List;

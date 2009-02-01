@@ -1,17 +1,16 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.jflex;
 
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 
-public class ParserEditorContributor extends BasicTextEditorActionContributor {
+public class JFlexEditorContributor extends BasicTextEditorActionContributor {
 
-	
 	/*
 	protected String getEditorContextID() {
-		return ParserEditor.EDITOR_CONTEXT_ID;
+		return JFlexEditor.EDITOR_CONTEXT_ID;
 	}
 
 	protected String getEditorID() {
-		return ParserEditor.EDITOR_ID;
+		return JFlexEditor.EDITOR_ID;
 	}
 
 	protected void registerStopHandler(Runnable stopHandler) {
@@ -20,7 +19,6 @@ public class ParserEditorContributor extends BasicTextEditorActionContributor {
 	
 	
 	
-
 	public void init(IActionBars bars) {
 		super.init(bars);
 		String editorID = getEditorID();
@@ -61,12 +59,12 @@ public class ParserEditorContributor extends BasicTextEditorActionContributor {
 		}
 
 		public void editorChanged(IEditorPart editor) {
-			if (!(editor instanceof ParserEditor)) {
+			if (!(editor instanceof JFlexEditor)) {
 				currentConf = null;
 				this.setEnabled(false);
 				return;
 			}
-			currentConf = modelToConf.get(((ParserEditor)editor).getModel());
+			currentConf = modelToConf.get(((JFlexEditor)editor).getModel());
 			if (currentConf != null) {
 				this.setText(currentConf.text);
 				this.setActionDefinitionId(currentConf.definitionId);
@@ -291,5 +289,6 @@ public class ParserEditorContributor extends BasicTextEditorActionContributor {
 		if (action != null)
 			menuManager.insertAfter("additions", action);
 	}
+	
 	*/
 }
