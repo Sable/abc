@@ -1,7 +1,6 @@
 package org.jastadd.plugin.jastadd.editor.jflex;
 
 import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;

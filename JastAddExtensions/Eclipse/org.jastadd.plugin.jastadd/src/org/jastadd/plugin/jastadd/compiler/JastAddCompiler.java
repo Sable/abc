@@ -1,6 +1,5 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.compiler;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,35 +15,27 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.jastadd.plugin.compiler.ast.IASTNode;
-import org.jastadd.plugin.compiler.ast.IJastAddNode;
-import org.jastadd.plugin.compiler.recovery.LexicalNode;
-import org.jastadd.plugin.compiler.recovery.Recovery;
-import org.jastadd.plugin.compiler.recovery.SOF;
+import org.jastadd.plugin.compiler.ast.IError;
+import org.jastadd.plugin.jastadd.JastAddNature;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
-import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
 import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
 import org.jastadd.plugin.jastadd.generated.AST.CompilationUnit;
 import org.jastadd.plugin.jastadd.generated.AST.JavaParser;
-import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
@@ -54,403 +45,333 @@ import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.Activator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
+import org.jastadd.plugin.jastaddj.AST.IParser;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler;
 import org.jastadd.plugin.jastaddj.util.BuildUtil;
-import org.jastadd.plugin.jastaddj.util.BuildUtil.ProgramInfo;
-import org.jastadd.plugin.util.NodeLocator;
 
 import beaver.Parser.Exception;
 
+/**
+ * JastAdd compiler used in the org.jastadd.plugin.compilers extension
+ * point.
+ * 
+ * @author emma
+ *
+ */
 public class JastAddCompiler extends JastAddJCompiler {
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#acceptedFileExtensions()
+	 */
+	@Override
+	protected Collection<String> acceptedFileExtensions() {
+		if (fAcceptedExtensions == null) {
+			fAcceptedExtensions = new ArrayList<String>();
+			fAcceptedExtensions.add("java");
+			fAcceptedExtensions.add("jrag");
+			fAcceptedExtensions.add("ast");
+		}
+		return fAcceptedExtensions;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#acceptedNatureID()
+	 */
+	@Override
+	protected String acceptedNatureID() {
+		return JastAddNature.NATURE_ID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#compileToProjectAST(org.eclipse.core.resources.IProject, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	@Override
+	protected IASTNode compileToProjectAST(IProject project, IProgressMonitor monitor) {
+
+		//Runtime.getRuntime().gc();
+		//System.out.println("Start rebuilding");
+		//System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+		//System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
+		
+		// Remove error markers from the project resource
+		deleteErrorMarkers(project, PARSE_ERROR_MARKER_ID);
+		deleteErrorMarkers(project, ERROR_MARKER_ID);
+		
+		// Get build configuration
+		JastAddJBuildConfiguration buildConfiguration = null;
+		try {
+			buildConfiguration = BuildUtil.readBuildConfiguration(project);
+		} catch (CoreException e) {
+			String message = "Failed to read build configuration: " + e.getMessage(); 
+			addCompilationFailedMarker(project, message);
+			Activator.INSTANCE.getLog().log(e.getStatus());
+		}
+		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
+		if (buildConfiguration == null)
+			return null;
+			
+		// Create a new project AST node
+		Program program = (Program) initProgram(project, buildConfiguration);
+		if (program == null)
+			return null;
+		initProgram(program, jastAddBuildConfig);
+		
+		// Re-generate scanner and parser if needed
+		buildJFlexScanner(project);
+		buildBeaverParser(project);
+
+		// Create map with path-file
+		Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);
+		if (map == null)
+			return null;
+
+		// Monitor code
+		monitor.beginTask("Building files in project " + project.getName(), 100);
+		if (monitor.isCanceled())
+			return null;		
+		SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 10);
+		subMonitor.beginTask("", map.keySet().size());
+
+		// Add all source files to the new program node
+		int numSourceFiles = 0;
+		for(String fileName : map.keySet()) {
+			program.addSourceFile(fileName);
+			if (monitor.isCanceled()) {
+				return null;
+			}
+			subMonitor.worked(1);
+			numSourceFiles++;
+		}
+
+		// Monitor code
+		subMonitor.done();
+		subMonitor = new SubProgressMonitor(monitor, 30);
+		subMonitor.beginTask("", numSourceFiles);
+		
+		// Check for errors in compilation units
+		boolean build = true;
+		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+			ICompilationUnit unit = (ICompilationUnit) iter.next();
+			if (unit.fromSource()) {
+				IFile unitFile = map.get(unit.getFileName());
+				
+				// Parse errors
+				Collection errors = unit.parseErrors();
+				boolean hasErrors = !errors.isEmpty();
+				updateErrorMarkers(unitFile, errors, PARSE_ERROR_MARKER_ID, unit);
+				errors.clear();
+
+				// Semantic errors
+				if (!hasErrors) {
+					Collection warnings = new LinkedList();
+					unit.errorCheck(errors, warnings);
+					hasErrors = !errors.isEmpty();
+					errors.addAll(warnings);
+					updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
+				}
+
+				// Avoid build if there are errors
+				build &= hasErrors;
+		
+				// Monitor code
+				if (monitor.isCanceled()) {
+					return null;
+				}
+				subMonitor.worked(1);
+			}
+		}
+		
+		// Monitor code
+		subMonitor.done();
+		subMonitor = new SubProgressMonitor(monitor, 60);
+		subMonitor.beginTask("", numSourceFiles*3);
+
+		// Build if there wasn't any errors
+		if (build) {
+			// Generate intertype declarations
+			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+				CompilationUnit cu = (CompilationUnit)iter.next();
+				if(cu.fromSource()) {
+					cu.generateIntertypeDecls();
+					if(monitor.isCanceled())
+						return null;
+					subMonitor.worked(1);
+				}
+			}
+			// Transform
+			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+				CompilationUnit cu = (CompilationUnit)iter.next();
+				if(cu.fromSource()) {
+					cu.transformation();
+					if(monitor.isCanceled())
+						return null;
+					subMonitor.worked(1);
+				}
+			}
+			// Generate class files
+			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+				CompilationUnit cu = (CompilationUnit)iter.next();
+				if(cu.fromSource()) {
+					for(int i = 0; i < cu.getNumTypeDecl(); i++) {
+						cu.getTypeDecl(i).generateClassfile();
+						// do not clear type decl since there may be ITD using
+						// matching on introduced parents.
+					}
+					//cu.clear();
+					if (monitor.isCanceled()) {
+						// Remove class files before return
+						try {
+							removeAllGeneratedClassFiles(project, buildConfiguration, monitor);
+						} catch (CoreException e) {
+							String message = "Failed to remove generated class files: " + e.getMessage(); 
+							addCompilationFailedMarker(project, message);
+							Activator.INSTANCE.getLog().log(e.getStatus());
+						}
+						return null;
+					}
+					subMonitor.worked(1);
+				}
+			}
+		}
+		
+		// Monitor code
+		subMonitor.done();
+		monitor.done();
+		
+		return program;
+		
+		//try {
+		//} finally {
+		//	monitor.done();
+		//	program.getCompilationUnitList().setParent(null);
+		//	program.setCompilationUnitList(new List());
+		//	program.flushAttributes();
+		//	program = null;
+		//}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#compileToAST(org.eclipse.jface.text.IDocument, org.eclipse.jface.text.reconciler.DirtyRegion, org.eclipse.jface.text.IRegion, org.eclipse.core.resources.IFile)
+	 */
 	@Override
 	protected IASTNode compileToAST(IDocument document, DirtyRegion dirtyRegion, IRegion region, IFile file) {
 		
 		IProject project = file.getProject();
 		String fileName = file.getRawLocation().toOSString();
-		
-		//boolean fireEvent = true;
-		JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
-		if (buildConfiguration == null)
-			return null;
-		
-		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
-		
-		
+
 		// Regenerate scanner or parser if there was a change in a flex or parser file
 		if (fileName.endsWith(".flex")) {
-			buildJFlexScanner(project, jastAddBuildConfig);
+			buildJFlexScanner(project);
 		} else if (fileName.endsWith(".parser")) {
-			buildBeaverParser(project, jastAddBuildConfig);
+			buildBeaverParser(project);
+		} else {
+			ICompilationUnit unit = null;
+			if (document != null) {
+				unit = createCompilationUnit(fileName, document.get());
+			} else {
+				unit = createCompilationUnit(file);
+			}
+			if (unit != null) {
+				// Currently only updating parse errors. To update semantic errors the
+				// node need to be added to the Program node which happens when the
+				// node is added to the registry. The method calling this one could be
+				// overidden to add such behavior
+				Collection<IError> errors = unit.parseErrors();
+				updateErrorMarkers(file, errors, PARSE_ERROR_MARKER_ID, unit);
+				return (IASTNode)unit;
+			}
+
+			// TODO Figure out what this does
+			//	if(program instanceof Program) {
+			//		((Program)program).flushIntertypeDecls();
+			//	}
 		}
+
+		return null;
 		
-		IProgram program = BuildUtil.getProgram(project);
+		//boolean fireEvent = true;
+		//JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
+		//if (buildConfiguration == null)
+		//	return null;
+		//JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
+		
+		
+		//IProgram program = BuildUtil.getProgram(project);
 		//super.updateModel(document, fileName, project);
 
-		try {
-			program.files().clear();
-			Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);
-			program.files().addAll(map.keySet());
+		//try {
+		//	program.files().clear();
+		//	Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);
+		//	program.files().addAll(map.keySet());
 	
-			Collection changedFileNames = new ArrayList();
-			if(fileName != null)
-				changedFileNames.add(fileName);
-			
+		//	Collection changedFileNames = new ArrayList();
+		//	if(fileName != null)
+		//		changedFileNames.add(fileName);
 			// remove files already built and the current document from work list
-			program.flushSourceFiles(changedFileNames);
-			
-			if(fileName != null)
-				program.files().remove(fileName);
-	
+		//	program.flushSourceFiles(changedFileNames);
+		//	if(fileName != null)
+		//		program.files().remove(fileName);
 			// build new files
-			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
-				String name = (String)iter.next();
-				program.addSourceFile(name);
-			}
-			if(fileName.endsWith(".ast"))
-				program.addSourceFile(fileName);
-			else
+		//	for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+		//		String name = (String)iter.next();
+		//		program.addSourceFile(name);
+		//	}
+		//	if(fileName.endsWith(".ast"))
+		//		program.addSourceFile(fileName);
+		//	else
 				//fireEvent = addSourceFileWithRecovery(project, program, document, fileName);
-				addSourceFileWithRecovery(project, program, document, fileName);
-			if(program instanceof Program) {
-				((Program)program).flushIntertypeDecls();
-			}
-			
-		} catch (Exception e) {
-			String message = "Failed to update model!"; 
-			IStatus status = new Status(IStatus.ERROR, 
-					Activator.JASTADDJ_PLUGIN_ID,
-					IStatus.ERROR, message, e);
-			Activator.INSTANCE.getLog().log(status);
-		} catch (Throwable e) {
-			String message = "Failed to update model!"; 
-			IStatus status = new Status(IStatus.ERROR, 
-					Activator.JASTADDJ_PLUGIN_ID,
-					IStatus.ERROR, message, e);
-			Activator.INSTANCE.getLog().log(status);
-		}
-		ProgramInfo info = BuildUtil.getProgramInfo(project);
-		if (info != null) {
-			info.changed();
-		}
-		return null;
+		//		addSourceFileWithRecovery(project, program, document, fileName);	
 	}
-
-	@Override
-	protected IASTNode compileToAST(IFile file) {
-		return null;
-	}
-
-	@Override
-	protected IASTNode compileToProjectAST(IProject project,
-			IProgressMonitor monitor) {
-		ProgramInfo info = BuildUtil.getProgramInfo(project);
-		if (info != null && info.hasChanged()) {
-
-			// Only build if there was a change
-
-			// Build a new project from saved files only.
-			Program program = null;
-			long startTime = System.currentTimeMillis();
-			long newTime;
-			//Runtime.getRuntime().gc();
-			System.out.println("Start rebuilding");
-			System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-			System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
-			try {
-				deleteErrorMarkers(project, PARSE_ERROR_MARKER_ID);
-				deleteErrorMarkers(project, ERROR_MARKER_ID);
-
-
-				JastAddJBuildConfiguration buildConfiguration = BuildUtil.readBuildConfiguration(project);
-				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
-
-				program = (Program) initProgram(project, buildConfiguration);
-				initProgram(program, jastAddBuildConfig);
-				if (program == null)
-					return null;
-				
-				// Generate scanner and parser
-				buildJFlexScanner(project, jastAddBuildConfig);
-				buildBeaverParser(project, jastAddBuildConfig);
-
-				int numSourceFiles = 0;
-
-				long time = System.currentTimeMillis();
-
-				Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);			
-
-				monitor.beginTask("Building files in project " + project.getName(), 100);
-				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 10);
-				subMonitor.beginTask("", map.keySet().size());
-				if (map != null) {
-					for(String fileName : map.keySet()) {
-						program.addSourceFile(fileName);
-						if (monitor.isCanceled()) {
-							return null;
-						}
-						subMonitor.worked(1);
-						numSourceFiles++;
-					}
-				}
-				subMonitor.done();
-
-				newTime = System.currentTimeMillis();
-				System.out.println("Parsing: " + (newTime-time));
-				time = newTime;
-
-				boolean build = true;
-
-				subMonitor = new SubProgressMonitor(monitor, 30);
-				subMonitor.beginTask("", numSourceFiles);
-				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-					ICompilationUnit unit = (ICompilationUnit) iter.next();
-
-					if (unit.fromSource()) {
-						IFile unitFile = map.get(unit.getFileName());
-						build &= updateErrorsInFile(unit, unitFile, true);
-						if (monitor.isCanceled()) {
-							return null;
-						}
-						subMonitor.worked(1);
-					}
-				}
-				subMonitor.done();
-
-				newTime = System.currentTimeMillis();
-				System.out.println("ErrorCheck: " + (newTime-time));
-				time = newTime;
-
-
-				// Use for the bootstrapped version of JastAdd
-
-				subMonitor = new SubProgressMonitor(monitor, 60);
-				subMonitor.beginTask("", numSourceFiles*3);
-				if (build) {
-					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-						CompilationUnit cu = (CompilationUnit)iter.next();
-						if(cu.fromSource()) {
-							cu.generateIntertypeDecls();
-							if(monitor.isCanceled())
-								return null;
-							subMonitor.worked(1);
-						}
-					}
-					newTime = System.currentTimeMillis();
-					System.out.println("ITD generation: " + (newTime-time));
-					time = newTime;
-					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-						CompilationUnit cu = (CompilationUnit)iter.next();
-						if(cu.fromSource()) {
-							cu.transformation();
-							if(monitor.isCanceled())
-								return null;
-							subMonitor.worked(1);
-						}
-					}
-					newTime = System.currentTimeMillis();
-					System.out.println("Transformation: " + (newTime-time));
-					time = newTime;
-					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-						CompilationUnit cu = (CompilationUnit)iter.next();
-						if(cu.fromSource()) {
-							for(int i = 0; i < cu.getNumTypeDecl(); i++) {
-								cu.getTypeDecl(i).generateClassfile();
-								// do not clear type decl since there may be ITD using
-								// matching on introduced parents.
-							}
-							//cu.clear();
-							if (monitor.isCanceled()) {
-								// Remove class files before return
-								removeAllGeneratedClassFiles(project, buildConfiguration, monitor);
-								return null;
-							}
-							subMonitor.worked(1);
-						}
-					}
-					newTime = System.currentTimeMillis();
-					System.out.println("Codegeneration: " + (newTime-time));
-					time = newTime;
-				}
-				subMonitor.done();
-				info.clearChanges();
-				
-			} catch (CoreException e) {
-				String message = "Build failed because: " + e.getMessage(); 
-				addCompilationFailedMarker(project, message);
-				Activator.INSTANCE.getLog().log(e.getStatus());
-			}
-			catch (Throwable e) {
-				String message = "Build failed!"; 
-				IStatus status = new Status(IStatus.ERROR, 
-						Activator.JASTADDJ_PLUGIN_ID,
-						IStatus.ERROR, message, e);
-				Activator.INSTANCE.getLog().log(status);
-			} finally {
-				monitor.done();
-				program.getCompilationUnitList().setParent(null);
-				program.setCompilationUnitList(new List());
-				program.flushAttributes();
-				program = null;
-				newTime = System.currentTimeMillis();
-				System.out.println("Complete Build: " + (newTime-startTime));
-				System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-				System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
-				System.out.println("Running garbage collector");
-				//Runtime.getRuntime().gc();
-				System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-				System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
-			}
-		}
-		return null;
-	}
-		
-	public boolean isModelFor(IProject project) {
-		try {
-			if (project != null && project.isOpen() && project.isNatureEnabled(JastAddNature.NATURE_ID)) {
-				return true;
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-    protected boolean addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws java.lang.Exception {
-    	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), fLexer);
-    	if (unit != null) {
-    		IPath path = Path.fromOSString(fileName);
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-			.findFilesForLocation(path);
-			if (files.length == 1)
-				return updateErrorsInFile(unit, files[0], true);
-    	}
-    	return false;
-      }
-    
-	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
-		deleteErrorMarkers(file, PARSE_ERROR_MARKER_ID);
-		Collection errors = unit.parseErrors();
-		Collection warnings = new LinkedList();
-		boolean noParseErrors = errors.isEmpty();
-		if (checkSemantics && noParseErrors) { // only run semantic checks if there's no parse errors and if its asked for
-			deleteErrorMarkers(file, ERROR_MARKER_ID);
-			unit.errorCheck(errors, warnings);
-		}
-		errors.addAll(warnings);
-		if (!errors.isEmpty()) {
-			addErrorMarkers(file, errors, ERROR_MARKER_ID);
-			
-			/*
-			for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-				org.jastadd.plugin.jastaddj.AST.IProblem error = 
-					(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
-				int line = error.line();
-				int endLine = error.endLine();
-				int column = error.column();
-				int endColumn = error.endColumn();
-				if (line == -1)
-					line = 1;
-				int startOffset = lookupOffset(line-1, column-1, content);
-				if (endLine == -1)
-					endLine = 1;
-				int endOffset = lookupOffset(endLine-1, endColumn-1, content); 
-
-				if (startOffset == endOffset)
-					endOffset++;
-
-				String message = error.message();
-				int severity = IMarker.SEVERITY_INFO;
-				if (error.severity() == IDEProblem.Severity.ERROR)
-					severity = IMarker.SEVERITY_ERROR;
-				else if (error.severity() == IDEProblem.Severity.WARNING)
-					severity = IMarker.SEVERITY_WARNING;
-				
-				if (error.kind() == IDEProblem.Kind.LEXICAL
-						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
-					addParseErrorMarker(file, message, line, startOffset, endOffset, severity);
-				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
-					addErrorMarker(file, message, line, startOffset, endOffset, severity);
-				}	
-			}
-			*/
-			
-			return noParseErrors;
-		}
-		return noParseErrors;
-	}
-/*
-    
-	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
-		String content;
-		try {
-			content = FileUtil.readTextFile(file.getRawLocation().toOSString());
-			return updateErrorsInFile(unit, file, content, checkSemantics);
-		} catch (IOException e) {
-			String message = "Problem reading file content when updating errors markers";
-			IStatus status = new Status(IStatus.ERROR, 
-					Activator.JASTADDJ_PLUGIN_ID,
-					IStatus.ERROR, message, e);
-			Activator.INSTANCE.getLog().log(status);
-		}
-		return false;
-	}
-	*/
-	
 	
 	/*
-	public java.util.List<String> getFileExtensions() {
-		java.util.List<String> list = super.getFileExtensions();
-		list.add("jrag");
-		list.add("jadd");
-		list.add("ast");
-		list.add("flex");
-		list.add("parser");
-		return list;
-	}
-	*/
-	
-	public String getNatureID() {
-		//return JastAddNature.NATURE_ID;
-		return JastAddNature.NATURE_ID;
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#compileToAST(org.eclipse.core.resources.IFile)
+	 */
+	@Override
+	protected IASTNode compileToAST(IFile file) {
+		return compileToAST(null, null, null, file);
 	}
 	
-	public JastAddCompiler() {
-		/*
-		String[] fileType = {"jrag", "jadd", "ast", "flex", "parser"};
- 		registerFileType(fileType[0]);
- 		registerFileType(fileType[1]);
- 		registerFileType(fileType[2]);
- 		registerFileType(fileType[3]);
- 		registerFileType(fileType[4]);
-		JastAddScanner scanner = new  JastAddScanner(new JastAddColors());
-		registerScanner(scanner, fileType[0]);
-		registerScanner(scanner, fileType[1]);
-		registerScanner(new ASTScanner(new JastAddColors()), fileType[2]);
-		registerScanner(new JFlexScanner(new JastAddColors()), fileType[3]);
-		registerScanner(new ParserScanner(new JastAddColors()), fileType[4]);
-		*/
-	}	
-
-
-	//*************** Protected methods
-	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#initProgram(org.eclipse.core.resources.IProject, org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration)
+	 */
 	@Override
 	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
-		Program program = new Program();
-		// Init
-		program.initBytecodeReader(new BytecodeParser());
-		program.initJavaParser(
-				new JavaParser() {
+		
+		if (fParser == null) {
+			fParser = new IParser() {
+				public org.jastadd.plugin.jastadd.generated.AST.JavaParser parser = new org.jastadd.plugin.jastadd.generated.AST.JavaParser() {
 					public CompilationUnit parse(java.io.InputStream is, String fileName) 
 					throws java.io.IOException, beaver.Parser.Exception {
 						return new org.jastadd.plugin.jastadd.parser.JavaParser().parse(is, fileName);
-					}
+					}	
+				};
+				public ICompilationUnit parse(java.io.InputStream is, String fileName) 
+				throws java.io.IOException, beaver.Parser.Exception {
+					return parser.parse(is, fileName);
 				}
-		);
+				public Object newInternalParser() {
+					return new org.jastadd.plugin.jastadd.generated.AST.JavaParser() {
+						public CompilationUnit parse(java.io.InputStream is, String fileName) 
+						throws java.io.IOException, beaver.Parser.Exception {
+							return new org.jastadd.plugin.jastadd.parser.JavaParser().parse(is, fileName);
+						}	
+					};
+				}
+			}; 
+		}
+		
+		Program program = new Program();
+		// Init
+		program.initBytecodeReader(new BytecodeParser());
+		program.initJavaParser((JavaParser)fParser.newInternalParser());
 		program.options().initOptions();
 		program.options().addKeyValueOption("-classpath");
 		program.options().addKeyValueOption("-bootclasspath");
@@ -467,17 +388,10 @@ public class JastAddCompiler extends JastAddJCompiler {
 		return program;	   
 	}
 	
-	protected void initProgram(IProgram program, JastAddBuildConfiguration buildConfig) {
-		Collection<String> options = new ArrayList<String>();
-		if (buildConfig.jastadd.getPackage() != null) {
-			options.add("-package");
-			options.add(buildConfig.jastadd.getPackage());
-		}
-		synchronized (((IASTNode)program).treeLockObject()) {
-			program.addOptions(options.toArray(new String[0]));
-		}
-	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.jastaddj.compiler.JastAddJCompiler#reinitProgram(org.eclipse.core.resources.IProject, org.jastadd.plugin.jastaddj.AST.IProgram, org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration)
+	 */
 	@Override
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
 		synchronized (((IASTNode)program).treeLockObject()) {
@@ -491,17 +405,18 @@ public class JastAddCompiler extends JastAddJCompiler {
 			realProgram.options().setOption("-verbose");
 		}
 	}	
-	
-	
-	/*
-	public Object getASTRootForLock(IProject project) {
-		ProgramInfo info = projectToNodeMap.get(project);
-		if (info == null)
-			return JastAddCompiler.class;
-		IProgram root = info.program;
-		return ((IJastAddNode)root).treeLockObject();
+
+	protected void initProgram(IProgram program, JastAddBuildConfiguration buildConfig) {
+		Collection<String> options = new ArrayList<String>();
+		if (buildConfig.jastadd.getPackage() != null) {
+			options.add("-package");
+			options.add(buildConfig.jastadd.getPackage());
+		}
+		synchronized (((IASTNode)program).treeLockObject()) {
+			program.addOptions(options.toArray(new String[0]));
+		}
 	}
-	*/
+	
 	
 	public ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
 		ArrayList<AttributeDecl> nameList = new ArrayList<AttributeDecl>();
@@ -662,42 +577,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 		}
 	}
 	
-	/*
-	protected ProgramInfo getProgramInfo(IProject project) {
-		if (projectToNodeMap.containsKey(project)) {
-			return projectToNodeMap.get(project);
-		} else {
-			if (isModelFor(project)) {
-				try {
-					ProgramInfo programInfo = new ProgramInfo();
-					programInfo.buildConfiguration = readBuildConfiguration(project);
-					programInfo.program = initProgram(project, programInfo.buildConfiguration);
-					JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
-					initProgram(programInfo.program, jastAddBuildConfig);
-					projectToNodeMap.put(project, programInfo);
-					nodeToProjectMap.put(programInfo.program, project);
-					return programInfo;
-				} catch (CoreException e) {
-					String message = "Initializing program failed!"; 
-					IStatus status = new Status(IStatus.ERROR, 
-							Activator.JASTADDJ_PLUGIN_ID,
-							IStatus.ERROR, message, e);
-					Activator.INSTANCE.getLog().log(status);
-					return null;
-				} catch (Error e) {
-					String message = "Initializing program failed!"; 
-					IStatus status = new Status(IStatus.ERROR, 
-							Activator.JASTADDJ_PLUGIN_ID,
-							IStatus.ERROR, message, e);
-					Activator.INSTANCE.getLog().log(status);
-					return null;
-				}
-			}
-		}
-		return null;
-	}
-	*/
-		
+	/*		
 	private static void clearProgram(ASTNode node) {
 		node.flushCache();
 		for(int i = 0; i < node.getNumChild(); i++) {
@@ -708,73 +588,8 @@ public class JastAddCompiler extends JastAddJCompiler {
 		}
 		
 	}
+	*/
 	
-	protected boolean updateModel(IDocument document, String fileName, IProject project) {
-		boolean fireEvent = true;
-		JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
-		if (buildConfiguration == null)
-			return false;
-		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
-		
-		// Regenerate scanner or parser if there was a change in a flex or parser file
-		if (fileName.endsWith(".flex")) {
-			buildJFlexScanner(project, jastAddBuildConfig);
-		} else if (fileName.endsWith(".parser")) {
-			buildBeaverParser(project, jastAddBuildConfig);
-		}
-		
-		IProgram program = BuildUtil.getProgram(project);
-		//super.updateModel(document, fileName, project);
-
-		try {
-			program.files().clear();
-			Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);
-			program.files().addAll(map.keySet());
-	
-			Collection changedFileNames = new ArrayList();
-			if(fileName != null)
-				changedFileNames.add(fileName);
-			
-			// remove files already built and the current document from work list
-			program.flushSourceFiles(changedFileNames);
-			
-			if(fileName != null)
-				program.files().remove(fileName);
-	
-			// build new files
-			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
-				String name = (String)iter.next();
-				program.addSourceFile(name);
-			}
-			if(fileName.endsWith(".ast"))
-				program.addSourceFile(fileName);
-			else
-				fireEvent = addSourceFileWithRecovery(project, program, document, fileName);
-
-			if(program instanceof Program) {
-				((Program)program).flushIntertypeDecls();
-			}
-		} catch (Exception e) {
-			String message = "Failed to update model!"; 
-			IStatus status = new Status(IStatus.ERROR, 
-					Activator.JASTADDJ_PLUGIN_ID,
-					IStatus.ERROR, message, e);
-			Activator.INSTANCE.getLog().log(status);
-
-		} catch (Throwable e) {
-			String message = "Failed to update model!"; 
-			IStatus status = new Status(IStatus.ERROR, 
-					Activator.JASTADDJ_PLUGIN_ID,
-					IStatus.ERROR, message, e);
-			Activator.INSTANCE.getLog().log(status);
-
-		}
-		ProgramInfo info = BuildUtil.getProgramInfo(project);
-		if (info != null) {
-			info.changed();
-		}
-		return fireEvent;
-	}
 
 	private long getTimeStamp(String name, IProject project) {
 		IFile oldFile = project.getFile(name);
@@ -789,7 +604,10 @@ public class JastAddCompiler extends JastAddJCompiler {
 		return Long.MIN_VALUE;
 	}
 	
-	private void buildJFlexScanner(IProject project, JastAddBuildConfiguration buildConfig) {
+	private void buildJFlexScanner(IProject project) {
+		
+		JastAddBuildConfiguration buildConfig = new JastAddBuildConfiguration(project);
+		
 		String flexFileName = buildConfig.flex.getOutputFolder() + File.separator + "Scanner.flex";
 		
 		long lastModified = getTimeStamp(flexFileName, project);
@@ -821,7 +639,9 @@ public class JastAddCompiler extends JastAddJCompiler {
 		}
 	}
 
-	private void buildBeaverParser(IProject project, JastAddBuildConfiguration buildConfig) {
+	private void buildBeaverParser(IProject project) {
+		JastAddBuildConfiguration buildConfig = new JastAddBuildConfiguration(project);
+		
 		String parserName = buildConfig.parser.getParserName();
 		if (parserName == null)
 			parserName = "Parser";
@@ -950,6 +770,233 @@ public class JastAddCompiler extends JastAddJCompiler {
   		return true;
   	}
   	
+
+
+	/*
+    protected boolean addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws java.lang.Exception {
+    	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), fLexer);
+    	if (unit != null) {
+    		IPath path = Path.fromOSString(fileName);
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+			.findFilesForLocation(path);
+			if (files.length == 1)
+				return updateErrorsInFile(unit, files[0], true);
+    	}
+    	return false;
+      }
+    
+	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
+		deleteErrorMarkers(file, PARSE_ERROR_MARKER_ID);
+		Collection errors = unit.parseErrors();
+		Collection warnings = new LinkedList();
+		boolean noParseErrors = errors.isEmpty();
+		if (checkSemantics && noParseErrors) { // only run semantic checks if there's no parse errors and if its asked for
+			deleteErrorMarkers(file, ERROR_MARKER_ID);
+			unit.errorCheck(errors, warnings);
+		}
+		errors.addAll(warnings);
+		if (!errors.isEmpty()) {
+			addErrorMarkers(file, errors, ERROR_MARKER_ID);
+			
+			for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+				org.jastadd.plugin.jastaddj.AST.IProblem error = 
+					(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
+				int line = error.line();
+				int endLine = error.endLine();
+				int column = error.column();
+				int endColumn = error.endColumn();
+				if (line == -1)
+					line = 1;
+				int startOffset = lookupOffset(line-1, column-1, content);
+				if (endLine == -1)
+					endLine = 1;
+				int endOffset = lookupOffset(endLine-1, endColumn-1, content); 
+
+				if (startOffset == endOffset)
+					endOffset++;
+
+				String message = error.message();
+				int severity = IMarker.SEVERITY_INFO;
+				if (error.severity() == IDEProblem.Severity.ERROR)
+					severity = IMarker.SEVERITY_ERROR;
+				else if (error.severity() == IDEProblem.Severity.WARNING)
+					severity = IMarker.SEVERITY_WARNING;
+				
+				if (error.kind() == IDEProblem.Kind.LEXICAL
+						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
+					addParseErrorMarker(file, message, line, startOffset, endOffset, severity);
+				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
+					addErrorMarker(file, message, line, startOffset, endOffset, severity);
+				}	
+			}
+			
+			
+			return noParseErrors;
+		}
+		return noParseErrors;
+	}
+
+    
+	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
+		String content;
+		try {
+			content = FileUtil.readTextFile(file.getRawLocation().toOSString());
+			return updateErrorsInFile(unit, file, content, checkSemantics);
+		} catch (IOException e) {
+			String message = "Problem reading file content when updating errors markers";
+			IStatus status = new Status(IStatus.ERROR, 
+					Activator.JASTADDJ_PLUGIN_ID,
+					IStatus.ERROR, message, e);
+			Activator.INSTANCE.getLog().log(status);
+		}
+		return false;
+	}
+	*/
+	
+	
+	/*
+	public java.util.List<String> getFileExtensions() {
+		java.util.List<String> list = super.getFileExtensions();
+		list.add("jrag");
+		list.add("jadd");
+		list.add("ast");
+		list.add("flex");
+		list.add("parser");
+		return list;
+	}
+	*/
+	
+	/*
+	public JastAddCompiler() {
+		
+		String[] fileType = {"jrag", "jadd", "ast", "flex", "parser"};
+ 		registerFileType(fileType[0]);
+ 		registerFileType(fileType[1]);
+ 		registerFileType(fileType[2]);
+ 		registerFileType(fileType[3]);
+ 		registerFileType(fileType[4]);
+		JastAddScanner scanner = new  JastAddScanner(new JastAddColors());
+		registerScanner(scanner, fileType[0]);
+		registerScanner(scanner, fileType[1]);
+		registerScanner(new ASTScanner(new JastAddColors()), fileType[2]);
+		registerScanner(new JFlexScanner(new JastAddColors()), fileType[3]);
+		registerScanner(new ParserScanner(new JastAddColors()), fileType[4]);
+		
+	}	
+*/
+
+	//*************** Protected methods
+	
+	
+
+	
+	/*
+	protected ProgramInfo getProgramInfo(IProject project) {
+		if (projectToNodeMap.containsKey(project)) {
+			return projectToNodeMap.get(project);
+		} else {
+			if (isModelFor(project)) {
+				try {
+					ProgramInfo programInfo = new ProgramInfo();
+					programInfo.buildConfiguration = readBuildConfiguration(project);
+					programInfo.program = initProgram(project, programInfo.buildConfiguration);
+					JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
+					initProgram(programInfo.program, jastAddBuildConfig);
+					projectToNodeMap.put(project, programInfo);
+					nodeToProjectMap.put(programInfo.program, project);
+					return programInfo;
+				} catch (CoreException e) {
+					String message = "Initializing program failed!"; 
+					IStatus status = new Status(IStatus.ERROR, 
+							Activator.JASTADDJ_PLUGIN_ID,
+							IStatus.ERROR, message, e);
+					Activator.INSTANCE.getLog().log(status);
+					return null;
+				} catch (Error e) {
+					String message = "Initializing program failed!"; 
+					IStatus status = new Status(IStatus.ERROR, 
+							Activator.JASTADDJ_PLUGIN_ID,
+							IStatus.ERROR, message, e);
+					Activator.INSTANCE.getLog().log(status);
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+	*/
+
+
+	/*
+	protected boolean updateModel(IDocument document, String fileName, IProject project) {
+		boolean fireEvent = true;
+		JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
+		if (buildConfiguration == null)
+			return false;
+		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
+		
+		// Regenerate scanner or parser if there was a change in a flex or parser file
+		if (fileName.endsWith(".flex")) {
+			buildJFlexScanner(project, jastAddBuildConfig);
+		} else if (fileName.endsWith(".parser")) {
+			buildBeaverParser(project, jastAddBuildConfig);
+		}
+		
+		IProgram program = BuildUtil.getProgram(project);
+		//super.updateModel(document, fileName, project);
+
+		try {
+			program.files().clear();
+			Map<String,IFile> map = BuildUtil.sourceMap(project, buildConfiguration);
+			program.files().addAll(map.keySet());
+	
+			Collection changedFileNames = new ArrayList();
+			if(fileName != null)
+				changedFileNames.add(fileName);
+			
+			// remove files already built and the current document from work list
+			program.flushSourceFiles(changedFileNames);
+			
+			if(fileName != null)
+				program.files().remove(fileName);
+	
+			// build new files
+			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+				String name = (String)iter.next();
+				program.addSourceFile(name);
+			}
+			if(fileName.endsWith(".ast"))
+				program.addSourceFile(fileName);
+			else
+				fireEvent = addSourceFileWithRecovery(project, program, document, fileName);
+
+			if(program instanceof Program) {
+				((Program)program).flushIntertypeDecls();
+			}
+		} catch (Exception e) {
+			String message = "Failed to update model!"; 
+			IStatus status = new Status(IStatus.ERROR, 
+					Activator.JASTADDJ_PLUGIN_ID,
+					IStatus.ERROR, message, e);
+			Activator.INSTANCE.getLog().log(status);
+
+		} catch (Throwable e) {
+			String message = "Failed to update model!"; 
+			IStatus status = new Status(IStatus.ERROR, 
+					Activator.JASTADDJ_PLUGIN_ID,
+					IStatus.ERROR, message, e);
+			Activator.INSTANCE.getLog().log(status);
+
+		}
+		ProgramInfo info = BuildUtil.getProgramInfo(project);
+		if (info != null) {
+			info.changed();
+		}
+		return fireEvent;
+	}
+	*/
+
+  	
   	/*
 	protected String[] filterNames = {"flex.xml", "parser.xml", "jastadd.xml"};
 	
@@ -966,9 +1013,10 @@ public class JastAddCompiler extends JastAddJCompiler {
 	}
 	*/
 
+  	/*
   	
   	public void checkForErrors(IProject project, IProgressMonitor monitor) {
-  		/*
+  		
 		try {
 			try {				
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
@@ -1024,8 +1072,9 @@ public class JastAddCompiler extends JastAddJCompiler {
 		} finally {
 			monitor.done();
 		}
-		*/
+		
 	}
+	
 
 	public Collection recoverAndCompletion(int documentOffset,
 			StringBuffer buf, IProject project, String fileName,
@@ -1096,5 +1145,6 @@ public class JastAddCompiler extends JastAddJCompiler {
 			return new ArrayList();
 		}
 	}
+	*/
 
 }

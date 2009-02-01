@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd.editor;
+package org.jastadd.plugin.jastadd.editor.aspects;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.ITokenScanner;

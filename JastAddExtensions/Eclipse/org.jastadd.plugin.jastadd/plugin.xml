@@ -161,7 +161,7 @@
  <extension
        point="org.jastadd.plugin.compilers">
     <compiler
-          class="org.jastadd.plugin.jastadd.JastAddCompiler">
+          class="org.jastadd.plugin.jastadd.compiler.JastAddCompiler">
     </compiler>
  </extension>
 	

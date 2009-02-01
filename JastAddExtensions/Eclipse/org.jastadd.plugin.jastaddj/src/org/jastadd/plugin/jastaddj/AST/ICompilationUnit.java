@@ -13,4 +13,8 @@ public interface ICompilationUnit extends IJastAddNode {
 	void transformation();
 	void generateClassfile();
 	int offset(int line, int column);
+	int getNumTypeDecl();
+	void setPathName(String path);
+	void setRelativeName(String path);
+	void setFromSource(boolean fromSource);
 }

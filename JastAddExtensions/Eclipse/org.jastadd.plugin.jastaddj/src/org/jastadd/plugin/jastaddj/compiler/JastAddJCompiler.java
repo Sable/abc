@@ -27,6 +27,8 @@ import org.jastadd.plugin.compiler.recovery.RecoveryLexer;
 import org.jastadd.plugin.compiler.recovery.SOF;
 import org.jastadd.plugin.jastaddj.Activator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
+import org.jastadd.plugin.jastaddj.AST.IParser;
+import org.jastadd.plugin.jastaddj.AST.IProblem;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.compiler.recovery.JavaLexerIII;
@@ -44,7 +46,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 	// Recovery lexer used for bridge parsing
 	protected RecoveryLexer fLexer;
 	// Java Parser used to build CompilationUnit's
-	protected JavaParser fJavaParser;
+	protected IParser fParser;
 	// File extensions accepted by this compiler
 	protected Collection<String> fAcceptedExtensions;
 	
@@ -240,6 +242,15 @@ public class JastAddJCompiler extends AbstractCompiler {
 			addSourceFileWithRecovery(project, program, document, fileName);
 		 */
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.jastadd.plugin.compiler.AbstractCompiler#compileToAST(org.eclipse.core.resources.IFile)
+	 */
+	@Override
+	protected IASTNode compileToAST(IFile file) {
+		return compileToAST(null, null, null, file);
+	}
 	
 	/*
 	 * (non-Javadoc)
@@ -261,15 +272,6 @@ public class JastAddJCompiler extends AbstractCompiler {
 		} else {
 			deleteErrorMarkers(file, ERROR_MARKER_ID);
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.jastadd.plugin.compiler.AbstractCompiler#compileToAST(org.eclipse.core.resources.IFile)
-	 */
-	@Override
-	protected IASTNode compileToAST(IFile file) {
-		return compileToAST(null, null, null, file);
 	}
 	
 	/*
@@ -298,8 +300,8 @@ public class JastAddJCompiler extends AbstractCompiler {
 			Collection<IError> errorList, String markerID, ICompilationUnit unit) {
 		for (IError error : errorList) {
 			// Convert column,line to start end offsets
-			if (error instanceof IDEProblem) {
-				IDEProblem problem = (IDEProblem)error;
+			if (error instanceof IProblem) {
+				IProblem problem = (IProblem)error;
 				int startOffset = unit.offset(problem.line(), problem.column());
 				int endOffset = unit.offset(problem.endLine(), problem.endColumn());
 				problem.setStartOffset(startOffset);
@@ -319,12 +321,12 @@ public class JastAddJCompiler extends AbstractCompiler {
 
 		StringBuffer buf = new StringBuffer(contents);
 		int keepOn = 2;
-		CompilationUnit unit = null;
+		ICompilationUnit unit = null;
 		while (keepOn > 0) {
 			
 			java.io.InputStream is = new java.io.ByteArrayInputStream(buf.toString().getBytes());
 			try {
-				unit = fJavaParser.parse(is, path);
+				unit = fParser.parse(is, path);
 				is.close();
 				is = null;
 
@@ -374,10 +376,10 @@ public class JastAddJCompiler extends AbstractCompiler {
 	 */
 	protected ICompilationUnit createCompilationUnit(IFile file) {
 		String path = file.getRawLocation().toOSString();
-		CompilationUnit unit = null;
+		ICompilationUnit unit = null;
 		try {
 			java.io.InputStream is = new FileInputStream(file.getRawLocation().toFile());
-			unit = fJavaParser.parse(is, path);
+			unit = fParser.parse(is, path);
 			is.close();
 			is = null;
 
@@ -393,7 +395,6 @@ public class JastAddJCompiler extends AbstractCompiler {
 		return null;
 	}
 	
-
 	/**
 	 * Creates a new IProgram node which will act as a project root node
 	 * @param project The corresponding project
@@ -402,11 +403,15 @@ public class JastAddJCompiler extends AbstractCompiler {
 	 */
 	protected IProgram initProgram(IProject project,
 			JastAddJBuildConfiguration buildConfiguration) {
-		if (fJavaParser == null) {
-			fJavaParser = new JavaParser() {
+		if (fParser == null) {
+			fParser = new IParser() {
+				public parser.JavaParser parser = new parser.JavaParser();
 				public CompilationUnit parse(java.io.InputStream is, String fileName)
 					throws java.io.IOException, beaver.Parser.Exception {
-					return new parser.JavaParser().parse(is, fileName);
+					return parser.parse(is, fileName);
+				}
+				public Object newInternalParser() {
+					return new parser.JavaParser();
 				}
 			};
 		}
@@ -414,7 +419,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 		// Init
 		Program program = new Program();
 		program.initBytecodeReader(new BytecodeParser());
-		program.initJavaParser(fJavaParser);
+		program.initJavaParser((JavaParser)fParser.newInternalParser());
 		program.options().initOptions();
 		try {
 			program.addKeyValueOption("-classpath");

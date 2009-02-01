@@ -20,5 +20,7 @@ public interface IProblem {
 		public static final Kind SEMANTIC = new Kind();
 		private Kind() { }
 	}
-
+	
+	public void setStartOffset(int startOffset);
+	public void setEndOffset(int endOffset);
 }
