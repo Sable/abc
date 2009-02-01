@@ -243,11 +243,6 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		if (project == null)
 			return false;
-		/*
-		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
-		if (model == null)
-			return false;
-		*/
 		buildConfiguration = BuildUtil.readBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return false;

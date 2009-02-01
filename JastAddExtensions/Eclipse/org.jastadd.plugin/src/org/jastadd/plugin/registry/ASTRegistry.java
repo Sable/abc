@@ -71,9 +71,13 @@ public class ASTRegistry {
 	public IASTNode lookupAST(String key, IProject project) {
 		IASTNode node = null;
 		if (astMap.containsKey(project)) {
-			ASTEntry entry = astMap.get(project);	
-			synchronized (entry.lock()) {
-				node = entry.getChildAST(key);
+			ASTEntry entry = astMap.get(project);
+			if (key == null) {
+				node = entry.ast;
+			} else {
+				synchronized (entry.lock()) {
+					node = entry.getChildAST(key);
+				}
 			}
 		} else {
 			try {

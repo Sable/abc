@@ -30,11 +30,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.IClassDecl;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.util.BuildUtil;
+
+import org.jastadd.plugin.Activator;
 
 public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 
@@ -233,40 +236,37 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 		// Only search if a project has been selected 
 		IProject project = getProject();
 		if (project != null) {
-			ILabelProvider labelProvider= new JastAddLabelProvider();
+			ILabelProvider labelProvider= new MainTypeLabelProvider();
 			ElementListSelectionDialog dialog= new ElementListSelectionDialog(getShell(), labelProvider);
 		    dialog.setTitle(LauncherMessages.JavaMainTab_Choose_Main_Type_11); 
 			dialog.setMessage(LauncherMessages.JavaMainTab_Choose_a_main__type_to_launch__12);
 			
-			// Fill with values
-			//if (model != null) {
-				
-			JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
-			if (buildConfiguration != null) {
-				IProgram program = BuildUtil.getProgram(project);
-				if (program != null) {
-					IOutlineNode[] mainTypes = program.mainTypes();
-					if (mainTypes.length == 0) {
-						// Show message: No main types in this project
-						System.out.println("No main types in this project");
-						return;
-					} 
-					dialog.setElements(mainTypes);
-				} else {
-					dialog.setElements(new IOutlineNode[0]);
-				}
+			//JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
+			//if (buildConfiguration != null) {
+			
+			IASTNode projectAST = Activator.getASTRegistry().lookupAST(null, project);
+			if (projectAST != null && projectAST instanceof IProgram) {
+				IProgram program = (IProgram)projectAST;
+				IOutlineNode[] mainTypes = program.mainTypes();
+				if (mainTypes.length == 0) {
+					// Show message: No main types in this project
+					System.out.println("No main types in this project");
+					return;
+				} 
+				dialog.setElements(mainTypes);
 			} else {
 				dialog.setElements(new IOutlineNode[0]);
 			}
-			//}
-
+			
 			if (dialog.open() == Window.CANCEL) {
 				return;
 			}
 			Object[] results = dialog.getResult();	
 		    IClassDecl type = (IClassDecl)results[0];
 	     	if (type != null) {
-			  mainClassText.setText(type.packageName() + "." + type.getID());
+	     		String typeText = type.getID();
+	     		String packageText = type.packageName();
+	     		mainClassText.setText((packageText.length() > 0 ? packageText + "." : "") + typeText);
 		    }
 		} else {
 			// Show message: No project selected
@@ -275,7 +275,7 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	
-	private class JastAddLabelProvider implements ILabelProvider {
+	private class MainTypeLabelProvider implements ILabelProvider {
 
 		public Image getImage(Object element) {
 			if (element instanceof IOutlineNode) {
@@ -286,9 +286,13 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 		}
 
 		public String getText(Object element) {
-			if (element instanceof IOutlineNode) {
-				IOutlineNode decl = (IOutlineNode)element;
-				return decl.contentOutlineLabel();
+			if (element instanceof IClassDecl) {
+				IClassDecl decl = (IClassDecl)element;
+				String text = decl.packageName();
+				if (text.length() > 0)
+					text += ".";
+				text += decl.getID();
+				return text;
 			}
 			return null;
 		}
