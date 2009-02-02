@@ -1,4 +1,5 @@
 aspect ASTParsing {
+
   refine ASTGrammar private void Program.loadASTFile(String name) {
     try {
       FileInputStream is = new FileInputStream(name);
@@ -7,6 +8,8 @@ aspect ASTParsing {
       CompilationUnit cu = (CompilationUnit)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
+      // To get the state object from Program set the parent to Program
+      //cu.setParent(this);
       List importList = cu.getImportDeclList();
       for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
         TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
@@ -33,6 +36,8 @@ aspect ASTParsing {
       CompilationUnit cu = (CompilationUnit)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
+      // To get the state object from Program set the parent to Program
+      cu.setParent(this);
       List importList = cu.getImportDeclList();
       for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
         TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
@@ -41,10 +46,10 @@ aspect ASTParsing {
             (List)importList.fullCopy(),
             new List().add(typeDecl)
             );
+        addCompilationUnit(unit);
         unit.setFromSource(true);
         unit.setRelativeName(name);
         unit.setPathName(name);
-        addCompilationUnit(unit);
       }
     } catch (Exception e) {
       throw new Error(e.getMessage());
