@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.jastadd.plugin.jastadd.Activator;
-import org.jastadd.plugin.jastadd.FindEquationsHandler;
+import org.jastadd.plugin.jastadd.editor.actions.FindEquationsHandler;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor;
 
 public class AspectEditorContributor extends JastAddJEditorContributor {

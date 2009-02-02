@@ -2,7 +2,7 @@ package org.jastadd.plugin.jastadd.editor.aspects;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.jastadd.plugin.jastadd.FindEquationsHandler;
+import org.jastadd.plugin.jastadd.editor.actions.FindEquationsHandler;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 
 public class AspectEditor extends JastAddJEditor {

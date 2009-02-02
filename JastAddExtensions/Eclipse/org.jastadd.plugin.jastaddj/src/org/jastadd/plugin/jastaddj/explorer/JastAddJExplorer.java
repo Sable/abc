@@ -12,7 +12,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -159,13 +158,6 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 			releaseModelInfo();
 			super.dispose();
 		}
-
-		/*
-		public void modelChangedEvent() {
-			reloadModelInfo();
-			doViewerRefresh();
-		}
-		*/
 	}
 
 	private class MyLabelProvider extends BaseLabelProvider {

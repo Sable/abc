@@ -61,8 +61,11 @@ public class Activator extends AbstractUIPlugin {
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
+	/*
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
+		
+		 *  TODO Add this again 
 		synchronized(stopHandlers) {
 			for(Runnable stopHandler : stopHandlers) {
 				try {
@@ -73,8 +76,9 @@ public class Activator extends AbstractUIPlugin {
 				}
 			}
 		}
+		
 	}
-
+*/
 	
 	public void addStopHandler(Runnable stopHandler) {
 		synchronized(stopHandlers) {

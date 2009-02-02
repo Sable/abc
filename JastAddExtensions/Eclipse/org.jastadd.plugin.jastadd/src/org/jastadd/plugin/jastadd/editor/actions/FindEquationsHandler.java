@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd;
+package org.jastadd.plugin.jastadd.editor.actions;
 
 
 import java.util.ArrayList;
