@@ -31,12 +31,10 @@ import org.jastadd.plugin.util.ColorRegistry;
 
 public class JastAddJSourceViewerConfiguration extends SourceViewerConfiguration {
 	
-	//private JastAddModel model;
 	private ReconcilingStrategy strategy;
 	
-	public JastAddJSourceViewerConfiguration(ReconcilingStrategy strategy) { //, JastAddModel model) {
+	public JastAddJSourceViewerConfiguration(ReconcilingStrategy strategy) { 
 		this.strategy = strategy;
-		//this.model = model;
 	}
 	
 	/**
@@ -62,11 +60,19 @@ public class JastAddJSourceViewerConfiguration extends SourceViewerConfiguration
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
-		ITokenScanner scanner = new JastAddJScanner(new ColorRegistry());
+		ITokenScanner scanner = getScanner();
 		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		return reconciler;
+	}
+	
+	/**
+	 * Returns the token scanner to use for highlightingin this source viewer
+	 * @return The token scanner
+	 */
+	protected ITokenScanner getScanner() {
+		return new JastAddJScanner(new ColorRegistry());
 	}
 	
 	/**

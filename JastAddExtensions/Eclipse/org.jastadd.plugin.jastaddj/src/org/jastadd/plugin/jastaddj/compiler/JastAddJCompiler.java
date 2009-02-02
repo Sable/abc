@@ -256,6 +256,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.AbstractCompiler#displaySemanticErrors(org.jastadd.plugin.compiler.ast.IASTNode, org.eclipse.core.resources.IFile)
 	 */
+	/*
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void displaySemanticErrors(IASTNode node, IFile file) {
@@ -273,7 +274,7 @@ public class JastAddJCompiler extends AbstractCompiler {
 			deleteErrorMarkers(file, ERROR_MARKER_ID);
 		}
 	}
-	
+	*/
 	/*
 	 * Change from the default error marker to the parser error marker for lexical and syntactic errors
 	 * (non-Javadoc)

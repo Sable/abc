@@ -361,11 +361,8 @@ public class BuildUtil {
 						case IResource.FILE:
 							IFile file = (IFile) resource;
 							for (ICompiler compiler : org.jastadd.plugin.Activator.getRegisteredCompilers()) {
-								if (!compiler.canCompile(file))
-									break;
-								if (!matcher.match(resource))
-									break;
-								result.put(file.getRawLocation().toOSString(), file);
+								if (compiler.canCompile(file) && matcher.match(resource))
+									result.put(file.getRawLocation().toOSString(), file);
 							}
 							break;
 						}

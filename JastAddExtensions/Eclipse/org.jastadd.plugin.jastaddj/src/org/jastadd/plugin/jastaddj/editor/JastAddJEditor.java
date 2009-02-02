@@ -23,6 +23,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -74,18 +75,18 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	private static final String BUNDLE_FOR_CONSTRUCTED_KEYS= "org.eclipse.jdt.internal.ui.javaeditor.ConstructedJavaEditorMessages";//$NON-NLS-1$
 	
 	// Content outline
-	private AbstractBaseContentOutlinePage fOutlinePage;
+	protected AbstractBaseContentOutlinePage fOutlinePage;
 
 	// Reconciling strategy
-	private ReconcilingStrategy fStrategy;
+	protected ReconcilingStrategy fStrategy;
 	
 	// ASTRegistry listener fields
-	private IASTNode fRoot;
-	private String fKey;
-	private IProject fProject;
+	protected IASTNode fRoot;
+	protected String fKey;
+	protected IProject fProject;
 
-	private IContextActivation contextActivation;
-	private JastAddJBreakpointAdapter breakpointAdapter;	
+	protected IContextActivation contextActivation;
+	protected JastAddJBreakpointAdapter breakpointAdapter;	
 		
 	/**
 	 * Creates a new JastAddJ editor
@@ -298,6 +299,14 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		}
 		return super.getAdapter(required);
 	}
+	
+	/**
+	 * Creates a new source viewer configuration
+	 * @return The new source viewer configuration
+	 */
+	protected SourceViewerConfiguration createSourceViewerConfiguration() {
+		return new JastAddJSourceViewerConfiguration(fStrategy);
+	}
 
 	
 	/**
@@ -310,8 +319,7 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		setEditorContextMenuId(getEditorSite().getId());
 		
 		 // Set the source viewer configuration before the call to createPartControl to set viewer configuration	
-		JastAddJSourceViewerConfiguration conf = new JastAddJSourceViewerConfiguration(fStrategy); //, model);
-	    super.setSourceViewerConfiguration(conf);
+	    super.setSourceViewerConfiguration(createSourceViewerConfiguration());
 	    super.createPartControl(parent);
 
 	    /*
