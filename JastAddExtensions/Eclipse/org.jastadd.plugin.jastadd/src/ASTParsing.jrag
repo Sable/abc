@@ -8,16 +8,24 @@ aspect ASTParsing {
       CompilationUnit cu = (CompilationUnit)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
-      // To get the state object from Program set the parent to Program
-      //cu.setParent(this);
+
       List importList = cu.getImportDeclList();
       for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+      
+ 		// All new nodes which have had other parents need to get their state from
+ 		// the Program node to make sure it's the same all over the tree
+        CompilationUnit unit = new CompilationUnit();
+        changeStateInNode(unit,state());
+        unit.setPackageDecl(cu.getPackageDecl());
+        
+        List listCopy = (List)importList.fullCopy();
+        changeStateInNode(listCopy, state());
+        unit.setChild(listCopy,0);
+        
         TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
-        CompilationUnit unit = new CompilationUnit(
-            cu.getPackageDecl(),
-            (List)importList.fullCopy(),
-            new List().add(typeDecl)
-            );
+        changeStateInNode(typeDecl, state());
+        unit.setChild(new List().add(typeDecl), 1);
+        
         unit.setFromSource(true);
         unit.setRelativeName(name);
         unit.setPathName(name);
@@ -36,24 +44,36 @@ aspect ASTParsing {
       CompilationUnit cu = (CompilationUnit)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
-      // To get the state object from Program set the parent to Program
-      cu.setParent(this);
+
       List importList = cu.getImportDeclList();
       for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+      
+       	// All new nodes which have had other parents need to get their state from
+ 		// the Program node to make sure it's the same all over the tree
+        CompilationUnit unit = new CompilationUnit();
+        changeStateInNode(unit,state());
+        unit.setPackageDecl(cu.getPackageDecl());
+        
+        List listCopy = (List)importList.fullCopy();
+        changeStateInNode(listCopy, state());
+        unit.setChild(listCopy, 0);
+        
         TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
-        CompilationUnit unit = new CompilationUnit(
-            cu.getPackageDecl(),
-            (List)importList.fullCopy(),
-            new List().add(typeDecl)
-            );
-        addCompilationUnit(unit);
+        changeStateInNode(typeDecl, state());
+        unit.setChild(new List().add(typeDecl),1);
+
         unit.setFromSource(true);
         unit.setRelativeName(name);
         unit.setPathName(name);
+        addCompilationUnit(unit);
       }
     } catch (Exception e) {
       throw new Error(e.getMessage());
     }
+  }
+  
+  protected void ASTNode.changeStateInNode(ASTNode node, ASTNode$State state) {
+    node.state = state;
   }
   
   refine JastAddJCompile public void Program.addSourceFile(String name, String contents) {

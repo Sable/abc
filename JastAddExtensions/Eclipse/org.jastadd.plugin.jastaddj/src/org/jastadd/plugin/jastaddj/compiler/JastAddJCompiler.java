@@ -37,8 +37,6 @@ import org.jastadd.plugin.jastaddj.util.BuildUtil;
 
 import AST.BytecodeParser;
 import AST.CompilationUnit;
-import AST.IDEProblem;
-import AST.JavaParser;
 import AST.Program;
 
 public class JastAddJCompiler extends AbstractCompiler {
@@ -405,22 +403,34 @@ public class JastAddJCompiler extends AbstractCompiler {
 	protected IProgram initProgram(IProject project,
 			JastAddJBuildConfiguration buildConfiguration) {
 		if (fParser == null) {
-			fParser = new IParser() {
-				public parser.JavaParser parser = new parser.JavaParser();
-				public CompilationUnit parse(java.io.InputStream is, String fileName)
+			if (fParser == null) {
+				fParser = new IParser() {
+					public AST.JavaParser parser = new AST.JavaParser() {
+						public CompilationUnit parse(java.io.InputStream is, String fileName) 
+						throws java.io.IOException, beaver.Parser.Exception {
+							return new parser.JavaParser().parse(is, fileName);
+						}	
+					};
+					public ICompilationUnit parse(java.io.InputStream is, String fileName) 
 					throws java.io.IOException, beaver.Parser.Exception {
-					return parser.parse(is, fileName);
-				}
-				public Object newInternalParser() {
-					return new parser.JavaParser();
-				}
-			};
+						return parser.parse(is, fileName);
+					}
+					public Object newInternalParser() {
+						return new AST.JavaParser() {
+							public CompilationUnit parse(java.io.InputStream is, String fileName) 
+							throws java.io.IOException, beaver.Parser.Exception {
+								return new parser.JavaParser().parse(is, fileName);
+							}	
+						};
+					}
+				}; 
+			}
 		}
 		
 		// Init
 		Program program = new Program();
 		program.initBytecodeReader(new BytecodeParser());
-		program.initJavaParser((JavaParser)fParser.newInternalParser());
+		program.initJavaParser((AST.JavaParser)fParser.newInternalParser());
 		program.options().initOptions();
 		try {
 			program.addKeyValueOption("-classpath");

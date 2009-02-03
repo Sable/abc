@@ -167,7 +167,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 				errors.clear();
 
 				// Semantic errors
-				if (!hasErrors) {
+				if (!hasErrors && !unitFile.getRawLocation().toOSString().endsWith("ast")) {
 					Collection warnings = new LinkedList();
 					unit.errorCheck(errors, warnings);
 					hasErrors = !errors.isEmpty();
@@ -295,7 +295,7 @@ public class JastAddCompiler extends JastAddJCompiler {
 
 		return null;
 		
-		//boolean fireEvent = true;
+		//boolean fireEvent = true;d
 		//JastAddJBuildConfiguration buildConfiguration = BuildUtil.getBuildConfiguration(project);
 		//if (buildConfiguration == null)
 		//	return null;
