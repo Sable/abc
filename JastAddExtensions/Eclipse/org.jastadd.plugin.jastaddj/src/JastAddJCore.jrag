@@ -12,4 +12,5 @@ aspect JastAddJCore {
 	 */
 	eq CompilationUnit.hasLookupKey() = true;
 	eq CompilationUnit.lookupKey() = pathName();	
+	eq CompilationUnit.lookupChildAST(String key) = key.equals(lookupKey()) ? this : null;
 }

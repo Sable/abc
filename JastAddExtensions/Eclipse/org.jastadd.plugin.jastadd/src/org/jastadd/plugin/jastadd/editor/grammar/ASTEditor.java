@@ -1,250 +1,131 @@
 package org.jastadd.plugin.jastadd.editor.grammar;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.jastadd.plugin.Activator;
+import org.jastadd.plugin.ReconcilingStrategy;
+import org.jastadd.plugin.compiler.ast.IASTNode;
+import org.jastadd.plugin.jastaddj.editor.JastAddJContentOutlinePage;
+import org.jastadd.plugin.registry.ASTRegistry;
+import org.jastadd.plugin.registry.IASTRegistryListener;
+import org.jastadd.plugin.ui.view.AbstractBaseContentOutlinePage;
 
-public class ASTEditor extends AbstractDecoratedTextEditor {
+public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegistryListener {
 	
 	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.ASTEditor";
 	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ASTEditorContext";
 	
+	// Content outline
+	protected AbstractBaseContentOutlinePage fOutlinePage;
+
+	// Reconciling strategy
+	protected ReconcilingStrategy fStrategy;
 	
-	// TODO modify this editor to look like JastAddJ and remove model when possible
+	// ASTRegistry listener fields
+	protected IASTNode fRoot;
+	protected String fKey;
+	protected IProject fProject;
+
+	public ASTEditor() {
+		fOutlinePage = new JastAddJContentOutlinePage(this); 
+		fStrategy = new ReconcilingStrategy();
+	}
+	
 	/*
-	
-	public String getEditorContextID() {
-		return EDITOR_CONTEXT_ID;
-	}
-
-	protected class JastAddResourceBundle extends ResourceBundle {
-
-		private HashMap<String,String> map = new HashMap<String,String>();
-
-		@Override
-		public Enumeration<String> getKeys() {
-			ResourceBundle parent = this.parent;
-			return new ResourceBundleEnumeration(map.keySet(),
-					(parent != null) ? parent.getKeys() : null);
-		}
-
-		@Override
-		protected Object handleGetObject(String key) {
-			return map.get(key);
-		}
-
-	}
-
-	@Override
-	protected void createActions() {
-		super.createActions();
-		// This action will fire a CONTENTASSIST_PROPOSALS operation
-		// when executed
-		IAction action = new TextOperationAction(new JastAddResourceBundle(),
-				"ContentAssistProposal", this, SourceViewer.CONTENTASSIST_PROPOSALS);
-		action.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", action);
-		setActionActivationCode("ContentAssistProposal",' ', -1, SWT.CTRL);
-	}	
-
-	@Override
-	public void doSave(IProgressMonitor progressMonitor) {
-		super.doSave(progressMonitor);
-		IEditorInput input = getEditorInput();
-		if (input instanceof IFileEditorInput) {
-			IFile file = ((IFileEditorInput)input).getFile();
-			final IProject project = file.getProject();
-			final JastAddModel m = model;
-			IWorkspaceRunnable runnable= new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					m.checkForErrors(project, monitor);
-				}
-			};
-			try {
-				project.getWorkspace().run(runnable, progressMonitor);
-			} catch (CoreException e) {
-				//model.logError(e, "Problem with error check on save");
-			}
-		}
-	}
-
-	private JastAddContentOutlinePage fOutlinePage;
-	private ProjectionSupport projectionSupport;
-	private JastAddEditorFolder folder;
-	private IContextActivation contextActivation;
-
-	private JastAddModel model;
-
-	public JastAddModel getModel() {
-		return this.model;
-	}
-
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#doSetInput(org.eclipse.ui.IEditorInput)
+	 */
 	@Override
 	protected void doSetInput(IEditorInput input) throws CoreException {
-		if (input instanceof IFileEditorInput) {
-			IFileEditorInput fileInput = (IFileEditorInput)input;
-			IFile file = fileInput.getFile();
-			model = JastAddModelProvider.getModel(file);
-			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model, file));
-		}
-		else if (input instanceof JastAddStorageEditorInput) {
-			JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
-			model = storageInput.getModel();
-			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));
-		}		
 		super.doSetInput(input);
+		IFileEditorInput fInput = null;
+		if (input instanceof IFileEditorInput) {
+			fInput = (IFileEditorInput)input; 
+		}
+		// Update AST
+		resetAST(fInput);
+		// Update file in reconciling strategy
+		if (fInput != null)
+			fStrategy.setFile(fInput.getFile());
 	}
-
-	 
-	// Overriden method from TextEditor which adds a JastAdd specific SourceViewerConfiguration
-	 // and DocumentProvider.
-	 
-	@Override
-	protected void initializeEditor() {
-		super.initializeEditor();		
-		setDocumentProvider(new JastAddDocumentProvider());
-	}
-
 	
-	// Overriden method from TextEditor which adds a JastAdd specific ContentOutline and
-	 // BreakpointAdapter.
+	// ASTRegistry listener methods
+	
+	@Override
+	public void childASTChanged(IProject project, String key) {
+		System.out.println("ASTEditor.childASTChanged, project=" + project.getName() + ", key=" + key);
+		ASTRegistry reg = Activator.getASTRegistry();
+		fRoot = reg.lookupAST(fKey, fProject);
+		update();
+	}
+
+	@Override
+	public void projectASTChanged(IProject project) {
+		System.out.println("ASTEditor.projectASTChanged, project=" + project.getName());
+		ASTRegistry reg = Activator.getASTRegistry();
+		fRoot = reg.lookupAST(fKey, fProject);
+		update();
+	}
+	
+	/**
+	 * Update to the AST corresponding to the file input
+	 * @param fInput The new file input
+	 */
+	private void resetAST(IFileEditorInput fInput) {
+		// Reset
+		ASTRegistry reg = Activator.getASTRegistry();
+		reg.removeListener(this);
+		fRoot = null;
+		fProject = null;
+		fKey = null;
+		
+		// Update
+		if (fInput != null) {
+			IFile file = fInput.getFile();
+			fKey = file.getRawLocation().toOSString();
+			fProject = file.getProject();
+			reg.addListener(this, fProject, fKey);
+			fRoot = reg.lookupAST(fKey, fProject);
+			update();
+		}
+	}
+	
 	 
+	/**
+	 * Updates the outline and the view
+	 */
+	private void update() {
+		// Update outline
+		fOutlinePage.updateAST(fRoot);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#getAdapter(java.lang.Class)
+	 */
 	@Override
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
-			if (fOutlinePage == null) {
-				fOutlinePage =  new JastAddContentOutlinePage(this, model);
-				if (getEditorInput() != null)
-					fOutlinePage.setInput(getEditorInput());
-			}
 			return fOutlinePage;
-		}
+		} 
 		return super.getAdapter(required);
 	}
-
-
-	 // Overriden method from AbstractDecoratedTextEditor. Adds projection support
-	 // which provides folding in the editor. Activates the JastAdd editor context which activates
-	 // commands and keybindings related to the context.
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
+	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		setEditorContextMenuId(getEditorSite().getId());
-
-		super.createPartControl(parent);
-
-		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
-		projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-		if (model != null) {
-			projectionSupport.addSummarizableAnnotationType(ICompiler.ERROR_MARKER_ID); //$NON-NLS-1$
-			projectionSupport.addSummarizableAnnotationType(ICompiler.WARNING_MARKER_ID); //$NON-NLS-1$
-		}
-		projectionSupport.setHoverControlCreator(new JastAddControlCreator());
-		projectionSupport.install();
-		getSourceViewerConfiguration();
-		viewer.doOperation(ProjectionViewer.TOGGLE);
-
-		folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this);
-		if (model != null)
-			model.addListener(folder);
-
-		if (model != null) {
-			IContextService contextService = (IContextService) getSite().getService(IContextService.class);
-			contextActivation = contextService.activateContext(getEditorContextID());
-		}
+		setEditorContextMenuId(getEditorSite().getId());		
+		 // Set the source viewer configuration before the call to createPartControl to set viewer configuration	
+	    super.setSourceViewerConfiguration(new ASTSourceViewerConfiguration());
+	    super.createPartControl(parent);
 	}
-
-	
-	 // Overriden method from TextEditor which removes listeners and contexts. 
-	 
-	@Override 
-	public void dispose() {
-		super.dispose();
-
-		IEditorInput input = getEditorInput();
-		if (model != null) {
-			if(input instanceof IFileEditorInput) {
-				IFileEditorInput fileInput = (IFileEditorInput)input;
-				IFile file = fileInput.getFile();
-				final JastAddModel model = JastAddModelProvider.getModel(file);
-				if (this.model == model) {
-					FileInfoMap.releaseFileInfo(FileInfoMap.buildFileInfo(input));
-				}
-			} else if(input instanceof JastAddStorageEditorInput) {
-				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
-				FileInfoMap.releaseFileInfo(FileInfoMap.buildFileInfo(input));
-			}
-			model.removeListener(folder);
-		}
-		IContextService contextService = (IContextService) getSite().getService(IContextService.class);
-		contextService.deactivateContext(contextActivation);
-	}
-
-	public void installInformationPresenter(InformationPresenter presenter) {
-		presenter.install(getSourceViewer());
-	}
-
-	
-	// Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
-	 // support for folding.
-	 
-	@Override
-	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		fAnnotationAccess = getAnnotationAccess();
-		fOverviewRuler = createOverviewRuler(getSharedColors());
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
-		// ensure decoration support has been created and configured.
-		getSourceViewerDecorationSupport(viewer);
-		return viewer;
-	}
-
-	
-	// ControlCreator class used when creating the hover window for collapsed folding markers 
-	 
-	private class JastAddControlCreator implements IInformationControlCreator {
-		public IInformationControl createInformationControl(Shell shell) {
-			return new JastAddSourceInformationControl(shell, model);
-		}
-	}
-
-	public void populateContextMenu(IMenuManager menuManager) {
-	}
-
-	@Override
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
-		super.editorContextMenuAboutToShow(menu);
-		populateContextMenu(menu);
-	}
-
-	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {
-		String id = getEditorContextID() + idSuffix;
-		IMenuManager newMenuManager = menuManager.findMenuUsingPath(id);
-		if (newMenuManager == null)
-			newMenuManager = new MenuManager(text, id);
-		newMenuManager.add(new Separator("additions"));
-		menuManager.insertAfter("additions", newMenuManager);
-		return newMenuManager;
-	}
-
-	protected IMenuManager findOrAddFindContextMenu(IMenuManager menuManager) {
-		return findOrAddMenu(menuManager, ".find.popup", "F&ind");
-	}
-
-	protected IMenuManager findOrAddRefactorContextMenu(IMenuManager menuManager) {
-		return findOrAddMenu(menuManager, ".refactor.popup", "Refac&tor");
-	}
-
-	protected void addContextMenuItem(IMenuManager menuManager, String text, String definitionId, IActionDelegate actionDelegate) {
-		menuManager.add(buildContextMenuItem(text, definitionId, actionDelegate));
-	}
-
-	protected IAction buildContextMenuItem(String text, String definitionId, final IActionDelegate actionDelegate) {
-		IAction action = new Action() {
-			public void run() {
-				actionDelegate.run(this);
-			}
-		};
-		action.setText(text);
-		action.setActionDefinitionId(definitionId);
-		return action;
-	}
-	*/	
 }

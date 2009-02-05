@@ -93,7 +93,7 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	 */
 	public JastAddJEditor() {
 		fOutlinePage = new JastAddJContentOutlinePage(this); 
-		fStrategy = new ReconcilingStrategy();//new ReconcilingStrategy(model);
+		fStrategy = new ReconcilingStrategy();
 	}
 
 
@@ -127,7 +127,8 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		// Update AST
 		resetAST(fInput);
 		// Update file in reconciling strategy
-		fStrategy.setFile(fInput.getFile());
+		if (fInput != null)
+			fStrategy.setFile(fInput.getFile());
 
 		/* Save this for later
 		if (input instanceof IFileEditorInput) {
