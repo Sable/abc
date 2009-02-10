@@ -39,7 +39,7 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 	public static final String VIEW_ID = "org.jastadd.plugin.explore.JastAddJExplorer";
 
 	
-	private ITreeContentProvider contentProvider = new MyContentProvider();
+	private ITreeContentProvider contentProvider = new JastAddJContentProvider();
 	
 	private ILabelProvider labelProvider = new DecoratingLabelProvider(
 			new DecoratingLabelProvider(new MyLabelProvider(), getPlugin()
@@ -66,8 +66,8 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 	}
 	
 
-	public class MyContentProvider extends BaseContentProvider implements IASTRegistryListener { 
-		public MyContentProvider() {
+	public class JastAddJContentProvider extends BaseContentProvider implements IASTRegistryListener { 
+		public JastAddJContentProvider() {
 			super(new BaseWorkbenchContentProvider(),
 					new JastAddContentProvider());
 			Activator.getASTRegistry().addListener(this);

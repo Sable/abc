@@ -1,0 +1,18 @@
+aspect JastAddCore {
+
+  /*
+   * Refine the lookup key to be able to handle multiple CompilationUnit's with
+   * the same key, as in the ast file case.
+   */
+
+  refine JastAddJCore eq CompilationUnit.lookupKey() {
+  	return pathName() + postLookupKey();
+  }
+ 
+  syn String CompilationUnit.postLookupKey() = postLookupKey;
+  
+  private String CompilationUnit.postLookupKey = "";
+  public void CompilationUnit.setPostLookupKey(String value) { 
+    postLookupKey = value;
+  }
+}

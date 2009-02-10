@@ -159,7 +159,6 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 		public Object[] getChildren(Object element) {
 			if (element instanceof IJastAddNode)
 				return jastAddContentProvider.getChildren(element);
-
 			IResource resource = (IResource) element;
 			if(resource != null) {
 				IContainer sourceRoot = findSourceRoot(resource);
@@ -168,23 +167,26 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 						return filter(getSourceRootItemChildren(resource, sourceRoot));
 					} else if (resource instanceof IFile) {
 						IFile file = (IFile) resource;
-
-						String path = file.getRawLocation().toOSString();
-						IProject project = file.getProject();
-						ASTRegistry reg = Activator.getASTRegistry();
-						if (reg != null) {
-							IASTNode ast = reg.lookupAST(path, project);
-
-							if (ast != null && ast instanceof IJastAddNode) {
-								IJastAddNode node = (IJastAddNode)ast;
-								return filter(jastAddContentProvider.getChildren(node));
-							}
-						}
+						return getChildrenForFile(file);								
 					}
 				}
 			}
-
 			return filter(resourceContentProvider.getChildren(element));
+		}
+		
+		protected Object[] getChildrenForFile(IFile file) {
+			
+			String path = file.getRawLocation().toOSString();
+			IProject project = file.getProject();
+			ASTRegistry reg = Activator.getASTRegistry();
+			IASTNode ast = reg.lookupAST(path, project);
+
+			if (ast != null && ast instanceof IJastAddNode) {
+				IJastAddNode node = (IJastAddNode)ast;
+				return filter(jastAddContentProvider.getChildren(node));
+			}
+			
+			return new Object [0];
 		}
 
 		public boolean hasChildren(Object element) {

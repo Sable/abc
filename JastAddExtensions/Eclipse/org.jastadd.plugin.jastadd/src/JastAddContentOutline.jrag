@@ -71,6 +71,7 @@ aspect JastAddContentOutline {
 	eq ASTOptionalChild.contentOutlineLabel() = "[" + super.contentOutlineLabel() + "]";
 	eq ASTTokenChild.contentOutlineLabel() = "<" + super.contentOutlineLabel() + ">";
 	
+	/*
   	refine JastAddJContentOutline eq CompilationUnit.outlineChildren() {
   		if (isFromASTFile()) {
   			ArrayList list = collectRelatedASTDecls(relativeName());
@@ -80,5 +81,6 @@ aspect JastAddContentOutline {
   			return JastAddJContentOutline.CompilationUnit.outlineChildren();
   		}
   	}
+  	*/
   		  
 }

@@ -15,6 +15,19 @@
 		<selection class = "org.eclipse.core.resources.IResource"/>
 	</wizard>
 	</extension>
+	
+	<!-- Perspective -->
+	
+	<extension point = "org.eclipse.ui.perspectives">
+	<perspective
+		class = "org.jastadd.plugin.jastadd.perspective.JastAddPerspective"
+		id = "org.jastadd.plugin.jastadd.JastAddPerspective"
+		name = "JastAdd"
+		icon = "icons/obj16/ja_bullet.gif">
+		
+	</perspective>
+	</extension> 	
+	
 
 	<!-- Nature -->
 	
@@ -107,6 +120,10 @@
           id="org.jastadd.plugin.jastadd.debug"
           name="JastAdd Debug">
     </category>
+    <category
+          id="org.jastadd.plugin.jastadd"
+          name="JastAdd">
+    </category>
     <view
           allowMultiple="false"
           category="org.jastadd.plugin.jastadd.debug"
@@ -121,7 +138,15 @@
           id="org.jastadd.plugin.jastadd.debugger.attributes.visualization.AttributeVisualizationView"
           name="Attribute Visualization View">
     </view>
+    <view
+		class = "org.jastadd.plugin.jastadd.explorer.JastAddExplorer"
+		id = "org.jastadd.plugin.jastadd.explorer.JastAddExplorer"
+		icon = "icons/eview16/package.gif"
+		category="org.jastadd.plugin.jastadd"		
+		name = "JastAdd Explorer">
+	 </view>
  </extension>
+ 
  <extension
        point="org.eclipse.ui.popupMenus">
     <viewerContribution
