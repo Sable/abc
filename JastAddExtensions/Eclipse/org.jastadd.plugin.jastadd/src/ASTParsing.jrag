@@ -106,14 +106,18 @@ aspect ASTParsing {
   	return list;
   }
   
-  /*
-  refine ImplicitConstructor public boolean List.requiresDefaultConstructor() {
+  
+  refine ImplicitConstructor eq List.requiresDefaultConstructor() {
       if (getParent() instanceof ASTDecl) {
        return false;
+     } 
+     if(getParent() instanceof ClassDecl) {
+       ClassDecl c = (ClassDecl)getParent();
+       return c.getBodyDeclList() == this && !(c instanceof AnonymousDecl) && c.noConstructor();
      }
-     return ImplicitConstructor.List.requiresDefaultConstructor();
+     return false;
   }
-  */
+  
 
 
 }
