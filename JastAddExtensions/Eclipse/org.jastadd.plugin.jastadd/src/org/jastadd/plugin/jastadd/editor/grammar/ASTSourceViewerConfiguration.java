@@ -3,13 +3,22 @@ package org.jastadd.plugin.jastadd.editor.grammar;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.jastadd.plugin.ReconcilingStrategy;
 import org.jastadd.plugin.util.ColorRegistry;
 
 public class ASTSourceViewerConfiguration extends SourceViewerConfiguration {
+
+	private ReconcilingStrategy fStrategy;
+	
+	public ASTSourceViewerConfiguration(ReconcilingStrategy strategy) {
+		this.fStrategy = strategy;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -24,4 +33,16 @@ public class ASTSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		return reconciler;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler(org.eclipse.jface.text.source.ISourceViewer)
+	 */
+	/* ReconcilingStrategy for AST files ? 
+	@Override 
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
+		MonoReconciler reconciler = new MonoReconciler(fStrategy, false);
+		return reconciler;
+    }
+    */
 }

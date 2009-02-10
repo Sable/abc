@@ -1,5 +1,7 @@
 package org.jastadd.plugin.jastadd.editor.grammar;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -11,10 +13,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jastadd.plugin.Activator;
 import org.jastadd.plugin.ReconcilingStrategy;
 import org.jastadd.plugin.compiler.ast.IASTNode;
-import org.jastadd.plugin.jastaddj.editor.JastAddJContentOutlinePage;
 import org.jastadd.plugin.registry.ASTRegistry;
 import org.jastadd.plugin.registry.IASTRegistryListener;
-import org.jastadd.plugin.ui.view.AbstractBaseContentOutlinePage;
 
 public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegistryListener {
 	
@@ -22,19 +22,20 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ASTEditorContext";
 	
 	// Content outline
-	protected AbstractBaseContentOutlinePage fOutlinePage;
+	protected ASTContentOutlinePage fOutlinePage;
 
 	// Reconciling strategy
 	protected ReconcilingStrategy fStrategy;
 	
 	// ASTRegistry listener fields
-	protected IASTNode fRoot;
+	protected ArrayList<IASTNode> fRootList;
 	protected String fKey;
 	protected IProject fProject;
 
 	public ASTEditor() {
-		fOutlinePage = new JastAddJContentOutlinePage(this); 
+		fOutlinePage = new ASTContentOutlinePage(this); 
 		fStrategy = new ReconcilingStrategy();
+		fRootList = new ArrayList<IASTNode>();
 	}
 	
 	/*
@@ -60,17 +61,30 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 	@Override
 	public void childASTChanged(IProject project, String key) {
 		System.out.println("ASTEditor.childASTChanged, project=" + project.getName() + ", key=" + key);
-		ASTRegistry reg = Activator.getASTRegistry();
-		fRoot = reg.lookupAST(fKey, fProject);
+		lookupASTList();
 		update();
 	}
 
 	@Override
 	public void projectASTChanged(IProject project) {
 		System.out.println("ASTEditor.projectASTChanged, project=" + project.getName());
-		ASTRegistry reg = Activator.getASTRegistry();
-		fRoot = reg.lookupAST(fKey, fProject);
+		lookupASTList();
 		update();
+	}
+	
+	private void lookupASTList() {
+		int postIndex = 0;
+		boolean failedLookup = false;
+		ASTRegistry reg = Activator.getASTRegistry();
+		fRootList.clear();
+		while (!failedLookup) {
+			IASTNode root = reg.lookupAST(fKey + "#" + postIndex++, fProject);
+			if (root == null) {
+				failedLookup = true;
+			} else {
+				fRootList.add(root);
+			}
+		}
 	}
 	
 	/**
@@ -81,7 +95,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 		// Reset
 		ASTRegistry reg = Activator.getASTRegistry();
 		reg.removeListener(this);
-		fRoot = null;
+		fRootList.clear();
 		fProject = null;
 		fKey = null;
 		
@@ -91,7 +105,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 			fKey = file.getRawLocation().toOSString();
 			fProject = file.getProject();
 			reg.addListener(this, fProject, fKey);
-			fRoot = reg.lookupAST(fKey, fProject);
+			lookupASTList();
 			update();
 		}
 	}
@@ -102,7 +116,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 	 */
 	private void update() {
 		// Update outline
-		fOutlinePage.updateAST(fRoot);
+		fOutlinePage.updateASTList(fRootList);
 	}
 
 	/*
@@ -125,7 +139,7 @@ public class ASTEditor extends AbstractDecoratedTextEditor implements IASTRegist
 	public void createPartControl(Composite parent) {
 		setEditorContextMenuId(getEditorSite().getId());		
 		 // Set the source viewer configuration before the call to createPartControl to set viewer configuration	
-	    super.setSourceViewerConfiguration(new ASTSourceViewerConfiguration());
+	    super.setSourceViewerConfiguration(new ASTSourceViewerConfiguration(fStrategy));
 	    super.createPartControl(parent);
 	}
 }

@@ -28,11 +28,6 @@ public abstract class AbstractBaseContentOutlinePage extends ContentOutlinePage 
 		fLabelProvider = new JastAddLabelProvider();
 	}
 	
-	@Override 
-	public void dispose() {
-		super.dispose();
-	}
-
 	/*
 	public void setInput(IEditorInput input) {
 		fInput = input;
