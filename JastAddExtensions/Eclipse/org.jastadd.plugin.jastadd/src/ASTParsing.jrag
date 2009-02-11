@@ -15,6 +15,7 @@ aspect ASTParsing {
  		// All new nodes which have had other parents need to get their state from
  		// the Program node to make sure it's the same all over the tree
         CompilationUnit unit = new CompilationUnit();
+        unit.setOffsets(scanner.offsets());
         changeStateInNode(unit,state());
         unit.setPackageDecl(cu.getPackageDecl());
         
@@ -53,6 +54,7 @@ aspect ASTParsing {
        	// All new nodes which have had other parents need to get their state from
  		// the Program node to make sure it's the same all over the tree
         CompilationUnit unit = new CompilationUnit();
+        unit.setOffsets(scanner.offsets());
         changeStateInNode(unit,state());
         unit.setPackageDecl(cu.getPackageDecl());
         
@@ -107,6 +109,9 @@ aspect ASTParsing {
   }
   
   
+  /*
+   * Fix to get rid of stack overflow problems
+   */
   refine ImplicitConstructor eq List.requiresDefaultConstructor() {
       if (getParent() instanceof ASTDecl) {
        return false;

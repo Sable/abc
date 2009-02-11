@@ -167,13 +167,13 @@ public class JastAddCompiler extends JastAddJCompiler {
 				errors.clear();
 
 				// Semantic errors
-				if (!hasErrors && !unitFile.getRawLocation().toOSString().endsWith("ast")) {
+				if (!hasErrors) { // && !unitFile.getRawLocation().toOSString().endsWith("ast")) {
 					Collection warnings = new LinkedList();
 					unit.errorCheck(errors, warnings);
 					hasErrors = !errors.isEmpty();
 					errors.addAll(warnings);
-					updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
 				}
+				updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
 
 				// Avoid build if there are errors
 				build &= hasErrors;

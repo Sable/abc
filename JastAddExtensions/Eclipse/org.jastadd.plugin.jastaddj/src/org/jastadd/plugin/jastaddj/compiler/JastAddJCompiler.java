@@ -149,8 +149,8 @@ public class JastAddJCompiler extends AbstractCompiler {
 					unit.errorCheck(errors, warnings);
 					hasErrors = !errors.isEmpty();
 					errors.addAll(warnings);
-					updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
 				}
+				updateErrorMarkers(unitFile, errors, ERROR_MARKER_ID, unit);
 
 				// Generate bytecode
 				if (!hasErrors) { 

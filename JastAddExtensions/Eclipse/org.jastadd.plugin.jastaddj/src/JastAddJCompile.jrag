@@ -122,7 +122,7 @@ aspect Compile {
        	return null;
       }
       
-      public class IDEProblem implements org.jastadd.plugin.compiler.ast.IError {
+      public class IDEProblem implements org.jastadd.plugin.compiler.ast.IError, org.jastadd.plugin.jastaddj.AST.IProblem {
       	private Problem problem;
       	private IProblem.Severity severity;
       	private IProblem.Kind kind;
