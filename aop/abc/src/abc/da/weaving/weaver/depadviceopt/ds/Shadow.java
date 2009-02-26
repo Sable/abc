@@ -57,6 +57,7 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.matching.MethodCallShadowMatch;
+import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ResidueBox;
@@ -127,7 +128,7 @@ public class Shadow {
 	 * The invoke statement at which the advice body method for this shadow is called.
 	 */
 	protected final Stmt stmt;
-
+	
 	/**
 	 * If true, this shadow applies to a call statement to a method which resides in a method with the same signature.
 	 * In other words, the shadow applies to a delegating call.
@@ -167,6 +168,13 @@ public class Shadow {
 	 */
 	public void disable() {
 		outerResidueBox.setResidue(NeverMatch.v());
+	}
+	
+	/**
+	 * Conjoins the residue of this shadow with rhsResidue on the right-hand side. 
+	 */
+	public void conjoinResidueWith(Residue rhsResidue) {
+		outerResidueBox.setResidue(AndResidue.construct(outerResidueBox.getResidue(), rhsResidue));
 	}
 	
 	/**
@@ -287,7 +295,7 @@ public class Shadow {
 		}
 		return findActiveShadowsInMethod(WeavableMethods.v().getReachable(Scene.v().getCallGraph()));
 	}
-
+	
 	/**
 	 * Creates a set of new {@link Shadow} objects representing all shadows in the given set of methods. 
 	 * Shadows, for which the {@link Residue} is {@link NeverMatch} are called inactive. Such inactive shadows are not added.

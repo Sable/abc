@@ -31,7 +31,7 @@ import org.aspectbench.tm.runtime.internal.labelshadows.LabelShadowSwitchFactory
  */
 public class ShadowSwitch {
 	
-	public static boolean groupTable[][];	
+	public static boolean probeTable[][];	
 	public static boolean enabled[];
 	public static int counts[];
 	
@@ -91,7 +91,7 @@ public class ShadowSwitch {
 	}
 	
 	private static void all() {
-		for(int i=0;i<groupTable.length;i++) {
+		for(int i=0;i<probeTable.length;i++) {
 			enableShadowGroup(i);
 		}
 		System.err.println("Enabled all shadow groups.");
@@ -119,8 +119,8 @@ public class ShadowSwitch {
 	}
 
 	public static void enableShadowGroup(int groupNumber) {
-		for (int i = 0; i < groupTable[groupNumber].length; i++) {
-			boolean toEnable = groupTable[groupNumber][i];
+		for (int i = 0; i < probeTable[groupNumber].length; i++) {
+			boolean toEnable = probeTable[groupNumber][i];
 			enabled[i] = enabled[i] | toEnable;
 		}		
 	}

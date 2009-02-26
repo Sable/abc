@@ -18,12 +18,15 @@
  */
 package abc.da.weaving.aspectinfo;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +38,7 @@ import abc.da.weaving.weaver.depadviceopt.ds.Bag;
 import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.da.weaving.weaver.depadviceopt.ds.ShadowComparator;
+import abc.da.weaving.weaver.dynainstr.Probe;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -290,7 +294,6 @@ public class AdviceDependency {
 
 			numStrongShadows = strong.size();
 			
-			//*HAS* to be a LinkedHashSet, because we want to make sure that strong shadows come first!
 			Set<Shadow> domain = new LinkedHashSet<Shadow>(strong);
 			domain.addAll(weak);
 			
@@ -305,9 +308,9 @@ public class AdviceDependency {
 			shadowToIndex = new HashMap<Shadow, Integer>();
 			for (Shadow shadow : domain) {
 				shadowList[i] = shadow;
-				String depdendentAdviceName =
+				String dependentAdviceName =
 					dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
-				dependentAdviceNames[i] = depdendentAdviceName;
+				dependentAdviceNames[i] = dependentAdviceName;
 				shadows[i] = shadow;
 				shadowToIndex.put(shadow, i++);
 			}
@@ -344,30 +347,7 @@ public class AdviceDependency {
 			}
 			
 		}
-			
-		/**
-		 * For two shadows s1, s2 returns <code>true</code> if s1 is compatible with s2,
-		 * according to this dependency.
-		 * @see ShadowComparator#compatibleBindings(Shadow, Shadow)
-		 */
-		public boolean compatible(Shadow s1, Shadow s2) {
-			Integer n1 = shadowToIndex.get(s1); 
-			Integer n2 = shadowToIndex.get(s2);
-			if(n1==null || n2==null) {
-				throw new IllegalArgumentException("Shadow not part of this dependency!");
-			}
-			//make i1 the larger of the two indices
-			int i1, i2;
-			if(n1>n2){
-				i1 = n1;
-				i2 = n2;
-			} else {
-				i1 = n2;
-				i2 = n1;
-			}
-			return shadowIsCompatibleWith[i1][i2];
-		}
-		
+				
 		/**
 		 * Returns the value at position (j,i) of {@link #shadowIsCompatibleWith} if i<j, or
 		 * the value at position (i,j) otherwise. Therefore, by accessing the array through this method,
@@ -471,6 +451,142 @@ public class AdviceDependency {
 				overlappingShadows[num] = bitSet;
 			}
 			return overlappingShadows[num];
+		}
+
+		/**
+		 * This method computes all probes for this advice dependency.
+		 * When this dependency has k strong symbols, then the probe
+		 * will contain k shadows (both enabled and compatible among each other)
+		 * with the labels of these k strong symbols, plus all shadows that are compatible
+		 * with these all of these k shadows and have one of the weak symbols as name.
+		 * 
+		 * The algorithm is an adaption of the algorithm described in this paper:
+		 * Kroft, D., "All paths through a maze," Proceedings of the IEEE , vol.55, no.1, pp. 88-90, Jan. 1967
+		 * URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1447319&isnumber=31092
+		 * 
+		 * We assume a k-partite directed graph, where the k partitions are formed by the shadows of
+		 * the k strong symbols. (each shadow forms a node of the graph) There is an edge between
+		 * shadows a1 and b1 for symbols a and b if b follows a in the list of strong symbols and
+		 * a1 and b1 are compatible. Then, enumerating the strong subsets of all probes is equal to
+		 * enumerating all paths through this k-partite graph (which is what Kroft describes). 
+		 */
+		public Collection<Probe> computeProbes() {
+			DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+
+			//build a mapping from the names of strong advice to their shadows
+			Map<String,List<Shadow>> strongAdviceNameToShadows = new HashMap<String, List<Shadow>>();
+			for(String strongAdviceName : strongAdviceNameToVars.keySet()) {
+				strongAdviceNameToShadows.put(strongAdviceName, new ArrayList<Shadow>());
+			}			
+			for(int i=0;i<numStrongShadows;i++) {
+				Shadow s = shadows[i];
+				assert dai.isDependentAdvice(s.getAdviceDecl());
+				
+				if(s.isEnabled()) {
+					String strongAdviceName = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(s.getAdviceDecl()));
+					strongAdviceNameToShadows.get(strongAdviceName).add(s);
+				}
+			}
+					
+			List<String> strongAdviceNames = new ArrayList<String>(strongAdviceNameToVars.keySet());
+			Set<Set<Shadow>> strongProbes = new HashSet<Set<Shadow>>();
+			//List<String> symbolStack = new LinkedList<String>();
+			List<Shadow> shadowStack = new LinkedList<Shadow>();
+			
+			List<Shadow> shadowsOfFirstStrongAdvice = strongAdviceNameToShadows.get(strongAdviceNames.get(0));
+			//no shadows at all!?
+			if(shadowsOfFirstStrongAdvice.isEmpty()) {
+				return Collections.emptySet();
+			} else {
+				
+				//for every shadow of the first strong advice...
+				for (Shadow shadowOfFirstStrongAdvice : shadowsOfFirstStrongAdvice) {
+					
+					//...initialize stack with that shadow...
+					shadowStack.add(shadowOfFirstStrongAdvice);
+					
+					//...and try to find compatible shadows for other strong symbols
+					Shadow lastShadow = null;
+					do {
+						Shadow shadow = shadowStack.get(shadowStack.size()-1);
+						String symbol = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
+						boolean addedShadow = false;
+						//is there a "next strong symbol"?
+						if(strongAdviceNames.indexOf(symbol)+1<strongAdviceNames.size()) {
+							String succSymbol = strongAdviceNames.get(strongAdviceNames.indexOf(symbol)+1);
+							//is there a compatible shadow with that symbol name?
+							List<Shadow> succShadows = strongAdviceNameToShadows.get(succSymbol);
+							//find first compatible shadow
+							if(!succShadows.isEmpty()) {
+								int lastNodeIndex = (lastShadow==null) ? -1 : succShadows.indexOf(lastShadow);
+								if(lastNodeIndex+1<succShadows.size()) {
+									List<Shadow> remainingSuccShadows = succShadows.subList(lastNodeIndex+1, succShadows.size());
+									for (Shadow succShadow : remainingSuccShadows) {
+										if(compatibleWithAll(succShadow, shadowStack)) {
+											//found compatible shadow, add to stack
+											shadowStack.add(succShadow);
+											addedShadow = true;
+											break;
+										}
+									}
+								}
+							}						
+						}					
+						
+						
+						if(shadowStack.size()==strongAdviceNames.size()) {
+							strongProbes.add(new HashSet<Shadow>(shadowStack));
+							lastShadow = shadowStack.remove(shadowStack.size()-1);					
+						} else {
+							if(addedShadow) {
+								lastShadow = null;
+							} else {
+								lastShadow = shadowStack.remove(shadowStack.size()-1);					
+							}
+						}
+					} while(!shadowStack.isEmpty());
+					
+				}
+			}
+			
+			
+			Set<Probe> probes = new HashSet<Probe>();
+			for (Set<Shadow> strongProbe: strongProbes) {
+				assert !strongProbe.isEmpty();
+				Set<Shadow> probeShadows = new HashSet<Shadow>(strongProbe);
+				//for all weak shadows
+				for(int i=numStrongShadows;i<shadows.length;i++) {
+					//if the i-th shadow is enabled
+					if(shadows[i].isEnabled()) {
+						//see if the shadow is compatible to all strong shadows
+						boolean compatibleToAllStrongShadows = true;
+						for (Shadow shadow : strongProbe) {
+							int j = shadowToIndex.get(shadow);
+							if(!get(j,i)) {
+								compatibleToAllStrongShadows = false;
+							}
+						}
+						if(compatibleToAllStrongShadows) {
+							//add the shadow to the probe
+							probeShadows.add(shadows[i]);
+						}
+					}
+				}
+				probes.add(new Probe(probeShadows));				
+			}
+			
+			return probes;
+		}
+
+		private boolean compatibleWithAll(Shadow possibleNewtopShadow,List<Shadow> shadows) {
+			int i = shadowToIndex.get(possibleNewtopShadow);
+			for (Shadow shadow : shadows) {
+				int j = shadowToIndex.get(shadow);
+				if(!get(i,j)) {
+					return false;
+				}
+			}			
+			return true;
 		}
 		
 	}
@@ -607,6 +723,14 @@ public class AdviceDependency {
 			throw new IllegalStateException("Shadow groups have not yet been computed.");			
 		}
 		return shadowGroupsRecord.getOverlappingEnabledShadows(shadow);
+	}
+
+	public Collection<Probe> computeProbes() {
+		if(shadowGroupsRecord!=null) {
+			return shadowGroupsRecord.computeProbes();
+		} else {
+			throw new RuntimeException("No shadow groups computed yet.");
+		}
 	}
 
 }

@@ -27,6 +27,9 @@ import static abc.da.AbcExtension.DEPENDENT_ADVICE_QUICK_CHECK;
 import java.util.Collection;
 import java.util.List;
 
+import soot.Scene;
+import soot.SootClass;
+
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
@@ -36,6 +39,7 @@ import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
+import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
 import abc.ja.da.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
@@ -313,6 +317,17 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 			&& !OptionsParser.v().laststage().equals("flowins")) {
 				passes.add(new ReweavingPass(abc.da.AbcExtension.DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
 			}
+			
+            if(Debug.v().dynaInstr) {
+        	    ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
+    	            @Override
+	                public boolean analyze() {
+                	    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+            	        return false;
+        	        }
+    	        };
+	            passes.add( new ReweavingPass( abc.da.AbcExtension.DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+            }
 	    	
 	        //add a pass which just cleans up resources;
 	        //this is necessary in order to reset static fields for the test harness        
@@ -357,6 +372,17 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 	 */
 	protected DAInfo createDependentAdviceInfo() {
 		return new DAInfo();
+	}
+	
+	
+	@Override
+	public void addBasicClassesToSoot() {
+		super.addBasicClassesToSoot();
+		
+        if(Debug.v().dynaInstr || Debug.v().shadowCount) {
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);
+        }
 	}
 	
     /**

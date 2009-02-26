@@ -145,4 +145,10 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
     	super.createReweavingPasses(passes);
     	daExtension.createReweavingPasses(passes);
     }
+    
+    @Override
+    public void addBasicClassesToSoot() {
+    	super.addBasicClassesToSoot();
+    	daExtension.addBasicClassesToSoot();
+    }
 }

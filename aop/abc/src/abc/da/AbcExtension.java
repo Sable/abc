@@ -22,9 +22,13 @@ package abc.da;
 import java.util.Collection;
 import java.util.List;
 
+import soot.Scene;
+import soot.SootClass;
+
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAInfo;
+import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -42,6 +46,7 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
     public static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
 	public static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
     public static final ID DEPENDENT_ADVICE_INTRA_FLOWSENS = new ReweavingPass.ID("flow-sensitive intraprocedural analysis for dependent-advice");
+    public static final ID DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION = new ReweavingPass.ID("dynamic instrumentation for dependent-advice");
     public static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
 
 	/** The dependent advice info for this extension. This encapsulates all information about advice dependencies in the backend. */
@@ -108,6 +113,17 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 			&& !OptionsParser.v().laststage().equals("flowins")) {
 				passes.add(new ReweavingPass(DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
 			}
+			
+            if(Debug.v().dynaInstr) {
+                ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
+                    @Override
+                    public boolean analyze() {
+                        DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+                        return false;
+                    }
+                };
+                passes.add( new ReweavingPass( DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+            }
 	    	
 	        //add a pass which just cleans up resources;
 	        //this is necessary in order to reset static fields for the test harness        
@@ -136,6 +152,16 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 	 */
 	protected DAInfo createDependentAdviceInfo() {
 		return new DAInfo();
+	}
+	
+	@Override
+	public void addBasicClassesToSoot() {
+		super.addBasicClassesToSoot();
+		
+        if(Debug.v().dynaInstr || Debug.v().shadowCount) {
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);
+        }
 	}
 	
     /**

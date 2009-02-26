@@ -72,5 +72,11 @@ public class AbcExtension extends abc.ja.tm.AbcExtension implements HasDAInfo
     	super.createReweavingPasses(passes);
     	tmwpoptExtension.createReweavingPasses(passes);
     }
+    
+    @Override
+    public void addBasicClassesToSoot() {
+    	super.addBasicClassesToSoot();
+    	tmwpoptExtension.addBasicClassesToSoot();
+    }
    
 }
