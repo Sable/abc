@@ -16,73 +16,73 @@ public class IntraFlowSens1 extends AbstractTest {
 	}
 	
 	void canMatch1() {
-		a();
-		b();
+		a();	//can match -> must stay
+		b();	//can match -> must stay
 	}
 
 	void canMatch2() {
-		a();
+		a();	//can match -> must stay
 		if(System.currentTimeMillis()>1021231)
-			b();
+			b();//can match -> must stay
 	}
 
 	void canMatch3() {
-		a();
+		a();//can match -> must stay
 		if(System.currentTimeMillis()>1021231)
-			x();
-		b();
+			x();	//can discard a match -> must stay
+		b();//can match -> must stay
 	}
 	
 	void canMatch4() {
-		b();
+		b();//can lead to a match in combination with a call to canMatch2() -> must stay
 	}
 
-	void cannotMatch() {
-		a();
-		x();
-		b();
+	void cannotMatch() {	//cannot match itself but discard a match
+		a();	//is on a dead path -> can be removed
+		x();	//needs to stay because it can discard a partial match, e.g. canMatch2() cannotMatch() canMatch4()
+		b();	//can be removed (dead)
 	}
 
 	void cannotMatch2() {
-		x();
-		b();
+		x();	//needs to stay because it can discard a partial match, e.g. canMatch2() cannotMatch2() canMatch4()
+		b();	//can be removed (dead)
 	}
 
 	void unnecessary() {
 		a();//one of those
 		a();//is unnecessary
-		b();
+		b();	//can match -> must stay
 	}
 	
 	void canMatchLoop() {
-		while(a()) {
-			x();//is unnecessary
+		while(a()) {	//can match -> must stay
+			x();		//is unnecessary but may be hard to detect
 		}
-		b();
+		b();			//can match -> must stay
 	}
 	
 	void cannotMatchLoop() {
-		while(x()) {
-			a();
+		while(x()) {	//needs to stay because it can discard a partial match, e.g. canMatch2() cannotMatchLoop() canMatch4()
+			a();		//is on a dead path -> can be removed
 		}
-		b();
+		b();			//is dead -> can be removed
 	}
 	
 	void cannotMatchFinally() {
 		try {
-			a();
+			a();	//is on a dead path -> can be removed
 		} finally {
-			x();
+			x();	//needs to stay because it can discard a partial match, e.g. canMatch2() cannotMatchFinally() canMatch4()
 		}
-		b();
+		b();		//is dead -> can be removed
 	}
 	
 	void canMatchTryCatch() {
 		try {
-			a();
+			a();	//can match -> must stay
 		} catch(RuntimeException e) {
-			x();
+			x();	//can discard a match -> must stay
 		}
-		b();
+		b();		//can match -> must stay
 	}
 }
