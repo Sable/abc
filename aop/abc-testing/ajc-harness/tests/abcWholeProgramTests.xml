@@ -37,8 +37,7 @@
 	    	<message kind="warning" line="41"/>
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="48"/>
-	    	<message kind="warning" line="52"/>
-	    	<message kind="warning" line="59"/>
+	    	<message kind="warning" line="53"/>
 	    	<message kind="warning" line="66"/>
 	    	<message kind="warning" line="68"/>
 	    	<message kind="warning" line="73"/>
@@ -83,7 +82,34 @@
 	    	<message kind="warning" line="48"/>
 		</compile>
     </ajc-test>
+    
+    <ajc-test num="1309" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test5 (subtle case)">
+        <compile files="IntraFlowSens5.java,AB2.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="19"/>
+	    	<message kind="warning" line="21"/>
+	    	<message kind="warning" line="23"/>
+	    	<message kind="warning" line="25"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1310" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test6">
+        <compile files="IntraFlowSens6.java,AB3.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="11"/>
+	    	<message kind="warning" line="12"/>
+	    	<message kind="warning" line="20"/>        
+		</compile>
+    </ajc-test>
         
+    <ajc-test num="1311" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test7">
+        <compile files="IntraFlowSens7.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="13"/>
+	    	<message kind="warning" line="15"/>
+		</compile>
+    </ajc-test>
+
     <ajc-test num="1431" dir="abctests/da/optimizations"
         title="Flow-insensitive optimization for dependent advice">
         <compile files="FlowIns.java" options="-ext,abc.da,-laststage,flowins,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
