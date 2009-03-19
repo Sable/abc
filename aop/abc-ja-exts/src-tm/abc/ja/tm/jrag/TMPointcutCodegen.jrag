@@ -32,27 +32,49 @@ aspect TMPointcutCodegen
         throw new InternalCompilerError("called pointcut() on regex()");
     }
 
-    // Record which symbols match before a joinpoint, rather than after it.
+
     syn boolean SymbolKind.matchesBefore() = false;
+    syn boolean SymbolKind.matchesAfterReturning() = false;
+    syn boolean SymbolKind.matchesAfterThrowing() = false;
     eq BeforeSymbol.matchesBefore() = true;
     eq AroundSymbol.matchesBefore() = true;
+    eq AfterReturningSymbol.matchesAfterReturning() = true;
+    eq AfterThrowingSymbol.matchesAfterThrowing() = true;
+    eq AfterSymbol.matchesAfterReturning() = true;
+    eq AfterSymbol.matchesAfterThrowing() = true;
 
-    // returns a pointcut that matches whenever one of the before
-    // or around symbol-pointcuts matches (if matchbefore == true)
-    // or whenever one of the after, after-returning, or after-throwing
-    // symbol-pointcuts matches (if matchbefore == false)
-    syn Pointcut TraceMatchDecl.symbolsPointcut(boolean matchbefore)
+    syn Pointcut TraceMatchDecl.symbolsPointcutBefore()
     {
         Pointcut result = null;
         for (int i = 0; i < getNumSymbolDecl(); i++)
-            if (getSymbolDecl(i).getSymbolKind().matchesBefore() == matchbefore)
+            if (getSymbolDecl(i).getSymbolKind().matchesBefore())
                 result = pcOr(result, getSymbolDecl(i).closedPointcut());
         return result;
     }
 
-    syn Pointcut TraceMatchDecl.beforeSymbolsPointcut() = symbolsPointcut(true);
+    syn Pointcut TraceMatchDecl.symbolsPointcutAfterReturning()
+    {
+        Pointcut result = null;
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            if (getSymbolDecl(i).getSymbolKind().matchesAfterReturning())
+                result = pcOr(result, getSymbolDecl(i).closedPointcut());
+        return result;
+    }
 
-    syn Pointcut TraceMatchDecl.afterSymbolsPointcut() = symbolsPointcut(false);
+    syn Pointcut TraceMatchDecl.symbolsPointcutAfterThrowing()
+    {
+        Pointcut result = null;
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            if (getSymbolDecl(i).getSymbolKind().matchesAfterThrowing())
+                result = pcOr(result, getSymbolDecl(i).closedPointcut());
+        return result;
+    }
+
+    syn Pointcut TraceMatchDecl.beforeSymbolsPointcut() = symbolsPointcutBefore();
+
+    syn Pointcut TraceMatchDecl.afterReturningSymbolsPointcut() = symbolsPointcutAfterReturning();
+
+    syn Pointcut TraceMatchDecl.afterThrowingSymbolsPointcut() = symbolsPointcutAfterThrowing();
 
     syn Pointcut TraceMatchDecl.aroundSymbolPointcut()
     {

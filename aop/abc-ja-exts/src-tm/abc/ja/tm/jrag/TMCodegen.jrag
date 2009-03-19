@@ -91,9 +91,14 @@ aspect TMCodegen
                     beforeSymbolsPointcut(), methodSig(), jp_params,
                     methods, abc.tm.ast.TMAdviceDecl.BODY);
         
-            if (afterSymbolsPointcut() != null)
-                createAdviceDecl(new AfterAdvice(pos()),
-                afterSymbolsPointcut(), methodSig(), jp_params,
+            if (afterReturningSymbolsPointcut() != null)
+                createAdviceDecl(new AfterReturningAdvice(pos()),
+                afterReturningSymbolsPointcut(), methodSig(), jp_params,
+                methods, abc.tm.ast.TMAdviceDecl.BODY);
+
+            if (afterThrowingSymbolsPointcut() != null)
+                createAdviceDecl(new AfterThrowingAdvice(pos()),
+                afterThrowingSymbolsPointcut(), methodSig(), jp_params,
                 methods, abc.tm.ast.TMAdviceDecl.BODY);
         }
 
@@ -104,8 +109,13 @@ aspect TMCodegen
                 syncMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SYNCH);
 
-        if (afterSymbolsPointcut() != null)
-            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
+        if (afterReturningSymbolsPointcut() != null)
+            createAdviceDecl(new AfterReturningAdvice(pos()), afterReturningSymbolsPointcut(),
+                syncMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SYNCH);
+
+        if (afterThrowingSymbolsPointcut() != null)
+            createAdviceDecl(new AfterThrowingAdvice(pos()), afterThrowingSymbolsPointcut(),
                 syncMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SYNCH);
 
@@ -114,8 +124,13 @@ aspect TMCodegen
                 someMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SOME);
 
-        if (afterSymbolsPointcut() != null)
-            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
+        if (afterReturningSymbolsPointcut() != null)
+            createAdviceDecl(new AfterReturningAdvice(pos()), afterReturningSymbolsPointcut(),
+                someMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SOME);
+
+        if (afterThrowingSymbolsPointcut() != null)
+            createAdviceDecl(new AfterThrowingAdvice(pos()), afterThrowingSymbolsPointcut(),
                 someMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SOME);
     }
