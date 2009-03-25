@@ -136,7 +136,8 @@ aspect AnnotationsCodegen {
     }
   }
 
-  inh TypeDecl Modifiers.hostType();
+  // defined in Java1.4Frontend these days
+  // inh TypeDecl Modifiers.hostType();
 
   // 4.8.15
   syn boolean Modifier.isRuntimeVisible() = false;
