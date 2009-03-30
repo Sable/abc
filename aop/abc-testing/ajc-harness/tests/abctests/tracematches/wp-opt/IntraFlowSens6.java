@@ -17,7 +17,7 @@ public class IntraFlowSens6 extends AbstractTest {
 
 	static void f2() {
 		while(f.x()) {	//could prevent a match when called between two calls to f3 -> must stay
-			f.a();		//can never match the pattern "a a" over {a,x} -> removed
+			f.a();		//can never match the pattern "a a" over {a,x} -> can be removed
 		}
 	}
 	

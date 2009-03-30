@@ -56,7 +56,7 @@ public class IntraFlowSens1 extends AbstractTest {
 	
 	void canMatchLoop() {
 		while(a()) {	//can match -> must stay
-			x();		//is unnecessary but may be hard to detect
+			x();		//unnecessary
 		}
 		b();			//can match -> must stay
 	}

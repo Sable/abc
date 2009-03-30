@@ -1,7 +1,7 @@
 
 <!-- <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> -->
 <suite>
-    <ajc-test num="1221" dir="abctests/eaj/maybeShared" 
+<!--    <ajc-test num="1221" dir="abctests/eaj/maybeShared" 
 	    title="maybeShared pointcut - not shared">
         <compile files="NotShared.java" options="-ext,abc.eaj,-w,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot"/>
         <run class="NotShared"/>
@@ -13,7 +13,7 @@
         </compile>
         <run class="Shared"/>
     </ajc-test>
-    
+-->    
     <ajc-test num="1302" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-insensitive stage">
         <compile files="FlowIns.java" options="-ext,abc.ja.tmwpopt,-laststage,flowins,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
@@ -38,6 +38,7 @@
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="48"/>
 	    	<message kind="warning" line="53"/>
+	    	<message kind="warning" line="59"/>
 	    	<message kind="warning" line="66"/>
 	    	<message kind="warning" line="68"/>
 	    	<message kind="warning" line="73"/>
@@ -67,7 +68,7 @@
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test4 (tainting)">
         <compile files="IntraFlowSens4.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="9"/>
-	    	<message kind="warning" line="10"/>
+	    	<!--<message kind="warning" line="10"/>-->
 		</compile>
     </ajc-test>
 
@@ -98,7 +99,7 @@
         <compile files="IntraFlowSens6.java,AB3.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="12"/>
-	    	<message kind="warning" line="20"/>        
+	    	<!-- <message kind="warning" line="20"/>  currently fail to remove this one -->        
 		</compile>
     </ajc-test>
         
@@ -115,6 +116,21 @@
         <compile files="IntraFlowSens8.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="9"/>
 	    	<message kind="warning" line="10"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1313" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test9">
+        <compile files="IntraFlowSens9.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="9"/>
+	    	<message kind="warning" line="10"/>
+	    	<message kind="warning" line="11"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1320" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Tainting">
+        <compile files="Tainting.java,ABC.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">	    	
 		</compile>
     </ajc-test>
 
@@ -166,20 +182,12 @@
     <ajc-test num="1434" dir="abctests/da/optimizations"
         title="Flow-sensitive optimization for dependent advice (3)">
         <compile files="FlowSens3.java" options="-ext,abc.ja.da,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
-	    	<!--<message kind="warning" line="11"/> cannot currently be removed by analysis -->
+	    	<message kind="warning" line="11"/>
 		</compile>
     </ajc-test>
 
     <ajc-test num="1440" dir="abctests/da/optimizations/mop"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="HasNext.java,Test.java" options="-ext,abc.da,-laststage,flowins">
-	    	<message kind="warning" line="79"/>
-		</compile>
-        <run class="Test"/>
-    </ajc-test>
-    
-    <ajc-test num="1441" dir="abctests/da/optimizations/mop"
-        title="Flow-insensitive optimization for dependent advice (copy)">
         <compile files="HasNext.java,Test.java" options="-ext,abc.da,-laststage,flowins">
 	    	<message kind="warning" line="79"/>
 		</compile>

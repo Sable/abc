@@ -28,9 +28,13 @@ public class IntraFlowSens3 extends AbstractTest {
 		t1.x();//must stay because it could discard a partial match that started earlier
 		t1.b();//can go
 		t2.a();//field (!) t2 is set in this method, so we only have weak information for t2
+		t2 = create();	//don't know what's assigned here; could or could not be the same as the previous object
 		t2.x();//and hence we have to keep...
-		t2 = new IntraFlowSens3();
 		t2.b();//these guys alive
+	}
+	
+	static IntraFlowSens3 create() {
+		return null;
 	}
 
 }
