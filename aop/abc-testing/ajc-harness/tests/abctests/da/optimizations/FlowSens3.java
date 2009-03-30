@@ -8,7 +8,7 @@ public class FlowSens3 {
 		FlowSens3 f = new FlowSens3();
 		f.a(); 	//matches; needs to stay
 		f.b(); 	//matches; needs to stay
-		f.a(); 	//could be removed but may be hard to tell by our analysis
+		f.a(); 	//can be removed
 	}
 	
 	void a(){}

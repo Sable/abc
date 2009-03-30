@@ -57,7 +57,7 @@ aspect FlowSens {
 		//matches
 		Test t3 = new Test();
 		t3.a(); 
-		t3.b();//do not need to read the b
+		t3.b();//do not need to read the b, so in principle this shadow can be removed; however, we fail to do so because we would have to do backwards-determinization of the state machine, which right now we don't 
 		t3.c();
 		t3.d();
 		t3.d();
