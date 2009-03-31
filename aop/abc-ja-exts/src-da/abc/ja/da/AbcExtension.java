@@ -301,53 +301,55 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     public void createReweavingPasses(List<ReweavingPass> passes) {
     	super.createReweavingPasses(passes);
     	
-    	if(Debug.v().dontOptimizeDA) {
-    		if(Debug.v().debugDA) 
-    			System.err.println("da: DISABLED ALL OPTIMIZATIONS FOR DEPENDENT ADVICE");
-    	} else {
-	    	//quick check
-	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
-	   		
-	   		//flow-insensitive analysis, if enabled
-	    	if(!OptionsParser.v().laststage().equals("quick")) {
-	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
-	    	}
-	    	
-			if(!OptionsParser.v().laststage().equals("quick")
-			&& !OptionsParser.v().laststage().equals("flowins")) {
-				passes.add(new ReweavingPass(abc.da.AbcExtension.DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
-			}
-			
-            if(Debug.v().dynaInstr) {
-        	    ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
-    	            @Override
-	                public boolean analyze() {
-                	    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
-            	        return false;
-        	        }
-    	        };
-	            passes.add( new ReweavingPass( abc.da.AbcExtension.DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
-            }
-	    	
-	        //add a pass which just cleans up resources;
-	        //this is necessary in order to reset static fields for the test harness        
-	        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
-	
+		//quick check
+    	if(!OptionsParser.v().laststage().equals("none")) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
+    	}
+   		
+   		//flow-insensitive analysis, if enabled
+    	if(!OptionsParser.v().laststage().equals("none")
+    	&& !OptionsParser.v().laststage().equals("quick")) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
+    	}
+    	
+    	if(!OptionsParser.v().laststage().equals("none")
+		&& !OptionsParser.v().laststage().equals("quick")
+		&& !OptionsParser.v().laststage().equals("flowins")) {
+			passes.add(new ReweavingPass(abc.da.AbcExtension.DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
+		}
+		
+        if(Debug.v().dynaInstr) {
+    	    ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
 	            @Override
-	            public boolean analyze() {
-	            	//do nothing
-	                return false;
-	            }
-	            
-	            @Override
-	            public void cleanup() {
-	                //reset state
-	                getDependentAdviceInfo().resetAnalysisDataStructures();
-	            }
-	
+                public boolean analyze() {
+            	    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+        	        return false;
+    	        }
 	        };
-	        passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
-    	} 
+            passes.add( new ReweavingPass( abc.da.AbcExtension.DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+        }
+    	
+        //add a pass which just cleans up resources;
+        //this is necessary in order to reset static fields for the test harness        
+        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
+
+            @Override
+            public boolean analyze() {
+            	//do nothing
+                return false;
+            }
+            
+            @Override
+            public void cleanup() {
+                //reset state
+                getDependentAdviceInfo().resetAnalysisDataStructures();
+            }
+
+        };
+        
+    	if(!OptionsParser.v().laststage().equals("none")) {
+    		passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
+    	}
     }
     
 	/**
