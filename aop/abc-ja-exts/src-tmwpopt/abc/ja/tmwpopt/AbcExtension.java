@@ -23,7 +23,10 @@ import java.util.List;
 
 import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.DAInfo;
+import abc.da.weaving.weaver.tracing.Dumper;
+import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 
@@ -61,7 +64,17 @@ public class AbcExtension extends abc.ja.tm.AbcExtension implements HasDAInfo
 	
 	@Override
 	public Weaver createWeaver() {
-		return tmwpoptExtension.createWeaver();
+		Weaver weaver = tmwpoptExtension.createWeaver();
+    	weaver.setAspectCodegen(new AspectCodeGen() {
+	    		
+    		@Override
+    		public void fillInAspect(Aspect aspect) {
+    			super.fillInAspect(aspect);
+    			Dumper.replaceDependentAdviceBodies(getDependentAdviceInfo(),aspect);
+    		}
+	    		
+    	});
+	    return weaver;
 	}
 	
     /**

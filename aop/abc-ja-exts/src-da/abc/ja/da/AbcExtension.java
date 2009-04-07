@@ -29,23 +29,30 @@ import java.util.List;
 
 import soot.Scene;
 import soot.SootClass;
+import soot.SootMethod;
 
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.da.ExtensionInfo;
 import abc.da.HasDAInfo;
+import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
 import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
+import abc.da.weaving.weaver.tracing.Dumper;
+import abc.eaj.weaving.weaver.SyncWarningWeaver;
 import abc.ja.da.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
+import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
+import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
+import abc.weaving.weaver.Weaver;
 
 /**
  * Abc extension for dependent advice. Exposes a quick check and a flow-insensitive analysis to resolve advice
@@ -385,6 +392,9 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
         	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
         	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);
         }
+        if(Debug.v().traceExecution) {
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Dumper", SootClass.SIGNATURES);
+        }
 	}
 	
     /**
@@ -422,5 +432,20 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 	public void resetAnalysisDataStructures() {
         WeavableMethods.reset();
 	}
+	
+    @Override
+    protected Weaver createWeaver() {
+    	Weaver weaver = super.createWeaver();
+    	weaver.setAspectCodegen(new AspectCodeGen() {
+    		
+    		@Override
+    		public void fillInAspect(Aspect aspect) {
+    			super.fillInAspect(aspect);
+    			Dumper.replaceDependentAdviceBodies(getDependentAdviceInfo(),aspect);
+    		}
+    		
+    	});
+    	return weaver;
+    }
    
 }

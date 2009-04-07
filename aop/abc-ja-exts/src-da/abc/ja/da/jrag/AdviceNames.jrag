@@ -45,8 +45,12 @@ aspect AdviceNames
  	
  	//propagate upwards, from AdviceSpec to AdviceDecl
  	
- 	syn lazy boolean AdviceDecl.hasGivenName() { 	
- 		return getAdviceSpec().hasGivenName();
+ 	syn lazy boolean AdviceDecl.hasGivenName() {
+ 		boolean ret = getAdviceSpec().hasGivenName();
+ 		if(ret && abc.main.Debug.v().traceExecution) {
+ 			getAdviceSpec().localLookupImplicitVariable("thisJoinPointStaticPart");
+ 		} 			 	
+ 		return ret;
  	} 
 
  	syn lazy String AdviceDecl.getGivenName() { 	
