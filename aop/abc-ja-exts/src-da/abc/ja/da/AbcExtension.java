@@ -436,15 +436,17 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     @Override
     protected Weaver createWeaver() {
     	Weaver weaver = super.createWeaver();
-    	weaver.setAspectCodegen(new AspectCodeGen() {
-    		
-    		@Override
-    		public void fillInAspect(Aspect aspect) {
-    			super.fillInAspect(aspect);
-    			Dumper.replaceDependentAdviceBodies(getDependentAdviceInfo(),aspect);
-    		}
-    		
-    	});
+		if(Debug.v().traceExecution) {	
+	    	weaver.setAspectCodegen(new AspectCodeGen() {
+	    		
+	    		@Override
+	    		public void fillInAspect(Aspect aspect) {
+	    			super.fillInAspect(aspect);
+	    			Dumper.replaceDependentAdviceBodies(getDependentAdviceInfo(),aspect);
+	    		}
+	    		
+	    	});
+		}
     	return weaver;
     }
    
