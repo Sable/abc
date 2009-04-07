@@ -68,7 +68,6 @@
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test4 (tainting)">
         <compile files="IntraFlowSens4.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="9"/>
-	    	<!--<message kind="warning" line="10"/>-->
 		</compile>
     </ajc-test>
 
@@ -99,7 +98,7 @@
         <compile files="IntraFlowSens6.java,AB3.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="12"/>
-	    	<!-- <message kind="warning" line="20"/>  currently fail to remove this one -->        
+			<message kind="warning" line="20"/>        
 		</compile>
     </ajc-test>
         
@@ -127,6 +126,12 @@
 	    	<message kind="warning" line="11"/>
 		</compile>
     </ajc-test>
+    
+    <ajc-test num="1314" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test10">
+        <compile files="IntraFlowSens10.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,intra,-warn-about-individual-shadows,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+		</compile>
+    </ajc-test>
 
     <ajc-test num="1320" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Tainting">
@@ -136,7 +141,7 @@
 
     <ajc-test num="1431" dir="abctests/da/optimizations"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="FlowIns.java" options="-ext,abc.da,-laststage,flowins,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns.java" options="-ext,abc.ja.da,-laststage,flowins,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
@@ -188,9 +193,17 @@
 
     <ajc-test num="1440" dir="abctests/da/optimizations/mop"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="HasNext.java,Test.java" options="-ext,abc.da,-laststage,flowins">
+        <compile files="HasNext.java,Test.java" options="-ext,abc.ja.da,-laststage,flowins">
 	    	<message kind="warning" line="79"/>
 		</compile>
         <run class="Test"/>
+    </ajc-test>
+    
+    
+    <ajc-test num="55555" dir="abctests/tracematches/wp-opt"
+        title="DUMPER">
+        <compile files="DumperTest.java,AB.java,AbstractTest.java" options="-ext,abc.ja.tmwpopt,-laststage,quick,-debug,traceExecution,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+		</compile>
+		<run class="DumperTest"/>
     </ajc-test>
 </suite>
