@@ -3,7 +3,12 @@
 	<classpathentry kind="src" path="src-eaj"/>
 	<classpathentry kind="src" path="src-tm"/>
 	<classpathentry kind="src" path="generated"/>
+	<classpathentry kind="src" path="src-da"/>
+	<classpathentry kind="src" path="src-om"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/abc-ja"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/abcJars"/>
+	<classpathentry kind="lib" path="/soot/lib/sootclasses-trunk.jar" sourcepath="/JastAddExtensions/JimpleBackend"/>
+	<classpathentry excluding="abc/ja/tmwpopt/AbcExtension2.java" kind="src" path="src-tmwpopt"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

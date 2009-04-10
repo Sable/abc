@@ -72,7 +72,7 @@ public class AbcExtension extends abc.ja.tm.AbcExtension implements HasDAInfo
 	    		@Override
 	    		public void fillInAspect(Aspect aspect) {
 	    			super.fillInAspect(aspect);
-	    			Dumper.replaceDependentAdviceBodies(getDependentAdviceInfo(),aspect);
+	    			Dumper.replaceDependentAdviceBodiesAndExtendSJPInfos(getDependentAdviceInfo(),aspect);
 	    		}
 		    		
 	    	});
@@ -94,5 +94,20 @@ public class AbcExtension extends abc.ja.tm.AbcExtension implements HasDAInfo
     	super.addBasicClassesToSoot();
     	tmwpoptExtension.addBasicClassesToSoot();
     }
+    
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CompileSequence createCompileSequence() {
+		return new CompileSequence(this) {
+			@Override
+			public void reset() {
+				super.reset();
+				//reset static members for tracematches
+		        abc.tm.weaving.aspectinfo.TraceMatch.reset();
+			}
+		};
+	}	
    
 }

@@ -98,13 +98,15 @@
 </target>
 
 <!-- generate compiler source files -->
-<target name="gen" depends="settings,gen-tm,da-parser,om-parser,da-jrag,om-jrag,tmwpopt-jrag">
+<target name="gen" depends="settings,gen-tm,da-parser,om-parser,da-jrag,om-jrag,gen-tmwpopt">
   <!-- copy library files-->
   <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
   </copy>
 </target>
-
+	
+<target name="gen-tmwpopt" depends="gen-tm,tmwpopt-parser,tmwpopt-jrag"/>
+	
 <target name="gen-tm" depends="gen-eaj,tm-parser,tm-jrag"/>
 
 <target name="gen-eaj" depends="eaj-parser,eaj-jrag"/>
@@ -113,7 +115,7 @@
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
-	<jastadd package="abc.ja.tm.jrag" rewrite="true"
+	<jastadd package="abc.ja.tmwpopt.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
@@ -429,6 +431,40 @@
 		</fileset>
   </jastadd>
 </target>
+	
+<target name="tmwpopt-parser" depends="settings">
+  <property name="tmwpopt-parserdir" location="${basedir}/generated/abc/ja/tmwpopt/parse"/>
+  <mkdir dir="${tmwpopt-parserdir}"/>
+  <!-- generate the parser phase 1, create a full .lalr
+     - specification from fragments -->
+  <concat destfile="${tmwpopt-parserdir}/JavaParser.all" binary="true" force="no">
+    <filelist dir="${basedir}">
+      <file name="src-tmwpopt/abc/ja/tmwpopt/parse/header.parser"/>
+    </filelist>
+    <filelist dir="${frontend}">
+      <file name="parser/java14.parser"/>
+    </filelist>
+    <fileset dir="${frontend1.5}">
+      <include name="*.parser"/>
+    </fileset>
+    <filelist dir="${abc-ja.loc}">
+      <file name="src/abc/ja/parse/errorproductions.parser"/>
+      <file name="src/abc/ja/parse/aspectj.parser"/>
+    </filelist>
+    <filelist dir="${basedir}">
+      <file name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+      <file name="src-tm/abc/ja/tm/parse/tm.parser"/>
+    </filelist>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
+              classname="Main" fork="true" dir="${tmwpopt-parserdir}">
+		<arg line="JavaParser.all JavaParser.beaver"/>
+	</java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${tmwpopt-parserdir}/JavaParser.beaver" terminalNames="yes"
+          compress="no" useSwitch="yes"/>
+</target>	
 
 <target name="tm-parser" depends="settings">
   <property name="tm-parserdir" location="${basedir}/generated/abc/ja/tm/parse"/>

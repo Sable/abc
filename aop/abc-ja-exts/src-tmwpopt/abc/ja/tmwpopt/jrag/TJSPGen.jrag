@@ -6,47 +6,59 @@ aspect TJSPGen {
         
 	refine TMCodegen
 	eq TraceMatchDecl.implicitParameters() {
-		getAdviceSpec().localLookupVariable("thisJoinPointStaticPart");
+		if(abc.main.Debug.v().traceExecution)
+			getAdviceSpec().localLookupVariable("thisJoinPointStaticPart");
 		return refined();
 	}        
 
     refine SymbolNameAnalysis
     eq SymbolDecl.getParameterList() {
-    	adviceSpec().localLookupVariable("thisJoinPointStaticPart");
+		if(abc.main.Debug.v().traceExecution)
+	    	adviceSpec().localLookupVariable("thisJoinPointStaticPart");
     	return refined();
     }
 
 	eq BeforeSymbol.refersTo(Variable decl) {
-		if(decl.name().equals("thisJoinPointStaticPart")) {			
-			return true;
+		if(abc.main.Debug.v().traceExecution) {
+			if(decl.name().equals("thisJoinPointStaticPart")) {			
+				return true;
+			}
 		}
 		return super.refersTo(decl);	
 	}
 	
 	eq AroundSymbol.refersTo(Variable decl) {
-		if(decl.name().equals("thisJoinPointStaticPart")) {
-			return true;
+		if(abc.main.Debug.v().traceExecution) {
+			if(decl.name().equals("thisJoinPointStaticPart")) {
+				return true;
+			}
 		}
 		return super.refersTo(decl);	
 	}
 	
 	eq AfterSymbol.refersTo(Variable decl) {
-		if(decl.name().equals("thisJoinPointStaticPart")) {
-			return true;
+		if(abc.main.Debug.v().traceExecution) {
+			if(decl.name().equals("thisJoinPointStaticPart")) {
+				return true;
+			}
 		}
 		return super.refersTo(decl);	
 	}
 
 	eq AfterReturningSymbol.refersTo(Variable decl) {
-		if(decl.name().equals("thisJoinPointStaticPart")) {
-			return true;
+		if(abc.main.Debug.v().traceExecution) {
+			if(decl.name().equals("thisJoinPointStaticPart")) {
+				return true;
+			}
 		}
 		return super.refersTo(decl);	
 	}
 
 	eq AfterThrowingSymbol.refersTo(Variable decl) {
-		if(decl.name().equals("thisJoinPointStaticPart")) {
-			return true;
+		if(abc.main.Debug.v().traceExecution) {
+			if(decl.name().equals("thisJoinPointStaticPart")) {
+				return true;
+			}
 		}
 		return super.refersTo(decl);	
 	}
