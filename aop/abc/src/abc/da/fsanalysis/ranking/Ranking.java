@@ -103,11 +103,11 @@ public class Ranking {
 			return copy;
 		}
 
-		protected PotentialFailureGroup(Set<Shadow> ppfStrings, double rank, EnumSet<Features> features, Set<Shadow> overlaps, TracePattern tm) {
+		protected PotentialFailureGroup(Set<Shadow> ppfs, double rank, EnumSet<Features> features, Set<Shadow> overlaps, TracePattern tm) {
 			this.rank = rank;
 			this.tm = tm;
 			this.features = features;
-			this.ppfs = ppfStrings;
+			this.ppfs = ppfs;
 			this.overlaps = overlaps;
 		}
 		
@@ -428,54 +428,55 @@ public class Ranking {
 	}
 
 	private PotentialFailureGroup computeRank(Shadow ppf, TracePattern tm, Map<Shadow, Set<Shadow>> ppfToOverlaps, Set<Shadow> allShadows) {
-		double overlap = overlap(ppf,ppfToOverlaps,allShadows);
-		double fractionDelegatingShadows = fractionDelegatingShadows(ppf,ppfToOverlaps);
-		double fractionShadowPtsDynamicLoading = fractionShadowPtsDynamicLoading(ppf,ppfToOverlaps);
-		double fractionShadowPtsNoContext = fractionShadowPtsNoContext(ppf,ppfToOverlaps);
-		double relativeSize = relativeSize(ppf,ppfToOverlaps);
-		//following only works after flow-sensitive analysis
-		double fractionShadowsRetainedInterprocedurally = fractionShadowsRetainedInterprocedurally(ppf,ppfToOverlaps);
-		double fractionShadowsWithCutOffAnalysis = fractionShadowsWithCutOffAnalysis(ppf,ppfToOverlaps);
-		double fractionShadowsWithTainting = fractionShadowsWithTainting(ppf,ppfToOverlaps);
-
-		double[] penalties = {
-				overlap,
-				fractionShadowsRetainedInterprocedurally,
-				relativeSize,
-				fractionShadowPtsDynamicLoading,
-				fractionShadowPtsNoContext,
-				fractionShadowsWithCutOffAnalysis,
-				fractionShadowsWithTainting,
-				fractionDelegatingShadows
-		};
-		double[] penaltyFactors = {
-				2,
-				2,
-				2,
-				5,
-				1,
-				5,
-				1,
-				5
-		};
+//		double overlap = overlap(ppf,ppfToOverlaps,allShadows);
+//		double fractionDelegatingShadows = fractionDelegatingShadows(ppf,ppfToOverlaps);
+//		double fractionShadowPtsDynamicLoading = fractionShadowPtsDynamicLoading(ppf,ppfToOverlaps);
+//		double fractionShadowPtsNoContext = fractionShadowPtsNoContext(ppf,ppfToOverlaps);
+//		double relativeSize = relativeSize(ppf,ppfToOverlaps);
+//		//following only works after flow-sensitive analysis
+//		double fractionShadowsRetainedInterprocedurally = fractionShadowsRetainedInterprocedurally(ppf,ppfToOverlaps);
+//		double fractionShadowsWithCutOffAnalysis = fractionShadowsWithCutOffAnalysis(ppf,ppfToOverlaps);
+//		double fractionShadowsWithTainting = fractionShadowsWithTainting(ppf,ppfToOverlaps);
+//
+//		double[] penalties = {
+//				overlap,
+//				fractionShadowsRetainedInterprocedurally,
+//				relativeSize,
+//				fractionShadowPtsDynamicLoading,
+//				fractionShadowPtsNoContext,
+//				fractionShadowsWithCutOffAnalysis,
+//				fractionShadowsWithTainting,
+//				fractionDelegatingShadows
+//		};
+//		double[] penaltyFactors = {
+//				2,
+//				2,
+//				2,
+//				5,
+//				1,
+//				5,
+//				1,
+//				5
+//		};
+//		
+//		double sumFactors = 0, sumFeatures = 0, tempRank = 0;
+//		for (int i = 0; i < penaltyFactors.length; i++) {
+//			sumFactors += penaltyFactors[i];
+//			sumFeatures++;
+//			tempRank += penaltyFactors[i] * penalties[i];
+//		}
 		
-		double sumFactors = 0, sumFeatures = 0, tempRank = 0;
-		for (int i = 0; i < penaltyFactors.length; i++) {
-			sumFactors += penaltyFactors[i];
-			sumFeatures++;
-			tempRank += penaltyFactors[i] * penalties[i];
-		}
-		
-		double rank = 1- (tempRank / sumFactors); 
+//		double rank = 1- (tempRank / sumFactors); 
+		double rank = 1; 
 		
 		EnumSet<Features> features = EnumSet.noneOf(Features.class);
-		if(overlap>0) features.add(Features.OVERLAPS);
-		if(fractionShadowsRetainedInterprocedurally>0) features.add(Features.CONTINUATION);
-		if(fractionDelegatingShadows>0) features.add(Features.DELEGATE);
-		if(fractionShadowPtsDynamicLoading>0) features.add(Features.DYNAMIC_LOADING);
-		if(fractionShadowPtsNoContext>0) features.add(Features.NO_CONTEXT);
-		if(fractionShadowsWithCutOffAnalysis>0) features.add(Features.ANALYSIS_ABORTED);
-		if(fractionShadowsWithTainting>0) features.add(Features.CALL);
+//		if(overlap>0) features.add(Features.OVERLAPS);
+//		if(fractionShadowsRetainedInterprocedurally>0) features.add(Features.CONTINUATION);
+//		if(fractionDelegatingShadows>0) features.add(Features.DELEGATE);
+//		if(fractionShadowPtsDynamicLoading>0) features.add(Features.DYNAMIC_LOADING);
+//		if(fractionShadowPtsNoContext>0) features.add(Features.NO_CONTEXT);
+//		if(fractionShadowsWithCutOffAnalysis>0) features.add(Features.ANALYSIS_ABORTED);
+//		if(fractionShadowsWithTainting>0) features.add(Features.CALL);
 			
 		return new PotentialFailureGroup(ppf,rank,features,ppfToOverlaps.get(ppf),tm);
 	}

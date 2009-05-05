@@ -262,7 +262,7 @@ public class Debug {
 	public boolean shadowCount = false;
 	
     //output potential points of failure in PFG files    
-    public boolean outputPFGs = true;
+    public boolean outputPFGs = false;
     //output clickable HTML graphs
     public boolean outputHTML = false;
     

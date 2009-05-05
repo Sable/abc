@@ -37,6 +37,7 @@ import abc.da.fsanalysis.EnabledShadowSet;
 import abc.da.fsanalysis.callgraph.AbstractedCallGraph;
 import abc.da.fsanalysis.callgraph.NodePredicate;
 import abc.da.fsanalysis.flowanalysis.AnalysisJob;
+import abc.da.fsanalysis.ranking.PFGs;
 import abc.da.fsanalysis.ranking.Statistics;
 import abc.da.fsanalysis.util.ShadowsPerTMSplitter;
 import abc.da.weaving.aspectinfo.AdviceDependency;
@@ -84,7 +85,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 
 			CallGraph cg = buildAbstractedCallGraph(dependentAdviceShadows);
 			
-			Statistics.v().dump("after first flow-insensitive stage", dependentAdviceShadows, true);
+			if(Debug.v().outputPFGs)
+				PFGs.v().dump("after first flow-insensitive stage", dependentAdviceShadows, true);
 
 			File traceFile = retrieveTraceFileHandle();
 
@@ -114,7 +116,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        	//we iterate until no shadows are disabled any more
 	        } while(!enabledShadowsBeforeIteration.equals(enabledShadowsAfterIteration));
 
-	        Statistics.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
+			if(Debug.v().outputPFGs)
+				PFGs.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
 	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());  
 		} finally {
