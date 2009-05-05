@@ -125,11 +125,12 @@ public class Statistics {
 			
 			try {
 				Set<Shadow> ppfs = filterPotentialPointOfFailures(perTMShadows);
-				List<PotentialFailureGroup> sortedGroups = Ranking.v().rankAndSort(ppfs, tm);
+				List<PotentialFailureGroup> sortedGroups = null;
+				if(!numberOnly) sortedGroups = Ranking.v().rankAndSort(ppfs, tm);
 
 				if(Debug.v().outputPFGs) {
 					PrintWriter out = new PrintWriter(new FileOutputStream(fileName,true));
-					out.println("Number of potential failure groups "+message+": "+sortedGroups.size());
+					out.println("Number of potential failure groups "+message+": "+ppfs.size());
 					if(!numberOnly) {
 						for (PotentialFailureGroup pfg : sortedGroups) {
 							out.println(pfg);

@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,11 +44,13 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.spark.ondemand.AllocAndContext;
 import soot.jimple.spark.ondemand.AllocAndContextSet;
+import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
 import soot.jimple.toolkits.pointer.FullObjectSet;
 import soot.tagkit.Host;
 import soot.tagkit.LineNumberTag;
 import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -74,9 +77,20 @@ import abc.weaving.tagkit.InstructionSourceTag;
  * The last item (statement) is necessary because for example an after-advice causes two shadows to
  * be woven: one for normal return and one for exceptional return. Both have the same shadowID
  * and AdviceDecl. 
+ * 
+ * FIXME this implementation currently may give slightly wrong semantics for the case
+ * where pointcut definitions overlap, as it will assign different statements
+ * for shadows applying at the same program point
  * @author Eric Bodden
  */
 public class Shadow {
+	
+	public interface ShadowDisabledListener {
+		
+		public void shadowDisabled(Shadow shadow);
+		
+	}
+	
 	
 	/**
 	 * The unique numeric ID of this shadow.
@@ -97,7 +111,7 @@ public class Shadow {
 	/**
 	 * The position at which this shadow occurs in code.
 	 */
-	protected Position pos;
+	protected final Position pos;
 	
 	/**
 	 * The {@link ResidueBox} for this shadow. Can be used to modify the shadow's residue.
@@ -129,11 +143,17 @@ public class Shadow {
 	 */
 	protected final Stmt stmt;
 	
+	protected boolean isEnabled;
+	
+	protected final int hashCode;
+	
 	/**
 	 * If true, this shadow applies to a call statement to a method which resides in a method with the same signature.
 	 * In other words, the shadow applies to a delegating call.
 	 */
 	private final boolean isDelegateCallShadow;
+	
+	protected final Set<ShadowDisabledListener> listeners;
 	
 	private Shadow(int shadowId, AdviceDecl adviceDecl, SootMethod container, Position pos, Map<String, Local> adviceFormalNameToSootLocal, ResidueBox outerResidueBox, Stmt stmt, boolean isDelegateCallShadow) {
 		this.shadowId = shadowId;
@@ -154,6 +174,9 @@ public class Shadow {
 				primitiveFormalNames.add(formal.getName());
 			}
 		}
+		this.isEnabled = true;
+		this.hashCode = computeHashCode();
+		this.listeners = Collections.newSetFromMap(new IdentityHashMap<ShadowDisabledListener, Boolean>());
 	}
 	
 	/**
@@ -167,7 +190,16 @@ public class Shadow {
 	 * Disables this shadow by setting its {@link Residue} to {@link NeverMatch}.
 	 */
 	public void disable() {
-		outerResidueBox.setResidue(NeverMatch.v());
+		if(isEnabled) {
+			for(ShadowDisabledListener listener: listeners) {
+				listener.shadowDisabled(this);
+			}
+			listeners.clear();			
+		}
+		isEnabled = false;
+		if(!Debug.v().traceExecution) {
+			outerResidueBox.setResidue(NeverMatch.v());
+		}
 	}
 	
 	/**
@@ -182,7 +214,7 @@ public class Shadow {
 	 * {@link NeverMatch}.
 	 */
 	public boolean isEnabled() {
-		return !NeverMatch.neverMatches(outerResidueBox.getResidue());
+		return isEnabled;
 	}
 	
 	/**
@@ -243,8 +275,7 @@ public class Shadow {
 		return ret;
 	}
 		
-	@Override
-	public int hashCode() {
+	private int computeHashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
@@ -252,6 +283,11 @@ public class Shadow {
 		result = prime * result + shadowId;
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
 		return result;
+	}
+	
+	@Override
+	public int hashCode() {
+		return hashCode;
 	}
 
 	@Override
@@ -537,6 +573,10 @@ public class Shadow {
 			pointsToSetOf(var);
 		}		
 		for (PointsToSet pts : adviceFormalNameToPointsToSet.values()) {
+			if(pts instanceof LazyContextSensitivePointsToSet) {
+				LazyContextSensitivePointsToSet lazySet = (LazyContextSensitivePointsToSet) pts;
+				pts = lazySet.getDelegate();
+			}
 			if(pts instanceof AllocAndContextSet) {
 				AllocAndContextSet allocAndContextSet = (AllocAndContextSet) pts;
 				for (AllocAndContext allocAndContext : allocAndContextSet) {
@@ -560,5 +600,12 @@ public class Shadow {
 	 */
 	public boolean isDelegateCallShadow() {
 		return isDelegateCallShadow;
+	}
+	
+	public void registerListener(ShadowDisabledListener listener) {
+		if(!isEnabled()) {
+			throw new RuntimeException("shadow already disabled!");
+		}
+		listeners.add(listener);
 	}
 }

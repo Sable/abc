@@ -293,7 +293,7 @@ any of their subdirectories.
     </boolopt>
   </section>
   <section>
-    <name>Static whole-program analysis for dependent advice (abc.da) and tracematches (abc.tmwpopt)</name>
+    <name>Static whole-program analysis for dependent advice (abc.da)</name>
     <stringopt>
       <alias>laststage</alias>
       <default>quick</default>
@@ -302,8 +302,8 @@ any of their subdirectories.
       whole program analysis for tracematches. (quick|flowins|flowsens)</short_desc>
       <long_desc>Specifies the last stage to be executed in the static
       whole program analysis for dependent advice and tracematches. There are three stages:
-      (1) quick, (2) flowins (flow-insensitive analysis) and (3) flowsens
-      (flow-sensitive analysis, tracematches only). They are executed in this order.
+      (1) quick, (2) flowins (flow-insensitive analysis), (3) flowsens
+      (flow-sensitive analysis) and (4) dyna (dynamic partial instrumentation). They are executed in this order.
       Default is quick.
       </long_desc>
     </stringopt>
@@ -315,6 +315,32 @@ any of their subdirectories.
 		If enabled, abc issues a warning for each individual shadow removed by the analyses.
 		If disabled, only summary information about disabled shadows and tracematches will be given.
 		Default is false.
+      </long_desc>
+    </boolopt>
+    <stringopt>
+      <alias>runtime-trace</alias>
+      <set_arg_label>trace-file</set_arg_label>
+      <short_desc>Read runtime trace from this file.</short_desc>
+      <long_desc>Read a runtime trace from file <use_arg_label/>
+	and compare it to the compile-trime approximation of the trace.
+      </long_desc>
+    </stringopt>
+    <stringopt>
+      <alias>compile-time-trace</alias>
+      <set_arg_label>compile-time-trace-file</set_arg_label>
+      <short_desc>Read compile-time trace from this file.</short_desc>
+      <long_desc>Read a compile-time approximation of a trace from file <use_arg_label/>
+	and compare it to the runtime trace.
+      </long_desc>
+    </stringopt>
+    <boolopt>
+      <alias>produce-compile-time-trace</alias>
+      <default>false</default>
+      <short_desc>Produces a compile-time trace file abc.da.cttrace.</short_desc>
+      <long_desc>
+		Produces a compile-time trace file abc.da.cttrace containing information
+		about the set of possible states at each shadow. Only effective if
+		laststage >= flowsens.
       </long_desc>
     </boolopt>
   </section>

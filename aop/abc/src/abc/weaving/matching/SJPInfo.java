@@ -45,4 +45,6 @@ public interface SJPInfo {
     public SootField sjpfield();
     public void makeSJPfield(SootClass sc, Chain units, Stmt ip, LocalGenerator lg,
           SootMethod method, Local factory_local, int sjpcount);
+    public void overrideKind(String newKind);
+    public String getKind();
 }

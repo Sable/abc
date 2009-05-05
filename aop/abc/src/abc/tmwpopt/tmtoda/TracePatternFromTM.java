@@ -19,19 +19,18 @@
 
 package abc.tmwpopt.tmtoda;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import soot.SootClass;
 import soot.SootMethod;
 import abc.da.weaving.aspectinfo.TracePattern;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.SimpleStateMachine;
-import abc.tm.weaving.matching.StateMachine;
 import abc.weaving.aspectinfo.Aspect;
 
 /**
@@ -43,13 +42,23 @@ public class TracePatternFromTM implements TracePattern {
 
 	protected TraceMatch tm;
 	protected SimpleStateMachine sm;
-
 	public TracePatternFromTM(TraceMatch tm) {
 		this.tm = tm;
-	}
+		
+		sm = ((SimpleStateMachine) tm.getStateMachine()).determinise();  //make copy so that we don't tamper with the original
 
-	public boolean equals(Object obj) {
-		return tm.equals(obj);
+		//add looping transitions to initial state
+		for (SMNode s : sm.getInitialStates()) {
+			for (String symbol : getSymbols()) {
+				sm.newTransition(s,s,symbol);
+			}
+		}
+		
+        Map<String, Collection<String>> symToVars = new HashMap<String, Collection<String>>();
+        for(String sym: getSymbols()) {
+        	symToVars.put(sym,getVariableOrder(sym));
+        }        
+		sm.prepare(getFormals(),symToVars);
 	}
 
 	public Aspect getContainer() {
@@ -84,50 +93,12 @@ public class TracePatternFromTM implements TracePattern {
 		return tm.getVariableOrder(symbol);
 	}
 
-	@SuppressWarnings("unchecked")
-	public StateMachine getStateMachine() {
-		if(sm==null) {
-			sm = ((SimpleStateMachine) tm.getStateMachine()).determinise();  //make copy so that we don't tamper with the original
-
-			//add looping transitions to initial state
-			for (SMNode s : sm.getInitialStates()) {
-				for (String symbol : getSymbols()) {
-					sm.newTransition(s,s,symbol);
-				}
-			}
-
-			//the following optimization is only true for state machines that never leave the initial state, so we better make this sure;
-			//tracematch state machines should always have this property
-			assert sm.alwaysInInitialState();		
-			
-			//if we have transitions q0 --a--> q1 --a--> q1 then
-			//we can safely reduce this to q0 --a--> q1 only, due to the suffix-matching semantics of tracematches
-			for (SMNode s : sm.getInitialStates()) {
-				Iterator<SMEdge> edgeIter = s.getOutEdgeIterator();
-				while(edgeIter.hasNext()) {
-					SMEdge outEdge = edgeIter.next();
-					String symbol = outEdge.getLabel();
-					SMNode target = outEdge.getTarget();
-					if(!target.isInitialNode()) {
-						Iterator<SMEdge> otherEdgeIter = target.getOutEdgeIterator();
-						Set<SMEdge> edgesToRemove = new HashSet<SMEdge>(); //make copy to avoid ConcurrentModificationException
-						while(otherEdgeIter.hasNext()) {
-							SMEdge edge = otherEdgeIter.next();
-							if(edge.getLabel().equals(symbol) && edge.getTarget()==target) {
-								edgesToRemove.add(edge);
-							}
-						}
-						for (SMEdge edge : edgesToRemove) {
-							sm.removeTransition(edge);
-						}
-					}
-				}
-			}
-			
-			sm.prepare(this.getSymbols());
-			
-		}
+	public SimpleStateMachine getStateMachine() {
 		return sm;
+	}
+
+	public Collection<String> getFormals() {
+		return tm.getFormalNames();
 	}
 	
 }

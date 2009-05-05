@@ -54,18 +54,18 @@ public class AdviceApplicationVisitor {
 	public final void traverse(AdviceApplicationHandler aah) {
 	
 		GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
-		for (Iterator classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
-			AbcClass abcClass = (AbcClass) classIter.next();
+		for (Iterator<AbcClass> classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
+			AbcClass abcClass = classIter.next();
 			SootClass c = abcClass.getSootClass();
 			
-			for (Iterator methodIter = c.methodIterator(); methodIter.hasNext();) {
-				SootMethod m = (SootMethod) methodIter.next();
+			for (Iterator<SootMethod> methodIter = c.methodIterator(); methodIter.hasNext();) {
+				SootMethod m = methodIter.next();
 				
 				MethodAdviceList adviceList = gai.getAdviceList(m);
 				
 				if(adviceList!=null) {
-					for (Iterator aaIter = adviceList.allAdvice().iterator(); aaIter.hasNext();) {
-						AdviceApplication aa = (AdviceApplication) aaIter.next();
+					for (Iterator<AdviceApplication> aaIter = adviceList.allAdvice().iterator(); aaIter.hasNext();) {
+						AdviceApplication aa = aaIter.next();
 						
 						aah.adviceApplication(aa,m);
 						

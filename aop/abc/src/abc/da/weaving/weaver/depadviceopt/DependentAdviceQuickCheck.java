@@ -84,6 +84,10 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 				public void adviceApplication(AdviceApplication aa, SootMethod m) {
 					boolean isDependent = dai.isDependentAdvice(aa.advice);
 					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
+						String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
+						String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
+						if(givenName.endsWith("newDaCapoRun")) return;
+						
 						numEnabledDependentAdviceShadowsBefore++;
 						if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
 							//after advice generate two shadows, one for after-returning and
@@ -138,8 +142,17 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 	
 					public void adviceApplication(AdviceApplication aa, SootMethod m) {
 						boolean isDependent = dai.isDependentAdvice(aa.advice);
-						if (isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+						if (isDependent &&  !NeverMatch.neverMatches(aa.getResidue()) && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+							String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
+							String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
+							if(givenName.endsWith("newDaCapoRun")) return;
+
 							numEnabledDependentAdviceShadowsAfter--;
+							if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
+								//after advice generate two shadows, one for after-returning and
+								//one for after-throwing
+								numEnabledDependentAdviceShadowsAfter--;
+							}
 							aa.setResidue(NeverMatch.v());
 						}
 					}			
@@ -153,6 +166,10 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 						public void adviceApplication(AdviceApplication aa, SootMethod m) {
 							boolean isDependent = dai.isDependentAdvice(aa.advice);
 							if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+								String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
+								String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
+								if(givenName.endsWith("newDaCapoRun")) return;
+
 								//enough to warn one time, even if the same advice has many shadows
 								if(!warned.contains(aa.advice)) {
 									warnAdvice(aa.advice);
@@ -168,6 +185,10 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 						public void adviceApplication(AdviceApplication aa, SootMethod m) {
 							boolean isDependent = dai.isDependentAdvice(aa.advice);
 							if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+								String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
+								String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
+								if(givenName.endsWith("newDaCapoRun")) return;
+
 								//enough to warn one time, even if the same advice has many shadows
 								warnShadow(aa);
 							}

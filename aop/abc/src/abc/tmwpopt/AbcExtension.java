@@ -21,6 +21,10 @@ package abc.tmwpopt;
 
 import java.util.List;
 
+import soot.Scene;
+import soot.SootClass;
+import soot.tagkit.Host;
+
 import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
@@ -33,6 +37,7 @@ import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tmwpopt.tmtoda.TracePatternFromTM;
+import abc.weaving.matching.SJPInfo;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 
@@ -120,19 +125,21 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 		return new TMWeaver() {
 			@Override
 			public void weaveGenerateAspectMethods() {
-				super.weaveGenerateAspectMethods();
 				DAInfo daInfo = getDependentAdviceInfo();
 				//for each tracematch, register appropriate advice dependencies with abc.da
 				for (TraceMatch tm : ((TMGlobalAspectInfo)getGlobalAspectInfo()).getTraceMatches()) {
-					//create dependency for tracematch pattern
-					daInfo.registerTracePattern(new TracePatternFromTM(tm));
-					
 					//register advice names
 					for(String sym: tm.getSymbols()) {
 						String adviceName = tm.getSymbolAdviceMethod(sym).getName();
-						daInfo.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
+						daInfo.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName,
+								tm.getContainer().getName()+"."+sym
+						);
 					}
+
+					//create dependency for tracematch pattern
+					daInfo.registerTracePattern(new TracePatternFromTM(tm));					
 				}
+				super.weaveGenerateAspectMethods();
 			}
 		};
 	}
@@ -150,5 +157,9 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
     public void addBasicClassesToSoot() {
     	super.addBasicClassesToSoot();
     	daExtension.addBasicClassesToSoot();
+        if(Debug.v().traceExecution) {
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Dumper", SootClass.SIGNATURES);
+        }
     }
+    
 }

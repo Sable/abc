@@ -19,12 +19,14 @@
  
  package abc.da.weaving.aspectinfo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import soot.SootClass;
 import soot.SootMethod;
 import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.matching.SimpleStateMachine;
 import abc.tm.weaving.matching.StateMachine;
 import abc.weaving.aspectinfo.Aspect;
 
@@ -53,5 +55,7 @@ public interface TracePattern {
 
 	public String getName();
 	
-	public StateMachine getStateMachine();
+	public SimpleStateMachine getStateMachine();
+	
+	public Collection<String> getFormals();
 }

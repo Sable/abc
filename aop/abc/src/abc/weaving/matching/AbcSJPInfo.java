@@ -436,4 +436,12 @@ public class AbcSJPInfo implements SJPInfo {
       createSJPObject();
       assignObject();
     } 
+  
+  public void overrideKind(String newKind) {
+		this.kind = newKind;
+  }
+  
+  public String getKind() {
+	  return kind;
+  }
 }

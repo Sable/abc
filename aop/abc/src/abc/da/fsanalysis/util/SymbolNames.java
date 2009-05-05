@@ -19,7 +19,6 @@
 package abc.da.fsanalysis.util;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import soot.SootMethod;
 import abc.da.HasDAInfo;
@@ -64,14 +63,16 @@ public class SymbolNames {
 			if(tm==null)
 				return null;
 				
-	        Map<SootMethod,String> adviceMethodToSymbol = new HashMap<SootMethod, String>();
 	        for (String sym : tm.getSymbols()) {
 				SootMethod am = tm.getSymbolAdviceMethod(sym);
-				adviceMethodToSymbol.put(am,sym);
+				if(am.equals(adviceMethod)) {
+					symbolName = sym;
+					break;
+				}
 			}
-	        Map<Shadow,String> shadowToSymbolName = new HashMap<Shadow, String>();
-			
-	        symbolName = adviceMethodToSymbol.get(adviceMethod);
+	        if(symbolName==null) {
+	        	throw new RuntimeException("no symbol name found for shadow!");
+	        }       
 			shadowToSymbolName.put(s, symbolName);
 		}
 		

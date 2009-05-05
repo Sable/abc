@@ -61,7 +61,7 @@ import abc.weaving.weaver.around.AroundWeaver;
 
 public class Weaver {
 
-    protected final AspectCodeGen ag;
+    protected AspectCodeGen ag;
     
     protected Map<Object,Object> unitBindings = new HashMap();
     protected Map<Object,Object> reverseUnitBindings;
@@ -454,6 +454,10 @@ public class Weaver {
 		 */
 		public Unweaver getUnweaver() {
 			return unweaver;
+		}
+		
+		public void setAspectCodegen(AspectCodeGen ag) {
+			this.ag = ag;
 		}
 		
 } // class Weaver

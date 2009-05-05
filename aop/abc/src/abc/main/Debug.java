@@ -256,32 +256,26 @@ public class Debug {
     // Suppress AspectJ keywords
     public boolean pureJava = false;
     
-    //verbose mode for static tracematch analysis
-    public boolean debugTmAnalysis = false;
-    //dump shadow statistics for static tracematch optimization 
-	public boolean tmShadowStatistics = false;
-	//use CSV format for statistics
-	public boolean csv = false;
-	//dump shadows as they are disabled
-	public boolean tmShadowDump = false;
 	//enable dynamic instrumentation
 	public boolean dynaInstr = false;
 	//enable shadow counting
 	public boolean shadowCount = false;
 	
     //output potential points of failure in PFG files    
-    public boolean outputPFGs = false;
+    public boolean outputPFGs = true;
     //output clickable HTML graphs
     public boolean outputHTML = false;
     
     //print advice dependencies generated for tracematches
     public boolean printTMAdviceDeps = false;
     
-    //if enabled, dependent advice will not be optimized, not even with a quick-check
-    public boolean dontOptimizeDA = false;
-    
     //print debug information for analysis for dependent advice
     public boolean debugDA = false;
+    
+    //print a dump for every method analized by the flow-sensitive analysis
+    public boolean dumpDA = false;
+
+    public boolean traceExecution = false;
     
 
     public static void phaseDebug(String s) {

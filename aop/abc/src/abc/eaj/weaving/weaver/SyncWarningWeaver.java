@@ -29,6 +29,7 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.BodyShadowMatch;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AdviceApplicationVisitor;
+import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.Weaver;
 
 /**
@@ -40,6 +41,14 @@ public class SyncWarningWeaver extends Weaver {
 	
 	protected static Set convertedMethods = new IdentityHashSet(); 
 	
+	public SyncWarningWeaver() {
+		super();
+	}
+	
+	public SyncWarningWeaver(AspectCodeGen aspectCodeGen) {
+		super(aspectCodeGen);
+	}
+
 	public static void registerConvertedMethod(SootMethod m) {
 		convertedMethods.add(m);
 	}

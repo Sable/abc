@@ -27,9 +27,16 @@ import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import soot.PackManager;
+import soot.PatchingChain;
 import soot.PointsToAnalysis;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
+import soot.Unit;
+import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
+import soot.jimple.NullConstant;
+import soot.jimple.Stmt;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.pointsto.CustomizedDemandCSPointsTo;
@@ -41,6 +48,7 @@ import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -67,7 +75,7 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 	 */
 	public boolean analyze() {
 		
-		boolean debug = Debug.v().debugTmAnalysis || Debug.v().debugDA;
+		boolean debug = Debug.v().debugDA;
 		
 		final DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
 
@@ -242,8 +250,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
 		CustomizedDemandCSPointsTo customPta = new CustomizedDemandCSPointsTo((DemandCSPointsTo) pta);
 		Scene.v().setPointsToAnalysis(customPta);
-		
-		DemandCSPointsTo.DEBUG = true;
 	}
 
 	public void warn(Shadow s,String msg) {
@@ -304,6 +310,10 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
         sootArgs.add("-p");
         sootArgs.add("cg.spark");
         sootArgs.add("empties-as-allocs:true");   
+        
+//        sootArgs.add("-p");
+//        sootArgs.add("cg.spark");
+//        sootArgs.add("on-fly-cg:false");
         
         OptionsParser.v().set_tag_instructions(true);
     }

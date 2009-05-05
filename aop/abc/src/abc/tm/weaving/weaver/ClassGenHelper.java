@@ -173,25 +173,25 @@ public class ClassGenHelper {
     private LocalGeneratorEx curLGen;
     
     // often needed class and type constants
-    static SootClass objectClass;
-    static SootClass setClass;
-    static SootClass listClass;
-    static SootClass collectionClass;
-    static SootClass iteratorClass;
-    static SootClass ccMapClass;
+    SootClass objectClass;
+    SootClass setClass;
+    SootClass listClass;
+    SootClass collectionClass;
+    SootClass iteratorClass;
+    SootClass ccMapClass;
     
-    static SootClass idMapClass;
-    static SootClass weakIdMapClass;
-    static SootClass collWeakIdMapClass;
+    SootClass idMapClass;
+    SootClass weakIdMapClass;
+    SootClass collWeakIdMapClass;
     
-    static Type objectType;
-    static Type setType;
-    static Type listType;
-    static Type collectionType;
-    static Type jusetType;
-    static Type iteratorType;
-    static Type hashEntryType;
-    static RefType mapType;
+    Type objectType;
+    Type setType;
+    Type listType;
+    Type collectionType;
+    Type jusetType;
+    Type iteratorType;
+    Type hashEntryType;
+    RefType mapType;
     
     // other often-needed constants
     List emptyList = new LinkedList();

@@ -19,6 +19,7 @@
  
 package abc.da.weaving.aspectinfo;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,11 +44,12 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
  */
 public class TracePatternFromSource implements TracePattern {
 
-	protected StateMachine sm;	
+	protected SimpleStateMachine sm;	
 	protected Aspect container;
 	protected String name;
 	protected Map<String,List<String>> symToVars; 
 	protected Map<String,SootMethod> symToAdviceMethod;
+	protected Set<String> formals;
 		
 	public TracePatternFromSource(
 			Aspect container,
@@ -56,9 +58,14 @@ public class TracePatternFromSource implements TracePattern {
 			String name) {
 		this.container = container;
 		this.symToVars = symToVars;
-		sm.prepare(this.getSymbols());
-		this.sm = sm;
 		this.name = name;
+		this.formals = new HashSet<String>();
+		for (List<String> vars : symToVars.values()) {
+			formals.addAll(vars);
+		}
+		
+		this.sm = sm;
+		this.sm.prepare(formals,symToVars);
 	}
 
 	public Aspect getContainer() {
@@ -99,7 +106,7 @@ public class TracePatternFromSource implements TracePattern {
 		return name;
 	}
 
-	public StateMachine getStateMachine() {
+	public SimpleStateMachine getStateMachine() {
 		return sm;
 	}
 
@@ -143,6 +150,10 @@ public class TracePatternFromSource implements TracePattern {
 
 	public List<String> getVariableOrder(String symbol) {
 		return symToVars.get(symbol);
+	}
+
+	public Collection<String> getFormals() {
+		return formals;
 	}
 
 }

@@ -24,11 +24,11 @@ import java.util.List;
 
 import soot.Scene;
 import soot.SootClass;
-
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
+import abc.da.weaving.weaver.tracing.CrossChecker;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -47,6 +47,7 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 	public static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
     public static final ID DEPENDENT_ADVICE_INTRA_FLOWSENS = new ReweavingPass.ID("flow-sensitive intraprocedural analysis for dependent-advice");
     public static final ID DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION = new ReweavingPass.ID("dynamic instrumentation for dependent-advice");
+    public static final ID CROSS_CHECK = new ReweavingPass.ID("cross-check");
     public static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
 
 	/** The dependent advice info for this extension. This encapsulates all information about advice dependencies in the backend. */
@@ -97,53 +98,68 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
     public void createReweavingPasses(List<ReweavingPass> passes) {
     	super.createReweavingPasses(passes);
     	
-    	if(Debug.v().dontOptimizeDA) {
-    		if(Debug.v().debugDA) 
-    			System.err.println("da: DISABLED ALL OPTIMIZATIONS FOR DEPENDENT ADVICE");
-    	} else {
-	    	//quick check
-	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
-	   		
-	   		//flow-insensitive analysis, if enabled
-	    	if(!OptionsParser.v().laststage().equals("quick")) {
-	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
-	    	}
-	    	
-			if(!OptionsParser.v().laststage().equals("quick")
-			&& !OptionsParser.v().laststage().equals("flowins")) {
-				passes.add(new ReweavingPass(DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
-			}
-			
-            if(Debug.v().dynaInstr) {
-                ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
-                    @Override
-                    public boolean analyze() {
-                        DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
-                        return false;
-                    }
-                };
-                passes.add( new ReweavingPass( DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+    	if(OptionsParser.v().runtime_trace()!=null) {
+    		//do only cross-check
+    		passes.add(new ReweavingPass(CROSS_CHECK,new AbstractReweavingAnalysis() {
+
+				public boolean analyze() {
+		    		CrossChecker.crossCheck();
+					return false;
+				}
+    			
+    		}));
+    		return;
+    	}
+	    
+    	//quick check
+    	if(!OptionsParser.v().laststage().equals("none")) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,getDependentAdviceInfo().quickCheck()));
+    	}
+   		
+   		//flow-insensitive analysis, if enabled
+    	if(!OptionsParser.v().laststage().equals("none")
+    	&& !OptionsParser.v().laststage().equals("quick")) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,getDependentAdviceInfo().flowInsensitiveAnalysis()));
+    	}
+    	
+		if(!OptionsParser.v().laststage().equals("none")
+		&& !OptionsParser.v().laststage().equals("quick")
+		&& !OptionsParser.v().laststage().equals("flowins")) {
+			passes.add(new ReweavingPass(DEPENDENT_ADVICE_INTRA_FLOWSENS,getDependentAdviceInfo().intraProceduralAnalysis()));			
+		}
+		
+        if(Debug.v().dynaInstr) {
+            ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
+                @Override
+                public boolean analyze() {
+                    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+                    return false;
+                }
+            };
+            passes.add( new ReweavingPass( DEPENDENT_ADVICE_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+        }
+    	
+        //add a pass which just cleans up resources;
+        //this is necessary in order to reset static fields for the test harness        
+        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
+
+            @Override
+            public boolean analyze() {
+            	//do nothing
+                return false;
             }
-	    	
-	        //add a pass which just cleans up resources;
-	        //this is necessary in order to reset static fields for the test harness        
-	        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
-	
-	            @Override
-	            public boolean analyze() {
-	            	//do nothing
-	                return false;
-	            }
-	            
-	            @Override
-	            public void cleanup() {
-	                //reset state
-	                getDependentAdviceInfo().resetAnalysisDataStructures();
-	            }
-	
-	        };
-	        passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
-    	} 
+            
+            @Override
+            public void cleanup() {
+                //reset state
+                getDependentAdviceInfo().resetAnalysisDataStructures();
+            }
+
+        };
+        
+        if(!OptionsParser.v().laststage().equals("none")) {
+        	passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
+        }
     }
     
 	/**

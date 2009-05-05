@@ -19,6 +19,7 @@
 package abc.da.weaving.aspectinfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import java.util.Set;
 import polyglot.util.Position;
 import soot.SootMethod;
 import abc.da.HasDAInfo;
+import abc.da.fsanalysis.EnabledShadowSet;
 import abc.da.weaving.weaver.depadviceopt.ds.Bag;
 import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
@@ -422,6 +424,17 @@ public class AdviceDependency {
 			return res;
 		}
 
+		public Collection<Shadow> getEnabledDependentAdviceShadows() {
+			Set<Shadow> res = new HashSet<Shadow>(Arrays.asList(shadows));
+			for (Iterator<Shadow> iterator = res.iterator(); iterator.hasNext();) {
+				Shadow shadow = iterator.next();
+				if(!shadow.isEnabled()) {
+					iterator.remove();
+				}
+			}			
+			return res;
+		}
+		
 		protected BitSet overlappingShadows(int num) {
 			if(overlappingShadows[num]==null) {
 
@@ -644,7 +657,7 @@ public class AdviceDependency {
 		boolean changed = true;
 		while(changed) {
 			changed = false;
-			for (Shadow shadow : dependentAdviceShadows) {
+			for (Shadow shadow : new HashSet<Shadow>(dependentAdviceShadows)) {
 				if(dai.isDependentAdvice(shadow.getAdviceDecl())) {
 					boolean isAlive = false;
 					for (AdviceDependency dependency : dependencies) {
@@ -701,10 +714,10 @@ public class AdviceDependency {
 		return dependencies;
 	}
 	
-	public static Set<Shadow> getAllEnabledShadowsOverlappingWith(Collection<Shadow> shadows) {
+	public static EnabledShadowSet getAllEnabledShadowsOverlappingWith(Collection<Shadow> shadows) {
 		DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
 		
-		Set<Shadow> overlappingShadows = new HashSet<Shadow>();
+		EnabledShadowSet overlappingShadows = new EnabledShadowSet();
 		Set<AdviceDependency> dependencies = dependenciesPassingQuickCheck();
 		
 		for (Shadow shadow : shadows) {
@@ -717,12 +730,32 @@ public class AdviceDependency {
 		
 		return overlappingShadows;
 	}
+	
+	public static Set<Shadow> getAllEnabledDependentAdviceShadowsFromAspect(Aspect a) {
+		Set<Shadow> shadows = new HashSet<Shadow>();
+		Set<AdviceDependency> dependencies = dependenciesPassingQuickCheck();
+		
+		for (AdviceDependency dependency : dependencies) {
+			if(dependency.getContainer().equals(a)) {
+				shadows.addAll(dependency.getEnabledDependentAdviceShadows());
+			}
+		}
+		
+		return shadows;
+	}
 
 	protected Collection<Shadow> getOverlappingEnabledShadows(Shadow shadow) {
 		if(shadowGroupsRecord==null) {
 			throw new IllegalStateException("Shadow groups have not yet been computed.");			
 		}
 		return shadowGroupsRecord.getOverlappingEnabledShadows(shadow);
+	}
+
+	protected Collection<Shadow> getEnabledDependentAdviceShadows() {
+		if(shadowGroupsRecord==null) {
+			throw new IllegalStateException("Shadow groups have not yet been computed.");			
+		}
+		return shadowGroupsRecord.getEnabledDependentAdviceShadows();
 	}
 
 	public Collection<Probe> computeProbes() {

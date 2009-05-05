@@ -19,9 +19,12 @@
  */
 package abc.da.weaving.weaver.depadviceopt;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,19 +33,18 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import abc.da.HasDAInfo;
-import abc.da.fsanalysis.analysis.AnalysisJob;
-import abc.da.fsanalysis.analysis.UnnecessaryShadowsElimination;
+import abc.da.fsanalysis.EnabledShadowSet;
 import abc.da.fsanalysis.callgraph.AbstractedCallGraph;
 import abc.da.fsanalysis.callgraph.NodePredicate;
-import abc.da.fsanalysis.ranking.Ranking;
+import abc.da.fsanalysis.flowanalysis.AnalysisJob;
 import abc.da.fsanalysis.ranking.Statistics;
 import abc.da.fsanalysis.util.ShadowsPerTMSplitter;
-import abc.da.fsanalysis.util.SymbolNames;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.TracePattern;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
@@ -57,6 +59,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	
 	protected long maxTime, averageTime, totalTime;
 	protected int analysisCount;
+	
+	protected Map<SootMethod,AnalysisJob> methodToJob = new HashMap<SootMethod, AnalysisJob>();
 	
 	
 	/**
@@ -78,63 +82,43 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 			
 			if(dependentAdviceShadows.isEmpty()) return false;
 
-			final Set<SootMethod> methodsWithShadows = new HashSet<SootMethod>();
-			for (Shadow shadow : dependentAdviceShadows) {
-				methodsWithShadows.add(shadow.getContainer());
-			}
-			
-			CallGraph cg = new AbstractedCallGraph(Scene.v().getCallGraph(), new NodePredicate() {
-
-				/** 
-				 * Returns <code>true</code> if the method can call back to weavable classes.
-				 */
-				public boolean visitChildren(MethodOrMethodContext curr) {
-			    	SootMethod method = curr.method();
-			    	//explicitly has no effects on base code
-			    	return !MethodCategory.noEffectsOnBaseCode(method);
-			    }
-
-				public boolean want(MethodOrMethodContext node) {
-			    	SootMethod method = node.method();			    	
-			    	//explicitly has no effects on base code
-			    	if(MethodCategory.noEffectsOnBaseCode(method)) {
-			    		return false;
-			    	}
-			    	return methodsWithShadows.contains(node);
-				}
-				
-			});
+			CallGraph cg = buildAbstractedCallGraph(dependentAdviceShadows);
 			
 			Statistics.v().dump("after first flow-insensitive stage", dependentAdviceShadows, true);
-			
-	        oneIteration(dependentAdviceShadows,cg);
 
-	        Statistics.v().dump("after flow-sensitive stage", dependentAdviceShadows, true);
+			File traceFile = retrieveTraceFileHandle();
 
-	        AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(dependentAdviceShadows);
+			int iteration = 1;
+			//the set of shadows enabled just before the current itration
+			Set<Shadow> enabledShadowsBeforeIteration = new HashSet<Shadow>(dependentAdviceShadows);
+			//the set of shadow enabled just after the last iteration
+			Set<Shadow> enabledShadowsAfterIteration = enabledShadowsBeforeIteration;
+	        do {
+	        	//the shadows enabled before this iterations are the ones that remained enabled after the last one
+	        	enabledShadowsBeforeIteration = enabledShadowsAfterIteration;
+		        System.err.println("da:    DA-Shadows enabled before FlowSens iteration "+iteration+": "+enabledShadowsBeforeIteration.size());		        
+	        	
+		        //do the work...
+		        oneIteration(enabledShadowsBeforeIteration,cg,traceFile);
+	        	
+		        //create the set of all still-enabled shadows
+		        enabledShadowsAfterIteration = new HashSet<Shadow>(enabledShadowsBeforeIteration);
+	        	for (Iterator<Shadow> shadowIter = enabledShadowsAfterIteration.iterator(); shadowIter.hasNext();) {
+					Shadow shadow = shadowIter.next();
+					if(!shadow.isEnabled()) {
+						shadowIter.remove();
+					}
+				}
+		        
+	        	iteration++;
+	        	//we iterate until no shadows are disabled any more
+	        } while(!enabledShadowsBeforeIteration.equals(enabledShadowsAfterIteration));
 
-			Statistics.v().dump("after second flow-insensitive stage", dependentAdviceShadows, false);
+	        Statistics.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
-	        System.err.println("=========================================");
-	        if(UnnecessaryShadowsElimination.timesAborted>0) {
-	        	System.err.println("SOME RUNS WERE ABORTED!");
-	        }
-        	System.err.println("Number of aborted attempts:    "+UnnecessaryShadowsElimination.timesAborted);
-        	System.err.println("Limit was:                     "+UnnecessaryShadowsElimination.maxJobCount);
-        	System.err.println("Max number of successful jobs: "+UnnecessaryShadowsElimination.maxJobCountOccurred);
-	        System.err.println("=========================================");
-
-		} catch(OutOfMemoryError e) {
-			//in case we run out of memory, clean up right away
-			e.printStackTrace();
-			System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			System.err.println("Ran out of memory! Cleaning up...");
-			System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
+	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());  
 		} finally {
-			Statistics.reset();
-			Ranking.reset();
-			SymbolNames.reset();
+			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
 		}
 		return false;
 	}
@@ -142,11 +126,73 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 
 
 	/**
+	 * Depending on the command-line setting returns either a handle to a file which
+	 * the compile-time trace for cross-validation should be writen to, or <code>null</code>.
+	 */
+	private File retrieveTraceFileHandle() {
+		File traceFile = null;
+		if(OptionsParser.v().produce_compile_time_trace()) {
+			try {
+				traceFile = new File("abc.da.cttrace");
+				if(traceFile.exists()) {
+					traceFile.delete();
+				}
+				traceFile.createNewFile();
+			} catch (IOException e) {
+				System.err.println("Error creating trace file abc.da.cttrace:");
+				e.printStackTrace();
+				traceFile = null;
+			}
+		}
+		return traceFile;
+	}
+
+	/**
+	 * Returns an abstracted call-graph. This call-graph is different from the full call-graph
+	 * in that it does not contain any outgoing call edges for which it holds that transitively,
+	 * through this call, no method containing an enabled shadow may be reached.
+	 */
+	private CallGraph buildAbstractedCallGraph(Set<Shadow> dependentAdviceShadows) {
+		final Set<SootMethod> methodsWithShadows = new HashSet<SootMethod>();
+		for (Shadow shadow : dependentAdviceShadows) {
+			if(shadow.isEnabled())
+				methodsWithShadows.add(shadow.getContainer());
+		}
+		
+		CallGraph cg = new AbstractedCallGraph(Scene.v().getCallGraph(), new NodePredicate() {
+
+			/** 
+			 * Returns <code>true</code> if the method can call back to weaveable classes.
+			 */
+			public boolean visitChildren(MethodOrMethodContext curr) {
+		    	SootMethod method = curr.method();
+		    	//explicitly has no effects on base code
+		    	return !MethodCategory.noEffectsOnBaseCode(method);
+		    }
+
+			public boolean want(MethodOrMethodContext node) {
+		    	SootMethod method = node.method();			    	
+		    	//explicitly has no effects on base code
+		    	if(MethodCategory.noEffectsOnBaseCode(method)) {
+		    		return false;
+		    	}
+		    	return methodsWithShadows.contains(node);
+			}
+			
+		});
+		return cg;
+	}
+
+
+
+	/**
      * Executes a single analysis iteration.
-     * @param shadows 
-     * @param cg 
+     * @param shadows the set of all shadows in the program that are still enabled
+     * @param cg the abstracted call-graph
+	 * @param traceFile <code>null</code> or the handle to a file which the compile-time
+	 * trace should be written to (for cross-validation)
      */
-    protected void oneIteration(Set<Shadow> shadows, CallGraph cg) {
+    protected void oneIteration(Set<Shadow> shadows, CallGraph cg, File traceFile) {
 		HasDAInfo gai = (HasDAInfo) Main.v().getAbcExtension();
 
 		/*
@@ -154,15 +200,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 		 */
 		Map<TracePattern,Set<Shadow>> tmToShadows = ShadowsPerTMSplitter.splitSymbolShadows(shadows);
 		
-//        boolean mayStartThreads = mayStartThreads(cg);
-        
         for (TracePattern tm : (Collection<TracePattern>)gai.getDependentAdviceInfo().getTracePatterns()) {
-//            if(mayStartThreads && !tm.isPerThread() && Debug.v().debugTmAnalysis) {
-//                System.err.println("#####################################################");
-//                System.err.println(" Application may start threads that execute shadows! ");
-//                System.err.println(" TracePattern "+tm.getName()+" is not per-thread!");
-//                System.err.println("#####################################################");
-//            }
             
         	Set<Shadow> thisTMsShadows = tmToShadows.get(tm);
         	if(thisTMsShadows==null) {
@@ -174,13 +212,13 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
         	 * Build a mapping from methods to the shadows in these methods.
         	 * We only take account shadows for this TracePattern.
         	 */
-        	Map<SootMethod,Set<Shadow>> methodToEnabledTMShadows = new HashMap<SootMethod, Set<Shadow>>();
+        	Map<SootMethod,EnabledShadowSet> methodToEnabledTMShadows = new HashMap<SootMethod, EnabledShadowSet>();
             for (Shadow s : thisTMsShadows) {
             	if(s.isEnabled()) {
 	                SootMethod m = s.getContainer();
-	                Set<Shadow> shadowsInMethod = methodToEnabledTMShadows.get(m);
+	                EnabledShadowSet shadowsInMethod = methodToEnabledTMShadows.get(m);
 	                if(shadowsInMethod==null) {
-	                	shadowsInMethod = new HashSet<Shadow>();
+	                	shadowsInMethod = new EnabledShadowSet();
 	                	methodToEnabledTMShadows.put(m, shadowsInMethod);                	
 	                }
 	                shadowsInMethod.add(s);
@@ -194,24 +232,28 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
             	Set<Shadow> shadowsInMethod = methodToEnabledTMShadows.get(m);
                 if(shadowsInMethod.isEmpty()) return; //no active shadows any more
                 
-                if(Debug.v().debugTmAnalysis)
+                if(Debug.v().debugDA)
                 	System.err.println("Analyzing: "+m+" on TracePattern: "+tm.getName());
                 
                 long before = System.currentTimeMillis();
 
+                AnalysisJob job = methodToJob.get(m);
+                if(job==null) {
+                    /*
+                     * Set up supporting analyses.
+                     */
+                	job = new AnalysisJob(m,tm,shadowsInMethod,cg,methodToEnabledTMShadows);
+                	methodToJob.put(m, job);
+                }
+
                 /*
-                 * Set up and run supporting analyses.
+                 * Run the analysis job.
                  */
-                AnalysisJob job = new AnalysisJob(m,tm,shadowsInMethod,cg,methodToEnabledTMShadows);
-                
-                /*
-                 * Run UnnecessaryShadowsElimination.
-                 */
-                UnnecessaryShadowsElimination.apply(job);
+                job.compute(traceFile);
 
                 long duration = System.currentTimeMillis()-before;
 
-                if(Debug.v().debugTmAnalysis) {
+                if(Debug.v().debugDA) {
                 	System.err.println("Done analyzing: "+m+" on TracePattern: "+tm.getName());
 					System.err.println("Analysis took: "+duration);
                 }
@@ -227,16 +269,9 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
         System.err.println("Maximal analysis time:   "+maxTime);
         System.err.println("Average analysis time:   "+averageTime);
         System.err.println("Total analysis time:     "+totalTime);
+        
+        //perform flow-insensitive analysis again
+        AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(shadows);
     }
-
-//    private boolean mayStartThreads(CallGraph cg) {
-//        for (Iterator<Edge> iterator = cg.listener(); iterator.hasNext();) {
-//            Edge edge = iterator.next();
-//            if(edge.kind().equals(Kind.THREAD)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
 }

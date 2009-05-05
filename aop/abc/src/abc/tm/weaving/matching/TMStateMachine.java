@@ -84,7 +84,11 @@ public class TMStateMachine extends SimpleStateMachine {
     	fillInCollectableWeakRefs(tm);
         collectableWeakRefsToOtherRefs(formals,notused,tm);
         initBoundVars(formals);
-        fixBoundVars(tm);
+        Map<String, Collection<String>> symToVars = new HashMap<String, Collection<String>>();
+        for(String sym: tm.getSymbols()) {
+        	symToVars.put(sym,tm.getVariableOrder(sym));
+        }        
+        fixBoundVars(symToVars);
         if (!formals.isEmpty() && Debug.v().generateLeakWarnings)
         	generateLeakWarnings(pos);
     }
@@ -228,61 +232,7 @@ public class TMStateMachine extends SimpleStateMachine {
     		state.collectableWeakRefs = collWeakRefs;
     	}
     }
-    
-	/**
-		 * initialise the boundVars fields for the meet-over-all-paths computation
-		 * 
-		 * @param formals all variables declared in the tracematch
-		 */
-	private void initBoundVars(Collection<String> formals) {
-			// we want a maximal fixpoint so for all final nodes the
-			// starting value is the empty set
-			// and for all other nodes it is the set of all formals
-			for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
-				SMNode node = (SMNode) edgeIter.next();
-				if (node.isInitialNode())
-					node.boundVars = new LinkedHashSet<String>();
-				else
-					node.boundVars = new LinkedHashSet<String>(formals); 
-			}
-		}
 
-	/**
-		 * do fixpoint iteration using a worklist of edges
-		 * 
-		 * @param tm tracematch, which provides a mapping from symbols
-         *           to sets of bound variables
-		 */
-		private void fixBoundVars(TraceMatch tm) {
-			// the worklist contains edges whose target has changed value
-			List worklist = new LinkedList(edges);
-			while (!worklist.isEmpty()) {
-				SMEdge edge = (SMEdge) worklist.remove(0);
-				SMNode src = edge.getSource();
-				SMNode tgt = edge.getTarget();
-				// now compute the flow function along this edge
-				Set flowAlongEdge = new LinkedHashSet(src.boundVars);
-				Collection c = tm.getVariableOrder(edge.getLabel());
-				if (c != null)
-				   flowAlongEdge.addAll(c);
-				// if tgt.boundVars is already smaller, skip
-				if (!flowAlongEdge.containsAll(tgt.boundVars)) {
-				   // otherwise compute intersection of 
-				   // tgt.boundVars and flowAlongEdge
-				   tgt.boundVars.retainAll(flowAlongEdge);
-				   // add any edges whose target has been affected to
-				   // the worklist
-				   for (Iterator edgeIter=edges.iterator(); edgeIter.hasNext(); ) {
-					   SMEdge anotherEdge = (SMEdge) edgeIter.next();
-					   if (anotherEdge.getSource() == tgt && 
-							!worklist.contains(anotherEdge))
-						worklist.add(0,anotherEdge);	
-				   }
-				}
-			}
-		}
-	
-	
 	 /**
 	  * compute for each node n, n.needStrongRefs := complement(n.collectableWeakRefs);
 	 * @param formals variables declared in the tracematch

@@ -27,10 +27,11 @@ import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
+import soot.SootClass;
+import soot.SootMethod;
 import abc.da.fianalysis.PathInfoFinder;
 import abc.da.fianalysis.PathInfoFinder.PathInfo;
-import abc.da.fsanalysis.ds.Constraint;
-import abc.da.fsanalysis.ds.Disjunct;
+import abc.da.fsanalysis.flowanalysis.ds.Disjunct;
 import abc.da.fsanalysis.ranking.OutputDotGraphs;
 import abc.da.fsanalysis.ranking.Ranking;
 import abc.da.fsanalysis.ranking.Statistics;
@@ -77,13 +78,6 @@ public class DAInfo {
 	 */
 	public Set<AdviceDependency> getAdviceDependencies() {
 		return Collections.unmodifiableSet(adviceDependencies);		
-	}
-	
-	/**
-	 * Registers a dependent advice.
-	 */
-	public void registerDependentAdvice(String internalAdviceName) {
-		registerDependentAdvice(internalAdviceName,internalAdviceName);
 	}
 	
     /**
@@ -215,6 +209,10 @@ public class DAInfo {
 		}
 		return false;
 	}
+	
+	public boolean isDependentAdviceMethod(SootClass container, SootMethod m) {
+		return adviceMethodNameToAdviceShortName.containsKey(container.getName()+"."+m.getName());
+	}
 
 	public String qualifiedNameOfAdvice(AdviceDecl adviceDecl) {
 		return adviceDecl.getAspect().getName()+"."+adviceDecl.getImpl().getSootMethod().getName();
@@ -338,8 +336,7 @@ public class DAInfo {
 		Ranking.reset();
 		Statistics.reset();
 		SymbolNames.reset();
+		OutputDotGraphs.reset();    
 		Disjunct.reset();
-		Constraint.reset();
-		OutputDotGraphs.reset();        
 	}
 }

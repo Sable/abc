@@ -21,12 +21,17 @@
 package abc.tm.weaving.matching;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import abc.da.weaving.aspectinfo.TracePattern;
 
 /**
  * An abstraction of a {@link TMStateMachine}. Supports basic operations on state machines but
@@ -91,6 +96,19 @@ public class SimpleStateMachine implements StateMachine {
 		}
 		return initialStates;
 	}
+	
+	public Set<SMNode> getFinalStates() {
+		// In principle, we could memoize this.
+		Set<SMNode> initialStates = new HashSet();
+	
+		for (Iterator iterator = getStateIterator(); iterator.hasNext();) {
+			SMNode state = (SMNode) iterator.next();
+			if(state.isFinalNode()) {
+				initialStates.add(state);
+			}
+		}
+		return initialStates;
+	}
 
 	public SMNode getStateByNumber(int n) {
 	    Iterator i = getStateIterator();
@@ -112,7 +130,7 @@ public class SimpleStateMachine implements StateMachine {
 	 * @param state the state to attach the skip loop to
 	 * @param label the label for the skip loop
 	 */
-	protected void newSkipLoop(State state, String label) {
+	public void newSkipLoop(State state, String label) {
 	    SMNode s = (SMNode)state;
 	    SMEdge edge = new SkipLoop(s,label);
 	    s.addOutgoingEdge(edge);
@@ -461,7 +479,7 @@ public class SimpleStateMachine implements StateMachine {
 			}
 	}
 	
-    public void prepare(Set<String> symbols) {
+    public void prepare(Collection<String> formals, Map<String, ? extends Collection<String>> symToVars) {
 		TMStateMachine det = null;
 		eliminateEpsilonTransitions();
 
@@ -470,23 +488,16 @@ public class SimpleStateMachine implements StateMachine {
 		reverse();
 		det.reverse();
 		det = det.determinise();
-		det.addSelfLoops(symbols,false/*also to initial state*/);
-		det.removeSkipToFinal();
-
-		det.compressStates();
-		det.renumberStates();
-		addSelfLoops(symbols,false/*also to initial state*/);
-		removeSkipToFinal();
+		this.edges = det.edges;
+		this.nodes = det.nodes;
+		addSelfLoops(symToVars.keySet(),false/*also to initial state*/);
 
 		compressStates();
 		renumberStates();
+		
+		initBoundVars(formals);
+		fixBoundVars(symToVars);
 
-		if (!abc.main.Debug.v().useNFA) {
-			if (this.nodes.size() >= det.nodes.size()) {
-				this.edges = det.edges;
-				this.nodes = det.nodes;
-			}
-		}
 	}
 
 	public String toString() {
@@ -514,6 +525,78 @@ public class SimpleStateMachine implements StateMachine {
 	 */
 	public boolean alwaysInInitialState() {
 		return false;
+	}
+	
+	/**
+	 * Returns for the given symbol the numbers of the states on which this symbol
+	 * has an effect, i.e. at which the symbol does not simply loop.
+	 */
+	public Set<Integer> getNumbersOfStatesAffectedBySymbol(String symbol) {
+		Set<Integer> sourceStateNumbers = new HashSet<Integer>();
+		for(Iterator<SMEdge> edgeIter = getEdgeIterator();edgeIter.hasNext();) {
+			SMEdge edge = edgeIter.next();
+			if(edge.getLabel().equals(symbol) && (edge.isSkipEdge() || edge.getSource()!=edge.getTarget())) {
+				sourceStateNumbers.add(edge.getSource().getNumber());
+			}
+		}
+		return sourceStateNumbers;
+	}	
+	
+	/**
+	 * initialise the boundVars fields for the meet-over-all-paths computation
+	 * 
+	 * @param formals all variables declared in the tracematch
+	 */
+	public void initBoundVars(Collection<String> formals) {
+		// we want a maximal fixpoint so for all final nodes the
+		// starting value is the empty set
+		// and for all other nodes it is the set of all formals
+		for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
+			SMNode node = (SMNode) edgeIter.next();
+			if (node.isInitialNode())
+				node.boundVars = new LinkedHashSet<String>();
+			else
+				node.boundVars = new LinkedHashSet<String>(formals); 
+		}
+	}
+	
+	/**
+	 * do fixpoint iteration using a worklist of edges
+	 * 
+	 * @param symToVars tracematch, which provides a mapping from symbols
+     *           to sets of bound variables
+	 */
+	public void fixBoundVars(Map<String, ? extends Collection<String>> symToVars) {
+		// the worklist contains edges whose target has changed value
+		List worklist = new LinkedList(edges);
+		while (!worklist.isEmpty()) {
+			SMEdge edge = (SMEdge) worklist.remove(0);
+			SMNode src = edge.getSource();
+			SMNode tgt = edge.getTarget();
+			// now compute the flow function along this edge
+			Set flowAlongEdge = new LinkedHashSet(src.boundVars);
+			Collection c = symToVars.get(edge.getLabel());
+			if (c != null)
+			   flowAlongEdge.addAll(c);
+			// if tgt.boundVars is already smaller, skip
+			if (!flowAlongEdge.containsAll(tgt.boundVars)) {
+			   // otherwise compute intersection of 
+			   // tgt.boundVars and flowAlongEdge
+			   tgt.boundVars.retainAll(flowAlongEdge);
+			   // add any edges whose target has been affected to
+			   // the worklist
+			   for (Iterator edgeIter=edges.iterator(); edgeIter.hasNext(); ) {
+				   SMEdge anotherEdge = (SMEdge) edgeIter.next();
+				   if (anotherEdge.getSource() == tgt && 
+						!worklist.contains(anotherEdge))
+					worklist.add(0,anotherEdge);	
+			   }
+			}
+		}
+	}
+	
+	public Set<SMNode> getStates() {
+		return Collections.unmodifiableSet(nodes);
 	}
 
 }

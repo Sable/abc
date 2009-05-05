@@ -16,13 +16,12 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.da.fsanalysis.analysis;
+package abc.da.fsanalysis.flowanalysis;
 
-import java.util.Map;
-
-import soot.Local;
-import soot.jimple.toolkits.pointer.InstanceKey;
+import soot.Unit;
+import soot.toolkits.graph.DirectedGraph;
 import abc.da.weaving.aspectinfo.TracePattern;
+import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 
 /**
  * Generic interface for a flow-sensitive analysis for static TracePattern optimizations.
@@ -34,22 +33,17 @@ public interface TMFlowAnalysis {
 	/**
 	 * @return returns the associated TracePattern
 	 */
-	public TracePattern getTracePattern();
-        
-    /**
-     * notifies the analysis that a final state was hit. 
-     */
-    public void hitFinal();
-
-	/**
-	 * Converts a mapping from TracePattern formals to advice locals to
-	 * a mapping from TracePattern formals to instance keys.
-	 */
-	public Map<String,InstanceKey> reMap(Map<String, Local> tmFormalToAdviceLocal);
+	public TracePattern tracePattern();
+	
+	public DirectedGraph<Unit> unitGraph();
 
 	/**
 	 * Returns the analysis job that is currently being processed.
 	 */
 	public AnalysisJob getJob();
 
+	public void registerNecessaryShadow(Shadow necessaryShadow);
+	
+	public boolean isForward();
+	
 }

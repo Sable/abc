@@ -22,8 +22,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import abc.da.fsanalysis.callgraph.NodePredicate;
-
 import soot.MethodOrMethodContext;
 import soot.Scene;
 import soot.SootMethod;
@@ -135,13 +133,12 @@ public class AbstractedCallGraph extends CallGraph {
 				//the recursion might have to add edges deeper down the call stack 
 				for (Iterator<Edge> iter = delegate.edgesOutOf(curr); iter.hasNext();) {
 					Edge succEdge = iter.next();
-					
-					if(abstractPath(succEdge)==TRUE) {
+					int result = abstractPath(succEdge);
+					if(result==TRUE || (result==COMPUTING && nodePredicate.want(succEdge.getTgt()))) {
 						//found something in callee
 						addEdgeToThis(succEdge);
 						childrenInteresting = true;
 					}
-					
 				}
 			}
 			

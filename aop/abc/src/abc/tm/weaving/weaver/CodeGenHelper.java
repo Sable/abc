@@ -24,6 +24,7 @@ import soot.util.*;
 import soot.jimple.*;
 
 import abc.weaving.aspectinfo.Formal;
+import abc.weaving.aspectinfo.MethodCategory;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.*;
 
@@ -1690,6 +1691,7 @@ public class CodeGenHelper
         real_body_method.setActiveBody(old_body_method.getActiveBody());
         Body new_body = Jimple.v().newBody(old_body_method);
         old_body_method.setActiveBody(new_body);
+        MethodCategory.register(old_body_method, MethodCategory.IF_EXPR);
 
         container.addMethod(real_body_method);
     }

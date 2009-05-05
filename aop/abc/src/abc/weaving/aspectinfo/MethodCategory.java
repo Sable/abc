@@ -212,7 +212,7 @@ public class MethodCategory {
     { return adviceBody(getCategory(m)); }
 
     public static boolean noEffectsOnBaseCode(int cat) {    	
-    	boolean rightCategory = (cat == NO_EFFECTS_ON_BASE_CODE);
+    	boolean rightCategory = (cat == NO_EFFECTS_ON_BASE_CODE) || (cat==ASPECT_INSTANCE) || (cat==ACCESSOR_GET) || (cat==ACCESSOR_SET) || (cat==THIS_GET);
     	//if Object is application class, this means we weave into the JDK and hence, any method can have side-effects on the base code
     	//because virtually everything *is* base code
     	if(Scene.v().getSootClass("java.lang.Object").isApplicationClass()) {
@@ -223,7 +223,8 @@ public class MethodCategory {
     }
     
     public static boolean noEffectsOnBaseCode(SootMethod m) {
-    	return noEffectsOnBaseCode(getCategory(m));
+    	//this is sort of a hack; should treat this more nicely
+    	return noEffectsOnBaseCode(getCategory(m)) || m.getName().equals("abc$postClinit");
     }
     
 
