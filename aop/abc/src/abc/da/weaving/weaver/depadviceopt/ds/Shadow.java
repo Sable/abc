@@ -155,7 +155,6 @@ public class Shadow {
 	
 	protected final Set<ShadowDisabledListener> listeners;
 	
-	@SuppressWarnings("unchecked")
 	private Shadow(int shadowId, AdviceDecl adviceDecl, SootMethod container, Position pos, Map<String, Local> adviceFormalNameToSootLocal, ResidueBox outerResidueBox, Stmt stmt, boolean isDelegateCallShadow) {
 		this.shadowId = shadowId;
 		this.adviceDecl = adviceDecl;
@@ -177,7 +176,7 @@ public class Shadow {
 		}
 		this.isEnabled = true;
 		this.hashCode = computeHashCode();
-		this.listeners = new IdentityHashSet();
+		this.listeners = new IdentityHashSet<ShadowDisabledListener>();
 	}
 	
 	/**
