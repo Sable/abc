@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +49,7 @@ import soot.tagkit.Host;
 import soot.tagkit.LineNumberTag;
 import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
+import soot.util.IdentityHashSet;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -155,6 +155,7 @@ public class Shadow {
 	
 	protected final Set<ShadowDisabledListener> listeners;
 	
+	@SuppressWarnings("unchecked")
 	private Shadow(int shadowId, AdviceDecl adviceDecl, SootMethod container, Position pos, Map<String, Local> adviceFormalNameToSootLocal, ResidueBox outerResidueBox, Stmt stmt, boolean isDelegateCallShadow) {
 		this.shadowId = shadowId;
 		this.adviceDecl = adviceDecl;
@@ -176,7 +177,7 @@ public class Shadow {
 		}
 		this.isEnabled = true;
 		this.hashCode = computeHashCode();
-		this.listeners = Collections.newSetFromMap(new IdentityHashMap<ShadowDisabledListener, Boolean>());
+		this.listeners = new IdentityHashSet();
 	}
 	
 	/**
