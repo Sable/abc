@@ -121,7 +121,7 @@ public class DAInfo {
 				List<String> variableOrder = tp.getVariableOrder(strongSymbol);
 				String adviceName = tp.getSymbolAdviceMethod(strongSymbol).getName();
 				adviceName = replaceForHumanReadableName(tp.getContainer().getName()+"."+adviceName);
-				adviceName = adviceName.substring(adviceName.lastIndexOf(".")+1); //remove qualification
+				adviceName = unqualify(adviceName); //remove qualification
 				strongAdviceNameToVars.put(adviceName, variableOrder);
 			}
 			
@@ -132,7 +132,7 @@ public class DAInfo {
 				List<String> variableOrder = tp.getVariableOrder(weakSymbol);
 				String adviceName = tp.getSymbolAdviceMethod(weakSymbol).getName();
 				adviceName = replaceForHumanReadableName(tp.getContainer().getName()+"."+adviceName);
-				adviceName = adviceName.substring(adviceName.lastIndexOf(".")+1); //remove qualification
+				adviceName = unqualify(adviceName); //remove qualification
 				weakAdviceNameToVars.put(adviceName, variableOrder);
 			}
 			
@@ -162,6 +162,17 @@ public class DAInfo {
 		
 		return result; 
     }
+
+	private String unqualify(String adviceName) {
+		int lastindex=-1, secondlastindex = -1;
+		for(int i=0;i<adviceName.length();i++) {
+			if(adviceName.charAt(i)=='.') {
+				secondlastindex = lastindex;
+				lastindex = i;
+			}
+		}
+		return adviceName.substring(secondlastindex+1);
+	}
 	
 	/**
 	 * Registers a dependent advice and a human-readable name for it (the name given to it in the frontend and in the

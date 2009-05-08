@@ -112,16 +112,28 @@ public class AdviceDependency {
 		this.pos = pos;
 		this.strongAdviceNameToVars = new HashMap<String, List<String>>();
 		for (String adviceName : strongAdviceNameToVars.keySet()) {
-			if(adviceName.contains(".")) {
-				throw new IllegalArgumentException("Advice may not be qualified!");
+			int dotCount = 0;
+			for(int i=0;i<adviceName.length();i++) {
+				if(adviceName.charAt(i)=='.') {
+					dotCount++;
+				}
+			}
+			if(dotCount>1) {
+				throw new IllegalArgumentException("Advice may only be qualified by trace-pattern name, not by class name!");
 			}
 			//qualify name
 			this.strongAdviceNameToVars.put(container.getName()+"."+adviceName, strongAdviceNameToVars.get(adviceName));
 		}
 		this.weakAdviceNameToVars = new HashMap<String, List<String>>();
 		for (String adviceName : weakAdviceNameToVars.keySet()) {
-			if(adviceName.contains(".")) {
-				throw new IllegalArgumentException("Advice may not be qualified!");
+			int dotCount = 0;
+			for(int i=0;i<adviceName.length();i++) {
+				if(adviceName.charAt(i)=='.') {
+					dotCount++;
+				}
+			}
+			if(dotCount>1) {
+				throw new IllegalArgumentException("Advice may only be qualified by trace-pattern name, not by class name!");
 			}
 			//qualify name
 			this.weakAdviceNameToVars.put(container.getName()+"."+adviceName, weakAdviceNameToVars.get(adviceName));

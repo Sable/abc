@@ -132,7 +132,7 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 					for(String sym: tm.getSymbols()) {
 						String adviceName = tm.getSymbolAdviceMethod(sym).getName();
 						daInfo.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName,
-								tm.getContainer().getName()+"."+sym
+								tm.getContainer().getName()+"."+tm.getName()+"."+sym
 						);
 					}
 
