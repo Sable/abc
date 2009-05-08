@@ -111,7 +111,7 @@ public class PathInfoFinder {
 				SMNode tgt = edge.getTarget();
 				for (Iterator<SMEdge> outIter = tgt.getOutEdgeIterator(); outIter.hasNext();) {
 					SMEdge outEdge = outIter.next();
-					if(outEdge.isSkipEdge()) {
+					if(outEdge.isSkipEdge() || (tgt.isFinalNode() && outEdge.getTarget()==tgt)) {
 						skipLoopLabelSet.add(outEdge.getLabel());
 					}
 				}
