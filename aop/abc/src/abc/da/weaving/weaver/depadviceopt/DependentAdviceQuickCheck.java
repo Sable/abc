@@ -76,29 +76,28 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 
 		int currNumFulfilledDependencies = Integer.MAX_VALUE;
 		
-		if(Debug.v().debugDA) {
-			numEnabledDependentAdviceShadowsBefore = 0;
-			//disable all advice applications that belong to "other" dependent advice
-			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
+		numEnabledDependentAdviceShadowsBefore = 0;
+		//disable all advice applications that belong to "other" dependent advice
+		AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 
-				public void adviceApplication(AdviceApplication aa, SootMethod m) {
-					boolean isDependent = dai.isDependentAdvice(aa.advice);
-					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
-						String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
-						String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
-						if(givenName.endsWith("newDaCapoRun")) return;
-						
+			public void adviceApplication(AdviceApplication aa, SootMethod m) {
+				boolean isDependent = dai.isDependentAdvice(aa.advice);
+				if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
+					String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
+					String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
+					if(givenName.endsWith("newDaCapoRun")) return;
+					
+					numEnabledDependentAdviceShadowsBefore++;
+					if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
+						//after advice generate two shadows, one for after-returning and
+						//one for after-throwing
 						numEnabledDependentAdviceShadowsBefore++;
-						if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
-							//after advice generate two shadows, one for after-returning and
-							//one for after-throwing
-							numEnabledDependentAdviceShadowsBefore++;
-						}
 					}
-				}			
-			});
-			numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
-		}
+				}
+			}			
+		});
+		numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
+
 
 		/*
 		 * we have to make a fixed-point iteration here (see abc-2008-2):
@@ -132,7 +131,7 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 						for (AdviceDependency dep : fulfilledAdviceDependencies) {
 							if(ad.getAspect().equals(dep.getContainer()) && dep.containsAdviceNamed(adviceName)) {
 								dependentAdviceToKeepAlive.add(ad);
-							}
+							} 
 						}
 					}
 				}
