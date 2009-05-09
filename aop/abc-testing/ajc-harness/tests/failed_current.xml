@@ -1,4 +1,4 @@
-<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
@@ -96,12 +96,6 @@
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
-    </ajc-test>
-<ajc-test title="Tracematches (wp-tmopt): QuickCheck" num="1301" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tmwpopt,-laststage,quick,-warn-about-individual-shadows" files="QuickCheck.java">
-	    	<message line="12" kind="warning"></message>
-		</compile>
-		<run class="QuickCheck"></run>
     </ajc-test>
 <ajc-test title="Typechecks for dependent advice with state machine" num="1426" dir="abctests/da/typechecks">
         <compile options="-ext,abc.ja.da" files="DASMTypeChecks.java">

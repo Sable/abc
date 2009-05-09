@@ -1,4 +1,4 @@
-<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="static and non-static before methods -- one file" num="7" keywords="from-base" dir="base/test100" abccomment="I have put this comment in as a test, and this is a very          long one over multiple lines too. LJH">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -5891,6 +5891,12 @@
 	        <message line="15" kind="warning"></message>
         </compile>
         <run class="SyncMethods"></run>
+    </ajc-test>
+<ajc-test title="Tracematches (wp-tmopt): QuickCheck" num="1301" dir="abctests/tracematches/wp-opt">
+        <compile options="-ext,abc.tmwpopt,-laststage,quick,-warn-about-individual-shadows" files="QuickCheck.java">
+	    	<message line="12" kind="warning"></message>
+		</compile>
+		<run class="QuickCheck"></run>
     </ajc-test>
 <ajc-test title="Path-infos are not established completely (Feng Chen)" num="1310" dir="abctests/tracematches/wp-opt">
         <compile options="-ext,abc.tmwpopt,-laststage,quick" files="IncompletePathInfoConstruction.java"></compile>
