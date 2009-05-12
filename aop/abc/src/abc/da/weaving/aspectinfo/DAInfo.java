@@ -34,7 +34,6 @@ import abc.da.fianalysis.PathInfoFinder.PathInfo;
 import abc.da.fsanalysis.flowanalysis.ds.Disjunct;
 import abc.da.fsanalysis.ranking.OutputDotGraphs;
 import abc.da.fsanalysis.ranking.Ranking;
-import abc.da.fsanalysis.ranking.Statistics;
 import abc.da.fsanalysis.util.SymbolNames;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceIntraproceduralAnalysis;
@@ -345,7 +344,6 @@ public class DAInfo {
 	public void resetAnalysisDataStructures() {
         WeavableMethods.reset();
 		Ranking.reset();
-		Statistics.reset();
 		SymbolNames.reset();
 		OutputDotGraphs.reset();    
 		Disjunct.reset();

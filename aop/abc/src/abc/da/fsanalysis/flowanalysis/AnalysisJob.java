@@ -57,6 +57,7 @@ import abc.da.fsanalysis.flowanalysis.ds.Configuration;
 import abc.da.fsanalysis.flowanalysis.ds.Disjunct;
 import abc.da.fsanalysis.flowanalysis.ds.Configuration.MaxConfigException;
 import abc.da.fsanalysis.mustalias.InstanceKeyNonRefLikeType;
+import abc.da.fsanalysis.ranking.Ranking;
 import abc.da.fsanalysis.util.SymbolNames;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.InvertedTracePattern;
@@ -341,6 +342,7 @@ public class AnalysisJob {
 		} catch(MaxConfigException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Aborting analysis of: "+method().getSignature());
+			Ranking.v().addMethodWithCutOffComputation(method());
 		}
 		if(Debug.v().debugDA) {
 			System.err.println("Done analyzing method : "+method().getSignature()+", took: "+(System.currentTimeMillis()-before));

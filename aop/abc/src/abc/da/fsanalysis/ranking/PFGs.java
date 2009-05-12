@@ -1,10 +1,12 @@
 package abc.da.fsanalysis.ranking;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,13 +80,20 @@ public class PFGs {
 				System.err.println("Number of potential failure groups "+message+": "+ppfs.size());
 				System.err.println();
 				System.err.println();
-				Set<Ranking.PotentialFailureGroup> pfgs = new HashSet<Ranking.PotentialFailureGroup>();
+				List<Ranking.PotentialFailureGroup> pfgs = new ArrayList<Ranking.PotentialFailureGroup>();
 				for (Set<Shadow> group : groups) {
 					Set<Shadow> groupPPFs = filterPotentialPointsOfFailure(group);
 					Set<Shadow> contextShadows = new HashSet<Shadow>(group);
 					contextShadows.removeAll(groupPPFs);
-					pfgs.add(new Ranking.PotentialFailureGroup(groupPPFs, 1,  EnumSet.noneOf(Features.class), contextShadows, tp));
+					EnumSet<Features> groupFeatures = EnumSet.noneOf(Features.class);
+					for(Shadow s: group) {
+						EnumSet<Features> shadowFeatures = Ranking.PotentialFailureGroup.featuresOf(s);
+						groupFeatures.addAll(shadowFeatures);
+					}
+					double rank = 1-(groupFeatures.size()/(Ranking.pPFFeatures.length+0.0));
+					pfgs.add(new Ranking.PotentialFailureGroup(groupPPFs, rank,  groupFeatures, contextShadows, tp));
 				}
+				Collections.sort(pfgs);
 				for (Ranking.PotentialFailureGroup potentialFailureGroup : pfgs) {
 					System.err.println(potentialFailureGroup);
 					System.err.println();

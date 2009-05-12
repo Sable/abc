@@ -20,7 +20,6 @@ package abc.da.fsanalysis.ranking;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -33,11 +32,11 @@ import java.util.Set;
 import polyglot.util.Position;
 import soot.Scene;
 import soot.SootMethod;
+import abc.da.fsanalysis.util.SymbolNames;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.TracePattern;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
-import abc.da.fsanalysis.util.SymbolNames;
 
 /**
  * This class produces a ranked list of potential points of failure from a given set of shadows.
@@ -60,21 +59,13 @@ public class Ranking {
 		DYNAMIC_LOADING,
 		NO_CONTEXT,
 		OVERLAPS,
-		PPF_ANALYSIS_ABORTED,
-		PPF_CALL,
-		PPF_CONTINUATION,
-		PPF_DELEGATE,
-		PPF_DYNAMIC_LOADING,
-		PPF_NO_CONTEXT
 	};
 	
-	protected static Features[] pPFFeatures = new Features[] {
-		Features.PPF_ANALYSIS_ABORTED,
-		Features.PPF_CALL,
-		Features.PPF_CONTINUATION,
-		Features.PPF_DELEGATE,
-		Features.PPF_DYNAMIC_LOADING,
-		Features.PPF_NO_CONTEXT,
+	public static Features[] pPFFeatures = new Features[] {
+		Features.ANALYSIS_ABORTED,
+		Features.DELEGATE,
+		Features.DYNAMIC_LOADING,
+		Features.NO_CONTEXT,
 	}; 
 	
 	/**
@@ -87,23 +78,8 @@ public class Ranking {
 		protected final EnumSet<Features> features;
 		protected final Set<Shadow> overlaps;
 		protected final TracePattern tm;
-		
-		public PotentialFailureGroup(Shadow ppf, double rank, EnumSet<Features> features, Set<Shadow> overlaps, TracePattern tm) {
-			this(new HashSet<Shadow>(), rank, ppfFeatures(features,ppf), overlaps, tm);
-			this.ppfs.add(ppf);
-		}
-
-		private static EnumSet<Features> ppfFeatures(EnumSet<Features> features, Shadow ppf) {
-			EnumSet<Features> copy = EnumSet.noneOf(Features.class);
-			copy.addAll(features);
-			EnumSet<Features> ppfFeaturs = featuresOf(ppf);
-			for (Features f : ppfFeaturs) {
-				copy.add(Features.values()[f.ordinal()+(Features.PPF_ANALYSIS_ABORTED.ordinal()-Features.ANALYSIS_ABORTED.ordinal())]);
-			}
-			return copy;
-		}
-
-		protected PotentialFailureGroup(Set<Shadow> ppfs, double rank, EnumSet<Features> features, Set<Shadow> overlaps, TracePattern tm) {
+	
+		public PotentialFailureGroup(Set<Shadow> ppfs, double rank, EnumSet<Features> features, Set<Shadow> overlaps, TracePattern tm) {
 			this.rank = rank;
 			this.tm = tm;
 			this.features = features;
@@ -111,56 +87,7 @@ public class Ranking {
 			this.overlaps = overlaps;
 		}
 		
-		public PotentialFailureGroup tryMerge(PotentialFailureGroup other) {
-			if(this==other) {
-				return null;
-			}
-			EnumSet<Features> copy1 = EnumSet.noneOf(Features.class);
-			copy1.addAll(features);
-			copy1.removeAll(Arrays.asList(pPFFeatures));
-			EnumSet<Features> copy2 = EnumSet.noneOf(Features.class);
-			copy2.addAll(other.features);
-			copy2.removeAll(Arrays.asList(pPFFeatures));
-			if(this.tm.equals(other.tm)			 
-			 && this.rank== other.rank
-			 && copy1.equals(copy2)
-			 && this.getAllShadowStrings().equals(other.getAllShadowStrings()) ) {
-				Set<Shadow> joinedPPFs = new HashSet<Shadow>(ppfs);
-				joinedPPFs.addAll(other.ppfs);
-
-				/* Naive O(n^2) solution to merging: */
-				Set<Shadow> joinedOverlaps = new HashSet<Shadow>(overlaps);
-
-				for (Shadow o : other.overlaps) {
-					boolean hit = false;
-					for (Shadow a : overlaps) {
-						if (shadowToString(o).equals(shadowToString(a)))
-							{ hit = true; break; }
-					}
-					if (!hit) joinedOverlaps.add(o);
-				}
-
-				for (Shadow p : joinedPPFs) {
-					Iterator<Shadow> it = joinedOverlaps.iterator();
-					Shadow a;
-					while (it.hasNext()) {
-						a = it.next();
-						if (shadowToString(a).equals(shadowToString(p)))
-							it.remove();
-					}
-				}
-
-				EnumSet<Features> mergedFeatures = EnumSet.noneOf(Features.class);
-				mergedFeatures.addAll(this.features);
-				mergedFeatures.addAll(other.features);
-
-				return new PotentialFailureGroup(joinedPPFs, rank, mergedFeatures, joinedOverlaps, tm);
-			} else {
-				return null;
-			}			
-		}
-
-		public int compareTo(PotentialFailureGroup o) {
+				public int compareTo(PotentialFailureGroup o) {
 			return (o.rank - rank)<0?-1:1;
 		}
 		
@@ -195,6 +122,7 @@ public class Ranking {
 				ppfStringList.add(shadowToString(s));
 
 			Collections.sort(ppfStringList);
+			
 			for (String s : ppfStringList) {
 				sb.append(s);
 				sb.append("\n");
@@ -282,24 +210,16 @@ public class Ranking {
 			    " href='"+URLPrefix+name.replace('.', '/')+".java;line="+ln+"#l_"+ln+"'>"+name+":"+ln+"</a>\n";
 		}
 
-		private static EnumSet<Features> featuresOf(Shadow s) {
+		public static EnumSet<Features> featuresOf(Shadow s) {
 			EnumSet<Features> features = EnumSet.noneOf(Features.class);
 			if(s.pointsToSetsSufferFromDynamicLoading())
 				features.add(Features.DYNAMIC_LOADING);
 			if(s.isDelegateCallShadow())
 				features.add(Features.DELEGATE);
-			if(s.notAllPointsToSetsContextSensitive()) {
+			if(s.notAllPointsToSetsContextSensitive())
 				features.add(Features.NO_CONTEXT);
-			}
-			if(shadowsRetainedBecauseOfTainting.contains(s)) {
-				features.add(Features.CALL);
-			}
-			if(shadowsRetainedInterprocedurally.contains(s)) {
-				features.add(Features.CONTINUATION);
-			}
-			if(methodsWithCutOffAnalysis.contains(s.getContainer())) {
+			if(methodsWithCutOffAnalysis.contains(s.getContainer()))
 				features.add(Features.ANALYSIS_ABORTED);
-			}
 			return features;
 		}
 		
@@ -362,220 +282,10 @@ public class Ranking {
 		
 	}
 	
-	protected static Set<Shadow> shadowsRetainedInterprocedurally = new HashSet<Shadow>();
-	
-	protected static Set<Shadow> shadowsRetainedBecauseOfTainting = new HashSet<Shadow>();
-	
 	protected static Set<SootMethod> methodsWithCutOffAnalysis = new HashSet<SootMethod>();
-	
-	public void addShadowsRetainedInterprocedurally(Collection<Shadow> shadows) {
-		shadowsRetainedInterprocedurally.addAll(shadows);
-	}
-	
-	public void addShadowsRetainedBecauseOfTainting(Set<Shadow> shadows) {
-		shadowsRetainedBecauseOfTainting.addAll(shadows);
-	}
 	
 	public void addMethodWithCutOffComputation(SootMethod m) {
 		methodsWithCutOffAnalysis.add(m);
-	}
-	
-	public List<PotentialFailureGroup> rankAndSort(Set<Shadow> ppfs, TracePattern tm) {
-		Map<Shadow,Set<Shadow>> ppfToOverlaps = new HashMap<Shadow, Set<Shadow>>();
-		Set<Shadow> allShadows = new HashSet<Shadow>(ppfs);
-		for (Shadow ppf : ppfs) {
-			Set<Shadow> overlaps =
-				AdviceDependency.getAllEnabledShadowsOverlappingWith(Collections.singleton(ppf));
-			for (Iterator<Shadow> iter = overlaps.iterator(); iter.hasNext();) {
-				Shadow s = iter.next();
-				if(!(s.getAdviceDecl() instanceof PerSymbolTMAdviceDecl) || SymbolNames.v().isArtificialShadow(s)) {
-					iter.remove();
-				}
-			}
-			ppfToOverlaps.put(ppf, overlaps);
-			allShadows.addAll(overlaps);
-		}
-		
-		Set<PotentialFailureGroup> result = new HashSet<PotentialFailureGroup>();		
-		for (Shadow shadow : ppfs) {
-			result.add(computeRank(shadow,tm,ppfToOverlaps,allShadows));
-		}
-
-		List<PotentialFailureGroup> resultList = new ArrayList<PotentialFailureGroup>(result);				
-		Set<PotentialFailureGroup> worklist = new HashSet<PotentialFailureGroup>(result);
-		while(!worklist.isEmpty()) {
-			//pop first pfg
-			Iterator<PotentialFailureGroup> iterator = worklist.iterator();
-			PotentialFailureGroup pfg1 = iterator.next();
-			iterator.remove();
-			//
-			for (PotentialFailureGroup pfg2 : result) {
-				PotentialFailureGroup merged = pfg1.tryMerge(pfg2);
-				if(merged!=null) {
-					result.remove(pfg1);
-					result.remove(pfg2);
-					result.add(merged);
-					worklist.add(merged);
-					//better break, to avoid a ConcurrentModificationException
-					break;
-				}				
-			}				
-		}
-			
-		resultList = new ArrayList<PotentialFailureGroup>(result);				
-		Collections.sort(resultList);
-		return resultList;
-	}
-
-	private PotentialFailureGroup computeRank(Shadow ppf, TracePattern tm, Map<Shadow, Set<Shadow>> ppfToOverlaps, Set<Shadow> allShadows) {
-//		double overlap = overlap(ppf,ppfToOverlaps,allShadows);
-//		double fractionDelegatingShadows = fractionDelegatingShadows(ppf,ppfToOverlaps);
-//		double fractionShadowPtsDynamicLoading = fractionShadowPtsDynamicLoading(ppf,ppfToOverlaps);
-//		double fractionShadowPtsNoContext = fractionShadowPtsNoContext(ppf,ppfToOverlaps);
-//		double relativeSize = relativeSize(ppf,ppfToOverlaps);
-//		//following only works after flow-sensitive analysis
-//		double fractionShadowsRetainedInterprocedurally = fractionShadowsRetainedInterprocedurally(ppf,ppfToOverlaps);
-//		double fractionShadowsWithCutOffAnalysis = fractionShadowsWithCutOffAnalysis(ppf,ppfToOverlaps);
-//		double fractionShadowsWithTainting = fractionShadowsWithTainting(ppf,ppfToOverlaps);
-//
-//		double[] penalties = {
-//				overlap,
-//				fractionShadowsRetainedInterprocedurally,
-//				relativeSize,
-//				fractionShadowPtsDynamicLoading,
-//				fractionShadowPtsNoContext,
-//				fractionShadowsWithCutOffAnalysis,
-//				fractionShadowsWithTainting,
-//				fractionDelegatingShadows
-//		};
-//		double[] penaltyFactors = {
-//				2,
-//				2,
-//				2,
-//				5,
-//				1,
-//				5,
-//				1,
-//				5
-//		};
-//		
-//		double sumFactors = 0, sumFeatures = 0, tempRank = 0;
-//		for (int i = 0; i < penaltyFactors.length; i++) {
-//			sumFactors += penaltyFactors[i];
-//			sumFeatures++;
-//			tempRank += penaltyFactors[i] * penalties[i];
-//		}
-		
-//		double rank = 1- (tempRank / sumFactors); 
-		double rank = 1; 
-		
-		EnumSet<Features> features = EnumSet.noneOf(Features.class);
-//		if(overlap>0) features.add(Features.OVERLAPS);
-//		if(fractionShadowsRetainedInterprocedurally>0) features.add(Features.CONTINUATION);
-//		if(fractionDelegatingShadows>0) features.add(Features.DELEGATE);
-//		if(fractionShadowPtsDynamicLoading>0) features.add(Features.DYNAMIC_LOADING);
-//		if(fractionShadowPtsNoContext>0) features.add(Features.NO_CONTEXT);
-//		if(fractionShadowsWithCutOffAnalysis>0) features.add(Features.ANALYSIS_ABORTED);
-//		if(fractionShadowsWithTainting>0) features.add(Features.CALL);
-			
-		return new PotentialFailureGroup(ppf,rank,features,ppfToOverlaps.get(ppf),tm);
-	}
-
-	private double relativeSize(Shadow ppf,Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-		
-		int maxSize = 0;
-		for (Set<Shadow> shadows : ppfToOverlaps.values()) {
-			maxSize = Math.max(maxSize, shadows.size());
-		}
-				
-		//subtract 1 because there is always at least one shadow in a group
-		return (overlaps.size() - 1) / (maxSize - 1.0);
-	}
-
-	private double fractionShadowPtsDynamicLoading(Shadow ppf,Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-		
-		int numDynamicLoading = 0;
-		for (Shadow shadow : overlaps) {
-			if(shadow.pointsToSetsSufferFromDynamicLoading()) {
-				numDynamicLoading++;
-			}
-		}
-		return numDynamicLoading / (overlaps.size() + 0.0);
-	}
-
-	private double fractionShadowPtsNoContext(Shadow ppf, Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-		
-		int numNoContext = 0;
-		for (Shadow shadow : overlaps) {
-			if(shadow.notAllPointsToSetsContextSensitive()) {
-				numNoContext++;
-			}
-		}
-		return numNoContext / (overlaps.size() + 0.0);
-	}
-
-	private double fractionDelegatingShadows(Shadow ppf,Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-		
-		int numDel = 0;
-		for (Shadow shadow : overlaps) {
-			if(shadow.isDelegateCallShadow()) {
-				numDel++;
-			}
-		}
-		return numDel / (overlaps.size() + 0.0);
-	}
-
-	private double fractionShadowsWithTainting(Shadow ppf, Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-
-		Set<Shadow> taintedShadows = new HashSet<Shadow>(overlaps);
-		taintedShadows.retainAll(shadowsRetainedBecauseOfTainting);
-		
-		return taintedShadows.size() / (overlaps.size() + 0.0);
-	}
-
-	private double fractionShadowsWithCutOffAnalysis(Shadow ppf, Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-		
-		int cutOff = 0;
-		for (Shadow shadow : overlaps) {
-			if(methodsWithCutOffAnalysis.contains(shadow.getContainer())) {		
-				overlaps.add(ppf);
-				cutOff++;
-			}
-		}
-		
-		return cutOff / (overlaps.size() + 0.0);
-	}
-
-	private double fractionShadowsRetainedInterprocedurally(Shadow ppf,Map<Shadow, Set<Shadow>> ppfToOverlaps) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-
-		Set<Shadow> interprocedurallyRetainedShadows = new HashSet<Shadow>(overlaps);
-		interprocedurallyRetainedShadows.retainAll(shadowsRetainedInterprocedurally);
-		
-		return interprocedurallyRetainedShadows.size() / (overlaps.size() + 0.0);
-	}
-
-	private double overlap(Shadow ppf, Map<Shadow, Set<Shadow>> ppfToOverlaps, Set<Shadow> allShadows) {
-		Set<Shadow> overlaps = new HashSet<Shadow>(ppfToOverlaps.get(ppf));
-
-		Set<Shadow> nonUniqueShadows = new HashSet<Shadow>();
-		for (Map.Entry<Shadow, Set<Shadow>> entry : ppfToOverlaps.entrySet()) {
-			if(!entry.getKey().equals(ppf)) {
-				for (Shadow shadow : entry.getValue()) {
-					if(overlaps.contains(shadow)) {
-						nonUniqueShadows.add(shadow);
-					}
-				}
-			}			
-		}
-		
-		return nonUniqueShadows.size() / (allShadows.size() + 0.0); 
 	}
 	
 	//singleton pattern
@@ -597,8 +307,6 @@ public class Ranking {
 	public static void reset() {
 		instance = null;
 		methodsWithCutOffAnalysis.clear();
-		shadowsRetainedBecauseOfTainting.clear();
-		shadowsRetainedInterprocedurally.clear();
 	}
 
 }
