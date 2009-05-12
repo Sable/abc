@@ -215,6 +215,12 @@ public class AnalysisJob {
 		}
 		
 		this.shadowToOverlaps = shadowToOverlaps;
+		
+		if(Debug.v().debugDA) {
+			System.err.println("Number of all call statements: "+callStmts.size());
+			System.err.println("Number of potentially-recursive-call statements: "+recursiveCallStmts.size());
+			System.err.println("Number of non-recursive call statements: "+(callStmts.size()-recursiveCallStmts.size()));
+		}
 	}
 	
 	public TracePattern tracePattern() {
@@ -284,13 +290,13 @@ public class AnalysisJob {
 		
 		
 		long before = System.currentTimeMillis();
+		int numIterations = 1;
+		int numShadows = allEnabledTMShadowsInMethod().size();
 		try {
-			int i = 1;
-			int numShadows = allEnabledTMShadowsInMethod().size();
 			
 			while(true) {
 				if(Debug.v().debugDA) {
-					System.err.println("Iteration number "+(i++)+" of up to "+numShadows+"...");
+					System.err.println("Iteration number "+(numIterations++)+" of up to "+numShadows+"...");
 				}
 				Set<Shadow> allShadows = new HashSet<Shadow>(allEnabledTMShadowsInMethod());
 				
@@ -337,7 +343,8 @@ public class AnalysisJob {
 			System.err.println("Aborting analysis of: "+method().getSignature());
 		}
 		if(Debug.v().debugDA) {
-			System.err.println("Done analyzing method :"+method().getSignature()+", took: "+(System.currentTimeMillis()-before));
+			System.err.println("Done analyzing method : "+method().getSignature()+", took: "+(System.currentTimeMillis()-before));
+			System.err.println("Done analyzing method with iterations: " +(numIterations-1)+", max was: "+numShadows);
 		}				
 	}
 

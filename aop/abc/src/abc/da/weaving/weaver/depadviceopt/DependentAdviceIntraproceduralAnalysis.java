@@ -28,9 +28,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import soot.Local;
 import soot.MethodOrMethodContext;
 import soot.Scene;
 import soot.SootMethod;
+import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.EnabledShadowSet;
@@ -38,7 +40,6 @@ import abc.da.fsanalysis.callgraph.AbstractedCallGraph;
 import abc.da.fsanalysis.callgraph.NodePredicate;
 import abc.da.fsanalysis.flowanalysis.AnalysisJob;
 import abc.da.fsanalysis.ranking.PFGs;
-import abc.da.fsanalysis.ranking.Statistics;
 import abc.da.fsanalysis.util.ShadowsPerTMSplitter;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.TracePattern;
@@ -119,7 +120,25 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 			if(Debug.v().outputPFGs)
 				PFGs.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
-	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());  
+	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());
+	        
+	        if(Debug.v().debugDA) {
+		        Set<Local> allLocals = new HashSet<Local>();
+	        	for(Shadow s: dependentAdviceShadows) {
+	        		Map<String, Local> adviceFormalToSootLocal = s.getAdviceFormalToSootLocal();
+	        		allLocals.addAll(adviceFormalToSootLocal.values());
+	        	}
+	        	int numCSPointsToSets=0;
+	    		for(Local l: allLocals) {
+	    			LazyContextSensitivePointsToSet pointsToSet = (LazyContextSensitivePointsToSet) Scene.v().getPointsToAnalysis().reachingObjects(l);
+	    			if(pointsToSet.isContextSensitive()) {
+	    				numCSPointsToSets++;
+	    			}
+	    		}
+	    		System.err.println("Points-to sets: "+allLocals.size());
+	    		System.err.println("Points-to sets for which context was tried to be computed: "+numCSPointsToSets);
+	        }
+	        
 		} finally {
 			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
 		}
@@ -183,6 +202,12 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 			}
 			
 		});
+		
+		if(Debug.v().debugDA) {
+			System.err.println("Number of edges in full call graph: "+Scene.v().getCallGraph().size());
+			System.err.println("Number of edges in abstracted call graph: "+cg.size());
+		}
+		
 		return cg;
 	}
 
