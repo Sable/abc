@@ -147,8 +147,8 @@ public class DAInfo {
     }
 
 	private void filterRedundantDependencies(Set<AdviceDependency> deps) {
-		Set<AdviceDependency> copy = new HashSet<AdviceDependency>(deps);
 		for (Iterator<AdviceDependency> iterator = deps.iterator(); iterator.hasNext();) {
+			Set<AdviceDependency> copy = new HashSet<AdviceDependency>(deps);
 			AdviceDependency dep = iterator.next();
 			for (AdviceDependency dep2 : copy) {
 				if(dep.equals(dep2)) continue;
