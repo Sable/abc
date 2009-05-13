@@ -21,6 +21,7 @@ package abc.da.weaving.aspectinfo;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,28 +90,9 @@ public class DAInfo {
      */
     public Set<AdviceDependency> registerTracePattern(TracePattern tp) {
     	Set<AdviceDependency> result = new HashSet<AdviceDependency>();
-//		if(Debug.v().printTMAdviceDeps) {
-//			System.out.println("=====================================================");
-//			System.out.println("Symbol advice methods for TracePattern "+tm.getName()+":");
-//			for (String s : tm.getSymbols()) {
-//				System.out.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
-//			}
-//			System.out.println("Sync advice method for TracePattern "+tm.getName()+":");
-//			System.out.println(tm.getSynchAdviceMethod().getName());
-//			System.out.println("Some advice method for TracePattern "+tm.getName()+":");
-//			System.out.println(tm.getSomeAdviceMethod().getName());
-//			System.out.println("Body advice method for TracePattern "+tm.getName()+":");
-//			System.out.println(tm.getBodyMethod().getName());
-//			System.out.println("Advice Dependencies for TracePattern "+tm.getName()+":");
-//			System.out.println();
-//		}
-		
-//		TracePattern tp = new TracePatternFromTM(tm);
-
-//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getSynchAdviceMethod().getName());
-//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getSomeAdviceMethod().getName());
-//		registerDependentAdvice(tp.getContainer().getName()+"."+tp.getName()+"$body");
-		
+	
+    	Set<AdviceDependency> deps = new HashSet<AdviceDependency>();
+    	
 		//construct path infos and register dependencies
 		Set<PathInfo> pathInfos = new PathInfoFinder(tp).getPathInfos();
     	for (PathInfo pathInfo : pathInfos) {
@@ -135,25 +117,27 @@ public class DAInfo {
 				weakAdviceNameToVars.put(adviceName, variableOrder);
 			}
 			
-//			//synch, some and body advice are also weak; they take no parameters
-//			weakAdviceNameToVars.put(tp.getSynchAdviceMethod().getName(),Collections.<String>emptyList());
-//			weakAdviceNameToVars.put(tp.getSomeAdviceMethod().getName(),Collections.<String>emptyList());
-//			weakAdviceNameToVars.put(tp.getName()+"$body",Collections.<String>emptyList());
-			
 			AdviceDependency adviceDependency = new AdviceDependency(
 					strongAdviceNameToVars,
 					weakAdviceNameToVars,
 					tp.getContainer(),
 					Position.compilerGenerated()
 			);
+			deps.add(adviceDependency);
+		}
+
+    	filterRedundantDependencies(deps);
+    	
+    	for(AdviceDependency adviceDependency: deps){
 			addAdviceDependency(adviceDependency);
 			result.add(adviceDependency);
 			if(Debug.v().printTMAdviceDeps) {
 				System.out.println(adviceDependency);
 				System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
 			}
-		}
-		if(Debug.v().printTMAdviceDeps) {
+
+    	}
+    	if(Debug.v().printTMAdviceDeps) {
 			System.out.println("====================================================");
 		}
 		
@@ -161,6 +145,25 @@ public class DAInfo {
 		
 		return result; 
     }
+
+	private void filterRedundantDependencies(Set<AdviceDependency> deps) {
+		Set<AdviceDependency> copy = new HashSet<AdviceDependency>(deps);
+		for (Iterator<AdviceDependency> iterator = deps.iterator(); iterator.hasNext();) {
+			AdviceDependency dep = iterator.next();
+			for (AdviceDependency dep2 : copy) {
+				if(dep.equals(dep2)) continue;
+				Set<String> d2StrongAdvice = dep2.strongAdviceNameToVars.keySet();
+				Set<String> dStrongAdvice = dep.strongAdviceNameToVars.keySet();
+				Set<String> d2AllAdvice = dep2.adviceNames();
+				Set<String> dAllAdvice = dep.adviceNames();
+
+				if(dStrongAdvice.containsAll(d2StrongAdvice) && dAllAdvice.containsAll(d2AllAdvice)) {
+					iterator.remove();
+					break;
+				}
+			}
+		}
+	}
 
 	private String unqualify(String adviceName) {
 		int lastindex=-1, secondlastindex = -1;
