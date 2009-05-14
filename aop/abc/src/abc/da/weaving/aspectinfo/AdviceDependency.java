@@ -203,6 +203,10 @@ public class AdviceDependency {
 		return res;
 	}
 	
+	public int numStrongShadows() {
+		return strongAdviceNameToVars.size();
+	}
+	
 	/**
 	 * Returns the position of this dependency in code.
 	 */

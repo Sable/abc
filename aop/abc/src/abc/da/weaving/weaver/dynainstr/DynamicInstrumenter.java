@@ -178,9 +178,17 @@ public class DynamicInstrumenter {
 		//compute and uniquely number all probes
 		Set<Probe> probes = new HashSet<Probe>();
 		DAInfo daInfo = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+		int largestNumberOfStrongShadows = 0;		
 		for (AdviceDependency dep : daInfo.getAdviceDependencies()) {
+			largestNumberOfStrongShadows = Math.max(largestNumberOfStrongShadows, dep.numStrongShadows());
 			probes.addAll(dep.computeProbes());			
-		}		
+		}
+		
+		if(Debug.v().debugDA) {
+			System.err.println("Largest number of strong shadows: "+largestNumberOfStrongShadows);
+			System.err.println("Number of probes: "+probes.size());			
+		}
+		
 		int number = 0;
 		for (Probe probe : probes) {
 			probe.assignNumber(number++);
