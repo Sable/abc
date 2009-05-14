@@ -101,8 +101,6 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 		//if this extension is enabled, we want to warn the user about each individual shadow being removed
 		//by abc.da, and not just summary information
 		OptionsParser.v().set_warn_about_individual_shadows(true);
-		
-		if(Debug.v().printTMAdviceDeps) Debug.v().printIndices = true;
 	}
 
     public void collectVersions(StringBuffer versions)

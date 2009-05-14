@@ -266,9 +266,6 @@ public class Debug {
     //output clickable HTML graphs
     public boolean outputHTML = false;
     
-    //print advice dependencies generated for tracematches
-    public boolean printTMAdviceDeps = false;
-    
     //print debug information for analysis for dependent advice
     public boolean debugDA = false;
     

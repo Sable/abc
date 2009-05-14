@@ -70,18 +70,27 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		if(adviceDependencies.isEmpty()) return false;		
 		
 		if(Debug.v().debugDA) {
-			System.err.println("da: Starting QuickCheck");
+			System.err.println();
+			System.err.println();
+			for (AdviceDependency dep : adviceDependencies) {
+				System.err.println(dep);
+				System.err.println();
+			}
 			int largestNumberOfStrongShadows = 0;
 			for (AdviceDependency dep : adviceDependencies) {
 				largestNumberOfStrongShadows = Math.max(largestNumberOfStrongShadows, dep.numStrongShadows());
 			}
 			System.err.println("Largest number of strong shadows: "+largestNumberOfStrongShadows);
+			System.err.println();
+			System.err.println();
+			System.err.println("da: Starting QuickCheck");
 		}
 		long timeBefore = System.currentTimeMillis(); 
 		
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 
 		int currNumFulfilledDependencies = Integer.MAX_VALUE;
 		
+		final Set<SootMethod> methodsWithShadowsBeforeQC = new HashSet<SootMethod>();
 		numEnabledDependentAdviceShadowsBefore = 0;
 		//disable all advice applications that belong to "other" dependent advice
 		AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
@@ -99,6 +108,7 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 						//one for after-throwing
 						numEnabledDependentAdviceShadowsBefore++;
 					}
+					methodsWithShadowsBeforeQC.add(m);
 				}
 			}			
 		});
@@ -209,12 +219,13 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		}
 				
 		if(Debug.v().debugDA) {
-			System.err.println("da:    QuickCheck took:                         "+(System.currentTimeMillis()-timeBefore));
-			System.err.println("da:    Active dependencies before QuickCheck:   "+adviceDependencies.size());  
-			System.err.println("da:    Active dependencies after QuickCheck:    "+fulfilledAdviceDependencies.size());  
-			System.err.println("da:    DA-Shadows enabled before QuickCheck:    "+numEnabledDependentAdviceShadowsBefore);  
-			System.err.println("da:    DA-Shadows enabled after QuickCheck:     "+numEnabledDependentAdviceShadowsAfter);  
-			System.err.println("da:    Methods with still-enabled DA-Shadows:   "+methodsWithShadowsAfterQC.size());
+			System.err.println("da:    QuickCheck took:                           "+(System.currentTimeMillis()-timeBefore));
+			System.err.println("da:    Active dependencies before QuickCheck:     "+adviceDependencies.size());  
+			System.err.println("da:    Active dependencies after QuickCheck:      "+fulfilledAdviceDependencies.size());  
+			System.err.println("da:    DA-Shadows enabled before QuickCheck:      "+numEnabledDependentAdviceShadowsBefore);  
+			System.err.println("da:    DA-Shadows enabled after QuickCheck:       "+numEnabledDependentAdviceShadowsAfter);  
+			System.err.println("da:    Methods with enabled DA-Shadows before QC: "+methodsWithShadowsBeforeQC.size());
+			System.err.println("da:    Methods with enabled DA-Shadows after QC:  "+methodsWithShadowsAfterQC.size());
 		}
 
 		return false;

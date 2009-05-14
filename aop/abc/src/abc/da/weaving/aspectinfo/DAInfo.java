@@ -130,15 +130,7 @@ public class DAInfo {
     	for(AdviceDependency adviceDependency: deps){
 			addAdviceDependency(adviceDependency);
 			result.add(adviceDependency);
-			if(Debug.v().printTMAdviceDeps) {
-				System.out.println(adviceDependency);
-				System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
-			}
-
     	}
-    	if(Debug.v().printTMAdviceDeps) {
-			System.out.println("====================================================");
-		}
 		
 		addTracePattern(tp);
 		
