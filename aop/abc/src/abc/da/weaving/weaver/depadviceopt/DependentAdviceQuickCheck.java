@@ -69,8 +69,14 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		Set<AdviceDependency> adviceDependencies = dai.getAdviceDependencies();
 		if(adviceDependencies.isEmpty()) return false;		
 		
-		if(Debug.v().debugDA)
+		if(Debug.v().debugDA) {
 			System.err.println("da: Starting QuickCheck");
+			int largestNumberOfStrongShadows = 0;
+			for (AdviceDependency dep : adviceDependencies) {
+				largestNumberOfStrongShadows = Math.max(largestNumberOfStrongShadows, dep.numStrongShadows());
+			}
+			System.err.println("Largest number of strong shadows: "+largestNumberOfStrongShadows);
+		}
 		long timeBefore = System.currentTimeMillis(); 
 		
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 

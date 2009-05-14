@@ -77,6 +77,7 @@ public class DAInfo {
 	 * Returns the unmodifiable set of all advice dependencies.
 	 */
 	public Set<AdviceDependency> getAdviceDependencies() {
+		filterRedundantDependencies(adviceDependencies);		
 		return Collections.unmodifiableSet(adviceDependencies);		
 	}
 	
@@ -126,8 +127,6 @@ public class DAInfo {
 			deps.add(adviceDependency);
 		}
 
-    	filterRedundantDependencies(deps);
-    	
     	for(AdviceDependency adviceDependency: deps){
 			addAdviceDependency(adviceDependency);
 			result.add(adviceDependency);
