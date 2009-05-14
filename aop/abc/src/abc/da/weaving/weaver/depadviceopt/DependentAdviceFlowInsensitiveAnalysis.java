@@ -40,6 +40,7 @@ import soot.jimple.Stmt;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.pointsto.CustomizedDemandCSPointsTo;
+import abc.da.fsanalysis.ranking.PFGs;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.ds.Bag;
@@ -209,6 +210,10 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 			System.err.println("da:    Disabling shadows took:            "+(System.currentTimeMillis()-before));
 			System.err.println("da:    DA-Shadows enabled before FlowIns: "+numEnabledDependentAdviceShadowsBefore);  
 			System.err.println("da:    DA-Shadows enabled after  FlowIns: "+numEnabledDependentAdviceShadowsAfter);  
+			
+			if(Debug.v().outputPFGs)
+				PFGs.v().dump("after first flow-insensitive stage", stillActiveDependentAdviceShadows, true);
+
 		}
 		
 		return false;

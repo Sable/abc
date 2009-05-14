@@ -86,9 +86,6 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 
 			CallGraph cg = buildAbstractedCallGraph(dependentAdviceShadows);
 			
-			if(Debug.v().outputPFGs)
-				PFGs.v().dump("after first flow-insensitive stage", dependentAdviceShadows, true);
-
 			File traceFile = retrieveTraceFileHandle();
 
 			int iteration = 1;
