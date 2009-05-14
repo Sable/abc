@@ -104,7 +104,8 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		});
 		numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
 
-
+		
+		final Set<SootMethod> methodsWithShadowsAfterQC = new HashSet<SootMethod>();
 		/*
 		 * we have to make a fixed-point iteration here (see abc-2008-2):
 		 * assume the trivial NFA for "a b | b c", and assume a program where "a" does not match;
@@ -147,18 +148,22 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 	
 					public void adviceApplication(AdviceApplication aa, SootMethod m) {
 						boolean isDependent = dai.isDependentAdvice(aa.advice);
-						if (isDependent &&  !NeverMatch.neverMatches(aa.getResidue()) && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+						if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
 							String qualifiedNameOfAdvice = dai.qualifiedNameOfAdvice((AdviceDecl)aa.advice);
 							String givenName = dai.replaceForHumanReadableName(qualifiedNameOfAdvice);
 							if(givenName.endsWith("newDaCapoRun")) return;
+							if (!dependentAdviceToKeepAlive.contains(aa.advice)) {
 
-							numEnabledDependentAdviceShadowsAfter--;
-							if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
-								//after advice generate two shadows, one for after-returning and
-								//one for after-throwing
 								numEnabledDependentAdviceShadowsAfter--;
+								if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
+									//after advice generate two shadows, one for after-returning and
+									//one for after-throwing
+									numEnabledDependentAdviceShadowsAfter--;
+								}
+								aa.setResidue(NeverMatch.v());
+							} else {
+								methodsWithShadowsAfterQC.add(m);							
 							}
-							aa.setResidue(NeverMatch.v());
 						}
 					}			
 				});
@@ -209,6 +214,7 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			System.err.println("da:    Active dependencies after QuickCheck:    "+fulfilledAdviceDependencies.size());  
 			System.err.println("da:    DA-Shadows enabled before QuickCheck:    "+numEnabledDependentAdviceShadowsBefore);  
 			System.err.println("da:    DA-Shadows enabled after QuickCheck:     "+numEnabledDependentAdviceShadowsAfter);  
+			System.err.println("da:    Methods with still-enabled DA-Shadows:   "+methodsWithShadowsAfterQC.size());
 		}
 
 		return false;
