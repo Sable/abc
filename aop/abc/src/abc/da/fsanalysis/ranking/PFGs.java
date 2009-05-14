@@ -70,30 +70,27 @@ public class PFGs {
 				groups.add(overlaps);
 			}
 			
-			if(numberOnly) {
-				System.err.println("Number of potential failure groups "+message+": "+ppfs.size());
-			} else {
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				System.err.println("Number of potential failure groups "+message+": "+ppfs.size());
-				System.err.println();
-				System.err.println();
-				List<Ranking.PotentialFailureGroup> pfgs = new ArrayList<Ranking.PotentialFailureGroup>();
-				for (Set<Shadow> group : groups) {
-					Set<Shadow> groupPPFs = filterPotentialPointsOfFailure(group);
-					Set<Shadow> contextShadows = new HashSet<Shadow>(group);
-					contextShadows.removeAll(groupPPFs);
-					EnumSet<Features> groupFeatures = EnumSet.noneOf(Features.class);
-					for(Shadow s: group) {
-						EnumSet<Features> shadowFeatures = Ranking.PotentialFailureGroup.featuresOf(s);
-						groupFeatures.addAll(shadowFeatures);
-					}
-					double rank = 1-(groupFeatures.size()/(Ranking.pPFFeatures.length+0.0));
-					pfgs.add(new Ranking.PotentialFailureGroup(groupPPFs, rank,  groupFeatures, contextShadows, tp));
+			List<Ranking.PotentialFailureGroup> pfgs = new ArrayList<Ranking.PotentialFailureGroup>();
+			for (Set<Shadow> group : groups) {
+				Set<Shadow> groupPPFs = filterPotentialPointsOfFailure(group);
+				Set<Shadow> contextShadows = new HashSet<Shadow>(group);
+				contextShadows.removeAll(groupPPFs);
+				EnumSet<Features> groupFeatures = EnumSet.noneOf(Features.class);
+				for(Shadow s: group) {
+					EnumSet<Features> shadowFeatures = Ranking.PotentialFailureGroup.featuresOf(s);
+					groupFeatures.addAll(shadowFeatures);
 				}
-				Collections.sort(pfgs);
+				double rank = 1-(groupFeatures.size()/(Ranking.pPFFeatures.length+0.0));
+				pfgs.add(new Ranking.PotentialFailureGroup(groupPPFs, rank,  groupFeatures, contextShadows, tp));
+			}
+			Collections.sort(pfgs);
+			System.err.println("Number of potential failure groups "+message+": "+pfgs.size());
+			if(!numberOnly) {
+				System.err.println();
+				System.err.println();
+				System.err.println();
+				System.err.println();
+				System.err.println();
 				for (Ranking.PotentialFailureGroup potentialFailureGroup : pfgs) {
 					System.err.println(potentialFailureGroup);
 					System.err.println();
@@ -104,7 +101,6 @@ public class PFGs {
 				System.err.println();
 				System.err.println();
 			}
-			
 		}
 	}	
 
