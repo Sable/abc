@@ -217,7 +217,12 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 				}
 			}
 		}
-				
+
+		if(adviceDependencies.size()==fulfilledAdviceDependencies.size()) {
+			methodsWithShadowsAfterQC.clear();
+			methodsWithShadowsAfterQC.addAll(methodsWithShadowsBeforeQC);
+		}
+		
 		if(Debug.v().debugDA) {
 			System.err.println("da:    QuickCheck took:                           "+(System.currentTimeMillis()-timeBefore));
 			System.err.println("da:    Active dependencies before QuickCheck:     "+adviceDependencies.size());  
