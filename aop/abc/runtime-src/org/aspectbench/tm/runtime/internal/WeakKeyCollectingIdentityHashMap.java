@@ -35,10 +35,6 @@ package org.aspectbench.tm.runtime.internal;
  * @author Pavel Avgustinov
  */
 
-import java.util.Iterator;
-import java.util.Set;
-
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 
 public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
@@ -50,14 +46,12 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 	 * reference queue, and when it expires the associated map can be retreived from it.
 	 */
 	class KeyWeakRef extends MyWeakRef {
-		protected WeakKeyCollectingIdentityHashMap theMap = WeakKeyCollectingIdentityHashMap.this; 
-		
 		public KeyWeakRef(Object o) {
 			super(o, expiredQueue);
 		}
 		
 		public void cleanup() {
-			theMap.safeRemove(this);
+			WeakKeyCollectingIdentityHashMap.this.safeRemove(this);
 		}
 	}
 	
