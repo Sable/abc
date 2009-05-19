@@ -39,8 +39,6 @@ import abc.da.fsanalysis.util.SymbolNames;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceIntraproceduralAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
-import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
-import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -336,7 +334,6 @@ public class DAInfo {
 	 * Resets all static data structures used for static tracematch optimizations.
 	 */
 	public void resetAnalysisDataStructures() {
-        WeavableMethods.reset();
 		Ranking.reset();
 		SymbolNames.reset();
 		OutputDotGraphs.reset();    

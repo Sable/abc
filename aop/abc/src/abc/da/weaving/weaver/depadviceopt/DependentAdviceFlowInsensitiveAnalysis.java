@@ -27,16 +27,9 @@ import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import soot.PackManager;
-import soot.PatchingChain;
 import soot.PointsToAnalysis;
 import soot.Scene;
-import soot.SootClass;
 import soot.SootMethod;
-import soot.Unit;
-import soot.jimple.Jimple;
-import soot.jimple.JimpleBody;
-import soot.jimple.NullConstant;
-import soot.jimple.Stmt;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.pointsto.CustomizedDemandCSPointsTo;
@@ -49,7 +42,6 @@ import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -130,6 +122,18 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		//compute all active shadows in the program (including unreachable ones)
 		final Set<Shadow> allActiveShadows = Shadow.allActiveShadows();
 		
+		//filter out shadows that do not belong to a dependent advice
+		filterForDependentAdvice(allActiveShadows);
+				
+		//disable all unreachable shadows
+		for (Shadow shadow : allActiveShadows) {
+			if(!reachableActiveShadows.contains(shadow)) {
+				shadow.disable();
+				if(OptionsParser.v().warn_about_individual_shadows())
+					warn(shadow,"Shadow disabled because it was deemed unreachable from main method in: "+Scene.v().getMainClass());
+			}			
+		}
+
 		if(debug) {
 			System.err.println("da:    Determining reachable and unreachable shadows took: " +(System.currentTimeMillis()-before));
 			System.err.println("da:    Number of reachable DA-Shadows with non-empty points-to sets: "+reachableActiveShadows.size());
@@ -156,18 +160,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		Bag<AdviceDecl> shadowsDisabledPerAdviceDecl =
 			AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(reachableActiveShadows);		
 
-		//filter out shadows that do not belong to a dependent advice
-		filterForDependentAdvice(allActiveShadows);
-				
-		//disable all unreachable shadows
-		for (Shadow shadow : allActiveShadows) {
-			if(!reachableActiveShadows.contains(shadow)) {
-				shadow.disable();
-				if(OptionsParser.v().warn_about_individual_shadows())
-					warn(shadow,"Shadow disabled because it was deemed unreachable from main method in: "+Scene.v().getMainClass());
-			}			
-		}
-		
 		final Map<AdviceDecl,Integer> adviceToNumTotal = new HashMap<AdviceDecl, Integer>();
 		for (Shadow shadow : allActiveShadows) {						
 			//count total number

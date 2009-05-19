@@ -29,7 +29,6 @@ import java.util.List;
 
 import soot.Scene;
 import soot.SootClass;
-import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
@@ -38,14 +37,12 @@ import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
-import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
 import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
 import abc.da.weaving.weaver.tracing.Dumper;
 import abc.ja.da.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.Aspect;
-import abc.weaving.matching.SJPInfo;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.ReweavingAnalysis;
@@ -424,13 +421,6 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 		return flowInsensitiveAnalysis;
 	}
 
-	/**
-	 * Resets all static data structures used for static tracematch optimizations.
-	 */
-	public void resetAnalysisDataStructures() {
-        WeavableMethods.reset();
-	}
-	
     @Override
     protected Weaver createWeaver() {
     	Weaver weaver = super.createWeaver();

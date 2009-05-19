@@ -33,6 +33,7 @@ import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import polyglot.util.StdErrorQueue;
 import soot.Local;
+import soot.MethodOrMethodContext;
 import soot.PointsToSet;
 import soot.RefLikeType;
 import soot.Scene;
@@ -44,12 +45,14 @@ import soot.jimple.Stmt;
 import soot.jimple.spark.ondemand.AllocAndContext;
 import soot.jimple.spark.ondemand.AllocAndContextSet;
 import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
+import soot.jimple.toolkits.callgraph.ReachableMethods;
 import soot.jimple.toolkits.pointer.FullObjectSet;
 import soot.tagkit.Host;
 import soot.tagkit.LineNumberTag;
 import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
 import soot.util.IdentityHashSet;
+import soot.util.queue.QueueReader;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -315,10 +318,19 @@ public class Shadow {
 	}
 
 	/**
-	 * Creates and returns all active shadows in all weavable methods.
+	 * Creates and returns all active shadows in all methods that have a body.
 	 */
 	public static Set<Shadow> allActiveShadows() {
-		return findActiveShadowsInMethod(WeavableMethods.v().getAll());
+		Set<SootMethod> methods = new HashSet<SootMethod>();
+		for(SootClass c: Scene.v().getApplicationClasses()) {
+			for (SootMethod method : c.getMethods()) {
+				if(method.hasActiveBody()) {
+					methods.add(method);
+				}
+			}
+		}
+		
+		return findActiveShadowsInMethod(methods);
 	}
 
 	/**
@@ -329,7 +341,24 @@ public class Shadow {
 		if(!Scene.v().hasCallGraph()) {
 			throw new IllegalStateException("No callgraph present.");
 		}
-		return findActiveShadowsInMethod(WeavableMethods.v().getReachable(Scene.v().getCallGraph()));
+		
+		//get all reachable methods
+		ReachableMethods rm = new ReachableMethods(
+				Scene.v().getCallGraph(),
+				new ArrayList<MethodOrMethodContext>(Collections.<MethodOrMethodContext>singleton(Scene.v().getMainMethod()))
+		);
+		rm.update();
+		
+		QueueReader<MethodOrMethodContext> reader = rm.listener();
+		Set<SootMethod> reachableMethods = new HashSet<SootMethod>();
+		
+		//check for weavable ones
+        while(reader.hasNext()) {
+            SootMethod method = (SootMethod) reader.next();
+           	reachableMethods.add(method);
+        }
+		
+		return findActiveShadowsInMethod(reachableMethods);
 	}
 	
 	/**
@@ -369,6 +398,7 @@ public class Shadow {
 
 			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
 	        MethodAdviceList adviceList = gai.getAdviceList(m);
+
 	        //if there are any advice applications within that method
 	        if(adviceList!=null) {
 	        	//build a mapping from shadow ID and advice name to the corresponding advice application
