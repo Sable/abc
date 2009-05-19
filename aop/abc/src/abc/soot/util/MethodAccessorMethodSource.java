@@ -95,15 +95,16 @@ public class MethodAccessorMethodSource implements soot.MethodSource {
         if (methodInst.flags().isStatic()) {
             invoke = soot.jimple.Jimple.v().newStaticInvokeExpr(meth, methParams);
         }
-        else if(meth.declaringClass().isInterface()) {
-            // TODO: Check this is the correct behaviour - adopted from InterTypeAdjuster
-            invoke = soot.jimple.Jimple.v().newInterfaceInvokeExpr(base, meth, methParams);
-        }
         else {
+            // TODO: Check this is the correct behaviour - adopted from InterTypeAdjuster
             base = generateLocal(receiver.getType());
             body.getLocals().add(base);
             body.getUnits().addFirst(soot.jimple.Jimple.v().newIdentityStmt(base, Jimple.v().newThisRef(receiver.getType())));
-            invoke = soot.jimple.Jimple.v().newSpecialInvokeExpr(base, meth, methParams);
+            if(meth.declaringClass().isInterface()) {
+            	invoke = soot.jimple.Jimple.v().newInterfaceInvokeExpr(base, meth, methParams);
+            } else {
+                invoke = soot.jimple.Jimple.v().newSpecialInvokeExpr(base, meth, methParams);
+            }
         }
 
         soot.jimple.Stmt stmt = null;
