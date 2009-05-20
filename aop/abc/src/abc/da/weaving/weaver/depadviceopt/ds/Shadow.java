@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +54,7 @@ import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
 import soot.util.IdentityHashSet;
 import soot.util.queue.QueueReader;
+import abc.da.fsanalysis.util.SymbolNames;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -395,7 +397,6 @@ public class Shadow {
 
 		Set<Shadow> shadows = new HashSet<Shadow>();
 		for (SootMethod m : methods) {
-
 			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
 	        MethodAdviceList adviceList = gai.getAdviceList(m);
 
@@ -480,6 +481,13 @@ public class Shadow {
 						}						
 					}
 		        }
+			}
+		}
+		
+		for (Iterator iterator = shadows.iterator(); iterator.hasNext();) {
+			Shadow shadow = (Shadow) iterator.next();
+			if(SymbolNames.v().isArtificialShadow(shadow)) {
+				iterator.remove();
 			}
 		}
 		
