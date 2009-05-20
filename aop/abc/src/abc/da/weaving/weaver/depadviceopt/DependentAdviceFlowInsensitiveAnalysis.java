@@ -26,11 +26,14 @@ import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
+import soot.Local;
 import soot.PackManager;
 import soot.PointsToAnalysis;
+import soot.PointsToSet;
 import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
+import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.pointsto.CustomizedDemandCSPointsTo;
 import abc.da.fsanalysis.ranking.PFGs;
@@ -137,11 +140,7 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		if(debug) {
 			System.err.println("da:    Determining reachable and unreachable shadows took: " +(System.currentTimeMillis()-before));
 			System.err.println("da:    Number of reachable DA-Shadows with non-empty points-to sets: "+reachableActiveShadows.size());
-			CustomizedDemandCSPointsTo pta = (CustomizedDemandCSPointsTo) Scene.v().getPointsToAnalysis();
-			System.err.println("da:    PTA requests: "+pta.requests);
-			System.err.println("da:    PTA retries:  "+pta.retry);
-			System.err.println("da:    PTA success:  "+pta.success);
-			System.err.println("da: Computing Consistent Shadow Groups");
+			System.err.println("da:    Computing Consistent Shadow Groups");
 		}
 
 		//compute consistent shadow groups and build the set of shadows to retain
@@ -202,10 +201,27 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 			System.err.println("da:    Disabling shadows took:            "+(System.currentTimeMillis()-before));
 			System.err.println("da:    DA-Shadows enabled before FlowIns: "+numEnabledDependentAdviceShadowsBefore);  
 			System.err.println("da:    DA-Shadows enabled after  FlowIns: "+numEnabledDependentAdviceShadowsAfter);  
+
+			CustomizedDemandCSPointsTo pta = (CustomizedDemandCSPointsTo) Scene.v().getPointsToAnalysis();
+			System.err.println("da:    PTA requests: "+pta.requests);
+			System.err.println("da:    PTA retries:  "+pta.retry);
+			System.err.println("da:    PTA success:  "+pta.success);
+			int all=0, cs=0;
+			for (Shadow s : reachableActiveShadows) {
+				for(String var: s.getAdviceFormalNames()) {
+					LazyContextSensitivePointsToSet pointsToSetOf = (LazyContextSensitivePointsToSet) s.pointsToSetOf(var);
+					all++;
+					if(pointsToSetOf.isContextSensitive()) {
+						cs++;
+					}
+				}
+			}
+			
+    		System.err.println("Points-to sets: "+all);
+    		System.err.println("Points-to sets for which context was tried to be computed: "+cs);
 			
 			if(Debug.v().outputPFGs)
 				PFGs.v().dump("after first flow-insensitive stage", stillActiveDependentAdviceShadows, true);
-
 		}
 		
 		return false;

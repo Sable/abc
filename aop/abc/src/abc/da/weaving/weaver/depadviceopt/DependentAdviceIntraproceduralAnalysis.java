@@ -118,24 +118,6 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 				PFGs.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
 	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());
-	        
-	        if(Debug.v().debugDA) {
-		        Set<Local> allLocals = new HashSet<Local>();
-	        	for(Shadow s: dependentAdviceShadows) {
-	        		Map<String, Local> adviceFormalToSootLocal = s.getAdviceFormalToSootLocal();
-	        		allLocals.addAll(adviceFormalToSootLocal.values());
-	        	}
-	        	int numCSPointsToSets=0;
-	    		for(Local l: allLocals) {
-	    			LazyContextSensitivePointsToSet pointsToSet = (LazyContextSensitivePointsToSet) Scene.v().getPointsToAnalysis().reachingObjects(l);
-	    			if(pointsToSet.isContextSensitive()) {
-	    				numCSPointsToSets++;
-	    			}
-	    		}
-	    		System.err.println("Points-to sets: "+allLocals.size());
-	    		System.err.println("Points-to sets for which context was tried to be computed: "+numCSPointsToSets);
-	        }
-	        
 		} finally {
 			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
 		}
