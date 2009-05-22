@@ -68,6 +68,8 @@ import abc.weaving.weaver.Weaver;
 public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 {
 	
+	protected boolean didRunAnalysis = false;
+	
 	/**
 	 * The abc.da extension that we use to conduct the various static whole-program analyses for tracematches.
 	 */
@@ -91,6 +93,13 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 				@Override
 				protected DependentAdviceQuickCheck createQuickCheck() {
 					return new DependentAdviceQuickCheck() {
+						@Override
+						public boolean analyze() {
+							boolean res = super.analyze();
+							didRunAnalysis = true;
+							return res;
+						}
+						
 						protected void warnShadow(abc.weaving.matching.AdviceApplication aa) {
 							//if this extension is enabled, only warn when removing shadows that belong to per-symbol advice
 							//(otherwise we would report for sync/some/body advice as well)
@@ -149,39 +158,41 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 			
 			@Override
 			public void weaveAdvice() {
-				super.weaveAdvice();
-
-				//disable helper advice (some, synch and body) at shadows at which
-				//all advice applications for symbol shadows were disabled
-				final GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
-				Set<AdviceApplication> aas = new HashSet<AdviceApplication>();
-				for(SootClass c: Scene.v().getApplicationClasses()) {
-					for(SootMethod m: c.getMethods()) {
-						MethodAdviceList adviceList = gai.getAdviceList(m);
-						if(adviceList!=null) {
-							aas.addAll(adviceList.allAdvice());
+				if(didRunAnalysis) {
+					//disable helper advice (some, synch and body) at shadows at which
+					//all advice applications for symbol shadows were disabled
+					final GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
+					Set<AdviceApplication> aas = new HashSet<AdviceApplication>();
+					for(SootClass c: Scene.v().getApplicationClasses()) {
+						for(SootMethod m: c.getMethods()) {
+							MethodAdviceList adviceList = gai.getAdviceList(m);
+							if(adviceList!=null) {
+								aas.addAll(adviceList.allAdvice());
+							}
 						}
 					}
-				}
-				Set<Integer> shadowIDsWithSymbolShadowsApplying = new HashSet<Integer>();
-				for (AdviceApplication aa : aas) {
-					AbstractAdviceDecl advice = aa.advice;
-					if(advice instanceof TMAdviceDecl) {
-						TMAdviceDecl tmAdvice = (TMAdviceDecl) advice;
-						if(!tmAdvice.isBody() && !tmAdvice.isSome() && !tmAdvice.isSynch()) {
-							assert advice instanceof PerSymbolTMAdviceDecl;
-							shadowIDsWithSymbolShadowsApplying.add(aa.shadowmatch.shadowId);
-						}
-					}
-				}
-				for (AdviceApplication aa : aas) {
-					if(!shadowIDsWithSymbolShadowsApplying.contains(aa.shadowmatch.shadowId)) {
+					Set<Integer> shadowIDsWithSymbolShadowsApplying = new HashSet<Integer>();
+					for (AdviceApplication aa : aas) {
 						AbstractAdviceDecl advice = aa.advice;
-						if(advice instanceof TMAdviceDecl) {
-							aa.setResidue(NeverMatch.v());
+						if(!NeverMatch.neverMatches(aa.getResidue()) && advice instanceof TMAdviceDecl) {
+							TMAdviceDecl tmAdvice = (TMAdviceDecl) advice;
+							if(!tmAdvice.isBody() && !tmAdvice.isSome() && !tmAdvice.isSynch()) {
+								assert advice instanceof PerSymbolTMAdviceDecl;
+								shadowIDsWithSymbolShadowsApplying.add(aa.shadowmatch.shadowId);
+							}
+						}
+					}
+					for (AdviceApplication aa : aas) {
+						if(!shadowIDsWithSymbolShadowsApplying.contains(aa.shadowmatch.shadowId)) {
+							AbstractAdviceDecl advice = aa.advice;
+							if(advice instanceof TMAdviceDecl) {
+								aa.setResidue(NeverMatch.v());
+							} 
 						}
 					}
 				}
+				
+				super.weaveAdvice();
 			}
 		};
 	}
