@@ -19,25 +19,32 @@
 
 package abc.tmwpopt;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import soot.Scene;
 import soot.SootClass;
-import soot.tagkit.Host;
-
+import soot.SootMethod;
 import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.main.Debug;
+import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
+import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tmwpopt.tmtoda.TracePatternFromTM;
-import abc.weaving.matching.SJPInfo;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 
@@ -138,6 +145,43 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 					daInfo.registerTracePattern(new TracePatternFromTM(tm));					
 				}
 				super.weaveGenerateAspectMethods();
+			}
+			
+			@Override
+			public void weaveAdvice() {
+				super.weaveAdvice();
+
+				//disable helper advice (some, synch and body) at shadows at which
+				//all advice applications for symbol shadows were disabled
+				final GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
+				Set<AdviceApplication> aas = new HashSet<AdviceApplication>();
+				for(SootClass c: Scene.v().getApplicationClasses()) {
+					for(SootMethod m: c.getMethods()) {
+						MethodAdviceList adviceList = gai.getAdviceList(m);
+						if(adviceList!=null) {
+							aas.addAll(adviceList.allAdvice());
+						}
+					}
+				}
+				Set<Integer> shadowIDsWithSymbolShadowsApplying = new HashSet<Integer>();
+				for (AdviceApplication aa : aas) {
+					AbstractAdviceDecl advice = aa.advice;
+					if(advice instanceof TMAdviceDecl) {
+						TMAdviceDecl tmAdvice = (TMAdviceDecl) advice;
+						if(!tmAdvice.isBody() && !tmAdvice.isSome() && !tmAdvice.isSynch()) {
+							assert advice instanceof PerSymbolTMAdviceDecl;
+							shadowIDsWithSymbolShadowsApplying.add(aa.shadowmatch.shadowId);
+						}
+					}
+				}
+				for (AdviceApplication aa : aas) {
+					if(!shadowIDsWithSymbolShadowsApplying.contains(aa.shadowmatch.shadowId)) {
+						AbstractAdviceDecl advice = aa.advice;
+						if(advice instanceof TMAdviceDecl) {
+							aa.setResidue(NeverMatch.v());
+						}
+					}
+				}
 			}
 		};
 	}
