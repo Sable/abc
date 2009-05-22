@@ -68,9 +68,6 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			return false;
 		}
 
-		Set<AdviceDependency> adviceDependencies = dai.getAdviceDependencies();
-		if(adviceDependencies.isEmpty()) return false;		
-		
 		if(Debug.v().debugDA) {
 			Set<AbcClass> weavableClasses = gai.getWeavableClasses();
 			System.err.println("Weavable classes: "+weavableClasses.size());
@@ -85,7 +82,12 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 				}
 			}
 			System.err.println("Weavable methods: "+weavableMethods);			
-			
+		}
+		
+		Set<AdviceDependency> adviceDependencies = dai.getAdviceDependencies();
+		if(adviceDependencies.isEmpty()) return false;		
+		
+		if(Debug.v().debugDA) {
 			System.err.println();
 			System.err.println();
 			for (AdviceDependency dep : adviceDependencies) {
