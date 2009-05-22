@@ -179,7 +179,8 @@ public class DynamicInstrumenter {
 		Set<Probe> probes = new HashSet<Probe>();
 		DAInfo daInfo = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
 		for (AdviceDependency dep : daInfo.getAdviceDependencies()) {
-			probes.addAll(dep.computeProbes());			
+			if(dep.fulfillsQuickCheck())
+				probes.addAll(dep.computeProbes());			
 		}
 		
 		if(Debug.v().debugDA) {
