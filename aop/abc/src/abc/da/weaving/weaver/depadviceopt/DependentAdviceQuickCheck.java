@@ -31,10 +31,12 @@ import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
+import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AfterAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -70,6 +72,20 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		if(adviceDependencies.isEmpty()) return false;		
 		
 		if(Debug.v().debugDA) {
+			Set<AbcClass> weavableClasses = gai.getWeavableClasses();
+			System.err.println("Weavable classes: "+weavableClasses.size());
+			int weavableMethods = 0;
+			for (AbcClass abcClass : weavableClasses) {
+				List<SootMethod> methods = abcClass.getSootClass().getMethods();
+				for (SootMethod m : methods) {
+					if(MethodCategory.weaveCalls(m) || MethodCategory.weaveExecution(m) ||
+					   MethodCategory.weaveInside(m)) {
+						weavableMethods++;
+					}
+				}
+			}
+			System.err.println("Weavable methods: "+weavableMethods);			
+			
 			System.err.println();
 			System.err.println();
 			for (AdviceDependency dep : adviceDependencies) {
