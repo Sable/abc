@@ -583,8 +583,8 @@ public class AdviceDependency {
 			for (Set<Shadow> strongProbe: strongProbes) {
 				assert !strongProbe.isEmpty();
 				Set<Shadow> probeShadows = new HashSet<Shadow>(strongProbe);
-				//for all weak shadows
-				for(int i=numStrongShadows;i<shadows.length;i++) {
+				//for all strong AND weak shadows
+				for(int i=0;i<shadows.length;i++) {
 					//if the i-th shadow is enabled
 					if(shadows[i].isEnabled()) {
 						//see if the shadow is compatible to all strong shadows
