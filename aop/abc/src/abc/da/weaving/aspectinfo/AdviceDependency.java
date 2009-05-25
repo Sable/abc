@@ -41,6 +41,7 @@ import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.da.weaving.weaver.depadviceopt.ds.ShadowComparator;
 import abc.da.weaving.weaver.dynainstr.Probe;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -578,6 +579,10 @@ public class AdviceDependency {
 				}
 			}
 			
+			
+			if(Debug.v().debugDA) {
+				System.err.println("Minimal activation sets for this probe: "+strongProbes.size());
+			}
 			
 			Set<Probe> probes = new HashSet<Probe>();
 			for (Set<Shadow> strongProbe: strongProbes) {
