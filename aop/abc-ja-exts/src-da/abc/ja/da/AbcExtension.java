@@ -402,25 +402,6 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
         return daInfo;
     }
     
-
-	/**
-	 * @inheritDoc
-	 */
-	public DependentAdviceQuickCheck quickCheck() {
-		if(quickCheck==null)
-			quickCheck = createQuickCheck();
-		return quickCheck;
-	}
-	
-	/**
-	 * @inheritDoc
-	 */
-	public DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis() {
-		if(flowInsensitiveAnalysis==null)
-			flowInsensitiveAnalysis = createFlowInsensitiveAnalysis();
-		return flowInsensitiveAnalysis;
-	}
-
     @Override
     protected Weaver createWeaver() {
     	Weaver weaver = super.createWeaver();
