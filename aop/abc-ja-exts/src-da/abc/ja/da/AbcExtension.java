@@ -37,7 +37,7 @@ import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
-import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
+import abc.da.weaving.weaver.dynainstr.SpatialPartitioner;
 import abc.da.weaving.weaver.tracing.Dumper;
 import abc.ja.da.parse.JavaParser.Terminals;
 import abc.main.Debug;
@@ -324,7 +324,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     	    ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
 	            @Override
                 public boolean analyze() {
-            	    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+            	    SpatialPartitioner.v().createClassesAndSetDynamicResidues();
         	        return false;
     	        }
 	        };
