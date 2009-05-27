@@ -6,13 +6,15 @@
  */
 package abc.da.weaving.weaver.dynainstr;
 
+import java.util.Set;
+
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 
 public class ShadowCountManager {
 	
-	public static void setCountResidues() {
-		for (Shadow shadow : Shadow.reachableActiveShadows()) {
-			shadow.conjoinResidueWith(new ShadowCountResidue(DynamicInstrumenter.v().getCodeGenNumber(shadow)));
+	public static void setCountResidues(Set<Shadow> allEnabledShadows) {
+		for (Shadow shadow : allEnabledShadows) {
+			shadow.conjoinResidueWith(new ShadowCountResidue(SpatialPartitioner.v().getCodeGenNumber(shadow)));
 		}
 	}
 

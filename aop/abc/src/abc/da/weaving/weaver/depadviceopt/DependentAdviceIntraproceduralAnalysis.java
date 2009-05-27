@@ -28,11 +28,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import soot.Local;
 import soot.MethodOrMethodContext;
 import soot.Scene;
 import soot.SootMethod;
-import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import abc.da.HasDAInfo;
 import abc.da.fsanalysis.EnabledShadowSet;
@@ -279,6 +277,11 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
         
         //perform flow-insensitive analysis again
         AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(shadows);
+    }
+    
+    @Override
+    public void cleanup() {
+    	methodToJob = null;
     }
 
 }

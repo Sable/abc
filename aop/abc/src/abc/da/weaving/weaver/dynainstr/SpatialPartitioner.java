@@ -57,7 +57,7 @@ import abc.weaving.residues.Residue;
 import abc.weaving.weaver.Unweaver;
 
 /**
- * The {@link DynamicInstrumenter} generates dynamic {@link Residue}s for each
+ * The {@link SpatialPartitioner} generates dynamic {@link Residue}s for each
  * shadow that is still enabled. Those residues allow to enable/disable those
  * shadows dynamically by setting a boolean flag.
  * 
@@ -69,7 +69,7 @@ import abc.weaving.weaver.Unweaver;
  * @author Eric Bodden
  * @author Patrick Lam
  */
-public class DynamicInstrumenter {
+public class SpatialPartitioner {
 
 	
 	/** Name of the shadow switch class in the abc runtime. */
@@ -96,17 +96,14 @@ public class DynamicInstrumenter {
 	 * Also sets dynamic residues accordingly.
 	 */
 	public void createClassesAndSetDynamicResidues() {
-		//create unique IDs starting at 0 for all shadows
-		numberAllReachableActiveShadows();
+		Set<Shadow> allEnabledShadows = createShadowSwitchInitializerClass();
 
-		createShadowSwitchInitializerClass();
-
-		for (Shadow shadow : Shadow.reachableActiveShadows()) {
+		for (Shadow shadow : allEnabledShadows) {
 			shadow.conjoinResidueWith(new DynamicInstrumentationResidue(codeGenNumber.get(shadow)));
 		}
 		
-        //conjoin all residues with a residue for counting shadows
-        ShadowCountManager.setCountResidues();
+		//conjoin all residues with a residue for counting shadows
+		ShadowCountManager.setCountResidues(allEnabledShadows);
 	}
 	
 	/**
@@ -122,10 +119,10 @@ public class DynamicInstrumenter {
 	}
 
 	/**	Assigns a unique number (starting off at 0) to each reachable active shadow. */
-    private void numberAllReachableActiveShadows() {
+    private void numberShadows(Set<Shadow> shadows) {
     	codeGenNumber = new HashMap<Shadow, Integer>();
     	int num = 0;
-    	for (Shadow shadow : Shadow.reachableActiveShadows()) {
+    	for (Shadow shadow : shadows) {
 			codeGenNumber.put(shadow, num++);
 		}
 	}
@@ -134,8 +131,9 @@ public class DynamicInstrumenter {
 	 * Creates a class with a single method that initializes the data structures
 	 * in the shadow switch class, i.e. mapping of probes to their
 	 * shadows.
+	 * @return 
 	 */
-	protected void createShadowSwitchInitializerClass() {
+	protected Set<Shadow> createShadowSwitchInitializerClass() {
 		// public class <INITIALIZER_CLASS_NAME> extends Object implements
 		// IShadowSwitchInitializer { ... }
 		SootClass switchClass = new SootClass(INITIALIZER_CLASS_NAME,
@@ -147,14 +145,15 @@ public class DynamicInstrumenter {
 
 		generateDefaultConstructor(switchClass, superClass);
 
-		generateInitMethod(switchClass);
+		return generateInitMethod(switchClass);
 	}
 
 	/**
 	 * Generates the initialization method. 
 	 * @param switchClass the class to attach the method to
+	 * @return 
 	 */
-	private void generateInitMethod(SootClass switchClass) {
+	private Set<Shadow> generateInitMethod(SootClass switchClass) {
 		// public void initialize() { ... }
 		SootMethod initMethod = new SootMethod("initialize",
 				Collections.EMPTY_LIST, VoidType.v(), Modifier.PUBLIC);
@@ -172,9 +171,6 @@ public class DynamicInstrumenter {
 		units.addLast(Jimple.v().newIdentityStmt(thisLocal,
 				Jimple.v().newThisRef(switchClass.getType())));
 
-		// retrieve the set of enabled shadows and the set of all (sound) probes
-		Set<Shadow> enabledShadows = Shadow.reachableActiveShadows();
-		
 		//compute and uniquely number all probes
 		Set<Probe> probes = new HashSet<Probe>();
 		DAInfo daInfo = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
@@ -187,10 +183,21 @@ public class DynamicInstrumenter {
 			System.err.println("Number of probes: "+probes.size());			
 		}
 		
+		Set<Shadow> enabledShadows = new HashSet<Shadow>();
 		int number = 0;
 		for (Probe probe : probes) {
 			probe.assignNumber(number++);
+			enabledShadows.addAll(probe.getShadows());
 		}
+		
+		numberShadows(enabledShadows);
+		
+		//save some memory
+		Scene.v().releaseCallGraph();
+		Scene.v().releasePointsToAnalysis();
+		Scene.v().releaseReachableMethods();
+		daInfo.flowInsensitiveAnalysis().cleanup();
+		daInfo.intraProceduralAnalysis().cleanup();
 
 		// create a new array "probeTable". This is an array of arrays of
 		// boolean, i.e. a 2D array.
@@ -203,7 +210,7 @@ public class DynamicInstrumenter {
 				IntConstant.v(probes.size()));
 		SootFieldRef fieldRef = Scene.v().makeFieldRef(
 				Scene.v().getSootClass(
-						DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+						SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 				"probeTable", ArrayType.v(BooleanType.v(), 2), true);
 		AssignStmt assignStmt = Jimple.v().newAssignStmt(array, newArrayExpr);
 		units.add(assignStmt);
@@ -230,7 +237,7 @@ public class DynamicInstrumenter {
 		// field "enabled" = enabled
 		SootFieldRef enabledFieldRef = Scene.v().makeFieldRef(
 				Scene.v().getSootClass(
-						DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+						SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 				"enabled", ArrayType.v(BooleanType.v(), 1), true);
 		staticFieldRef = Jimple.v().newStaticFieldRef(enabledFieldRef);
 		fieldAssignStmt = Jimple.v()
@@ -252,7 +259,7 @@ public class DynamicInstrumenter {
 		// field "counts" = counts
 		SootFieldRef countsFieldRef = Scene.v().makeFieldRef(
 		        Scene.v().getSootClass(
-		                DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+		                SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 		        "counts", ArrayType.v(IntType.v(), 1), true);
 		staticFieldRef = Jimple.v().newStaticFieldRef(countsFieldRef);
 		fieldAssignStmt = Jimple.v()
@@ -287,6 +294,8 @@ public class DynamicInstrumenter {
 		if (Debug.v().doValidate) {
 			body.validate();
 		}
+		
+		return enabledShadows;
 	}
 
 	/**
@@ -349,7 +358,7 @@ public class DynamicInstrumenter {
 		body.getLocals().add(array);
 		SootFieldRef fieldRef = Scene.v().makeFieldRef(
 				Scene.v().getSootClass(
-						DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+						SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 				"probeTable", ArrayType.v(BooleanType.v(), 2), true);
 		StaticFieldRef staticFieldRef = Jimple.v().newStaticFieldRef(fieldRef);
 		AssignStmt fieldAssignStmt = Jimple.v().newAssignStmt(array,
@@ -405,14 +414,14 @@ public class DynamicInstrumenter {
 	
 	//singleton pattern
 	
-	protected static DynamicInstrumenter instance;
+	protected static SpatialPartitioner instance;
 
-	private DynamicInstrumenter() {
+	private SpatialPartitioner() {
 	}
 
-	public static DynamicInstrumenter v() {
+	public static SpatialPartitioner v() {
 		if (instance == null) {
-			instance = new DynamicInstrumenter();
+			instance = new SpatialPartitioner();
 		}
 		return instance;
 	}

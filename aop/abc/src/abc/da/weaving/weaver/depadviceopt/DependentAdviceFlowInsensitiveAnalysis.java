@@ -26,10 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
-import soot.Local;
 import soot.PackManager;
 import soot.PointsToAnalysis;
-import soot.PointsToSet;
 import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
@@ -330,5 +328,10 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
         
         OptionsParser.v().set_tag_instructions(true);
     }
+	
+	@Override
+	public void cleanup() {
+		stillActiveDependentAdviceShadows = null;
+	}
 
 }

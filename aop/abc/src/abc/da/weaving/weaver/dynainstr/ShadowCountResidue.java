@@ -72,7 +72,7 @@ public class ShadowCountResidue extends Residue {
 		//boolean[] counts = ShadowSwitch.counts;
 		Local array = localgen.generateLocal(ArrayType.v(IntType.v(),1),"counts");
 		SootFieldRef fieldRef = Scene.v().makeFieldRef(
-			Scene.v().getSootClass(DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+			Scene.v().getSootClass(SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 			"counts",
 			ArrayType.v(IntType.v(),1),
 			true

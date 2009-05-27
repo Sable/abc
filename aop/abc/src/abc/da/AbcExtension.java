@@ -27,7 +27,7 @@ import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAInfo;
-import abc.da.weaving.weaver.dynainstr.DynamicInstrumenter;
+import abc.da.weaving.weaver.dynainstr.SpatialPartitioner;
 import abc.da.weaving.weaver.tracing.CrossChecker;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
@@ -132,7 +132,7 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
             ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
                 @Override
                 public boolean analyze() {
-                    DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+                    SpatialPartitioner.v().createClassesAndSetDynamicResidues();
                     return false;
                 }
             };

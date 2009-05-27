@@ -73,7 +73,7 @@ public class DynamicInstrumentationResidue extends Residue {
 		//boolean[] enabled_array = ShadowSwitch.enabled;
 		Local array = localgen.generateLocal(ArrayType.v(BooleanType.v(),1),"enabled_array");
 		SootFieldRef fieldRef = Scene.v().makeFieldRef(
-			Scene.v().getSootClass(DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
+			Scene.v().getSootClass(SpatialPartitioner.SHADOW_SWITCH_CLASS_NAME),
 			"enabled",
 			ArrayType.v(BooleanType.v(),1),
 			true
