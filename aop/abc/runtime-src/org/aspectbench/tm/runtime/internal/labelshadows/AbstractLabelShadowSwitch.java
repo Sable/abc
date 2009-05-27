@@ -18,10 +18,6 @@
  */
 package org.aspectbench.tm.runtime.internal.labelshadows;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -31,51 +27,12 @@ import java.util.Set;
  */
 public abstract class AbstractLabelShadowSwitch implements Runnable {
 
-	protected Set disabled = new HashSet();
+	public static volatile boolean enabled = true; 
 	
 	public abstract void run();
 
-	/**
-	 * @param className
-	 * @return true if the tracematch is now enabled or false if it is not
-	 */
-	protected boolean switchTraceMatch(String className) {
-		boolean isEnabled = !disabled.contains(className);
-		try {
-			Class cl = Class.forName(className);
-			
-			String methodName;
-			if(isEnabled) {
-				methodName = "disableLabelShadows";
-				disabled.add(className);
-			} else {
-				methodName = "enableLabelShadows";
-				disabled.remove(className);
-			}
-
-			Method aspectOfMethod = cl.getMethod("aspectOf",new Class[0]);
-			Object aspectInstance = aspectOfMethod.invoke(null,new Object[0]);
-			
-			Method method = cl.getMethod(methodName,new Class[0]);
-			method.invoke(aspectInstance,new Object[0]);
-						
-			isEnabled = !isEnabled;
-			
-		} catch (ClassNotFoundException e) {
-			System.err.println("Class not found: "+e.getMessage());
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} 
-		
-		return isEnabled;
+	protected boolean switchOnOff() {
+		return enabled = !enabled;
 	}
 
 }

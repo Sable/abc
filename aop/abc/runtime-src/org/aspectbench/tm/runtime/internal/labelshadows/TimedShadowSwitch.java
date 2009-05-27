@@ -42,9 +42,6 @@ public class TimedShadowSwitch extends AbstractLabelShadowSwitch {
 	/** Number of periods after which to apply increases or decreases. */
 	protected volatile int periods;
 	
-	/** Name of the class whose tracematch should be triggered. */
-	protected volatile String className;
-	
 	/**
 	 */
 	public TimedShadowSwitch() {
@@ -53,7 +50,6 @@ public class TimedShadowSwitch extends AbstractLabelShadowSwitch {
 		incDisabled = Double.parseDouble(System.getProperty("incDisabled", "2"));
 		incEnabled = Double.parseDouble(System.getProperty("incEnabled", "2"));
 		periods = Integer.parseInt(System.getProperty("periods", "10"));
-		className = System.getProperty("className", "");
 		if(tDisabled<1) {
 			throw new IllegalArgumentException("Illegal argument tDisabled="+tDisabled);
 		}
@@ -62,9 +58,6 @@ public class TimedShadowSwitch extends AbstractLabelShadowSwitch {
 		}
 		if(periods<1) {
 			throw new IllegalArgumentException("Illegal argument periods="+periods);
-		}
-		if(className.length()==0) {
-			throw new IllegalArgumentException("No className given! Use: java -DclassName=<ClassName>");
 		}
 		System.err.println("Instantiated timed shadow switch.");
 		System.err.println("Will start with disabling for "+tDisabled+"ms then enabling for "+tEnabled+"ms.");
@@ -81,7 +74,7 @@ public class TimedShadowSwitch extends AbstractLabelShadowSwitch {
 		int per = 0;
 		while(true) {
 			//switch label shadows off
-			switchTraceMatch(className);
+			switchOnOff();
 			//wait for <breakLength> ms
 			synchronized (this) {
 				try {
@@ -90,7 +83,7 @@ public class TimedShadowSwitch extends AbstractLabelShadowSwitch {
 				}
 			}
 			//switch label shadows on
-			switchTraceMatch(className);
+			switchOnOff();
 			//wait for <breakLength> ms
 			synchronized (this) {
 				try {

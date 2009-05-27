@@ -47,6 +47,8 @@ import abc.weaving.weaver.WeavingContext;
  */
 public class DynamicInstrumentationResidue extends Residue {
 
+	public static final String TIMED_SHADOW_SWITCH_CLASS_NAME = "org.aspectbench.tm.runtime.internal.labelshadows.AbstractLabelShadowSwitch";
+	
 	protected int shadowNumber;
 
 	/**
@@ -69,6 +71,22 @@ public class DynamicInstrumentationResidue extends Residue {
 			Chain units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {
 		if(!sense) return reverseSense(method, localgen, units, begin, fail, sense, wc);
 		
+		//switch for temporal partitioning
+		Local enabledTemporal = localgen.generateLocal(BooleanType.v(),"enabledTemporal");
+		SootFieldRef temporalFieldRef = Scene.v().makeFieldRef(
+			Scene.v().getSootClass(TIMED_SHADOW_SWITCH_CLASS_NAME),
+			"enabled",
+			BooleanType.v(),
+			true
+		);
+		StaticFieldRef tempStaticFieldRef = Jimple.v().newStaticFieldRef(temporalFieldRef);
+		AssignStmt assignStmt = Jimple.v().newAssignStmt(enabledTemporal, tempStaticFieldRef);
+		units.insertAfter(assignStmt, begin);	
+		
+		//if(enabledTemporal==false) goto fail;
+		IfStmt testStmt = Jimple.v().newIfStmt(Jimple.v().newEqExpr(enabledTemporal, IntConstant.v(0)), fail);
+		units.insertAfter(testStmt, assignStmt);
+		
 		//fetch the boolean array to a local variable
 		//boolean[] enabled_array = ShadowSwitch.enabled;
 		Local array = localgen.generateLocal(ArrayType.v(BooleanType.v(),1),"enabled_array");
@@ -79,20 +97,20 @@ public class DynamicInstrumentationResidue extends Residue {
 			true
 		);		
 		StaticFieldRef staticFieldRef = Jimple.v().newStaticFieldRef(fieldRef);
-		AssignStmt assignStmt = Jimple.v().newAssignStmt(array, staticFieldRef);
-		units.insertAfter(assignStmt, begin);
+		AssignStmt assignStmt2 = Jimple.v().newAssignStmt(array, staticFieldRef);
+		units.insertAfter(assignStmt2, testStmt);
 	
 		//boolean enabled = enabled_array[shadowNumber];
 		Local enabled = localgen.generateLocal(BooleanType.v(),"enabled");
 		ArrayRef arrayRef = Jimple.v().newArrayRef(array, IntConstant.v(shadowNumber));
 		AssignStmt countLoadStmt = Jimple.v().newAssignStmt(enabled, arrayRef);
-		units.insertAfter(countLoadStmt, assignStmt);
+		units.insertAfter(countLoadStmt, assignStmt2);
 
 		//if(enabled==false) goto fail;
-		IfStmt testStmt = Jimple.v().newIfStmt(Jimple.v().newEqExpr(enabled, IntConstant.v(0)), fail);
-		units.insertAfter(testStmt, countLoadStmt);
+		IfStmt testStmt2 = Jimple.v().newIfStmt(Jimple.v().newEqExpr(enabled, IntConstant.v(0)), fail);
+		units.insertAfter(testStmt2, countLoadStmt);
 		
-		return testStmt;
+		return testStmt2;
 	}
 
 	/**

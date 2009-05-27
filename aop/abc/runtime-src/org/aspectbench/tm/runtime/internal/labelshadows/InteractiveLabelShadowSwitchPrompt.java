@@ -36,19 +36,20 @@ public class InteractiveLabelShadowSwitchPrompt extends	AbstractLabelShadowSwitc
 	public void run() {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		
-		System.out.println("At the moment, label shadows for all shadows are enabled.");
+		System.out.println("At the moment, all strong shadows are disabled.");
 		
 		while(true) {
-			System.out.println("Please type the name of any class containing a tracematch to disable/enable its label shadows.\n" +
+			System.out.println("Please type enter to disable/enable all label shadows.\n" +
 					"Type 'x' to exit this console.");
 			try {
 				String line = in.readLine();
 				if(line.toLowerCase().equals("x")) {
 					break;
+				} else {
+					boolean enabled = switchOnOff();
+					
+					System.err.println("new status: "+(enabled?"enabled":"disabled"));
 				}
-				boolean enabled = switchTraceMatch(line);
-				
-				System.err.println("new label-edge status: "+(enabled?"enabled":"disabled"));
 				
 			} catch (IOException e) {
 				break;

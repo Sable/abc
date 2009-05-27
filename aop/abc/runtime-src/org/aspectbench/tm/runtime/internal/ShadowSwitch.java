@@ -41,8 +41,10 @@ public class ShadowSwitch {
 
 	private static void initialize() {
 		try {
+			System.err.print("Initializing the arrays that map shadow groups to shadows...");
 			IShadowSwitchInitializer initializer = (IShadowSwitchInitializer) Class.forName("org.aspectbench.tm.runtime.internal.ShadowSwitchInitializer").newInstance();
 			initializer.initialize();
+			System.err.println(" done.");
 			
 			String argString = System.getProperty("SHADOWGROUPS","");
 			parse(argString);
@@ -72,6 +74,7 @@ public class ShadowSwitch {
 		if(argString.length()>0) {
 			if(argString.equals("all")) {
 				all();
+				System.err.println("Enabled all "+probeTable.length+" shadow groups.");
 				return;
 			}
 			
@@ -80,8 +83,10 @@ public class ShadowSwitch {
 			String arg = split[1];		
 			if(format.equals("enum")) {
 				byNumber(arg);
+				System.err.println("Enabled shadow group "+arg+".");
 			} else if(format.equals("upto")) {
 				upToNumber(arg);
+				System.err.println("Enabled shadow groups 0-"+arg+".");
 			} else {
 				System.err.println("No shadow groups enabled.");
 			}

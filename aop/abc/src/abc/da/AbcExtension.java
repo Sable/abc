@@ -177,6 +177,7 @@ public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
         if(Debug.v().dynaInstr || Debug.v().shadowCount) {
         	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
         	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);
+        	Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.labelshadows.AbstractLabelShadowSwitch", SootClass.SIGNATURES);
         }
 	}
 	
