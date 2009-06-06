@@ -221,6 +221,16 @@ public class Debug {
     												// the maps from the commons collections for TM indexing
     public boolean generateLeakWarnings = true;
 
+    // Set this to true to enable debug traces -- print "D" for every time a disjunct
+    // is constructed, "d" for every time it's finalized and "*" every time one is
+    // discarded for being invalid; also, "C" when a constraint is created and "c"
+    // when one is destroyed (those are the default traces).
+    // If you pipe the output into a file (by appending '> output_file' to the command
+    // line), you can then count the frequency of the respective events with the
+    // following command: cat output_file | tr "D" "\n" | wc -l
+    // (replacing "D" by "d" or "C" or "c" or "*" as appropriate).
+    public boolean tracematchLogging = false;
+
     // make every weakref used for tracematches have the same hashcode
     public boolean clashHashCodes = false;
 

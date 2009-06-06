@@ -39,7 +39,6 @@ import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.tagkit.SourceFileTag;
 import soot.util.Chain;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.Tagger;
@@ -153,7 +152,7 @@ public class GenStaticJoinPoints {
 	fornameParams.add(RefType.v("java.lang.String"));
         SootMethodRef forname 
 	    = Scene.v().makeMethodRef(jls,"forName",fornameParams,RefType.v("java.lang.Class"),true);
-        Value val = Jimple.v().newStaticInvokeExpr(forname,arg);
+        Value val = Jimple.v().newStaticInvokeExpr(forname,new Value[] { arg });
         Stmt getjavaclass = Jimple.v().newAssignStmt(javaclass,val);
         Tagger.tagStmt(getjavaclass, InstructionKindTag.THISJOINPOINT);
         debug("Generating getjavaclass " + getjavaclass);

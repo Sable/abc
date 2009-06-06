@@ -65,15 +65,6 @@ import abc.tm.weaving.matching.TMStateMachine;
 
 public class ClassGenHelper {
     ///////// flags
-    // Set this to true to enable debug traces -- print "D" for every time a disjunct
-    // is constructed, "d" for every time it's finalized and "*" every time one is
-    // discarded for being invalid; also, "C" when a constraint is created and "c"
-    // when one is destroyed (those are the default traces).
-    // If you pipe the output into a file (by appending '> output_file' to the command
-    // line), you can then count the frequency of the respective events with the
-    // following command: cat output_file | tr "D" "\n" | wc -l
-    // (replacing "D" by "d" or "C" or "c" or "*" as appropriate).
-    private boolean enableDebugTraces = false;
     
     private int debugCount = 0;
     /**
@@ -1110,7 +1101,7 @@ public class ClassGenHelper {
      * Inserts code to print s to stdout at the end of the current method body.
      */
     protected void doPrintString(String s) {
-        if(enableDebugTraces) {
+        if(Debug.v().tracematchLogging) {
             List singleString = new LinkedList();
             singleString.add(RefType.v("java.lang.String"));
             Local out = getStaticFieldLocal(Scene.v().getSootClass("java.lang.System"), "out", 

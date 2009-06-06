@@ -14,7 +14,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/abcJars"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/soot"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libs"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
