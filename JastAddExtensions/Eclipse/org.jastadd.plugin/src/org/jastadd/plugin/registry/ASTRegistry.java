@@ -71,20 +71,34 @@ public class ASTRegistry {
 	public IASTNode lookupAST(String key, IProject project) {
 		IASTNode node = null;
 		if (astMap.containsKey(project)) {
-			ASTEntry entry = astMap.get(project);
-			if (key == null) {
-				node = entry.ast;
-			} else {
-				synchronized (entry.lock()) {
-					node = entry.getChildAST(key);
-				}
-			}
+			node = getAST(key, project);
 		} else {
 			try {
 				project.build(IncrementalProjectBuilder.FULL_BUILD , org.jastadd.plugin.Builder.BUILDER_ID, null, null);
+				if (astMap.containsKey(project))
+					node = getAST(key, project);
 				//return lookupAST(key, project);
 			} catch (CoreException e) {
 				e.printStackTrace();
+			}
+		}
+		return node;
+	}
+	
+	/** 
+	 * Looks up an AST matching a key and project
+	 * @param key The key to match
+	 * @param project The project to match
+	 * @return The AST found, if no match null
+	 */
+	private IASTNode getAST(String key, IProject project) {
+		IASTNode node;
+		ASTEntry entry = astMap.get(project);
+		if (key == null) {
+			node = entry.ast;
+		} else {
+			synchronized (entry.lock()) {
+				node = entry.getChildAST(key);
 			}
 		}
 		return node;
