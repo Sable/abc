@@ -17,9 +17,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.viewsupport.ImageImageDescriptor;
-import org.eclipse.jdt.ui.JavaElementImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -430,22 +427,7 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 			return decorateImage(image, severity);
 		}
 
-		protected Image decorateImage(Image image, int severity) {
-			int adornmentFlags;
-			if (severity == IMarker.SEVERITY_ERROR)
-				adornmentFlags = JavaElementImageDescriptor.ERROR;
-			else if (severity == IMarker.SEVERITY_WARNING)
-				adornmentFlags = JavaElementImageDescriptor.WARNING;
-			else
-				return image;
-
-			ImageDescriptor imageDescriptor = new ImageImageDescriptor(image);
-			Rectangle bounds = image.getBounds();
-			return JavaPlugin.getImageDescriptorRegistry().get(
-					new JavaElementImageDescriptor(imageDescriptor,
-							adornmentFlags, new Point(bounds.width,
-									bounds.height)));
-		}
+		
 	}
 
 	protected void handleOpen(OpenEvent event) {
