@@ -58,7 +58,7 @@ public class ASTRegistry {
 	// when there are more than one compiler active for a project. Both compilers
 	// will update the register with a root ast project pair. One way is to solve this
 	// is to create a key object containing an IProject and a nature key indicating
-	// which nature this IRootAST object refers to. This would make a connection between
+	// which nature this IRootAST object refers to. This would create a connection between
 	// compilers and natures. This might be a reasonable limitation.
 	private HashMap<IProject,ASTEntry> astMap = new HashMap<IProject,ASTEntry>();
 
