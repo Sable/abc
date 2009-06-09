@@ -1,5 +1,4 @@
 import org.jastadd.plugin.compiler.ast.IOutlineNode;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.swt.graphics.Image;
 import java.util.ArrayList;
 
