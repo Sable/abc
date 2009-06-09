@@ -6,11 +6,13 @@ import java.util.Map;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,6 +20,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.actions.OpenFileAction;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
@@ -32,6 +36,10 @@ import org.jastadd.plugin.registry.IASTRegistryListener;
 import org.jastadd.plugin.ui.view.AbstractBaseExplorer;
 import org.jastadd.plugin.ui.view.JastAddContentProvider;
 import org.jastadd.plugin.ui.view.JastAddLabelProvider;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.viewsupport.ImageImageDescriptor;
+import org.eclipse.jdt.ui.JavaElementImageDescriptor;
+
 
 @SuppressWarnings("restriction")
 public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTarget {
@@ -178,6 +186,22 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 	}
 
 	private class MyProblemLabelDecorator extends BaseProblemLabelDecorator {
+		protected Image decorateImage(Image image, int severity) {
+			int adornmentFlags;
+			if (severity == IMarker.SEVERITY_ERROR)
+				adornmentFlags = JavaElementImageDescriptor.ERROR;
+			else if (severity == IMarker.SEVERITY_WARNING)
+				adornmentFlags = JavaElementImageDescriptor.WARNING;
+			else
+				return image;
+
+			ImageDescriptor imageDescriptor = new ImageImageDescriptor(image);
+			Rectangle bounds = image.getBounds();
+			return JavaPlugin.getImageDescriptorRegistry().get(
+					new JavaElementImageDescriptor(imageDescriptor,
+							adornmentFlags, new Point(bounds.width,
+									bounds.height)));
+		}
 	}
 
 	private String[] extension = new String[] { "*.class" };
