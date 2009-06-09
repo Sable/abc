@@ -24,8 +24,16 @@ public abstract class AbstractBaseContentOutlinePage extends ContentOutlinePage 
 	public AbstractBaseContentOutlinePage(AbstractTextEditor editor) {
 		super();
 	    fTextEditor = editor;
-		fContentProvider = new JastAddContentProvider();
-		fLabelProvider = new JastAddLabelProvider();
+	    fContentProvider = getContentProvider();
+	    fLabelProvider = getLabelProvider();
+	}
+
+	protected ITreeContentProvider getContentProvider() {
+		return new JastAddContentProvider();
+	}
+
+	protected IBaseLabelProvider getLabelProvider() {
+		return new JastAddLabelProvider();
 	}
 	
 	/*
