@@ -61,7 +61,6 @@ public abstract class AbstractCompiler implements ICompiler {
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.ICompiler#compile(org.eclipse.core.resources.IProject, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
 	public void compile(IProject project, IProgressMonitor monitor) {
 		IASTNode root = compileToProjectAST(project, monitor);
 		ASTRegistry reg = Activator.getASTRegistry();
@@ -74,7 +73,6 @@ public abstract class AbstractCompiler implements ICompiler {
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.ICompiler#compile(org.eclipse.core.resources.IProject, java.util.Collection, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
 	public void compile(IProject project, Collection<IFile> changedFiles, IProgressMonitor monitor) {
 		ASTRegistry reg = Activator.getASTRegistry();
 		for (IFile file : changedFiles) {
@@ -89,7 +87,6 @@ public abstract class AbstractCompiler implements ICompiler {
 	 * (non-Javadoc)
 	 * @see org.jastadd.plugin.compiler.ICompiler#compile(org.eclipse.jface.text.IDocument, org.eclipse.jface.text.reconciler.DirtyRegion, org.eclipse.jface.text.IRegion, org.eclipse.core.resources.IFile)
 	 */
-	@Override
 	public void compile(IDocument document, DirtyRegion dirtyRegion, IRegion region, IFile file) {
 		IASTNode node = compileToAST(document, dirtyRegion, region, file);
 		ASTRegistry reg = Activator.getASTRegistry();

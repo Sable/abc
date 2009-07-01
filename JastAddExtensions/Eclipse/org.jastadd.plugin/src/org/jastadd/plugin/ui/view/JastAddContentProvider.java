@@ -31,7 +31,6 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
-	@Override
 	public Object[] getChildren(Object element) {
 		if(element instanceof IOutlineNode) {
 			IOutlineNode node = (IOutlineNode)element;
@@ -61,7 +60,6 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 	 */
-	@Override
 	public Object getParent(Object element) {
 		if(element instanceof IJastAddNode) {
 				IJastAddNode node = (IJastAddNode)element;
@@ -82,7 +80,6 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 	 */
-	@Override
 	public boolean hasChildren(Object element) {
 		if(element instanceof IOutlineNode) {
 			synchronized (((IASTNode)element).treeLockObject()) {
@@ -108,7 +105,6 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 	 */
-	@Override
 	public Object[] getElements(Object element) {
 
 		/*

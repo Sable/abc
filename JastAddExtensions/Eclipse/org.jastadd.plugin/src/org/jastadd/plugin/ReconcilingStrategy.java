@@ -34,7 +34,6 @@ public class ReconcilingStrategy implements IReconcilingStrategy, IReconcilingSt
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.text.reconciler.IReconcilingStrategy#reconcile(org.eclipse.jface.text.IRegion)
 	 */
-	@Override
 	public void reconcile(IRegion region) {		
 		if (file != null) {
 			for (ICompiler compiler : Activator.getRegisteredCompilers()) {
@@ -50,7 +49,6 @@ public class ReconcilingStrategy implements IReconcilingStrategy, IReconcilingSt
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.text.reconciler.IReconcilingStrategy#reconcile(org.eclipse.jface.text.reconciler.DirtyRegion, org.eclipse.jface.text.IRegion)
 	 */
-	@Override
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
 		if (file != null) {
 			for (ICompiler compiler : Activator.getRegisteredCompilers()) {
@@ -65,7 +63,6 @@ public class ReconcilingStrategy implements IReconcilingStrategy, IReconcilingSt
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.text.reconciler.IReconcilingStrategy#setDocument(org.eclipse.jface.text.IDocument)
 	 */
-	@Override
 	public void setDocument(IDocument document) {
 		this.document = document;
 	}
@@ -75,7 +72,6 @@ public class ReconcilingStrategy implements IReconcilingStrategy, IReconcilingSt
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension#initialReconcile()
 	 */
-	@Override
 	public void initialReconcile() {
 		if (file != null) {
 			for (ICompiler compiler : Activator.getRegisteredCompilers()) {
@@ -90,7 +86,6 @@ public class ReconcilingStrategy implements IReconcilingStrategy, IReconcilingSt
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension#setProgressMonitor(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
 	public void setProgressMonitor(IProgressMonitor monitor) {	
 	}
 }
