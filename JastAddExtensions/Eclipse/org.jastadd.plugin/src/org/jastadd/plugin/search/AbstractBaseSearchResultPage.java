@@ -20,7 +20,7 @@ public abstract class AbstractBaseSearchResultPage extends AbstractTextSearchVie
 	
 	
 	private JastAddSearchContentProvider fContentProvider;
-	private JastAddSearchResult fInput;
+	//private JastAddSearchResult fInput;
 
 	private TreeViewer fViewer;
 	
@@ -139,8 +139,8 @@ public abstract class AbstractBaseSearchResultPage extends AbstractTextSearchVie
 		viewer.setContentProvider(new JastAddSearchContentProvider());
 		viewer.setLabelProvider(new JastAddSearchLabelProvider());
 		viewer.addDoubleClickListener(new JastAddDoubleClickListener());
-		if (fInput != null)
-			viewer.setInput(fInput);
+//		if (fInput != null)
+//			viewer.setInput(fInput);
 	}
 
 	@Override
