@@ -61,7 +61,7 @@ aspect EmitJimple {
       getChild(i).jimplify1phase1();
   }
   
-  syn SootClass TypeDecl.sootClass() = null;
+  syn lazy SootClass TypeDecl.sootClass() = null;
   eq ClassDecl.sootClass() {
     if(options().verbose())
       System.out.println("Creating from source " + jvmName());
