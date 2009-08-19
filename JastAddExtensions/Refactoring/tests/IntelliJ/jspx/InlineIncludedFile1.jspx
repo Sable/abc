@@ -1,5 +1,0 @@
-<jsp:root
-    xmlns:jsp="http://java.sun.com/JSP/Page"
-    version="2.0">
-    <jsp:directive.include <caret>file="/P/included1.jspx"/>
-</jsp:root>

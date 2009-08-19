@@ -1,9 +1,0 @@
-aspect FlushCaches {
- 	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
-	public void ASTNode.flushCaches() {
-		flushCache();
-		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).flushCaches();
-	}
-
-}

@@ -1,4 +1,0 @@
-<root>
-    <!--@elvariable id="newrequest" type="aaa.SeamELVarsHighlighting2Bean2"-->
-${new<caret>request}
-</root>

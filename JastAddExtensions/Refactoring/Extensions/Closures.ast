@@ -1,2 +1,0 @@
-ClosureInvocation : Expr ::= Parameter:ParameterDeclaration* ReturnType:Access Exception:Access* Block Arg:Expr*;
-

@@ -1,3 +1,0 @@
-com.foo
-com.foo.AAA
-com.fooa

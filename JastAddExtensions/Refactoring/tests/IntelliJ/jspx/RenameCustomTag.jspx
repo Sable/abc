@@ -1,5 +1,0 @@
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:zzz="http://xxx.org/super-puper">
-  <zzz:__ShowSou<caret>rce />
-  <zzz:__ShowSource />
-  <__ShowSource />
-</jsp:root>

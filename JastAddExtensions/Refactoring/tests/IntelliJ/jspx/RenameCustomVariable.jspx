@@ -1,4 +1,0 @@
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:zzz="/super-puper3.tld">
-  <zzz:__ShowSource __jspFile="aaa"/>
-  ${ myName }
-</jsp:root>

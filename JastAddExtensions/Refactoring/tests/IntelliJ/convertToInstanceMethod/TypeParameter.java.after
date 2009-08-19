@@ -1,8 +1,0 @@
-class C<T> {
-    T get() { return null; }
-
-    void method(T value, X<T> x) {
-        T v = get();
-        System.out.println(v + " " + value);
-    }
-}

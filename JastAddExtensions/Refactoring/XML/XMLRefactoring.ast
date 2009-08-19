@@ -1,1 +1,0 @@
-ClassAttribute : XMLAttribute ::= Type:Access;

@@ -1,3 +1,0 @@
-com.fooNew
-com.fooNew.AAA
-com.fooa

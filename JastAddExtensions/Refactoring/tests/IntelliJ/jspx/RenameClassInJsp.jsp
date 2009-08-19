@@ -1,1 +1,0 @@
-<jsp:useBean id="aaa" type="java.util.Map<My<caret>Clazz,java.lang.String>"/>

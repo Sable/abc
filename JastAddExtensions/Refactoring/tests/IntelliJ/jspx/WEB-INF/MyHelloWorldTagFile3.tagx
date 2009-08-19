@@ -1,5 +1,0 @@
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0" xmlns:f="http://java.sun.com/jsf/core">
-  <f:loadBundle var="aaa"/>
-  #{a<caret>aa}
-  <c:forEach items="#{aaa}" var="myvar2"/>
-</jsp:root>
