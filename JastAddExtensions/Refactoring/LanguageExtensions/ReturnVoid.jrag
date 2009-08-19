@@ -1,0 +1,20 @@
+aspect ReturnVoid {
+	public static LanguageExtension ASTNode.RETURN_VOID = new LanguageExtension("return void");
+	
+	syn boolean ReturnStmt.returnsVoid() = hasResult() && getResult().type().isVoid();
+	
+	rewrite ReturnStmt {
+		when(returnsVoid() && !hasExtension(RETURN_VOID))
+		to Stmt {
+			Expr res = getResult();
+			if(following().equals(returnTarget())) {
+				return new ExprStmt(res);
+			} else {
+				EmptyStmt e = insertEmptyStmtBefore();
+				e.replaceWith(new ExprStmt(res));
+				setResultOpt(new Opt());
+				return this;
+			}
+		}
+	}
+}

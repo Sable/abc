@@ -1,0 +1,178 @@
+import java.util.*;
+
+/*
+ * The inherited attribute accessMethod(m) computes a MethodAccessInfo which
+ * describes how to access method m from the current location in the AST. This
+ * MethodAccessInfo can in turn be used to construct an actual access.
+ * 
+ * The implementation of accessMethod tries to stay close to lookupMethod with
+ * basically the same clauses and the same control flow, but with additional calls to
+ * methods "moveInto" and "moveDownTo", which transport a symbolic access from a
+ * parent type to a child type resp. an enclosing type to a nested type, adding
+ * information about required qualifications in the process. For the implementation
+ * of these methods see MethodAccessInfo.jrag
+ */
+
+aspect AccessMethod {
+	
+	class MethodAccessInfo {
+		private MethodDecl target;
+		private TypeDecl source;
+		private TypeDecl bend;
+		private Collection<MethodDecl> competitors;
+		private boolean directlyVisible;
+		
+		public MethodAccessInfo(MethodDecl target, TypeDecl td, 
+								Collection<MethodDecl> competitors) {
+			this.target = target;
+			this.source = td;
+			this.bend = td;
+			this.competitors = competitors;
+			this.directlyVisible = true;
+		}
+	}
+	
+	public boolean MethodDecl.applicableTo(List<Expr> args) {
+		if(getNumParameter() != args.getNumChild())
+			return false;
+		for(int i=0;i<getNumParameter();++i)
+			if(!args.getChild(i).type().instanceOf(getParameter(i).type()))
+				return false;
+		return true;
+	}
+
+	public MethodAccessInfo MethodAccessInfo.moveDownTo(TypeDecl td) {
+		bend = td;
+		if(!td.localMethods(target.name()).isEmpty())
+			directlyVisible = false;
+		else if(directlyVisible)
+			source = td;
+		return this;
+	}
+		
+	public MethodAccessInfo MethodAccessInfo.moveInto(TypeDecl td) {
+		if(!td.memberMethods(target.name()).isEmpty())
+			directlyVisible = false;
+		return this;
+	}
+		
+	public SimpleSet TypeDecl.localMethods(String name) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator i=localMethodsIterator();i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			if(md.name().equals(name))
+				res = res.add(md);
+		}
+		return res;
+	}
+	
+	// cf. attribute lookupMethod(String) in LookupMethod.jrag
+	inh MethodAccessInfo Expr.accessMethod(MethodDecl md);
+	inh MethodAccessInfo TypeDecl.accessMethod(MethodDecl md);
+	inh MethodAccessInfo BodyDecl.accessMethod(MethodDecl md);
+
+	eq MethodAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ConstructorAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ArrayAccess.getExpr().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ArrayTypeWithSizeAccess.getExpr().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+
+	eq Program.getChild().accessMethod(MethodDecl md) = null;
+	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md) = unqualifiedAccessMethod(md);
+
+	// cf. attribute unqualifiedLookupMethod in LookupMethod.jrag
+	syn MethodAccessInfo TypeDecl.unqualifiedAccessMethod(MethodDecl md) {
+		MethodAccessInfo acc = accessMemberMethod(md);
+		if(acc != null) return acc;
+		if(isInnerType() || md.isStatic()) {
+			acc = accessMethod(md);
+			if(acc != null)
+				return acc.moveInto(this);
+		}
+		return null;
+	}
+
+	// in explicit constructor invocation
+	eq ConstructorDecl.getConstructorInvocation().accessMethod(MethodDecl md) {
+		MethodAccessInfo acc = hostType().accessMemberMethod(md);
+		if(acc != null && md.isStatic()) return acc;
+		if(hostType().isNestedType()) {
+			acc = hostType().accessMethod(md);
+			if(acc != null)
+				return acc.moveInto(hostType());
+		}
+		return null;
+	}
+	
+	eq AbstractDot.getRight().accessMethod(MethodDecl md) = 
+		getLeft().type().accessMemberMethod(md);
+
+	// cf. attribute memberMethods(String)
+	syn MethodAccessInfo TypeDecl.accessMemberMethod(MethodDecl md) =
+		accessLocalMethod(md);
+	
+	eq ClassDecl.accessMemberMethod(MethodDecl md) {
+		MethodAccessInfo acc = accessLocalMethod(md);
+		if(acc != null) return acc;
+		if(hasSuperclass()) {
+			acc = superclass().accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		return null;
+	}
+	
+	eq InterfaceDecl.accessMemberMethod(MethodDecl md) {
+		MethodAccessInfo acc = accessLocalMethod(md);
+		if(acc != null) return acc;
+		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		acc = typeObject().accessMemberMethod(md);
+		if(acc != null && md.isPublic())
+			return acc.moveDownTo(this);
+		return null;
+	}
+	
+	// somewhat similar to attribute localMethodsSignature(String)
+	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
+		for(Iterator<MethodDecl> iter=localMethodsIterator();iter.hasNext();) {
+			MethodDecl md2 = iter.next();
+			if(md2.sameSourceDeclAs(md)) {
+				Collection competitors = memberMethods(md.name());
+				competitors.remove(md);
+				return new MethodAccessInfo(md, this, competitors);
+			}
+		}
+		return null;
+	}
+	
+	// Java 1.5 extensions
+	eq CompilationUnit.getTypeDecl().accessMethod(MethodDecl md) {
+		String name = md.name();
+		for(ImportDecl i : getImportDecls())
+			if(!i.isOnDemand())
+				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
+					MethodDecl md2 = (MethodDecl)iter.next();
+					if(md == md2)
+						return new MethodAccessInfo(md, md.hostType(), new HashSet());
+				}
+		for(ImportDecl i : getImportDecls())
+			if(i.isOnDemand())
+				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
+					MethodDecl md2 = (MethodDecl)iter.next();
+					if(md == md2)
+						return new MethodAccessInfo(md, md.hostType(), new HashSet());
+				}
+		return accessMethod(md);
+	}
+	inh MethodAccessInfo CompilationUnit.accessMethod(MethodDecl md);
+}

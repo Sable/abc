@@ -1,0 +1,14 @@
+aspect Declaration {
+	interface Declaration { 
+		String name();
+	}
+	
+	PackageDecl implements Declaration;
+	TypeDecl implements Declaration;
+	Variable extends Declaration;
+	MethodDecl implements Declaration;
+	
+	public String PackageDecl.name() {
+		return getName();
+	}
+}

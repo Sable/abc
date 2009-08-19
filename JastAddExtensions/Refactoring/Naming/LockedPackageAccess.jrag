@@ -1,0 +1,25 @@
+aspect LockedPackageAccess {
+	private PackageDecl PackageAccess.targetPackage = null;
+	
+	public void PackageAccess.lockNames(Collection<String> endangered) {
+		if(targetPackage == null && endangered.contains(getTopLevelPackage()))
+			lock();
+		super.lockNames(endangered);
+	}
+	
+	public void PackageAccess.lock() {
+		targetPackage = decl();		
+	}
+	
+	rewrite PackageAccess {
+		when(targetPackage != null && !hasExtension(LOCKED_NAMES))
+		to PackageAccess {
+			if(fromSource())
+				setPackage(targetPackage.getName());
+			if(!lookupName(getTopLevelPackage()).isSingleton(targetPackage))
+				throw new RefactoringException("cannot access obscured package");
+			targetPackage = null;
+			return this;
+		}
+	}
+}

@@ -1,0 +1,16 @@
+aspect LocalVariable {
+	// for the purposes of refactoring, local variables include parameters
+	interface LocalVariable extends Variable {
+		public BodyDecl enclosingBodyDecl();
+	}
+	
+	VariableDeclaration implements LocalVariable;
+	ParameterDeclaration implements LocalVariable;
+	
+	inh BodyDecl VariableDeclaration.hostBodyDecl();
+	inh BodyDecl ParameterDeclaration.hostBodyDecl();
+	
+	eq Program.getChild().hostBodyDecl() = null;
+	eq TypeDecl.getChild().hostBodyDecl() = null;
+	eq BodyDecl.getChild().hostBodyDecl() = this;
+}

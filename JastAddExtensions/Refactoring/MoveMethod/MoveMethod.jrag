@@ -1,0 +1,87 @@
+aspect MoveMethod {
+	public void MethodDecl.move() {
+		checkMovingPreconditions();
+		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID);
+		ClassDecl targetClass = (ClassDecl)getParameter(0).type();
+		MethodDecl movedMethod = createMovedMethod();
+		Stmt delegation = createDelegationCall(movedMethod);
+		this.setBlock(new Block(new List<Stmt>().add(delegation)));
+		targetClass.lockAllNames();
+		targetClass.addBodyDecl(movedMethod);
+		eliminate(RETURN_VOID);
+		eliminate(WITH_STMT);
+		eliminate(LOCKED_NAMES);
+	}
+	
+	private void MethodDecl.checkMovingPreconditions() {
+		if(getNumParameter() < 1)
+			throw new RefactoringException("no parameter to move into");
+		if(!getParameter(0).type().isClassDecl())
+			throw new RefactoringException("can only move into class");
+		if(!hostType().fromSource() || !getParameter(0).type().fromSource())
+			throw new RefactoringException("cannot move inside bytecode");
+		if(isStatic())
+			throw new RefactoringException("cannot move static method (yet)");
+		if(!hasBlock())
+			throw new RefactoringException("cannot move body-less method");
+		if(!getParameter(0).type().canIntroduceMethod(this))
+			throw new RefactoringException("cannot introduce method");
+	}
+	
+	private MethodDecl MethodDecl.createMovedMethod() {
+		Variable target = getParameter(0);
+		ClassDecl targetClass = (ClassDecl)target.type();
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Access rettype = new TypeAccess(type());
+		String name = name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		List<Access> qualifiers = new List<Access>();
+		addParms(parms, qualifiers);
+		for(int i=1;i<getNumParameter();++i) {
+			ParameterDeclaration oldparm = getParameter(i);
+			parms.add(new ParameterDeclaration(new TypeAccess(oldparm.type()), oldparm.name()));
+		}
+		List<Access> exns = new List<Access>();
+		for(Access exn : getExceptions())
+			exns.add(new TypeAccess(exn.type()));
+		List<Stmt> stmts = new List<Stmt>();
+		VariableDeclaration recv = new VariableDeclaration(new TypeAccess(targetClass), target.name(), new ThisAccess("this")); 
+		stmts.add(recv);
+		for(VarAccess va : getParameter(0).allUses())
+			va.lock(recv);
+		getBlock().lockAllNames();
+		WithStmt with = new WithStmt(qualifiers, getBlock());
+		stmts.add(with);		
+		return new MethodDecl(mods, rettype, name, parms, exns, new Opt(new Block(stmts)));		
+	}
+	
+	// add one parameter for every enclosing instance to the parameter list and a binding
+	// to it to the list of qualifiers
+	private void MethodDecl.addParms(List<ParameterDeclaration> parms, List<Access> quals) {
+		for(TypeDecl enc=hostType();enc!=null;enc=enc.enclosingType()) {
+			String parmname = enc.name().toLowerCase();
+			ParameterDeclaration parm = new FreshParameter(new TypeAccess(enc), parmname);
+			parms.insertChild(parm, 0);
+			quals.insertChild(new LockedVarAccess(parm), 0);
+		}
+	}
+	
+	private void MethodDecl.addArgs(List<Expr> args) {
+		for(TypeDecl enc=hostType();enc!=null;enc=enc.enclosingType()) {
+			if(enc == hostType())
+				args.insertChild(new ThisAccess("this"), 0);
+			else
+				args.insertChild(new TypeAccess(enc).qualifiesAccess(new ThisAccess("this")), 0);
+		}
+	}
+	
+	private Stmt MethodDecl.createDelegationCall(MethodDecl movedMethod) {
+		Variable target = getParameter(0);
+		List<Expr> args = new List<Expr>();
+		addArgs(args);
+		for(int i=1;i<getNumParameter();++i)
+			args.add(new VarAccess(getParameter(i).name()));
+		Expr call = new VarAccess(target.name()).qualifiesAccess(new MethodAccess(name(), args));
+		return new ReturnStmt(call);
+	}
+}

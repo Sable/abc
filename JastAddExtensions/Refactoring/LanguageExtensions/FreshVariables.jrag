@@ -1,0 +1,119 @@
+/* the names of fresh variables are guaranteed not to clash
+ * with the names of other variables */
+aspect FreshVariables {
+	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables");
+	
+	interface FreshVariable extends LocalVariable { }
+	FreshParameter implements FreshVariable;
+	FreshLocalVariable implements FreshVariable;
+	
+	public FreshParameter.FreshParameter(Access type, String name) {
+		this(new Modifiers(new List()), type, name);
+	}
+	
+	public FreshLocalVariable.FreshLocalVariable(Access type, String name) {
+		this(new Modifiers(new List()), type, name, new Opt<Expr>());
+	}
+	
+	public boolean FreshVariable.canIntroduceLocal(String name) {
+		return true;
+	}
+	
+	public void FreshVariable.toString(StringBuffer s) {
+		s.append("#fresh#" + name());
+	}
+	
+	// fresh variables cannot be looked up, they can only be referred to with locked names
+	eq FreshParameter.declaresVariable(String name) = false;
+	eq FreshLocalVariable.declaresVariable(String name) = false;
+	
+	// eliminating fresh variables
+	rewrite FreshParameter {
+		when(!hasExtension(FRESH_VARIABLES))
+		to ParameterDeclaration {
+			String new_name = pickFreshName();
+			ParameterDeclaration pd = new ParameterDeclaration(getTypeAccess(), new_name);
+			for(VarAccess va : uses())
+				((LockedVarAccess)va).setTarget(pd);
+			return pd;
+		}
+	}
+	
+	rewrite FreshLocalVariable {
+		when(!hasExtension(FRESH_VARIABLES))
+		to VariableDeclaration {
+			String new_name = pickFreshName();
+			VariableDeclaration vd = new VariableDeclaration(getTypeAccess(), new_name);
+			for(VarAccess va : uses())
+				((LockedVarAccess)va).setTarget(vd);
+			return vd;
+		}
+	}
+	
+	public String FreshVariable.pickFreshName() {
+		String fresh_name = name();
+		Collection<Declaration> decls = hostBodyDecl().allDecls();
+		if(conflicts(fresh_name, decls)) {
+			for(int i=0;;++i) {
+				fresh_name = name()+i;
+				if(!conflicts(fresh_name, decls))
+					break;
+			}
+		}
+		return fresh_name;
+	}
+	
+	// check whether the name conflicts with any of the decls
+	public boolean FreshVariable.conflicts(String name, Collection<Declaration> decls) {
+		for(Declaration decl : decls)
+			if(decl != this && decl.name().equals(name))
+				return true;
+		return false;
+	}
+	
+	// collect all declarations made or referenced in a subtree
+	public Collection<Declaration> ASTNode.allDecls() {
+		HashSet<Declaration> res = new HashSet<Declaration>();
+		collectAllDecls(res);
+		return res;
+	}
+	
+	public void ASTNode.collectAllDecls(Collection<Declaration> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllDecls(res);
+	}
+	
+	public void Declaration.collectAllDecls(Collection<Declaration> res) {
+		res.add(this);
+		super.collectAllDecls(res);
+	}
+	
+	// this shouldn't really be necessary, but JastAdd doesn't propagate through
+	// more than one interface
+	public void Variable.collectAllDecls(Collection<Declaration> res) {
+		res.add(this);
+		super.collectAllDecls(res);
+	}
+	
+	public void PackageAccess.collectAllDecls(Collection<Declaration> res) {
+		res.add(lookupPackage(getTopLevelPackage()));
+		super.collectAllDecls(res);
+	}
+	
+	public void TypeAccess.collectAllDecls(Collection<Declaration> res) {
+		if(!getPackage().equals(""))
+			res.add(lookupPackage(getTopLevelPackage()));
+		res.add(decl());
+		super.collectAllDecls(res);
+	}
+	
+	public void VarAccess.collectAllDecls(Collection<Declaration> res) {
+		res.add(decl());
+		super.collectAllDecls(res);
+	}
+	
+	public void MethodAccess.collectAllDecls(Collection<Declaration> res) {
+		res.add(decl());
+		super.collectAllDecls(res);
+	}
+}

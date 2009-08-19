@@ -1,0 +1,26 @@
+aspect Lookup {
+	// simulates the effect of plugging in name as a ParseName, disambiguating and then taking decl()
+	public SimpleSet Expr.lookupName(String name) {
+		NameType nt = this.nameType();
+		if(nt == NameType.PACKAGE_NAME) {
+			return lookupPackage(name);
+		} else if(nt == NameType.TYPE_NAME) {
+			return lookupType(name);
+		} else if(nt == NameType.PACKAGE_OR_TYPE_NAME) {
+			if(!lookupType(name).isEmpty())
+				return lookupType(name);
+			return lookupPackage(name);
+		} else if(nt == NameType.AMBIGUOUS_NAME) {
+			if(!lookupVariable(name).isEmpty())
+				return lookupVariable(name);
+			if(!lookupType(name).isEmpty())
+				return lookupType(name);
+			return lookupPackage(name);
+		} else if(nt == NameType.METHOD_NAME) {
+			return new SimpleSet.SimpleSetImpl(lookupMethod(name));
+		} else if(nt == NameType.EXPRESSION_NAME) {
+			return lookupVariable(name);
+		}
+		throw new Error("unsupported name type");
+	}
+}

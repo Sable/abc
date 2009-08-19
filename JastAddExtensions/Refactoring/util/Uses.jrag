@@ -1,0 +1,23 @@
+aspect Uses {
+	public Collection<VarAccess> Variable.allUses() { return uses(); }
+	
+	// bind all uses of a variable to its declaration
+	coll Collection<VarAccess> FieldDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                           with add root Program;
+	VarAccess contributes
+	this when decl() instanceof FieldDeclaration
+	to FieldDeclaration.uses() for (FieldDeclaration)decl();
+	
+	coll Collection<VarAccess> VariableDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                           with add root Program;
+	VarAccess contributes
+	this when decl() instanceof VariableDeclaration
+	to VariableDeclaration.uses() for (VariableDeclaration)decl();
+
+	coll Collection<VarAccess> ParameterDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                           with add root Program;
+	VarAccess contributes
+	this when decl() instanceof ParameterDeclaration
+	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
+	
+}

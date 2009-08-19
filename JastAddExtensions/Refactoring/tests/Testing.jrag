@@ -1,0 +1,117 @@
+/*
+ * some extensions to ease testing
+ */
+
+aspect Testing {
+	
+	public Program Frontend.getProgram() {
+		return program;
+	}
+	
+	// sort compilation units alphabetically before printing; this helps when comparing results
+	refine PrettyPrint public void Program.toString(StringBuffer s) {
+		ArrayList<CompilationUnit> cus = new ArrayList<CompilationUnit>();
+		for(Iterator<CompilationUnit> iter = compilationUnitIterator(); iter.hasNext();) {
+			CompilationUnit cu = iter.next();
+			if(cu.fromSource())
+				cus.add(cu);
+		}
+		Collections.sort(cus, new Comparator<CompilationUnit>() {
+			@Override
+			public int compare(CompilationUnit cu1, CompilationUnit cu2) {
+				return cu1.pathName().compareTo(cu2.pathName());
+			} 
+		});  
+		for(CompilationUnit cu : cus)
+			cu.toString(s);
+	}
+	
+	syn String BodyDecl.ppID() = "";
+	eq ConstructorDecl.ppID() = name();
+	eq FieldDeclaration.ppID() = name();
+	eq MemberTypeDecl.ppID() = typeDecl().name();
+	eq MethodDecl.ppID() = name();
+	
+	refine PrettyPrint protected void TypeDecl.ppBodyDecls(StringBuffer s) {
+		ArrayList<BodyDecl> bds = new ArrayList<BodyDecl>();
+		for(int i=0;i<getNumBodyDecl();++i)
+			bds.add(getBodyDecl(i));
+		Collections.sort(bds, new Comparator<BodyDecl>() {
+			@Override
+			public int compare(BodyDecl bd1, BodyDecl bd2) {
+				return bd1.ppID().compareTo(bd2.ppID());
+			}
+		});
+		s.append("  {");
+		for(BodyDecl bd : bds)
+			bd.toString(s);
+		s.append(indent() + "}");
+	}
+	
+	// output names of compilation units; this helps when comparing results
+	refine PrettyPrint public void CompilationUnit.toString(StringBuffer s) {
+		s.append("compilation unit "+getID()+"\n");
+		refined(s);
+	}
+	
+	// find a type given its package and name (both may contains dots)
+	public TypeDecl Program.findType(String pkg, String name) {
+		String path[] = name.split("\\.");
+		TypeDecl tp = lookupType(pkg, path[0]);
+		if(tp == null) return null;
+		for(int i=1;i<path.length;++i) {
+			Iterator<TypeDecl> iter = tp.memberTypes(path[i]).iterator();
+			if(!iter.hasNext()) return null;
+			tp = iter.next();
+		}
+		return tp;
+	}
+	
+	// find a type given its name (may contain dots)
+	public TypeDecl Program.findType(String name) {
+		String path[] = name.split("\\.");
+		TypeDecl tp = findSimpleType(path[0]);
+		if(tp == null) return null;
+		for(int i=1;i<path.length;++i) {
+			Iterator<TypeDecl> iter = tp.memberTypes(path[i]).iterator();
+			if(!iter.hasNext()) return null;
+			tp = iter.next();
+		}
+		return tp;		
+	}
+	
+	public TypeDecl ASTNode.findSimpleType(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				TypeDecl td = child.findSimpleType(name);
+				if(td != null) return td;
+			}
+		}
+		return null;
+	}
+	
+	public TypeDecl TypeDecl.findSimpleType(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findSimpleType(name);
+	}
+	
+	// find a variable given its simple name
+	public Variable ASTNode.findVariable(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				Variable v = child.findVariable(name);
+				if(v != null) return v;
+			}
+		}
+		return null;		
+	}
+	
+	public Variable Variable.findVariable(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findVariable(name);
+	}
+}

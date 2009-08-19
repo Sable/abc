@@ -1,0 +1,184 @@
+aspect With {
+	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement");
+	
+	public void WithStmt.toString(StringBuffer s) {
+		s.append(indent());
+		s.append("with(");
+		for(int i=0;i<getNumQualifier();++i) {
+			if(i!=0)
+				s.append(", ");
+			getQualifier(i).toString(s);
+		}
+		s.append(") ");
+		getStmt().toString(s);
+	}
+	
+	eq WithStmt.getStmt().hostType() = getQualifier(getNumQualifier()-1).type();
+	eq WithStmt.getStmt().thisType() = getQualifier(getNumQualifier()-1).type();
+	
+	eq WithStmt.getStmt().lookupVariable(String name) {
+		for(int i=getNumQualifier()-1;i>=0;--i) {
+			TypeDecl td = getQualifier(i).type();
+			SimpleSet c = td.memberFields(name);
+			if(td.inStaticContext() || td.isStatic())
+				c = removeInstanceVariables(c);
+			if(!c.isEmpty())
+				return c;
+		}
+		return removeFields(lookupVariable(name));
+	}
+	
+	public SimpleSet ASTNode.removeFields(SimpleSet s) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator iter=s.iterator();iter.hasNext();) {
+			Variable v = (Variable)iter.next();
+			if(!v.isInstanceVariable() && !v.isClassVariable())
+				res = res.add(v);
+		}
+		return res;
+	}
+	
+	eq WithStmt.getStmt().lookupMethod(String name) {
+		for(int i=getNumQualifier()-1;i>=0;--i) {
+			TypeDecl td = getQualifier(i).type();
+			Collection c = td.memberMethods(name);
+			if(!c.isEmpty())
+				return c;
+		}
+		return Collections.EMPTY_LIST;
+	}
+	
+	/*eq WithStmt.getStmt().accessVariable(Variable decl) {
+		for(int i=getNumQualifier()-1;i>=0;--i) {
+			TypeDecl td = getQualifier(i).type();
+			VariableAccessInfo acc = td.accessMemberField(decl);
+			if(acc != null)
+				return movePastQualifiers(acc, i+1);
+		}
+		if(decl.isInstanceVariable() || decl.isClassVariable())
+			return null;
+		return movePastQualifiers(accessVariable(decl), 0);
+	}
+	
+	private VariableAccessInfo WithStmt.movePastQualifiers(VariableAccessInfo acc, int i) {
+		if(acc == null)
+			return null;
+		Variable decl = acc.getTarget();
+		for(int j=i;j<getNumQualifier();++j) {
+			TypeDecl td = getQualifier(j).type();
+			if((td.inStaticContext() || td.isStatic()) && decl.isInstanceVariable())
+				return null;
+			acc.becomeInvisible(td.memberFields(decl.name()).isEmpty());
+		}
+		return acc;
+	}*/
+	
+	// eliminating with statements
+	rewrite WithStmt {
+		when(!hasExtension(WITH_STMT))
+		to Stmt {
+			//getStmt().triggerRewrites();
+			getStmt().eliminateWith(getQualifiers());
+			return getStmt();
+		}
+	}
+	
+	public void ASTNode.eliminateWith(List<Access> qualifiers) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).eliminateWith(qualifiers);
+	}
+	
+	public void TypeDecl.eliminateWith(List<Access> qualifiers) {
+		qualifiers.add(new TypeAccess(this).qualifiesAccess(new ThisAccess("this")));
+		super.eliminateWith(qualifiers);
+		qualifiers.removeChild(qualifiers.getNumChild()-1);
+	}
+	
+	public void Expr.eliminateWith(List<Access> qualifiers) {
+		if(isThisAccess()) {
+			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
+				Access qual = qualifiers.getChild(i);
+				if(this.type().equals(qual.type())) {
+					if(!qual.isThisAccess())
+						replaceWith(qual.fullCopy());
+					return;
+				}
+			}
+			throw new RefactoringException("cannot eliminate this");
+		} else if(isSuperAccess()) {
+			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
+				Access qual = qualifiers.getChild(i);
+				if(!qual.type().isClassDecl() || !((ClassDecl)qual.type()).hasSuperclass())
+					continue;
+				ClassDecl cd = (ClassDecl)qual.type();
+				if(this.type().equals(cd.superclass())) {
+					if(!qual.isThisAccess())
+						replaceWith(new ParExpr(new CastExpr(new TypeAccess(cd.superclass()),
+								                             (Expr)qual.fullCopy())));
+					return;
+				}
+			}
+			throw new RefactoringException("cannot eliminate super");
+		} else {
+			super.eliminateWith(qualifiers);
+		}
+	}
+	
+	public void AbstractDot.eliminateWith(List<Access> qualifiers) {
+		rotateLeft();
+		if(isThisAccess() || isSuperAccess()) {
+			super.eliminateWith(qualifiers);
+		} else {
+			getRight().eliminateWith(qualifiers);
+			getLeft().eliminateWith(qualifiers);
+		}
+	}
+	
+	public void MethodAccess.eliminateWith(List<Access> qualifiers) {
+		if(isQualified()) {
+			if(qualifier().isSuperAccess())
+				throw new RefactoringException("cannot eliminate with");
+			super.eliminateWith(qualifiers);
+		} else {
+			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
+				Access qual = qualifiers.getChild(i);
+				if(!qual.type().memberMethods(name()).isEmpty()) {
+					qualifyWith((Expr)qual.fullCopy());
+					super.eliminateWith(qualifiers);
+					return;
+				}
+			}
+			throw new RefactoringException("cannot eliminate with");
+		}
+	}
+	
+	public void ClassInstanceExpr.eliminateWith(List<Access> qualifiers) {
+		if(!isQualified() && getAccess().type().isInnerClass()) {
+			TypeDecl td = getAccess().type();
+			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
+				Access qual = qualifiers.getChild(i);
+				if(qual.type().subtype(td.enclosingType())) {
+					qualifyWith((Expr)qual.fullCopy());
+					super.eliminateWith(qualifiers);
+					return;
+				}
+			}
+			throw new RefactoringException("cannot eliminate with");
+		}
+		super.eliminateWith(qualifiers);
+	}
+	
+	public void VarAccess.eliminateWith(List<Access> qualifiers) {
+		if(!isQualified() && decl() instanceof FieldDeclaration) {
+			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
+				Access qual = qualifiers.getChild(i);
+				if(!qual.type().memberFields(name()).isEmpty()) {
+					qualifyWith((Expr)qual.fullCopy());
+					super.eliminateWith(qualifiers);
+					return;
+				}
+			}
+			throw new RefactoringException("cannot eliminate with");
+		}
+	}
+}

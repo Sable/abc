@@ -1,0 +1,36 @@
+/*
+ * FileRange represents a range of characters inside a file given by file name,
+ * start and end position.
+ */
+
+aspect FileRange {
+
+	public class FileRange {
+
+		public String filename;
+		public int sl, sc, el, ec;
+
+		public FileRange(String filename, int sl, int sc, int el, int ec) {
+			this.filename = filename;
+			this.sl = sl; this.sc = sc;
+			this.el = el; this.ec = ec;
+		}
+
+		public FileRange(String filename, int start, int end) {
+			this.filename = filename;
+			this.sl = ASTNode.getLine(start); this.sc = ASTNode.getColumn(start);
+			this.el = ASTNode.getLine(end); this.ec = ASTNode.getColumn(end);
+		}
+
+		public String toString() {
+			return filename+":("+sl+", "+sc+")-("+el+", "+ec+")";
+		}
+
+	}
+	
+	public boolean FileRange.startsBefore(FileRange that) {
+		return this.sl < that.sl ||
+		   this.sl == that.sl && this.sc < that.sc;
+	}
+	
+}

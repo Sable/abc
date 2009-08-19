@@ -1,0 +1,41 @@
+aspect PackageDecl {
+	syn nta PackageDecl Program.getPackageDecl(String name) {
+		return new PackageDecl(name);
+	}
+	
+	inh PackageDecl Expr.lookupPackage(String name);
+	eq Program.getChild().lookupPackage(String name) = getPackageDecl(name);
+	
+	syn PackageDecl PackageAccess.decl() = lookupPackage(getPackage());
+	
+	PackageDecl implements SimpleSet;
+	syn int PackageDecl.size() = 1;
+	syn boolean PackageDecl.isEmpty() = false;
+	public SimpleSet PackageDecl.add(Object o) {
+		return new SimpleSetImpl().add(this).add(o);
+	}
+	syn boolean PackageDecl.contains(Object o) = this == o;
+	public boolean PackageDecl.isSingleton() { return true; }
+	public boolean PackageDecl.isSingleton(Object o) { return contains(o); }
+
+	PackageDecl implements Iterator;
+	private PackageDecl PackageDecl.iterElem;
+	public Iterator PackageDecl.iterator() { iterElem = this; return this; }
+	public boolean PackageDecl.hasNext() { return iterElem != null; }
+	public Object PackageDecl.next() { Object o = iterElem; iterElem = null; return o; }
+	public void PackageDecl.remove() { throw new UnsupportedOperationException(); }
+	
+	public String PackageAccess.getTopLevelPackage() {
+		String[] comp = getPackage().split("\\.");
+		if(comp.length == 0)
+			return null;
+		return comp[0];
+	}
+	
+	public String TypeAccess.getTopLevelPackage() {
+		String[] comp = packageName().split("\\.");
+		if(comp.length == 0)
+			return null;
+		return comp[0];
+	}
+}

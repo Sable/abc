@@ -1,0 +1,72 @@
+aspect AST {
+	public Program ASTNode.programRoot() {
+		ASTNode n=this;
+		while(n!=null && !(n instanceof Program))
+			n=n.getParent();
+		return (Program)n;
+	}
+	
+	public CompilationUnit ASTNode.compilationUnit() {
+		ASTNode n=this;
+		while(n!=null && !(n instanceof CompilationUnit))
+			n=n.getParent();
+		return (CompilationUnit)n;
+	}
+	
+	syn lazy boolean ASTNode.fromSource() {
+		CompilationUnit cu = compilationUnit();
+		return cu == null ? false : cu.fromSource(); 
+	}
+
+	public void ASTNode.flushCaches() {
+		this.flushCache();
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.flushCaches();
+		}
+	}
+	
+	protected void ASTNode.replaceWith(ASTNode newnode) {
+		ASTNode parent = getParent();
+		parent.setChild(newnode, parent.getIndexOfChild(this));
+	}
+	
+	protected void Access.qualifyWith(Expr qual) {
+		ASTNode parent = getParent();
+		int idx = parent.getIndexOfChild(this);
+		parent.setChild(qual.qualifiesAccess(this), idx);
+	}
+
+	/* JastAddJ stores multiply qualified accesses as right-heavy trees
+	 * for example, [A.this.f] is
+	 *     .
+	 *    / \
+	 *   A   .
+	 *      / \
+	 *    this f
+	 *    
+	 *  Unfortunately, this makes it rather hard to extract the complete
+	 *  qualifier of an access; for example, we'd like to see in this example
+	 *  that [f] is qualified by [A.this], not just by [this].
+	 *  
+	 *  This method rotates the tree to the left; e.g., the above example
+	 *  becomes
+	 *  
+	 *       .
+	 *      / \
+	 *     .   f
+	 *    / \
+	 *   A this
+	 */
+	public void AbstractDot.rotateLeft() {
+		Expr l = getLeft();
+		Access r = getRight();
+		while(r instanceof AbstractDot) {
+			l = new AbstractDot(l, (Access)((AbstractDot)r).getLeft());
+			r = ((AbstractDot)r).getRight();
+		}
+		setLeft(l);
+		setRight(r);
+	}
+}

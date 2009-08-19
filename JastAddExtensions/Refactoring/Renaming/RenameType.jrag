@@ -1,0 +1,59 @@
+/*
+ * The Rename Type refactoring
+ */
+
+aspect RenameType {
+	
+	public void TypeDecl.rename(String new_name) {
+		if(name().equals(new_name))
+			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
+		checkRenamingPreconds(new_name);
+		String old_name = name();
+		introduce(LOCKED_NAMES);
+		Collection<String> endangered = new ArrayList<String>(2);
+		endangered.add(old_name);
+		endangered.add(new_name);
+		programRoot().lockNames(endangered);
+		setID(new_name);
+		eliminate(LOCKED_NAMES);
+	}
+	
+	private void TypeDecl.checkRenamingPreconds(String new_name) {
+        if(hasNestedType(new_name))
+            throw new RefactoringException("nested type of the same name exists");
+		if(isNestedType()) {
+			TypeDecl enc = enclosingType();
+			if(!enc.memberTypes(new_name).isEmpty())
+				throw new RefactoringException("type of the same name exists in enclosing type");
+			if(hasEnclosingType(new_name))
+				throw new RefactoringException("enclosing type of the same name exists");
+		} else if(isTopLevelType()) {
+			String pkg = hostPackage();
+            if(lookupType(pkg, new_name) != null)
+				throw new RefactoringException("type of the same name exists in enclosing package");
+			if(programRoot().hasPackage(pkg+"."+new_name))
+				throw new RefactoringException("sub-package of the same name exists in enclosing package");
+		}
+	}
+	
+    private boolean TypeDecl.hasNestedType(String name) {
+        for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl d = getBodyDecl(i);
+            if(d instanceof MemberTypeDecl) {
+                TypeDecl a = ((MemberTypeDecl)d).typeDecl();
+                if(a.name().equals(name) || a.hasNestedType(name))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean TypeDecl.hasEnclosingType(String name) {
+    	if(!isNestedType()) return false;
+    	TypeDecl enc = enclosingType();
+    	return enc.name().equals(name) || enc.hasEnclosingType(name);
+    }
+	
+}

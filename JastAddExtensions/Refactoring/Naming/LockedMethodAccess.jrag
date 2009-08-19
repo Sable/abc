@@ -1,0 +1,193 @@
+aspect LockedMethodAccess {
+	/* A locked method access is a method access that does not obey the normal method lookup
+	 * rules, but instead immediately binds to its target. */
+	public LockedMethodAccess.LockedMethodAccess(MethodDecl target, List<Expr> args) {
+		this(target.name(), args, target, new Opt());
+	}
+	
+	private boolean LockedMethodAccess.simulate_unlocked = false;
+	eq LockedMethodAccess.decls() = simulate_unlocked ? super.decls() : SimpleSet.emptySet.add(getTarget());
+	
+	private MethodDecl LockedMethodAccess.unlockedDecl() {
+		flushCache();
+		simulate_unlocked = true;
+		MethodDecl res = decl();
+		simulate_unlocked = false;
+		return res;
+	}
+		
+	public void LockedMethodAccess.toString(StringBuffer s) {
+		s.append("[[");
+		if(hasQualifier()) {
+			getQualifier().toString(s);
+			s.append(".");
+		}
+		super.toString(s);
+		s.append("]]");
+	}
+	
+	public void LockedMethodAccess.addQualifier(Expr e) {
+		if(!hasQualifier())
+			setQualifier(e);
+		else
+			setQualifier(e.qualifiesAccess((Access)getQualifier()));
+	}
+	
+	// introducing fixed method accesses
+	public void MethodAccess.lockMethodNames(Collection<String> endangered) {
+		if(endangered.contains(name()))
+			lock();
+		else
+			super.lockMethodNames(endangered);
+	}
+	
+	public void MethodAccess.lock() {
+		MethodDecl target = decl().isSubstituted() ? decl().sourceMethodDecl() : decl();
+		replaceWith(new LockedMethodAccess(target, getArgs()));		
+	}
+	
+	public boolean MethodDecl.isSubstituted() { return false; }
+	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
+	
+	// pushing qualifiers into LockedMethodAccess
+	public void ASTNode.pushMethodQualifiers() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).pushMethodQualifiers();
+	}
+	
+	public void AbstractDot.pushMethodQualifiers() {
+		if(!fromSource())
+			return;
+		getLeft().pushMethodQualifiers();
+		getRight().pushMethodQualifiers();
+		if(getRight() instanceof LockedMethodAccess) {
+			LockedMethodAccess ma = (LockedMethodAccess)getRight();
+			ma.addQualifier(getLeft());
+			replaceWith(ma);
+		} else if(getRight() instanceof AbstractDot && 
+				((AbstractDot)getRight()).getLeft() instanceof LockedMethodAccess) {
+			AbstractDot r = (AbstractDot)getRight();
+			LockedMethodAccess ma = (LockedMethodAccess)r.getLeft();
+			ma.addQualifier(getLeft());
+			AbstractDot d = new AbstractDot(ma, r.getRight());
+			replaceWith(d);
+		}
+	}
+	
+	// eliminating locked method accesses
+	inh TypeDecl LockedMethodAccess.enclosingType();
+	rewrite LockedMethodAccess {
+		when(!hasExtension(LOCKED_NAMES))
+		to Access {
+			MethodDecl target = getTarget();
+			if(fromSource())
+				setID(target.name());
+			if(unlockedDecl().sameSourceDeclAs(target)) {
+				return new MethodAccess(name(), getArgs());
+			} else if(fromSource()) {
+				MethodAccessInfo acc;
+				if(hasQualifier())
+					acc = getQualifier().type().accessMemberMethod(target);
+				else
+					acc = accessMethod(target);
+				if(acc == null)
+					throw new RefactoringException("cannot access method "+target.name());
+				Access res = acc.eliminate(hasQualifier() ? getQualifier() : null, 
+										   enclosingType(), inStaticContext(), getArgs());
+				if(res == null)
+					throw new RefactoringException("cannot access method "+target.name());
+				return res;
+			}
+			throw new RefactoringException("cannot access method "+target.name());
+		}
+	}
+	
+	// eliminating locked method accesses
+	public Access MethodAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing, 
+			boolean inStaticCtxt, List<Expr> args) {
+		if(qualifier == null)
+			return eliminate(enclosing, inStaticCtxt, args);
+		else
+			return eliminateQualified(qualifier, enclosing, inStaticCtxt, args);
+	}
+	
+	public Access MethodAccessInfo.eliminate(TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
+		if(!directlyVisible) {
+			if(target.isStatic())
+				return computeStaticAccess(enclosing, args);
+			if(inStaticCtxt)
+				return null;
+			if(source == bend) {
+				return computeThisAccess(enclosing, args);
+			} else if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
+				return computeSuperAccess(enclosing, args);
+			} else {
+				return null;
+			}
+		} else {
+			return constructAccess(args);
+		}
+	}
+	
+	public Access MethodAccessInfo.computeStaticAccess(TypeDecl enclosing, List<Expr> args) {
+		return new TypeAccess(source).qualifiesAccess(constructAccess(args));
+	}
+	
+	public Access MethodAccessInfo.computeThisAccess(TypeDecl enclosing, List<Expr> args) {
+		MethodAccess ma = constructAccess(args);
+		if(source == enclosing)
+			return ma;
+		else
+			return new TypeAccess(bend).qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
+	}
+	
+	public Access MethodAccessInfo.computeSuperAccess(TypeDecl enclosing, List<Expr> args) {
+		MethodAccess ma = constructAccess(args);
+		if(bend == enclosing)
+			return new SuperAccess("super").qualifiesAccess(ma);
+		else
+			return new TypeAccess(bend).qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
+	}
+
+	protected MethodAccess MethodAccessInfo.constructAccess(List<Expr> args) {
+		// check if any of the competitors is more specific than the target for
+		// this argument list; then we need casts
+		List<Expr> new_args = (List<Expr>)args.fullCopy();
+		for(MethodDecl cand : competitors) {
+			if(cand.applicableTo(args) && cand.moreSpecificThan(target)) {
+				insertCasts(new_args);
+				break;
+			}
+		}
+		return new MethodAccess(target.name(), new_args);
+	}
+	
+	protected void MethodAccessInfo.insertCasts(List<Expr> args) {
+		for(int i=0;i<target.getNumParameter();++i) {
+			TypeDecl tp = target.getParameter(i).type();
+			Expr arg = args.getChild(i);
+			args.setChild(new CastExpr(new TypeAccess(tp), arg), i);
+		}
+	}
+
+	public Access MethodAccessInfo.eliminateQualified(Expr qualifier, TypeDecl enclosing,
+			boolean inStaticCtxt, List<Expr> args) {
+		MethodAccess ma = constructAccess(args);
+		if(!directlyVisible) {
+			if(!target.isStatic())
+				return null;
+			if(inStaticCtxt)
+				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
+					return qualifier.qualifiesAccess(ma);
+				else
+					return null;
+			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
+				return qualifier.qualifiesAccess(ma);
+			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
+				return new ParExpr(new CastExpr(new TypeAccess(source), qualifier)).qualifiesAccess(ma);
+			return null;
+		} else {
+			return qualifier.qualifiesAccess(ma);
+		}
+	}	
+}

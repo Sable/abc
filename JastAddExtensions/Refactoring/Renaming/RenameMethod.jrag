@@ -1,0 +1,59 @@
+/*
+ * The Rename Method refactoring
+ */
+
+aspect RenameMethod {
+	// rename a method and all its overriding/overridden methods
+	public void MethodDecl.rename(String new_name) {
+		if(name().equals(new_name))
+			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
+		HashSet<MethodDecl> overrides = overrides();
+		HashSet<MethodDecl> overriders = overriders();
+		this.renameSingleMethod(new_name);
+		for(MethodDecl md : overrides)
+			md.renameSingleMethod(new_name);
+		for(MethodDecl md : overriders)
+			md.renameSingleMethod(new_name);
+	}
+	
+	// rename only the method itself
+	private void MethodDecl.renameSingleMethod(String new_name) {
+		checkRenamingPreconds(new_name);
+		String old_name = name();
+		introduce(LOCKED_NAMES);
+		Collection<String> endangered = new ArrayList<String>(2);
+		endangered.add(old_name);
+		endangered.add(new_name);
+		programRoot().lockMethodNames(endangered);
+		programRoot().pushMethodQualifiers();
+		setID(new_name);
+		eliminate(LOCKED_NAMES);
+	}
+
+	private void MethodDecl.checkRenamingPreconds(String new_name) {
+		String sig = signature();
+		int idx = sig.indexOf('(');
+		String new_sig = new_name + sig.substring(idx);
+		if(!hostType().canIntroduceMethod(this, new_sig))
+			throw new RefactoringException("cannot rename");
+	}
+	
+	public boolean TypeDecl.canIntroduceMethod(MethodDecl md) {
+		return canIntroduceMethod(md, md.signature());
+	}
+	
+	public boolean TypeDecl.canIntroduceMethod(MethodDecl md, String sig) {
+		// make sure there isn't already a method with the same signature in this type
+		if(!localMethodsSignature(sig).isEmpty())
+			return false;
+		// if there are any like-named methods in superclasses, we must be able to override them
+		for(Iterator i = ancestorMethods(sig).iterator();i.hasNext();) {
+			MethodDecl md2 = (MethodDecl)i.next();
+			if(!md.canOverrideOrHide(md2))
+				return false;
+		}
+		return true;
+	}
+}

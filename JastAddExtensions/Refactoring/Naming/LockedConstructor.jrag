@@ -1,0 +1,24 @@
+aspect LockedConstructor {
+	private boolean ConstructorDecl.locked = false;
+	
+	public void ConstructorDecl.lockNames(Collection<String> endangered) {
+		if(!locked && endangered.contains(name()))
+			locked = true;
+		super.lockNames(endangered);
+	}
+	
+	rewrite ConstructorDecl {
+		when(locked && !hasExtension(LOCKED_NAMES))
+		to ConstructorDecl {
+			if(!getID().equals(hostType().name())) {
+				if(fromSource())
+					setID(hostType().name());
+				else
+					throw new RefactoringException("cannot adjust constructor in compiled code");
+			}
+			locked = false;
+			return this;
+		}
+	}
+	
+}

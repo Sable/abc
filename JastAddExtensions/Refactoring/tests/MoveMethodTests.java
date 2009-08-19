@@ -1,0 +1,575 @@
+package tests;
+
+import junit.framework.TestCase;
+import AST.MethodDecl;
+import AST.Program;
+import AST.RefactoringException;
+import AST.SimpleSet;
+import AST.TypeDecl;
+
+public class MoveMethodTests extends TestCase {
+	public MoveMethodTests(String name) {
+		super(name);
+	}
+	
+	public void testSucc(String tp_name, String sig, Program in, Program out) {		
+		assertNotNull(in);
+		assertNotNull(out);
+		TypeDecl tp = in.findType(tp_name);
+		assertNotNull(tp);
+		SimpleSet s = tp.localMethodsSignature(sig);
+		assertTrue(s.isSingleton());
+		MethodDecl md = (MethodDecl)s.iterator().next();
+		try {
+			md.move();
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			fail("Refactoring was supposed to succeed; failed with "+rfe);
+		}
+	}
+
+	public void testFail(String tp_name, String sig, Program in) {		
+		assertNotNull(in);
+		TypeDecl tp = in.findType(tp_name);
+		assertNotNull(tp);
+		SimpleSet s = tp.localMethodsSignature(sig);
+		assertTrue(s.isSingleton());
+		MethodDecl md = (MethodDecl)s.iterator().next();
+		try {
+			md.move();
+			fail("Refactoring was supposed to fail; succeeded with "+in);
+		} catch(RefactoringException rfe) { }
+	}
+	
+	public void test0() {
+		testFail("A", "m()", Program.fromClasses("class A { void m() { } }"));
+	}
+
+	public void test1() {
+		testFail("A", "m(int)", Program.fromClasses("class A { void m(int x) { } }"));
+	}
+
+	public void test2() {
+		testFail("A", "m(I)", 
+			Program.fromClasses(
+			"interface I { }",
+			"class A { void m(I i) { } }"));
+	}
+
+	public void test3() {
+		testFail("A", "m(B)",
+			Program.fromClasses(
+			"class A { static void m(B b) { } }",
+			"class B { }"));
+	}
+
+	public void test4() {
+		testFail("A", "m(B)",
+			Program.fromClasses(
+			"abstract class A { abstract void m(B b); }",
+			"class B { }"));
+	}
+	
+	public void test5() {
+		testFail("String", "contentEquals(java.lang.StringBuffer)", 
+				Program.fromClasses("class A { }"));
+	}
+	
+	public void test6() {
+		testFail("A", "m(B)",
+			Program.fromClasses(
+			"class A { void m(B b) { } }",
+			"class B { int m(B b) { return 23; } }"));
+	}
+	
+	public void test7() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { void m(B b) { } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { void m(B b) { b.m(this); } }",
+			"class B { void m(A a) { B b = this; { } } }"));
+	}
+	
+	public void test8() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  int m(B b) {" +
+			"    return 23;" +
+			"  }" +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { int m(B b) { return b.m(this); } }",
+			"class B {" +
+			"  int m(A a) {" +
+			"    B b = this;" +
+			"    { return 23; }" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test9() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { " +
+			"  int x;" +
+			"  int m(B b) {" +
+			"    return x;" +
+			"  } " +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { int x; int m(B b) { return b.m(this); } }",
+			"class B { int m(A a) { B b = this; { return a.x; } } }"));
+	}
+	
+	public void test10() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { A m(B b) { return this; } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { A m(B b) { return b.m(this); } }",
+			"class B { A m(A a) { B b = this; { return a; } } }"));
+	}
+	
+	public void test11() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { B m(B b) { return b; } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { B m(B b) { return b.m(this); } }",
+			"class B { B m(A a) { B b = this; { return b; } } }"));
+	}
+	
+	public void test12() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { " +
+			"  int x;" +
+			"  int m(B b) {" +
+			"    return this.x;" +
+			"  } " +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { int x; int m(B b) { return b.m(this); } }",
+			"class B { int m(A a) { B b = this; { return a.x; } } }"));
+	}
+	
+	public void test13() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { " +
+			"  int x;" +
+			"  int m(B b) {" +
+			"    return A.this.x;" +
+			"  } " +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { int x; int m(B b) { return b.m(this); } }",
+			"class B { int m(A a) { B b = this; { return a.x; } } }"));
+	}
+	
+	public void test14() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class Super { int x; }",
+			"class A extends Super { int m(B b) { return super.x; } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class Super { int x; }",
+			"class A extends Super { int m(B b) { return b.m(this); } }",
+			"class B { int m(A a) { B b = this; { return ((Super)a).x; } } }"));
+	}
+	
+	public void test15() {
+		testFail("A", "m(B)",
+			Program.fromClasses(
+			"class Super { int m(B b) { return 23; } }",
+			"class A extends Super { int m(B b) { return super.m(b)+19; } }",
+			"class B { }"));
+	}
+	
+	public void test16() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  int f() { return 23; }" +
+			"  int m(B b) { return f()+19; }" +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A {" +
+			"  int f() { return 23; }" +
+			"  int m(B b) { return b.m(this); }" +
+			"}" +
+			"class B {" +
+			"  int m(A a) { B b = this; { return a.f()+19; } }" +
+			"}"));
+	}
+	
+	public void test17() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  int f() { return 23; }" +
+			"  int m(B b) { return this.f()+19; }" +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A {" +
+			"  int f() { return 23; }" +
+			"  int m(B b) { return b.m(this); }" +
+			"}" +
+			"class B {" +
+			"  int m(A a) { B b = this; { return a.f()+19; } }" +
+			"}"));
+	}
+	
+	public void test18() {
+		testSucc("A", "m(Outer.B)",
+			Program.fromClasses(
+			"class Outer {" +
+			"  static int m() { return 23; }" +
+			"  static class B {" +
+			"    class Inner {" +
+			"      int f() { return m(); }" +
+			"    }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  int m(Outer.B b) {" +
+			"    return 42;" +
+			"  }" +
+			"}"),
+			Program.fromClasses(
+			"class Outer {" +
+			"  static int m() { return 23; }" +
+			"  static class B {" +
+			"    class Inner {" +
+			"      int f() { return Outer.m(); }" +
+			"    }" +
+			"    int m(A a) {" +
+			"      B b = this;" +
+			"      { return 42; }" +
+			"    }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  int m(Outer.B b) {" +
+			"    return b.m(this);" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test19() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class Outer {" +
+			"  int x;" +
+			"  class A {" +
+			"    int y;" +
+			"    int m(B b) {" +
+			"      return x+y;" +
+			"    }" +
+			"  }" +
+			"}" +
+			"class B { }"),
+			Program.fromClasses(
+			"class Outer {" +
+			"  int x;" +
+			"  class A {" +
+			"    int y;" +
+			"    int m(B b) {" +
+			"      return b.m(Outer.this, this);" +
+			"    }" +
+			"  }" +
+			"}" +
+			"class B {" +
+			"  int m(Outer outer, Outer.A a) {" +
+			"    B b = this;" +
+			"    { return outer.x + a.y; }" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test20() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  void m(B b) {" +
+			"    new A() {" +
+			"      Object f() {" +
+			"        return this;" +
+			"      }" +
+			"    };" +
+			"  }" +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A {" +
+			"  void m(B b) {" +
+			"    b.m(this);" +
+			"  }" +
+			"}",
+			"class B {" +
+			"  void m(A a) {" +
+			"    B b = this;" +
+			"    {" +
+			"      new A() {" +
+			"        Object f() {" +
+			"          return this;" +
+			"        }" +
+			"      };" +
+			"    }" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test21() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  A m(B b) {" +
+			"    new A() {" +
+			"      Object f() {" +
+			"        return this;" +
+			"      }" +
+			"    };" +
+			"    return this;" +
+			"  }" +
+			"}",
+			"class B { }"),
+			Program.fromClasses(
+			"class A {" +
+			"  A m(B b) {" +
+			"    return b.m(this);" +
+			"  }" +
+			"}",
+			"class B {" +
+			"  A m(A a) {" +
+			"    B b = this;" +
+			"    {" +
+			"      new A() {" +
+			"        Object f() {" +
+			"          return this;" +
+			"        }" +
+			"      };" +
+			"      return a;" +
+			"    }" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test22() {
+		testSucc("A", "m(B, int)",
+			Program.fromClasses(
+			"class A { void m(B b, int a) { } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { void m(B b, int a) { b.m(this, a); } }",
+			"class B { void m(A a0, int a) { B b = this; { } } }"));
+	}
+	
+	public void test23() {
+		testSucc("A", "foo(B, A.Inner)",
+			Program.fromClasses(
+			"class B { class Inner { } }",
+			"public abstract class A {" +
+			"  void foo(B f, Inner i) {" +
+			"    new Inner();" +
+			"  }" +
+			"  class Inner { }" +
+			"  void bar() {" +
+			"    foo(new B(), new Inner());" +
+			"  }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  void foo(A a, A.Inner i) {" +
+			"    B f = this;" +
+			"    { a.new Inner(); }" +
+			"  }" +
+			"  class Inner {}" +
+			"}" +
+			"public abstract class A {" +
+			"  void foo(B f, Inner i) {" +
+			"    f.foo(this, i);" +
+			"  }" +
+			"  class Inner {}" +
+			"  void bar() {" +
+			"    foo(new B(), new Inner());" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test24() {
+		testSucc("Inner", "foo(B)",
+			Program.fromClasses(
+			"class B { }",
+			"class A {" +
+			"  void bar(Inner inner) {}" +
+			"  class Inner {" +
+			"    void foo(final B b) {" +
+			"      bar(this);" +
+			"    }" +
+			"  }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  void foo(A a, A.Inner inner) {" +
+			"    B b = this;" +
+			"    { a.bar(inner); }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  void bar(Inner inner) {}" +
+			"  class Inner {" +
+			"    void foo(final B b) {" +
+			"      b.foo(A.this, this);" +
+			"    }" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test25() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class B { }",
+			"class A {" +
+			"  int x;" +
+			"  void m(B b) { x++; }" +
+			"  void bar() { m(new B()); }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  void m(A a) { " +
+			"    B b = this;" +
+			"    { a.x++; }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  int x;" +
+			"  void m(B b) { b.m(this); }" +
+			"  void bar() { m(new B()); }" +
+			"}"));
+	}
+	
+	public void test26() {
+		testFail("A", "m(A)",
+			Program.fromClasses(
+			"public class A {" +
+			"  void m(A a) {" +
+			"    m(a);" +
+			"    a.m(a);" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test27() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class B {" +
+			"  B g() { return null; }" +
+			"}",
+			"class A {" +
+			"  void m(B b) {" +
+			"    if(b != null) m(b.g());" +
+			"  }" +
+			"  void n() {" +
+			"    m(new B());" +
+			"  }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  B g() { return null; }" +
+			"  void m(A a) {" +
+			"    B b = this;" +
+			"    {" +
+			"      if(b != null)" +
+			"        a.m(b.g());" +
+			"    }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  void m(B b) {" +
+			"    b.m(this);" +
+			"  }" +
+			"  void n() {" +
+			"    m(new B());" +
+			"  }" +
+			"}"));
+	}
+	
+	public void test28() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class B { }",
+			"class A {" +
+			"  void m(B b) {" +
+			"    notify();" +
+			"  }" +
+			"  void g() { }" +
+			"  B getB() { return null; }" +
+			"}",
+			"class U {" +
+			"  A myA;" +
+			"  { myA.m(myA.getB()); }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  void m(A a) {" +
+			"    B b = this;" +
+			"    { a.notify(); }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  void m(B b) {" +
+			"    b.m(this);" +
+			"  }" +
+			"  void g() { }" +
+			"  B getB() { return null; }" +
+			"}",
+			"class U {" +
+			"  A myA;" +
+			"  { myA.m(myA.getB()); }" +
+			"}"));
+	}
+	
+	public void test29() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class B { }",
+			"class A {" +
+			"  void n() { }" +
+			"  void m(final B b) {" +
+			"    class Inner {" +
+			"      { A.this.n(); }" +
+			"    }" +
+			"  }" +
+			"}"),
+			Program.fromClasses(
+			"class B {" +
+			"  void m(final A a) {" +
+			"    B b = this;" +
+			"    {" +
+			"      class Inner {" +
+			"        { a.n(); }" +
+			"      }" +
+			"    }" +
+			"  }" +
+			"}",
+			"class A {" +
+			"  void n() { }" +
+			"  void m(final B b) {" +
+			"    b.m(this);" +
+			"  }" +
+			"}"));
+	}
+}

@@ -1,0 +1,14 @@
+aspect JastAddJOffsets {
+  public void CompilationUnit.setOffsets(HashMap map) {
+    offsets = map;
+  }
+  private HashMap CompilationUnit.offsets;
+  public int CompilationUnit.offset(int line, int column) {
+    if(line == 1) return column - 1;
+    Integer key = new Integer(line);
+    if(offsets == null || !offsets.containsKey(key))
+      return -1;
+    Integer lineOffset = (Integer)offsets.get(key);
+    return lineOffset.intValue() + column - 1;
+  }
+}

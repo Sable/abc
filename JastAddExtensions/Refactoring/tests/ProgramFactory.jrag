@@ -1,0 +1,131 @@
+import tests.CompileHelper;
+
+aspect ProgramFactory {
+	public static Program Program.fromStmts(String... stmts) {
+		File f = null;
+		Program p = null;
+		try {
+			f = createTempFile("Test.java");
+			FileWriter fw = new FileWriter(f);
+			fw.write("class Test {\n");
+			fw.write("  void m() {\n");
+			for(String s : stmts)
+				fw.write(s+"\n");
+			fw.write("  }\n");
+			fw.write("}\n");
+			fw.close();
+			p = CompileHelper.compile(f.getAbsolutePath());
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			if(f != null)
+				f.delete();
+		}
+		return p;
+	}
+
+	public static Program Program.fromBodyDecls(String... bodydecls) {			
+		File f = null;
+		Program p = null;
+		try {
+			f = createTempFile("Test.java");
+			FileWriter fw = new FileWriter(f);
+			fw.write("class Test {\n");
+			for(String s : bodydecls)
+				fw.write(s+"\n");
+			fw.write("}\n");
+			fw.close();
+			p = CompileHelper.compile(f.getAbsolutePath());
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			if(f != null)
+				f.delete();
+		}
+		return p;
+	}
+
+	public static Program Program.fromClasses(String... classes) {			
+		File f = null;
+		Program p = null;
+		try {
+			f = createTempFile("Test.java");
+			FileWriter fw = new FileWriter(f);
+			for(String s : classes)
+				fw.write(s+"\n");
+			fw.close();
+			p = CompileHelper.compile(f.getAbsolutePath());
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			if(f != null)
+				f.delete();
+		}
+		return p;
+	}
+
+	public static Program Program.fromCompilationUnits(RawCU... cus) {
+		ArrayList<File> files = new ArrayList<File>();
+		Program p = null;
+		File dir = null;
+		try {
+			String[] filenames = new String[cus.length];
+			int i=0;
+			dir = createTempDirectory();
+			for(RawCU cu : cus) {
+				File f = new File(dir, cu.getName());
+				FileWriter fw = new FileWriter(f);
+				fw.write(cu.getContent());
+				fw.close();
+				filenames[i++] = f.getAbsolutePath();
+			}
+			p = CompileHelper.compile(filenames);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			for(File f : files)
+				if(f != null)
+					f.delete();
+			if(dir != null)
+				dir.delete();
+		}
+		return p;
+	}
+
+	// from stackoverflow.com
+	public static File Program.createTempDirectory() throws IOException {
+		final File temp;
+		temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+		if(!(temp.delete())) {
+			throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+		}
+		if(!(temp.mkdir())) {
+			throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+		}
+		return (temp);
+	}
+	
+	public static File Program.createTempFile(String name) throws IOException {
+		File dir = createTempDirectory();
+		File f = new File(dir, name);
+		return f;
+	}
+
+	class RawCU {
+		private String name;
+		private String content;
+
+		public RawCU(String name, String content) {
+			this.name = name;
+			this.content = content;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getContent() {
+			return content;
+		}
+	}
+}

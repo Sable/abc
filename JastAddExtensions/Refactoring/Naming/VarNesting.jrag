@@ -1,0 +1,56 @@
+/*
+ * When we rename a local variable, it is important to check that the new name does
+ * not clash with the name of an already existing local variable. The method
+ * canIntroduceLocal(id) checks whether a subtree could legally occur within the scope
+ * of a local variable id.
+ * 
+ * The method canIntroduceLabel(id) does the same for labels.
+ */
+
+aspect VarNesting {
+	
+	// check whether this subtree contains a conflicting local declaration
+	public boolean ASTNode.canIntroduceLocal(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null && !child.canIntroduceLocal(name))
+				return false;
+		}
+		return true;
+	}
+	
+	// TODO: this should only be defined once, on LocalDeclaration
+	public boolean ParameterDeclaration.canIntroduceLocal(String name) {
+		if(name.equals(name()))
+			return false;
+		return super.canIntroduceLocal(name);
+	}
+	
+	public boolean VariableDeclaration.canIntroduceLocal(String name) {
+		if(name.equals(name()))
+			return false;
+		return super.canIntroduceLocal(name);
+	}
+	
+	// cut-off for local/anonymous classes
+	public boolean TypeDecl.canIntroduceLocal(String name) {
+		return true;
+	}
+	
+	// check whether this subtree contains no conflicting labels
+	public boolean ASTNode.canIntroduceLabel(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				if(!child.canIntroduceLabel(name))
+					return false;
+		}
+		return true;
+	}
+	
+	public boolean LabeledStmt.canIntroduceLabel(String name) {
+		if(name.equals(getLabel()))
+			return false;
+		return super.canIntroduceLabel(name);
+	}
+}

@@ -1,0 +1,39 @@
+/*
+ * The Rename Variable refactoring
+ */
+
+aspect RenameVariable {
+	public void Variable.rename(String new_name) {
+		if(name().equals(new_name))
+			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
+		checkRenamingPreconds(new_name);
+		String old_name = name();
+		introduce(LOCKED_NAMES);
+		Collection<String> endangered = new ArrayList<String>(2);
+		endangered.add(old_name);
+		endangered.add(new_name);
+		programRoot().lockNames(endangered);
+		programRoot().pushQualifiers();
+		setID(new_name);
+		eliminate(LOCKED_NAMES);
+	}
+	
+	public void Variable.checkRenamingPreconds(String new_name) { }
+	
+	public void FieldDeclaration.checkRenamingPreconds(String new_name) {
+		if(!hostType().localFields(new_name).isEmpty())
+			throw new RefactoringException("field named "+new_name+" exists");
+	}
+
+	public void VariableDeclaration.checkRenamingPreconds(String new_name) {
+		if(!hostBodyDecl().canIntroduceLocal(new_name))
+			throw new RefactoringException("cannot rename variable to "+new_name);
+	}
+
+	public void ParameterDeclaration.checkRenamingPreconds(String new_name) {
+		if(!hostBodyDecl().canIntroduceLocal(new_name))
+			throw new RefactoringException("cannot rename variable to "+new_name);
+	}
+}

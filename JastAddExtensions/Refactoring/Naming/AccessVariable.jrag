@@ -1,0 +1,293 @@
+import java.util.*;
+
+/*
+ * The inherited attribute accessVariable(v) computes a VariableAccessInfo which
+ * describes how to access variable v from the current location in the AST. This
+ * VariableAccessInfo can in turn be used to construct an actual access.
+ * 
+ * The implementation of accessVariable is mostly parallel to lookupVariable with
+ * the same clauses and the same control flow, but with additional calls to
+ * methods "addQualifier" and "moveDownTo", which transport a symbolic access from a
+ * parent type to a child type resp. an enclosing type to a nested type, adding
+ * information about required qualifications in the process.
+ */
+
+aspect AccessVariable {
+	class VariableAccessInfo {
+		private Variable target;
+		private TypeDecl source;
+		private TypeDecl bend;
+		private boolean directlyVisible;  // i.e., neither shadowed nor hidden
+		
+		public VariableAccessInfo(Variable target) {
+			this.target = target;
+			this.source = null;
+			this.bend = null;
+			this.directlyVisible = true;
+		}
+		
+		public VariableAccessInfo(Variable target, TypeDecl td) {
+			this.target = target;
+			this.source = td;
+			this.bend = td;
+			this.directlyVisible = true;
+		}
+		
+		public Variable getVariable() { return target; }
+		public TypeDecl getSource() { return source; }
+		public TypeDecl getBend() { return bend; }
+		public boolean isDirectlyVisible() { return directlyVisible; }
+
+		public void setSource(TypeDecl td) { source = td; }
+		public void setBend(TypeDecl td) { bend = td; }
+		public void setVisibility(boolean v) { directlyVisible = v; }
+		
+		public VariableAccessInfo becomeInvisible(boolean v) {
+			if(v) directlyVisible = false;
+			return this;
+		}
+		
+		public VariableAccessInfo moveDownTo(TypeDecl td) {
+			setBend(td);
+			if(!td.localFields(getVariable().name()).isEmpty())
+				becomeInvisible(true);
+			else
+				setSource(td);
+			return this;
+		}
+	}
+	
+	// a coarser form of equality that considers, for example, a method from a generic
+	// class and its counterpart from a parametrised instance of the class to be the same
+	syn boolean TypeDecl.sameSourceDeclAs(TypeDecl decl) 
+		= sourceTypeDecl().equals(decl.sourceTypeDecl());
+	syn boolean MethodDecl.sameSourceDeclAs(MethodDecl decl) 
+		= sourceMethodDecl().equals(decl.sourceMethodDecl());
+	syn boolean Variable.sameSourceDeclAs(Variable decl) 
+		= sourceVariableDecl().equals(decl.sourceVariableDecl());
+	
+	// cf. lookupVariable(String)
+	inh VariableAccessInfo TypeDecl.accessVariable(Variable decl);
+	inh VariableAccessInfo BodyDecl.accessVariable(Variable decl);
+	inh VariableAccessInfo Stmt.accessVariable(Variable decl);
+	inh VariableAccessInfo Block.accessVariable(Variable decl);
+	inh VariableAccessInfo ForStmt.accessVariable(Variable decl);
+	inh VariableAccessInfo Expr.accessVariable(Variable decl);
+	inh VariableAccessInfo CatchClause.accessVariable(Variable decl);
+	inh VariableAccessInfo VariableDeclaration.accessVariable(Variable decl);
+	inh VariableAccessInfo ParameterDeclaration.accessVariable(Variable decl);
+
+	eq Program.getChild().accessVariable(Variable decl) = null;
+
+	eq TypeDecl.getBodyDecl(int i).accessVariable(Variable decl) {
+		VariableAccessInfo acc = accessMemberField(decl);
+		if(acc != null)	return acc;
+		acc = accessVariable(decl);
+		if((inStaticContext() || isStatic()) && decl.isInstanceVariable())
+			return null;
+		if(acc != null)
+			acc.becomeInvisible(!memberFields(decl.name()).isEmpty());
+		return acc;
+	}
+
+	// The scope of a parameter of a method is the entire body of the method
+	eq MethodDecl.getBlock().accessVariable(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(parameterDeclaration(decl.name()) != SimpleSet.emptySet);
+		return acc;
+	}
+
+	eq ConstructorDecl.getBlock().accessVariable(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(parameterDeclaration(decl.name()) != SimpleSet.emptySet);
+		return acc;
+	}
+
+	eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(!decl.isStatic() && decl instanceof FieldDeclaration &&
+				((FieldDeclaration)decl).hostType().sameSourceDeclAs(hostType()))
+			return null;
+	    if(acc != null)
+			acc.becomeInvisible(parameterDeclaration(decl.name()) != SimpleSet.emptySet);
+		return acc;
+	}
+
+	// The scope of a local variable declaration in a block is the rest of
+	// the block in which the declaration appears
+	eq Block.getStmt(int index).accessVariable(Variable decl) {
+		int i = index;
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(declaresVariable(decl.name(), i));
+		return acc;
+	}
+	
+	// does this block declare a variable [name] at or before index i?
+	public boolean Block.declaresVariable(String name, int index) {
+		for(int i=0;i<=index;++i)
+			if(getStmt(i) instanceof VariableDeclaration &&
+					((VariableDeclaration)getStmt(i)).name().equals(name))
+				return true;
+		return false;
+	}
+
+	// The scope of the parameter of an exception handler that is declared in a
+	// catch clause of a try statement is the entire block associated with the catch
+	eq CatchClause.getBlock().accessVariable(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(parameterDeclaration(decl.name()) != SimpleSet.emptySet);
+		return acc;
+	}
+
+	// The scope of a local variable declared in the ForInit part of the for
+	// statement includes all of the following:
+	eq ForStmt.getInitStmt().accessVariable(Variable decl) = localAccess(decl);
+	eq ForStmt.getCondition().accessVariable(Variable decl) = localAccess(decl);
+	eq ForStmt.getUpdateStmt().accessVariable(Variable decl) = localAccess(decl);
+	eq ForStmt.getStmt().accessVariable(Variable decl) = localAccess(decl);
+
+	// cf. localLookup(String)
+	syn VariableAccessInfo ForStmt.localAccess(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(localVariableDeclaration(decl.name()) != null);
+		return acc;
+	}
+
+	eq MethodAccess.getArg().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+	eq ConstructorAccess.getArg().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+	eq SuperConstructorAccess.getArg().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+	eq ArrayAccess.getExpr().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+	eq ArrayTypeWithSizeAccess.getExpr().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+	eq ClassInstanceExpr.getArg().accessVariable(Variable decl) = unqualifiedScope().accessVariable(decl);
+
+	eq AbstractDot.getRight().accessVariable(Variable decl) = getLeft().qualifiedAccessVariable(decl);
+
+	eq ParseName.qualifiedAccessVariable(Variable decl) = null;
+	eq PackageOrTypeAccess.qualifiedAccessVariable(Variable decl) = null;
+	eq AmbiguousAccess.qualifiedAccessVariable(Variable decl) = null;
+
+	// cf. qualifiedLookupVariable(String)
+	syn VariableAccessInfo Expr.qualifiedAccessVariable(Variable decl) {
+		if(type().accessibleFrom(hostType())) {
+			VariableAccessInfo acc = type().accessMemberField(decl);
+			if(acc != null && isAccessibleField(decl)) return acc;
+		}
+		return null;
+	}
+
+	eq PackageAccess.qualifiedAccessVariable(Variable decl) = null;
+
+	eq TypeAccess.qualifiedAccessVariable(Variable decl) {
+		if(type().accessibleFrom(hostType())) {
+			VariableAccessInfo acc = type().accessMemberField(decl);
+			if(acc != null && isAccessibleField(decl) && !decl.isInstanceVariable())
+				return acc;
+		}
+		return null;
+	}
+
+	// check whether field is accessible when using this Expr as qualifier
+	public boolean Expr.isAccessibleField(Variable decl) {
+		return decl instanceof FieldDeclaration && 
+				mayAccess((FieldDeclaration)decl);
+	}
+
+	// cf. memberFields(String)
+	syn VariableAccessInfo TypeDecl.accessMemberField(Variable decl) = 
+		accessField(decl);
+
+	// cf. localFields(String)
+	syn VariableAccessInfo TypeDecl.accessLocalField(Variable decl) {
+		for(Iterator iter = localFields(decl.name()).iterator(); iter.hasNext(); ) {
+			FieldDeclaration f = (FieldDeclaration)iter.next();
+			if(f.sameSourceDeclAs(decl))
+				return new VariableAccessInfo(f, this);
+		}
+		return null;
+	}
+
+	// cf. fields(String)
+	syn VariableAccessInfo TypeDecl.accessField(Variable decl) = 
+		accessLocalField(decl);
+	
+	syn boolean Variable.isPrivateField();
+	eq FieldDeclaration.isPrivateField() = isPrivate();
+	eq VariableDeclaration.isPrivateField() = false;
+	eq ParameterDeclaration.isPrivateField() = false;
+	
+	syn boolean Variable.isAccessibleFrom(TypeDecl td);
+	eq FieldDeclaration.isAccessibleFrom(TypeDecl td) = accessibleFrom(td);
+	eq VariableDeclaration.isAccessibleFrom(TypeDecl td) = true;
+	eq ParameterDeclaration.isAccessibleFrom(TypeDecl td) = true;
+
+	eq ClassDecl.accessField(Variable decl) {
+		VariableAccessInfo acc = accessLocalField(decl);
+		if(acc != null) return acc;
+		if(hasSuperclass()) {
+			acc = superclass().accessField(decl);
+			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessField(decl);
+			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		return null;
+	}
+
+	eq InterfaceDecl.accessField(Variable decl) {
+		VariableAccessInfo acc = accessLocalField(decl);
+		if(acc != null) return acc;
+		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessField(decl);
+			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		return null;
+	}
+		
+	// Java 5 extensions
+	eq ConstCase.getValue().accessVariable(Variable decl)
+  		= switchType().isEnumDecl() ? switchType().accessMemberField(decl) 
+  									: accessVariable(decl);
+
+	eq CompilationUnit.getTypeDecl().accessVariable(Variable decl) {
+		String name = decl.name();
+		for(ImportDecl i : getImportDecls())
+			if(!i.isOnDemand())
+				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
+					FieldDeclaration fd = (FieldDeclaration)iter.next();
+					if(fd == decl)
+						return new VariableAccessInfo(fd, fd.hostType());
+				}
+		for(ImportDecl i : getImportDecls())
+			if(i.isOnDemand())
+				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
+					FieldDeclaration fd = (FieldDeclaration)iter.next();
+					if(fd == decl)
+						return new VariableAccessInfo(fd, fd.hostType());
+				}
+		return accessVariable(decl);
+	}
+	inh VariableAccessInfo CompilationUnit.accessVariable(Variable decl);
+	
+	eq EnhancedForStmt.getVariableDeclaration().accessVariable(Variable decl) = localAccessVariable(decl);
+	eq EnhancedForStmt.getExpr().accessVariable(Variable decl) = localAccessVariable(decl);
+	eq EnhancedForStmt.getStmt().accessVariable(Variable decl) = localAccessVariable(decl);
+
+	// cf. localLookupVariable(String)
+	syn VariableAccessInfo EnhancedForStmt.localAccessVariable(Variable decl) {
+		VariableAccessInfo acc = accessVariable(decl);
+		if(acc != null)
+			acc.becomeInvisible(getVariableDeclaration().name().equals(decl.name()));
+		return acc;
+	}	
+}

@@ -1,0 +1,9 @@
+aspect RefactoringException {
+	// making this an unchecked exception is not so great, but it
+	// facilitates eliminating language extensions by rewriting
+	class RefactoringException extends Error {
+		public RefactoringException(String msg) {
+			super(msg);
+		}
+	}
+}

@@ -1,0 +1,26 @@
+aspect CompilationUnitExt {
+	public String CompilationUnit.getID() {
+		char pathsep = File.separatorChar;
+		String path = pathName();
+		if(path == null)
+			return null;
+		int i = path.lastIndexOf(pathsep);
+		String relname_tail = i == -1 ? path : path.substring(i+1);
+		int j = relname_tail.lastIndexOf(".");
+		return relname_tail.substring(0, j);	 		
+	}
+	
+	public void CompilationUnit.setID(String id) {
+		setRelativeName(patchName(relativeName(), id));
+		setPathName(patchName(pathName(), id));
+	}
+	
+	private static String CompilationUnit.patchName(String path, String name) {
+		char pathsep = File.separatorChar;
+		int i = path.lastIndexOf(pathsep);
+		String relname_head = i == -1 ? "" : path.substring(0, i+1);
+		String relname_tail = i == -1 ? path : path.substring(i+1);
+		int j = relname_tail.lastIndexOf(".");
+		return relname_head + name + relname_tail.substring(j);
+	}
+}

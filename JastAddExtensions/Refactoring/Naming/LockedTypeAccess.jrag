@@ -1,0 +1,205 @@
+aspect LockedTypeAccess {
+	// not all types have a name
+	public boolean TypeDecl.hasName() { return true; }
+	public boolean AbstractWildcardType.hasName() { return false; }
+	public boolean NullType.hasName() { return false; }
+	public boolean EmptyType.hasName() { return false; }
+	public boolean AnonymousDecl.hasName() { return false; }
+	public boolean ClassDeclSubstituted.hasName() { return false; }
+	public boolean GenericClassDeclSubstituted.hasName() { return false; }
+	public boolean UnknownType.hasName() { return false; }
+	public boolean GLBType.hasName() { return false; }
+	public boolean GenericInterfaceDeclSubstituted.hasName() { return false; }
+	public boolean LUBType.hasName() { return false; }
+	
+	/* A locked type access is a type access that does not obey the normal type lookup
+	 * rules, but instead immediately binds to its target. */
+	private TypeDecl TypeAccess.targetType = null;
+	private boolean CompilationUnit.locked = false;
+	
+	refine LookupType eq TypeAccess.decls() {
+		if(targetType == null)
+			return refined();
+		return SimpleSet.emptySet.add(targetType);
+	}
+	
+	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
+		if(targetType == null) {
+			refined(s);
+		} else {
+			s.append("[[");
+			refined(s);
+			s.append("]]");
+		}
+	}
+	
+	public TypeAccess.TypeAccess(TypeDecl target) {
+		setID(target.name());
+		targetType = target;
+	}
+	
+	public void TypeAccess.lockNames(Collection<String> endangered) {
+		if(targetType == null &&
+				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
+			lock();
+		super.lockNames(endangered);
+	}
+	
+	// absolute type access; can't get shadowed anyway
+	public void BytecodeTypeAccess.lockNames(Collection<String> endangered) { }
+	
+	public void CompilationUnit.lockNames(Collection<String> endangered) {
+		if(fromSource() && !locked && endangered.contains(getID()))
+			locked = true;
+		super.lockNames(endangered);
+	}
+	
+	rewrite TypeAccess {
+		when(targetType != null && !hasExtension(LOCKED_NAMES))
+		to Access {
+			return unlock();
+		}
+	}
+	
+	rewrite CompilationUnit {
+		when(locked && fromSource() && !hasExtension(LOCKED_NAMES))
+		to CompilationUnit {
+			locked = false;
+			// make sure this compilation unit has same name as publicly declared class
+			for(TypeDecl t : getTypeDecls()) {
+				if(t.isPublic()) {
+					setID(t.name());
+					break;
+				}
+			}
+			return this;
+		}
+	}
+	
+	public void TypeAccess.lock() {
+		targetType = decl();
+	}
+	
+	public Access TypeAccess.unlock() {
+		TypeDecl target = targetType;
+		if(!target.hasName())
+			throw new RefactoringException("cannot unlock access to nameless type");
+		try {
+			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
+					|| hostType() != null && !target.accessibleFrom(hostType()))
+				throw new RefactoringException("inaccessible type");
+			if(!fromSource()) {
+				if(!decl().equals(target))
+					throw new RefactoringException("cannot fix access in library");
+				return this;
+			}
+			if(target.isRawType())
+				target = target.erasure();
+			if(target.isPrimitive() || target.isVoid())
+				return unlockPrimitiveTypeAccess(target);
+			if(target.isArrayDecl())
+				return unlockArrayTypeAccess((ArrayDecl)target);
+			if(target.isParameterizedType())
+				return unlockParTypeAccess((ParTypeDecl)target);
+			if(target.isTypeVariable())
+				return unlockTypeVariableAccess((TypeVariable)target);
+			if(target.isLocalClass())
+				return unlockLocalClassAccess((ClassDecl)target);
+			if(target.isMemberType())
+				return unlockMemberTypeAccess(target);
+			if(target.isTopLevelType())
+				return unlockTopLevelTypeAccess(target);
+			throw new Error("cannot fix access to this kind of type");
+		} finally {
+			targetType = null;
+		}
+	}
+	
+	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target) {
+		if(isQualified())
+			throw new RefactoringException("cannot access primitive type under qualifier");
+		setPackage(PRIMITIVE_PACKAGE_NAME);
+		setID(target.name());
+		return this;
+	}
+	
+	protected Access TypeAccess.unlockTypeVariableAccess(TypeVariable target) {
+		if(isQualified())
+			throw new RefactoringException("cannot access type variable under type qualifier");
+		if(!lookupName(target.name()).isSingleton(target))
+			throw new RefactoringException("cannot access shadowed/obscured type variable");
+		setPackage("");
+		setID(target.name());
+		return this;
+	}
+	
+	protected Access TypeAccess.unlockLocalClassAccess(ClassDecl target) {
+		if(isQualified())
+			throw new RefactoringException("cannot access local class under type qualifier");
+		if(!lookupName(target.name()).isSingleton(target))
+			throw new RefactoringException("cannot access shadowed/obscured local class");
+		setPackage("");
+		setID(target.name());
+		return this;
+	}
+
+	protected Access TypeAccess.unlockMemberTypeAccess(TypeDecl target) {
+		if(isQualified()) {
+			if(!qualifier().isTypeAccess())
+				throw new RefactoringException("cannot access member type under non-type qualifier");
+			TypeDecl outer = qualifier().type();
+			if(!outer.memberTypes(target.name()).isSingleton(target))
+				throw new RefactoringException("cannot access shadowed member type");
+			setPackage("");
+			setID(target.name());
+			return this;
+		} else {
+			if(lookupName(target.name()).isSingleton(target)) {
+				setPackage("");
+				setID(target.name());
+				return this;
+			} else {
+				TypeDecl outer = target.enclosingType();
+				if(!outer.memberTypes(target.name()).isSingleton(target))
+					throw new RefactoringException("cannot access shadowed member type");
+				setPackage("");
+				setID(target.name());
+				return new TypeAccess(outer).qualifiesAccess(this);
+			}
+		}
+	}
+	
+	protected Access TypeAccess.unlockTopLevelTypeAccess(TypeDecl target) {
+		if(isQualified())
+			throw new RefactoringException("cannot access toplevel type under qualifier");
+		if(lookupName(target.name()).isSingleton(target)) {
+			setPackage("");
+			setID(target.name());
+			return this;
+		}
+		setPackage(target.packageName());
+		setID(target.name());
+		String pkg = getTopLevelPackage();
+		SimpleSet s = lookupName(pkg);
+		if(!s.isEmpty() && !s.isSingleton(lookupPackage(pkg))
+				|| !lookupType(target.packageName(), target.name()).equals(target))
+			throw new RefactoringException("cannot access toplevel type");
+		return this;
+	}
+	
+	protected Access TypeAccess.unlockParTypeAccess(ParTypeDecl target) {
+		List<Access> args = new List<Access>();
+		for(int i=0;i<target.getNumArgument();++i)
+			args.add(new TypeAccess(target.getArgument(i).type()));
+		return new ParTypeAccess(new TypeAccess(target.genericDecl()), args);
+	}
+
+	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
+		return new ArrayTypeAccess(new TypeAccess(target.componentType()));
+	}
+	
+	protected Access ArrayTypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
+		setAccess(new TypeAccess(target.componentType()));
+		return this;
+	}
+}

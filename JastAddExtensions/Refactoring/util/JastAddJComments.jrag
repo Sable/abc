@@ -1,0 +1,14 @@
+aspect Comments {
+
+  public void CompilationUnit.setComments(HashMap<FileRange, String> map) {
+    comments = map;
+  }
+  public HashMap<FileRange, String> CompilationUnit.comments;
+  public FileRange CompilationUnit.findComment(String comment) {
+	  for(Map.Entry<FileRange, String> e : comments.entrySet())
+		  if(e.getValue().equals(comment))
+			  return e.getKey();
+	  return null;
+  }
+
+}
