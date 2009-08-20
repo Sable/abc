@@ -32,9 +32,13 @@ aspect LanguageExtensions {
 	}
 	
 	public void ASTNode.eliminate(LanguageExtension... les) {
-		int phase = state().rewritePhase;
 		for(LanguageExtension le : les)
-			phase |= le.getIndex();
+			eliminate(le);
+	}
+	
+	public void ASTNode.eliminate(LanguageExtension le) {
+		int phase = state().rewritePhase;
+		phase |= le.getIndex();
 		programRoot().applyRewrites(phase);
 	}
 	

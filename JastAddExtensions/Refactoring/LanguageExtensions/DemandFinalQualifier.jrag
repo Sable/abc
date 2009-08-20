@@ -1,0 +1,67 @@
+/* the demand final modifier "final?" can be used to qualify parameters or local
+ * variables; it becomes a normal "final" modifier if there are references from within
+ * a nested or local class, and otherwise just goes away */
+aspect DemandFinalQualifier {
+	public static LanguageExtension ASTNode.DEMAND_FINAL_MODIFIER = new LanguageExtension("demand final modifier");
+	
+	// whether a variable should be final
+	syn boolean Variable.shouldBeFinal() {
+		if(isClassVariable() || isInstanceVariable())
+			return false;
+		for(VarAccess va : uses())
+			if(va.hostType() != this.hostType())
+				return true;
+		return false;
+	}
+	
+	// whether it is OK for a variable to be final
+	syn boolean Variable.mayBeFinal();
+	eq FieldDeclaration.mayBeFinal() = false;  // sound but not complete
+	eq ParameterDeclaration.mayBeFinal() {
+		for(VarAccess va : uses())
+			if(va.isDest())
+				return false;
+		return true;
+	}
+	eq VariableDeclaration.mayBeFinal() {
+		for(VarAccess va : uses())
+			if(va.isDest() && (this.hasInit() || !va.isDUbefore(this)))
+				return false;
+		return true;
+	}
+	
+	public boolean Modifiers.isDemandFinal() {
+		return numModifier("final?") != 0;
+	}
+	
+	public void Modifiers.addDemandFinalModifier() {
+		if(!isFinal())
+			addModifier(new Modifier("final?"));
+	}
+	
+	public void ParameterDeclaration.setDemandFinal() { getModifiers().addDemandFinalModifier(); }
+	public void VariableDeclaration.setDemandFinal() { getModifiers().addDemandFinalModifier(); }
+
+	rewrite Modifiers {
+		when(isDemandFinal() && !hasExtension(DEMAND_FINAL_MODIFIER))
+		to Modifiers {
+			Modifier m = null;
+			int i=0;
+			for(;i<getNumModifier();++i) {
+				if(getModifier(i).getID().equals("final?")) {
+					m = getModifier(i);
+					break;
+				}
+			}
+			Variable v = getModifiedVariable();
+			if(v.shouldBeFinal()) {
+				if(!v.mayBeFinal())
+					throw new RefactoringException("variable should be made final but can't");
+				m.setID("final");
+			} else {
+				getModifierList().removeChild(i);
+			}
+			return this;
+		}
+	}
+}

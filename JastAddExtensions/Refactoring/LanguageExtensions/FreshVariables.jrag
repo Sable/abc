@@ -19,8 +19,8 @@ aspect FreshVariables {
 		return true;
 	}
 	
-	public void FreshVariable.toString(StringBuffer s) {
-		s.append("#fresh#" + name());
+	public String FreshVariable.name() {
+		return "#fresh#" + super.name();
 	}
 	
 	// fresh variables cannot be looked up, they can only be referred to with locked names
@@ -32,10 +32,10 @@ aspect FreshVariables {
 		when(!hasExtension(FRESH_VARIABLES))
 		to ParameterDeclaration {
 			String new_name = pickFreshName();
-			ParameterDeclaration pd = new ParameterDeclaration(getTypeAccess(), new_name);
+			ParameterDeclaration pd = new ParameterDeclaration(getModifiers(), getTypeAccess(), new_name);
 			for(VarAccess va : uses())
 				((LockedVarAccess)va).setTarget(pd);
-			return pd;
+			return pd;		
 		}
 	}
 	
@@ -51,11 +51,11 @@ aspect FreshVariables {
 	}
 	
 	public String FreshVariable.pickFreshName() {
-		String fresh_name = name();
+		String fresh_name = getID();
 		Collection<Declaration> decls = hostBodyDecl().allDecls();
 		if(conflicts(fresh_name, decls)) {
 			for(int i=0;;++i) {
-				fresh_name = name()+i;
+				fresh_name = getID()+i;
 				if(!conflicts(fresh_name, decls))
 					break;
 			}

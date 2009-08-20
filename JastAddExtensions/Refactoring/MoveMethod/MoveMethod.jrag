@@ -1,16 +1,14 @@
 aspect MoveMethod {
 	public void MethodDecl.move() {
 		checkMovingPreconditions();
-		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID);
+		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
 		ClassDecl targetClass = (ClassDecl)getParameter(0).type();
 		MethodDecl movedMethod = createMovedMethod();
 		Stmt delegation = createDelegationCall(movedMethod);
 		this.setBlock(new Block(new List<Stmt>().add(delegation)));
 		targetClass.lockAllNames();
 		targetClass.addBodyDecl(movedMethod);
-		eliminate(RETURN_VOID);
-		eliminate(WITH_STMT);
-		eliminate(LOCKED_NAMES);
+		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 	
 	private void MethodDecl.checkMovingPreconditions() {
@@ -61,6 +59,7 @@ aspect MoveMethod {
 		for(TypeDecl enc=hostType();enc!=null;enc=enc.enclosingType()) {
 			String parmname = enc.name().toLowerCase();
 			ParameterDeclaration parm = new FreshParameter(new TypeAccess(enc), parmname);
+			parm.setDemandFinal();
 			parms.insertChild(parm, 0);
 			quals.insertChild(new LockedVarAccess(parm), 0);
 		}

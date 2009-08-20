@@ -1,0 +1,11 @@
+aspect Modifiers {
+	inh Variable Modifiers.getModifiedVariable();
+	
+	eq Program.getChild().getModifiedVariable() = null;
+	eq TypeDecl.getModifiers().getModifiedVariable() = null;
+	eq ConstructorDecl.getModifiers().getModifiedVariable() = null;
+	eq MethodDecl.getModifiers().getModifiedVariable() = null;
+	eq FieldDeclaration.getModifiers().getModifiedVariable() = this;
+	eq VariableDeclaration.getModifiers().getModifiedVariable() = this;
+	eq ParameterDeclaration.getModifiers().getModifiedVariable() = this;
+}

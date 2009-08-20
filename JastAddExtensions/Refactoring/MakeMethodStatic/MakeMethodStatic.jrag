@@ -1,0 +1,31 @@
+aspect MakeMethodStatic {
+	public void MethodDecl.makeStatic() {
+		if(isStatic())
+			return;
+		if(!fromSource() || !hasBlock())
+			throw new RefactoringException("cannot make static");
+		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
+		programRoot().lockMethodNames(Collections.singleton(name()));
+		// prepare new method
+		MethodDecl newMethod = (MethodDecl)this.fullCopy();
+		newMethod.getModifiers().addModifier(new Modifier("static"));
+		String newParmName = hostType().name().toLowerCase();
+		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType()), newParmName);
+		newParm.setDemandFinal();
+		newMethod.getParameterList().insertChild(newParm, 0);
+		Access newParmAcc = new LockedVarAccess(newParm);
+		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
+		newMethod.setBlock(new Block(new List<Stmt>().add(withStmt)));
+		if(!hostType().canIntroduceMethod(newMethod))
+			throw new RefactoringException("cannot introduce method");
+		hostType().addBodyDecl(newMethod);
+		// make this method a delegate
+		List<Expr> delegationArgs = new List<Expr>().add(new ThisAccess("this"));
+		for(int i=0;i<getNumParameter();++i)
+			delegationArgs.add(new VarAccess(getParameter(i).name()));
+		Expr delegationCall = new MethodAccess(name(), delegationArgs);
+		this.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(delegationCall))));
+		// KTHXBYE
+		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+	}
+}

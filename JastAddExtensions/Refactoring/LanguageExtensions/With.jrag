@@ -169,7 +169,7 @@ aspect With {
 	}
 	
 	public void VarAccess.eliminateWith(List<Access> qualifiers) {
-		if(!isQualified() && decl() instanceof FieldDeclaration) {
+		if(!isQualified() && decl() instanceof FieldDeclaration && !decl().isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
 				if(!qual.type().memberFields(name()).isEmpty()) {
