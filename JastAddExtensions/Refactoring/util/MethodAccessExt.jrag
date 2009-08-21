@@ -1,0 +1,12 @@
+aspect MethodAccessExt {
+	syn boolean MethodAccess.isSuperCall() = this.isQualified() && this.qualifier().isSuperAccess();
+	syn boolean MethodAccess.isPolyCall() = !decl().isStatic() && !decl().isPrivate()  && !isSuperCall();
+	
+	syn lazy Collection<MethodDecl> MethodAccess.possibleTargets() {
+		HashSet<MethodDecl> res = new HashSet<MethodDecl>();
+		res.add(decl());
+		if(isPolyCall())
+			res.addAll(decl().overriders());
+		return res;
+	}
+}

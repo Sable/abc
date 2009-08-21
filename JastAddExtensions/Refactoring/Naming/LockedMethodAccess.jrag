@@ -1,3 +1,4 @@
+// TODO: check that possible targets stay the same, not only the decl
 aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */
@@ -5,14 +6,20 @@ aspect LockedMethodAccess {
 		this(target.name(), args, target, new Opt());
 	}
 	
-	private boolean LockedMethodAccess.simulate_unlocked = false;
-	eq LockedMethodAccess.decls() = simulate_unlocked ? super.decls() : SimpleSet.emptySet.add(getTarget());
+	eq LockedMethodAccess.isSuperCall() = hasQualifier() ? getQualifier().isSuperAccess() : super.isSuperCall();
+	
+	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget());
 	
 	private MethodDecl LockedMethodAccess.unlockedDecl() {
 		flushCache();
-		simulate_unlocked = true;
-		MethodDecl res = decl();
-		simulate_unlocked = false;
+		SimpleSet set; 
+		if(hasQualifier())
+			set = maxSpecific(getQualifier().type().memberMethods(name()));
+		else
+			set = maxSpecific(lookupMethod(name()));
+		if(!set.isSingleton())
+			return unknownMethod();
+		MethodDecl res = (MethodDecl)set.iterator().next();
 		return res;
 	}
 		
@@ -83,7 +90,11 @@ aspect LockedMethodAccess {
 			if(fromSource())
 				setID(target.name());
 			if(unlockedDecl().sameSourceDeclAs(target)) {
-				return new MethodAccess(name(), getArgs());
+				MethodAccess ma = new MethodAccess(name(), getArgs());
+				if(hasQualifier())
+					return getQualifier().qualifiesAccess(ma);
+				else
+					return ma;
 			} else if(fromSource()) {
 				MethodAccessInfo acc;
 				if(hasQualifier())
