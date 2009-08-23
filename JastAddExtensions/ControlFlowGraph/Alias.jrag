@@ -1,0 +1,40 @@
+// poor man's alias analysis
+aspect Alias {
+	interface Location { 
+		TypeDecl type();
+	}
+	Variable extends Location;
+	ArrayAccess implements Location;
+	
+	syn lazy Location Access.getLocation() = null;
+	eq AbstractDot.getLocation() = getRight().getLocation();
+	eq ArrayAccess.getLocation() = this;
+	eq VarAccess.getLocation() = decl();
+	
+	public boolean Location.isArrayElement() { return false; }
+	public boolean Variable.isArrayElement() { return false; }
+	public boolean ArrayAccess.isArrayElement() { return true; }
+	
+	public boolean Variable.mayAlias(Location l) { return this == l; }
+	
+	public boolean Variable.mustAlias(Location l) { return false; }
+	public boolean ParameterDeclaration.mustAlias(Location l) { return mayAlias(l); }
+	public boolean VariableDeclaration.mustAlias(Location l) { return mayAlias(l); }
+	
+	/* we say an access refers to a location if assigning a value to it changes
+	 * the content of that location */
+	syn boolean Access.mayReferTo(Location l) = false;
+	eq AbstractDot.mayReferTo(Location l) = getRight().mayReferTo(l);
+	eq ArrayAccess.mayReferTo(Location l) = l.isArrayElement() && type().castingConversionTo(l.type());
+	eq VarAccess.mayReferTo(Location l) = decl().mayAlias(l);
+	
+	syn boolean Access.mustReferTo(Location l) = false;
+	eq AbstractDot.mustReferTo(Location l) = getRight().mustReferTo(l);
+	eq ArrayAccess.mustReferTo(Location l) = false;
+	eq VarAccess.mustReferTo(Location l) = decl().mustAlias(l);
+	
+	// very crude interprocedural analysis
+	syn boolean MethodAccess.mayDefine(Location l) =
+		!(l instanceof ParameterDeclaration || l instanceof VariableDeclaration);
+	syn boolean MethodAccess.mustDefine(Location l) = false;
+}

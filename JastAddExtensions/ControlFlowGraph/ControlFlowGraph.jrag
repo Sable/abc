@@ -451,7 +451,7 @@ aspect ControlFlowGraph {
 	eq SynchronizedStmt.getExpr().following() = singleNode(getBlock());
 	eq SynchronizedStmt.getBlock().following() = following();
 
-	// AssertStmt: note that as assertion failure is just an exception
+	// AssertStmt: note that an assertion failure is just an exception
 	eq AssertStmt.succ() = singleNode(getfirst().first());
 	
 	eq AssertStmt.getfirst().followingWhenTrue() = following();

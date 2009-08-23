@@ -1,0 +1,98 @@
+aspect ReachingDefinitions {
+	interface Definition { }
+	Access implements Definition;
+	ParameterDeclaration implements Definition;
+	VariableDeclaration implements Definition;
+	MethodAccess implements Definition;
+	
+	public SmallSet<Definition> Access.reachingDefinitions() {
+		Location l = getLocation();
+		if(!isSource() || l == null)
+			return SmallSet.<Definition>empty();
+		// we don't want the node to be its own reaching definition
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	coll SmallSet<Access> Definition.reachedUses() [SmallSet.mutable()] with add root BodyDecl;
+	Access contributes this to Definition.reachedUses() for each reachingDefinitions();
+	
+	syn lazy SmallSet<Definition> ASTNode.reachingDefinitionsFor(Location l)
+		circular [SmallSet.<Definition>empty()] {
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	eq ParameterDeclaration.reachingDefinitionsFor(Location l) {
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		if(mayAlias(l)) {
+			res = SmallSet.singleton((Definition)this);
+			if(mustAlias(l))
+				return res;
+		}
+		//return super.reachingDefinitionsFor(lv);
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	eq VariableDeclaration.reachingDefinitionsFor(Location l) {
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		if(mayAlias(l)) {
+			if(isInitialised())
+				res = SmallSet.singleton((Definition)this);
+			if(mustAlias(l))
+				return res;
+		}
+		// return super.reachingDefinitionsFor(lv);
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	eq Access.reachingDefinitionsFor(Location l) {
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		if(isDest()) {
+			if(mayReferTo(l)) {
+				res = SmallSet.singleton((Definition)this);
+				if(mustReferTo(l))
+					return res;
+			}
+		}
+		//return res.union(super.reachingDefinitionsFor(l));
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	eq MethodAccess.reachingDefinitionsFor(Location l) {
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		if(mayDefine(l)) {
+			res = SmallSet.singleton((Definition)this);
+			if(mustDefine(l))
+				return res;
+		}
+		//return res.union(super.reachingDefinitionsFor(l));
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	// take care of local variable references from within local/anonymous classes
+	eq Modifiers.reachingDefinitionsFor(Location l) {
+		if(hostType().isLocalClass() || hostType().isAnonymous())
+			return hostType().reachingDefinitionsFor(l);
+		//return super.reachingDefinitionsFor(l);
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
+	syn boolean VariableDeclaration.isInitialised() = 
+		hasInit() || getParent() instanceof EnhancedForStmt;
+}
