@@ -1,0 +1,33 @@
+/** The "Split Variable Declaration" refactoring splits a variable declaration
+ *  with initialiser like
+ *
+ *        int x = 42;
+ *
+ *  into a declaration followed by an assignment like
+ *
+ *        int x;
+ *        x = 42;
+ *
+ *  The refactoring returns the newly created assignment, or null if none was created.
+ */
+
+aspect SplitVarDecl {
+  
+  public AssignSimpleExpr VariableDeclaration.split() {
+    if(!hasInit())
+      return null;  // we could throw an exception here, but I think it's better this way
+    Expr init;
+    // if the RHS is an array initializer, it has to be wrapped into an array creation expression
+    if(getInit().isArrayInit())
+    	init = new ArrayCreationExpr(new TypeAccess(type()), new Opt(getInit()));
+    else
+    	init = getInit();
+    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), init);
+    this.setInitOpt(new Opt());
+    insertStmtAfter(new ExprStmt(assgn));
+    return assgn;
+  }
+  
+  syn lazy boolean Expr.isArrayInit() = false;
+  eq ArrayInit.isArrayInit() = true;
+}

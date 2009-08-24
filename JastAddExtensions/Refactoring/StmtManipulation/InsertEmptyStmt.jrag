@@ -1,0 +1,118 @@
+/* The Insert Empty Statement refactoring inserts an empty statement
+ * before or after a given statement. This trivially preserves semantics,
+ * but some care has to be taken to preserve compilability. */
+aspect InsertEmptyStmt {
+	public EmptyStmt Stmt.insertEmptyStmtBefore() {
+		return (EmptyStmt)insertStmtBefore(new EmptyStmt());
+	}
+	
+	public EmptyStmt Stmt.insertEmptyStmtAfter() {
+		return (EmptyStmt)insertStmtAfter(new EmptyStmt());
+	}
+	
+	// more general purpose version to insert any statement; not a refactoring, obviously  
+	inh Stmt Stmt.insertStmtBefore(Stmt s);
+	eq Program.getChild().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ConstructorDecl.getConstructorInvocation().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq LabeledStmt.getStmt().insertStmtBefore(Stmt s) = insertStmtBefore(s);
+	eq Block.getStmt(int i).insertStmtBefore(Stmt s) {
+		getStmtList().insertChild(s, i);
+		return s;
+	}
+	eq IfStmt.getThen().insertStmtBefore(Stmt s) {
+		setThen(new Block(new List<Stmt>().add(s).add(getThen())));
+		return s;
+	}
+	eq IfStmt.getElse().insertStmtBefore(Stmt s) {
+		setElse(new Block(new List<Stmt>().add(s).add(getElse())));
+		return s;
+	}
+	eq WhileStmt.getStmt().insertStmtBefore(Stmt s) {
+		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
+		return s;
+	}
+	eq DoStmt.getStmt().insertStmtBefore(Stmt s) {
+		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
+		return s;
+	}
+	eq ForStmt.getInitStmt().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ForStmt.getUpdateStmt().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ForStmt.getStmt().insertStmtBefore(Stmt s) {
+		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
+		return s;
+	}
+	eq EnhancedForStmt.getVariableDeclaration().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq EnhancedForStmt.getStmt().insertStmtBefore(Stmt s) {
+		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
+		return s;
+	}
+	eq InstanceInitializer.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq StaticInitializer.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ConstructorDecl.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq MethodDecl.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq SwitchStmt.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq SynchronizedStmt.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TryStmt.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TryStmt.getFinally().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq CatchClause.getBlock().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	
+	inh Stmt Stmt.insertStmtAfter(Stmt s);
+	eq Program.getChild().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ConstructorDecl.getConstructorInvocation().insertStmtAfter(Stmt s) {
+		getBlock().insertChild(s, 0);
+		return s;
+	}
+	eq LabeledStmt.getStmt().insertStmtAfter(Stmt s) = insertStmtAfter(s);
+	eq Block.getStmt(int i).insertStmtAfter(Stmt s) {
+		getStmtList().insertChild(s, i+1);
+		return s;
+	}
+	eq IfStmt.getThen().insertStmtAfter(Stmt s) {
+		if(!getThen().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setThen(new Block(new List<Stmt>().add(getThen()).add(s)));
+		return s;
+	}
+	eq IfStmt.getElse().insertStmtAfter(Stmt s) {
+		if(!getElse().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setElse(new Block(new List<Stmt>().add(getElse()).add(s)));
+		return s;
+	}
+	eq WhileStmt.getStmt().insertStmtAfter(Stmt s) {
+		if(!getStmt().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setStmt(new Block(new List<Stmt>().add(getStmt()).add(s)));
+		return s;
+	}
+	eq DoStmt.getStmt().insertStmtAfter(Stmt s) {
+		if(!getStmt().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setStmt(new Block(new List<Stmt>().add(getStmt()).add(s)));
+		return s;
+	}
+	eq ForStmt.getInitStmt().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ForStmt.getUpdateStmt().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ForStmt.getStmt().insertStmtAfter(Stmt s) {
+		if(!getStmt().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setStmt(new Block(new List<Stmt>().add(getStmt()).add(s)));
+		return s;
+	}
+	eq EnhancedForStmt.getVariableDeclaration().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq EnhancedForStmt.getStmt().insertStmtAfter(Stmt s) {
+		if(!getStmt().canCompleteNormally())
+			throw new RefactoringException("cannot insert statement here");
+		setStmt(new Block(new List<Stmt>().add(getStmt()).add(s)));
+		return s;
+	}
+	eq InstanceInitializer.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq StaticInitializer.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ConstructorDecl.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq MethodDecl.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq SwitchStmt.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq SynchronizedStmt.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TryStmt.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TryStmt.getFinally().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq CatchClause.getBlock().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+}

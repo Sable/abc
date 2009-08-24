@@ -20,4 +20,14 @@ aspect Uses {
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
 	
+	// bind all uses of a label to its declaration
+	coll Collection<Stmt> LabeledStmt.uses() [new ArrayList<Stmt>()] 
+	                                         with add root BodyDecl;
+	BreakStmt contributes
+	this when targetStmt() instanceof LabeledStmt
+	to LabeledStmt.uses() for (LabeledStmt)targetStmt();
+	
+	ContinueStmt contributes
+	this when targetStmt() instanceof LabeledStmt
+	to LabeledStmt.uses() for (LabeledStmt)targetStmt();
 }

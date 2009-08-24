@@ -1,6 +1,7 @@
 aspect With {
 	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement");
 	
+	// pretty printing
 	public void WithStmt.toString(StringBuffer s) {
 		s.append(indent());
 		s.append("with(");
@@ -13,6 +14,7 @@ aspect With {
 		getStmt().toString(s);
 	}
 	
+	// naming
 	eq WithStmt.getStmt().hostType() = getQualifier(getNumQualifier()-1).type();
 	eq WithStmt.getStmt().thisType() = getQualifier(getNumQualifier()-1).type();
 	
@@ -48,30 +50,12 @@ aspect With {
 		return Collections.EMPTY_LIST;
 	}
 	
-	/*eq WithStmt.getStmt().accessVariable(Variable decl) {
-		for(int i=getNumQualifier()-1;i>=0;--i) {
-			TypeDecl td = getQualifier(i).type();
-			VariableAccessInfo acc = td.accessMemberField(decl);
-			if(acc != null)
-				return movePastQualifiers(acc, i+1);
-		}
-		if(decl.isInstanceVariable() || decl.isClassVariable())
-			return null;
-		return movePastQualifiers(accessVariable(decl), 0);
-	}
-	
-	private VariableAccessInfo WithStmt.movePastQualifiers(VariableAccessInfo acc, int i) {
-		if(acc == null)
-			return null;
-		Variable decl = acc.getTarget();
-		for(int j=i;j<getNumQualifier();++j) {
-			TypeDecl td = getQualifier(j).type();
-			if((td.inStaticContext() || td.isStatic()) && decl.isInstanceVariable())
-				return null;
-			acc.becomeInvisible(td.memberFields(decl.name()).isEmpty());
-		}
-		return acc;
-	}*/
+	// control flow
+	eq WithStmt.succ() = 
+		getNumQualifier() == 0 ? singleNode(getStmt()) : singleNode(getQualifier(0).first());
+	eq WithStmt.getQualifier(int i).following() = 
+		i+1 < getNumQualifier() ? singleNode(getQualifier(i+1).first()) : singleNode(getStmt()); 
+	eq WithStmt.getStmt().following() = following();
 	
 	// eliminating with statements
 	rewrite WithStmt {

@@ -1,0 +1,5 @@
+aspect BlockExt {
+	public void Block.removeStmt(Stmt s) {
+    	getStmtList().removeChild(getStmtList().getIndexOfChild(s));
+	}
+}

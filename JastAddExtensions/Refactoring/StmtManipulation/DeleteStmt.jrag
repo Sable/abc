@@ -1,0 +1,17 @@
+/* Deletes an empty statement and any labels attached to it, if possible. */
+aspect InsertEmptyStmt {
+	// in fact, we implement a more general version; might not be a refactoring
+	// if the statement is non-empty
+	public void Stmt.delete() {
+		Stmt s = this;
+		while(s.getParent() instanceof LabeledStmt) {
+			if(!((LabeledStmt)getParent()).uses().isEmpty())
+				throw new RefactoringException("cannot delete this statement");
+			s = (Stmt)s.getParent();
+		}
+		if(s.getParent().getParent() instanceof Block)
+			((Block)s.getParent().getParent()).removeStmt(this);
+		else
+			throw new RefactoringException("cannot delete this statement");
+	}
+}

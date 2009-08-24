@@ -13,6 +13,7 @@ public class AllTests {
 		suite.addTestSuite(RenameTypeTests.class);
 		suite.addTestSuite(MoveMethodTests.class);
 		suite.addTestSuite(MakeMethodStaticTests.class);
+		suite.addTestSuite(InlineTempTests.class);
 		//$JUnit-END$
 		return suite;
 	}

@@ -1,0 +1,37 @@
+aspect InlineAssignment {	
+	public void AssignSimpleExpr.inline() throws RefactoringException {
+		if(!(getParent() instanceof ExprStmt))
+			throw new RefactoringException("cannot inline this assignment");
+		Stmt stmt = (Stmt)getParent();
+		if(!(getDest() instanceof VarAccess))
+			throw new RefactoringException("LHS is not a simple variable");
+		VarAccess v = (VarAccess)getDest();
+		if(!v.decl().isLocalVariable())
+			throw new RefactoringException("can only inline assignment to local variable");
+		makeConversionExplicit();
+		Expr rhs = getSource();
+		SmallSet<Access> dsuccs = v.reachedUses();
+		// check that all the data successors have this as their only data predecessor and are not destinations
+		// and replace them by copies of the RHS
+		for(Access w : dsuccs) {
+			rhs.lockDataFlow();
+			rhs.lockAllNames();
+			if(w.isDest())
+				throw new RefactoringException("cannot inline into destinations");
+			if(!w.reachingDefinitions().isSingleton())
+				throw new RefactoringException("ambiguous dataflow");
+			// TODO: should we parenthesise?
+			w.replaceWith(rhs);
+			rhs.unlockDataFlow();
+			setSource(rhs = (Expr)rhs.fullCopy());
+		}
+		// delete assignment
+		stmt.delete();
+	}
+	
+	public void AssignSimpleExpr.makeConversionExplicit() {
+		if(!getDest().type().equals(getSource().type()))
+			setSource(new CastExpr(new TypeAccess(getDest().type()), getSource()));
+	}
+	
+}

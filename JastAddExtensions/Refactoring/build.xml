@@ -69,6 +69,8 @@
 			<include name="ControlFlowGraph.jrag"/>
 			<include name="Sets.jrag"/>
 			<include name="Exceptions.jrag"/>
+			<include name="Alias.jrag"/>
+			<include name="ReachingDefinitions.jrag"/>
 		</fileset>
 		<fileset dir="${Refactoring}/util">
 		        <include name="**/*.ast"/>

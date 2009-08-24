@@ -1,0 +1,36 @@
+aspect DataFlow {
+	public void ASTNode.lockDataFlow() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).lockDataFlow();
+	}
+	
+	public void ASTNode.unlockDataFlow() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).unlockDataFlow();
+	}
+	
+	private SmallSet<Definition> Access.lockedReachingDefs = null;
+	private SmallSet<Access> Access.lockedReachedUses = null;
+	public void Access.lockDataFlow() {
+		if(lockedReachingDefs == null)
+			lockedReachingDefs = reachingDefinitions();
+		if(lockedReachedUses == null)
+			lockedReachedUses = reachedUses();
+	}
+	public void Access.unlockDataFlow() {
+		flushCache();
+		if(lockedReachingDefs != null) {
+			if(!reachingDefinitions().equals(lockedReachingDefs))
+				throw new RefactoringException("couldn't preserve data flow");
+			lockedReachingDefs = null;
+		}
+		if(lockedReachedUses != null) {
+			if(!reachedUses().equals(lockedReachedUses))
+				throw new RefactoringException("couldn't preserve data flow");
+			lockedReachedUses = null;
+		}
+	}
+	public void MethodAccess.unlockDataFlow() {
+		throw new RefactoringException("cannot preserve data flow for method invocations");
+	}
+}

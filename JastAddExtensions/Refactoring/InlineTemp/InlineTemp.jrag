@@ -1,0 +1,34 @@
+aspect InlineTemp {
+	public void VariableDeclaration.inline() {
+		AssignSimpleExpr assgn = split();
+		if(assgn != null)
+			assgn.inline();
+		removeUnused();
+	}
+	
+    public void VarAccess.inline() {
+    	if(!(decl() instanceof VariableDeclaration))
+    		throw new RefactoringException("cannot inline non-local definitions");
+    	SmallSet<Definition> pred = this.reachingDefinitions();
+    	if(!pred.isSingleton())
+    		throw new RefactoringException("ambiguous dataflow");
+    	Definition def = pred.iterator().next();
+    	if(def instanceof VariableDeclaration) {
+    		((VariableDeclaration)def).inline();
+    	} else {
+    		VarAccess va = (VarAccess)def;
+    		if(va.getParent() instanceof AssignSimpleExpr)
+    			((AssignSimpleExpr)va.getParent()).inline();
+    		else
+    			throw new RefactoringException("cannot inline this assignment");
+    	}
+    }
+    
+    // stand-alone refactoring
+    public void VariableDeclaration.doInline() {
+    	Program root = programRoot();
+    	root.introduce(LOCKED_NAMES);
+    	inline();
+    	root.eliminate(LOCKED_NAMES);
+    }
+}
