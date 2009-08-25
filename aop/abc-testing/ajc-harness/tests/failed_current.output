@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1012ms, memory usage: 7072288.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 915ms, memory usage: 6887200.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1896ms, memory usage: 8358272.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1835ms, memory usage: 4202080.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1019ms, memory usage: 14228936.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1017ms, memory usage: 14131880.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 861ms, memory usage: 10131592.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 843ms, memory usage: 5288848.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,22 +36,22 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1659ms, memory usage: 4276424.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1661ms, memory usage: 9303728.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@12e529f.foo calls Outer$Inner@326e5c.mi
+Outer@61963b.foo calls Outer$Inner@ce1139.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@326e5c.mi calls java.io.PrintStream@eb76d6.println
+Outer$Inner@ce1139.mi calls java.io.PrintStream@ccecfd.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@12e529f.foo calls Outer$InnerRandom@11fd2be.nextHook
+Outer@61963b.foo calls Outer$InnerRandom@3493c6.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@11fd2be.nextHook calls Outer$InnerRandom@11fd2be.next
+Outer$InnerRandom@3493c6.nextHook calls Outer$InnerRandom@3493c6.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@12e529f.foo calls X.nextInt
+Outer@61963b.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -62,7 +62,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$3$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -71,7 +71,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2969ms, memory usage: 9528656.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2919ms, memory usage: 9568648.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -85,7 +85,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$30$around$1600(AroundAll.java:199)
+	at A.inline$26$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -94,7 +94,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 3408ms, memory usage: 9445560.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 3699ms, memory usage: 9445144.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -112,7 +112,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 2148ms, memory usage: 8640872.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 2128ms, memory usage: 8632248.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -136,26 +136,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2542ms, memory usage: 9047000.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2537ms, memory usage: 9043848.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1018ms, memory usage: 7881432.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 999ms, memory usage: 8690936.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1037ms, memory usage: 19067816.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1018ms, memory usage: 13086336.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1231ms, memory usage: 10908960.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1334ms, memory usage: 8876168.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -163,7 +163,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1156ms, memory usage: 9143888.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1187ms, memory usage: 14232360.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -179,13 +179,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 886ms, memory usage: 22272736.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 952ms, memory usage: 21677128.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 224ms, memory usage: 8426944.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 223ms, memory usage: 8419824.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -194,7 +194,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 898ms, memory usage: 9419472.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 887ms, memory usage: 12834488.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -219,7 +219,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 3088ms, memory usage: 8988448.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 3105ms, memory usage: 9019360.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -240,7 +240,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 983ms, memory usage: 21621832.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 975ms, memory usage: 23987776.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -249,19 +249,19 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1651ms, memory usage: 19243872.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1533ms, memory usage: 17348216.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 790ms, memory usage: 5650664.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 792ms, memory usage: 18889416.
 
 
 Running test 1426: abctests/da/typechecks/Typechecks for dependent advice with state machine
 Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.ja.da abctests/da/typechecks/DASMTypeChecks.java 
 Illegal arguments: Cannot load AbcExtension from abc.ja.da
-FAIL: Test 1426: "abctests/da/typechecks/Typechecks for dependent advice with state machine" failed in 256ms, memory usage: 9797848.
+FAIL: Test 1426: "abctests/da/typechecks/Typechecks for dependent advice with state machine" failed in 320ms, memory usage: 8333992.
 
 
