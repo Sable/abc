@@ -473,12 +473,33 @@ public class Main {
         }
         sb.append(OptionsParser.v().classpath());
 
-        sb.append(File.pathSeparator);
-        sb.append(System.getProperty("java.home"));
-        sb.append(File.separator);
-        sb.append("lib");
-        sb.append(File.separator);
-        sb.append("rt.jar");
+        if(System.getProperty("os.name").equals("Mac OS X")) {
+	        //in Mac OS X, rt.jar is split into classes.jar and ui.jar
+	        sb.append(File.pathSeparator);
+	        sb.append(System.getProperty("java.home"));
+	        sb.append(File.separator);
+	        sb.append("..");
+	        sb.append(File.separator);
+	        sb.append("Classes");
+	        sb.append(File.separator);
+	        sb.append("classes.jar");
+	
+	        sb.append(File.pathSeparator);
+	        sb.append(System.getProperty("java.home"));
+	        sb.append(File.separator);
+	        sb.append("..");
+	        sb.append(File.separator);
+	        sb.append("Classes");
+	        sb.append(File.separator);
+	        sb.append("ui.jar");
+        } else {
+            sb.append(File.pathSeparator);
+            sb.append(System.getProperty("java.home"));
+            sb.append(File.separator);
+            sb.append("lib");
+            sb.append(File.separator);
+            sb.append("rt.jar");
+        }
 
         if(OptionsParser.v().w() || OptionsParser.v().dava()) {
             //necessary for some whole-program analyses and dava
