@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import abc.da.weaving.aspectinfo.TracePattern;
-
 /**
  * An abstraction of a {@link TMStateMachine}. Supports basic operations on state machines but
  * has no dependencies on the tracematch semantics. This is used by the extension abc.da, but may also be used

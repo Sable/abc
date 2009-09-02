@@ -48,7 +48,6 @@ import soot.ShortType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
@@ -60,10 +59,8 @@ import abc.tm.weaving.weaver.IndexedCodeGenHelper;
 import abc.tm.weaving.weaver.itds.ITDAnalysisResults;
 import abc.tm.weaving.weaver.itds.ITDOptimisation;
 import abc.util.Pair;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /** 
  * Represents a TraceMatch.
