@@ -1,4 +1,4 @@
-<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
@@ -96,25 +96,6 @@
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice with state machine" num="1426" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.ja.da" files="DASMTypeChecks.java">
-	    	<message line="16" kind="warning"></message>
-	    	<message line="16" kind="warning"></message>
-	    	<message line="16" kind="warning"></message>
-	    	<message line="24" kind="error"></message>
-	    	<message line="32" kind="error"></message>
-	    	<message line="47" kind="error"></message>
-	    	<message line="49" kind="error"></message>
-	    	<message line="53" kind="error"></message>
-	    	<message line="55" kind="error"></message>
-	    	<message line="61" kind="error"></message>
-	    	<message line="62" kind="error"></message>
-	    	<message line="69" kind="error"></message>
-	    	<message line="75" kind="error"></message>
-	    	<message line="83" kind="error"></message>
-	    	<message line="92" kind="error"></message>
-		</compile>
     </ajc-test>
  
 </suite>
