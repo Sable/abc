@@ -295,16 +295,14 @@ any of their subdirectories.
   <section>
     <name>Static whole-program analysis for dependent advice (abc.da)</name>
     <stringopt>
-      <alias>laststage</alias>
+      <alias>static-analyses</alias>
       <default>quick</default>
-      <set_arg_label>stage</set_arg_label>
-      <short_desc>Specifies the last stage to be executed in the static
-      whole program analysis for tracematches. (quick|flowins|flowsens)</short_desc>
-      <long_desc>Specifies the last stage to be executed in the static
-      whole program analysis for dependent advice and tracematches. There are three stages:
-      (1) quick, (2) flowins (flow-insensitive analysis), (3) flowsens
-      (flow-sensitive analysis) and (4) dyna (dynamic partial instrumentation). They are executed in this order.
-      Default is quick.
+      <set_arg_label>stage1-stage2</set_arg_label>
+      <short_desc>Specifies a hyphen separated list of static-analysis-stages to be executed.</short_desc>
+      <long_desc>Specifies a hyphen separated list of static-analysis-stages to be executed. There are three stages:
+      (1) quick, (2) osa (flow-insensitive Orphan-Shadow Analysis), (3) nsa
+      (flow-sensitive Nop-Shadows Analysis) and (4) dyna (dynamic partial instrumentation for collaborative runtime verification).
+      The stages are executed in this order. Not all combinations of analyses are possible: (3) and (4) both require (2). 
       </long_desc>
     </stringopt>
     <boolopt>
