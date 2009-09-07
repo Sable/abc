@@ -492,6 +492,19 @@ public class Main {
 	        sb.append("Classes");
 	        sb.append(File.separator);
 	        sb.append("ui.jar");
+
+	        if(OptionsParser.v().w() || OptionsParser.v().dava()) {
+	            //necessary for some whole-program analyses and dava
+		        sb.append(File.pathSeparator);
+		        sb.append(System.getProperty("java.home"));
+		        sb.append(File.separator);
+		        sb.append("..");
+		        sb.append(File.separator);
+		        sb.append("Classes");
+	            sb.append(File.separator);
+	            sb.append("jce.jar");
+	        }
+
         } else {
             sb.append(File.pathSeparator);
             sb.append(System.getProperty("java.home"));
@@ -499,17 +512,18 @@ public class Main {
             sb.append("lib");
             sb.append(File.separator);
             sb.append("rt.jar");
+
+            if(OptionsParser.v().w() || OptionsParser.v().dava()) {
+                //necessary for some whole-program analyses and dava
+                sb.append(File.pathSeparator);
+                sb.append(System.getProperty("java.home"));
+                sb.append(File.separator);
+                sb.append("lib");
+                sb.append(File.separator);
+                sb.append("jce.jar");
+            }
         }
 
-        if(OptionsParser.v().w() || OptionsParser.v().dava()) {
-            //necessary for some whole-program analyses and dava
-            sb.append(File.pathSeparator);
-            sb.append(System.getProperty("java.home"));
-            sb.append(File.separator);
-            sb.append("lib");
-            sb.append(File.separator);
-            sb.append("jce.jar");
-        }
 
         if(System.getProperty("abc.home")!=null) {
             sb.append(File.pathSeparator);
