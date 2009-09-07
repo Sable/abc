@@ -29,6 +29,16 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%
+!The framework for reweaving analyis was changed slightly. Pass IDs are
+;now used to automatically infer which pass is enabled or disabled.
+;The user supplies a hyphen-separated list of passes to abc using the
+;-static-analyses flag; e.g. quick-osa-nsa will enable the three passes
+;quick, osa and nsa. A pass can now also state which passes it depends on
+;by passing the IDs of these passes as additional arguments to the
+;constructor. abc checks these dependencies before the passes are about
+;to be applied.  
+
 %1.3.0 1207124346
 !The structure of the AbcExtension class has been reworked; in particular,
 ;the entire compilation process is now driven by a CompileSequence. This

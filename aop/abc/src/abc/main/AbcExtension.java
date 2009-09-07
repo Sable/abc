@@ -38,10 +38,7 @@ import soot.Transform;
 import soot.Trap;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
-import soot.toolkits.scalar.LocalPacker;
 import soot.util.Chain;
 import abc.aspectj.ExtensionInfo;
 import abc.aspectj.parse.AbcLexer;
@@ -103,8 +100,8 @@ import abc.weaving.weaver.ReweavingPass.ID;
  */
 public class AbcExtension
 {
-    private static final ID PASS_CFLOW_ANALYSIS = new ID("CFlow analysis");
-    private static final ID PASS_DEBUG_UNWEAVER = new ID("Debug Unweaver");
+    private static final ID PASS_CFLOW_ANALYSIS = new ID("cflow");
+    private static final ID PASS_DEBUG_UNWEAVER = new ID("debugUnweaver");
     
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;
@@ -683,7 +680,33 @@ public class AbcExtension
         if(reweavingPasses == null) {
             reweavingPasses = new ArrayList<ReweavingPass>();
             createReweavingPasses(reweavingPasses);
+            
+            //cross-check dependencies
+            for (ReweavingPass pass1 : reweavingPasses) {
+				for(ID requiredID: pass1.dependencies()) {
+					boolean foundID=false;
+		            for (ReweavingPass pass2 : reweavingPasses) {
+		            	if(pass2.getId().equals(requiredID)) {
+		            		foundID = true;
+		            		break;
+		            	}
+		            }
+		            if(!foundID) {
+		            	forceReportError(ErrorInfo.SEMANTIC_ERROR, "Pass '"+pass1.getName()+"' requires pass with ID '"+
+		            			requiredID+"' but that pass is not enabled.", Position.COMPILER_GENERATED);
+		            }
+				}
+			}
+            
+            //filter out disabled passes
+            for (Iterator<ReweavingPass> passIter = reweavingPasses.iterator(); passIter.hasNext();) {
+				ReweavingPass pass = passIter.next();
+				if(!pass.isEnabled()) {
+					passIter.remove();					
+				}
+			}
         }
+        
         return reweavingPasses;
     }
 

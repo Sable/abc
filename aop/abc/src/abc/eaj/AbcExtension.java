@@ -55,7 +55,7 @@ import abc.weaving.weaver.ReweavingPass.ID;
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
-    protected static final ID THREAD_LOCAL_OBJECTS_ANALYSIS = new ReweavingPass.ID("thread-local obejcts analysis");
+    protected static final ID THREAD_LOCAL_OBJECTS_ANALYSIS = new ReweavingPass.ID("tlo");
     
     protected boolean lexerSawMaybeSharedPointcut = false;
 

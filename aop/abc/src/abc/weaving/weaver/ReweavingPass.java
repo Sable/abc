@@ -20,10 +20,15 @@
 package abc.weaving.weaver;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import polyglot.util.Enum;
 import abc.main.Debug;
+import abc.main.options.OptionsParser;
 
 /**
  * Encapsulates a reweaving analysis and associates it with a unique pass ID
@@ -33,9 +38,14 @@ import abc.main.Debug;
  */
 public class ReweavingPass {
 
-    /** Analysis identifiers. These should be unique. */
-    public static class ID extends Enum {
-        public ID(String name) { super(name); }
+    /** Analysis identifiers. These should be unique. The ID is used to enable th eanalysis on the command line. */
+    @SuppressWarnings("serial")
+	public static class ID extends Enum {
+        public ID(String name) { super(name);
+	        if(name.contains(" ") || name.contains("-")) {
+	        	throw new RuntimeException("ID must not contain whitespace or hyphens: "+name);
+	        }
+        }
     }
 
     /**
@@ -51,13 +61,17 @@ public class ReweavingPass {
     
     protected volatile Throwable exception;
 
+	protected final String name;
+	
+	protected final Set<ID> dependencies;
+
     /**
      * Creates a new reweaving analysis pass.
      * @param id a unique pass ID
      * @param analysis the analysis to schedule
      */
-    public ReweavingPass(ID id, ReweavingAnalysis analysis) {
-        this(id, analysis, NO_TIMEOUT);
+    public ReweavingPass(ID id, ReweavingAnalysis analysis, ID... dependencies) {
+        this(id, analysis, NO_TIMEOUT, dependencies);
     }
         
     /**
@@ -66,7 +80,7 @@ public class ReweavingPass {
      * @param analysis the analysis to schedule
      * @param timeout a timeout in milliseconds after which the analysis should be aborted
      */
-    public ReweavingPass(ID id, ReweavingAnalysis analysis, long timeout) {
+    public ReweavingPass(ID id, ReweavingAnalysis analysis, long timeout, ID... dependencies) {
         assert id != null;
         assert analysis != null;
         this.id = id;
@@ -76,6 +90,8 @@ public class ReweavingPass {
             timeout = NO_TIMEOUT;
         }
         this.timeout = timeout;
+		this.name = id.toString();
+		this.dependencies = Collections.unmodifiableSet(new HashSet<ID>(Arrays.asList(dependencies)));
     }
 
     /**
@@ -149,14 +165,14 @@ public class ReweavingPass {
     /**
      * @see abc.weaving.weaver.ReweavingAnalysis#defaultSootArgs(java.util.List)
      */
-    public void defaultSootArgs(List sootArgs) {
+    public void defaultSootArgs(List<String> sootArgs) {
         analysis.defaultSootArgs(sootArgs);
     }
 
     /**
      * @see abc.weaving.weaver.ReweavingAnalysis#enforceSootArgs(java.util.List)
      */
-    public void enforceSootArgs(List sootArgs) {
+    public void enforceSootArgs(List<String> sootArgs) {
         analysis.enforceSootArgs(sootArgs);
     }
     
@@ -177,6 +193,17 @@ public class ReweavingPass {
         }
         
     }
+    
+    public Set<ID> dependencies() {
+    	return dependencies;
+    }
 
+	public String getName() {
+		return name;
+	}
+	
+	public boolean isEnabled() {
+		return Arrays.asList(OptionsParser.v().static_analyses().toLowerCase().split("-")).contains(getName());
+	}
     
 }
