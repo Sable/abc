@@ -293,17 +293,13 @@ any of their subdirectories.
     </boolopt>
   </section>
   <section>
-    <name>Static whole-program analysis for dependent advice (abc.da)</name>
+    <name>Static whole-program analyses (reweaving analyses)</name>
     <stringopt>
       <alias>static-analyses</alias>
       <default>quick</default>
       <set_arg_label>stage1-stage2</set_arg_label>
       <short_desc>Specifies a hyphen separated list of static-analysis-stages to be executed.</short_desc>
-      <long_desc>Specifies a hyphen separated list of static-analysis-stages to be executed. There are three stages:
-      (1) quick, (2) osa (flow-insensitive Orphan-Shadow Analysis), (3) nsa
-      (flow-sensitive Nop-Shadows Analysis) and (4) dyna (dynamic partial instrumentation for collaborative runtime verification).
-      The stages are executed in this order. Not all combinations of analyses are possible: (3) and (4) both require (2). 
-      </long_desc>
+      <long_desc>Specifies a hyphen separated list of static-analysis-stages to be executed.</long_desc>
     </stringopt>
     <boolopt>
       <alias>warn-about-individual-shadows</alias>
