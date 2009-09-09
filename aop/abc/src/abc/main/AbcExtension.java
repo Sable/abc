@@ -681,6 +681,14 @@ public class AbcExtension
             reweavingPasses = new ArrayList<ReweavingPass>();
             createReweavingPasses(reweavingPasses);
             
+            //filter out disabled passes
+            for (Iterator<ReweavingPass> passIter = reweavingPasses.iterator(); passIter.hasNext();) {
+				ReweavingPass pass = passIter.next();
+				if(!pass.isEnabled()) {
+					passIter.remove();					
+				}
+			}
+
             //cross-check dependencies
             for (ReweavingPass pass1 : reweavingPasses) {
 				for(ID requiredID: pass1.dependencies()) {
@@ -692,19 +700,12 @@ public class AbcExtension
 		            	}
 		            }
 		            if(!foundID) {
-		            	forceReportError(ErrorInfo.SEMANTIC_ERROR, "Pass '"+pass1.getName()+"' requires pass with ID '"+
-		            			requiredID+"' but that pass is not enabled.", Position.COMPILER_GENERATED);
+		            	System.err.println("Pass '"+pass1.getName()+"' requires pass '"+
+		            			requiredID+"' but that pass is not enabled. Quitting.");
+		            	System.exit(1);
 		            }
 				}
-			}
-            
-            //filter out disabled passes
-            for (Iterator<ReweavingPass> passIter = reweavingPasses.iterator(); passIter.hasNext();) {
-				ReweavingPass pass = passIter.next();
-				if(!pass.isEnabled()) {
-					passIter.remove();					
-				}
-			}
+			}            
         }
         
         return reweavingPasses;
