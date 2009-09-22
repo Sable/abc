@@ -1,3 +1,5 @@
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
+
 aspect JastAddJContentOutline {
   
    eq ClassDecl.showInContentOutline() = !isSynthetic();
