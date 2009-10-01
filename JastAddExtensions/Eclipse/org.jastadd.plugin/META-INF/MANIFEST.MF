@@ -29,3 +29,4 @@ Export-Package: org.jastadd.plugin,
  org.jastadd.plugin.ui.popup,
  org.jastadd.plugin.ui.view,
  org.jastadd.plugin.util
+Bundle-Vendor: jastadd.org
