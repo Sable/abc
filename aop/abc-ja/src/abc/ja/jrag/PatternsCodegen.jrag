@@ -39,23 +39,34 @@ aspect PatternsCodegen
     eq FieldPattern.fieldPattern() = this;
     eq MethodPattern.methodPattern() = this;
     eq ConstructorPattern.constructorPattern() = this;
-    public abc.weaving.aspectinfo.TypePattern Pattern.typePattern() {
-      return new abc.weaving.aspectinfo.TypePattern() {
+    class TypePatternWrapper implements abc.weaving.aspectinfo.TypePattern {
+    	Pattern pattern;
+    	
+    	public TypePatternWrapper(Pattern p) { pattern = p; }
+    	
         public boolean matchesType(Type cl) {
-          return Pattern.this.matchesType(cl);
+          return pattern.matchesType(cl);
         }
         public abc.aspectj.ast.TypePatternExpr getPattern() {
           throw new InternalCompilerError(
                     "Can not get polyglot frontend pattern from JastAdd");
         }
+        Pattern getWrappedPattern() { return pattern; }
         public boolean equivalent(abc.weaving.aspectinfo.TypePattern p) {
+          if (this.getClass() == p.getClass()) {
+        	  return pattern.equivales(((TypePatternWrapper)p).getWrappedPattern());
+          }
           return false;
         }
         public String toString()
         {
-          return Pattern.this.toString();
+          return pattern.toString();
         }
-      };
+      }
+
+    public abc.weaving.aspectinfo.TypePattern Pattern.typePattern() {
+      
+      return new TypePatternWrapper(this);
     }
 
     // ...which throw an exception when called on the wrong node
@@ -160,12 +171,6 @@ aspect PatternsCodegen
         return matchesCall(sm.makeRef());
     }
 
-    public boolean
-    MethodPattern.equivalent(abc.weaving.aspectinfo.MethodPattern p)
-    {
-        return false;
-    }
-
     public abc.aspectj.ast.MethodPattern MethodPattern.getPattern()
     {
         throw new InternalCompilerError(
@@ -219,12 +224,6 @@ aspect PatternsCodegen
         return matchesFieldRef(sf.makeRef());
     }
 
-    public boolean
-    FieldPattern.equivalent(abc.weaving.aspectinfo.FieldPattern p)
-    {
-        return false;
-    }
-
     public abc.aspectj.ast.FieldPattern FieldPattern.getPattern()
     {
         throw new InternalCompilerError(
@@ -268,12 +267,6 @@ aspect PatternsCodegen
         return true;
     }
 
-    public boolean ConstructorPattern.equivalent(
-                                abc.weaving.aspectinfo.ConstructorPattern p)
-    {
-        return false;
-    }
-
     public abc.aspectj.ast.ConstructorPattern ConstructorPattern.getPattern()
     {
         throw new InternalCompilerError(
@@ -284,33 +277,46 @@ aspect PatternsCodegen
     //
     // Matching name patterns
     // made lazy to allow multiple calls
-    syn lazy ClassnamePattern Pattern.classnamePattern() =
-        new ClassnamePattern() {
-            public boolean matchesClass(SootClass cl)
-            {
-            	if(abc.main.Debug.v().patternMatches) {
-            		System.err.println("Matching classname pattern " + Pattern.this + " against "
-            				+ cl + ": " + matchesType(cl.getType()));
-            	}
-                return matchesType(cl);
-            }
+	class ClassnamePatternWrapper implements ClassnamePattern {
+		private Pattern pattern;
+		
+		public ClassnamePatternWrapper(Pattern p) { pattern = p; }
+		
+        public boolean matchesClass(SootClass cl)
+        {
+        	if(abc.main.Debug.v().patternMatches) {
+        		System.err.println("Matching classname pattern " + pattern + " against "
+        				+ cl + ": " + pattern.matchesType(cl.getType()));
+        	}
+            return pattern.matchesType(cl);
+        }
 
-            public boolean equivalent(ClassnamePattern p)
-            {
-                return false;
+        Pattern getWrappedPattern() { return pattern; }
+        
+        public boolean equivalent(ClassnamePattern p)
+        {
+            if (this.getClass() == p.getClass()) {
+            	ClassnamePatternWrapper cpw = (ClassnamePatternWrapper)p;
+            	return pattern.equivales(cpw.getWrappedPattern());
             }
+            return false;
+        }
 
-            public abc.aspectj.ast.ClassnamePatternExpr getPattern()
-            {
-                throw new InternalCompilerError(
-                        "Can not get polyglot frontend pattern from JastAdd");
-            }
+        public abc.aspectj.ast.ClassnamePatternExpr getPattern()
+        {
+            throw new InternalCompilerError(
+                    "Can not get polyglot frontend pattern from JastAdd");
+        }
 
-            public String toString()
-            {
-                return Pattern.this.toString();
-            }
-        };
+        public String toString()
+        {
+            return pattern.toString();
+        }
+    }
+	
+    syn lazy ClassnamePattern Pattern.classnamePattern() {
+    	return new ClassnamePatternWrapper(this);
+    }
 
 
     //
