@@ -19,6 +19,7 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+import abc.weaving.aspectinfo.MethodCategory;
 import abc.eaj.weaving.aspectinfo.*;
 
 aspect Pointcuts {
@@ -141,6 +142,7 @@ aspect Pointcuts {
       new SootMethod(name, paramtypes, returntype, modifiers);
     hostType().getSootClassDecl().addMethod(method);
 
+    MethodCategory.register(method, MethodCategory.IF_EXPR);
     return method;
   }
 

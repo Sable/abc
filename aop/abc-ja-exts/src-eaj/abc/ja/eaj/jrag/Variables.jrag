@@ -136,7 +136,9 @@ aspect Variables {
     }
 
     // check for circular let-pointcut definitions
-    if (((ParameterDeclaration) getVarAccess().decl()).isCircular())
+    if (!(getVarAccess().decl() instanceof ParameterDeclaration)) {
+       warning("Unknown variable type: " + getVarAccess().decl());
+    } else if (((ParameterDeclaration) getVarAccess().decl()).isCircular())
       error("The pointcut variable " + getVarAccess().name() +
             " is circularly defined through let pointcuts.");
   }
