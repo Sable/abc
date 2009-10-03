@@ -183,6 +183,8 @@ public class Weaver {
             weaveGenerateAspectMethods();
             //inline preinitialization etc.
             inlineConstructors();
+            
+            AbcTimer.mark("Inlining constructors and preinit");
 
             final List reweavingPasses = abc.main.Main.v().getAbcExtension().getReweavingPasses();
                         
@@ -258,9 +260,13 @@ public class Weaver {
                 }
             }
             
+            AbcTimer.mark("Reweaving passes");
+            
             if( abc.main.Debug.v().optimizeResidues ) {
                 optimizeResidues();
             }
+            
+            AbcTimer.mark("Optimising resudues");
 
             if(!abc.main.Debug.v().dontWeaveAfterAnalysis) {
                 //don't forget to process declare warning/errors;
@@ -277,6 +283,8 @@ public class Weaver {
                 weaveAdvice();        
             }
             
+            AbcTimer.mark("Weaving advice");
+            
             //let the last pass tear down
             if(lastPass!=null) {
             	lastPass.tearDownWeaving();
@@ -287,6 +295,8 @@ public class Weaver {
                 ReweavingPass pass = (ReweavingPass) iter.next();
                 pass.cleanup();
             }
+            
+            AbcTimer.mark("weaving passes");
         }
         
 		public void doInlining() {
@@ -425,16 +435,30 @@ public class Weaver {
                 if (abc.main.Debug.v().cleanupAfterAdviceWeave)
                 for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                     final AbcClass cl = (AbcClass) clIt.next();
+                    debug("--------- STARTING CLEANUP OF CLASS >>>>> " + cl.getSootClass().getName());
                     for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
                         final SootMethod m = (SootMethod) mIt.next();
-                        if( !m.hasActiveBody() ) continue;
-                        Body b = m.getActiveBody();
-                        CopyPropagator.v().transform(b);
-                        ConstantPropagatorAndFolder.v().transform(b);
-			// This has been observed to remove nops as well as dead assignments
-                        DeadAssignmentEliminator.v().transform(b);
-                        UnusedLocalEliminator.v().transform(b);
+                        debug("\t--------- STARTING METHOD >>>>> " + m.getName());
+                        long oldMillis = System.currentTimeMillis();
+                        if( m.hasActiveBody() ) {
+	                        Body b = m.getActiveBody();
+	                        CopyPropagator.v().transform(b);
+	                        debug("\t\t--------- * CopyPropagator: " + (System.currentTimeMillis() - oldMillis));
+	                        oldMillis = System.currentTimeMillis();
+	                        ConstantPropagatorAndFolder.v().transform(b);
+	                        debug("\t\t--------- * ConstantPropagatorAndFolder: " + (System.currentTimeMillis() - oldMillis));
+	                        oldMillis = System.currentTimeMillis();
+				// This has been observed to remove nops as well as dead assignments
+	                        DeadAssignmentEliminator.v().transform(b);
+	                        debug("\t\t--------- * DeadAssignmentEliminator: " + (System.currentTimeMillis() - oldMillis));
+	                        oldMillis = System.currentTimeMillis();
+	                        UnusedLocalEliminator.v().transform(b);
+	                        debug("\t\t--------- * UnusedLocalEliminator: " + (System.currentTimeMillis() - oldMillis));
+	                        oldMillis = System.currentTimeMillis();
+                        }
+                        debug("\t--------- DONE METHOD >>>>> " + m.getName());
                     }
+                    debug("--------- FINISHED CLEANUP OF CLASS >>>>> " + cl.getSootClass().getName() + "\n");
                 }
                 AbcTimer.mark("Weaving advice");
                 abc.main.Debug.phaseDebug("Weaving advice");
