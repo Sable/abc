@@ -29,6 +29,7 @@ import java.util.Set;
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
+import soot.Scene;
 import abc.weaving.matching.MatchingContext;
 import abc.weaving.residues.Residue;
 
@@ -74,8 +75,8 @@ public abstract class Pointcut extends Syntax {
                                      List/*<Formal>*/ formals,
                                      Aspect context) {
 
-        Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
-        Hashtable/*<String,AbcType>*/ typeEnv=new Hashtable();
+        Hashtable<String,Var> renameEnv=new Hashtable<String,Var>();
+        Hashtable<String, AbcType> typeEnv=new Hashtable<String, AbcType>();
 
         if(formals!=null) {
             Iterator it=formals.iterator();
@@ -89,6 +90,20 @@ public abstract class Pointcut extends Syntax {
             }
         }
 
+        /*
+         * Horrible horrible hack. Need to know about thisJoinPoint* when unifying stuff, so
+         * initially put them in the type map.
+         */
+        String[] predefVars = new String[] {"thisJoinPoint", "thisJoinPointStaticPart", "thisEnclosingJoinPointStaticPart"};
+        String[] typeNames = new String[] {
+        		org.aspectj.lang.JoinPoint.class.getCanonicalName(),
+        		org.aspectj.lang.JoinPoint.StaticPart.class.getName(),
+        		org.aspectj.lang.JoinPoint.StaticPart.class.getName()
+        };
+        for (int i = 0; i < predefVars.length; i++) {
+			typeEnv.put(predefVars[i], AbcFactory.AbcType(Scene.v().getRefType(typeNames[i])));
+		}
+        
         Pointcut inlined=pc.inline(renameEnv,typeEnv,context,0);
 
         Pointcut ret=inlined.dnf().makePointcut(pc.getPosition());
@@ -111,13 +126,13 @@ public abstract class Pointcut extends Syntax {
      */
     public final static class DNF {
         private List/*<Formal>*/ formals;
-        private List/*<List<Pointcut>>*/ disjuncts;
+        private List/*<List<Pointcut>>*/<List<Pointcut>> disjuncts;
 
 	/** Construct DNF from a singleton pointcut */
         public DNF(Pointcut pc) {
             formals=new ArrayList();
-            disjuncts=new ArrayList();
-            List conjuncts=new ArrayList(1);
+            disjuncts=new ArrayList<List<Pointcut>>();
+            List<Pointcut> conjuncts=new ArrayList<Pointcut>(1);
             conjuncts.add(pc);
             disjuncts.add(conjuncts);
         }
@@ -145,16 +160,16 @@ public abstract class Pointcut extends Syntax {
             res.formals=dnf1.formals;
             res.formals.addAll(dnf2.formals);
 
-            res.disjuncts=new ArrayList(dnf1.disjuncts.size()*dnf2.disjuncts.size());
+            res.disjuncts=new ArrayList<List<Pointcut>>(dnf1.disjuncts.size()*dnf2.disjuncts.size());
 
-            Iterator left=dnf1.disjuncts.iterator();
+            Iterator<List<Pointcut>> left=dnf1.disjuncts.iterator();
             while(left.hasNext()) {
-                final List/*<Pointcut>*/ leftConjuncts=(List) left.next();
-                Iterator right=dnf2.disjuncts.iterator();
+                final List/*<Pointcut>*/ leftConjuncts=left.next();
+                Iterator<List<Pointcut>> right=dnf2.disjuncts.iterator();
                 while(right.hasNext()) {
-                    final List/*<Pointcut>*/ rightConjuncts=(List) right.next();
+                    final List/*<Pointcut>*/ rightConjuncts=right.next();
 
-                    List conjuncts=new ArrayList(leftConjuncts.size()+rightConjuncts.size());
+                    List<Pointcut> conjuncts=new ArrayList<Pointcut>(leftConjuncts.size()+rightConjuncts.size());
                     conjuncts.addAll(leftConjuncts);
                     conjuncts.addAll(rightConjuncts);
                     res.disjuncts.add(conjuncts);
@@ -178,11 +193,11 @@ public abstract class Pointcut extends Syntax {
             return AndPointcut.construct(res,ifs,pos);
         }
 
-        private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
-            Iterator it=disjuncts.iterator();
+        private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/<List<Pointcut>> disjuncts,Position pos) {
+            Iterator<List<Pointcut>> it=disjuncts.iterator();
             Pointcut res=new EmptyPointcut(pos);
             while(it.hasNext()) {
-                res=OrPointcut.construct(res,makeConjuncts((List) it.next(),pos),pos);
+                res=OrPointcut.construct(res,makeConjuncts(it.next(),pos),pos);
             }
             return res;
         }
@@ -232,7 +247,7 @@ public abstract class Pointcut extends Syntax {
     // a class, so we don't need to change everything each time we add one
     public abstract Pointcut inline
         (Hashtable/*<String,Var>*/ renameEnv,
-         Hashtable/*<String,AbcType>*/ typeEnv,
+         Hashtable/*<String,AbcType>*/<String, AbcType> typeEnv,
          Aspect context,
 	 int cflowdepth);
 
@@ -251,7 +266,7 @@ public abstract class Pointcut extends Syntax {
      *                 all the formal parameters to the pointcut
      */
     public abstract void registerSetupAdvice
-        (Aspect context,Hashtable/*<String,AbcType>*/ typeEnv);
+        (Aspect context,Hashtable/*<String,AbcType>*/<String, AbcType> typeEnv);
 
     /** Get a list of free variable names bound by this pointcut.
      *   @param result The results should be placed in this set
