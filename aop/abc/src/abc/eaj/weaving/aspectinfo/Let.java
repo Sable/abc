@@ -19,15 +19,25 @@
 
 package abc.eaj.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import polyglot.util.Position;
-import soot.*;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
-
-import abc.eaj.weaving.residues.*;
+import abc.eaj.weaving.residues.LetResidue;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.If;
+import abc.weaving.aspectinfo.LocalPointcutVars;
+import abc.weaving.aspectinfo.MethodSig;
+import abc.weaving.aspectinfo.Pointcut;
+import abc.weaving.aspectinfo.Unification;
+import abc.weaving.aspectinfo.Var;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.residues.AndResidue;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.WeavingVar;
 
 /** Handler for <code>let</code> condition pointcut.
  *  @author Julian Tibble
@@ -88,6 +98,13 @@ public class Let extends If
 
     public boolean unify(Pointcut otherpc, Unification unification)
     {
-        return false;
+    	if (otherpc.getClass() == this.getClass()) {
+    		Let otherlet = (Let)otherpc;
+    		Var othervar = otherlet.getBoundVar();
+    		if (bound_var.unify(othervar, unification)) {
+    			return super.unify(otherpc, unification);
+    		} else return false;
+    	} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
     }
 }
