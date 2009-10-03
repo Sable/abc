@@ -23,6 +23,7 @@ package abc.tm.weaving.weaver;
 
 import java.util.Iterator;
 
+import abc.main.AbcTimer;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.weaving.weaver.Weaver;
@@ -68,6 +69,7 @@ public class TMWeaver extends Weaver
             TraceMatch tm = (TraceMatch)it.next();
             tmcg.fillInTraceMatch(tm);
         }
+        AbcTimer.mark("tracematch codegen");
     }
 
     public void weaveAdvice()
