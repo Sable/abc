@@ -59,13 +59,6 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 		}
 	}
 	
-	/**
-	 * A map that associates keys with Marker objects. Mappings are dropped from
-	 * that map as keys are garbage-collected. Note it is static, i.e. shared
-	 * between all WeakKeyIdentityHashMaps, to ensure consistency.
-	 */
-	static WeakKeyCollectingIdentityHashMap markers = new WeakKeyCollectingIdentityHashMap();
-	
 	public WeakKeyIdentityHashMap() {
 		super();
 	}
@@ -81,29 +74,11 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	public WeakKeyIdentityHashMap(int initialCapacity) {
 		super(initialCapacity);
 	}
-
-	/**
-	 * If the given object is already a Marker, it is returned unchanged. Otherwise,
-	 * the Marker representing that particular object is (constructed, if necessary,
-	 * and) returned.
-	 * 
-	 * Actually, the marker object scheme is deprecated in favour of persistent weakrefs.
-	 */
-	public static Object getMarker(Object key) {
-		if(key instanceof Marker) return key;
-		Object marker = markers.get(key);
-		if(marker == null) {
-			marker = new Marker();
-			markers.put(key, marker);
-		}
-		return marker;
-	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	public Object get(Object key) {
-		//key = getMarker(key);
 	    key = PersistentWeakRef.getWeakRef(key);
 		return super.get(key);
 	}
@@ -112,7 +87,6 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * {@inheritDoc}
 	 */
 	public Object put(Object key, Object value) {
-		//key = getMarker(key);
 		key = PersistentWeakRef.getWeakRef(key);
 		return super.put(key, value);
 	}
@@ -121,16 +95,7 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * {@inheritDoc}
 	 */
 	public Object remove(Object key) {
-		//key = getMarker(key);
 		return super.remove(key);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object safeRemove(Object key) {
-		throw new RuntimeException("safeRemove shouldn't be called on WeakKeyIdentityHashMap");
-	}
-
 	
 }

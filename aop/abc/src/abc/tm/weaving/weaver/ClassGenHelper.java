@@ -701,7 +701,7 @@ public class ClassGenHelper {
             case IndexingScheme.PRIM_MAP:
                 return getNewHashMap();
             case IndexingScheme.WEAK_MAP:
-                return getNewHashMap();
+                return getNewWeakIdMap();
             case IndexingScheme.STRONG_MAP:
                 return getNewIdMap();
             default:
