@@ -150,7 +150,7 @@
      </yguard>
    </target>
 
-    <target name="abc" depends="settings,flex-translator,cup-translator,options-code">
+    <target name="abc" depends="settings,flex-translator,cup-translator,options-code,runtime">
         <mkdir dir="classes"/>
         <javac
             destdir="classes"
@@ -169,6 +169,7 @@
                 <pathelement location="${polyglot.cupclasses.loc}"/>
                 <pathelement location="${soot.loc}"/>
                 <pathelement location="${jasmin.loc}"/>
+		<pathelement location="runtime-classes"/>
             </classpath>
         </javac>
     </target>
