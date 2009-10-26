@@ -172,7 +172,7 @@ aspect EmitJimple {
     }
     for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
-      if(!sc.implementsInterface(typeDecl.jvmName()))
+      if(!sc.implementsInterface(typeDecl.getSootClassDecl().getName()))
         sc.addInterface(typeDecl.getSootClassDecl());
     }
     if(isNestedType())
@@ -191,7 +191,7 @@ aspect EmitJimple {
     sc.setSuperclass(typeObject().getSootClassDecl());
     for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
-      if(typeDecl != typeObject() && !sc.implementsInterface(typeDecl.jvmName()))
+      if(typeDecl != typeObject() && !sc.implementsInterface(typeDecl.getSootClassDecl().getName()))
         sc.addInterface(typeDecl.getSootClassDecl());
     }
     if(isNestedType())
