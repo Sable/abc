@@ -112,7 +112,11 @@ aspect CompileSequence {
 	    	  StringBuilder b = new StringBuilder();
 	    	  for(int j = 0; j < strs.length; j++) {
 	    		  if(j != 0)
-	    			  b.append('.');
+	    			  // handle anonymous classes properly
+	    			  if (Character.isDigit(strs[j].charAt(0)))
+	    				  b.append('$');
+	    			  else
+	    				  b.append('.');
 	    		  b.append(strs[j]);
 	    		  TypeDecl t = this.lookupType(pack, b.toString());
 	    		  if(t != null)
