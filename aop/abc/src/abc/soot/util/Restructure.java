@@ -70,59 +70,68 @@ public class Restructure {
    */
   public static InvokeStmt findInitStmt(Chain units)
     { // look for the <init> 
-      Iterator it = units.snapshotIterator();
-      InvokeStmt initstmt = null;
+	  Iterator it = units.snapshotIterator();
+	  InvokeStmt initstmt = null;
 
-      // need to track all locals containing refs to "this"
-      LinkedList receivercopies = new LinkedList();
+	  // need to track all locals containing refs to "this"
+	  LinkedList receivercopies = new LinkedList();
 
-      // get the "this", should be first identity statement
-      Stmt first = (Stmt) it.next();
-      Local thisloc = null;
-      if ( (first instanceof IdentityStmt) && 
-	   ((IdentityStmt) first).getRightOp() instanceof ThisRef
-	 )
-        { thisloc = (Local) 
-	        ((IdentityStmt) first).getLeftOp();//the local for "this" 
-          // add to list of locals containing this
-          receivercopies.add(thisloc);
-	}
-	else
-	  throw new InternalCompilerError("Expecting an identity stmt for this");
-	
-      int countinits = 0;
-      debug("--- Starting to look through statement list ..... ");
-      while ( it.hasNext() )
-        { Stmt u = (Stmt) it.next();
-          debug(" ... Looking at stmt " + u);
+	  // get the "this", should be first identity statement
+	  Stmt first = (Stmt) it.next();
+	  Local thisloc = null;
+	  if ( (first instanceof IdentityStmt) && 
+			  ((IdentityStmt) first).getRightOp() instanceof ThisRef
+	  )
+	  { thisloc = (Local) 
+		  ((IdentityStmt) first).getLeftOp();//the local for "this" 
+	  // add to list of locals containing this
+	  receivercopies.add(thisloc);
+	  }
+	  else
+		  throw new InternalCompilerError("Expecting an identity stmt for this");
 
-	  // if we find a stmt lhs = rhs, where rhs is already a copy
-	  //     of "this",  add lhs to receivercopies
-	  if ((u instanceof AssignStmt) &&
-	      receivercopies.contains(((AssignStmt) u).getRightOp()))
-	    receivercopies.add(((AssignStmt) u).getLeftOp());
+	  int countinits = 0;
+	  debug("--- Starting to look through statement list ..... ");
+	  while ( it.hasNext() ) { 
+		  Stmt u = (Stmt) it.next();
+		  debug(" ... Looking at stmt " + u);
 
-          if ((u instanceof InvokeStmt) && 
-	      ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
-	      ((InvokeStmt) u).getInvokeExpr().getMethodRef().name()
-	      .equals(SootMethod.constructorName) &&
-	      receivercopies.contains
-	      (((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).getBase()))
-	    { debug("Found <init> " + u);
-	      countinits++;
-	      if (countinits == 1) // great, found it
-	        initstmt = (InvokeStmt) u;  
-	      else
-	        throw new InternalCompilerError("Expecting only one <init>");
-             }	 
-          } // all units
-	 
-       debug("--- Finished looking through statement list ..... ");
-       if (countinits == 0)     
-         throw new InternalCompilerError("Could not find a matching <init>");
+		  // Compute copies of the receiver
+		  if (u instanceof AssignStmt) {
+			  AssignStmt ass = (AssignStmt) u;
+			  // if we find a stmt lhs = rhs, where rhs is already a copy
+			  //     of "this",  add lhs to receivercopies
+			  if (receivercopies.contains(ass.getRightOp()))
+				  receivercopies.add(ass.getLeftOp());
+			  // Another possibility, occurring in javac-compiled enum bytecode,
+			  // is that we have r2 = (EnumClass)this;
+			  else if (ass.getRightOp() instanceof CastExpr) {
+				  CastExpr cast = (CastExpr) ass.getRightOp();
+				  if (receivercopies.contains(cast.getOp()))
+					  receivercopies.add(ass.getLeftOp());
+			  }
+		  }
+		  if ((u instanceof InvokeStmt) && 
+				  ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
+				  ((InvokeStmt) u).getInvokeExpr().getMethodRef().name()
+				  .equals(SootMethod.constructorName) &&
+				  receivercopies.contains
+				  (((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).getBase())) {
+			  debug("Found <init> " + u);
+			  countinits++;
+			  if (countinits == 1) // great, found it
+				  initstmt = (InvokeStmt) u;  
+			  else
+				  throw new InternalCompilerError("Expecting only one <init>");
+		  }	 
+	  } // all units
 
-       return(initstmt);
-     }
+	  debug("--- Finished looking through statement list ..... ");
+	  if (countinits == 0)     
+		  throw new InternalCompilerError("Could not find a matching <init>");
+
+	  return(initstmt);
+    }
 
    /** Given a Chain for the body of a method,  find the first "real"
     *  stmt (i.e. not an identity stmt or the copy of "this" we often make) 
