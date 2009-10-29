@@ -336,4 +336,50 @@ aspect AspectJCodegen {
   public polyglot.util.Position ASTNode.pos() {
     return new polyglot.util.Position(sourceFile(), lineNumber());
   }
+    
+  public Body Body.addTrap(SootClass type, soot.jimple.Stmt firstStmt, soot.jimple.Stmt lastStmt, soot.jimple.Stmt handler) {
+    body.getTraps().add(Jimple.v().newTrap(type, firstStmt, lastStmt, handler));
+    return this;
+  }
+  // When weaving bytecode the current attribute sequence means we shouldn't add
+  // new methods after jimplifying classes, which ClassAccess.eval does.
+  refine Expressions public soot.Value ClassAccess.eval(Body b) {
+	if ((hostType().compilationUnit().weavable() && !hostType().compilationUnit().fromSource()) ||
+	       !(prevExpr().type().isPrimitiveType() || prevExpr().type().isVoid())) {
+          	java.util.List<Type> singleString = new java.util.ArrayList<Type>();
+    	singleString.add(RefType.v("java.lang.String"));
+    	SootMethodRef ref = Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.Class"), "forName", singleString, RefType.v("java.lang.Class"), true);
+    	Value name = new StringLiteral(prevExpr().type().jvmName()).eval(b);
+    	soot.jimple.Stmt startTrap = b.newLabel();
+    	soot.jimple.Stmt endTrap = b.newLabel();
+    	soot.jimple.Stmt handler = b.newLabel();
+    	soot.jimple.Stmt endAll = b.newLabel();
+    	b.addLabel(startTrap);
+    	Local result = asLocal(b, b.newStaticInvokeExpr(ref, name, this));
+    	b.addLabel(endTrap);
+    	b.add(b.newGotoStmt(endAll, null));
+    	Local ex = b.newLocal("ex$$$", RefType.v("java.lang.ClassNotFoundException"));
+    	b.addLabel(handler);
+    	b.add(b.newIdentityStmt(ex, b.newCaughtExceptionRef(null), null));
+    	Local argLocal = asLocal(b, 
+    			b.newVirtualInvokeExpr(ex, Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.ClassNotFoundException"), 
+    					"getMessage", 
+    					new java.util.ArrayList(), 
+    					RefType.v("java.lang.String"), 
+    					false), 
+    				null));
+    	Local toThrow = b.newLocal("toThrow$$", RefType.v("java.lang.NoClassDefFoundError"));
+    	b.add(b.newAssignStmt(toThrow, b.newNewExpr(RefType.v("java.lang.NoClassDefFoundError"), null), null));
+    	b.add(b.newInvokeStmt(b.newSpecialInvokeExpr(toThrow, 
+    			Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.NoClassDefFoundError"), singleString),
+    			argLocal,
+    			null), null));
+    	b.addLabel(endAll);
+    	
+    	b.addTrap(Scene.v().getSootClass("java.lang.ClassNotFoundException"), startTrap, endAll, handler);
+    	return result;
+	} else {
+	  return refined(b);
+	}
+  }
 }
