@@ -1,0 +1,297 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Pavel Avgustinov
+ * Copyright (C) 2008 Torbjorn Ekman
+ * Copyright (C) 2008 Julian Tibble
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+aspect PatternsEquivalence {
+	/*
+	 * There are a bunch of methods on various types of patterns that test for
+	 * equivalence. They are used (at least) when sharing CFlow stacks, so
+	 * without reasonable implementations no sharing will take place.
+	 * 
+	 * We define an 'equivales()' relation on abc-ja Patterns, and implement
+	 * the 'equivalent()' interface methods for the matcher/weaver in terms of
+	 * those.
+	 */
+	
+	/*
+	 * General equivalence
+	 */
+	
+	// base cases
+	syn boolean Pattern.equivales(Pattern other) = (this == other);
+	syn boolean MemberPattern.equivales(MemberPattern other) = (this == other);
+	syn boolean FormalPattern.equivales(FormalPattern other) = (this == other);
+	syn boolean BindingPattern.equivales(BindingPattern other) = (this == other);
+	// this case covers both ModifierPatterns and NegModifierPatterns
+	syn boolean ModifierPattern.equivales(ModifierPattern other) = 
+		this.getClass() == other.getClass() && this.getModifier().getID().equals(other.getModifier().getID());
+	
+	
+	// Our binary patterns are commutative
+	eq BinaryPattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			BinaryPattern that = (BinaryPattern)other;
+			return (this.getLhs().equivales(that.getLhs()) 
+					&& this.getRhs().equivales(that.getRhs()))
+				||
+					(this.getLhs().equivales(that.getRhs())
+					&& this.getRhs().equivales(that.getLhs()));
+		}
+		return false;
+	}
+	
+	// Equivalent if the negated subexprs are equivalent
+	eq NegPattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			NegPattern that = (NegPattern)other;
+			return this.getPattern().equivales(that.getPattern());
+		}
+		return false;
+	}
+	
+	// Equivalent if the negated subexprs are equivalent
+	eq UniversalNegPattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			UniversalNegPattern that = (UniversalNegPattern)other;
+			return this.getPattern().equivales(that .getPattern());
+		}
+		return false;
+	}
+	
+	eq SimpleNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			SimpleNamePattern that = (SimpleNamePattern)other;
+			return this.getPattern().equals(that.getPattern());
+		}
+		return false;
+	}
+	
+	eq DotNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			DotNamePattern that = (DotNamePattern)other;
+			return this.getRhs().equals(that.getRhs()) && this.getLhs().equivales(that.getLhs());
+		}
+		return false;
+	}
+	
+	eq DotDotNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			DotDotNamePattern that = (DotDotNamePattern)other;
+			return this.getRhs().equals(that.getRhs()) && this.getLhs().equivales(that.getLhs());
+		}
+		return false;
+	}
+	
+	eq TypeDotNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			TypeDotNamePattern that = (TypeDotNamePattern)other;
+			return this.getRhs().equals(that.getRhs()) && this.getLhs().equivales(that.getLhs());
+		}
+		return false;
+	}
+	
+	eq ExplicitTypeNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			ExplicitTypeNamePattern that = (ExplicitTypeNamePattern)other;
+			// TODO is this enough?
+			return this.getAccess().type() == that.getAccess().type();
+		}
+		return false;
+	}
+	
+	eq SubtypeNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			SubtypeNamePattern that = (SubtypeNamePattern)other;
+			return this.getPattern().equivales(that.getPattern());
+		}
+		return false;
+	}
+	
+	eq ArraytypeNamePattern.equivales(Pattern other) {
+		if (this.getClass() == other.getClass()) {
+			ArraytypeNamePattern that = (ArraytypeNamePattern)other;
+			if (!this.getPattern().equivales(that.getPattern()))
+				return false;
+			if (this.getNumDims() != that.getNumDims())
+				return false;
+			for (int i = 0; i < this.getNumDims(); i++) {
+				// TODO not sure how to compare exprs, so if one or more are present assume non-equivalence
+				if (this.getDims(i).hasExpr() || that.getDims(i).hasExpr())
+					return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/*
+	 * Some helper methods
+	 */
+	
+	boolean MemberPattern.modsListsEquivalent(List<ModifierPattern> one, List<ModifierPattern> two) {
+    	Set<String> mods1 = new LinkedHashSet<String>();
+    	Set<String> mods2 = new LinkedHashSet<String>();
+    	for (ModifierPattern mp : one) {
+    		mods1.add((mp instanceof NegModifierPattern ? "!" : "") + mp.getModifier().getID());
+    	}
+    	for (ModifierPattern mp : two) {
+    		mods2.add((mp instanceof NegModifierPattern ? "!" : "") + mp.getModifier().getID());
+    	}
+    	return mods1.equals(mods2);
+	}
+	
+	boolean MemberPattern.patternListsEquivalent(List<? extends Pattern> one, List<? extends Pattern> two) {
+    	for (Pattern tp : one) {
+    		boolean present = false;
+    		for (Pattern tp2 : two) {
+    			if (tp.equivales(tp2)) {
+    				present = true;
+    				break;
+    			}
+    		}
+    		if (!present) return false;
+    	}
+    	for (Pattern tp : two) {
+    		boolean present = false;
+    		for (Pattern tp2 : one) {
+    			if (tp.equivales(tp2)) {
+    				present = true;
+    				break;
+    			}
+    		}
+    		if (!present) return false;
+    	}
+    	return true;
+	}
+	
+	eq MethodPattern.equivales(MemberPattern other) {
+		if (this.getClass() == other.getClass()) {
+			MethodPattern that = (MethodPattern)other;
+
+			// Check names
+	    	if (!getMemberNamePattern().equivales(that.getMemberNamePattern())) return false;
+	    	// Check return types
+	    	if (!getReturnTypePattern().equivales(that.getReturnTypePattern())) return false;
+	    	// Check list of arguments
+	    	if (getNumFormalPattern() != that.getNumFormalPattern()) return false;
+	    	for (int i = 0; i < getNumFormalPattern(); i++) {
+				if (!getFormalPattern(i).equivales(that.getFormalPattern(i))) return false;
+			}
+	    	// Check modifier paterns [order doesn't matter]
+	    	if (!modsListsEquivalent(this.getModifierPatterns(), that.getModifierPatterns())) 
+	    		return false;
+	    	// Check throws patterns [order doesn't matter]
+	    	if (!patternListsEquivalent(this.getThrowsPatterns(), that.getThrowsPatterns()))
+	    		return false;
+	    	// all done
+	        return true;
+		}
+		return false;
+	}
+
+	eq ConstructorPattern.equivales(MemberPattern other) {
+		if (this.getClass() == other.getClass()) {
+			ConstructorPattern that = (ConstructorPattern)other;
+			// Check name
+	    	if (!getMemberNamePattern().equivales(that.getMemberNamePattern())) 
+	    		return false;
+	    	// Check list of arguments
+	    	if (getNumFormalPattern() != that.getNumFormalPattern()) 
+	    		return false;
+	    	for (int i = 0; i < getNumFormalPattern(); i++) {
+				if (!getFormalPattern(i).equivales(that.getFormalPattern(i))) 
+					return false;
+			}
+	    	// Check modifier paterns [order doesn't matter]
+	    	if (!modsListsEquivalent(this.getModifierPatterns(), that.getModifierPatterns())) 
+	    		return false;
+	    	// Check throws patterns [order doesn't matter]
+	    	if (!patternListsEquivalent(this.getThrowsPatterns(), that.getThrowsPatterns()))
+	    		return false;
+	    	// all done
+	        return true;
+		}
+		return false;
+	}
+	
+	eq FieldPattern.equivales(MemberPattern other) {
+		if (this.getClass() == other.getClass()) {
+			FieldPattern that = (FieldPattern)other;
+			// Check name
+			if (!this.getMemberNamePattern().equivales(that.getMemberNamePattern()))
+				return false;
+			// Check type
+			if (!this.getTypePattern().equivales(that.getTypePattern()))
+				return false;
+			// Check modifiers
+			if (!modsListsEquivalent(this.getModifierPatterns(), that.getModifierPatterns()))
+				return false;
+			// all done
+			return true;
+		}
+		return false;
+	}
+	
+	eq WildcardFormalPattern.equivales(FormalPattern other) {
+		return this.getClass() == other.getClass();
+	}
+	
+	eq ConcreteFormalPattern.equivales(FormalPattern other) {
+		if (this.getClass() == other.getClass())
+			return this.getPattern().equivales(((ConcreteFormalPattern)other).getPattern());
+		return false;
+	}
+	
+	eq StarBindingPattern.equivales(BindingPattern other) {
+		return this.getClass() == other.getClass();
+	}
+	
+	eq DotDotBindingPattern.equivales(BindingPattern other) {
+		return this.getClass() == other.getClass();
+	}
+	
+	eq NameBindingPattern.equivales(BindingPattern other) {
+		if (this.getClass() == other.getClass())
+			return this.getPattern().equivales(((NameBindingPattern)other).getPattern());
+		return false;
+	}
+	
+	/*
+	 * Implementation of weaver interfaces
+	 */
+    public boolean MethodPattern.equivalent(abc.weaving.aspectinfo.MethodPattern p) {
+    	if (this.getClass() == p.getClass())
+    		return this.equivales((MethodPattern)p);
+   		return false;
+    }
+
+    public boolean FieldPattern.equivalent(abc.weaving.aspectinfo.FieldPattern p) {
+    	if (this.getClass() == p.getClass())
+    		return this.equivales((FieldPattern)p);
+   		return false;
+    }
+
+    public boolean ConstructorPattern.equivalent(abc.weaving.aspectinfo.ConstructorPattern p) {
+    	if (this.getClass() == p.getClass())
+    		return this.equivales((ConstructorPattern)p);
+   		return false;
+	}
+
+}
