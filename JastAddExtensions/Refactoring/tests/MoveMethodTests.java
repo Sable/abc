@@ -561,4 +561,14 @@ public class MoveMethodTests extends TestCase {
 			"  }" +
 			"}"));
 	}
+	
+	public void test30() {
+		testSucc("A", "m(B)",
+			Program.fromClasses(
+			"class A { synchronized void m(B b) { } }",
+			"class B { }"),
+			Program.fromClasses(
+			"class A { synchronized void m(B b) { b.m(this); } }",
+			"class B { void m(A a) { { } } }"));
+	}
 }

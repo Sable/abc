@@ -53,6 +53,8 @@ aspect MoveMethod {
 
 		private void createMovedMethod() {
 			Modifiers mods = (Modifiers)method.getModifiers().fullCopy();
+			if(mods.isSynchronized())
+				mods.removeModifier("synchronized");
 			Access rettype = new TypeAccess(method.type());
 			String name = method.name();
 			List<ParameterDeclaration> parms = new List<ParameterDeclaration>();

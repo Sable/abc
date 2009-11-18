@@ -8,4 +8,12 @@ aspect Modifiers {
 	eq FieldDeclaration.getModifiers().getModifiedVariable() = this;
 	eq VariableDeclaration.getModifiers().getModifiedVariable() = this;
 	eq ParameterDeclaration.getModifiers().getModifiedVariable() = this;
+	
+	public void Modifiers.removeModifier(String mod) {
+		for(int i=0;i<getNumModifier();++i) {
+			Modifier m = getModifier(i);
+			if(m.getID().equals(mod))
+				getModifierList().removeChild(i);
+		}
+	}
 }
