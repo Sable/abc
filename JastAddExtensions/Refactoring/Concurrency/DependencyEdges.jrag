@@ -1,0 +1,115 @@
+aspect DependencyEdges {
+	syn boolean CFNode.isAcquire() = false;
+	syn boolean CFNode.isRelease() = false;
+	syn boolean CFNode.isSyncAction() = isAcquire() || isRelease();
+	syn boolean CFNode.isMemoryAction() = isSyncAction();
+	
+	eq SynchronizedStmt.isAcquire() = true;
+	eq SynchronizedStmt.isRelease() = true;
+	
+	eq VarAccess.isAcquire() = isSource() && decl().isVolatile();
+	eq VarAccess.isRelease() = isDest() && decl().isVolatile();
+	eq VarAccess.isMemoryAction() = true;
+	
+	// conservatively assume the worst about method calls
+	eq Call.isAcquire() = true;
+	eq Call.isRelease() = true;
+	
+	// the set of all acquire actions that come before this node in the CFG
+	// (intra-procedural)
+	syn lazy SmallSet<CFNode> ASTNode.acquiresBefore()
+		circular [SmallSet.<CFNode>empty()] {
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.acquiresBefore());
+		return res;
+	}
+	
+	eq CFNode.acquiresBefore() {
+		if(isAcquire())
+			return SmallSet.singleton((CFNode)this);
+		// return super.acquiresBefore();
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.acquiresBefore());
+		return res;
+	}
+	
+	// the set of all release actions that come after this node in the CFG
+	// (intra-procedural)
+	// NOTE: this does not include sync blocks this node is nested inside
+	//       (since sync blocks appear _before_ their body in the CFG, but not after)
+	syn lazy SmallSet<CFNode> ASTNode.computeReleasesAfter()
+	    circular [SmallSet.<CFNode>empty()] {
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : succ())
+			res = res.union(p.computeReleasesAfter());
+		return res;
+	}
+
+	eq CFNode.computeReleasesAfter() {
+		if(isRelease())
+			return SmallSet.singleton((CFNode)this);
+		// return super.computeReleasesAfter();
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : succ())
+			res = res.union(p.computeReleasesAfter());
+		return res;
+	}
+	
+	syn lazy SmallSet<CFNode> ASTNode.releasesAfter() {
+		SmallSet<CFNode> res = computeReleasesAfter();
+		// additionally, any sync block we are nested inside is also a release-after
+		for(ASTNode n=getParent();n!=null&&!(n instanceof TypeDecl);n=n.getParent())
+			if(n instanceof SynchronizedStmt)
+				res = res.union((SynchronizedStmt)n);
+		return res;
+	}
+	
+	protected SmallSet<CFNode> ASTNode.acquiresBefore;
+	protected SmallSet<CFNode> ASTNode.releasesAfter;
+	
+	public void ASTNode.lockSyncDependencies() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.lockSyncDependencies();
+		}
+	}
+	
+	public void TypeDecl.lockSyncDependencies() { }
+	
+	public void CFNode.lockSyncDependencies() {
+		if(isMemoryAction()) {
+			acquiresBefore = acquiresBefore();
+			releasesAfter = releasesAfter();
+		}
+		super.lockSyncDependencies();
+	}
+	
+	public void ASTNode.unlockSyncDependencies() throws RefactoringException {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.unlockSyncDependencies();
+		}
+	}
+	
+	public void TypeDecl.unlockSyncDependencies() { }
+	
+	public void CFNode.unlockSyncDependencies() throws RefactoringException {
+		if(isMemoryAction()) {
+			if(!acquiresBefore.subsetOf(acquiresBefore()))
+				throw new RefactoringException("lost an ACQ-> edge");
+			if(!releasesAfter.subsetOf(releasesAfter()))
+				throw new RefactoringException("lost a ->REL edge");
+			if(isSyncAction()) {
+				if(!acquiresBefore().subsetOf(acquiresBefore))
+					throw new RefactoringException("gained an ACQ-> edge");
+				if(!releasesAfter().subsetOf(releasesAfter))
+					throw new RefactoringException("gained a ->REL edge");
+			}
+		}
+		super.unlockSyncDependencies();
+	}
+}

@@ -41,16 +41,18 @@ aspect LockedMethodAccess {
 	}
 	
 	// introducing fixed method accesses
-	public void MethodAccess.lockMethodNames(Collection<String> endangered) {
+	public ASTNode MethodAccess.lockMethodNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
-			lock();
+			return lock();
 		else
-			super.lockMethodNames(endangered);
+			return super.lockMethodNames(endangered);
 	}
 	
-	public void MethodAccess.lock() {
+	public ASTNode MethodAccess.lock() {
 		MethodDecl target = decl().isSubstituted() ? decl().sourceMethodDecl() : decl();
-		replaceWith(new LockedMethodAccess(target, getArgs()));		
+		LockedMethodAccess lma = new LockedMethodAccess(target, getArgs());
+		replaceWith(lma);
+		return lma;
 	}
 	
 	public boolean MethodDecl.isSubstituted() { return false; }

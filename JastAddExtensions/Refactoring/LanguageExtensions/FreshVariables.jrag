@@ -23,10 +23,6 @@ aspect FreshVariables {
 		return "#fresh#" + super.name();
 	}
 	
-	// fresh variables cannot be looked up, they can only be referred to with locked names
-	eq FreshParameter.declaresVariable(String name) = false;
-	eq FreshLocalVariable.declaresVariable(String name) = false;
-	
 	// eliminating fresh variables
 	rewrite FreshParameter {
 		when(!hasExtension(FRESH_VARIABLES))

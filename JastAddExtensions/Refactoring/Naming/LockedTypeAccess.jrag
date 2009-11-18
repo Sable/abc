@@ -38,20 +38,20 @@ aspect LockedTypeAccess {
 		targetType = target;
 	}
 	
-	public void TypeAccess.lockNames(Collection<String> endangered) {
+	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
 		if(targetType == null &&
 				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
 			lock();
-		super.lockNames(endangered);
+		return super.lockNames(endangered);
 	}
 	
 	// absolute type access; can't get shadowed anyway
-	public void BytecodeTypeAccess.lockNames(Collection<String> endangered) { }
+	public ASTNode BytecodeTypeAccess.lockNames(Collection<String> endangered) { return this; }
 	
-	public void CompilationUnit.lockNames(Collection<String> endangered) {
+	public ASTNode CompilationUnit.lockNames(Collection<String> endangered) {
 		if(fromSource() && !locked && endangered.contains(getID()))
 			locked = true;
-		super.lockNames(endangered);
+		return super.lockNames(endangered);
 	}
 	
 	rewrite TypeAccess {
@@ -76,8 +76,9 @@ aspect LockedTypeAccess {
 		}
 	}
 	
-	public void TypeAccess.lock() {
+	public ASTNode TypeAccess.lock() {
 		targetType = decl();
+		return this;
 	}
 	
 	public Access TypeAccess.unlock() {

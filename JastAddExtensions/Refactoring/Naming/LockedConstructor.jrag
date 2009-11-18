@@ -1,10 +1,10 @@
 aspect LockedConstructor {
 	private boolean ConstructorDecl.locked = false;
 	
-	public void ConstructorDecl.lockNames(Collection<String> endangered) {
+	public ASTNode ConstructorDecl.lockNames(Collection<String> endangered) {
 		if(!locked && endangered.contains(name()))
 			locked = true;
-		super.lockNames(endangered);
+		return super.lockNames(endangered);
 	}
 	
 	rewrite ConstructorDecl {

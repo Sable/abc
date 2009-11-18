@@ -11,18 +11,23 @@ aspect InlineAssignment {
 		makeConversionExplicit();
 		Expr rhs = getSource();
 		SmallSet<Access> dsuccs = v.reachedUses();
+		BodyDecl bd = hostBodyDecl();
 		// check that all the data successors have this as their only data predecessor and are not destinations
 		// and replace them by copies of the RHS
 		for(Access w : dsuccs) {
+			rhs = (Expr)rhs.lockAllNames();
+			bd.flushCaches();
 			rhs.lockDataFlow();
-			rhs.lockAllNames();
+			bd.lockSyncDependencies();
 			if(w.isDest())
 				throw new RefactoringException("cannot inline into destinations");
 			if(!w.reachingDefinitions().isSingleton())
 				throw new RefactoringException("ambiguous dataflow");
 			// TODO: should we parenthesise?
 			w.replaceWith(rhs);
+			bd.flushCaches();
 			rhs.unlockDataFlow();
+			bd.unlockSyncDependencies();
 			setSource(rhs = (Expr)rhs.fullCopy());
 		}
 		// delete assignment

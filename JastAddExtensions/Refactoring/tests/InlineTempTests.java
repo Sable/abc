@@ -260,57 +260,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
-/*    public void test11() {
-        testSucc(
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "public class A {"+
-            "  static final int j = 23;"+
-            "  static final int i = j;"+
-            "}"+
-            ""+
-            "class B extends A {"+
-            "  int j = 42;"+
-            "  int k = i;"+
-            "}")),
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "public class A {"+
-            "  static final int j = 23;"+
-            "  static final int i = j;"+
-            "  public A() {"+
-            "    super();"+
-            "  }"+
-            "}"+
-            ""+
-            "class B extends A {"+
-            "  int j = 42;"+
-            "  int k = A.j;"+
-            "  B() {"+
-            "    super();"+
-            "  }"+
-            "}")));
-    }
-
-    public void test12() {
-        testFail(
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "package p;"+
-            ""+
-            "public class A {"+
-            "  static final int j = 23;"+
-            "  protected static final int i = j;"+
-            "}"),
-            new RawCU("B.java",
-            "package q;"+
-            ""+
-            "class B extends p.A {"+
-            "  int k = i;"+
-            "}")));
-    }*/
-
-    public void test13() {
+    public void test11() {
         testSucc(
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -325,8 +275,8 @@ public class InlineTempTests extends TestCase {
             new RawCU("A.java",
             "public class A {"+
             "  int m() {"+
-            "    new int[]{ 23, 42 } [1] = 72;"+
-            "    return new int[]{ 23, 42 } [0];"+
+            "    (new int[]{ 23, 42 }) [1] = 72;"+
+            "    return (new int[]{ 23, 42 }) [0];"+
             "  }"+
             "  public A() {"+
             "    super();"+
@@ -334,76 +284,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
-/*    public void test14() {
-        testSucc(
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "public class A {"+
-            "  static final int j = 23;"+
-            "  public static final int i = j;"+
-            "}"+
-            ""+
-            "class B {"+
-            "  int k = A.i;"+
-            "}")),
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "public class A {"+
-            "  static final int j = 23;"+
-            "  public static final int i = j;"+
-            "  public A() {"+
-            "    super();"+
-            "  }"+
-            "}"+
-            ""+
-            "class B {"+
-            "  int k = A.j;"+
-            "  B() {"+
-            "    super();"+
-            "  }"+
-            "}")));
-    }
-
-    public void test15() {
-        testSucc(
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "class C {"+
-            "  static final int j = 23;"+
-            "}"+
-            ""+
-            "public class A {"+
-            "  public static final int i = C.j;"+
-            "}"+
-            ""+
-            "class B {"+
-            "  int k = A.i;"+
-            "}")),
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "class C {"+
-            "  static final int j = 23;"+
-            "  C() {"+
-            "    super();"+
-            "  }"+
-            "}"+
-            ""+
-            "public class A {"+
-            "  public static final int i = C.j;"+
-            "  public A() {"+
-            "    super();"+
-            "  }"+
-            "}"+
-            ""+
-            "class B {"+
-            "  int k = C.j;"+
-            "  B() {"+
-            "    super();"+
-            "  }"+
-            "}")));
-    }*/
-
-    public void test16() {
+    public void test12() {
         testSucc(
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -427,7 +308,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
-    public void test17() {
+    public void test13() {
         testFail(
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -441,7 +322,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
-    public void test18() {
+    public void test14() {
         testFail(
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -453,5 +334,119 @@ public class InlineTempTests extends TestCase {
             "    return i;"+
             "  }"+
             "}")));
+    }
+    
+    public void test15() {
+        testFail(
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {"+
+            "  int k, l;"+
+            "  int m() {"+
+            "    int i = k;" +
+            "    ++k;"+
+            "    return i;"+
+            "  }"+
+            "}")));
+    }
+    
+    public void test16() {
+        testSucc(
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {"+
+            "  int k, l;"+
+            "  int m() {"+
+            "    int i = k;" +
+            "    ++l;"+
+            "    return i;"+
+            "  }"+
+            "}")),
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {" +
+            "  int k, l;" +
+            "  int m() {" +
+            "    ++l;" +
+            "    return k;" +
+            "  }" +
+            "}")));
+    }
+    
+    public void test17() {
+    	testFail(
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    		"class A {" +
+    		"  volatile int f;" +
+    		"  void m() {" +
+    		"    int i = (f = 42);" +
+    		"    synchronized(this) {" +
+    		"      if(i==23);" +
+    		"    }" +
+    		"  }" +
+    		"}")));
+    }
+    
+    public void test18() {
+    	testFail(
+    	    Program.fromCompilationUnits(
+    	    new RawCU("A.java",
+    	    "class A {" +
+    	    "  volatile int f, g;" +
+    	    "  void m() {" +
+    	    "    int i = (f = 42);" +
+    	    "    if(g==23);" +
+    	    "    if(i==23);" +
+    	    "  }" +
+    	    "}")));
+    }
+    
+    public void test19() {
+    	testSucc(
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    		"class A {" +
+    		"  int f;" +
+    		"  void m() {" +
+    		"    int i = (f = 42);" +
+    		"    synchronized(this) {" +
+    		"      if(i==23);" +
+    		"    }" +
+    		"  }" +
+    		"}")),
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    	    "class A {" +
+    	    "  int f;" +
+    	    "  void m() {" +
+    	    "    synchronized(this) {" +
+    	    "      if((f = 42)==23);" +
+    	    "    }" +
+    	    "  }" +
+    	    "}")));
+    }
+    
+    public void test20() {
+    	testSucc(
+    	    Program.fromCompilationUnits(
+    	    new RawCU("A.java",
+    	    "class A {" +
+    	    "  int f, g;" +
+    	    "  void m() {" +
+    	    "    int i = (f = 42);" +
+    	    "    if(g==23);" +
+    	    "    if(i==23);" +
+    	    "  }" +
+    	    "}")),
+    	    Program.fromCompilationUnits(
+    	    new RawCU("A.java",
+    	    "class A {" +
+    	    "  int f, g;" +
+    	    "  void m() {" +
+    	    "    if(g==23);" +
+    	    "    if((f = 42)==23);" +
+    	    "  }" +
+    	    "}")));
     }
 }

@@ -1,14 +1,15 @@
 aspect LockedPackageAccess {
 	private PackageDecl PackageAccess.targetPackage = null;
 	
-	public void PackageAccess.lockNames(Collection<String> endangered) {
+	public ASTNode PackageAccess.lockNames(Collection<String> endangered) {
 		if(targetPackage == null && endangered.contains(getTopLevelPackage()))
 			lock();
-		super.lockNames(endangered);
+		return super.lockNames(endangered);
 	}
 	
-	public void PackageAccess.lock() {
-		targetPackage = decl();		
+	public ASTNode PackageAccess.lock() {
+		targetPackage = decl();
+		return this;
 	}
 	
 	rewrite PackageAccess {

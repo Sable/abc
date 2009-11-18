@@ -1,0 +1,13 @@
+aspect Call {
+	interface Call {
+		public int getNumArg();
+		public Expr getArg(int i);
+		public List<Expr> getArgList();
+		public void setArg(Expr e, int i);
+		public void setArgList(List<Expr> list);
+		public void addArg(Expr e);
+	}
+	
+	MethodAccess implements Call;
+	ConstructorAccess implements Call;
+}

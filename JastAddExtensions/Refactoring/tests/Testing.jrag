@@ -17,7 +17,6 @@ aspect Testing {
 				cus.add(cu);
 		}
 		Collections.sort(cus, new Comparator<CompilationUnit>() {
-			@Override
 			public int compare(CompilationUnit cu1, CompilationUnit cu2) {
 				return cu1.pathName().compareTo(cu2.pathName());
 			} 
@@ -37,7 +36,6 @@ aspect Testing {
 		for(int i=0;i<getNumBodyDecl();++i)
 			bds.add(getBodyDecl(i));
 		Collections.sort(bds, new Comparator<BodyDecl>() {
-			@Override
 			public int compare(BodyDecl bd1, BodyDecl bd2) {
 				return bd1.ppID().compareTo(bd2.ppID());
 			}

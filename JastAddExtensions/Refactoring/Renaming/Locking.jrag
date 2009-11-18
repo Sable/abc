@@ -1,29 +1,33 @@
 aspect Locking {
-	public void ASTNode.lockNames(Collection<String> endangered) {
+	public ASTNode ASTNode.lockNames(Collection<String> endangered) {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockNames(endangered);
+		return this;
 	}
 	
-	public void ASTNode.lockMethodNames(Collection<String> endangered) {
+	public ASTNode ASTNode.lockMethodNames(Collection<String> endangered) {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockMethodNames(endangered);
+		return this;
 	}
 	
-	public void ASTNode.lockAllNames() {
+	public ASTNode ASTNode.lockAllNames() {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockAllNames();
+		return this;
 	}
 	
 	interface LockableName {
-		public void lock();
+		public ASTNode lock();
 	}
 	PackageAccess implements LockableName;
 	TypeAccess implements LockableName;
 	VarAccess implements LockableName;
 	MethodAccess implements LockableName;
 	
-	public void LockableName.lockAllNames() {
-		lock();
+	public ASTNode LockableName.lockAllNames() {
+		ASTNode res = lock();
 		super.lockAllNames();
+		return res;
 	}
 }

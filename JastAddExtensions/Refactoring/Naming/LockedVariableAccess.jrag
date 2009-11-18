@@ -48,20 +48,22 @@ aspect LockedVariableAccess {
 	}
 	
 	// introducing locked variable accesses
-	public void VarAccess.lockNames(Collection<String> endangered) {
+	public ASTNode VarAccess.lockNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
-			lock();
+			return lock();
 		else
-			super.lockNames(endangered);
+			return super.lockNames(endangered);
 	}
 	
-	public void VarAccess.lock() {
-		lock(decl());
+	public ASTNode VarAccess.lock() {
+		return lock(decl());
 	}
 	
-	public void VarAccess.lock(Variable target) {
+	public ASTNode VarAccess.lock(Variable target) {
 		target = target.isSubstituted() ? target.sourceVariableDecl() : target;
-		replaceWith(new LockedVarAccess(target));		
+		LockedVarAccess lva = new LockedVarAccess(target);
+		replaceWith(lva);
+		return lva;
 	}
 	
 	public boolean Variable.isSubstituted() { return false; }

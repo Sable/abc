@@ -9,14 +9,16 @@ aspect DataFlow {
 			getChild(i).unlockDataFlow();
 	}
 	
-	private SmallSet<Definition> Access.lockedReachingDefs = null;
-	private SmallSet<Access> Access.lockedReachedUses = null;
+	protected SmallSet<Definition> Access.lockedReachingDefs = null;
+	protected SmallSet<Access> Access.lockedReachedUses = null;
+	
 	public void Access.lockDataFlow() {
 		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
 		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
 	}
+	
 	public void Access.unlockDataFlow() {
 		flushCache();
 		if(lockedReachingDefs != null) {
