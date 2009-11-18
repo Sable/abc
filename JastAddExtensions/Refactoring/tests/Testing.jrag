@@ -112,4 +112,22 @@ aspect Testing {
 			return this;
 		return super.findVariable(name);
 	}
+	
+	// find a doubly-parenthesised expression
+	public Expr ASTNode.findDoublyParenthesised() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				Expr e = child.findDoublyParenthesised();
+				if(e != null) return e;
+			}
+		}
+		return null;
+	}
+	
+	public Expr ParExpr.findDoublyParenthesised() {
+		if(getExpr() instanceof ParExpr)
+			return ((ParExpr)getExpr()).getExpr();
+		return null;
+	}
 }

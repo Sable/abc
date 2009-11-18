@@ -99,14 +99,14 @@ aspect DependencyEdges {
 	
 	public void CFNode.unlockSyncDependencies() throws RefactoringException {
 		if(isMemoryAction()) {
-			if(!acquiresBefore.subsetOf(acquiresBefore()))
+			if(acquiresBefore != null && !acquiresBefore.subsetOf(acquiresBefore()))
 				throw new RefactoringException("lost an ACQ-> edge");
-			if(!releasesAfter.subsetOf(releasesAfter()))
+			if(releasesAfter != null && !releasesAfter.subsetOf(releasesAfter()))
 				throw new RefactoringException("lost a ->REL edge");
 			if(isSyncAction()) {
-				if(!acquiresBefore().subsetOf(acquiresBefore))
+				if(acquiresBefore != null && !acquiresBefore().subsetOf(acquiresBefore))
 					throw new RefactoringException("gained an ACQ-> edge");
-				if(!releasesAfter().subsetOf(releasesAfter))
+				if(releasesAfter != null && !releasesAfter().subsetOf(releasesAfter))
 					throw new RefactoringException("gained a ->REL edge");
 			}
 		}

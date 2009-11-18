@@ -1,0 +1,18 @@
+aspect ExtractTemp {
+	public VariableDeclaration Expr.extractTemp(String name) {
+		return enclosingStmt().insertUnusedLocal(new VariableDeclaration(new TypeAccess(type()), name)).
+				extractAssignment(this).merge();
+	}
+	
+	public VariableDeclaration VariableDeclaration.extractAssignment(Expr expr) {
+		return expr.extractAssignment(this);
+	}
+	
+    // stand-alone refactoring
+    public void Expr.doExtract(String name) {
+    	Program root = programRoot();
+    	root.introduce(LOCKED_NAMES);
+    	extractTemp(name);
+    	root.eliminate(LOCKED_NAMES);
+    }
+}

@@ -2,4 +2,16 @@ aspect BlockExt {
 	public void Block.removeStmt(Stmt s) {
     	getStmtList().removeChild(getStmtList().getIndexOfChild(s));
 	}
+	
+	public void Block.removeStmt(int i) {
+		getStmtList().removeChild(i);
+	}
+	
+	public int Block.getIndexOfStmt(Stmt s) {
+		return getStmtList().getIndexOfChild(s);
+	}
+	
+	public void Block.insertStmt(int i, Stmt s) {
+		getStmtList().insertChild(s, i);
+	}
 }
