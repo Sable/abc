@@ -1,0 +1,19 @@
+aspect UnfoldSynchronized {
+	/* if the method is declared synchronized, strip away the synchronized qualifier and surround the
+	 * body of the method with a synchronized block
+	 * 
+	 * for a static method, we need to synchronize on A.class, where A is the host type of the method;
+	 * for an instance method, we need to synchronize on this */
+	public void MethodDecl.unfoldSynchronized() {
+		if(!this.isSynchronized() || !this.hasBlock())
+			return;
+		getModifiers().removeModifier("synchronized");
+		if(this.isStatic()) {
+			Stmt stmt = new SynchronizedStmt(new AbstractDot(new TypeAccess(hostType()), new ClassAccess()), getBlock());
+			setBlock(new Block(new List<Stmt>().add(stmt)));
+		} else {
+			Stmt stmt = new SynchronizedStmt(new ThisAccess("this"), getBlock());
+			setBlock(new Block(new List<Stmt>().add(stmt)));
+		}
+	}
+}

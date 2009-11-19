@@ -1,0 +1,32 @@
+aspect Inheritance {
+	// collect all children of a type declaration
+	coll Collection<TypeDecl> TypeDecl.childTypes() circular [new HashSet<TypeDecl>()] 
+	                                                         with add root Program;
+	ClassDecl contributes
+	this when hasSuperclass()
+	to TypeDecl.childTypes() for superclass();
+	
+	ClassDecl contributes
+	this
+	to TypeDecl.childTypes() for each interfaces();
+	
+	InterfaceDecl contributes
+	this
+	to TypeDecl.childTypes() for each superInterfaces();
+	
+	public Iterable<InterfaceDecl> ClassDecl.interfaces() {
+		return new Iterable<InterfaceDecl>() {
+			public Iterator<InterfaceDecl> iterator() {
+				return interfacesIterator();
+			}
+		};
+	}
+	
+	public Iterable<InterfaceDecl> InterfaceDecl.superInterfaces() {
+		return new Iterable<InterfaceDecl>() {
+			public Iterator<InterfaceDecl> iterator() {
+				return superinterfacesIterator();
+			}
+		};
+	}
+}

@@ -28,6 +28,10 @@ aspect AST {
 	public boolean Stmt.isInBlock() {
 		return getParent() != null && getParent().getParent() instanceof Block;
 	}
+	
+	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
+		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
+	}
 
 	public void ASTNode.flushCaches() {
 		this.flushCache();

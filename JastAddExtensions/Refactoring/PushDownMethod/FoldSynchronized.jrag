@@ -1,0 +1,31 @@
+aspect FoldSynchronized {
+	/* tries to replace a synchronized block surrounding the entire body of a method by
+	 * a synchronized qualifier on the method
+	 * 
+	 * for a static method, the synchronized block has to synchronize on A.class, where A
+	 * is the host type of the method
+	 * 
+	 * for an instance method, the synchronized block has to synchronize on this */
+	public void MethodDecl.foldSynchronized() { 
+		if(!this.hasBlock())
+			return;
+		Block body = getBlock();
+		if(body.getNumStmt() != 1 ||
+				!(body.getStmt(0) instanceof SynchronizedStmt))
+			return;
+		SynchronizedStmt s = (SynchronizedStmt)body.getStmt(0);
+		if(this.isStatic()) {
+			if(s.getExpr().isClassAccess() && s.getExpr().type().equals(hostType())) {
+				if(!this.isSynchronized())
+					getModifiers().addModifier(new Modifier("synchronized"));
+				this.setBlock(s.getBlock());
+			}
+		} else {
+			if(s.getExpr() instanceof ThisAccess) {
+				if(!this.isSynchronized())
+					getModifiers().addModifier(new Modifier("synchronized"));
+				this.setBlock(s.getBlock());
+			}
+		}
+	}
+}
