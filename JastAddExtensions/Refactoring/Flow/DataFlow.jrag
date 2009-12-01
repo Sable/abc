@@ -11,12 +11,15 @@ aspect DataFlow {
 	
 	protected SmallSet<Definition> Access.lockedReachingDefs = null;
 	protected SmallSet<Access> Access.lockedReachedUses = null;
+	protected SmallSet<Access> Access.lockedWriteDeps = null;
 	
 	public void Access.lockDataFlow() {
 		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
 		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
+		if(lockedWriteDeps == null)
+			lockedWriteDeps = writeDeps();
 	}
 	
 	public void Access.unlockDataFlow() {
@@ -30,6 +33,10 @@ aspect DataFlow {
 			if(!reachedUses().equals(lockedReachedUses))
 				throw new RefactoringException("couldn't preserve data flow");
 			lockedReachedUses = null;
+		}
+		if(lockedWriteDeps != null) {
+			if(!writeDeps().equals(lockedWriteDeps))
+				throw new RefactoringException("couldn't preserve data flow");
 		}
 	}
 	public void MethodAccess.unlockDataFlow() {

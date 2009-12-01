@@ -449,4 +449,24 @@ public class InlineTempTests extends TestCase {
     	    "  }" +
     	    "}")));
     }
+    
+    public void test21() {
+        testFail(
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {" +
+            "  int x;" +
+            "  volatile boolean ready;"+
+            "  void t1() {"+
+            "    int i = (x=23);"+
+            "    x = 42;" +
+            "    int j = i;"+
+            "    ready = true;"+
+            "  }" +
+            "  void t2() {" +
+            "    while(!ready);" +
+            "    assert(x==42);" +
+            "  }"+
+            "}")));
+    }
 }
