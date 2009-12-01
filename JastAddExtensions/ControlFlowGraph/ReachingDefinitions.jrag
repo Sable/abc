@@ -19,6 +19,18 @@ aspect ReachingDefinitions {
 	coll SmallSet<Access> Definition.reachedUses() [SmallSet.mutable()] with add root BodyDecl;
 	Access contributes this to Definition.reachedUses() for each reachingDefinitions();
 	
+	// for a write, returns the set of writes to the same variable preceding it in the CFG
+	public SmallSet<Access> Access.writeDeps() {
+		Location l = getLocation();
+		if(!isDest() || l == null)
+			return SmallSet.<Access>empty();
+		// we don't want the node to write-depend on itself
+		SmallSet<Access> res = SmallSet.<Access>empty();
+		for(ASTNode p : pred())
+			res = res.union(p.reachingDefinitionsFor(l));
+		return res;
+	}
+	
 	syn lazy SmallSet<Definition> ASTNode.reachingDefinitionsFor(Location l)
 		circular [SmallSet.<Definition>empty()] {
 		SmallSet<Definition> res = SmallSet.<Definition>empty();

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 aspect Sets {
@@ -242,19 +243,30 @@ class BitSet {
     HashSet<T> set = new HashSet<T>();
     public String toString() { return set.toString(); }
     public Iterator<T> iterator() { return set.iterator(); }
+    public int size() { return set.size(); }
+    public boolean subsetOf(SmallSet<? extends T> that) {
+        for(T x : set)
+            if(!that.contains(x))
+                return false;
+        return true;
+    }
     @SuppressWarnings("unchecked")
-    public static <T> SmallSet<T> empty() { return emptySet; }
-    @SuppressWarnings("unchecked")
-    private static SmallSet emptySet = new SmallSet() {
-      public boolean equals(Object o) { return o instanceof SmallSet && ((SmallSet)o).isEmpty(); }
-      public SmallSet union(SmallSet set) { return set; }
-      public SmallSet union(Object element) { return new SmallSet().union(element); }
-      public SmallSet compl(SmallSet set) { return this; }
-      public SmallSet compl(Object element) { return this; }
-      public SmallSet intersect(SmallSet set) { return this; }
-      public boolean isEmpty() { return true; }
-      public boolean isSingleton() { return false; }
-    };
+    public static <T> SmallSet<T> empty() {
+      return new SmallSet<T>() {
+        public boolean equals(Object o) { return o instanceof SmallSet && ((SmallSet)o).isEmpty(); }
+        public SmallSet union(SmallSet set) { return set; }
+        public SmallSet union(Object element) { return new SmallSet().union(element); }
+        public SmallSet compl(SmallSet set) { return this; }
+        public SmallSet compl(Object element) { return this; }
+        public SmallSet intersect(SmallSet set) { return this; }
+        public boolean isEmpty() { return true; }
+        public boolean isSingleton() { return false; }
+        public void add(T t) { throw new UnsupportedOperationException("emptySet.add(T)"); }
+        public void add(SmallSet<T> x) { throw new UnsupportedOperationException("emptySet.add(SmallSet<T>)"); }
+        public int size() { return 0; }
+        public boolean subsetOf(SmallSet<? extends T> that) { return true; }
+      };
+    }
     @SuppressWarnings("unchecked")
     public static <T> SmallSet<T> full() { return fullSet; }
     @SuppressWarnings("unchecked")
@@ -271,6 +283,8 @@ class BitSet {
       public SmallSet intersect(SmallSet set) { return set; }
       public boolean isEmpty() { return false; }
       public boolean isSingleton() { return false; }
+      public int size() { throw new UnsupportedOperationException("fullSet.size()"); }
+      public boolean subsetOf(SmallSet that) { throw new UnsupportedOperationException("fullSet.subsetOf"); }
     };
 
     protected SmallSet() {
