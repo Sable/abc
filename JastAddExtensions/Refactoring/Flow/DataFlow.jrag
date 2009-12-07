@@ -19,6 +19,8 @@ aspect DataFlow {
 		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
 		if(lockedWriteDeps == null)
+			// we actually don't need to lock write dependences for local variables
+			// (since for them we can see every write), but that is not implemented at the moment
 			lockedWriteDeps = writeDeps();
 	}
 	

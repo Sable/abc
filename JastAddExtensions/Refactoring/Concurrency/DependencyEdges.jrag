@@ -2,7 +2,8 @@ aspect DependencyEdges {
 	syn boolean CFNode.isAcquire() = false;
 	syn boolean CFNode.isRelease() = false;
 	syn boolean CFNode.isSyncAction() = isAcquire() || isRelease();
-	syn boolean CFNode.isMemoryAction() = isSyncAction();
+	syn boolean CFNode.isThreadManagementAction() = false;
+	syn boolean CFNode.isMemoryAction() = isSyncAction() || isThreadManagementAction();
 	
 	eq SynchronizedStmt.isAcquire() = true;
 	eq SynchronizedStmt.isRelease() = true;
@@ -14,6 +15,7 @@ aspect DependencyEdges {
 	// conservatively assume the worst about method calls
 	eq Call.isAcquire() = true;
 	eq Call.isRelease() = true;
+	eq Call.isThreadManagementAction() = true;
 	
 	// the set of all acquire actions that come before this node in the CFG
 	// (intra-procedural)
@@ -66,8 +68,28 @@ aspect DependencyEdges {
 		return res;
 	}
 	
+	// the set of all thread management actions that come after this node in the CFG
+	syn lazy SmallSet<CFNode> ASTNode.threadManagementAfter()
+		circular [SmallSet.<CFNode>empty()] {
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : succ())
+			res = res.union(p.threadManagementAfter());
+		return res;		
+	}
+	
+	eq CFNode.threadManagementAfter() {
+		if(isThreadManagementAction())
+			return SmallSet.singleton((CFNode)this);
+		// return super.threadManagementAfter();
+		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+		for(ASTNode p : succ())
+			res = res.union(p.threadManagementAfter());
+		return res;
+	}
+	
 	protected SmallSet<CFNode> ASTNode.acquiresBefore;
 	protected SmallSet<CFNode> ASTNode.releasesAfter;
+	protected SmallSet<CFNode> ASTNode.threadManagementAfter;
 	
 	public void ASTNode.lockSyncDependencies() {
 		for(int i=0;i<getNumChild();++i) {
@@ -83,6 +105,7 @@ aspect DependencyEdges {
 		if(isMemoryAction()) {
 			acquiresBefore = acquiresBefore();
 			releasesAfter = releasesAfter();
+			threadManagementAfter = threadManagementAfter();
 		}
 		super.lockSyncDependencies();
 	}
@@ -103,6 +126,8 @@ aspect DependencyEdges {
 				throw new RefactoringException("lost an ACQ-> edge");
 			if(releasesAfter != null && !releasesAfter.subsetOf(releasesAfter()))
 				throw new RefactoringException("lost a ->REL edge");
+			if(threadManagementAfter != null && !threadManagementAfter.equals(threadManagementAfter()))
+				throw new RefactoringException("unable to preserve thread management dependencies");
 			if(isSyncAction()) {
 				if(acquiresBefore != null && !acquiresBefore().subsetOf(acquiresBefore))
 					throw new RefactoringException("gained an ACQ-> edge");

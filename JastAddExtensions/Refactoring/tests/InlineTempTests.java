@@ -469,4 +469,26 @@ public class InlineTempTests extends TestCase {
             "  }"+
             "}")));
     }
+
+    
+    public void test22() {
+        testFail(
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {" +
+            "  int x;" +
+            "  void m() throws InterruptedException {" +
+            "    Thread t1 = new Thread() {" +
+            "      public void run() {" +
+            "        x = 23;" +
+            "      }" +
+            "    };" +
+            "    t1.start();"+
+            "    int i = x;"+
+            "    t1.join();" +
+            "    int j = i;"+
+            "  }" +
+            "}")));
+    }
+
 }
