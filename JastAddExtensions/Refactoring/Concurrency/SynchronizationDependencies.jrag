@@ -1,0 +1,74 @@
+aspect SynchronizationDependencies {
+	syn boolean ASTNode.isAcquire() = false;
+	syn boolean ASTNode.isRelease() = false;
+	syn boolean ASTNode.isThreadManagementAction() = false;
+	syn boolean ASTNode.isSyncAction() = isAcquire() || isRelease() || isThreadManagementAction();
+	syn boolean ASTNode.isMemoryAction() = isSyncAction();
+	
+	eq SynchronizedStmt.isAcquire() = true;
+	eq SynchronizedStmt.isRelease() = true;
+	
+	eq VarAccess.isAcquire() = isSource() && decl().isVolatile();
+	eq VarAccess.isRelease() = isDest() && decl().isVolatile();
+	eq VarAccess.isMemoryAction() = decl().isField();
+	
+	eq ArrayAccess.isMemoryAction() = true;
+	
+	// conservatively assume the worst about method calls
+	eq Call.isAcquire() = true;
+	eq Call.isRelease() = true;
+	eq Call.isThreadManagementAction() = true;
+	
+	class AcquireDependency extends IrreflexiveBackwardEdge {
+		public static final AcquireDependency edge = new AcquireDependency();
+		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(ASTNode start, ASTNode end) { return end.isAcquire(); }
+		public boolean terminates(ASTNode start, ASTNode end) { return end.isAcquire(); }
+	}
+	
+	class ReleaseDependency extends IrreflexiveForwardEdge {
+		public static final ReleaseDependency edge = new ReleaseDependency();
+		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(ASTNode start, ASTNode end) { return end.isRelease(); }
+		public boolean terminates(ASTNode start, ASTNode end) { return end.isRelease(); }
+		public SmallSet<CFNode> collect(ASTNode start) {
+			SmallSet<CFNode> res = super.collect(start);
+			// additionally, any sync block we are nested inside is also a release-after
+			for(ASTNode n=start.getParent();n!=null&&!(n instanceof TypeDecl);n=n.getParent())
+				if(n instanceof SynchronizedStmt)
+					res = res.union((SynchronizedStmt)n);
+			return res;
+		}
+	}
+	
+	class ThreadManagementDependency extends IrreflexiveForwardEdge {
+		public static final ThreadManagementDependency edge = new ThreadManagementDependency();
+		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(ASTNode start, ASTNode end) { return end.isThreadManagementAction(); }
+		public boolean terminates(ASTNode start, ASTNode end) { return end.isThreadManagementAction(); }
+	}
+	
+	public void ASTNode.lockSyncDependencies() {
+		lockDependencies(AcquireDependency.edge);
+		lockDependencies(ReleaseDependency.edge);
+		lockDependencies(ThreadManagementDependency.edge);
+	}
+	
+	public void ASTNode.unlockSyncDependencies() {
+		unlockDependencies(new PreservationStrategy() {
+			public DependencyEdge getEdge() { return AcquireDependency.edge; }
+			public boolean preserve(ASTNode n) { return true; }
+			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
+		});
+		unlockDependencies(new PreservationStrategy() {
+			public DependencyEdge getEdge() { return ReleaseDependency.edge; }
+			public boolean preserve(ASTNode n) { return true; }
+			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
+		});
+		unlockDependencies(new PreservationStrategy() {
+			public DependencyEdge getEdge() { return ThreadManagementDependency.edge; }
+			public boolean preserve(ASTNode n) { return true; }
+			public boolean reflect(ASTNode n) { return true; }
+		});
+	}
+}

@@ -29,6 +29,10 @@ aspect AST {
 		return getParent() != null && getParent().getParent() instanceof Block;
 	}
 	
+	public boolean Variable.isField() {
+		return isClassVariable() || isInstanceVariable();
+	}
+	
 	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
 		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
 	}

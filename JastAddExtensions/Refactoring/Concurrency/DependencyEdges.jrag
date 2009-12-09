@@ -1,140 +1,112 @@
 aspect DependencyEdges {
-	syn boolean CFNode.isAcquire() = false;
-	syn boolean CFNode.isRelease() = false;
-	syn boolean CFNode.isSyncAction() = isAcquire() || isRelease();
-	syn boolean CFNode.isThreadManagementAction() = false;
-	syn boolean CFNode.isMemoryAction() = isSyncAction() || isThreadManagementAction();
+	abstract class DependencyEdge {
+		protected abstract boolean isStart(ASTNode node);
+		protected abstract boolean isTarget(ASTNode start, ASTNode end);
+		public abstract SmallSet<CFNode> collect(ASTNode start);
+	}
 	
-	eq SynchronizedStmt.isAcquire() = true;
-	eq SynchronizedStmt.isRelease() = true;
+	abstract class BackwardEdge extends DependencyEdge {
+		public abstract boolean terminates(ASTNode start, ASTNode end);
+		public SmallSet<CFNode> collect(ASTNode start) {
+			if(!isStart(start))
+				return SmallSet.<CFNode>empty();
+			return start.collect(this, start);
+		}
+	}
 	
-	eq VarAccess.isAcquire() = isSource() && decl().isVolatile();
-	eq VarAccess.isRelease() = isDest() && decl().isVolatile();
-	eq VarAccess.isMemoryAction() = true;
+	abstract class IrreflexiveBackwardEdge extends BackwardEdge {
+		public SmallSet<CFNode> collect(ASTNode start) {
+			if(!isStart(start))
+				return SmallSet.<CFNode>empty();
+			SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+			for(ASTNode p : (SmallSet<ASTNode>)start.pred())
+				res = res.union(p.collect(this, start));
+			return res;
+		}
+	}
 	
-	// conservatively assume the worst about method calls
-	eq Call.isAcquire() = true;
-	eq Call.isRelease() = true;
-	eq Call.isThreadManagementAction() = true;
-	
-	// the set of all acquire actions that come before this node in the CFG
-	// (intra-procedural)
-	syn lazy SmallSet<CFNode> ASTNode.acquiresBefore()
-		circular [SmallSet.<CFNode>empty()] {
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+	syn lazy SmallSet<CFNode> ASTNode.collect(BackwardEdge be, ASTNode start) 
+		circular [SmallSet.<CFNode> empty()] {
+		SmallSet<CFNode> res = be.isTarget(start, this) ? SmallSet.singleton((CFNode)this)
+													  : SmallSet.<CFNode>empty();
+		if(be.terminates(start, this))
+			return res;
 		for(ASTNode p : pred())
-			res = res.union(p.acquiresBefore());
+			res = res.union(p.collect(be, start));
 		return res;
 	}
 	
-	eq CFNode.acquiresBefore() {
-		if(isAcquire())
-			return SmallSet.singleton((CFNode)this);
-		// return super.acquiresBefore();
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
-		for(ASTNode p : pred())
-			res = res.union(p.acquiresBefore());
-		return res;
+	abstract class ForwardEdge extends DependencyEdge {
+		public abstract boolean terminates(ASTNode start, ASTNode end);
+		public SmallSet<CFNode> collect(ASTNode start) {
+			if(!isStart(start))
+				return SmallSet.<CFNode>empty();
+			return start.collect(this, start);
+		}
 	}
 	
-	// the set of all release actions that come after this node in the CFG
-	// (intra-procedural)
-	// NOTE: this does not include sync blocks this node is nested inside
-	//       (since sync blocks appear _before_ their body in the CFG, but not after)
-	syn lazy SmallSet<CFNode> ASTNode.computeReleasesAfter()
-	    circular [SmallSet.<CFNode>empty()] {
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+	abstract class IrreflexiveForwardEdge extends ForwardEdge {
+		public SmallSet<CFNode> collect(ASTNode start) {
+			if(!isStart(start))
+				return SmallSet.<CFNode>empty();
+			SmallSet<CFNode> res = SmallSet.<CFNode>empty();
+			for(ASTNode p : (SmallSet<ASTNode>)start.succ())
+				res = res.union(p.collect(this, start));
+			return res;
+		}
+	}
+	
+	syn lazy SmallSet<CFNode> ASTNode.collect(ForwardEdge fe, ASTNode start) 
+		circular [SmallSet.<CFNode> empty()] {
+		SmallSet<CFNode> res = fe.isTarget(start, this) ? SmallSet.singleton((CFNode)this)
+												  	  : SmallSet.<CFNode>empty();
+		if(fe.terminates(start, this))
+			return res;
 		for(ASTNode p : succ())
-			res = res.union(p.computeReleasesAfter());
+			res = res.union(p.collect(fe, start));
 		return res;
 	}
 
-	eq CFNode.computeReleasesAfter() {
-		if(isRelease())
-			return SmallSet.singleton((CFNode)this);
-		// return super.computeReleasesAfter();
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
-		for(ASTNode p : succ())
-			res = res.union(p.computeReleasesAfter());
-		return res;
+	interface PreservationStrategy {
+		DependencyEdge getEdge();
+		boolean preserve(ASTNode n);
+		boolean reflect(ASTNode n);
 	}
 	
-	syn lazy SmallSet<CFNode> ASTNode.releasesAfter() {
-		SmallSet<CFNode> res = computeReleasesAfter();
-		// additionally, any sync block we are nested inside is also a release-after
-		for(ASTNode n=getParent();n!=null&&!(n instanceof TypeDecl);n=n.getParent())
-			if(n instanceof SynchronizedStmt)
-				res = res.union((SynchronizedStmt)n);
-		return res;
+	private IdentityHashMap<DependencyEdge, SmallSet<CFNode>> ASTNode.dependencies = null;
+	private IdentityHashMap<DependencyEdge, SmallSet<CFNode>> ASTNode.getDependencies() {
+		if(dependencies == null)
+			dependencies = new IdentityHashMap<DependencyEdge, SmallSet<CFNode>>();
+		return dependencies;
 	}
 	
-	// the set of all thread management actions that come after this node in the CFG
-	syn lazy SmallSet<CFNode> ASTNode.threadManagementAfter()
-		circular [SmallSet.<CFNode>empty()] {
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
-		for(ASTNode p : succ())
-			res = res.union(p.threadManagementAfter());
-		return res;		
-	}
-	
-	eq CFNode.threadManagementAfter() {
-		if(isThreadManagementAction())
-			return SmallSet.singleton((CFNode)this);
-		// return super.threadManagementAfter();
-		SmallSet<CFNode> res = SmallSet.<CFNode>empty();
-		for(ASTNode p : succ())
-			res = res.union(p.threadManagementAfter());
-		return res;
-	}
-	
-	protected SmallSet<CFNode> ASTNode.acquiresBefore;
-	protected SmallSet<CFNode> ASTNode.releasesAfter;
-	protected SmallSet<CFNode> ASTNode.threadManagementAfter;
-	
-	public void ASTNode.lockSyncDependencies() {
+	public void ASTNode.lockDependencies(DependencyEdge e) {
+		if(e.isStart(this))
+			getDependencies().put(e, e.collect(this));
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode ch = getChild(i);
 			if(ch != null)
-				ch.lockSyncDependencies();
+				ch.lockDependencies(e);
 		}
 	}
 	
-	public void TypeDecl.lockSyncDependencies() { }
-	
-	public void CFNode.lockSyncDependencies() {
-		if(isMemoryAction()) {
-			acquiresBefore = acquiresBefore();
-			releasesAfter = releasesAfter();
-			threadManagementAfter = threadManagementAfter();
-		}
-		super.lockSyncDependencies();
-	}
-	
-	public void ASTNode.unlockSyncDependencies() throws RefactoringException {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode ch = getChild(i);
-			if(ch != null)
-				ch.unlockSyncDependencies();
-		}
-	}
-	
-	public void TypeDecl.unlockSyncDependencies() { }
-	
-	public void CFNode.unlockSyncDependencies() throws RefactoringException {
-		if(isMemoryAction()) {
-			if(acquiresBefore != null && !acquiresBefore.subsetOf(acquiresBefore()))
-				throw new RefactoringException("lost an ACQ-> edge");
-			if(releasesAfter != null && !releasesAfter.subsetOf(releasesAfter()))
-				throw new RefactoringException("lost a ->REL edge");
-			if(threadManagementAfter != null && !threadManagementAfter.equals(threadManagementAfter()))
-				throw new RefactoringException("unable to preserve thread management dependencies");
-			if(isSyncAction()) {
-				if(acquiresBefore != null && !acquiresBefore().subsetOf(acquiresBefore))
-					throw new RefactoringException("gained an ACQ-> edge");
-				if(releasesAfter != null && !releasesAfter().subsetOf(releasesAfter))
-					throw new RefactoringException("gained a ->REL edge");
+	public void ASTNode.unlockDependencies(PreservationStrategy r) {
+		DependencyEdge e = r.getEdge();
+		if(e.isStart(this)) {
+			SmallSet<CFNode> old_edges = getDependencies().get(e);
+			if(old_edges != null) {
+				SmallSet<CFNode> new_edges = e.collect(this);
+				if(r.preserve(this) && !old_edges.subsetOf(new_edges))
+					throw new RefactoringException("couldn't preserve edge: "+e);
+				if(r.reflect(this) && !new_edges.subsetOf(old_edges))
+					throw new RefactoringException("couldn't reflect edge: "+e);
 			}
 		}
-		super.unlockSyncDependencies();
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.unlockDependencies(r);
+		}
 	}
+	
 }
