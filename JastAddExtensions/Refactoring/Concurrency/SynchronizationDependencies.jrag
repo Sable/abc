@@ -49,26 +49,16 @@ aspect SynchronizationDependencies {
 	}
 	
 	public void ASTNode.lockSyncDependencies() {
-		lockDependencies(AcquireDependency.edge);
-		lockDependencies(ReleaseDependency.edge);
-		lockDependencies(ThreadManagementDependency.edge);
+		lockDependencies(AcquireDependency.edge, ReleaseDependency.edge, ThreadManagementDependency.edge);
 	}
 	
 	public void ASTNode.unlockSyncDependencies() {
-		unlockDependencies(new PreservationStrategy() {
-			public DependencyEdge getEdge() { return AcquireDependency.edge; }
-			public boolean preserve(ASTNode n) { return true; }
+		unlockDependencies(new PreservationStrategy(AcquireDependency.edge) {
 			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
 		});
-		unlockDependencies(new PreservationStrategy() {
-			public DependencyEdge getEdge() { return ReleaseDependency.edge; }
-			public boolean preserve(ASTNode n) { return true; }
+		unlockDependencies(new PreservationStrategy(ReleaseDependency.edge) {
 			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
 		});
-		unlockDependencies(new PreservationStrategy() {
-			public DependencyEdge getEdge() { return ThreadManagementDependency.edge; }
-			public boolean preserve(ASTNode n) { return true; }
-			public boolean reflect(ASTNode n) { return true; }
-		});
+		unlockDependencies(new PreservationStrategy(ThreadManagementDependency.edge));
 	}
 }

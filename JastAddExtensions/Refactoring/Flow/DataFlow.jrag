@@ -25,7 +25,6 @@ aspect DataFlow {
 	}
 	
 	public void Access.unlockDataFlow() {
-		flushCache();
 		if(lockedReachingDefs != null) {
 			if(!reachingDefinitions().equals(lockedReachingDefs))
 				throw new RefactoringException("couldn't preserve data flow");

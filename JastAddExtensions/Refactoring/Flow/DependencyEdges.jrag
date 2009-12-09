@@ -67,10 +67,19 @@ aspect DependencyEdges {
 		return res;
 	}
 
-	interface PreservationStrategy {
-		DependencyEdge getEdge();
-		boolean preserve(ASTNode n);
-		boolean reflect(ASTNode n);
+	class PreservationStrategy {
+		private DependencyEdge edge;
+		
+		public PreservationStrategy(DependencyEdge edge) {
+			this.edge = edge;
+		}
+		
+		public DependencyEdge getEdge() {
+			return edge;
+		}
+		
+		public boolean preserve(ASTNode n) { return true; }
+		public boolean reflect(ASTNode n) { return true; }
 	}
 	
 	private IdentityHashMap<DependencyEdge, SmallSet<CFNode>> ASTNode.dependencies = null;
@@ -80,13 +89,14 @@ aspect DependencyEdges {
 		return dependencies;
 	}
 	
-	public void ASTNode.lockDependencies(DependencyEdge e) {
-		if(e.isStart(this))
-			getDependencies().put(e, e.collect(this));
+	public void ASTNode.lockDependencies(DependencyEdge... edges) {
+		for(DependencyEdge e : edges)
+			if(e.isStart(this))
+				getDependencies().put(e, e.collect(this));
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode ch = getChild(i);
 			if(ch != null)
-				ch.lockDependencies(e);
+				ch.lockDependencies(edges);
 		}
 	}
 	

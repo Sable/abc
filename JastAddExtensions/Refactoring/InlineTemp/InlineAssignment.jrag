@@ -26,6 +26,7 @@ aspect InlineAssignment {
 			// TODO: should we parenthesise?
 			w.replaceWith(rhs);
 			bd.flushCaches();
+			compilationUnit().flushCaches();
 			rhs.unlockDataFlow();
 			bd.unlockSyncDependencies();
 			setSource(rhs = (Expr)rhs.fullCopy());
