@@ -1,0 +1,100 @@
+aspect Precedence {
+	syn int Expr.precedence();
+	eq ArrayInit.precedence() = -1;
+	
+	eq Access.precedence() = 0;
+	eq Literal.precedence() = 0;
+	eq ParExpr.precedence() = 0;
+	
+	eq ArrayCreationExpr.precedence() = 1;
+	
+	eq PostfixExpr.precedence() = 2;
+	
+	eq PreIncExpr.precedence() = 3;
+	eq PreDecExpr.precedence() = 3;
+	eq PlusExpr.precedence() = 3;
+	eq MinusExpr.precedence() = 3;
+	eq BitNotExpr.precedence() = 3;
+	eq LogNotExpr.precedence() = 3;
+	eq CastExpr.precedence() = 3;
+	
+	eq MultiplicativeExpr.precedence() = 4;
+	
+	eq AdditiveExpr.precedence() = 5;
+	
+	eq ShiftExpr.precedence() = 6;
+	
+	eq LTExpr.precedence() = 7;
+	eq GTExpr.precedence() = 7;
+	eq LEExpr.precedence() = 7;
+	eq GEExpr.precedence() = 7;
+	eq InstanceOfExpr.precedence() = 7;
+	
+	eq EqualityExpr.precedence() = 8;
+	
+	eq AndBitwiseExpr.precedence() = 9;
+	
+	eq XorBitwiseExpr.precedence() = 10;
+	
+	eq OrBitwiseExpr.precedence() = 11;
+	
+	eq AndLogicalExpr.precedence() = 12;
+	
+	eq OrLogicalExpr.precedence() = 13;
+	
+	eq ConditionalExpr.precedence() = 14;
+	
+	eq AssignExpr.precedence() = 15;
+	
+	inh int Expr.maxPrecedence();
+	eq FieldDeclaration.getTypeAccess().maxPrecedence() = 0;
+	eq FieldDeclaration.getInit().maxPrecedence() = Integer.MAX_VALUE;
+	eq VariableDeclaration.getTypeAccess().maxPrecedence() = 0;
+	eq VariableDeclaration.getInit().maxPrecedence() = Integer.MAX_VALUE;
+	eq VariableDecl.getInit().maxPrecedence() = Integer.MAX_VALUE;
+	eq ArrayInit.getInit().maxPrecedence() = Integer.MAX_VALUE;
+	eq ArrayTypeWithSizeAccess.getAccess().maxPrecedence() = 0;
+	eq ArrayTypeWithSizeAccess.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq ArrayAccess.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq ClassInstanceExpr.getAccess().maxPrecedence() = 0;
+	eq ClassInstanceExpr.getArg().maxPrecedence() = Integer.MAX_VALUE;
+	eq ConstructorAccess.getArg().maxPrecedence() = Integer.MAX_VALUE;
+	eq MethodAccess.getArg().maxPrecedence() = Integer.MAX_VALUE;
+	eq AbstractDot.getLeft().maxPrecedence() = getRight().isArrayAccess() ? 0 : 1;
+	eq AbstractDot.getRight().maxPrecedence() = 0;
+	eq ExprStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq SwitchStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq ConstCase.getValue().maxPrecedence() = Integer.MAX_VALUE;
+	eq IfStmt.getCondition().maxPrecedence() = Integer.MAX_VALUE;
+	eq ReturnStmt.getResult().maxPrecedence() = Integer.MAX_VALUE;
+	eq WhileStmt.getCondition().maxPrecedence() = Integer.MAX_VALUE;
+	eq DoStmt.getCondition().maxPrecedence() = Integer.MAX_VALUE;
+	eq ForStmt.getCondition().maxPrecedence() = Integer.MAX_VALUE;
+	eq SynchronizedStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq ThrowStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq AssertStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq AssertStmt.getfirst().maxPrecedence() = Integer.MAX_VALUE;
+	eq ElementConstantValue.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq EnhancedForStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq EnumConstant.getArg().maxPrecedence() = Integer.MAX_VALUE;
+	eq LockedMethodAccess.getQualifier().maxPrecedence() = Integer.MAX_VALUE;
+	eq LockedVarAccess.getQualifier().maxPrecedence() = Integer.MAX_VALUE;
+	
+	eq Binary.getLeftOperand().maxPrecedence() = precedence();
+	eq Binary.getRightOperand().maxPrecedence() = precedence()-1;
+	
+	eq AssignExpr.getDest().maxPrecedence() = precedence()-1;
+	eq AssignExpr.getSource().maxPrecedence() = precedence();
+	
+	eq CastExpr.getExpr().maxPrecedence() = precedence()-1;
+	
+	eq Unary.getOperand().maxPrecedence() = precedence();
+	
+	eq ParExpr.getExpr().maxPrecedence() = Integer.MAX_VALUE;
+	
+	eq InstanceOfExpr.getExpr().maxPrecedence() = precedence();
+	
+	eq ConditionalExpr.getCondition().maxPrecedence() = precedence()-1;
+	eq ConditionalExpr.getTrueExpr().maxPrecedence() = Integer.MAX_VALUE;
+	eq ConditionalExpr.getFalseExpr().maxPrecedence() = precedence();
+}

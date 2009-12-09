@@ -23,7 +23,8 @@ aspect InlineAssignment {
 				throw new RefactoringException("cannot inline into destinations");
 			if(!w.reachingDefinitions().isSingleton())
 				throw new RefactoringException("ambiguous dataflow");
-			// TODO: should we parenthesise?
+			if(rhs.precedence() > w.maxPrecedence())
+				rhs = new ParExpr(rhs);
 			w.replaceWith(rhs);
 			bd.flushCaches();
 			compilationUnit().flushCaches();
