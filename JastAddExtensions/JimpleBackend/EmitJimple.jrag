@@ -13,6 +13,7 @@ import soot.jimple.*;
 import soot.coffi.ClassFile;
 import soot.coffi.method_info;
 import soot.coffi.CONSTANT_Utf8_info;
+import soot.tagkit.SourceFileTag;
 
 aspect EmitJimple {
   public void Program.jimplify1() {
@@ -70,7 +71,9 @@ aspect EmitJimple {
     sc.setApplicationClass();
     if (!isObject())
       sc.setSuperclass(typeObject().getSootClassDecl());
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
+    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
+    sc.addTag(st);
     return sc;
   }
   eq InterfaceDecl.sootClass() {
@@ -79,7 +82,9 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);
     sc.setApplicationClass();
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
+    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
+    sc.addTag(st);
     return sc;
   }
   
@@ -166,7 +171,9 @@ aspect EmitJimple {
     sc.setResolvingLevel(SootClass.DANGLING);
     sc.setModifiers(sootTypeModifiers());
     sc.setApplicationClass();
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
+    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
+    sc.addTag(st);
     if(hasSuperclass()) {
       sc.setSuperclass(superclass().getSootClassDecl());
     }
@@ -525,9 +532,9 @@ aspect EmitJimple {
         if(!(idstmt.getRightOp() instanceof CaughtExceptionRef)) {
           Object s = chain.getFirst();
           while(s instanceof IdentityStmt)
-            s = chain.getSuccOf(s);
+            s = chain.getSuccOf((soot.jimple.Stmt)s);
           if(s != null) {
-            chain.insertBefore(stmt, s);
+            chain.insertBefore(stmt, (soot.jimple.Stmt)s);
             return this;
           }
         }
