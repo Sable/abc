@@ -71,9 +71,6 @@ aspect EmitJimple {
     sc.setApplicationClass();
     if (!isObject())
       sc.setSuperclass(typeObject().getSootClassDecl());
-    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
-    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
-    sc.addTag(st);
     return sc;
   }
   eq InterfaceDecl.sootClass() {
@@ -82,9 +79,6 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);
     sc.setApplicationClass();
-    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
-    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
-    sc.addTag(st);
     return sc;
   }
   
@@ -194,7 +188,9 @@ aspect EmitJimple {
     sc.setResolvingLevel(SootClass.DANGLING);
     sc.setModifiers(sootTypeModifiers());
     sc.setApplicationClass();
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    SourceFileTag st = new soot.tagkit.SourceFileTag(sourceNameWithoutPath());
+    st.setAbsolutePath(new File(sourceFile()).getAbsolutePath());
+    sc.addTag(st);
     sc.setSuperclass(typeObject().getSootClassDecl());
     for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
