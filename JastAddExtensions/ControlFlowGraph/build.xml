@@ -29,14 +29,21 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-	<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**,bench/**,antlr/**,tmp/**" 
-         classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
+	<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**,bench/**,antlr/**,tmp/**, testsets/**" 
+         classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar" />
 </target>
 	
 <!-- generate compiler source files -->
 <target name="gen" depends="scanner,parser">
   <!-- create AST node types and weave aspect modules -->
-	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true" outdir="${basedir}">
+	<jastadd 
+		package="${package}" 
+		rewrite="true" 
+		beaver="true" 
+		noVisitCheck="true" 
+		noCacheCycle="true" 
+		noComponentCheck="true" 
+		outdir="${basedir}">
 		<fileset dir="${Java1.4Frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -68,69 +75,68 @@
 </target>
 
 <target name="scanner">
-    <mkdir dir="scanner"/>
-		<!-- compose the scanner -->
-		<concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
-      <filelist dir="${Java1.4Frontend}/scanner">
-        <file name="preamble.flex"/>
-        <file name="macros.flex"/>
-      </filelist>
-      <filelist dir=".">
-        <file name="java15macros.flex"/>
-      </filelist>
-      <filelist dir="${Java1.4Frontend}/scanner">
-        <file name="rules_preamble.flex"/>
-        <file name="WhiteSpace.flex"/>
-        <file name="Comments.flex"/>
-        <file name="Keywords.flex"/>
-      </filelist>
-      <filelist dir=".">
-        <file name="java15keywords.flex"/>
-      </filelist>
-      <filelist dir="${Java1.4Frontend}/scanner">
-        <file name="Literals.flex"/>
-      </filelist>
-      <filelist dir=".">
-        <file name="java15literals.flex"/>
-      </filelist>
-      <filelist dir="${Java1.4Frontend}/scanner">
-        <file name="Separators.flex"/>
-        <file name="Operators.flex"/>
-      </filelist>
-      <filelist dir=".">
-        <file name="java15operators.flex"/>
-        <file name="java15identifiers.flex"/>
-      </filelist>
-      <filelist dir="${Java1.4Frontend}/scanner">
-        <file name="postamble.flex"/>
-      </filelist>
-    </concat>
-	  <!-- generate the scanner -->
-		<jflex file="scanner/JavaScanner.flex" outdir="scanner" nobak="yes"/>
-    <copy todir="scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true"/>
+  <mkdir dir="scanner"/>
+  <!-- compose the scanner -->
+  <concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
+  	<filelist dir="${Java1.4Frontend}/scanner">
+          <file name="preamble.flex"/>
+          <file name="macros.flex"/>
+  	</filelist>
+      	<filelist dir="${Java1.5Frontend}">
+          <file name="java15macros.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.4Frontend}/scanner">
+          <file name="rules_preamble.flex"/>
+          <file name="WhiteSpace.flex"/>
+          <file name="Comments.flex"/>
+          <file name="Keywords.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.5Frontend}">
+          <file name="java15keywords.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.4Frontend}/scanner">
+          <file name="Literals.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.5Frontend}">
+          <file name="java15literals.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.4Frontend}/scanner">
+          <file name="Separators.flex"/>
+          <file name="Operators.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.5Frontend}">
+          <file name="java15operators.flex"/>
+          <file name="java15identifiers.flex"/>
+      	</filelist>
+      	<filelist dir="${Java1.4Frontend}/scanner">
+          <file name="postamble.flex"/>
+      	</filelist>
+  </concat>
+  <!-- generate the scanner -->
+  <jflex file="scanner/JavaScanner.flex" outdir="scanner" nobak="yes"/>
+  <copy todir="scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true"/>
 </target>
 
 <target name="parser">
-    <mkdir dir="parser"/>
-	<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
-		<concat destfile="parser/JavaParser.all" binary="true" force="false">
-	    <filelist dir="${Java1.4Frontend}">
-	      <file name="parser/preamble.parser"/>
-	      <file name="parser/java14.parser"/>
-	      <file name="parser/errorrecovery.parser"/>
-    </filelist>
-	  <fileset dir=".">
-	      <include name="*.parser"/>
-	  </fileset>
-	</concat>
-	<!-- generate the parser phase 2, translating .lalr to .beaver -->
-		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
-			<arg line="parser/JavaParser.all parser/JavaParser.beaver"/>
-		</java>
-	<!-- generate the parser phase 3, translating .beaver to .java -->
-	<beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="yes"/>
+  <mkdir dir="parser"/>
+  <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
+  <concat destfile="parser/JavaParser.all" binary="true" force="false">
+	<filelist dir="${Java1.4Frontend}">
+	  <file name="parser/preamble.parser"/>
+	  <file name="parser/java14.parser"/>
+          <file name="parser/errorrecovery.parser"/>
+	</filelist>
+	<fileset dir="${Java1.5Frontend}">
+  	  <include name="*.parser"/>
+	</fileset>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+  <java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
+	<arg line="parser/JavaParser.all parser/JavaParser.beaver"/>
+  </java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="yes"/>
 </target>
-
 
 <!-- remove generated source files and .class files -->
 <target name="clean" depends="cleanGen">

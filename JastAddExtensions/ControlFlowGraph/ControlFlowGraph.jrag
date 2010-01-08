@@ -17,7 +17,20 @@ aspect ControlFlowGraph {
 	
 	eq FieldDeclaration.entry() = hasInit() ? getInit().first() : null;
 	eq FieldDeclaration.exit() = this;
+
+
+	// EnumConstant: Inherits from FieldDeclaration but adds arguments (Expr node children)
+	// control flow for enum constants: first the arguments, then the init expression, then the exit node
+	eq EnumConstant.entry() = (getNumArg() > 0) ? getArg(0).first() : (hasInit() ? getInit().first() : null);
+	eq EnumConstant.exit() = this;
+	eq EnumConstant.getInit().following() = singleNode(exit());
+	eq EnumConstant.getArg(int i).following() {
+		if (i + 1 < getNumArg())
+			return singleNode(getArg(i + 1));
+		return hasInit() ? singleNode(getInit().first()) : singleNode(exit());
+	}
 	
+
 	eq MethodDecl.entry() = getModifiers();      ///getParameterList();
 	eq MethodDecl.exit() = this;
 	
@@ -437,6 +450,8 @@ aspect ControlFlowGraph {
 	eq EnhancedForStmt.getExpr().following() = singleNode(getVariableDeclaration());
 	eq EnhancedForStmt.getVariableDeclaration().following() = following().union(getStmt());
 	eq EnhancedForStmt.getStmt().following() = singleNode(getVariableDeclaration());
+
+	// EnumConstant: Inherits from FieldDeclaration but adds additional Expr node children (arguments)
 
 	// ExprStmt
 	eq ExprStmt.succ() = singleNode(getExpr().first());
