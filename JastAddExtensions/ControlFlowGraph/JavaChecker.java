@@ -74,34 +74,26 @@ class JavaChecker extends Frontend {
 	  
     //System.out.println(unit);
     //System.out.println(unit.dumpTree());
-    
-	  //add
-	  //unit.dumpTree();
+	//unit.dumpTree();
     
     //DeadCode 
-	  
     for(Iterator it = unit.deadCode().iterator();it.hasNext();) {
-    	CFGNode node = (CFGNode)it.next();
+    	CFNode node = (CFNode)it.next();
     	if(node instanceof Expr)
     		System.err.println(node+" in "+((Expr)node).enclosingStmt());
     	else
     		System.err.println(node);
     }
-   // System.err.println("DeadCode Num: "+unit.deadCode().size());
+    // System.err.println("DeadCode Num: "+unit.deadCode().size());
     
-	  deadCodeNum += unit.deadCode().size();
+	deadCodeNum += unit.deadCode().size();
 	  
 	/*  //CF
 	    for(Iterator it = unit.constUselessCode().iterator();it.hasNext();) {
-	    	CFGNode node = (CFGNode)it.next();
+	    	CFGNode node = (CFNode)it.next();
 	    	System.err.println(node);
 	    } 
 	*/  
-
-	 
-
-	  
-	  
     /*if(program.options().hasOption("-dot"))
       unit.emitDotDescription();*/
   }

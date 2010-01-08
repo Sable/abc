@@ -1,5 +1,5 @@
 aspect DefUse {	
-	/*	
+/*	
 	eq EntryStmt.def() {
 		BodyDecl b = enclosingBodyDecl();
 		if(b instanceof MethodDecl) {
@@ -21,7 +21,8 @@ aspect DefUse {
 		}
 		else
 			return empty();
-	}*/
+	}
+*/
 	
 
 	// create a locally scoped empty bit set for each body decl
@@ -36,10 +37,15 @@ aspect DefUse {
 	// make scoped bit set visible from statements and expressions
 	inh BitSet Stmt.empty();
 	inh BitSet Expr.empty();
+
+	// EN: Adding empty for remaining types implementing the CFNode interface
+	inh BitSet ParameterDeclaration.empty();
+	inh BitSet Modifiers.empty();
+	inh BitSet TypeDecl.empty();
 	
 	
 
-  /*
+/*
   // Let each Stmt collect defs from descenfing LocalVarAccess nodes
   coll BitSet Stmt.def() [empty().mutable()] with add root Stmt;
   VarAccess contributes decl() when isDest() && decl().isLocalVariable() to Stmt.def() for enclosingStmt(); 
@@ -54,11 +60,16 @@ aspect DefUse {
   	
   	// My implementation
   	// def()
-  	syn BitSet CFGNode.def();
+  	syn BitSet CFNode.def();
   	eq Expr.def() = empty();
   	eq Stmt.def() = empty();
-  
-  	eq VarAccess.def() {
+
+	// EN: Need equations for all node types implementing the CFNode interface
+	eq ParameterDeclaration.def() = empty();
+	eq Modifiers.def() = empty();
+	eq TypeDecl.def() = empty();
+
+	eq VarAccess.def() {
   		if(isDest() && (decl().isLocalVariable() || 
   			decl().isMethodParameter()))
   			return empty().union(decl());
@@ -78,10 +89,15 @@ aspect DefUse {
   	}
   
   
-  	//use()
-  	syn BitSet CFGNode.use();
+  	// use()
+  	syn BitSet CFNode.use();
   	eq Expr.use() = empty();
   	eq Stmt.use() = empty();
+
+	// EN: Need equations for all node types implementing the CFNode interface
+	eq ParameterDeclaration.use() = empty();
+	eq Modifiers.use() = empty();
+	eq TypeDecl.use() = empty();
   	
   	eq VarAccess.use() {
   		if(isSource() && (decl().isLocalVariable() ||

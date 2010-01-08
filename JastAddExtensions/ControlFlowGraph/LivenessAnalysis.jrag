@@ -12,13 +12,19 @@ aspect LivenessAnalysis {
 	
 	// My implementation
 	
-	syn BitSet CFGNode.in() circular [empty()];
+	syn BitSet CFNode.in() circular [empty()];
+
 	eq Stmt.in() = use().union(out().compl(def()));
 	eq Expr.in() = use().union(out().compl(def()));
+
+	// EN: Need equations for all node types implementing the CFNode interface
+	eq ParameterDeclaration.in() = empty();
+	eq Modifiers.in() = empty();
+	eq TypeDecl.in() = empty();
 	
-	coll BitSet CFGNode.out() circular [empty().mutable()] with add root BodyDecl;
-	Stmt contributes in() to CFGNode.out() for each pred();
-	Expr contributes in() to CFGNode.out() for each pred();
+	coll BitSet CFNode.out() circular [empty().mutable()] with add root BodyDecl;
+	Stmt contributes in() to CFNode.out() for each pred();
+	Expr contributes in() to CFNode.out() for each pred();
 	
 	
 }
