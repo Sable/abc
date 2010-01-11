@@ -64,6 +64,7 @@
 			<include name="DefUse.jrag" />
 			<include name="LivenessAnalysis.jrag" />
 			<include name="DeadCode.jrag" />
+			<include name="CallGraphVisual.jrag" />
 		</fileset>
   </jastadd>
   <!-- copy library files-->
