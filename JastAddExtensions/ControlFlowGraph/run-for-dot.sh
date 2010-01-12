@@ -118,12 +118,34 @@ function run-antlr {
 	TEST_SET_DIR='testsets/dacapo/antlr'
 	TEST_SET_FILE='testsets/dacapo/antlr/antlr_filelist'
 	CLASS_PATH=$TEST_SET_DIR'/antlr-2.7.2/antlr'
-	RESULT_FILE='result.antlr.dot'
-	./compile-for-dot.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE $CLASS_PATH
+	RESULT_FILE_DOT='result.antlr.dot'
+	./compile-for-dot.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE_DOT $CLASS_PATH
 	#do
+	RESULT_FILE_PNG='result.antlr.png'
+	echo '- Generating PNG file ['$RESULT_FILE_PNG']'
+	dot -Tpng $RESULT_FILE_DOT -o $RESULT_FILE_PNG
 }
 
-run-antlr
+function run-small {
+	echo ''
+	echo ' == Small == '
+	echo ''
+	TEST_SET_DIR='test'
+	TEST_SET_FILE='test/small_filelist'
+	CLASS_PATH=$TEST_SET_DIR
+	RESULT_FILE_DOT='result.small.dot'
+	./compile-for-dot.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE_DOT $CLASS_PATH
+	#do
+	RESULT_FILE_PNG='result.small.png'
+	echo '- Generating PNG file ['$RESULT_FILE_PNG']'
+	dot -Tpng $RESULT_FILE_DOT -o $RESULT_FILE_PNG
+	RESULT_FILE_PS='result.small.ps'
+	echo '- Generating PS file ['$RESULT_FILE_PS']'
+	dot -Tps $RESULT_FILE_DOT -o $RESULT_FILE_PS
+}
+
+run-small
+#run-antlr
 #run-bloat
 #run-chart
 #run-fop

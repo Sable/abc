@@ -1,0 +1,40 @@
+aspect CallGraph {
+
+	// Call graph nodes
+	interface CGNode {
+		TypeDecl hostType();
+		String name();
+	}
+	BodyDecl implements CGNode;
+	syn String BodyDecl.name() = "";
+
+	// Gather possible callees at method access nodes
+	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
+	eq VirtualMethodAccess.callees() = super.callees();
+
+	// Collect callees from BodyDecl
+	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
+	MethodAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
+	ConstructorAccess contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
+
+	// Collect calls to BodyDecl 
+	coll SmallSet<CGNode> BodyDecl.calls() [SmallSet.mutable()] with add root TypeDecl;
+	BodyDecl contributes this to BodyDecl.calls() for each callees();
+
+}
+
+aspect SpecializeStaticVirtualCalls {
+	// Guard attribute
+	syn boolean MethodAccess.isExactMethodAccess() = true;
+	eq StaticMethodAccess.isExactMethodAccess() = false;
+	eq VirtualMethodAccess.isExactMethodAccess() = false;
+	// Specialize MethodAccess nodes for static/virtual calls
+	rewrite MethodAccess {
+		when (isExactMethodAccess() && decl().isStatic()) to StaticMethodAccess {
+			return new StaticMethodAccess(getID(), getArgList());
+		}
+		when (isExactMethodAccess() && !decl().isStatic()) to VirtualMethodAccess {
+			return new VirtualMethodAccess(getID(), getArgList());
+		}
+	}
+}

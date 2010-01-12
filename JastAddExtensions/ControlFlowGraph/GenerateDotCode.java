@@ -8,7 +8,8 @@ public class GenerateDotCode extends Frontend {
 	public static void main(String[] args) {
 
 		if (args.length == 0) {
-			System.err.println("error: You need to supply a filename and then JastAddJ arguments");
+			System.err.println("error: You need to supply a filename " + 
+				"and then JastAddJ arguments");
 			System.exit(1);
 		}
 
@@ -37,7 +38,7 @@ public class GenerateDotCode extends Frontend {
 
 	protected void processNoErrors(CompilationUnit unit) {
 		out.println("\t//" + unit.relativeName());
-		unit.visualiseCallGraphUsingDot(out);
+		unit.visualiseCallGraphUsingDot(out, edgeBuffer);
 	}
 
 	public static boolean compile(String args[]) {
@@ -46,14 +47,16 @@ public class GenerateDotCode extends Frontend {
     	    new BytecodeParser(),
     	    new JavaParser() {
     	      parser.JavaParser parser = new parser.JavaParser();
-    		      public CompilationUnit parse(java.io.InputStream is, String fileName) 
-					throws java.io.IOException, beaver.Parser.Exception {
+    		      public CompilationUnit parse(java.io.InputStream is, 
+					String fileName) throws java.io.IOException,
+					beaver.Parser.Exception {
 		            return parser.parse(is, fileName);
 	          }
 			
 		});
 	}
 
+	private static StringBuffer edgeBuffer;
   	private static PrintStream out;
 
   	private static void setupFile(String filePath) throws IOException {
@@ -69,11 +72,14 @@ public class GenerateDotCode extends Frontend {
 		out.println("digraph G  {");
         out.println("\tsize=\"300,150\"");
         out.println("\tcenter=\"\"");
-        out.println("\tranksep=2;");
+        out.println("\tratio=0.02;");
         out.println("\tratio=auto;");
+		out.println("\tnode[width=0.2,height=0.2,fontsize=25]");
+		edgeBuffer = new StringBuffer();
 	}
 
 	private static void writeFooter() {
+		out.println(edgeBuffer.toString());
 		out.println("}");
 	}
 

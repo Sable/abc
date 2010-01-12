@@ -3,19 +3,42 @@ import java.io.*;
 aspect CallGraphVisual {
 
   // Visualization of Call Graph
-  public void CompilationUnit.visualiseCallGraphUsingDot(PrintStream out) {
+  public void CompilationUnit.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
 	for (int i = 0; i < getNumTypeDecl(); i++) {
-		getTypeDecl(i).visualiseCallGraphUsingDot(out);
+		getTypeDecl(i).visualiseCallGraphUsingDot(out, edgeBuffer);
 	}
   }
-  public void TypeDecl.visualiseCallGraphUsingDot(PrintStream out) {
+  public void TypeDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
+	out.println("\tsubgraph cluster_" + this.hashCode() + " {");
+	out.println("\t\tcolor=blue;label=\"" + this.getID() + "\";");
 	for (int i = 0; i < getNumBodyDecl(); i++) {
-		getBodyDecl(i).visualiseCallGraphUsingDot(out);
+		getBodyDecl(i).visualiseCallGraphUsingDot(out, edgeBuffer);
 	}	
+	out.println("\t}");
   }
-  public void BodyDecl.visualiseCallGraphUsingDot(PrintStream out) {
+  public void BodyDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
   }
-  public void MethodDecl.visualiseCallGraphUsingDot(PrintStream out) {
-    out.println("\t" + this.hashCode() + "[label=\"0.0\",shape=circle,height=0.15,width=0.15];");
+  public void MethodDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
+	//if (callees().size() > 0 || calls().size() > 0) {
+    out.println("\t\t" + this.hashCode() + 
+		"[shape=box,label=\"" + getID() + "\"];");
+	for (CGNode decl : callees()) {
+		edgeBuffer.append("\t" + this.hashCode() + " -> " + decl.hashCode() + ";\n");
+	}
+	//}
   }
+  public void ConstructorDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
+	//if (callees().size() > 0 || calls().size() > 0) {
+    out.println("\t\t" + this.hashCode() + 
+		"[color=lightgrey,shape=box,label=\"" + getID() + "(" + getNumParameter() + ")\"];");
+	for (CGNode decl : callees()) {
+		edgeBuffer.append("\t" + this.hashCode() + " -> " + decl.hashCode() + ";\n");
+		if (!decl.hostType().compilationUnit().fromSource()) {
+		    out.println("\t\t" + decl.hashCode() + 
+				"[shape=box,peripheries=2,label=\"" + decl.name() + "\"];");
+		}
+	}
+	//}
+  }
+
 }
