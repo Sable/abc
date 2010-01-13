@@ -4,8 +4,8 @@ public class CallGraphTest {
 //		B b = new B();
 //		a.b(0);
 //		b.b(1);
-		A a = new B();
-		a.b(2);
+		B a = new B();
+		a.c();
 	}
 }
 

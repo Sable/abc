@@ -10,7 +10,17 @@ aspect CallGraph {
 
 	// Gather possible callees at method access nodes
 	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
-	eq VirtualMethodAccess.callees() = super.callees();
+	eq VirtualMethodAccess.callees() {
+		SmallSet<CGNode> callees = super.callees();
+		// TODO: For classes, collect overriding methods
+//		TypeDecl type = isQualified() ? qualifier().type() : hostType();
+//		SmallSet<ReferenceType> subclasses = decl().subclasses();
+//		for (ReferenceType type : subclasses) {		
+//		}
+		// TODO: For interfaces, collect implementing types and corresponding methods
+		// TODO: Generics?
+		return callees;
+	}
 
 	// Collect callees from BodyDecl
 	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
@@ -37,4 +47,16 @@ aspect SpecializeStaticVirtualCalls {
 			return new VirtualMethodAccess(getID(), getArgList());
 		}
 	}
+}
+
+aspect Inheritance {
+	
+	coll SmallSet<ReferenceType> ReferenceType.subtypes() [SmallSet.mutable()] with add root CompilationUnit;
+	ClassDecl contributes subtypes().union(this) 
+		when hasSuperClassAccess() 
+		to ReferenceType.subtypes() for getSuperClassAccess().type();
+//	InterfaceDecl contributes subtypes().union(this) 
+//		when hasSuperInterfaceId()
+//		to ReferenceType.subtypes() for each getSuperClassAccess().decl();
+	
 }
