@@ -21,7 +21,7 @@ aspect CallGraphVisual {
   public void MethodDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
 	//if (callees().size() > 0 || calls().size() > 0) {
     out.println("\t\t" + this.hashCode() + 
-		"[shape=box,label=\"" + getID() + "\"];");
+		"[shape=box,label=\"" + getID() + "(" + getNumParameter() + ")\"];");
 	for (CGNode decl : callees()) {
 		edgeBuffer.append("\t" + this.hashCode() + " -> " + decl.hashCode() + ";\n");
 	}

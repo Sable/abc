@@ -8,28 +8,18 @@ aspect CallGraph {
 	BodyDecl implements CGNode;
 	syn String BodyDecl.name() = "";
 
-	// Gather possible callees at method access nodes
-	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
-	eq VirtualMethodAccess.callees() {
-		SmallSet<CGNode> callees = super.callees();
-		// TODO: For classes, collect overriding methods
-//		TypeDecl type = isQualified() ? qualifier().type() : hostType();
-//		SmallSet<ReferenceType> subclasses = decl().subclasses();
-//		for (ReferenceType type : subclasses) {		
-//		}
-		// TODO: For interfaces, collect implementing types and corresponding methods
-		// TODO: Generics?
-		return callees;
-	}
-
-	// Collect callees from BodyDecl
+	// Collect callees from children of BodyDecl
 	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
 	MethodAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
 	ConstructorAccess contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
 
-	// Collect calls to BodyDecl 
+	// Collect calls t+o BodyDecl 
 	coll SmallSet<CGNode> BodyDecl.calls() [SmallSet.mutable()] with add root TypeDecl;
 	BodyDecl contributes this to BodyDecl.calls() for each callees();
+
+	// Gather possible callees at method access nodes
+	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
+	eq VirtualMethodAccess.callees() = super.callees().union(decl().overridingMethods());
 
 }
 
@@ -51,12 +41,22 @@ aspect SpecializeStaticVirtualCalls {
 
 aspect Inheritance {
 	
-	coll SmallSet<ReferenceType> ReferenceType.subtypes() [SmallSet.mutable()] with add root CompilationUnit;
-	ClassDecl contributes subtypes().union(this) 
-		when hasSuperClassAccess() 
-		to ReferenceType.subtypes() for getSuperClassAccess().type();
+
+//	coll SmallSet<ReferenceType> ReferenceType.subtypes() 
+//		[SmallSet.mutable()] with add root CompilationUnit;
+	// Collect all classes "extends"
+//	ClassDecl contributes subtypes().union(this) when hasSuperClassAccess() 
+//		to ReferenceType.subtypes() for getSuperClassAccess().type();
 //	InterfaceDecl contributes subtypes().union(this) 
 //		when hasSuperInterfaceId()
 //		to ReferenceType.subtypes() for each getSuperClassAccess().decl();
+
+
+	// collect overriding methods by reversing the ancestorMethods collection
+	coll SmallSet<CGNode> MethodDecl.overridingMethods()
+		[SmallSet.mutable()] with add root CompilationUnit;
+	MethodDecl contributes overridingMethods().union(this) 
+		to MethodDecl.overridingMethods()
+		for each hostType().ancestorMethods(signature());
 	
 }
