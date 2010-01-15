@@ -38,6 +38,8 @@ public class InterfaceExtendsTest {
 		I i = new D();
 		i.m();
 	}
+	// TODO: Possible targets become A.m, B.m, C.m, D.m because thats the value of 
+	// overridingMethods() for I.m which is decl()
 	// Possible targets: B.m, C.m
 	// Correct target: B.m
 	private static void test5() {
