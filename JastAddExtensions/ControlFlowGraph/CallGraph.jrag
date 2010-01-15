@@ -3,23 +3,28 @@ aspect CallGraph {
 	// Call graph nodes
 	interface CGNode {
 		TypeDecl hostType();
-		String name();
+		// Implementation for this attribute located in CallGraphVisual.jrag
+		String visualCallGraphName();
 	}
 	BodyDecl implements CGNode;
-	syn String BodyDecl.name() = "";
 
 	// Collect callees from children of BodyDecl
 	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
 	MethodAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
 	ConstructorAccess contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
 
-	// Collect calls t+o BodyDecl 
+	// Collect calls to BodyDecl, invert the callees collection
 	coll SmallSet<CGNode> BodyDecl.calls() [SmallSet.mutable()] with add root TypeDecl;
 	BodyDecl contributes this to BodyDecl.calls() for each callees();
 
 	// Gather possible callees at method access nodes
 	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
-	eq VirtualMethodAccess.callees() = super.callees().union(decl().overridingMethods());
+	eq VirtualMethodAccess.callees() { 
+		if (decl().isAbstract()) {
+			return decl().overridingMethods();
+		}
+		return super.callees().union(decl().overridingMethods());
+	}
 
 }
 

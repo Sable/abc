@@ -1,16 +1,18 @@
 import java.io.*;
 
-aspect CallGraphVisual {
-
-  // Visualization of Call Graph
+/*
+ * Visualization of the call graph using Dot
+ */
+aspect CallGraphVisualDot {
   public void CompilationUnit.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
+	out.println("\t//" + relativeName());
 	for (int i = 0; i < getNumTypeDecl(); i++) {
 		getTypeDecl(i).visualiseCallGraphUsingDot(out, edgeBuffer);
 	}
   }
   public void TypeDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
 	out.println("\tsubgraph cluster_" + this.hashCode() + " {");
-	out.println("\t\tcolor=blue;label=\"" + this.getID() + "\";");
+	out.println("\t\tcolor=blue;label=\"" + getID() + "\";");
 	for (int i = 0; i < getNumBodyDecl(); i++) {
 		getBodyDecl(i).visualiseCallGraphUsingDot(out, edgeBuffer);
 	}	
@@ -19,26 +21,62 @@ aspect CallGraphVisual {
   public void BodyDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
   }
   public void MethodDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
-	//if (callees().size() > 0 || calls().size() > 0) {
     out.println("\t\t" + this.hashCode() + 
-		"[shape=box,label=\"" + getID() + "(" + getNumParameter() + ")\"];");
+		"[shape=box,label=\"" + visualCallGraphName() + "\"];");
 	for (CGNode decl : callees()) {
 		edgeBuffer.append("\t" + this.hashCode() + " -> " + decl.hashCode() + ";\n");
 	}
-	//}
   }
   public void ConstructorDecl.visualiseCallGraphUsingDot(PrintStream out, StringBuffer edgeBuffer) {
-	//if (callees().size() > 0 || calls().size() > 0) {
     out.println("\t\t" + this.hashCode() + 
-		"[color=lightgrey,shape=box,label=\"" + getID() + "(" + getNumParameter() + ")\"];");
+		"[color=lightgrey,shape=box,label=\"" + visualCallGraphName() + "\"];");
 	for (CGNode decl : callees()) {
 		edgeBuffer.append("\t" + this.hashCode() + " -> " + decl.hashCode() + ";\n");
 		if (!decl.hostType().compilationUnit().fromSource()) {
 		    out.println("\t\t" + decl.hashCode() + 
-				"[shape=box,peripheries=2,label=\"" + decl.name() + "\"];");
+				"[shape=box,peripheries=2,label=\"" + decl.visualCallGraphName() + "\"];");
 		}
 	}
-	//}
   }
+}
 
+/* 
+ * Visualization of the call graph using a simple text format:
+ *
+ * > --------------------------------------------------------
+ * > signature:_CompilationUnit/TypeDecl/BodyDecl_(in:#edges/out:#edges)\n
+ * > in:__caller signature\n
+ * > ...
+ * > out:_callee signature\n
+ * > ...
+ *
+ */
+aspect CallGraphVisualText {
+  syn String BodyDecl.visualCallGraphName() = "";
+  eq MethodDecl.visualCallGraphName() = signature();
+  eq ConstructorDecl.visualCallGraphName() = signature();
+  eq StaticInitializer.visualCallGraphName() = "staticInitBlock";
+  eq InstanceInitializer.visualCallGraphName() = "instanceInitBlock";
+  eq FieldDeclaration.visualCallGraphName() = name();
+  public void CompilationUnit.visualiseCallGraphUsingText(PrintStream out) {
+	for (int i = 0; i < getNumTypeDecl(); i++) {
+		getTypeDecl(i).visualiseCallGraphUsingText(out);
+	}
+  }
+  public void TypeDecl.visualiseCallGraphUsingText(PrintStream out) {
+	for (int i = 0; i < getNumBodyDecl(); i++) {
+		getBodyDecl(i).visualiseCallGraphUsingText(out);
+	}	
+  }
+  public void BodyDecl.visualiseCallGraphUsingText(PrintStream out) {
+	out.println("-------------------------------");
+    out.println("signature: " + hostType().name() + "/" + visualCallGraphName() + 
+		" (in:"+ calls().size() + "/out:" + callees().size() + ")");
+	for (CGNode decl : calls()) {
+		out.println("in:  " + decl.hostType().name() + "/" + decl.visualCallGraphName());
+	}
+	for (CGNode decl : callees()) {
+		out.println("out: " + decl.hostType().name() + "/" + decl.visualCallGraphName());
+	}
+  }
 }

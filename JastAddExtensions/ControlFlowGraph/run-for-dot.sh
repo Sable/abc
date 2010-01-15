@@ -133,13 +133,14 @@ function run-small {
 	TEST_SET_DIR='test'
 	TEST_SET_FILE='test/small_filelist'
 	CLASS_PATH=$TEST_SET_DIR
-	RESULT_FILE_DOT='result.small.dot'
-	./compile-for-dot.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE_DOT $CLASS_PATH
+	RESULT_FILE_BASE='result.small'
+	./compile-for-dot.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE_BASE $CLASS_PATH
 	#do
-	RESULT_FILE_PNG='result.small.png'
+	RESULT_FILE_DOT=$RESULT_FILE_BASE'.dot'
+	RESULT_FILE_PNG=$RESULT_FILE_BASE'.png'
 	echo '- Generating PNG file ['$RESULT_FILE_PNG']'
 	dot -Tpng $RESULT_FILE_DOT -o $RESULT_FILE_PNG
-	RESULT_FILE_PS='result.small.ps'
+	RESULT_FILE_PS=$RESULT_FILE_BASE'.ps'
 	echo '- Generating PS file ['$RESULT_FILE_PS']'
 	dot -Tps $RESULT_FILE_DOT -o $RESULT_FILE_PS
 }
