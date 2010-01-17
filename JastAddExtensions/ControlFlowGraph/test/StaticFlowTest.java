@@ -20,10 +20,26 @@ class A {
 	}
 	static void m() {
 	}
+	static int n() {
+		return 0;
+	}
+	static {
+		int a;
+	}
+	static int b = n();
 }
 class B {
 	static int a = m();
 	static int m() {
 		return 0;
 	}
+	static enum Enum {
+	    A, B;
+		static {
+			m();
+		}
+		static void m() {
+		}
+	}
 }
+

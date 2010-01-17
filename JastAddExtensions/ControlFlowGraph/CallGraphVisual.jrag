@@ -55,9 +55,14 @@ aspect CallGraphVisualText {
   syn String BodyDecl.visualCallGraphName() = "";
   eq MethodDecl.visualCallGraphName() = signature();
   eq ConstructorDecl.visualCallGraphName() = signature();
-  eq StaticInitializer.visualCallGraphName() = "staticInitBlock";
-  eq InstanceInitializer.visualCallGraphName() = "instanceInitBlock";
-  eq FieldDeclaration.visualCallGraphName() = name();
+  eq StaticInitializer.visualCallGraphName() = "staticInitBlock-" + childNbr();
+  eq InstanceInitializer.visualCallGraphName() = "instanceInitBlock-" + childNbr();
+  eq FieldDeclaration.visualCallGraphName() = "field: " + getTypeAccess() + " " + name();
+
+  inh int BodyDecl.childNbr();
+  eq TypeDecl.getBodyDecl(int i).childNbr() = i;
+  eq EnumConstant.getBodyDecl(int i).childNbr() = i;
+
   public void CompilationUnit.visualiseCallGraphUsingText(PrintStream out) {
 	for (int i = 0; i < getNumTypeDecl(); i++) {
 		getTypeDecl(i).visualiseCallGraphUsingText(out);
@@ -79,4 +84,104 @@ aspect CallGraphVisualText {
 		out.println("out: " + decl.hostType().name() + "/" + decl.visualCallGraphName());
 	}
   }
+}
+
+aspect IntraTypeFlowVisual {
+	public void CompilationUnit.visualiseIntraTypeFlowText(PrintStream out) {
+		for (int i = 0; i < getNumTypeDecl(); i++) {
+			getTypeDecl(i).visualiseIntraTypeFlowText(out);
+		}
+	}
+  public void TypeDecl.visualiseIntraTypeFlowText(PrintStream out) {
+	out.println("--------------------------------");
+	out.print("Static flow [" + name() + "|succ]: ");
+	if (staticEntry() != staticExit()) {
+		staticEntry().printStaticIntraSuccFlow(out);
+	} 
+	out.println();
+	out.print("Static flow [" + name() + "|pred]: ");
+	if (staticEntry() != staticExit()) {
+		staticExit().printStaticIntraPredFlow(out);
+	} 
+	out.println();
+	out.print("Instance flow [" + name() + "|succ]: ");
+	if (instanceEntry() != instanceExit()) {
+		instanceEntry().printInstanceIntraSuccFlow(out);
+	} 
+	out.println();
+	out.print("Instance flow [" + name() + "|pred]: ");
+	if (instanceEntry() != instanceExit()) {
+		instanceExit().printInstanceIntraPredFlow(out);
+	} 
+	out.println();
+  }
+
+  public void FlowNode.printStaticIntraSuccFlow(PrintStream out);
+  public void TypeDecl.printStaticIntraSuccFlow(PrintStream out) {
+	out.print("exit");
+  }
+  public void EnumConstant.printStaticIntraSuccFlow(PrintStream out) {
+  	out.print("exit");
+  }
+  public void BodyDecl.printStaticIntraSuccFlow(PrintStream out) {
+    out.print(visualCallGraphName() + " -> ");
+	for (FlowNode staticSucc : staticSucc()) {
+		staticSucc.printStaticIntraSuccFlow(out);
+	}
+  }
+
+  public void FlowNode.printStaticIntraPredFlow(PrintStream out);
+  public void TypeDecl.printStaticIntraPredFlow(PrintStream out) {
+	out.print("exit -> ");
+	for (FlowNode staticPred : staticPred()) {
+		staticPred.printStaticIntraPredFlow(out);
+	}
+  }
+  public void EnumConstant.printStaticIntraPredFlow(PrintStream out) {
+  	out.print("exit -> ");
+	for (FlowNode staticPred : staticPred()) {
+		staticPred.printStaticIntraPredFlow(out);
+	}
+  }
+  public void BodyDecl.printStaticIntraPredFlow(PrintStream out) {
+    out.print(visualCallGraphName() + " -> ");
+	for (FlowNode staticPred : staticPred()) {
+		staticPred.printStaticIntraPredFlow(out);
+	}
+  }
+
+  public void FlowNode.printInstanceIntraSuccFlow(PrintStream out);
+  public void TypeDecl.printInstanceIntraSuccFlow(PrintStream out) {
+	out.print("exit");
+  }
+  public void EnumConstant.printInstanceIntraSuccFlow(PrintStream out) {
+  	out.print("exit");
+  }
+  public void BodyDecl.printInstanceIntraSuccFlow(PrintStream out) {
+    out.print(visualCallGraphName() + " -> ");
+	for (FlowNode instanceSucc : instanceSucc()) {
+		instanceSucc.printInstanceIntraSuccFlow(out);
+	}
+  }
+
+  public void FlowNode.printInstanceIntraPredFlow(PrintStream out);
+  public void TypeDecl.printInstanceIntraPredFlow(PrintStream out) {
+	out.print("exit -> ");
+	for (FlowNode instancePred : instancePred()) {
+		instancePred.printInstanceIntraPredFlow(out);
+	}
+  }
+  public void EnumConstant.printInstanceIntraPredFlow(PrintStream out) {
+  	out.print("exit -> ");
+	for (FlowNode instancePred : instancePred()) {
+		instancePred.printInstanceIntraPredFlow(out);
+	}
+  }
+  public void BodyDecl.printInstanceIntraPredFlow(PrintStream out) {
+    out.print(visualCallGraphName() + " -> ");
+	for (FlowNode instancePred : instancePred()) {
+		instancePred.printInstanceIntraPredFlow(out);
+	}
+  }
+
 }

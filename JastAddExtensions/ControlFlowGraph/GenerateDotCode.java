@@ -39,6 +39,7 @@ public class GenerateDotCode extends Frontend {
 	protected void processNoErrors(CompilationUnit unit) {
 		unit.visualiseCallGraphUsingDot(dotOut, edgeBuffer);
 		unit.visualiseCallGraphUsingText(textOut);
+		unit.visualiseIntraTypeFlowText(textOut);
 	}
 
 	public static boolean compile(String args[]) {
