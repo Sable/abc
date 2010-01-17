@@ -11,7 +11,7 @@ aspect CallGraph {
 	// Collect callees from children of BodyDecl
 	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
 	MethodAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
-	ConstructorAccess contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
+	ConstructorAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
 
 	// Collect calls to BodyDecl, invert the callees collection
 	coll SmallSet<CGNode> BodyDecl.calls() [SmallSet.mutable()] with add root TypeDecl;
@@ -20,7 +20,6 @@ aspect CallGraph {
 	// Gather possible callees at method access nodes
 	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
 	eq VirtualMethodAccess.callees() { 
-
 		// Collect overriding methods
 		SmallSet<CGNode> possibleCallees = SmallSet.empty();
 		// Don't want to include decl() if the method is abstract (i.e. in an interface or abstract class)
@@ -29,7 +28,6 @@ aspect CallGraph {
 		} else {
 			possibleCallees = super.callees().union(decl().overridingMethods());
 		}
-
 		// Remove callees obviously out of scope
 		TypeDecl callingType = isQualified() ? qualifier().type() : hostType();
 		SmallSet<CGNode> callees = SmallSet.empty();
@@ -38,8 +36,14 @@ aspect CallGraph {
 				callees = callees.union(callee);
 			}
 		}
-
 		return callees;
+	}
+
+	// TODO: Add so that overriding constructors are accessible in the same way as overriding methods
+	// and choose the most appropiate constructor. decl() currently points to the super declaration e.g. Object() for ()
+	syn SmallSet<CGNode> ConstructorAccess.callees() {
+		//System.out.println("ConstructorAccess: decl() = " + decl() + ", enclosingBodyDecl() = " + enclosingBodyDecl());
+		return SmallSet.singleton((CGNode)decl());
 	}
 }
 
