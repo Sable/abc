@@ -20,12 +20,27 @@ aspect CallGraph {
 	// Gather possible callees at method access nodes
 	syn SmallSet<CGNode> MethodAccess.callees() = SmallSet.singleton((CGNode)decl());
 	eq VirtualMethodAccess.callees() { 
-		if (decl().isAbstract()) {
-			return decl().overridingMethods();
-		}
-		return super.callees().union(decl().overridingMethods());
-	}
 
+		// Collect overriding methods
+		SmallSet<CGNode> possibleCallees = SmallSet.empty();
+		// Don't want to include decl() if the method is abstract (i.e. in an interface or abstract class)
+		if (decl().isAbstract()) {
+			possibleCallees = decl().overridingMethods();
+		} else {
+			possibleCallees = super.callees().union(decl().overridingMethods());
+		}
+
+		// Remove callees obviously out of scope
+		TypeDecl callingType = isQualified() ? qualifier().type() : hostType();
+		SmallSet<CGNode> callees = SmallSet.empty();
+		for (CGNode callee : possibleCallees) {
+			if (callee.hostType().instanceOf(callingType)) {
+				callees = callees.union(callee);
+			}
+		}
+
+		return callees;
+	}
 }
 
 aspect SpecializeStaticVirtualCalls {
@@ -46,7 +61,6 @@ aspect SpecializeStaticVirtualCalls {
 
 aspect Inheritance {
 	
-
 //	coll SmallSet<ReferenceType> ReferenceType.subtypes() 
 //		[SmallSet.mutable()] with add root CompilationUnit;
 	// Collect all classes "extends"
@@ -56,12 +70,82 @@ aspect Inheritance {
 //		when hasSuperInterfaceId()
 //		to ReferenceType.subtypes() for each getSuperClassAccess().decl();
 
-
 	// collect overriding methods by reversing the ancestorMethods collection
 	coll SmallSet<CGNode> MethodDecl.overridingMethods()
 		[SmallSet.mutable()] with add root CompilationUnit;
 	MethodDecl contributes overridingMethods().union(this) 
 		to MethodDecl.overridingMethods()
 		for each hostType().ancestorMethods(signature());
+}
+
+// Flow at class loading and instance initialization
+aspect IntraTypeFlow {
+
+	// Flow interface declarations
+	syn ASTNode TypeDecl.staticEntry();
+	syn ASTNode EnumConstant.staticEntry();
+	syn ASTNode TypeDecl.staticExit();
+	syn ASTNode EnumConstant.staticExit();
+	syn SmallSet<ASTNode> BodyDecl.staticSucc();
+	coll SmallSet<ASTNode> ASTNode.staticPred() [SmallSet.mutable()] with add root TypeDecl;
+
+	// Helpers declaration
+	syn boolean BodyDecl.includeInStaticFlow();
+	inh SmallSet<ASTNode> BodyDecl.staticFollowing();
+
+	// Implementation: ASTNode.staticPred();
+	BodyDecl contributes this when includeInStaticFlow() 
+		to ASTNode.staticPred() for each staticSucc();
 	
+	// Implementation: ASTNode TypeDecl.staticEntry()
+	eq TypeDecl.staticEntry() {
+		for (int i = 0; i < getNumBodyDecl(); i++) {
+			BodyDecl decl = getBodyDecl(i);
+			if (decl.includeInStaticFlow()) {
+				return decl;
+			}
+		}
+		return staticExit();
+	}
+	eq EnumConstant.staticEntry() {
+		for (int i = 0; i < getNumBodyDecl(); i++) {
+			BodyDecl decl = getBodyDecl(i);
+			if (decl.includeInStaticFlow()) {
+				return decl;
+			}
+		}
+		return staticExit();
+	}	
+
+	// Implementation: ASTNode TypeDecl.staticExit()
+	eq TypeDecl.staticExit() = this;
+	eq EnumConstant.staticExit() = this;
+
+	// Implementation: SmallSet<ASTNode> BodyDecl.staticFollowing()
+	eq TypeDecl.getBodyDecl(int i).staticFollowing() {
+		for (int j = i + 1; j < getNumBodyDecl(); j++) {
+			BodyDecl decl = getBodyDecl(j);
+			if (decl.includeInStaticFlow()) {
+				return singleNode(decl);
+			}
+		}
+		return singleNode(staticExit());
+	}
+	eq EnumConstant.getBodyDecl(int i).staticFollowing() {
+		for (int j = i + 1; j < getNumBodyDecl(); j++) {
+			BodyDecl decl = getBodyDecl(j);
+			if (decl.includeInStaticFlow()) {
+				return singleNode(decl);
+			}
+		}
+		return singleNode(staticExit());
+	}
+	
+	// Implementation: SmallSet<ASTNode> BodyDecl.staticSucc()
+	eq BodyDecl.staticSucc() = staticFollowing();
+	
+	// Implementation: boolean BodyDecl.includeInStaticFlow()
+	eq BodyDecl.includeInStaticFlow() = false;
+	eq StaticInitializer.includeInStaticFlow() = true;
+	eq FieldDeclaration.includeInStaticFlow() = isStatic();	
 }
