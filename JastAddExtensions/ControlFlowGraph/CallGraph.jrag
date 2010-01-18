@@ -11,7 +11,8 @@ aspect CallGraph {
 	// Collect callees from children of BodyDecl
 	coll SmallSet<CGNode> BodyDecl.callees() [SmallSet.mutable()] with add root TypeDecl;
 	MethodAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
-	ConstructorAccess contributes callees() to BodyDecl.callees() for enclosingBodyDecl();
+	ConstructorAccess contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
+	ClassInstanceExpr contributes decl() to BodyDecl.callees() for enclosingBodyDecl();
 
 	// Collect calls to BodyDecl, invert the callees collection
 	coll SmallSet<CGNode> BodyDecl.calls() [SmallSet.mutable()] with add root TypeDecl;
@@ -22,7 +23,8 @@ aspect CallGraph {
 	eq VirtualMethodAccess.callees() { 
 		// Collect overriding methods
 		SmallSet<CGNode> possibleCallees = SmallSet.empty();
-		// Don't want to include decl() if the method is abstract (i.e. in an interface or abstract class)
+		// Don't want to include decl() if the method is abstract 
+		// (i.e. in an interface or abstract class)
 		if (decl().isAbstract()) {
 			possibleCallees = decl().overridingMethods();
 		} else {
@@ -39,12 +41,20 @@ aspect CallGraph {
 		return callees;
 	}
 
-	// TODO: Add so that overriding constructors are accessible in the same way as overriding methods
-	// and choose the most appropiate constructor. decl() currently points to the super declaration e.g. Object() for ()
+/*
 	syn SmallSet<CGNode> ConstructorAccess.callees() {
-		//System.out.println("ConstructorAccess: decl() = " + decl() + ", enclosingBodyDecl() = " + enclosingBodyDecl());
-		return SmallSet.singleton((CGNode)decl());
+		ConstructorDecl decl = decl();
+		System.out.println(this + ": decl() = " + decl);
+		SmallSet<ConstructorDecl> possibleCallees = decl.overridingConstructors();
+		for (ConstructorDecl callee : possibleCallees) {
+			System.out.println(this + ", callee = " + callee);
+			if (callee.moreSpecificThan(decl)) {
+				decl = callee;
+			}
+		}
+		return SmallSet.singleton((CGNode)decl);
 	}
+*/
 }
 
 aspect SpecializeStaticVirtualCalls {
@@ -80,6 +90,33 @@ aspect Inheritance {
 	MethodDecl contributes overridingMethods().union(this) 
 		to MethodDecl.overridingMethods()
 		for each hostType().ancestorMethods(signature());
+
+	coll SmallSet<ConstructorDecl> ConstructorDecl.overridingConstructors()
+		[SmallSet.mutable()] with add root TypeDecl;
+	ConstructorDecl contributes this
+		when hostType().ancestorConstructor(this) != null
+		to ConstructorDecl.overridingConstructors()
+		for hostType().ancestorConstructor(this);
+
+/*
+	syn lazy ConstructorDecl TypeDecl.ancestorConstructor(ConstructorDecl decl) = null;
+	eq ClassDecl.ancestorConstructor(ConstructorDecl decl) {
+		System.out.println("ancestorConstructor for decl = " + decl);
+		if (hasSuperclass()) {
+			System.out.println("hasSuperclass()");
+			for(Iterator itr = superclass().constructors().iterator(); itr.hasNext();) {
+				ConstructorDecl superDecl = (ConstructorDecl)itr.next();
+				System.out.println("superclass.constructor = " + superDecl);
+				if (superDecl.applicable(decl.getParameterList()) && 
+					superDecl.accessibleFrom(decl.hostType())) {
+					return superDecl;
+				}
+			}
+			return superclass().ancestorConstructor(decl);
+		}
+		return super.ancestorConstructor(decl);
+	}
+*/
 }
 
 // Intra type flow at class loading and instance initialization
