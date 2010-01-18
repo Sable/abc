@@ -67,6 +67,7 @@ class JavaCheckerTimeMem extends Frontend {
 		deadExprNum = 0;
 		deadOtherNum = 0;
 		deadCodeNum = 0;
+		deadMethodNum = 0;
 
 		// Run
       	long used = runtime.totalMemory()-runtime.freeMemory();
@@ -165,6 +166,7 @@ class JavaCheckerTimeMem extends Frontend {
   static int deadStmtNum = 0;
   static int deadExprNum = 0;
   static int deadOtherNum = 0;
+  static int deadMethodNum = 0;
 
   protected void processNoErrors(CompilationUnit unit) {
     //DeadCode 
@@ -180,6 +182,11 @@ class JavaCheckerTimeMem extends Frontend {
 		}
     }
 	deadCodeNum += unit.deadCode().size();  
+
+	// Dead Methods
+	for (MethodDecl decl : unit.deadMethods()) {
+		outAnalysis.println(" [Method:" + deadMethodNum++ + "]: " + decl + " in " + decl.hostType().name());
+	}
   }
 
 

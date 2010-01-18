@@ -3,7 +3,7 @@ aspect CallGraph {
 	// Call graph nodes
 	interface CGNode {
 		TypeDecl hostType();
-		// Implementation for this attribute located in CallGraphVisual.jrag
+		// Implementation for this attribute is located in CallGraphVisual.jrag
 		String visualCallGraphName();
 	}
 	BodyDecl implements CGNode;
@@ -63,37 +63,6 @@ aspect CallGraph {
 		return callees;
 	}
 
-	// Collect local classes in each BodyDecl
-	coll SmallSet<TypeDecl> BodyDecl.localDecls() [SmallSet.mutable()] with add root BodyDecl;
-	TypeDecl contributes this when (isLocalClass() || isAnonymous())
-		to BodyDecl.localDecls() for enclosingBodyDecl();
-	coll SmallSet<TypeDecl> TypeDecl.localDecls() [SmallSet.mutable()] with add root CompilationUnit;
-	FieldDeclaration contributes localDecls() to TypeDecl.localDecls() for hostType();
-	
-	inh SmallSet<TypeDecl> MethodAccess.localDeclsInScope();
-	inh SmallSet<TypeDecl> BodyDecl.localDeclsInScope();
-	eq Program.getChild(int i).localDeclsInScope() = SmallSet.empty();
-	eq TypeDecl.getBodyDecl(int i).localDeclsInScope() = localDecls();
-	eq InstanceInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
-	eq StaticInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
-	eq ConstructorDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
-	eq MethodDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
-	
-
-/*
-	syn SmallSet<CGNode> ConstructorAccess.callees() {
-		ConstructorDecl decl = decl();
-		System.out.println(this + ": decl() = " + decl);
-		SmallSet<ConstructorDecl> possibleCallees = decl.overridingConstructors();
-		for (ConstructorDecl callee : possibleCallees) {
-			System.out.println(this + ", callee = " + callee);
-			if (callee.moreSpecificThan(decl)) {
-				decl = callee;
-			}
-		}
-		return SmallSet.singleton((CGNode)decl);
-	}
-*/
 }
 
 aspect SpecializeStaticVirtualCalls {
@@ -114,15 +83,6 @@ aspect SpecializeStaticVirtualCalls {
 
 aspect Inheritance {
 	
-//	coll SmallSet<ReferenceType> ReferenceType.subtypes() 
-//		[SmallSet.mutable()] with add root CompilationUnit;
-	// Collect all classes "extends"
-//	ClassDecl contributes subtypes().union(this) when hasSuperClassAccess() 
-//		to ReferenceType.subtypes() for getSuperClassAccess().type();
-//	InterfaceDecl contributes subtypes().union(this) 
-//		when hasSuperInterfaceId()
-//		to ReferenceType.subtypes() for each getSuperClassAccess().decl();
-
 	// collect overriding methods by reversing the ancestorMethods collection
 	coll SmallSet<CGNode> MethodDecl.overridingMethods()
 		[SmallSet.mutable()] with add root CompilationUnit;
@@ -131,32 +91,24 @@ aspect Inheritance {
 		to MethodDecl.overridingMethods()
 		for each hostType().ancestorMethods(signature());
 
-/*
-	coll SmallSet<ConstructorDecl> ConstructorDecl.overridingConstructors()
-		[SmallSet.mutable()] with add root TypeDecl;
-	ConstructorDecl contributes this
-		when hostType().ancestorConstructor(this) != null
-		to ConstructorDecl.overridingConstructors()
-		for hostType().ancestorConstructor(this);
+	// Collect local and anonymous classes in BodyDecl
+	coll SmallSet<TypeDecl> BodyDecl.localDecls() [SmallSet.mutable()] with add root BodyDecl;
+	TypeDecl contributes this when (isLocalClass() || isAnonymous())
+		to BodyDecl.localDecls() for enclosingBodyDecl();
 
-	syn lazy ConstructorDecl TypeDecl.ancestorConstructor(ConstructorDecl decl) = null;
-	eq ClassDecl.ancestorConstructor(ConstructorDecl decl) {
-		System.out.println("ancestorConstructor for decl = " + decl);
-		if (hasSuperclass()) {
-			System.out.println("hasSuperclass()");
-			for(Iterator itr = superclass().constructors().iterator(); itr.hasNext();) {
-				ConstructorDecl superDecl = (ConstructorDecl)itr.next();
-				System.out.println("superclass.constructor = " + superDecl);
-				if (superDecl.applicable(decl.getParameterList()) && 
-					superDecl.accessibleFrom(decl.hostType())) {
-					return superDecl;
-				}
-			}
-			return superclass().ancestorConstructor(decl);
-		}
-		return super.ancestorConstructor(decl);
-	}
-*/
+	// Collect anonymous classes from fields in TypeDecl
+	coll SmallSet<TypeDecl> TypeDecl.localDecls() [SmallSet.mutable()] with add root CompilationUnit;
+	FieldDeclaration contributes localDecls() to TypeDecl.localDecls() for hostType();
+
+	// Inherit the localDecls collections in MethodAccess and BodyDecl	
+	inh SmallSet<TypeDecl> MethodAccess.localDeclsInScope();
+	inh SmallSet<TypeDecl> BodyDecl.localDeclsInScope();
+	eq Program.getChild(int i).localDeclsInScope() = SmallSet.empty();
+	eq TypeDecl.getBodyDecl(int i).localDeclsInScope() = localDecls();
+	eq InstanceInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq StaticInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq ConstructorDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq MethodDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
 }
 
 // Intra type flow at class loading and instance initialization

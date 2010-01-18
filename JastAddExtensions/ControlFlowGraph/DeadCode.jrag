@@ -30,4 +30,63 @@ aspect DeadCode {
 	//	eq CompilationUnit.getTypeDecl(int i).enclosingCompilationUnit() = this;
 	eq Program.getCompilationUnit(int i).enclosingCompilationUnit() = 
 		getCompilationUnit(i);
-}	
+}
+
+aspect DeadMethod {
+
+	// Collect static entry points and main methods
+/*
+	coll SmallSet<CGNode> CompilationUnit.callGraphEntrySet() 
+		[SmallSet.mutable()] with add root Program;
+	StaticInitializer contributes this 
+		to CompilationUnit.callGraphEntrySet() 
+		for enclosingCompilationUnit();
+	FieldDeclaration contributes this when isStatic() 
+		to CompilationUnit.callGraphEntrySet() 
+		for enclosingCompilationUnit();
+	MethodDecl contributes this when name().equals("main")
+		to CompilationUnit.callGRaphEntrySet()
+		for enclosingCompilationUnit();
+*/	
+
+	// Make sure each CGNode knows its enclosing compilation unit
+	// equation in DeadCode aspect
+	inh CompilationUnit CGNode.enclosingCompilationUnit();
+
+
+	// Collect dead methods in CompilationUnit
+	coll SmallSet<MethodDecl> CompilationUnit.deadMethods() 
+		[SmallSet.mutable()] with add root CompilationUnit;
+	MethodDecl contributes this when !isAlive() 
+		to CompilationUnit.deadMethods() 
+		for enclosingCompilationUnit();
+
+	syn boolean TypeDecl.isInstantiated() {
+		for (Iterator itr = constructors().iterator();itr.hasNext();) {
+			ConstructorDecl decl = (ConstructorDecl)itr.next();
+			if (decl.calls().size() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// A BodyDecl is alive if one or more callers are alive
+	syn boolean CGNode.isAlive();
+	// This is default behavior for ConstructorDecl
+	eq BodyDecl.isAlive() {
+		for (CGNode caller : calls()) {
+			if (caller.isAlive()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	eq MethodDecl.isAlive() = name().equals("main") || super.isAlive();
+	// We're pretending that all classes are loaded i.e. all static 
+	// initializers and fields are executed
+	eq StaticInitializer.isAlive() = true;
+	eq InstanceInitializer.isAlive() = hostType().isInstantiated();
+	eq FieldDeclaration.isAlive() = isStatic() || hostType().isInstantiated();
+
+}
