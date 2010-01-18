@@ -30,6 +30,15 @@ aspect CallGraph {
 		} else {
 			possibleCallees = super.callees().union(decl().overridingMethods());
 		}
+		// Add local classes from the enclosing scope
+		for (TypeDecl decl : localDeclsInScope()) {
+			for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
+				MethodDecl methodDecl = (MethodDecl)itr.next();
+				if (applicable(methodDecl) && accessible(methodDecl)) {
+					possibleCallees = possibleCallees.union(methodDecl);
+				}
+			}
+		}
 		// Divide callees into a set of subEq callees (i.e. in subclasses to the 
 		// calling type or in the calling type) and the closest super callee to the
 		// calling type
@@ -53,6 +62,23 @@ aspect CallGraph {
 		}
 		return callees;
 	}
+
+	// Collect local classes in each BodyDecl
+	coll SmallSet<TypeDecl> BodyDecl.localDecls() [SmallSet.mutable()] with add root BodyDecl;
+	TypeDecl contributes this when (isLocalClass() || isAnonymous())
+		to BodyDecl.localDecls() for enclosingBodyDecl();
+	coll SmallSet<TypeDecl> TypeDecl.localDecls() [SmallSet.mutable()] with add root CompilationUnit;
+	FieldDeclaration contributes localDecls() to TypeDecl.localDecls() for hostType();
+	
+	inh SmallSet<TypeDecl> MethodAccess.localDeclsInScope();
+	inh SmallSet<TypeDecl> BodyDecl.localDeclsInScope();
+	eq Program.getChild(int i).localDeclsInScope() = SmallSet.empty();
+	eq TypeDecl.getBodyDecl(int i).localDeclsInScope() = localDecls();
+	eq InstanceInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq StaticInitializer.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq ConstructorDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	eq MethodDecl.getBlock().localDeclsInScope() = localDecls().union(localDeclsInScope());
+	
 
 /*
 	syn SmallSet<CGNode> ConstructorAccess.callees() {
@@ -101,6 +127,7 @@ aspect Inheritance {
 	coll SmallSet<CGNode> MethodDecl.overridingMethods()
 		[SmallSet.mutable()] with add root CompilationUnit;
 	MethodDecl contributes overridingMethods().union(this) 
+		when !hostType().isLocalClass() && !hostType().isAnonymous()
 		to MethodDecl.overridingMethods()
 		for each hostType().ancestorMethods(signature());
 
