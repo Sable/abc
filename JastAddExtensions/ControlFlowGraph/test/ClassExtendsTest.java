@@ -43,10 +43,17 @@ public class ClassExtendsTest {
 		D d = new D();
 		((A)d).m();
 	}
+	
+	private static void test7() {
+		B b = new C();
+		b.n();
+	}
 }
 
 class A {
 	public void m() {
+	}
+	public void n() {
 	}
 }
 

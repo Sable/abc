@@ -30,13 +30,26 @@ aspect CallGraph {
 		} else {
 			possibleCallees = super.callees().union(decl().overridingMethods());
 		}
-		// Remove callees obviously out of scope
+		// Divide callees into a set of subEq callees (i.e. in subclasses to the 
+		// calling type or in the calling type) and the closest super callee to the
+		// calling type
 		TypeDecl callingType = isQualified() ? qualifier().type() : hostType();
-		SmallSet<CGNode> callees = SmallSet.empty();
+		SmallSet<CGNode> subEqCallees = SmallSet.empty();
+		MethodDecl superCallee = decl(); 
 		for (CGNode callee : possibleCallees) {
 			if (callee.hostType().instanceOf(callingType)) {
-				callees = callees.union(callee);
+				subEqCallees = subEqCallees.union(callee);
+			} else if (superCallee.overridingMethods().contains(callee)) {
+				superCallee = (MethodDecl)callee;
 			}
+		}
+		// This happens if the implementation is in a super class and there is no
+		// overriding implementation in a class equal to or below the declared type
+		SmallSet<CGNode> callees = SmallSet.empty();
+		if (subEqCallees.size() == 0) {
+			callees = callees.union(superCallee);
+		} else {
+			callees = callees.union(subEqCallees);
 		}
 		return callees;
 	}
@@ -91,6 +104,7 @@ aspect Inheritance {
 		to MethodDecl.overridingMethods()
 		for each hostType().ancestorMethods(signature());
 
+/*
 	coll SmallSet<ConstructorDecl> ConstructorDecl.overridingConstructors()
 		[SmallSet.mutable()] with add root TypeDecl;
 	ConstructorDecl contributes this
@@ -98,7 +112,6 @@ aspect Inheritance {
 		to ConstructorDecl.overridingConstructors()
 		for hostType().ancestorConstructor(this);
 
-/*
 	syn lazy ConstructorDecl TypeDecl.ancestorConstructor(ConstructorDecl decl) = null;
 	eq ClassDecl.ancestorConstructor(ConstructorDecl decl) {
 		System.out.println("ancestorConstructor for decl = " + decl);
