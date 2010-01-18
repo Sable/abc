@@ -72,7 +72,7 @@ aspect DeadMethod {
 	}
 
 	// A BodyDecl is alive if one or more callers are alive
-	syn boolean CGNode.isAlive();
+	syn boolean CGNode.isAlive() circular [false];
 	// This is default behavior for ConstructorDecl
 	eq BodyDecl.isAlive() {
 		for (CGNode caller : calls()) {
