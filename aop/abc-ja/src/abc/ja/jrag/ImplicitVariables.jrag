@@ -36,6 +36,8 @@ aspect ImplicitVariables
             new Modifiers(new List().add(new Modifier("final")));
 
         TypeDecl var_type = lookupType("org.aspectj.lang", "JoinPoint");
+        if(var_type==null) throw new RuntimeException("Cannot find type org.aspectj.lang.JoinPoint. Is abc-runtime.jar missing?");
+        
         if (!name.equals("thisJoinPoint")) {
             SimpleSet results = var_type.memberTypes("StaticPart");
             var_type = (TypeDecl) results.iterator().next();
