@@ -55,10 +55,10 @@ aspect DeadMethod {
 
 
 	// Collect dead methods in CompilationUnit
-	coll SmallSet<MethodDecl> CompilationUnit.deadMethods() 
+	coll SmallSet<MethodDecl> CompilationUnit.reachableMethods() 
 		[SmallSet.mutable()] with add root CompilationUnit;
-	MethodDecl contributes this when !isAlive() 
-		to CompilationUnit.deadMethods() 
+	MethodDecl contributes this when !isReachable() 
+		to CompilationUnit.reachableMethods() 
 		for enclosingCompilationUnit();
 
 	syn boolean TypeDecl.isInstantiated() {
@@ -72,21 +72,21 @@ aspect DeadMethod {
 	}
 
 	// A BodyDecl is alive if one or more callers are alive
-	syn boolean CGNode.isAlive() circular [false];
+	syn boolean CGNode.isReachable() circular [false];
 	// This is default behavior for ConstructorDecl
-	eq BodyDecl.isAlive() {
+	eq BodyDecl.isReachable() {
 		for (CGNode caller : calls()) {
-			if (caller.isAlive()) {
+			if (caller.isReachable()) {
 				return true;
 			}
 		}
 		return false;
 	}
-	eq MethodDecl.isAlive() = name().equals("main") || super.isAlive();
+	eq MethodDecl.isReachable() = name().equals("main") || super.isReachable();
 	// We're pretending that all classes are loaded i.e. all static 
 	// initializers and fields are executed
-	eq StaticInitializer.isAlive() = true;
-	eq InstanceInitializer.isAlive() = hostType().isInstantiated();
-	eq FieldDeclaration.isAlive() = isStatic() || hostType().isInstantiated();
+	eq StaticInitializer.isReachable() = true;
+	eq InstanceInitializer.isReachable() = hostType().isInstantiated();
+	eq FieldDeclaration.isReachable() = isStatic() || hostType().isInstantiated();
 
 }

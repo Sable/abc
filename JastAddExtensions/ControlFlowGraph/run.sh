@@ -114,14 +114,27 @@ function run-antlr {
 	./compile.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE $CLASS_PATH
 }
 
-run-antlr
-run-bloat
-run-chart
-run-fop
-run-hsqldb
-run-jython
-run-lucene
-run-pmd
-run-xalan
+# Setup small
+function run-small {
+	echo ''
+	echo ' == small == '
+	echo ''
+	TEST_SET_DIR='test'
+	TEST_SET_FILE='test/small_filelist'
+	CLASS_PATH=$TEST_SET_DIR
+	RESULT_FILE='result.small'
+	./compile.sh $TEST_SET_DIR $TEST_SET_FILE $RESULT_FILE $CLASS_PATH
+}
+
+run-small
+#run-antlr
+#run-bloat
+#run-chart
+#run-fop
+#run-hsqldb
+#run-jython
+#run-lucene
+#run-pmd
+#run-xalan
 
 exit

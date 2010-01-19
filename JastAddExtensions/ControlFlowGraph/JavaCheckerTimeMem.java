@@ -81,7 +81,7 @@ class JavaCheckerTimeMem extends Frontend {
 		outMem.println(mem[i]);
 		String resAnalysis = "# stmts: " + deadStmtNum + ", # exprs: " + deadExprNum + 
 			", # others: " + deadOtherNum + ", # total: " + deadCodeNum;
-		outAnalysis.println(resAnalysis);
+//		outAnalysis.println(resAnalysis);
 		System.out.println("-- time[" + i + "]: " + time[i] + ", mem[" + i + "]: " + mem[i]);
 		System.out.println("-- " + resAnalysis);
 
@@ -149,17 +149,30 @@ class JavaCheckerTimeMem extends Frontend {
   }
 
   public static boolean compile(String args[]) {
-	return new JavaCheckerTimeMem().process(
-        args,
-        new BytecodeParser(),
-        new JavaParser() {
+	JavaCheckerTimeMem checker = new JavaCheckerTimeMem();
+	boolean result = checker.process(args,new BytecodeParser(),new JavaParser() {
           parser.JavaParser parser = new parser.JavaParser();
-          public CompilationUnit parse(java.io.InputStream is, String fileName) throws java.io.IOException, beaver.Parser.Exception {
+          public CompilationUnit parse(java.io.InputStream is, String fileName) 
+			throws java.io.IOException, beaver.Parser.Exception {
             return parser.parse(is, fileName);
           }
-		
         }
     );
+
+	if (result) {
+		checker.printReachableMethods(outAnalysis);
+	}
+	return result;
+  }
+
+  public void printReachableMethods(PrintStream out) {
+	// Reachable Methods
+	for (int i = 0; i < program.getNumCompilationUnit(); i++) {
+		CompilationUnit unit = program.getCompilationUnit(i);
+		for (MethodDecl decl : unit.reachableMethods()) {
+			out.println("Reachable method: <" + decl.hostType().fullName() + " : " + decl.signature() + ">");
+		}
+	}	
   }
 
   static int deadCodeNum = 0;
@@ -170,6 +183,7 @@ class JavaCheckerTimeMem extends Frontend {
 
   protected void processNoErrors(CompilationUnit unit) {
     //DeadCode 
+	/*
 	outAnalysis.println(" -- Unit: " + unit.pathName() + " -- ");
     for(Iterator it = unit.deadCode().iterator();it.hasNext();) {
     	CFNode node = (CFNode)it.next();
@@ -182,11 +196,7 @@ class JavaCheckerTimeMem extends Frontend {
 		}
     }
 	deadCodeNum += unit.deadCode().size();  
-
-	// Dead Methods
-	for (MethodDecl decl : unit.deadMethods()) {
-		outAnalysis.println(" [Method:" + deadMethodNum++ + "]: " + decl + " in " + decl.hostType().name());
-	}
+	*/
   }
 
 
