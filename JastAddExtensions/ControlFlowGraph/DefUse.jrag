@@ -45,19 +45,19 @@ aspect DefUse {
 	
 	
 
-/*
-  // Let each Stmt collect defs from descenfing LocalVarAccess nodes
-  coll BitSet Stmt.def() [empty().mutable()] with add root Stmt;
+  // Let each Stmt collect defs from descending LocalVarAccess nodes
+//  coll BitSet Stmt.def() [empty().mutable()] with add root Stmt;
+  coll BitSet CFNode.def() [empty().mutable()] with add root Program; // had to switch the root to Program instead of Stmt
   VarAccess contributes decl() when isDest() && decl().isLocalVariable() to Stmt.def() for enclosingStmt(); 
+  VariableDeclaration contributes this when hasInit() to Stmt.def() for this;
 
   // Let each Stmt collect uses from descending LocalVarAccess nodes
-  coll BitSet Stmt.use() [empty().mutable()] with add root Stmt;
-  VarAccess contributes decl() when isSource() && decl().isLocalVariable() to Stmt.use() for enclosingStmt();
+//  coll BitSet Stmt.use() [empty().mutable()] with add root Stmt;
+  coll BitSet CFNode.use() [empty().mutable()] with add root Program; // had to switch the root to Program instead of Stmt
+  VarAccess contributes decl() when /*isSource() &&*/ decl().isLocalVariable() to Stmt.use() for enclosingStmt();
 
-*/
-	
 
-  	
+/*  	
   	// My implementation
   	// def()
   	syn BitSet CFNode.def();
@@ -73,8 +73,8 @@ aspect DefUse {
   		if(isDest() && (decl().isLocalVariable() || 
   			decl().isMethodParameter()))
   			return empty().union(decl());
-  	/*	if(isDest() && decl().isLocalVariable())  	  			
-  	  		return empty().union(decl());*/
+  	//	if(isDest() && decl().isLocalVariable())  	  			
+	//	  		return empty().union(decl());
   		else
   			//return super.def();
   			return empty();
@@ -103,12 +103,12 @@ aspect DefUse {
   		if(isSource() && (decl().isLocalVariable() ||
   			decl().isMethodParameter()))
   			return empty().union(decl());	
-  	/*	if(isSource() && decl().isLocalVariable()) 	  			
-  	  		return empty().union(decl());*/
+  	//	if(isSource() && decl().isLocalVariable()) 	  			
+  	//  		return empty().union(decl());
   		else
   			return super.use();
   	}
 
- 
+ */
   
 }

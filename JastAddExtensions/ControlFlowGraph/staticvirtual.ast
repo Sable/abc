@@ -1,2 +1,0 @@
-StaticMethodAccess : MethodAccess;
-VirtualMethodAccess : MethodAccess;

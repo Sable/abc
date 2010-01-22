@@ -159,9 +159,11 @@ class JavaCheckerTimeMem extends Frontend {
         }
     );
 
+	/*
 	if (result) {
 		checker.printReachableMethods(outAnalysis);
 	}
+	*/
 	return result;
   }
 
@@ -183,21 +185,160 @@ class JavaCheckerTimeMem extends Frontend {
 
   protected void processNoErrors(CompilationUnit unit) {
     //DeadCode 
-	/*
+	
 	outAnalysis.println(" -- Unit: " + unit.pathName() + " -- ");
+	for (int i = 0; i < unit.getNumTypeDecl(); i++) {
+		TypeDecl type = unit.getTypeDecl(i);
+		outAnalysis.println("Type: " + type.fullName());
+		for (int j = 0; j < type.getNumBodyDecl(); j++) {
+			BodyDecl decl = type.getBodyDecl(j);
+			if (decl instanceof MethodDecl) {
+				MethodDecl method = (MethodDecl)decl;
+				outAnalysis.println("Method: " + method.signature());
+				if (method.hasBlock()) 
+				for (int k = 0; k < method.getBlock().getNumStmt(); k++) {
+					Stmt stmt = method.getBlock().getStmt(k);
+					outAnalysis.println("Line: " + stmt.lineNumber() + " Stmt " + k + ": " + stmt);
+					printSets(stmt);
+				}
+				printFlow(method);
+			}
+		}	
+	}
+	
+
+	/*
     for(Iterator it = unit.deadCode().iterator();it.hasNext();) {
     	CFNode node = (CFNode)it.next();
     	if(node instanceof Expr) {
-    		outAnalysis.println(" [Expr:" + deadExprNum++ + "]: " + node+" in "+((Expr)node).enclosingStmt());
+    		//outAnalysis.println(" [Expr:" + deadExprNum++ + "]: " + node+" in "+((Expr)node).enclosingStmt());
     	} if (node instanceof Stmt) {
-			outAnalysis.println(" [Stmt:" + deadStmtNum++ + "]: " + node);
+			outAnalysis.println("DAE[" + ((ASTNode)node).analysisPrefix() + "]: " + node);
 		} else {
-    		outAnalysis.println(" [" + node.getClass().getName() + ":" + deadOtherNum++ + "]: " + node);
+    		//outAnalysis.println(" [" + node.getClass().getName() + ":" + deadOtherNum++ + "]: " + node);
 		}
     }
-	deadCodeNum += unit.deadCode().size();  
 	*/
-  }
+	
+	for (Stmt stmt : unit.deadAssignments()) {
+		outAnalysis.println("DAE[" + stmt.analysisPrefix() + "]: " + stmt);
+		printSets(stmt);
+	}
+
+	//deadCodeNum += unit.deadCode().size();  
+  }	private static void printFlow(MethodDecl method) {
+
+		outAnalysis.println("\n\n");
+
+		// Successors
+		outAnalysis.println("\n-- successor flow --");
+		ASTNode entry = method.entry();
+		ArrayList<ASTNode> worklist = new ArrayList<ASTNode>();
+		worklist.add(entry);
+		while (!worklist.isEmpty()) {
+			ASTNode node = worklist.remove(0);
+			if (node == method.entry()) {
+				outAnalysis.println("entry");
+			} else if (node == method.exit()) {
+				outAnalysis.println("exit");
+			} else outAnalysis.println(node);
+			Iterator itr = node.succ().iterator();
+			while (itr.hasNext()) {
+				ASTNode succ = (ASTNode)itr.next();
+				outAnalysis.println("->" + succ);
+				worklist.add(succ);
+			}
+		}
+		// Predecessors
+		outAnalysis.println("\n-- predecessor flow --");
+		ASTNode exit = method.exit();
+		worklist.clear();
+		worklist.add(exit);
+		while (!worklist.isEmpty()) {
+			ASTNode node = worklist.remove(0);
+			if (node == method.entry()) {
+				outAnalysis.println("entry");
+			} else if (node == method.exit()) {
+				outAnalysis.println("exit");
+			} else outAnalysis.println(node);
+			Iterator itr = node.pred().iterator();
+			while (itr.hasNext()) {
+				ASTNode pred = (Stmt)itr.next();
+				outAnalysis.println("->" + pred);
+				worklist.add(pred);
+			}
+		}
+
+		outAnalysis.println("\n\n");
+
+	}
+
+
+
+	private static void printSets(Stmt stmt) {
+		outAnalysis.print("\n\tdef [");
+		Iterator itr = stmt.def().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\tuse [");
+		itr = stmt.use().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\tin  [");
+		itr = stmt.in().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\tout [");
+		itr = stmt.out().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\n\tpred [");
+		itr = stmt.pred().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\n\tpredStmt [");
+		itr = stmt.predStmt().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\n\tsucc [");
+		itr = stmt.succ().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\n\tsuccStmt [");
+		itr = stmt.succStmt().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("]");
+
+		outAnalysis.print("\tside-effects [");
+		itr = stmt.sideEffectCollection().iterator();
+		while (itr.hasNext()) {
+			outAnalysis.print(itr.next() + ",");
+		}
+		outAnalysis.println("] mayHaveSideEffects = " + stmt.mayHaveSideEffects() + "\n");
+	}
 
 
   private static PrintStream outTime;

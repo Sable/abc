@@ -2,8 +2,10 @@ aspect DeadCode {
 
 	// Add dead code check
 
+	/** Unused variable analysis **/
+
 	// EN: Moving this to CFNode
-	/*
+	/*	
 	syn lazy boolean Stmt.isDead();
 	syn lazy boolean Expr.isDead();
 	eq Stmt.isDead() = !def().compl(out()).isEmpty();
@@ -32,61 +34,3 @@ aspect DeadCode {
 		getCompilationUnit(i);
 }
 
-aspect DeadMethod {
-
-	// Collect static entry points and main methods
-/*
-	coll SmallSet<CGNode> CompilationUnit.callGraphEntrySet() 
-		[SmallSet.mutable()] with add root Program;
-	StaticInitializer contributes this 
-		to CompilationUnit.callGraphEntrySet() 
-		for enclosingCompilationUnit();
-	FieldDeclaration contributes this when isStatic() 
-		to CompilationUnit.callGraphEntrySet() 
-		for enclosingCompilationUnit();
-	MethodDecl contributes this when name().equals("main")
-		to CompilationUnit.callGRaphEntrySet()
-		for enclosingCompilationUnit();
-*/	
-
-	// Make sure each CGNode knows its enclosing compilation unit
-	// equation in DeadCode aspect
-	inh CompilationUnit CGNode.enclosingCompilationUnit();
-
-
-	// Collect dead methods in CompilationUnit
-	coll SmallSet<MethodDecl> CompilationUnit.reachableMethods() 
-		[SmallSet.mutable()] with add root CompilationUnit;
-	MethodDecl contributes this when !isReachable() 
-		to CompilationUnit.reachableMethods() 
-		for enclosingCompilationUnit();
-
-	syn boolean TypeDecl.isInstantiated() {
-		for (Iterator itr = constructors().iterator();itr.hasNext();) {
-			ConstructorDecl decl = (ConstructorDecl)itr.next();
-			if (decl.calls().size() > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// A BodyDecl is alive if one or more callers are alive
-	syn boolean CGNode.isReachable() circular [false];
-	// This is default behavior for ConstructorDecl
-	eq BodyDecl.isReachable() {
-		for (CGNode caller : calls()) {
-			if (caller.isReachable()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	eq MethodDecl.isReachable() = name().equals("main") || super.isReachable();
-	// We're pretending that all classes are loaded i.e. all static 
-	// initializers and fields are executed
-	eq StaticInitializer.isReachable() = true;
-	eq InstanceInitializer.isReachable() = hostType().isInstantiated();
-	eq FieldDeclaration.isReachable() = isStatic() || hostType().isInstantiated();
-
-}

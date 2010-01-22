@@ -2,10 +2,10 @@ aspect LivenessAnalysis {
 /*
 	// Define the in and out attributes
 
-	syn BitSet Stmt.in() circular [empty()];
+	syn BitSet<Stmt> Stmt.in() circular [empty()];
 	eq Stmt.in() = use().union(out().compl(def()));
 	
-	coll BitSet Stmt.out() circular [empty().mutable()] with add root BodyDecl;
+	coll BitSet<Stmt> Stmt.out() circular [empty().mutable()] with add root BodyDecl;
 	Stmt contributes in() to Stmt.out() for each pred();
 	
 	*/
