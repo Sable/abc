@@ -23,6 +23,12 @@ aspect LockedTypeAccess {
 		return SimpleSet.emptySet.add(targetType);
 	}
 	
+	refine Generics eq TypeAccess.decl() {
+		if(targetType == null)
+			return refined();
+		return targetType;
+	}
+	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
 		if(targetType == null) {
 			refined(s);
@@ -96,7 +102,7 @@ aspect LockedTypeAccess {
 			}
 			if(target.isRawType())
 				target = target.erasure();
-			if(target.isPrimitive() || target.isVoid())
+			if(target instanceof PrimitiveType || target instanceof VoidType)
 				return unlockPrimitiveTypeAccess(target);
 			if(target.isArrayDecl())
 				return unlockArrayTypeAccess((ArrayDecl)target);
@@ -119,7 +125,6 @@ aspect LockedTypeAccess {
 	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target) {
 		if(isQualified())
 			throw new RefactoringException("cannot access primitive type under qualifier");
-		setPackage(PRIMITIVE_PACKAGE_NAME);
 		setID(target.name());
 		return this;
 	}

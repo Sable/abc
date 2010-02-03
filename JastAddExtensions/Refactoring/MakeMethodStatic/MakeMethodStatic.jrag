@@ -10,7 +10,10 @@ aspect MakeMethodStatic {
 		MethodDecl newMethod = (MethodDecl)this.fullCopy();
 		newMethod.getModifiers().addModifier(new Modifier("static"));
 		String newParmName = hostType().name().toLowerCase();
-		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType()), newParmName);
+		TypeDecl hostType = hostType();
+		if(hostType.isRawType())
+			hostType = hostType.erasure();
+		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType), newParmName);
 		newParm.setDemandFinal();
 		newMethod.getParameterList().insertChild(newParm, 0);
 		Access newParmAcc = new LockedVarAccess(newParm);

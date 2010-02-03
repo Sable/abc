@@ -22,4 +22,8 @@ aspect BlockExt {
 		assert n != null;
 		return (Block)n;
 	}
+	
+	public Block Expr.enclosingBlock() {
+		return enclosingStmt().enclosingBlock();
+	}
 }

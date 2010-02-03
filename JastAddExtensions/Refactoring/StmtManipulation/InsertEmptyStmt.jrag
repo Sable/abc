@@ -12,7 +12,9 @@ aspect InsertEmptyStmt {
 	
 	// more general purpose version to insert any statement; not a refactoring, obviously  
 	inh Stmt Stmt.insertStmtBefore(Stmt s);
+	inh Stmt Expr.insertStmtBefore(Stmt s);
 	eq Program.getChild().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TypeDecl.getChild().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
 	eq ConstructorDecl.getConstructorInvocation().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
 	eq LabeledStmt.getStmt().insertStmtBefore(Stmt s) = insertStmtBefore(s);
 	eq Block.getStmt(int i).insertStmtBefore(Stmt s) {
@@ -35,8 +37,8 @@ aspect InsertEmptyStmt {
 		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
 		return s;
 	}
-	eq ForStmt.getInitStmt().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
-	eq ForStmt.getUpdateStmt().insertStmtBefore(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq ForStmt.getInitStmt().insertStmtBefore(Stmt s) = insertStmtBefore(s);
+	eq ForStmt.getUpdateStmt().insertStmtBefore(Stmt s) = insertStmtBefore(s);
 	eq ForStmt.getStmt().insertStmtBefore(Stmt s) {
 		setStmt(new Block(new List<Stmt>().add(s).add(getStmt())));
 		return s;
@@ -58,6 +60,7 @@ aspect InsertEmptyStmt {
 	
 	inh Stmt Stmt.insertStmtAfter(Stmt s);
 	eq Program.getChild().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
+	eq TypeDecl.getChild().insertStmtAfter(Stmt s) { throw new RefactoringException("cannot insert statement here"); }
 	eq ConstructorDecl.getConstructorInvocation().insertStmtAfter(Stmt s) {
 		getBlock().insertChild(s, 0);
 		return s;

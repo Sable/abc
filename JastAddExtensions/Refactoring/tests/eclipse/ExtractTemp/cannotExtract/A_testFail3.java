@@ -1,6 +1,7 @@
 package p;
 class A{
     int m(int y){
-        int y= m(y);
+        int i= m(y);
+	return 23;
     };
 }
