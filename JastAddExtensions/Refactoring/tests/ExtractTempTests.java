@@ -3,10 +3,7 @@ package tests;
 import junit.framework.TestCase;
 import AST.Expr;
 import AST.Program;
-import AST.RawCU;
 import AST.RefactoringException;
-import AST.Variable;
-import AST.VariableDeclaration;
 
 public class ExtractTempTests extends TestCase {
 	public ExtractTempTests(String name) {

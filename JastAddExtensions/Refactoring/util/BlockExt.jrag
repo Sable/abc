@@ -14,4 +14,12 @@ aspect BlockExt {
 	public void Block.insertStmt(int i, Stmt s) {
 		getStmtList().insertChild(s, i);
 	}
+	
+	public Block Stmt.enclosingBlock() {
+		ASTNode n = this;
+		while(n!=null && !(n instanceof Block))
+			n = n.getParent();
+		assert n != null;
+		return (Block)n;
+	}
 }

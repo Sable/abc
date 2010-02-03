@@ -1,18 +1,66 @@
 aspect ExtractTemp {
-	public VariableDeclaration Expr.extractTemp(String name) {
-		return enclosingStmt().insertUnusedLocal(new VariableDeclaration(new TypeAccess(type()), name)).
-				extractAssignment(this).merge();
+	public VariableDeclaration Expr.extractTemp(String name, boolean makeFinal) {
+		if(inextractible())
+			throw new RefactoringException("expression is not extractible");
+		TypeDecl type = type();
+		if(type.isAnonymous())
+			type = ((AnonymousDecl)type).superType();
+		if(enclosingStmt() == null)
+			throw new RefactoringException("expression is not extractible");
+		return enclosingStmt().insertUnusedLocal(new VariableDeclaration(new TypeAccess(type), name)).
+			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}
+	
+	public VariableDeclaration Expr.extractTemp(String name) {
+		return extractTemp(name, false);
+	}
+
+	// an expression is inextractible if it cannot be replaced by a variable access
+	syn boolean Expr.inextractible() = notAnObject() || inInextractiblePosition();
+
+	// expressions that do not by themselves stand for objects
+	syn boolean Expr.notAnObject() = type().isVoid();
+	eq AbstractDot.notAnObject() = super.notAnObject() || getRight().notAnObject();
+	eq AbstractWildcard.notAnObject() = true;
+	eq ArrayAccess.notAnObject() = true;
+	eq ClassAccess.notAnObject() = true;
+	eq PackageAccess.notAnObject() = true;
+	eq ParTypeAccess.notAnObject() = true;
+	eq SuperAccess.notAnObject() = true;
+	eq TypeAccess.notAnObject() = true;
+	eq CastExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
+	eq ParExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
+	
+	// expressions in positions where they cannot be replaced by a local variable access
+	inh boolean Expr.inInextractiblePosition();
+	eq Program.getChild().inInextractiblePosition() = false;
+	eq ConstructorDecl.getConstructorInvocation().inInextractiblePosition() = true;
+	eq ExprStmt.getExpr().inInextractiblePosition() = true;
+	eq AbstractDot.getRight().inInextractiblePosition() = true;
+	eq MethodAccess.getArg().inInextractiblePosition() = false;
+	eq ConstructorAccess.getArg().inInextractiblePosition() = false;
+	eq ArrayAccess.getExpr().inInextractiblePosition() = false;
+	eq ArrayTypeWithSizeAccess.getExpr().inInextractiblePosition() = false;
+	eq ClassInstanceExpr.getArg().inInextractiblePosition() = false;
+	eq ArrayCreationExpr.getArrayInit().inInextractiblePosition() = true;
 	
 	public VariableDeclaration VariableDeclaration.extractAssignment(Expr expr) {
 		return expr.extractAssignment(this);
 	}
 	
+	public VariableDeclaration VariableDeclaration.makeFinal(boolean makeFinal) {
+		return makeFinal ? makeFinal() : this;
+	}
+	
     // stand-alone refactoring
-    public void Expr.doExtract(String name) {
+    public void Expr.doExtract(String name, boolean makeFinal) {
     	Program root = programRoot();
     	root.introduce(LOCKED_NAMES);
-    	extractTemp(name);
+    	extractTemp(name, makeFinal);
     	root.eliminate(LOCKED_NAMES);
+    }
+    
+    public void Expr.doExtract(String name) {
+    	doExtract(name, false);
     }
 }

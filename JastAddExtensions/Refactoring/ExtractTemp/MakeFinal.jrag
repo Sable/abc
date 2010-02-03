@@ -1,0 +1,12 @@
+aspect MakeFinal {
+	// make a variable final
+	public VariableDeclaration VariableDeclaration.makeFinal() {
+		if(this.isFinal())
+			return this;
+		for(VarAccess va : this.allUses())
+			if(va.isDest())
+				throw new RefactoringException("variable has writes; cannot make final");
+		this.getModifiers().addModifier(new Modifier("final"));
+		return this;
+	}
+}

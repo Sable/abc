@@ -1,17 +1,16 @@
 aspect InsertUnusedLocal {
 	// insert an unused local variable declaration before a given statement
 	public VariableDeclaration Stmt.insertUnusedLocal(VariableDeclaration decl) {
-		if(!isInBlock())
-			throw new RefactoringException("can only insert declarations in blocks");
-		Block block = (Block)getParent().getParent();
+		Block block = this.enclosingBlock();
+		if(block == null)
+			throw new RefactoringException("local variable cannot be created outside block");
 		// ensure that output compiles
 		if(!block.canIntroduceLocal(decl.name()))
 			throw new RefactoringException("local variable of same name exists");
 		// ensure that bindings are preserved
 		block.lockNames(Collections.singleton(decl.name()));
-		int idx = block.getIndexOfStmt(this);
-		block.insertStmt(idx, decl);
-		block.programRoot().flushCaches();
+		insertStmtBefore(decl);
+		block.hostType().flushCaches();
 		// ensure that there are no references
 		if(!decl.uses().isEmpty())
 			throw new RefactoringException("declaration is used");

@@ -47,8 +47,10 @@ aspect Testing {
 	}
 	
 	// output names of compilation units; this helps when comparing results
+	public static boolean CompilationUnit.printCUNames = false;
 	refine PrettyPrint public void CompilationUnit.toString(StringBuffer s) {
-		s.append("compilation unit "+getID()+"\n");
+		if(printCUNames)
+			s.append("compilation unit "+getID()+"\n");
 		refined(s);
 	}
 	

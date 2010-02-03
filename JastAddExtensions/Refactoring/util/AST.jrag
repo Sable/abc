@@ -82,8 +82,9 @@ aspect AST {
 		Expr l = getLeft();
 		Access r = getRight();
 		while(r instanceof AbstractDot) {
-			l = new AbstractDot(l, (Access)((AbstractDot)r).getLeft());
-			r = ((AbstractDot)r).getRight();
+			AbstractDot rdot = (AbstractDot)r;
+			l = new AbstractDot(l, (Access)rdot.getLeft());
+			r = rdot.getRight();
 		}
 		setLeft(l);
 		setRight(r);
