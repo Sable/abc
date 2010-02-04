@@ -1,0 +1,2 @@
+AnonymousMethod : Expr ::= Parameter:ParameterDeclaration* TypeParameter:TypeVariable* ReturnType:Access Exception:Access* Block Arg:Expr*;
+

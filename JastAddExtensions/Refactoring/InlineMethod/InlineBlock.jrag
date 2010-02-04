@@ -1,0 +1,15 @@
+aspect InlineBlock {
+	public void Block.inline() {
+		if(!(getParent().getParent() instanceof Block))
+			return;
+		Block parent_block = (Block)getParent().getParent();
+		parent_block.lockAllNames();
+		
+		// pull statements from block
+		for(int i = getNumStmt();i>0;--i)
+			getStmt(0).pullFromBlock();
+		
+		parent_block.removeStmt(this);
+		parent_block.hostType().flushCaches();
+	}
+}

@@ -1,0 +1,36 @@
+aspect ControlFlow {
+	public void ASTNode.lockControlFlow() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).lockControlFlow();
+	}
+	
+	public void ASTNode.unlockControlFlow() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).unlockControlFlow();
+	}
+	
+	protected SmallSet<ASTNode> ASTNode.lockedSucc = null;
+	protected SmallSet<ASTNode> ASTNode.lockedPred = null;
+	
+	public void CFNode.lockControlFlow() {
+		if(lockedSucc == null)
+			lockedSucc = forward_cdep();
+		if(lockedPred == null)
+			lockedPred = backward_cdep();
+	}
+	
+	public void CFNode.unlockControlFlow() {
+		if(lockedSucc != null) {
+			if(!forward_cdep().equals(lockedSucc))
+				throw new RefactoringException("couldn't preserve control flow");
+			lockedSucc = null;
+		}
+		if(lockedPred != null) {
+			if(!backward_cdep().equals(lockedPred))
+				throw new RefactoringException("couldn't preserve control flow");
+		}
+	}
+	
+	syn lazy SmallSet<ASTNode> CFNode.forward_cdep() = succ();
+	syn lazy SmallSet<ASTNode> CFNode.backward_cdep() = pred();
+}

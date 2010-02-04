@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="IntertypeDeclarations/|util/|Naming/|LanguageExtensions/|Renaming/|MoveMethod/|InsertStmt/|InsertEmptyStmt/|MakeMethodStatic/|InlineTemp/|StmtManipulation/|Flow/|Concurrency/|ExtractTemp/|PushDownMethod/|tests/eclipse/ExtractTemp/canExtract/|tests/eclipse/ExtractTemp/cannotExtract/" kind="src" path=""/>
+	<classpathentry excluding="IntertypeDeclarations/|util/|Naming/|LanguageExtensions/|Renaming/|MoveMethod/|InsertStmt/|InsertEmptyStmt/|MakeMethodStatic/|InlineTemp/|StmtManipulation/|Flow/|Concurrency/|ExtractTemp/|PushDownMethod/|tests/eclipse/ExtractTemp/canExtract/|tests/eclipse/ExtractTemp/cannotExtract/|InlineMethod/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path=""/>

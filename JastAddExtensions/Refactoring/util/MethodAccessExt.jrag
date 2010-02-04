@@ -9,4 +9,11 @@ aspect MethodAccessExt {
 			res.addAll(decl().overriders());
 		return res;
 	}
+	
+	syn lazy MethodDecl MethodAccess.getUniqueTarget() {
+		Collection<MethodDecl> targets = possibleTargets();
+		if(targets.size() != 1)
+			return null;
+		return targets.iterator().next();
+	}
 }

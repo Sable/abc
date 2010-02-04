@@ -15,6 +15,7 @@ public class ExtractTempTests extends TestCase {
 		assertNotNull(out);
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
+		e.unparenthesise();
 		try {
 			e.doExtract("x");
 			assertEquals(out.toString(), in.toString());
@@ -27,6 +28,7 @@ public class ExtractTempTests extends TestCase {
 		assertNotNull(in);
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
+		e.unparenthesise();
 		try {
 			e.doExtract("x");
 			fail("Refactoring was supposed to fail; succeeded with "+in);
@@ -35,7 +37,7 @@ public class ExtractTempTests extends TestCase {
 
     public void test1() {
         testSucc(Program.fromStmts("System.out.println(((42)));"),
-        		 Program.fromStmts("int x = 42;", "System.out.println(((x)));"));
+        		 Program.fromStmts("int x = 42;", "System.out.println(x);"));
     }
 
     public void test2() {

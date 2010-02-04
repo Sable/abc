@@ -2,16 +2,20 @@
 aspect InsertEmptyStmt {
 	// in fact, we implement a more general version; might not be a refactoring
 	// if the statement is non-empty
-	public void Stmt.delete() {
-		Stmt s = this;
-		while(s.getParent() instanceof LabeledStmt) {
-			if(!((LabeledStmt)getParent()).uses().isEmpty())
-				throw new RefactoringException("cannot delete this statement");
-			s = (Stmt)s.getParent();
-		}
-		if(s.getParent().getParent() instanceof Block)
-			((Block)s.getParent().getParent()).removeStmt(this);
-		else
+	inh boolean Stmt.delete();
+	eq ConstructorDecl.getConstructorInvocation().delete() { setConstructorInvocationOpt(new Opt()); return true; }
+	eq Block.getStmt(int i).delete() { removeStmt(i); return true; }
+	eq IfStmt.getThen().delete() { setThen(new EmptyStmt()); return true; }
+	eq IfStmt.getElse().delete() { setElseOpt(new Opt()); return true; }
+	eq WhileStmt.getStmt().delete() { setStmt(new EmptyStmt()); return true; }
+	eq DoStmt.getStmt().delete() { setStmt(new EmptyStmt()); return true; }
+	eq ForStmt.getInitStmt(int i).delete() { getInitStmtList().removeChild(i); return true; }
+	eq ForStmt.getUpdateStmt(int i).delete() { getUpdateStmtList().removeChild(i); return true; }
+	eq ForStmt.getStmt().delete() { setStmt(new EmptyStmt()); return true; }
+	eq EnhancedForStmt.getStmt().delete() { setStmt(new EmptyStmt()); return true; }
+	eq LabeledStmt.getStmt().delete() {
+		if(!uses().isEmpty())
 			throw new RefactoringException("cannot delete this statement");
+		delete();
 	}
 }

@@ -1,0 +1,47 @@
+aspect IntroduceOutParameter {
+
+	public AnonymousMethod AnonymousMethod.introduceOutParameter() {
+		if(!(getParent() instanceof AssignSimpleExpr))
+			return this;
+		AssignSimpleExpr parent = (AssignSimpleExpr)getParent();
+		if(!(parent.getDest() instanceof VarAccess))
+			throw new RefactoringException("cannot introduce non-variable out parameter");
+		VarAccess v = (VarAccess)parent.getDest();
+		getBlock().lockDataFlow();
+		setReturnType(new PrimitiveTypeAccess("void"));
+		ParameterDeclaration pd = new FreshParameter(new Modifiers("out"), new TypeAccess(v.type()), "res");
+		addParameter(pd);
+		addArg(new LockedVarAccess(v.decl()));
+		getBlock().addAssignToReturns(pd);
+		parent.replaceWith(this);
+		hostType().flushCaches();
+		return this;
+	}
+
+	public void ASTNode.addAssignToReturns(Variable v) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.addAssignToReturns(v);
+		}
+	}
+
+	// turn a return statement
+	//    return e;
+	// into
+	//    v = e;
+	//    return;
+	public void ReturnStmt.addAssignToReturns(Variable v) {
+		if(hasResult()) {
+			insertStmtBefore(AssignExpr.asStmt(new LockedVarAccess(v), getResult()));
+			setResultOpt(new Opt());
+			hostType().flushCaches();
+		}
+	}
+
+	public void ParameterDeclaration.makeOut() {
+		if(isWrite())
+			return;
+		getModifiers().addModifier(new Modifier("out"));
+	}
+}

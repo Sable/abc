@@ -39,7 +39,7 @@ aspect FreshVariables {
 		when(!hasExtension(FRESH_VARIABLES))
 		to VariableDeclaration {
 			String new_name = pickFreshName();
-			VariableDeclaration vd = new VariableDeclaration(getTypeAccess(), new_name);
+			VariableDeclaration vd = new VariableDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
 			for(VarAccess va : uses())
 				((LockedVarAccess)va).setTarget(vd);
 			return vd;

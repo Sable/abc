@@ -1,0 +1,11 @@
+aspect PullStatementFromBlock {
+	public void Stmt.pullFromBlock() {
+		Block block = (Block)getParent().getParent();
+		Block outer_block = (Block)block.getParent().getParent();
+		int idx = outer_block.getIndexOfStmt(block);
+		lockControlFlow();
+		block.removeStmt(this);
+		outer_block.insertStmt(idx, this);
+		hostType().flushCaches();
+	}
+}

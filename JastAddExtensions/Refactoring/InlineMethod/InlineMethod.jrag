@@ -1,0 +1,15 @@
+aspect InlineMethod {
+	
+	public void MethodAccess.inline() {
+		ASTNode n = inlineToAnonymousMethod().introduceOutParameter().open().inline();
+		if(n instanceof Block)
+			((Block)n).inline();
+	}
+	
+	public void MethodAccess.doInline() {
+    	Program root = programRoot();
+    	root.introduce(LOCKED_NAMES, FRESH_VARIABLES);		
+		inline();
+		root.eliminate(FRESH_VARIABLES, LOCKED_NAMES);
+	}
+}

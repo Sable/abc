@@ -1,0 +1,73 @@
+aspect InlineAnonymousMethod {
+	
+	public ASTNode AnonymousMethod.inline() {
+		TypeDecl root = hostType();
+		if(getNumParameter() > 0)
+			throw new RefactoringException("cannot inline this closure");
+		if(getParent() instanceof ExprStmt) {
+			String label = getBlock().pickFreshLabel("l");
+			java.util.Set<BreakStmt> breaks = new HashSet<BreakStmt>();
+			for(Stmt node : returns()) {
+				ReturnStmt ret = (ReturnStmt)node;
+				if(ret.hasResult())
+					throw new RefactoringException("cannot inline this closure");
+				BreakStmt brk = new BreakStmt(label);
+				breaks.add(brk);
+				ret.replaceWith(brk);
+			}
+			LabeledStmt body = new LabeledStmt(label, getBlock());
+			getParent().replaceWith(body);
+			root.flushCaches();
+			for(BreakStmt brk : breaks)
+				brk.removeUseless();
+			return body.removeUselessLabel();
+		} else if(isExprClosure()) {
+			Expr expr = getExpr();
+			replaceWith(expr);
+			root.flushCaches();
+			return expr;
+		} else if(getParent() instanceof ReturnStmt) {
+			Block block = getBlock();
+			getParent().replaceWith(block);
+			root.flushCaches();
+			return block;
+		} else {
+			throw new RefactoringException("cannot inline this closure");
+		}
+	}
+	
+	syn boolean AnonymousMethod.isExprClosure() 
+	  = getBlock().getNumStmt() == 1 && getBlock().getStmt(0) instanceof ReturnStmt &&
+	      ((ReturnStmt)getBlock().getStmt(0)).hasResult();
+	
+	syn Expr AnonymousMethod.getExpr() = ((ReturnStmt)getBlock().getStmt(0)).getResult();
+	
+	public boolean BreakStmt.removeUseless() {
+		if(following().equals(succ())) {
+			delete();
+			return true;
+		}
+		return false;
+	}
+	
+	public Stmt LabeledStmt.removeUselessLabel() {
+		if(uses().isEmpty()) {
+			Stmt stmt = getStmt();
+			replaceWith(stmt);
+			return stmt;
+		}
+		return this;
+	}
+	
+	inh LabeledStmt Block.lookupLabel(String name);
+	public String Block.pickFreshLabel(String base) {
+		if(lookupLabel(base) == null && canIntroduceLabel(base))
+			return base;
+		for(int i=0;;++i) {
+			String l = base + i;
+			if(lookupLabel(l) == null && canIntroduceLabel(l))
+				return l;
+		}
+	}
+	
+}

@@ -3,11 +3,9 @@ aspect ExtractTemp {
 		if(inextractible())
 			throw new RefactoringException("expression is not extractible");
 		TypeDecl type = type();
-		if(type.isAnonymous())
-			type = ((AnonymousDecl)type).superType();
-		if(enclosingStmt() == null)
-			throw new RefactoringException("expression is not extractible");
-		return enclosingStmt().insertUnusedLocal(new VariableDeclaration(new TypeAccess(type), name)).
+		/*if(type.isAnonymous())
+			type = ((AnonymousDecl)type).superType();*/
+		return insertUnusedLocal(new VariableDeclaration(new TypeAccess(type), name)).
 			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}
 	
@@ -60,9 +58,9 @@ aspect ExtractTemp {
     // stand-alone refactoring
     public void Expr.doExtract(String name, boolean makeFinal) {
     	Program root = programRoot();
-    	root.introduce(LOCKED_NAMES);
+    	root.introduce(LOCKED_NAMES, LOCKED_DATAFLOW);
     	extractTemp(name, makeFinal);
-    	root.eliminate(LOCKED_NAMES);
+    	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
     }
     
     public void Expr.doExtract(String name) {

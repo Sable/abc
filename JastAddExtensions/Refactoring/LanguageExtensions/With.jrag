@@ -1,6 +1,10 @@
 aspect With {
 	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement");
 	
+	public WithStmt.WithStmt(Access acc, Block block) {
+		this(new List<Access>().add(acc), block);
+	}
+	
 	// pretty printing
 	public void WithStmt.toString(StringBuffer s) {
 		s.append(indent());

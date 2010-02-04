@@ -89,4 +89,44 @@ aspect AST {
 		setLeft(l);
 		setRight(r);
 	}
+	
+	/* f.bundleQualifier() does the following:
+	 * 
+	 * 
+	 *      .                    .
+	 *     / \                  / \
+	 *    A   .        ~>      .   f
+	 *       / \              / \
+	 *     this f            A this
+	 *     
+	 *     
+	 *      .                    .
+	 *     / \                  / \
+	 *    A   .                .   g
+	 *       / \       ~>     / \
+	 *     this .            .   f
+	 *         / \          / \
+	 *        f   g        A this
+	 *        
+	 */
+	public void Access.bundleQualifier() {
+		if(isLeftChildOfDot()) {
+			AbstractDot parent = parentDot();
+			if(!parent.isRightChildOfDot())
+				return;
+			AbstractDot g = new AbstractDot(null, parent.getRight());
+			AbstractDot p = parent.parentDot();
+			p.setRight(this);
+			while(p.isRightChildOfDot())
+				p = p.parentDot();
+			p.rotateLeft();
+			p.replaceWith(g);
+			g.setLeft(p);
+		} else if(isRightChildOfDot()) {
+			AbstractDot p = parentDot();
+			while(p.isRightChildOfDot())
+				p = p.parentDot();
+			p.rotateLeft();
+		}
+	}
 }

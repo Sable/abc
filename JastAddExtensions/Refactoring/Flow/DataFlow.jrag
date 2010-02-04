@@ -1,4 +1,6 @@
 aspect DataFlow {
+	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow");
+	
 	public void ASTNode.lockDataFlow() {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockDataFlow();
@@ -42,5 +44,17 @@ aspect DataFlow {
 	}
 	public void MethodAccess.unlockDataFlow() {
 		throw new RefactoringException("cannot preserve data flow for method invocations");
+	}
+	
+	public boolean Access.hasLockedDataFlow() {
+		return lockedReachingDefs != null || lockedReachedUses != null || lockedWriteDeps != null;
+	}
+	
+	rewrite Access {
+		when(!hasExtension(LOCKED_DATAFLOW) && hasLockedDataFlow())
+		to Access {
+			unlockDataFlow();
+			return this;
+		}
 	}
 }

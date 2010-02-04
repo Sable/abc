@@ -16,4 +16,11 @@ aspect InsertUnusedLocal {
 			throw new RefactoringException("declaration is used");
 		return decl;
 	}
+	
+	public VariableDeclaration Expr.insertUnusedLocal(VariableDeclaration decl) {
+		Stmt s = enclosingStmt();
+		if(s == null)
+			throw new RefactoringException("no surrounding statement");
+		return s.insertUnusedLocal(decl);
+	}
 }
