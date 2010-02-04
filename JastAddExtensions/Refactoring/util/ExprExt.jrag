@@ -1,0 +1,10 @@
+aspect ExprExt {
+	syn boolean Expr.isStatementExpression() = false;
+	eq AssignExpr.isStatementExpression() = true;
+	eq PreIncExpr.isStatementExpression() = true;
+	eq PreDecExpr.isStatementExpression() = true;
+	eq PostfixExpr.isStatementExpression() = true;
+	eq MethodAccess.isStatementExpression() = true;
+	eq ClassInstanceExpr.isStatementExpression() = true;
+	eq AbstractDot.isStatementExpression() = getRight().isStatementExpression();
+}

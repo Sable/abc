@@ -13,6 +13,7 @@ aspect ExtractAssignment {
 		expr.replaceWith(vacc);
 		vacc.insertStmtBefore(AssignExpr.asStmt(new LockedVarAccess(v), expr));
 		block.hostType().flushCaches();
+		// TODO: this shouldn't be needed
 		expr.unlockDataFlow();
 		block.unlockSyncDependencies();
 		return v;

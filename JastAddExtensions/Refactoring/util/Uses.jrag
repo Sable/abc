@@ -1,7 +1,7 @@
 aspect Uses {
+	// bind all uses of a variable to its declaration
 	public Collection<VarAccess> Variable.allUses() { return uses(); }
 	
-	// bind all uses of a variable to its declaration
 	coll Collection<VarAccess> FieldDeclaration.uses() [new HashSet<VarAccess>()] 
 	                           with add root Program;
 	VarAccess contributes
@@ -19,6 +19,16 @@ aspect Uses {
 	VarAccess contributes
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
+	
+	// bind all method uses to any declaration they may resolve to at runtime
+	coll Collection<MethodAccess> MethodDecl.polyUses() [new HashSet<MethodAccess>()]
+	                              with add root Program;
+	MethodAccess contributes this to MethodDecl.polyUses() for each possibleTargets();
+	
+	// bind all method uses to the declaration they resolve to
+	coll Collection<MethodAccess> MethodDecl.uses() [new HashSet<MethodAccess>()]
+	                              with add root Program;
+	MethodAccess contributes this to MethodDecl.uses() for decl();
 	
 	// bind all uses of a label to its declaration
 	coll Collection<Stmt> LabeledStmt.uses() [new HashSet<Stmt>()] 

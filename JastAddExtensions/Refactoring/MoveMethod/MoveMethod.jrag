@@ -1,112 +1,88 @@
 aspect MoveMethod {
-	public void MethodDecl.doMove() {
+	public void MethodDecl.moveToParameter(String name, boolean inlineDelegator, boolean removeDelegator) {
 		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
-		move();
+		new MoveMethodRefactoring(this, name, inlineDelegator, removeDelegator).execute();
 		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 	
-	public void MethodDecl.move() {
+	public void MethodDecl.moveToFirstParameter() {
+		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
 		new MoveMethodRefactoring(this).execute();
+		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 	
 	class MoveMethodRefactoring {
-		private MethodDecl method;
-		private Variable target;
-		private ClassDecl targetClass;
-		private MethodDecl movedMethod;
-		private VariableDeclaration receiver_decl;
-		private Block with_block;
-		private Stmt delegation;
+		private MethodDecl m;
+		private Variable b;
+		private boolean inlineDelegator;
+		private boolean removeDelegator;
 		
-		public MoveMethodRefactoring(MethodDecl method) {
-			this.method = method;
+		public MoveMethodRefactoring(MethodDecl m, Variable b, boolean inlineDelegator, boolean removeDelegator) {
+			this.m = m;
+			this.b = b;
+			this.inlineDelegator = inlineDelegator;
+			this.removeDelegator = removeDelegator;
+		}
+		
+		public MoveMethodRefactoring(MethodDecl m) {
+			this(m, m.getNumParameter() == 0 ? null : m.getParameter(0), false, false);
+		}
+		
+		public MoveMethodRefactoring(MethodDecl m, String name, boolean inlineDelegator, boolean removeDelegator) {
+			this(m, m.getParameter(name), inlineDelegator, removeDelegator);
 		}
 		
 		public void execute() {
 			checkPreconditions();
-			target = method.getParameter(0);
-			targetClass = (ClassDecl)target.type();
-			createMovedMethod();
-			createDelegationCall();
-			method.setBlock(new Block(new List<Stmt>().add(delegation)));
-			targetClass.lockAllNames();
-			targetClass.addBodyDecl(movedMethod);
-			method.eliminate(ASTNode.WITH_STMT);
-			receiver_decl.inline();
+			MethodDecl m_copy = (MethodDecl)m.fullCopy();
+			for(MethodAccess ma : m.uses())
+				ma.lock(m_copy);
+			ParameterDeclaration b_copy = null;
+			List<Expr> args = new List<Expr>();
+			for(ParameterDeclaration pd : m_copy.getParameters()) {
+				if(pd.name().equals(b.name()))
+					b_copy = pd;
+				args.add(new LockedVarAccess(pd));
+			}
+			// NB: synchronization is done by delegating method
+			m.getModifiers().removeModifier("synchronized");
+			m.lockAllNames();
+			VariableDeclaration new_b = b.asVariableDeclaration(new ThisAccess("this"));
+			for(VarAccess va : b.allUses())
+				va.lock(new_b);
+			int i = m.getIndexOfParameter(b.name());
+			m.removeParameter(i);
+			args.removeChild(i);
+			List<Access> quals = new List<Access>();
+			for(TypeDecl A=m.hostType(); A!=null; A=A.enclosingType()) {
+				String a = A.name().toLowerCase();
+				ParameterDeclaration a_decl = new FreshParameter(new TypeAccess(A), a); 
+				a_decl.setDemandFinal();
+				m.insertParameter(a_decl, i);
+				args.insertChild(A==m.hostType() ? new ThisAccess("this") : new TypeAccess(A).qualifiesAccess(new ThisAccess("this")), i);
+				quals.insertChild(new LockedVarAccess(a_decl), 0);
+			}
+			m.setBlock(new Block(new_b, new WithStmt(quals, m.getBlock())));
+			m.replaceWith(m_copy);
+			m.programRoot().flushCaches();
+			b.type().insertUnusedMethod(m);
+			m_copy.setBlock(new Block(new ReturnStmt(new LockedVarAccess(b_copy).qualifiesAccess(new MethodAccess(m.name(), args)))));
+			m.eliminate(ASTNode.WITH_STMT);
+			new_b.inline();
+			if(inlineDelegator)
+				m_copy.inline();
 		}
 
 		private void checkPreconditions() {
-			if(method.getNumParameter() < 1)
-				throw new RefactoringException("no parameter to move into");
-			if(!method.getParameter(0).type().isClassDecl())
-				throw new RefactoringException("can only move into class");
-			if(!method.hostType().fromSource() || 
-					!method.getParameter(0).type().fromSource())
+			if(m == null || b == null)
+				throw new RefactoringException("method or target does not exist");
+			if(!m.hostType().fromSource() || !b.type().fromSource())
 				throw new RefactoringException("cannot move inside bytecode");
-			if(method.isStatic())
+			if(m.isStatic())
 				throw new RefactoringException("cannot move static method (yet)");
-			if(!method.hasBlock())
+			if(!m.hasBlock())
 				throw new RefactoringException("cannot move body-less method");
-			if(!method.getParameter(0).type().canIntroduceMethod(method))
-				throw new RefactoringException("cannot introduce method");
 		}
 
-		private void createMovedMethod() {
-			Modifiers mods = (Modifiers)method.getModifiers().fullCopy();
-			if(mods.isSynchronized())
-				mods.removeModifier("synchronized");
-			Access rettype = new TypeAccess(method.type());
-			String name = method.name();
-			List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
-			List<Access> qualifiers = new List<Access>();
-			addParms(parms, qualifiers);
-			for(int i=1;i<method.getNumParameter();++i) {
-				ParameterDeclaration oldparm = method.getParameter(i);
-				parms.add(new ParameterDeclaration(new TypeAccess(oldparm.type()), oldparm.name()));
-			}
-			List<Access> exns = new List<Access>();
-			for(Access exn : method.getExceptions())
-				exns.add(new TypeAccess(exn.type()));
-			List<Stmt> stmts = new List<Stmt>();
-			receiver_decl = new VariableDeclaration(new TypeAccess(targetClass), target.name(), new ThisAccess("this")); 
-			stmts.add(receiver_decl);
-			for(VarAccess va : target.allUses())
-				va.lock(receiver_decl);
-			with_block = method.getBlock();
-			with_block.lockAllNames();
-			WithStmt with = new WithStmt(qualifiers, with_block);
-			stmts.add(with);		
-			movedMethod = new MethodDecl(mods, rettype, name, parms, exns, new Opt(new Block(stmts)));		
-		}
-
-		// add one parameter for every enclosing instance to the parameter list and a binding
-		// to it to the list of qualifiers
-		private void addParms(List<ParameterDeclaration> parms, List<Access> quals) {
-			for(TypeDecl enc=method.hostType();enc!=null;enc=enc.enclosingType()) {
-				String parmname = enc.name().toLowerCase();
-				ParameterDeclaration parm = new FreshParameter(new TypeAccess(enc), parmname);
-				parm.setDemandFinal();
-				parms.insertChild(parm, 0);
-				quals.insertChild(new LockedVarAccess(parm), 0);
-			}
-		}
-
-		private void addArgs(List<Expr> args) {
-			for(TypeDecl enc=method.hostType();enc!=null;enc=enc.enclosingType()) {
-				if(enc == method.hostType())
-					args.insertChild(new ThisAccess("this"), 0);
-				else
-					args.insertChild(new TypeAccess(enc).qualifiesAccess(new ThisAccess("this")), 0);
-			}
-		}
-
-		private void createDelegationCall() {
-			List<Expr> args = new List<Expr>();
-			addArgs(args);
-			for(int i=1;i<method.getNumParameter();++i)
-				args.add(new VarAccess(method.getParameter(i).name()));
-			Expr call = new VarAccess(target.name()).qualifiesAccess(new MethodAccess(method.name(), args));
-			delegation = new ReturnStmt(call);
-		}
 	}
 }

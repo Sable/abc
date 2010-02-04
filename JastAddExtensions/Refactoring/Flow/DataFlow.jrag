@@ -40,6 +40,7 @@ aspect DataFlow {
 		if(lockedWriteDeps != null) {
 			if(!writeDeps().equals(lockedWriteDeps))
 				throw new RefactoringException("couldn't preserve data flow");
+			lockedWriteDeps = null;
 		}
 	}
 	public void MethodAccess.unlockDataFlow() {

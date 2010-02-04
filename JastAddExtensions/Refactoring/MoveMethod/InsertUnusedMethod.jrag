@@ -1,0 +1,18 @@
+aspect InsertUnusedMethod {
+	// insert an unused method into a given type
+	public void TypeDecl.insertUnusedMethod(MethodDecl m) {
+		throw new RefactoringException("cannot insert method into this kind of type declaration");
+	}
+	
+	public void ClassDecl.insertUnusedMethod(MethodDecl m) {
+		// TODO: think about parameterised classes, substituted classes, raw classes, and all that
+		if(!canIntroduceMethod(m))
+			throw new RefactoringException("cannot insert method here");
+		programRoot().lockMethodNames(Collections.singleton(m.name()));
+		addBodyDecl(m);
+		flushCaches();
+		if(!m.overrides().isEmpty() || !m.overriders().isEmpty())
+			throw new RefactoringException("method is used");
+	}
+	
+}

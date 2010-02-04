@@ -84,6 +84,7 @@ aspect LockedTypeAccess {
 	
 	public ASTNode TypeAccess.lock() {
 		targetType = decl();
+		assert targetType != unknownType();
 		return this;
 	}
 	

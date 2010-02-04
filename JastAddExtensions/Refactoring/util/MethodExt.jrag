@@ -1,0 +1,26 @@
+aspect MethodExt {
+	syn lazy int MethodDecl.getIndexOfParameter(String name) {
+		for(int i=0; i<getNumParameter(); ++i)
+			if(getParameter(i).name().equals(name))
+				return i;
+		return -1;
+	}
+	
+	public ParameterDeclaration MethodDecl.getParameter(String name) {
+		if(getIndexOfParameter(name) == -1)
+			return null;
+		return getParameter(getIndexOfParameter(name));
+	}
+	
+	public void MethodDecl.setParameter(String name, ParameterDeclaration pd) {
+		setParameter(pd, getIndexOfParameter(name));
+	}
+	
+	public void MethodDecl.insertParameter(ParameterDeclaration pd, int i) {
+		getParameterList().insertChild(pd, i);
+	}
+	
+	public void MethodDecl.removeParameter(int i) {
+		getParameterList().removeChild(i);
+	}
+}

@@ -9,8 +9,11 @@ aspect InlineAnonymousMethod {
 			java.util.Set<BreakStmt> breaks = new HashSet<BreakStmt>();
 			for(Stmt node : returns()) {
 				ReturnStmt ret = (ReturnStmt)node;
-				if(ret.hasResult())
-					throw new RefactoringException("cannot inline this closure");
+				if(ret.hasResult()) {
+					if(!ret.getResult().isStatementExpression())
+						throw new RefactoringException("cannot inline this closure");
+					ret.insertStmtBefore(new ExprStmt(ret.getResult()));
+				}
 				BreakStmt brk = new BreakStmt(label);
 				breaks.add(brk);
 				ret.replaceWith(brk);

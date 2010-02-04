@@ -6,6 +6,11 @@ aspect InlineMethod {
 			((Block)n).inline();
 	}
 	
+	public void MethodDecl.inline() {
+		for(MethodAccess ma : this.polyUses())
+			ma.inline();
+	}
+	
 	public void MethodAccess.doInline() {
     	Program root = programRoot();
     	root.introduce(LOCKED_NAMES, FRESH_VARIABLES);		

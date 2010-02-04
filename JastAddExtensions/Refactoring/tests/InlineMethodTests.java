@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import AST.Access;
 import AST.Expr;
 import AST.ExprStmt;
 import AST.LabeledStmt;
@@ -17,15 +18,15 @@ public class InlineMethodTests extends TestCase {
 	
 	private MethodAccess findAccess(Program in) {
 		Expr e = in.findDoublyParenthesised();
-		if(e instanceof MethodAccess) {
+		if(e != null)
 			e.unparenthesise();
-			return (MethodAccess)e;
-		}
+		if(e != null && e.isMethodAccess())
+			return (MethodAccess)((Access)e).lastAccess();
 		LabeledStmt l = in.findStmtWithLabel("inline");
 		assertTrue("not found", l != null);
 		Stmt s = l.unlabel();
-		assertTrue("not found", s instanceof ExprStmt && ((ExprStmt)s).getExpr() instanceof MethodAccess);
-		return (MethodAccess)((ExprStmt)s).getExpr();
+		assertTrue("not found", s instanceof ExprStmt && ((ExprStmt)s).getExpr().isMethodAccess());
+		return (MethodAccess)((Access)((ExprStmt)s).getExpr()).lastAccess();
 	}
 	
 	public void testSucc(Program in, Program out) {		
@@ -491,4 +492,7 @@ public class InlineMethodTests extends TestCase {
             "}")));
     }
 
+    public void test16() {
+        testFail(Program.fromStmts("inline: Integer.parseInt(\"42\");"));
+    }
 }

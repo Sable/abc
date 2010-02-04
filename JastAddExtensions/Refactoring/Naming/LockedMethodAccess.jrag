@@ -49,7 +49,12 @@ aspect LockedMethodAccess {
 	}
 	
 	public ASTNode MethodAccess.lock() {
-		MethodDecl target = decl().isSubstituted() ? decl().sourceMethodDecl() : decl();
+		return lock(decl());
+	}
+	
+	public ASTNode MethodAccess.lock(MethodDecl md) {
+		MethodDecl target = md.isSubstituted() ? md.sourceMethodDecl() : md;
+		assert target != unknownMethod();
 		LockedMethodAccess lma = new LockedMethodAccess(target, getArgs());
 		replaceWith(lma);
 		return lma;

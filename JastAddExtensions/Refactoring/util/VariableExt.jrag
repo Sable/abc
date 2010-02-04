@@ -1,0 +1,5 @@
+aspect VariableExt {
+	public VariableDeclaration Variable.asVariableDeclaration(Expr init) {
+		return new VariableDeclaration((Modifiers)getModifiers().fullCopy(), new TypeAccess(type()), name(), new Opt(init));
+	}
+}

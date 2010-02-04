@@ -3,8 +3,8 @@ aspect ExtractTemp {
 		if(inextractible())
 			throw new RefactoringException("expression is not extractible");
 		TypeDecl type = type();
-		/*if(type.isAnonymous())
-			type = ((AnonymousDecl)type).superType();*/
+		if(type.isAnonymous())
+			type = ((AnonymousDecl)type).superType();
 		return insertUnusedLocal(new VariableDeclaration(new TypeAccess(type), name)).
 			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}

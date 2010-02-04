@@ -21,7 +21,7 @@ public class MoveMethodTests extends TestCase {
 		assertTrue(s.isSingleton());
 		MethodDecl md = (MethodDecl)s.iterator().next();
 		try {
-			md.doMove();
+			md.moveToFirstParameter();
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
@@ -36,7 +36,7 @@ public class MoveMethodTests extends TestCase {
 		assertTrue(s.isSingleton());
 		MethodDecl md = (MethodDecl)s.iterator().next();
 		try {
-			md.doMove();
+			md.moveToFirstParameter();
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) { }
 	}
@@ -76,10 +76,14 @@ public class MoveMethodTests extends TestCase {
 	}
 	
 	public void test6() {
-		testFail("A", "m(B)",
+		testSucc("A", "m(B)",
 			Program.fromClasses(
 			"class A { void m(B b) { } }",
-			"class B { int m(B b) { return 23; } }"));
+			"class B { int m(B b) { return 23; } }"),
+			Program.fromClasses(
+		    "class A { void m(B b) { b.m(this); } }",
+		    "class B { int m(B b) { return 23; }" +
+		    "          void m(A a) { { } } }"));
 	}
 	
 	public void test7() {

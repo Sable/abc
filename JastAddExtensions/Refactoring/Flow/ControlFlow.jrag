@@ -28,6 +28,7 @@ aspect ControlFlow {
 		if(lockedPred != null) {
 			if(!backward_cdep().equals(lockedPred))
 				throw new RefactoringException("couldn't preserve control flow");
+			lockedPred = null;
 		}
 	}
 	

@@ -26,4 +26,11 @@ aspect BlockExt {
 	public Block Expr.enclosingBlock() {
 		return enclosingStmt().enclosingBlock();
 	}
+	
+	public Block.Block(Stmt... stmts) {
+		List<Stmt> l = new List<Stmt>();
+		for(Stmt stmt : stmts)
+			l.add(stmt);
+		setStmtList(l);
+	}
 }

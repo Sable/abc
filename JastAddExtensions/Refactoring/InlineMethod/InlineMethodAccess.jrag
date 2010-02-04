@@ -4,6 +4,8 @@ aspect InlineMethodAccess {
 		MethodDecl target = getUniqueTarget();
 		if(target == null)
 			throw new RefactoringException("cannot inline ambiguous method call");
+		if(!target.hasBlock() || !target.fromSource())
+			throw new RefactoringException("cannot inline call to method without body");
 		MethodDecl target_cp = target.fullCopy();
 		target.lockAllNames();
 		AnonymousMethod anon = target.asAnonymousMethod();
