@@ -1,1 +1,3 @@
 LockedVarAccess : VarAccess ::= <Target:Variable> [Qualifier:Expr];
+LockedThisAccess : ThisAccess ::= <Target:TypeDecl>;
+LockedSuperAccess : SuperAccess ::= <Target:TypeDecl>;

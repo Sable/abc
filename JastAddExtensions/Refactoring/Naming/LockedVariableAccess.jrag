@@ -164,4 +164,55 @@ aspect LockedVariableAccess {
 			}
 		}
 	}
+	
+	// a locked this access remembers which enclosing instance it is supposed to refer to;
+	// a super access remembers the enclosing instance whose super class it is supposed to refer to
+	eq LockedThisAccess.decl() = getTarget();
+	eq LockedSuperAccess.decl() = getTarget();
+	
+	public void LockedThisAccess.toString(StringBuffer s) {
+		s.append("[[this]]");
+	}
+	public void LockedSuperAccess.toString(StringBuffer s) {
+		s.append("[[super]]");
+	}
+	
+	public ThisAccess ThisAccess.lock() {
+		return isQualified() ? this : lock(decl());
+	}
+	public SuperAccess SuperAccess.lock() {
+		return isQualified() ? this : lock(decl());
+	}
+	
+	public LockedThisAccess ThisAccess.lock(TypeDecl target) {
+		LockedThisAccess lta = new LockedThisAccess("this", target);
+		replaceWith(lta);
+		return lta;
+	}
+	public LockedSuperAccess SuperAccess.lock(TypeDecl target) {
+		LockedSuperAccess lsa = new LockedSuperAccess("super", target);
+		replaceWith(lsa);
+		return lsa;
+	}
+	
+	public Access LockedThisAccess.eliminateLockedNames() {
+		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
+		if(super.decl().sameSourceDeclAs(getTarget()))
+			return new ThisAccess("this");
+		if(!fromSource() || isQualified())
+			throw new RefactoringException("cannot adjust this access");
+		if(!thisType().isInnerTypeOf(getTarget()))
+			throw new RefactoringException("enclosing instance not reachable");
+		return new TypeAccess(getTarget()).qualifiesAccess(new ThisAccess("this"));
+	}
+	public Access LockedSuperAccess.eliminateLockedNames() {
+		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
+		if(super.decl().sameSourceDeclAs(getTarget()))
+			return new SuperAccess("super");
+		if(!fromSource() || isQualified())
+			throw new RefactoringException("cannot adjust this access");
+		if(!thisType().isInnerTypeOf(getTarget()))
+			throw new RefactoringException("super instance not reachable");
+		return new TypeAccess(getTarget()).qualifiesAccess(new SuperAccess("super"));
+	}
 }
