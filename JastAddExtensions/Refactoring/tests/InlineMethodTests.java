@@ -495,4 +495,30 @@ public class InlineMethodTests extends TestCase {
     public void test16() {
         testFail(Program.fromStmts("inline: Integer.parseInt(\"42\");"));
     }
+    
+    public void test17() {
+    	testSucc(
+    		Program.fromBodyDecls(
+    		"int sum(int... xs) {" +
+    		"  int sum = 0;" +
+    		"  for(int x : xs)" +
+    		"    sum += x;" +
+    		"  return sum;" +
+    		"}",
+    		"{ int sum;" +
+    		"  sum = ((sum(23, 42, 56))); }"),
+    		Program.fromBodyDecls(
+    		"int sum(int... xs) {" +
+    		"  int sum = 0;" +
+    		"  for(int x : xs)" +
+    		"    sum += x;" +
+    		"  return sum;" +
+    		"}" +
+    		"{ int sum;" +
+    		"  int[] xs = new int[] { 23, 42, 56 };" +
+    		"  int sum0 = 0;" +
+    		"  for(int x : xs)" +
+    		"    sum0 += x;" +
+    		"  sum = sum0; }"));
+    }
 }

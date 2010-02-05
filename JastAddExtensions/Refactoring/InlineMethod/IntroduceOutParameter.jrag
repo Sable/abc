@@ -1,6 +1,8 @@
 aspect IntroduceOutParameter {
 
 	public AnonymousMethod AnonymousMethod.introduceOutParameter() {
+		eliminateVarargs();
+		programRoot().flushCaches();
 		if(!(getParent() instanceof AssignSimpleExpr))
 			return this;
 		AssignSimpleExpr parent = (AssignSimpleExpr)getParent();
@@ -16,6 +18,27 @@ aspect IntroduceOutParameter {
 		parent.replaceWith(this);
 		hostType().flushCaches();
 		return this;
+	}
+	
+	public void AnonymousMethod.eliminateVarargs() {
+		if(!isVariableArity())
+			return;
+		VariableArityParameterDeclaration last = (VariableArityParameterDeclaration)lastParameter();
+		ParameterDeclaration new_last = last.asFixedArityParameter();
+		for(VarAccess va : last.uses())
+			if(va instanceof LockedVarAccess)
+				((LockedVarAccess)va).lock(new_last);
+		setParameter(new_last, getNumParameter()-1);
+		if(!invokesVariableArityAsArray()) {
+			List<Expr> varargs = new List<Expr>();
+			for(int i=getNumArg()-1; i>getNumParameter()-1;--i) {
+				Expr arg = getArg(i);
+				removeArg(i);
+				varargs.insertChild(arg, 0);
+			}
+			varargs.insertChild(getArg(getNumParameter()-1), 0);
+			setArg(new ArrayCreationExpr(new TypeAccess(last.type()), new Opt(new ArrayInit(varargs))), getNumParameter()-1);
+		}
 	}
 
 	public void ASTNode.addAssignToReturns(Variable v) {

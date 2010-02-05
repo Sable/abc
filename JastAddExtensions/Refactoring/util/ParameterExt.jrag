@@ -1,0 +1,7 @@
+aspect ParameterExt {
+	public ParameterDeclaration VariableArityParameterDeclaration.asFixedArityParameter() {
+		Modifiers mod = (Modifiers)this.getModifiers().fullCopy();
+		TypeAccess acc = new TypeAccess(type());
+		return new ParameterDeclaration(mod, acc, getID());
+	}
+}

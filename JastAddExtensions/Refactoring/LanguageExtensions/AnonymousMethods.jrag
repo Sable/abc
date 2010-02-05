@@ -226,6 +226,18 @@ aspect AnonymousMethods {
 		getParameterList().removeChild(i);
 	}
 	
+	syn boolean AnonymousMethod.isVariableArity() = getNumParameter() == 0 ? false : getParameter(getNumParameter()-1).isVariableArity();
+	syn ParameterDeclaration AnonymousMethod.lastParameter() = getParameter(getNumParameter()-1);
+	syn Expr AnonymousMethod.lastArg() = getArg(getNumArg()-1);
+	
+	syn boolean AnonymousMethod.invokesVariableArityAsArray() {
+		if(!isVariableArity())
+			return false;
+		if(getNumParameter() != getNumArg())
+			return false;
+		return lastArg().type().methodInvocationConversionTo(lastParameter().type());
+	}
+	
 	// find argument for parameter
 	public Expr AnonymousMethod.lookupArg(String parmname) {
 		for(int i = 0; i < getNumParameter(); ++i)
