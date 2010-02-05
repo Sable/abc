@@ -3,12 +3,48 @@ aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */
 	public LockedMethodAccess.LockedMethodAccess(MethodDecl target, List<Expr> args) {
-		this(target.name(), args, target, new Opt());
+		this(target.name(), args, target.save(), new Opt());
 	}
+	
+	/* If we just store the method declaration an access should bind to, we get into trouble with
+	 * ParMethodDecls: we might store a reference to some ParMethodDecl, then somebody flushes the
+	 * caches, and a new ParMethodDecl will be created the next time we ask for it. Then inherited
+	 * attributes won't work anymore, and things generally become unpleasant.
+	 * 
+	 * So we store a SavedMethodDecl instead: this is either a wrapper around a regular MethodDecl,
+	 * or it represents a ParMethodDecl by its genericMethodDecl() and its list of arguments.*/
+	class SavedMethodDecl {
+		private MethodDecl md;
+		
+		public SavedMethodDecl(MethodDecl md) {
+			this.md = md;
+		}
+		
+		public MethodDecl getDecl() {
+			return md;
+		}
+	}
+	
+	class SavedParMethodDecl extends SavedMethodDecl {
+		ArrayList<TypeDecl> parms;
+		public SavedParMethodDecl(ParMethodDecl pmd) {
+			super(pmd.genericMethodDecl());
+			parms = new ArrayList<TypeDecl>();
+			for(Access acc : pmd.getTypeArguments())
+				parms.add(acc.type());
+		}
+		
+		public MethodDecl getDecl() {
+			return ((GenericMethodDecl)super.getDecl()).lookupParMethodDecl(parms);
+		}
+	}
+	
+	public SavedMethodDecl MethodDecl.save() { return new SavedMethodDecl(this); }
+	public SavedParMethodDecl ParMethodDecl.save() { return new SavedParMethodDecl(this); }
 	
 	eq LockedMethodAccess.isSuperCall() = hasQualifier() ? getQualifier().isSuperAccess() : super.isSuperCall();
 	
-	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget());
+	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget().getDecl());
 	
 	private MethodDecl LockedMethodAccess.unlockedDecl() {
 		flushCache();
@@ -90,32 +126,30 @@ aspect LockedMethodAccess {
 	
 	// eliminating locked method accesses
 	inh TypeDecl LockedMethodAccess.enclosingType();
-	rewrite LockedMethodAccess {
-		when(!hasExtension(LOCKED_NAMES))
-		to Access {
-			MethodDecl target = getTarget();
-			if(fromSource())
-				setID(target.name());
-			if(unlockedDecl().sameSourceDeclAs(target)) {
-				MethodAccess ma = new MethodAccess(name(), getArgs());
-				if(hasQualifier())
-					return getQualifier().qualifiesAccess(ma);
-				else
-					return ma;
-			} else if(fromSource()) {
-				MethodAccessInfo acc;
-				if(hasQualifier())
-					acc = getQualifier().type().accessMemberMethod(target);
-				else
-					acc = accessMethod(target);
-				if(acc == null)
-					throw new RefactoringException("cannot access method "+target.name());
-				Access res = acc.eliminate(hasQualifier() ? getQualifier() : null, 
-										   enclosingType(), inStaticContext(), getArgs());
-				if(res == null)
-					throw new RefactoringException("cannot access method "+target.name());
-				return res;
-			}
+	public Access LockedMethodAccess.eliminateLockedNames() {
+		MethodDecl target = getTarget().getDecl();
+		if(fromSource())
+			setID(target.name());
+		if(unlockedDecl().sameSourceDeclAs(target)) {
+			MethodAccess ma = new MethodAccess(name(), getArgs());
+			if(hasQualifier())
+				return getQualifier().qualifiesAccess(ma);
+			else
+				return ma;
+		} else if(fromSource()) {
+			MethodAccessInfo acc;
+			if(hasQualifier())
+				acc = getQualifier().type().accessMemberMethod(target);
+			else
+				acc = accessMethod(target);
+			if(acc == null)
+				throw new RefactoringException("cannot access method "+target.name());
+			Access res = acc.eliminate(hasQualifier() ? getQualifier() : null, 
+									   enclosingType(), inStaticContext(), getArgs());
+			if(res == null)
+				throw new RefactoringException("cannot access method "+target.name());
+			return res;
+		} else {
 			throw new RefactoringException("cannot access method "+target.name());
 		}
 	}

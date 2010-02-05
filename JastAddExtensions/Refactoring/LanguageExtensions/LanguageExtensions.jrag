@@ -1,57 +1,31 @@
 aspect LanguageExtensions {
-	class LanguageExtension {
-		private static int NEXT_LANG_EXT = 0;
-		private int index;
+	abstract class LanguageExtension {
 		private String name;
 		
 		public LanguageExtension(String name) { 
-			if(NEXT_LANG_EXT > 30)
-				throw new IllegalStateException("too many language extensions");
-			this.index = 1<<NEXT_LANG_EXT++;
 			this.name = name;
-		}
-		
-		public int getIndex() {
-			return index;
 		}
 		
 		public String toString() {
 			return name;
 		}
+		
+		public abstract ASTNode eliminateOn(ASTNode node);
 	}
 
-	public boolean ASTNode.hasExtension(LanguageExtension le) {
-		return (state().rewritePhase & le.getIndex()) == 0;
-	}
-	
-	public void ASTNode.introduce(LanguageExtension... les) {
-		int phase = state().rewritePhase;
-		for(LanguageExtension le : les)
-			phase &= ~le.getIndex();
-		programRoot().applyRewrites(phase);
-	}
-	
 	public void ASTNode.eliminate(LanguageExtension... les) {
+		flushCaches();
 		for(LanguageExtension le : les)
 			eliminate(le);
 	}
 	
-	public void ASTNode.eliminate(LanguageExtension le) {
-		int phase = state().rewritePhase;
-		phase |= le.getIndex();
-		programRoot().applyRewrites(phase);
-	}
-	
-	public void Program.applyRewrites(int stage) {
-		flushCaches();
-		enterRewritePhase(stage);
-		is$Final(stage);
-		for(CompilationUnit cu : getCompilationUnits())
-			cu.triggerRewrites();
-	}
-	
-	public void ASTNode.triggerRewrites() {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).triggerRewrites();
+	protected void ASTNode.eliminate(LanguageExtension le) {
+		flushCache();
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);			
+			ASTNode new_child = le.eliminateOn(child);
+			setChild((T)new_child, i);
+			new_child.eliminate(le);
+		}
 	}
 }

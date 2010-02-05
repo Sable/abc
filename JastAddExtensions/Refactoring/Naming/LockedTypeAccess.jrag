@@ -60,16 +60,12 @@ aspect LockedTypeAccess {
 		return super.lockNames(endangered);
 	}
 	
-	rewrite TypeAccess {
-		when(targetType != null && !hasExtension(LOCKED_NAMES))
-		to Access {
-			return unlock();
-		}
+	public Access TypeAccess.eliminateLockedNames() {
+		return targetType == null ? this : unlock();
 	}
-	
-	rewrite CompilationUnit {
-		when(locked && fromSource() && !hasExtension(LOCKED_NAMES))
-		to CompilationUnit {
+
+	public CompilationUnit CompilationUnit.eliminateLockedNames() {
+		if(locked && fromSource()) {
 			locked = false;
 			// make sure this compilation unit has same name as publicly declared class
 			for(TypeDecl t : getTypeDecls()) {
@@ -78,8 +74,8 @@ aspect LockedTypeAccess {
 					break;
 				}
 			}
-			return this;
 		}
+		return this;
 	}
 	
 	public ASTNode TypeAccess.lock() {
@@ -179,6 +175,7 @@ aspect LockedTypeAccess {
 	protected Access TypeAccess.unlockTopLevelTypeAccess(TypeDecl target) {
 		if(isQualified())
 			throw new RefactoringException("cannot access toplevel type under qualifier");
+		programRoot().flushCaches();
 		if(lookupName(target.name()).isSingleton(target)) {
 			setPackage("");
 			setID(target.name());

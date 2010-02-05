@@ -10,14 +10,13 @@ aspect RenameVariable {
 			throw new RefactoringException("not a valid name: "+new_name);
 		checkRenamingPreconds(new_name);
 		String old_name = name();
-		introduce(LOCKED_NAMES);
 		Collection<String> endangered = new ArrayList<String>(2);
 		endangered.add(old_name);
 		endangered.add(new_name);
 		programRoot().lockNames(endangered);
 		programRoot().pushQualifiers();
 		setID(new_name);
-		eliminate(LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES);
 	}
 	
 	public void Variable.checkRenamingPreconds(String new_name) { }

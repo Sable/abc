@@ -83,7 +83,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 		    "class A { void m(B b) { b.m(this); } }",
 		    "class B { int m(B b) { return 23; }" +
-		    "          void m(A a) { { } } }"));
+		    "          void m(A a) { } }"));
 	}
 	
 	public void test7() {
@@ -93,7 +93,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { void m(B b) { b.m(this); } }",
-			"class B { void m(A a) { { } } }"));
+			"class B { void m(A a) { } }"));
 	}
 	
 	public void test8() {
@@ -109,7 +109,7 @@ public class MoveMethodTests extends TestCase {
 			"class A { int m(B b) { return b.m(this); } }",
 			"class B {" +
 			"  int m(A a) {" +
-			"    { return 23; }" +
+			"    return 23;" +
 			"  }" +
 			"}"));
 	}
@@ -126,7 +126,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { int x; int m(B b) { return b.m(this); } }",
-			"class B { int m(A a) { { return a.x; } } }"));
+			"class B { int m(A a) { return a.x; } }"));
 	}
 	
 	public void test10() {
@@ -136,7 +136,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { A m(B b) { return b.m(this); } }",
-			"class B { A m(A a) { { return a; } } }"));
+			"class B { A m(A a) { return a; } }"));
 	}
 	
 	public void test11() {
@@ -146,7 +146,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { B m(B b) { return b.m(this); } }",
-			"class B { B m(A a) { { return this; } } }"));
+			"class B { B m(A a) { return this; } }"));
 	}
 	
 	public void test12() {
@@ -161,7 +161,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { int x; int m(B b) { return b.m(this); } }",
-			"class B { int m(A a) { { return a.x; } } }"));
+			"class B { int m(A a) { return a.x; } }"));
 	}
 	
 	public void test13() {
@@ -176,7 +176,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { int x; int m(B b) { return b.m(this); } }",
-			"class B { int m(A a) { { return a.x; } } }"));
+			"class B { int m(A a) { return a.x; } }"));
 	}
 	
 	public void test14() {
@@ -188,7 +188,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class Super { int x; }",
 			"class A extends Super { int m(B b) { return b.m(this); } }",
-			"class B { int m(A a) { { return ((Super)a).x; } } }"));
+			"class B { int m(A a) { return ((Super)a).x; } }"));
 	}
 	
 	public void test15() {
@@ -213,7 +213,7 @@ public class MoveMethodTests extends TestCase {
 			"  int m(B b) { return b.m(this); }" +
 			"}" +
 			"class B {" +
-			"  int m(A a) { { return a.f()+19; } }" +
+			"  int m(A a) { return a.f()+19; }" +
 			"}"));
 	}
 	
@@ -231,7 +231,7 @@ public class MoveMethodTests extends TestCase {
 			"  int m(B b) { return b.m(this); }" +
 			"}" +
 			"class B {" +
-			"  int m(A a) { { return a.f()+19; } }" +
+			"  int m(A a) { return a.f()+19; }" +
 			"}"));
 	}
 	
@@ -259,7 +259,7 @@ public class MoveMethodTests extends TestCase {
 			"      int f() { return Outer.m(); }" +
 			"    }" +
 			"    int m(A a) {" +
-			"      { return 42; }" +
+			"      return 42;" +
 			"    }" +
 			"  }" +
 			"}",
@@ -295,7 +295,7 @@ public class MoveMethodTests extends TestCase {
 			"}" +
 			"class B {" +
 			"  int m(Outer outer, Outer.A a) {" +
-			"    { return outer.x + a.y; }" +
+			"    return outer.x + a.y;" +
 			"  }" +
 			"}"));
 	}
@@ -321,13 +321,11 @@ public class MoveMethodTests extends TestCase {
 			"}",
 			"class B {" +
 			"  void m(A a) {" +
-			"    {" +
-			"      new A() {" +
-			"        Object f() {" +
-			"          return this;" +
-			"        }" +
-			"      };" +
-			"    }" +
+			"    new A() {" +
+			"      Object f() {" +
+			"        return this;" +
+			"      }" +
+			"    };" +
 			"  }" +
 			"}"));
 	}
@@ -354,14 +352,12 @@ public class MoveMethodTests extends TestCase {
 			"}",
 			"class B {" +
 			"  A m(A a) {" +
-			"    {" +
-			"      new A() {" +
-			"        Object f() {" +
-			"          return this;" +
-			"        }" +
-			"      };" +
-			"      return a;" +
-			"    }" +
+			"    new A() {" +
+			"      Object f() {" +
+			"        return this;" +
+			"      }" +
+			"    };" +
+			"    return a;" +
 			"  }" +
 			"}"));
 	}
@@ -373,7 +369,7 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { void m(B b, int a) { b.m(this, a); } }",
-			"class B { void m(A a0, int a) { { } } }"));
+			"class B { void m(A a0, int a) { } }"));
 	}
 	
 	public void test23() {
@@ -392,7 +388,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class B {" +
 			"  void foo(A a, A.Inner i) {" +
-			"    { a.new Inner(); }" +
+			"    a.new Inner();" +
 			"  }" +
 			"  class Inner {}" +
 			"}" +
@@ -422,7 +418,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class B {" +
 			"  void foo(A a, A.Inner inner) {" +
-			"    { a.bar(inner); }" +
+			"    a.bar(inner);" +
 			"  }" +
 			"}",
 			"class A {" +
@@ -447,7 +443,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class B {" +
 			"  void m(A a) { " +
-			"    { a.x++; }" +
+			"    a.x++;" +
 			"  }" +
 			"}",
 			"class A {" +
@@ -486,10 +482,8 @@ public class MoveMethodTests extends TestCase {
 			"class B {" +
 			"  B g() { return null; }" +
 			"  void m(A a) {" +
-			"    {" +
-			"      if(this != null)" +
-			"        a.m(this.g());" +
-			"    }" +
+			"    if(this != null)" +
+			"      a.m(this.g());" +
 			"  }" +
 			"}",
 			"class A {" +
@@ -520,7 +514,7 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class B {" +
 			"  void m(A a) {" +
-			"    { a.notify(); }" +
+			"    a.notify();" +
 			"  }" +
 			"}",
 			"class A {" +
@@ -551,10 +545,8 @@ public class MoveMethodTests extends TestCase {
 			Program.fromClasses(
 			"class B {" +
 			"  void m(final A a) {" +
-			"    {" +
-			"      class Inner {" +
-			"        { a.n(); }" +
-			"      }" +
+			"    class Inner {" +
+			"      { a.n(); }" +
 			"    }" +
 			"  }" +
 			"}",
@@ -573,6 +565,55 @@ public class MoveMethodTests extends TestCase {
 			"class B { }"),
 			Program.fromClasses(
 			"class A { synchronized void m(B b) { b.m(this); } }",
-			"class B { void m(A a) { { } } }"));
+			"class B { void m(A a) { } }"));
+	}
+	
+	public void test31() {
+		testSucc("A", "mA1(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  public void mA1(B b) {" +
+			"    b.mB1();" +
+			"    mA2();" +
+			"    b.mB2();" +
+			"    System.out.println(this);" +
+			"  }" +
+			"  public void mA2() { }" +
+			"}",
+			"class B {" +
+			"  public void mB1() { }" +
+			"  public void mB2() { }" +
+			"}",
+			"class C {" +
+			"  C() {" +
+			"    getA().mA1(getB());" +
+			"  }" +
+			"  A getA() { return null; }" +
+			"  B getB() { return null; }" +
+			"}"),
+			Program.fromClasses(
+			"class A {" +
+			"  public void mA1(B b) {" +
+			"    b.mA1(this);" +
+			"  }" +
+			"  public void mA2() { }" +
+			"}",
+			"class B {" +
+			"  public void mB1() { }" +
+			"  public void mB2() { }" +
+			"  public void mA1(A a) {" +
+			"    this.mB1();" +
+			"    a.mA2();" +
+			"    this.mB2();" +
+			"    System.out.println(a);" +
+			"  }" +
+			"}",
+			"class C {" +
+			"  C() {" +
+			"    getA().mA1(getB());" +
+			"  }" +
+			"  A getA() { return null; }" +
+			"  B getB() { return null; }" +
+			"}"));
 	}
 }

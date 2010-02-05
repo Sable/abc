@@ -1,20 +1,28 @@
 aspect ReturnVoid {
-	public static LanguageExtension ASTNode.RETURN_VOID = new LanguageExtension("return void");
-	
 	syn boolean ReturnStmt.returnsVoid() = hasResult() && getResult().type().isVoid();
 	
-	rewrite ReturnStmt {
-		when(returnsVoid() && !hasExtension(RETURN_VOID))
-		to Stmt {
-			Expr res = getResult();
-			if(following().equals(returnTarget())) {
-				return new ExprStmt(res);
-			} else {
-				EmptyStmt e = insertEmptyStmtBefore();
-				e.replaceWith(new ExprStmt(res));
-				setResultOpt(new Opt());
-				return this;
+	public static LanguageExtension ASTNode.RETURN_VOID = new LanguageExtension("return void") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateReturnVoid();
+		}
+	};
+	
+	public ASTNode ASTNode.eliminateReturnVoid() { return this; }
+	
+	public Block Block.eliminateReturnVoid() {
+		for(int i=0;i<getNumStmt();++i) {
+			Stmt s = getStmt(i);
+			if(s instanceof ReturnStmt && ((ReturnStmt)s).returnsVoid()) {
+				ReturnStmt ret = (ReturnStmt)s;
+				Expr res = ret.getResult();
+				if(ret.following().equals(ret.returnTarget())) {
+					setStmt(new ExprStmt(res), i);
+				} else {
+					insertStmt(i, new ExprStmt(res));
+					ret.setResultOpt(new Opt());
+				}
 			}
 		}
+		return this;
 	}
 }

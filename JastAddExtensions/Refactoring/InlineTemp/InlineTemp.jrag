@@ -27,8 +27,7 @@ aspect InlineTemp {
     // stand-alone refactoring
     public void VariableDeclaration.doInline() {
     	Program root = programRoot();
-    	root.introduce(LOCKED_NAMES);
     	inline();
-    	root.eliminate(LOCKED_NAMES);
+    	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
     }
 }

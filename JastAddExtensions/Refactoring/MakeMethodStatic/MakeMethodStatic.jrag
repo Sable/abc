@@ -4,7 +4,6 @@ aspect MakeMethodStatic {
 			return;
 		if(!fromSource() || !hasBlock())
 			throw new RefactoringException("cannot make static");
-		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
 		programRoot().lockMethodNames(Collections.singleton(name()));
 		// prepare new method
 		MethodDecl newMethod = (MethodDecl)this.fullCopy();
@@ -28,7 +27,6 @@ aspect MakeMethodStatic {
 			delegationArgs.add(new VarAccess(getParameter(i).name()));
 		Expr delegationCall = new MethodAccess(name(), delegationArgs);
 		this.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(delegationCall))));
-		// KTHXBYE
-		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 }

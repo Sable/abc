@@ -1,1 +1,1 @@
-LockedMethodAccess : MethodAccess ::= <Target:MethodDecl> [Qualifier:Expr];
+LockedMethodAccess : MethodAccess ::= <Target:SavedMethodDecl> [Qualifier:Expr];

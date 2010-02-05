@@ -58,7 +58,6 @@ aspect ExtractTemp {
     // stand-alone refactoring
     public void Expr.doExtract(String name, boolean makeFinal) {
     	Program root = programRoot();
-    	root.introduce(LOCKED_NAMES, LOCKED_DATAFLOW);
     	extractTemp(name, makeFinal);
     	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
     }

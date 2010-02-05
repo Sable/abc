@@ -1,3 +1,9 @@
 aspect Rename {
-	public static LanguageExtension ASTNode.LOCKED_NAMES = new LanguageExtension("locked names");	
+	public static LanguageExtension ASTNode.LOCKED_NAMES = new LanguageExtension("locked names") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateLockedNames();
+		}
+	};
+	
+	public ASTNode ASTNode.eliminateLockedNames() { return this; }
 }

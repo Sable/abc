@@ -11,13 +11,12 @@ aspect RenameType {
 			throw new RefactoringException("not a valid name: "+new_name);
 		checkRenamingPreconds(new_name);
 		String old_name = name();
-		introduce(LOCKED_NAMES);
 		Collection<String> endangered = new ArrayList<String>(2);
 		endangered.add(old_name);
 		endangered.add(new_name);
 		programRoot().lockNames(endangered);
 		setID(new_name);
-		eliminate(LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES);
 	}
 	
 	private void TypeDecl.checkRenamingPreconds(String new_name) {

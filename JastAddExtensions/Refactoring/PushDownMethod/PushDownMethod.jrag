@@ -47,8 +47,7 @@ aspect PushDownMethod {
 	}
 	
     public void MethodDecl.doPushDown() {
-    	introduce(LOCKED_NAMES);
     	pushDown();
-    	eliminate(LOCKED_NAMES);
+    	programRoot().eliminate(LOCKED_NAMES);
     }
 }

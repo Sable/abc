@@ -1,8 +1,6 @@
 /* the names of fresh variables are guaranteed not to clash
  * with the names of other variables */
 aspect FreshVariables {
-	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables");
-	
 	interface FreshVariable extends LocalVariable { }
 	FreshParameter implements FreshVariable;
 	FreshLocalVariable implements FreshVariable;
@@ -23,27 +21,32 @@ aspect FreshVariables {
 		return "#fresh#" + super.name();
 	}
 	
-	// eliminating fresh variables
-	rewrite FreshParameter {
-		when(!hasExtension(FRESH_VARIABLES))
-		to ParameterDeclaration {
-			String new_name = pickFreshName();
-			ParameterDeclaration pd = new ParameterDeclaration(getModifiers(), getTypeAccess(), new_name);
-			for(VarAccess va : uses())
-				((LockedVarAccess)va).setTarget(pd);
-			return pd;		
+	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateFreshVariables();
 		}
+	};
+	
+	public ASTNode ASTNode.eliminateFreshVariables() { return this; }
+	
+	public ParameterDeclaration FreshParameter.eliminateFreshVariables() {
+		String new_name = pickFreshName();
+		ParameterDeclaration pd = new ParameterDeclaration(getModifiers(), getTypeAccess(), new_name);
+		for(VarAccess va : uses()) {
+			assert va instanceof LockedVarAccess;
+			((LockedVarAccess)va).setTarget(pd);
+		}
+		return pd;
 	}
 	
-	rewrite FreshLocalVariable {
-		when(!hasExtension(FRESH_VARIABLES))
-		to VariableDeclaration {
-			String new_name = pickFreshName();
-			VariableDeclaration vd = new VariableDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
-			for(VarAccess va : uses())
-				((LockedVarAccess)va).setTarget(vd);
-			return vd;
+	public VariableDeclaration FreshLocalVariable.eliminateFreshVariables() {
+		String new_name = pickFreshName();
+		VariableDeclaration vd = new VariableDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
+		for(VarAccess va : uses()) {
+			assert va instanceof LockedVarAccess;
+			((LockedVarAccess)va).setTarget(vd);
 		}
+		return vd;
 	}
 	
 	public String FreshVariable.pickFreshName() {

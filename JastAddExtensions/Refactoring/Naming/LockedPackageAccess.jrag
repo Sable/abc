@@ -12,15 +12,14 @@ aspect LockedPackageAccess {
 		return this;
 	}
 	
-	rewrite PackageAccess {
-		when(targetPackage != null && !hasExtension(LOCKED_NAMES))
-		to PackageAccess {
+	public PackageAccess PackageAccess.eliminateLockedNames() {
+		if(targetPackage != null) {
 			if(fromSource())
 				setPackage(targetPackage.getName());
 			if(!lookupName(getTopLevelPackage()).isSingleton(targetPackage))
 				throw new RefactoringException("cannot access obscured package");
 			targetPackage = null;
-			return this;
 		}
+		return this;
 	}
 }

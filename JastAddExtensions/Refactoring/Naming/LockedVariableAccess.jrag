@@ -93,27 +93,25 @@ aspect LockedVariableAccess {
 	
 	// eliminating locked variable accesses
 	inh TypeDecl LockedVarAccess.enclosingType();
-	rewrite LockedVarAccess {
-		when(!hasExtension(LOCKED_NAMES))
-		to Access {
-			Variable target = getTarget();
-			if(fromSource())
-				setID(target.name());
-			if(unlockedDecl().sameSourceDeclAs(target)) {
-				if(hasQualifier())
-					return getQualifier().qualifiesAccess(new VarAccess(name()));
-				else
-					return new VarAccess(name());
-			} else if(fromSource() && !(target instanceof LocalVariable)) {
-				VariableAccessInfo acc;
-				if(hasQualifier())
-					acc = getQualifier().qualifiedAccessVariable(target);
-				else
-					acc = accessVariable(target);
-				if(acc == null)
-					throw new RefactoringException("cannot access variable "+target.name());
-				return acc.eliminate(hasQualifier() ? getQualifier() : null, enclosingType());
-			}
+	public Access LockedVarAccess.eliminateLockedNames() {
+		Variable target = getTarget();
+		if(fromSource())
+			setID(target.name());
+		if(unlockedDecl().sameSourceDeclAs(target)) {
+			if(hasQualifier())
+				return getQualifier().qualifiesAccess(new VarAccess(name()));
+			else
+				return new VarAccess(name());
+		} else if(fromSource() && !(target instanceof LocalVariable)) {
+			VariableAccessInfo acc;
+			if(hasQualifier())
+				acc = getQualifier().qualifiedAccessVariable(target);
+			else
+				acc = accessVariable(target);
+			if(acc == null)
+				throw new RefactoringException("cannot access variable "+target.name());
+			return acc.eliminate(hasQualifier() ? getQualifier() : null, enclosingType());
+		} else {
 			throw new RefactoringException("cannot access variable "+target.name());
 		}
 	}

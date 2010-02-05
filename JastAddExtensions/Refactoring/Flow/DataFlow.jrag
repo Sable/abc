@@ -1,14 +1,7 @@
 aspect DataFlow {
-	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow");
-	
 	public void ASTNode.lockDataFlow() {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockDataFlow();
-	}
-	
-	public void ASTNode.unlockDataFlow() {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).unlockDataFlow();
 	}
 	
 	protected SmallSet<Definition> Access.lockedReachingDefs = null;
@@ -25,6 +18,12 @@ aspect DataFlow {
 			// (since for them we can see every write), but that is not implemented at the moment
 			lockedWriteDeps = writeDeps();
 	}
+	
+	public void MethodAccess.lockDataFlow() {
+		throw new RefactoringException("cannot preserve data flow for method invocations");
+	}
+	
+	public void ASTNode.unlockDataFlow() { }
 	
 	public void Access.unlockDataFlow() {
 		if(lockedReachingDefs != null) {
@@ -43,19 +42,11 @@ aspect DataFlow {
 			lockedWriteDeps = null;
 		}
 	}
-	public void MethodAccess.unlockDataFlow() {
-		throw new RefactoringException("cannot preserve data flow for method invocations");
-	}
 	
-	public boolean Access.hasLockedDataFlow() {
-		return lockedReachingDefs != null || lockedReachedUses != null || lockedWriteDeps != null;
-	}
-	
-	rewrite Access {
-		when(!hasExtension(LOCKED_DATAFLOW) && hasLockedDataFlow())
-		to Access {
-			unlockDataFlow();
-			return this;
+	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow") {
+		public ASTNode eliminateOn(ASTNode n) {
+			n.unlockDataFlow();
+			return n;
 		}
-	}
+	};
 }

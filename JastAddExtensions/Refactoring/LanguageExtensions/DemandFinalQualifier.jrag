@@ -2,8 +2,6 @@
  * variables; it becomes a normal "final" modifier if there are references from within
  * a nested or local class, and otherwise just goes away */
 aspect DemandFinalQualifier {
-	public static LanguageExtension ASTNode.DEMAND_FINAL_MODIFIER = new LanguageExtension("demand final modifier");
-	
 	// whether a variable should be final
 	syn boolean Variable.shouldBeFinal() {
 		if(isClassVariable() || isInstanceVariable())
@@ -42,26 +40,33 @@ aspect DemandFinalQualifier {
 	public void ParameterDeclaration.setDemandFinal() { getModifiers().addDemandFinalModifier(); }
 	public void VariableDeclaration.setDemandFinal() { getModifiers().addDemandFinalModifier(); }
 
-	rewrite Modifiers {
-		when(isDemandFinal() && !hasExtension(DEMAND_FINAL_MODIFIER))
-		to Modifiers {
-			Modifier m = null;
-			int i=0;
-			for(;i<getNumModifier();++i) {
-				if(getModifier(i).getID().equals("final?")) {
-					m = getModifier(i);
-					break;
-				}
-			}
-			Variable v = getModifiedVariable();
-			if(v.shouldBeFinal()) {
-				if(!v.mayBeFinal())
-					throw new RefactoringException("variable should be made final but can't");
-				m.setID("final");
-			} else {
-				getModifierList().removeChild(i);
-			}
-			return this;
+	public static LanguageExtension ASTNode.DEMAND_FINAL_MODIFIER = new LanguageExtension("demand final modifier") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateDemandFinal();
 		}
+	};
+	
+	public ASTNode ASTNode.eliminateDemandFinal() { return this; }
+	
+	public Modifiers Modifiers.eliminateDemandFinal() {
+		if(!isDemandFinal())
+			return this;
+		Modifier m = null;
+		int i=0;
+		for(;i<getNumModifier();++i) {
+			if(getModifier(i).getID().equals("final?")) {
+				m = getModifier(i);
+				break;
+			}
+		}
+		Variable v = getModifiedVariable();
+		if(v.shouldBeFinal()) {
+			if(!v.mayBeFinal())
+				throw new RefactoringException("variable should be made final but can't");
+			m.setID("final");
+		} else {
+			getModifierList().removeChild(i);
+		}
+		return this;
 	}
 }

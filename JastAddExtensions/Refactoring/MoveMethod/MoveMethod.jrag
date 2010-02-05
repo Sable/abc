@@ -1,14 +1,14 @@
 aspect MoveMethod {
 	public void MethodDecl.moveToParameter(String name, boolean inlineDelegator, boolean removeDelegator) {
-		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
-		new MoveMethodRefactoring(this, name, inlineDelegator, removeDelegator).execute();
-		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		MethodDecl delegator = new MoveMethodRefactoring(this, name, inlineDelegator, removeDelegator).execute();
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		if(inlineDelegator)
+			delegator.doInline();
 	}
 	
 	public void MethodDecl.moveToFirstParameter() {
-		introduce(LOCKED_NAMES, WITH_STMT, RETURN_VOID, FRESH_VARIABLES, DEMAND_FINAL_MODIFIER);
 		new MoveMethodRefactoring(this).execute();
-		eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 	
 	class MoveMethodRefactoring {
@@ -32,7 +32,7 @@ aspect MoveMethod {
 			this(m, m.getParameter(name), inlineDelegator, removeDelegator);
 		}
 		
-		public void execute() {
+		public MethodDecl execute() {
 			checkPreconditions();
 			MethodDecl m_copy = (MethodDecl)m.fullCopy();
 			for(MethodAccess ma : m.uses())
@@ -62,15 +62,17 @@ aspect MoveMethod {
 				args.insertChild(A==m.hostType() ? new ThisAccess("this") : new TypeAccess(A).qualifiesAccess(new ThisAccess("this")), i);
 				quals.insertChild(new LockedVarAccess(a_decl), 0);
 			}
-			m.setBlock(new Block(new_b, new WithStmt(quals, m.getBlock())));
+			Block withBlock = m.getBlock();
+			m.setBlock(new Block(new_b, new WithStmt(quals, withBlock)));
 			m.replaceWith(m_copy);
-			m.programRoot().flushCaches();
+			m.programRoot().flushCaches(); m.flushCaches();
 			b.type().insertUnusedMethod(m);
-			m_copy.setBlock(new Block(new ReturnStmt(new LockedVarAccess(b_copy).qualifiesAccess(new MethodAccess(m.name(), args)))));
+			LockedVarAccess b_acc = new LockedVarAccess(b_copy);
+			m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m.name(), args)))));
 			m.eliminate(ASTNode.WITH_STMT);
 			new_b.inline();
-			if(inlineDelegator)
-				m_copy.inline();
+			withBlock.inline();
+			return m_copy;
 		}
 
 		private void checkPreconditions() {

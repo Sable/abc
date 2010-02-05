@@ -9,13 +9,13 @@ aspect Uses {
 	to FieldDeclaration.uses() for (FieldDeclaration)decl();
 	
 	coll Collection<VarAccess> VariableDeclaration.uses() [new HashSet<VarAccess>()] 
-	                           with add root Program;
+	                           with add root BodyDecl;
 	VarAccess contributes
 	this when decl() instanceof VariableDeclaration
 	to VariableDeclaration.uses() for (VariableDeclaration)decl();
 
 	coll Collection<VarAccess> ParameterDeclaration.uses() [new HashSet<VarAccess>()] 
-	                           with add root Program;
+	                           with add root BodyDecl;
 	VarAccess contributes
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();

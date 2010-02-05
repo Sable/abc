@@ -1,6 +1,4 @@
 aspect With {
-	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement");
-	
 	public WithStmt.WithStmt(Access acc, Block block) {
 		this(new List<Access>().add(acc), block);
 	}
@@ -62,13 +60,17 @@ aspect With {
 	eq WithStmt.getStmt().following() = following();
 	
 	// eliminating with statements
-	rewrite WithStmt {
-		when(!hasExtension(WITH_STMT))
-		to Stmt {
-			//getStmt().triggerRewrites();
-			getStmt().eliminateWith(getQualifiers());
-			return getStmt();
+	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateWith();
 		}
+	};
+	
+	public ASTNode ASTNode.eliminateWith() { return this; }
+	
+	public Stmt WithStmt.eliminateWith() {
+		getStmt().eliminateWith(getQualifiers());
+		return getStmt();
 	}
 	
 	public void ASTNode.eliminateWith(List<Access> qualifiers) {
@@ -157,6 +159,7 @@ aspect With {
 	}
 	
 	public void VarAccess.eliminateWith(List<Access> qualifiers) {
+		enclosingBodyDecl().flushCaches();
 		if(!isQualified() && decl() instanceof FieldDeclaration && !decl().isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
