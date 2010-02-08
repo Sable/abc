@@ -69,7 +69,7 @@ aspect MoveMethod {
 			b.type().insertUnusedMethod(m);
 			LockedVarAccess b_acc = new LockedVarAccess(b_copy);
 			m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m.name(), args)))));
-			m.eliminate(ASTNode.WITH_STMT);
+			m.eliminate(ASTNode.LOCKED_NAMES, ASTNode.WITH_STMT);
 			new_b.inline();
 			withBlock.inline();
 			return m_copy;

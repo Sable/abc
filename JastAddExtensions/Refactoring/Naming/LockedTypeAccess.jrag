@@ -14,19 +14,85 @@ aspect LockedTypeAccess {
 	
 	/* A locked type access is a type access that does not obey the normal type lookup
 	 * rules, but instead immediately binds to its target. */
-	private TypeDecl TypeAccess.targetType = null;
+	private SavedTypeDecl TypeAccess.targetType = null;
 	private boolean CompilationUnit.locked = false;
+	
+	/* We have to store a bit more than just a TypeDecl as the target of a locked type access;
+	 * see LockedMethodAccess.jrag */
+	class SavedTypeDecl {
+		private TypeDecl td;
+		
+		public SavedTypeDecl(TypeDecl td) {
+			this.td = td;
+		}
+		
+		public TypeDecl getDecl() {
+			return td;
+		}
+	}
+	
+	class SavedArrayDecl extends SavedTypeDecl {
+		private SavedTypeDecl componentType;
+		
+		public SavedArrayDecl(ArrayDecl ary) {
+			super(ary);
+			this.componentType = ary.componentType().save();
+		}
+		
+		public TypeDecl getDecl() {
+			return componentType.getDecl().arrayType();
+		}
+	}
+	
+	class SavedParTypeDecl extends SavedTypeDecl {
+		private ArrayList<SavedTypeDecl> parms;
+		public SavedParTypeDecl(ParTypeDecl ptd) {
+			super(ptd.genericDecl());
+			parms = new ArrayList<SavedTypeDecl>(ptd.getNumArgument());
+			for(int i=0;i<ptd.getNumArgument();++i)
+				parms.add(ptd.getArgument(i).type().save());
+		}
+		
+		public TypeDecl getDecl() {
+			ArrayList<TypeDecl> types = new ArrayList<TypeDecl>(parms.size());
+			for(SavedTypeDecl std : parms)
+				types.add(std.getDecl());
+			return ((GenericTypeDecl)super.getDecl()).lookupParTypeDecl(types);
+		}
+	}
+	
+	class SavedRawClassDecl extends SavedTypeDecl {
+		public SavedRawClassDecl(RawClassDecl rcd) {
+			super(rcd.genericDecl());
+		}
+		
+		public TypeDecl getDecl() { return ((GenericTypeDecl)super.getDecl()).rawType(); }
+	}
+	
+	class SavedRawInterfaceDecl extends SavedTypeDecl {
+		public SavedRawInterfaceDecl(RawInterfaceDecl rid) {
+			super(rid.genericDecl());
+		}
+		
+		public TypeDecl getDecl() { return ((GenericTypeDecl)super.getDecl()).rawType(); }
+	}
+	
+	public SavedTypeDecl TypeDecl.save() { return new SavedTypeDecl(this); }
+	public SavedTypeDecl ArrayDecl.save() { return new SavedArrayDecl(this); }
+	public SavedTypeDecl ParTypeDecl.save() { return new SavedParTypeDecl(this); }
+	public SavedTypeDecl RawClassDecl.save() { return new SavedRawClassDecl(this); }
+	public SavedTypeDecl RawInterfaceDecl.save() { return new SavedRawInterfaceDecl(this); }
 	
 	refine LookupType eq TypeAccess.decls() {
 		if(targetType == null)
 			return refined();
-		return SimpleSet.emptySet.add(targetType);
+		return SimpleSet.emptySet.add(targetType.getDecl());
 	}
 	
 	refine Generics eq TypeAccess.decl() {
 		if(targetType == null)
 			return refined();
-		return targetType;
+		return targetType.getDecl();
 	}
 	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
@@ -41,7 +107,7 @@ aspect LockedTypeAccess {
 	
 	public TypeAccess.TypeAccess(TypeDecl target) {
 		setID(target.name());
-		targetType = target;
+		targetType = target.save();
 	}
 	
 	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
@@ -79,13 +145,13 @@ aspect LockedTypeAccess {
 	}
 	
 	public ASTNode TypeAccess.lock() {
-		targetType = decl();
-		assert targetType != unknownType();
+		assert decl() != unknownType();
+		targetType = decl().save();
 		return this;
 	}
 	
 	public Access TypeAccess.unlock() {
-		TypeDecl target = targetType;
+		TypeDecl target = targetType.getDecl();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
 		try {

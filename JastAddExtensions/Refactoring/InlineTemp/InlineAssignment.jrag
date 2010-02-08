@@ -9,14 +9,15 @@ aspect InlineAssignment {
 		if(!v.decl().isLocalVariable())
 			throw new RefactoringException("can only inline assignment to local variable");
 		makeConversionExplicit();
-		Expr rhs = getSource();
+		Expr rhs;
 		SmallSet<Access> dsuccs = v.reachedUses();
 		BodyDecl bd = hostBodyDecl();
 		// check that all the data successors have this as their only data predecessor and are not destinations
 		// and replace them by copies of the RHS
 		for(Access w : dsuccs) {
-			rhs = (Expr)rhs.lockAllNames();
+			getSource().lockAllNames();
 			bd.flushCaches();
+			rhs = getSource();
 			rhs.lockDataFlow();
 			bd.lockSyncDependencies();
 			if(w.isDest())

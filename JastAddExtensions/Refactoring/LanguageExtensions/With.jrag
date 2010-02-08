@@ -41,6 +41,8 @@ aspect With {
 		}
 		return res;
 	}
+
+	// TODO: accessVariable, accessMethod
 	
 	eq WithStmt.getStmt().lookupMethod(String name) {
 		for(int i=getNumQualifier()-1;i>=0;--i) {
@@ -49,7 +51,18 @@ aspect With {
 			if(!c.isEmpty())
 				return c;
 		}
+		// TODO: why not lookupMethod(name)? (filter out non-static ones?)
 		return Collections.EMPTY_LIST;
+	}
+	
+	eq WithStmt.getStmt().lookupType(String name) {
+		for(int i=getNumQualifier()-1;i>=0;--i) {
+			SimpleSet c = getQualifier(i).qualifiedLookupType(name);
+			if(!c.isEmpty())
+				return c;
+		}
+		// TODO: filter out non-static ones?
+		return lookupType(name);
 	}
 	
 	// control flow

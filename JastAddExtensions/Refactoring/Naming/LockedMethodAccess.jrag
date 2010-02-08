@@ -26,7 +26,7 @@ aspect LockedMethodAccess {
 	}
 	
 	class SavedParMethodDecl extends SavedMethodDecl {
-		ArrayList<TypeDecl> parms;
+		private ArrayList<TypeDecl> parms;
 		public SavedParMethodDecl(ParMethodDecl pmd) {
 			super(pmd.genericMethodDecl());
 			parms = new ArrayList<TypeDecl>();
@@ -42,6 +42,8 @@ aspect LockedMethodAccess {
 	public SavedMethodDecl MethodDecl.save() { return new SavedMethodDecl(this); }
 	public SavedParMethodDecl ParMethodDecl.save() { return new SavedParMethodDecl(this); }
 	
+	eq LockedMethodAccess.isQualified() = hasQualifier();
+	eq LockedMethodAccess.qualifier() = getQualifier();
 	eq LockedMethodAccess.isSuperCall() = hasQualifier() ? getQualifier().isSuperAccess() : super.isSuperCall();
 	
 	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget().getDecl());
@@ -57,6 +59,12 @@ aspect LockedMethodAccess {
 			return unknownMethod();
 		MethodDecl res = (MethodDecl)set.iterator().next();
 		return res;
+	}
+	
+	public ASTNode LockedMethodAccess.lock() { return this; }
+	public ASTNode LockedMethodAccess.lock(MethodDecl md) {
+		this.setTarget(md.save());
+		return this;
 	}
 		
 	public void LockedMethodAccess.toString(StringBuffer s) {
@@ -85,6 +93,7 @@ aspect LockedMethodAccess {
 	}
 	
 	public ASTNode MethodAccess.lock() {
+		assert decl() != unknownMethod();
 		return lock(decl());
 	}
 	
@@ -93,6 +102,15 @@ aspect LockedMethodAccess {
 		assert target != unknownMethod();
 		LockedMethodAccess lma = new LockedMethodAccess(target, getArgs());
 		replaceWith(lma);
+		if(lma.isRightChildOfDot()) {
+			lma.parentDot().is$Final(false);
+		} else if(lma.isLeftChildOfDot()) {
+			AbstractDot parent = lma.parentDot();
+			if(parent.isRightChildOfDot()) {
+				parent.is$Final(false);
+				parent.parentDot().is$Final(false);
+			}
+		}
 		return lma;
 	}
 	
@@ -100,28 +118,31 @@ aspect LockedMethodAccess {
 	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
 	
 	// pushing qualifiers into LockedMethodAccess
-	public void ASTNode.pushMethodQualifiers() {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).pushMethodQualifiers();
-	}
+	public void ASTNode.pushMethodQualifiers() { }
 	
-	public void AbstractDot.pushMethodQualifiers() {
-		if(!fromSource())
-			return;
-		getLeft().pushMethodQualifiers();
-		getRight().pushMethodQualifiers();
-		if(getRight() instanceof LockedMethodAccess) {
-			LockedMethodAccess ma = (LockedMethodAccess)getRight();
-			ma.addQualifier(getLeft());
-			replaceWith(ma);
-		} else if(getRight() instanceof AbstractDot && 
-				((AbstractDot)getRight()).getLeft() instanceof LockedMethodAccess) {
-			AbstractDot r = (AbstractDot)getRight();
-			LockedMethodAccess ma = (LockedMethodAccess)r.getLeft();
-			ma.addQualifier(getLeft());
-			AbstractDot d = new AbstractDot(ma, r.getRight());
-			replaceWith(d);
-		}
+	rewrite AbstractDot {
+	  when(getRight() instanceof LockedMethodAccess)
+	  to LockedMethodAccess {
+		LockedMethodAccess lma = (LockedMethodAccess)getRight();
+		lma.addQualifier(getLeft());
+		if(hasParentDot())
+			parentDot().is$Final(false);
+		return lma;
+	  }
+	}
+	 
+	rewrite AbstractDot {
+	  when(getRight() instanceof AbstractDot &&
+			  ((AbstractDot)getRight()).getLeft() instanceof LockedMethodAccess)
+	  to AbstractDot {
+		AbstractDot r = (AbstractDot)getRight();
+		LockedMethodAccess ma = (LockedMethodAccess)r.getLeft();
+		ma.addQualifier(getLeft());
+		AbstractDot d = new AbstractDot(ma, r.getRight());
+		if(hasParentDot())
+			parentDot().is$Final(false);
+		return d;		  
+	  }
 	}
 	
 	// eliminating locked method accesses

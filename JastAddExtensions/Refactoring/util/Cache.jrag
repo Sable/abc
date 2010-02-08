@@ -14,7 +14,7 @@ aspect Cache {
 	// deactivate cache flushes in library compilation units to circumvent nta problems
 	// TODO: fix this
 	public void CompilationUnit.flushCaches() {
-		if(fromSource())
+		//if(fromSource())
 			super.flushCaches();
 	}
 }

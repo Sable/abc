@@ -63,8 +63,20 @@ aspect LockedVariableAccess {
 		target = target.isSubstituted() ? target.sourceVariableDecl() : target;
 		LockedVarAccess lva = new LockedVarAccess(target);
 		replaceWith(lva);
+		if(lva.isRightChildOfDot()) {
+			lva.parentDot().is$Final(false);
+		} else if(lva.isLeftChildOfDot()) {
+			AbstractDot parent = lva.parentDot();
+			if(parent.isRightChildOfDot()) {
+				parent.is$Final(false);
+				parent.parentDot().is$Final(false);
+			}
+		}
 		return lva;
 	}
+	
+	public ASTNode LockedVarAccess.lock() { return this; }
+	public ASTNode LockedVarAccess.lock(Variable target) { setTarget(target); return this; }
 	
 	public boolean Variable.isSubstituted() { return false; }
 	public boolean FieldDeclarationSubstituted.isSubstituted() { return true; }
@@ -72,25 +84,33 @@ aspect LockedVariableAccess {
 	public boolean VariableArityParameterDeclarationSubstituted.isSubstituted() { return true; }
 	
 	// pushing qualifiers into LockedVarAccess
-	public void ASTNode.pushQualifiers() {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).pushQualifiers();
-	}
+	public void ASTNode.pushQualifiers() { }
 	
-	public void AbstractDot.pushQualifiers() {
-		if(!fromSource())
-			return;
-		if(getRight().lastAccess() instanceof LockedVarAccess)
-			rotateLeft();
-		getLeft().pushQualifiers();
-		getRight().pushQualifiers();
-		if(getRight() instanceof LockedVarAccess) {
-			LockedVarAccess va = (LockedVarAccess)getRight();
-			va.addQualifier(getLeft());
-			replaceWith(va);
+	rewrite AbstractDot {
+		when(getRight() instanceof LockedVarAccess)
+		to LockedVarAccess {
+			LockedVarAccess lva = (LockedVarAccess)getRight();
+			lva.addQualifier(getLeft());
+			if(hasParentDot())
+				parentDot().is$Final(false);
+			return lva;
+		  }
+		}
+		 
+	rewrite AbstractDot {
+		when(getRight() instanceof AbstractDot &&
+				((AbstractDot)getRight()).getLeft() instanceof LockedVarAccess)
+		to AbstractDot {
+			AbstractDot r = (AbstractDot)getRight();
+			LockedVarAccess lva = (LockedVarAccess)r.getLeft();
+			lva.addQualifier(getLeft());
+			AbstractDot d = new AbstractDot(lva, r.getRight());
+			if(hasParentDot())
+				parentDot().is$Final(false);
+			return d;		  
 		}
 	}
-	
+		
 	// eliminating locked variable accesses
 	inh TypeDecl LockedVarAccess.enclosingType();
 	public Access LockedVarAccess.eliminateLockedNames() {
@@ -197,6 +217,7 @@ aspect LockedVariableAccess {
 	
 	public Access LockedThisAccess.eliminateLockedNames() {
 		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
+		flushCaches();
 		if(super.decl().sameSourceDeclAs(getTarget()))
 			return new ThisAccess("this");
 		if(!fromSource() || isQualified())
@@ -207,12 +228,15 @@ aspect LockedVariableAccess {
 	}
 	public Access LockedSuperAccess.eliminateLockedNames() {
 		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
+		flushCaches();
 		if(super.decl().sameSourceDeclAs(getTarget()))
 			return new SuperAccess("super");
-		if(!fromSource() || isQualified())
+		if(!fromSource() || isQualified() || qualifiesMethodAccess())
 			throw new RefactoringException("cannot adjust this access");
 		if(!thisType().isInnerTypeOf(getTarget()))
 			throw new RefactoringException("super instance not reachable");
 		return new TypeAccess(getTarget()).qualifiesAccess(new SuperAccess("super"));
 	}
+	
+	syn lazy boolean SuperAccess.qualifiesMethodAccess() = hasParentDot() && parentDot().isMethodAccess();
 }

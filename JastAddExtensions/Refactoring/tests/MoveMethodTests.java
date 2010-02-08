@@ -616,4 +616,16 @@ public class MoveMethodTests extends TestCase {
 			"  B getB() { return null; }" +
 			"}"));
 	}
+	
+	public void test32() {
+		testFail("A", "m(B)",
+			Program.fromClasses(
+			"class A {" +
+			"  private int k() { return 23; }" +
+			"  int m(B b) { return k() + b.l(); }" +
+			"}",
+			"class B {" +
+			"  int l() { return 42; }" +
+			"}"));
+	}
 }
