@@ -14,7 +14,7 @@ aspect RenameVariable {
 		endangered.add(old_name);
 		endangered.add(new_name);
 		programRoot().lockNames(endangered);
-		programRoot().pushQualifiers();
+		programRoot().triggerRewrites();
 		setID(new_name);
 		programRoot().eliminate(LOCKED_NAMES);
 	}

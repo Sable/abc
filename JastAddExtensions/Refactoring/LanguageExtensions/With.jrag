@@ -82,22 +82,22 @@ aspect With {
 	public ASTNode ASTNode.eliminateWith() { return this; }
 	
 	public Stmt WithStmt.eliminateWith() {
-		getStmt().eliminateWith(getQualifiers());
+		getStmt().eliminateWith(getQualifiers(), hostType());
 		return getStmt();
 	}
 	
-	public void ASTNode.eliminateWith(List<Access> qualifiers) {
+	public void ASTNode.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		for(int i=0;i<getNumChild();++i)
-			getChild(i).eliminateWith(qualifiers);
+			getChild(i).eliminateWith(qualifiers, hostType);
 	}
 	
-	public void TypeDecl.eliminateWith(List<Access> qualifiers) {
+	public void TypeDecl.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		qualifiers.add(new TypeAccess(this).qualifiesAccess(new ThisAccess("this")));
-		super.eliminateWith(qualifiers);
+		super.eliminateWith(qualifiers, hostType);
 		qualifiers.removeChild(qualifiers.getNumChild()-1);
 	}
 	
-	public void Expr.eliminateWith(List<Access> qualifiers) {
+	public void Expr.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		if(isThisAccess()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
 				Access qual = qualifiers.getChild(i);
@@ -123,31 +123,33 @@ aspect With {
 			}
 			throw new RefactoringException("cannot eliminate super");
 		} else {
-			super.eliminateWith(qualifiers);
+			super.eliminateWith(qualifiers, hostType);
 		}
 	}
 	
-	public void AbstractDot.eliminateWith(List<Access> qualifiers) {
+	public void AbstractDot.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		rotateLeft();
 		if(isThisAccess() || isSuperAccess()) {
-			super.eliminateWith(qualifiers);
+			super.eliminateWith(qualifiers, hostType);
 		} else {
-			getRight().eliminateWith(qualifiers);
-			getLeft().eliminateWith(qualifiers);
+			getRight().eliminateWith(qualifiers, hostType);
+			getLeft().eliminateWith(qualifiers, hostType);
 		}
 	}
 	
-	public void MethodAccess.eliminateWith(List<Access> qualifiers) {
+	public void MethodAccess.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		if(isQualified()) {
 			if(qualifier().isSuperAccess())
 				throw new RefactoringException("cannot eliminate with");
-			super.eliminateWith(qualifiers);
+			super.eliminateWith(qualifiers, hostType);
 		} else {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
 				if(!qual.type().memberMethods(name()).isEmpty()) {
+					if(!decl().accessibleFrom(hostType))
+						throw new RefactoringException("method not accessible");
 					qualifyWith((Expr)qual.fullCopy());
-					super.eliminateWith(qualifiers);
+					super.eliminateWith(qualifiers, hostType);
 					return;
 				}
 			}
@@ -155,30 +157,34 @@ aspect With {
 		}
 	}
 	
-	public void ClassInstanceExpr.eliminateWith(List<Access> qualifiers) {
+	public void ClassInstanceExpr.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		if(!isQualified() && getAccess().type().isInnerClass()) {
 			TypeDecl td = getAccess().type();
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
 				if(qual.type().subtype(td.enclosingType())) {
+					if(!getAccess().type().accessibleFrom(hostType))
+						throw new RefactoringException("type not accessible");
 					qualifyWith((Expr)qual.fullCopy());
-					super.eliminateWith(qualifiers);
+					super.eliminateWith(qualifiers, hostType);
 					return;
 				}
 			}
 			throw new RefactoringException("cannot eliminate with");
 		}
-		super.eliminateWith(qualifiers);
+		super.eliminateWith(qualifiers, hostType);
 	}
 	
-	public void VarAccess.eliminateWith(List<Access> qualifiers) {
+	public void VarAccess.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		enclosingBodyDecl().flushCaches();
 		if(!isQualified() && decl() instanceof FieldDeclaration && !decl().isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
 				if(!qual.type().memberFields(name()).isEmpty()) {
+					if(!((FieldDeclaration)decl()).accessibleFrom(hostType))
+						throw new RefactoringException("field not accessible");
 					qualifyWith((Expr)qual.fullCopy());
-					super.eliminateWith(qualifiers);
+					super.eliminateWith(qualifiers, hostType);
 					return;
 				}
 			}
