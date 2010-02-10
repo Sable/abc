@@ -1,0 +1,54 @@
+aspect TypeVariableExt {
+	interface GenericElement {
+		int getNumTypeParameter();
+		TypeVariable getTypeParameter(int i);
+	}
+	
+	GenericMethodDecl implements GenericElement;
+	GenericConstructorDecl implements GenericElement;
+	GenericTypeDecl implements GenericElement;
+	
+	inh GenericElement TypeVariable.owner();
+	eq Program.getChild().owner() { throw new IllegalStateException("owner() on type variable that is not in tree"); }
+	eq GenericElement.getTypeParameter().owner() = this;
+	
+	// collect all type variables used in a subtree
+	syn lazy Collection<TypeVariable> ASTNode.usedTypeVars() {
+		Collection<TypeVariable> res = new HashSet<TypeVariable>();
+		collectUsedTypeVars(res);
+		return res;
+	}
+	
+	protected void ASTNode.collectUsedTypeVars(Collection<TypeVariable> tvars) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.collectUsedTypeVars(tvars);
+		}
+	}
+	
+	protected void TypeAccess.collectUsedTypeVars(Collection<TypeVariable> tvars) {
+		if(decl().isTypeVariable())
+			tvars.add((TypeVariable)decl());
+		super.collectUsedTypeVars(tvars);
+	}
+
+	// does this subtree use type variables declared outside it?
+	public boolean ASTNode.usesForeignTypeVars() {
+		return usesTypeVarsOutside(this);
+	}
+	
+	syn lazy boolean ASTNode.usesTypeVarsOutside(ASTNode root) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child.usesTypeVarsOutside(root))
+				return true;
+		}
+		return false;
+	}
+	
+	eq TypeAccess.usesTypeVarsOutside(ASTNode root) {
+		return decl().isTypeVariable() && !decl().isDescendantTo(root) 
+		    || super.usesTypeVarsOutside(root);
+	}
+}

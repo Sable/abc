@@ -5,28 +5,57 @@ aspect MakeMethodStatic {
 		if(!fromSource() || !hasBlock())
 			throw new RefactoringException("cannot make static");
 		programRoot().lockMethodNames(Collections.singleton(name()));
-		// prepare new method
-		MethodDecl newMethod = (MethodDecl)this.fullCopy();
-		newMethod.getModifiers().addModifier(new Modifier("static"));
-		String newParmName = hostType().name().toLowerCase();
+		MethodDecl newMethod = this;
+		MethodDecl delegator = (MethodDecl)this.fullCopy();
 		TypeDecl hostType = hostType();
-		if(hostType.isRawType())
-			hostType = hostType.erasure();
+		// make new method static
+		newMethod.getModifiers().addModifier(new Modifier("static"));
+		// fix type arguments
+		if(newMethod.usesForeignTypeVars())
+			newMethod = newMethod.makeGeneric();
+		for(TypeVariable tv : newMethod.usedTypeVars()) {
+			if(!tv.isDescendantTo(newMethod)) {
+				TypeVariable new_tv = (TypeVariable)tv.fullCopy();
+				((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
+				for(TypeAccess tvu : tv.uses())
+					if(tvu.isDescendantTo(newMethod))
+						tvu.lock(new_tv);
+			}
+		}
+		// fix value arguments
+		String newParmName = hostType.name().toLowerCase();
 		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType), newParmName);
 		newParm.setDemandFinal();
 		newMethod.getParameterList().insertChild(newParm, 0);
 		Access newParmAcc = new LockedVarAccess(newParm);
 		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
 		newMethod.setBlock(new Block(new List<Stmt>().add(withStmt)));
-		if(!hostType().canIntroduceMethod(newMethod))
-			throw new RefactoringException("cannot introduce method");
-		hostType().addBodyDecl(newMethod);
-		// make this method a delegate
+		newMethod.flushCaches();
+		newMethod.signature();
+		// prepare delegating method
 		List<Expr> delegationArgs = new List<Expr>().add(new ThisAccess("this"));
-		for(int i=0;i<getNumParameter();++i)
-			delegationArgs.add(new VarAccess(getParameter(i).name()));
-		Expr delegationCall = new MethodAccess(name(), delegationArgs);
-		this.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(delegationCall))));
-		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		for(int i=1;i<newMethod.getNumParameter();++i)
+			delegationArgs.add(new VarAccess(newMethod.getParameter(i).name()));
+		Expr delegationCall = new MethodAccess(newMethod.name(), delegationArgs);
+		delegator.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(delegationCall))));
+		// plug in delegating method
+		newMethod.replaceWith(delegator);
+		delegator.programRoot().flushCaches();
+		if(!hostType.canIntroduceMethod(newMethod))
+			throw new RefactoringException("cannot introduce method");
+		hostType.addBodyDecl(newMethod);
+		newMethod.programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+	}
+	
+	GenericMethodDecl MethodDecl.makeGeneric() {
+		GenericMethodDecl g = new GenericMethodDecl(getModifiers(), getTypeAccess(), getID(), 
+				                                    getParameterList(), getExceptionList(), 
+				                                    getBlockOpt(), new List<TypeVariable>());
+		replaceWith(g);
+		return g;
+	}
+	
+	GenericMethodDecl GenericMethodDecl.makeGeneric() {
+		return this;
 	}
 }

@@ -20,6 +20,11 @@ aspect Uses {
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
 	
+	// bind all uses of a type to its declaration
+	coll Collection<TypeAccess> TypeDecl.uses() [new HashSet<TypeAccess>()]
+	                            with add root Program;
+	TypeAccess contributes this to TypeDecl.uses() for decl();
+	
 	// bind all method uses to any declaration they may resolve to at runtime
 	coll Collection<MethodAccess> MethodDecl.polyUses() [new HashSet<MethodAccess>()]
 	                              with add root Program;

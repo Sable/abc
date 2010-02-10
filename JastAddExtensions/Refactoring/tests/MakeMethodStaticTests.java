@@ -460,7 +460,7 @@ public class MakeMethodStaticTests extends TestCase {
             "}"),
             Program.fromClasses(
             "class A<T> {" +
-            "    public T m(T t) { return m(this); }"+
+            "    public T m(T t) { return m(this, t); }"+
             "    public static <T> T m(A<T> a, T t) {"+
             "      { return t; }"+
             "    }"+
