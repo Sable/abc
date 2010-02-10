@@ -14,11 +14,11 @@ package tests.eclipse.ExtractTemp;
 /* Several test cases are currently disabled for the following reasons:
  *   - We do not implement clone detection, so only a single instance of an expression
  *     can be extracted (succeeding tests 5, 6, 8, 10, 11, 12, 17, 25, 26, 51, 53, 54,
- *     62, 63, 64, 95, 100; failing tests 27, 28; overall 19 tests).
+ *     62, 63, 64, 95, 100; failing tests 27, 28; overall 20 tests).
  *     
  *     This feature would take some thought and effort to implement.
  *   - Sometimes we produce different, equally valid output (succeeding tests 12, 32, 
- *     39, 83, 85; overall 5 tests).
+ *     39, 83, 85; overall 5 tests
  *   - Our dataflow analysis is quite conservative (succeeding tests 19, 23, 44, 45, 52, 
  *     70, 73, 78, 88, 92, 97, 98, 103; overall 13 tests).
  *     
@@ -35,7 +35,7 @@ package tests.eclipse.ExtractTemp;
  *     already).
  *   - We can refactor an example on which Eclipse fails (failing test 19; overall 1 test).
  *   
- * So overall 50 tests (out of 133) are disabled.
+ * So overall 51 tests (out of 133) are disabled.
  *
  * We currently fail two tests: test91 due to the way JastAddJ handles capture conversion,
  * and test99 due to a problem in type access construction (constructs access to raw type
@@ -190,48 +190,48 @@ public class ExtractTempTests extends TestCase {
 		helper1(4, 16, 4, 21, false, false, "temp", "j");
 	}
 
-	public void test5() throws Exception{
-		// disabled: clone detection
-		//helper1(4, 16, 4, 21, true, false, "temp", "j");
-	}
+	// disabled: clone detection
+	/*public void test5() throws Exception{
+		helper1(4, 16, 4, 21, true, false, "temp", "j");
+	}*/
 
-	public void test6() throws Exception{
-		// disabled: clone detection
-		//helper1(4, 16, 4, 21, true, true, "temp", "j");
-	}
+	// disabled: clone detection
+	/*public void test6() throws Exception{
+		helper1(4, 16, 4, 21, true, true, "temp", "j");
+	}*/
 
 	public void test7() throws Exception{
 		helper1(4, 16, 4, 21, false, true, "temp", "j");
 	}
 
-	public void test8() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 20, 5, 25, true, false, "temp", "j");
-	}
+	// disabled: clone detection
+	/*public void test8() throws Exception{
+		helper1(5, 20, 5, 25, true, false, "temp", "j");
+	}*/
 
 	public void test9() throws Exception{
 		helper1(5, 20, 5, 25, false, false, "temp", "j");
 	}
 
-	public void test10() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 20, 5, 25, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test10() throws Exception{
+		helper1(5, 20, 5, 25, true, false, "temp", "i");
+	}*/
 
-	public void test11() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 20, 5, 25, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test11() throws Exception{
+		helper1(5, 20, 5, 25, true, false, "temp", "i");
+	}*/
 
-	public void test12() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 17, 5, 22, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test12() throws Exception{
+		helper1(5, 17, 5, 22, true, false, "temp", "i");
+	}*/
 
-	public void test13() throws Exception{
-		// disabled: different output
-		//helper1(7, 16, 7, 42, true, false, "temp", "iterator");
-	}
+	// disabled: different output
+	/*public void test13() throws Exception{
+		helper1(7, 16, 7, 42, true, false, "temp", "iterator");
+	}*/
 
 	public void test14() throws Exception{
 		helper1(6, 15, 6, 20, false, false, "temp", "y2");
@@ -245,20 +245,20 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 23, 7, 28, false, false, "temp", "y2");
 	}
 
-	public void test17() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 20, 5, 25, true, false, "temp", "j");
-	}
+	// disabled: clone detection
+	/*public void test17() throws Exception{
+		helper1(5, 20, 5, 25, true, false, "temp", "j");
+	}*/
 
-	public void test18() throws Exception{
-		// disabled: clone detection
-		//helper1(6, 20, 6, 25, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test18() throws Exception{
+		helper1(6, 20, 6, 25, true, false, "temp", "i");
+	}*/
 
-	public void test19() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(5, 20, 5, 23, true, false, "temp", "f");
-	}
+	// disabled: conservative dataflow
+	/*public void test19() throws Exception{
+		helper1(5, 20, 5, 23, true, false, "temp", "f");
+	}*/
 
 
 	public void test21() throws Exception{
@@ -266,21 +266,21 @@ public class ExtractTempTests extends TestCase {
 	}
 
 
-	public void test23() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(7, 17, 7, 20, false, false, "temp", "b");
-	}
+	// disabled: conservative dataflow
+	/*public void test23() throws Exception{
+		helper1(7, 17, 7, 20, false, false, "temp", "b");
+	}*/
 
 
-	public void test25() throws Exception{
-		// disabled: clone detection
-		//helper1(4, 17, 4, 22, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test25() throws Exception{
+		helper1(4, 17, 4, 22, true, false, "temp", "i");
+	}*/
 
-	public void test26() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 19, 5, 23, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test26() throws Exception{
+		helper1(5, 19, 5, 23, true, false, "temp", "i");
+	}*/
 
 	public void test27() throws Exception{
 		helper1(4, 16, 4, 19, true, false, "temp", "j");
@@ -302,10 +302,10 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 16, 5, 20, true, false, "temp", "j");
 	}
 
-	public void test32() throws Exception{
-		// disabled: different output
-		//helper1(4, 16, 4, 22, true, false, "temp", "j");
-	}
+	// disabled: different output
+	/*public void test32() throws Exception{
+		helper1(4, 16, 4, 22, true, false, "temp", "j");
+	}*/
 
 	public void test33() throws Exception{
 		helper1(4, 19, 4, 33, true, false, "temp", "object");
@@ -331,15 +331,15 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 28, 5, 32, true, false, "temp1", "temp2");
 	}
 
-	public void test39() throws Exception{
-		// disabled: different output
-		//helper1(4, 14, 4, 26, true, false, "temp", "object");
-	}
+	// disabled: different output
+	/*public void test39() throws Exception{
+		helper1(4, 14, 4, 26, true, false, "temp", "object");
+	}*/
 
-	public void test40() throws Exception{
-		// disabled: lone expr
-		//helper1(4, 9, 4, 16, true, false, "temp", "a");
-	}
+	// disabled: lone expr
+	/*public void test40() throws Exception{
+		helper1(4, 9, 4, 16, true, false, "temp", "a");
+	}*/
 
 	public void test41() throws Exception{
 		helper1(4, 16, 4, 43, true, false, "temp", "length");
@@ -353,30 +353,30 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 20, 5, 36, true, false, "temp", "fred");
 	}
 
-	public void test44() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(5, 20, 5, 28, true, false, "temp", "fred");
-	}
+	// disabled: conservative dataflow
+	/*public void test44() throws Exception{
+		helper1(5, 20, 5, 28, true, false, "temp", "fred");
+	}*/
 
-	public void test45() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(4, 16, 4, 19, true, false, "temp", "f");
-	}
+	// disabled: conservative dataflow
+	/*public void test45() throws Exception{
+		helper1(4, 16, 4, 19, true, false, "temp", "f");
+	}*/
 
-	public void test46() throws Exception{
-		// disabled: lone expr
-		//helper1(4, 9, 4, 12, true, false, "temp", "f");
-	}
+	// disabled: lone expr
+	/*public void test46() throws Exception{
+		helper1(4, 9, 4, 12, true, false, "temp", "f");
+	}*/
 
-	public void test47() throws Exception{
-		// disabled: lone expr
-		//helper1(5, 9, 5, 12, true, false, "temp", "r");
-	}
+	// disabled: lone expr
+	/*public void test47() throws Exception{
+		helper1(5, 9, 5, 12, true, false, "temp", "r");
+	}*/
 
-	public void test48() throws Exception{
-		// disabled: lone expr
-		//helper1(4, 16, 4, 32, true, false, "temp", "string");
-	}
+	// disabled: lone expr
+	/*public void test48() throws Exception{
+		helper1(4, 16, 4, 32, true, false, "temp", "string");
+	}*/
 
 	public void test49() throws Exception{
 		helper1(5, 15, 5, 19, true, false, "temp", "flag2");
@@ -386,35 +386,35 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 15, 5, 19, true, false, "temp", "flag2");
 	}
 
-	public void test51() throws Exception{
-		// disabled: clone detection
-		//helper1(5, 15, 5, 18, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test51() throws Exception{
+		helper1(5, 15, 5, 18, true, false, "temp", "i");
+	}*/
 
-	public void test52() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(15, 47, 15, 60, true, false, "valueOnIndexI", "object");
-	}
+	// disabled: conservative dataflow
+	/*public void test52() throws Exception{
+		helper1(15, 47, 15, 60, true, false, "valueOnIndexI", "object");
+	}*/
 
-	public void test53() throws Exception{
-		// disabled: clone detection
-		//helper1(6, 17, 6, 22, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test53() throws Exception{
+		helper1(6, 17, 6, 22, true, false, "temp", "i");
+	}*/
 
-	public void test54() throws Exception{
-		// disabled: clone detection
-		//helper1(6, 37, 6, 43, true, false, "temp", "i");
-	}
+	// disabled: clone detection
+	/*public void test54() throws Exception{
+		helper1(6, 37, 6, 43, true, false, "temp", "i");
+	}*/
 
-	public void test55() throws Exception{
-		// disabled: associativity
-		//helper1(6, 19, 6, 24, true, false, "temp", "i");
-	}
+	// disabled: associativity
+	/*public void test55() throws Exception{
+		helper1(6, 19, 6, 24, true, false, "temp", "i");
+	}*/
 
-	public void test56() throws Exception{
-		// disabled: associativity
-		//helper1(6, 24, 6, 29, true, false, "temp", "i");
-	}
+	// disabled: associativity
+	/*public void test56() throws Exception{
+		helper1(6, 24, 6, 29, true, false, "temp", "i");
+	}*/
 
 	public void test57() throws Exception{
 		helper1(8, 30, 8, 54, true, false, "newVariable", "string");
@@ -436,20 +436,20 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 17, 7, 18, true, false, "temp", "s2");
 	}
 
-	public void test62() throws Exception{
-		// disabled: clone detection
-		//helper1(10, 17, 10, 28, true, false, "temp", "string");
-	}
+	// disabled: clone detection
+	/*public void test62() throws Exception{
+		helper1(10, 17, 10, 28, true, false, "temp", "string");
+	}*/
 
-	public void test63() throws Exception{
-		// disabled: clone detection
-		//helper1(9, 20, 9, 23, true, false, "temp", "string");
-	}
+	// disabled: clone detection
+	/*public void test63() throws Exception{
+		helper1(9, 20, 9, 23, true, false, "temp", "string");
+	}*/
 
-	public void test64() throws Exception{
-		// disabled: clone detection
-		//helper1(10, 17, 10, 28, true, false, "temp", "string");
-	}
+	// disabled: clone detection
+	/*public void test64() throws Exception{
+		helper1(10, 17, 10, 28, true, false, "temp", "string");
+	}*/
 
 	public void test65() throws Exception{
 		helper1(6, 19, 6, 22, true, false, "temp", "bar2");
@@ -471,10 +471,10 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 24, 5, 26, true, false, "temp", "string2");
 	}
 
-	public void test70() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(7, 28, 7, 42, true, true, "temp", "length");
-	}
+	// disabled: conservative dataflow
+	/*public void test70() throws Exception{
+		helper1(7, 28, 7, 42, true, true, "temp", "length");
+	}*/
 
 	public void test71() throws Exception{
 		helper1(8, 24, 8, 34, true, false, "temp", "string");
@@ -484,10 +484,10 @@ public class ExtractTempTests extends TestCase {
 		helper1(8, 32, 8, 33, true, false, "temp", "i2");
 	}
 
-	public void test73() throws Exception{
-		// disabled: conservative dataflow
-		//warningHelper1(6, 39, 6, 40, true, false, "temp", "i2");
-	}
+	// disabled: conservative dataflow
+	/*public void test73() throws Exception{
+		warningHelper1(6, 39, 6, 40, true, false, "temp", "i2"); 
+	}*/
 
 	public void test74() throws Exception{
 		helper1(7, 36, 7, 49, true, false, "temp", "string");
@@ -501,20 +501,20 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 48, 7, 49, true, false, "temp", "k2");
 	}
 
-	public void test77() throws Exception {
-		// disabled: lone expr
-		//helper1(10, 13, 10, 17, true, false, "temp", "f");
-	}
+	// disabled: lone expr
+	/*public void test77() throws Exception {
+		helper1(10, 13, 10, 17, true, false, "temp", "f");
+	}*/
 
-	public void test78() throws Exception {
-		// disabled: conservative dataflow
-		//helper1(5, 21, 5, 27, true, false, "o2", "o");
-	}
+	// disabled: conservative dataflow
+	/*public void test78() throws Exception {
+		helper1(5, 21, 5, 27, true, false, "o2", "o");
+	}*/
 
-	public void test79() throws Exception {
-		// disabled: associativity
-		//helper1(10, 40, 10, 60, true, false, "strong", "string");
-	}
+	// disabled: associativity
+	/*public void test79() throws Exception {
+		helper1(10, 40, 10, 60, true, false, "strong", "string");
+	}*/
 
 	public void test80() throws Exception {
 		helper1(5, 37, 5, 45, true, false, "name", "string");
@@ -524,24 +524,24 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 15, 7, 20, true, false, "k", "const2");
 	}
 
-	public void test82() throws Exception {
-		// disabled: lone expr 
-		//helper1(5, 1, 6, 1, true, false, "one", "integer");
-	}
+	// disabled: lone expr
+	/*public void test82() throws Exception {
+		helper1(5, 1, 6, 1, true, false, "one", "integer");
+	}*/
 
-	public void test83() throws Exception{
-		// disabled: different output
-		//helper1(7, 17, 7, 27, false, false, "temp", "test");
-	}
+	// disabled: different output
+	/*public void test83() throws Exception{
+		helper1(7, 17, 7, 27, false, false, "temp", "test");
+	}*/
 
 	public void test84() throws Exception{
 		helper1(5, 16, 5, 17, false, false, "temp", "j");
 	}
 
-	public void test85() throws Exception{
-		// disabled: different output
-		//helper1(11, 22, 11, 32, true, true, "temp", "test2");
-	}
+	// disabled: different output
+	/*public void test85() throws Exception{
+		helper1(11, 22, 11, 32, true, true, "temp", "test2");
+	}*/
 
 	public void test86() throws Exception{
 		helper1(15, 22, 15, 37, true, true, "name", "a");
@@ -551,22 +551,22 @@ public class ExtractTempTests extends TestCase {
 		helper1(16, 17, 16, 27, true, true, "a2", "a2");
 	}
 
-	public void test88() throws Exception{
-		// disabled: conservative dataflow
-		//helper1(14, 14, 14, 19, true, false, "foo", "foo");
-	}
+	// disabled: conservative dataflow
+	/*public void test88() throws Exception{
+		helper1(14, 14, 14, 19, true, false, "foo", "foo");
+	}*/
 
-	public void test89() throws Exception{
-		// disabled: lone expression
-		/*		IPackageFragment a= getRoot().createPackageFragment("a", true,	null);
+	// disabled: lone expr
+	/*public void test89() throws Exception{
+		IPackageFragment a= getRoot().createPackageFragment("a", true,	null);
 		ICompilationUnit aA= a.createCompilationUnit("A.java", "package a; public class A {}", true, null);
 		aA.save(null, true);
 
 		IPackageFragment b= getRoot().createPackageFragment("b", true,	null);
 		ICompilationUnit bA= b.createCompilationUnit("A.java", "package b; public class A {}", true, null);
 		bA.save(null, true);
-		helper1(15, 7, 15, 15, true, false, "foo", "method");*/
-	}
+		helper1(15, 7, 15, 15, true, false, "foo", "method");
+	}*/
 
 	public void test90() throws Exception {
 		helper1(8, 19, 8, 28, true, false, "temp", "number");
@@ -576,61 +576,61 @@ public class ExtractTempTests extends TestCase {
 		helper1(8, 19, 8, 28, true, false, "temp", "integer");
 	}
 
-	public void test92() throws Exception {
-		// disabled: conservative dataflow
-		//helper1(9, 32, 9, 44, true, false, "asList", "asList");
-	}
+	// disabled: conservative dataflow
+	/*public void test92() throws Exception {
+		helper1(9, 32, 9, 44, true, false, "asList", "asList");
+	}*/
 
-	public void test93() throws Exception { 	
+	public void test93() throws Exception {
 		helper1(6, 28, 6, 34, true, false, "bla", "string");
 	}
 
-	public void test94() throws Exception {
-		// disabled: lone expr
-		//helper1(6, 9, 6, 24, false, false, "temp", "string");
-	}
+	// disabled: lone expr
+	/*public void test94() throws Exception {
+		helper1(6, 9, 6, 24, false, false, "temp", "string");
+	}*/
 
-	public void test95() throws Exception {
-		// disabled: clone detection
-		//helper1(5, 23, 5, 33, true, false, "temp", "b");
-	}
+	// disabled: clone detection
+	/*public void test95() throws Exception {
+		helper1(5, 23, 5, 33, true, false, "temp", "b");
+	}*/
 
 	public void test96() throws Exception {
 		helper1(6, 32, 6, 37, true, false, "isquared", "j");
 	}
 
-	public void test97() throws Exception {
-		// disabled: conservative dataflow
-		//helper1(10, 32, 10, 47, true, false, "temp", "nextElement");
-	}
+	// disabled: conservative dataflow
+	/*public void test97() throws Exception {
+		helper1(10, 32, 10, 47, true, false, "temp", "nextElement");
+	}*/
 
-	public void test98() throws Exception {
-		// disabled: conservative dataflow
-		//helper1(8, 32, 8, 44, true, true, "temp", "string");
-	}
+	// disabled: conservative dataflow
+	/*public void test98() throws Exception {
+		helper1(8, 32, 8, 44, true, true, "temp", "string");
+	}*/
 
 	public void test99() throws Exception {
 		helper1(7, 32, 7, 36, true, false, "temp", "a");
 	}
 
-	public void test100() throws Exception {
-		// disabled: clone detection
-		//helper1(5, 28, 5, 40, true, false, "temp", "object");
-	}
+	// disabled: clone detection
+	/*public void test100() throws Exception {
+		helper1(5, 28, 5, 40, true, false, "temp", "object");
+	}*/
 
-	public void test101() throws Exception {
-		// disabled: lone expr
-		//helper1(9, 13, 9, 24, true, false, "temp", "object");
-	}
+	// disabled: lone expr
+	/*public void test101() throws Exception {
+		helper1(9, 13, 9, 24, true, false, "temp", "object");
+	}*/
 
 	public void test102() throws Exception {
 		helper1(9, 24, 9, 29, true, false, "temp", "j");
 	}
 
-	public void test103() throws Exception {
-		// disabled: conservative dataflow
-		//helper1(7, 21, 7, 33, true, false, "temp", "valueOf");
-	}
+	// disabled: conservative dataflow
+	/*public void test103() throws Exception {
+		helper1(7, 21, 7, 33, true, false, "temp", "valueOf");
+	}*/
 
 
 	public void testZeroLengthSelection0() throws Exception {
@@ -685,10 +685,10 @@ public class ExtractTempTests extends TestCase {
 		failHelper1(4, 27, 4, 28, false, false, "temp");
 	}
 
-	public void testFail19() throws Exception{
-		// disabled: we can do this
-		//failHelper1(6, 16, 6, 18, false, false, "temp");
-	}
+	// disabled: we can do this
+	/*public void testFail19() throws Exception{
+		failHelper1(6, 16, 6, 18, false, false, "temp");
+	}*/
 
 	public void testFail20() throws Exception{
 		failHelper1(3, 9, 3, 41, false, false, "temp");
@@ -714,15 +714,15 @@ public class ExtractTempTests extends TestCase {
 		failHelper1(4, 15, 4, 20, false, false, "temp");
 	}
 
-	public void testFail27() throws Exception{
-		// disabled: clone detection
-		//failHelper1(7, 13, 7, 24, true, false, "temp");
-	}
+	// disabled: clone detection
+	/*public void testFail27() throws Exception{
+		failHelper1(7, 13, 7, 24, true, false, "temp");
+	}*/
 
-	public void testFail28() throws Exception{
-		// disabled: clone detection
-		//failHelper1(7, 17, 7, 28, true, false, "temp");
-	}
+	// disabled: clone detection
+	/*public void testFail28() throws Exception{
+		failHelper1(7, 17, 7, 28, true, false, "temp");
+	}*/
 
 	public void testFail29() throws Exception {
 		failHelper1(5, 32, 5, 35, true, false, "temp");

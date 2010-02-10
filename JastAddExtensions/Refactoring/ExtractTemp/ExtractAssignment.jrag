@@ -1,12 +1,12 @@
 aspect ExtractAssignment {	
 	// extract an expression as an assignment to a variable
 	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v) {
-		Expr expr = this;
-		Block block = expr.enclosingBlock();
+		Block block = enclosingBlock();
 		if(block == null)
 			throw new RefactoringException("cannot extract assignment here");
-		expr = (Expr)expr.lockAllNames();
-		block.hostType().flushCaches();
+		int idx = getParent().getIndexOfChild(this);
+		lockAllNames();
+		Expr expr = (Expr)getParent().getChild(idx);
 		expr.lockDataFlow();
 		block.lockSyncDependencies();
 		VarAccess vacc = new LockedVarAccess(v);

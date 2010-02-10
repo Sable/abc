@@ -26,6 +26,7 @@ aspect Locking {
 	MethodAccess implements LockableName;
 	ThisAccess implements LockableName;
 	SuperAccess implements LockableName;
+	ParTypeAccess implements LockableName;
 	
 	public ASTNode LockableName.lockAllNames() {
 		ASTNode res = lock();
