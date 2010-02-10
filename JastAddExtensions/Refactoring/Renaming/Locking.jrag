@@ -1,10 +1,16 @@
 aspect Locking {
+	public ASTNode ASTNode.lockNames(String... endangered) {
+		return lockNames(Arrays.asList(endangered));
+	}
 	public ASTNode ASTNode.lockNames(Collection<String> endangered) {
 		for(int i=0;i<getNumChild();++i)
 			setChild((T)getChild(i).lockNames(endangered), i);
 		return this;
 	}
 	
+	public ASTNode ASTNode.lockMethodNames(String... endangered) {
+		return lockMethodNames(Arrays.asList(endangered));
+	}
 	public ASTNode ASTNode.lockMethodNames(Collection<String> endangered) {
 		for(int i=0;i<getNumChild();++i)
 			setChild((T)getChild(i).lockMethodNames(endangered), i);

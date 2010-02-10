@@ -1,24 +1,24 @@
 aspect MoveMethod {
-	public void MethodDecl.doMoveToParameter(String name, boolean inlineDelegator, boolean removeDelegator) {
-		doMoveTo(getParameter(name), inlineDelegator, removeDelegator);
+	public void MethodDecl.doMoveToParameter(String name, boolean inlineDelegator, boolean removeDelegator, boolean removeSpuriousParameters) {
+		doMoveTo(getParameter(name), inlineDelegator, removeDelegator, removeSpuriousParameters);
 	}
 	
-	public void MethodDecl.doMoveToField(String name, boolean inlineDelegator, boolean removeDelegator) {
-		doMoveTo((FieldDeclaration)hostType().localFields(name), inlineDelegator, removeDelegator);
+	public void MethodDecl.doMoveToField(String name, boolean inlineDelegator, boolean removeDelegator, boolean removeSpuriousParameters) {
+		doMoveTo((FieldDeclaration)hostType().localFields(name), inlineDelegator, removeDelegator, removeSpuriousParameters);
 	}
 	
 	public void MethodDecl.moveToFirstParameter() {
-		doMoveTo(getNumParameter() > 0 ? getParameter(0) : null, false, false);
+		doMoveTo(getNumParameter() > 0 ? getParameter(0) : null, false, false, false);
 	}
 
-	public void MethodDecl.doMoveTo(Variable target, boolean inlineDelegator, boolean removeDelegator) {
-		MethodDecl delegator = moveTo(target);
+	public void MethodDecl.doMoveTo(Variable target, boolean inlineDelegator, boolean removeDelegator, boolean removeSpuriousParameters) {
+		MethodDecl delegator = moveTo(target, removeSpuriousParameters);
 		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 		if(inlineDelegator)
 			delegator.doInline();
 	}
 	
-	public MethodDecl MethodDecl.moveTo(Variable b) {
+	public MethodDecl MethodDecl.moveTo(Variable b, boolean removeSpuriousParameters) {
 		MethodDecl m = this;
 		checkMoveMethodPreconditions(m, b);
 		MethodDecl m_copy = (MethodDecl)m.fullCopy();
@@ -61,6 +61,13 @@ aspect MoveMethod {
 		m.eliminate(ASTNode.WITH_STMT, ASTNode.LOCKED_NAMES);
 		new_b.inline();
 		withBlock.inline();
+		// remove spurious parameters
+		if(removeSpuriousParameters) {
+			for(int k=i+quals.getNumChild()-1;k>=i;--k)
+				try {
+					m.removeUnusedParameter(k);
+				} catch(RefactoringException rfe) { }
+		}
 		return m_copy;
 	}
 

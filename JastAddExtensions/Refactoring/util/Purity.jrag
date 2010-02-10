@@ -1,0 +1,26 @@
+aspect Purity {
+	syn boolean Expr.isPure() = false;
+	
+	eq Access.isPure() = true;
+	eq AbstractDot.isPure() = getLeft().isPure() && getRight().isPure();
+	eq ArrayAccess.isPure() = getExpr().isPure();
+	eq ClassInstanceExpr.isPure() = false;
+	eq ConstructorAccess.isPure() = false;
+	eq MethodAccess.isPure() = false;
+	eq ArrayTypeWithSizeAccess.isPure() = getExpr().isPure();
+	
+	eq ArrayInit.isPure() = false;
+	eq AssignExpr.isPure() = false;
+	eq Binary.isPure() = getLeftOperand().isPure() && getRightOperand().isPure();
+	eq CastExpr.isPure() = getExpr().isPure();
+	eq ConditionalExpr.isPure() = getCondition().isPure() && getTrueExpr().isPure() && getFalseExpr().isPure();
+	eq InstanceOfExpr.isPure() = getExpr().isPure();
+	eq ArrayCreationExpr.isPure() = false;
+	eq Literal.isPure() = true;
+	eq ParExpr.isPure() = getExpr().isPure();
+	
+	eq Unary.isPure() = getOperand().isPure();
+	eq PostfixExpr.isPure() = false;
+	eq PreDecExpr.isPure() = false;
+	eq PreIncExpr.isPure() = false;
+}

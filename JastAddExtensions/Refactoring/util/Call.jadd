@@ -10,4 +10,44 @@ aspect Call {
 	
 	MethodAccess implements Call;
 	ConstructorAccess implements Call;
+	
+	interface Callable { 
+		public void setParameter(ParameterDeclaration pd, int i);
+		public List<ParameterDeclaration> getParameterList();
+	}
+	ConstructorDecl implements Callable;
+	MethodDecl implements Callable;
+	
+	public void Callable.setParameter(String name, ParameterDeclaration pd) {
+		setParameter(pd, getIndexOfParameter(name));
+	}
+	
+	public void Callable.insertParameter(ParameterDeclaration pd, int i) {
+		getParameterList().insertChild(pd, i);
+	}
+	
+	public void Callable.removeParameter(int i) {
+		getParameterList().removeChild(i);
+	}
+	
+	public int Callable.getIndexOfParameter(ParameterDeclaration pd) {
+		for(int i=0;i<getNumParameter();++i)
+			if(getParameter(i) == pd)
+				return i;
+		return -1;
+	}
+	
+	syn lazy int Callable.getIndexOfParameter(String name) {
+		for(int i=0; i<getNumParameter(); ++i)
+			if(getParameter(i).name().equals(name))
+				return i;
+		return -1;
+	}
+	
+	public ParameterDeclaration Callable.getParameter(String name) {
+		if(getIndexOfParameter(name) == -1)
+			return null;
+		return getParameter(getIndexOfParameter(name));
+	}
+	
 }

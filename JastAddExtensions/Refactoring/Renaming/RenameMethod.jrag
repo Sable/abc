@@ -44,10 +44,12 @@ aspect RenameMethod {
 	}
 	
 	public boolean TypeDecl.canIntroduceMethod(MethodDecl md, String sig) {
-		// make sure there isn't already a method with the same signature in this type
-		if(!localMethodsSignature(sig).isEmpty())
+		// make sure there isn't already a different method with the same signature in this type
+		SimpleSet mds = localMethodsSignature(sig);
+		if(!mds.isEmpty() && !mds.isSingleton(md))
 			return false;
 		// if there are any like-named methods in superclasses, we must be able to override them
+		// TODO: same for descendant methods
 		for(Iterator i = ancestorMethods(sig).iterator();i.hasNext();) {
 			MethodDecl md2 = (MethodDecl)i.next();
 			if(!md.canOverrideOrHide(md2))

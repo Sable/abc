@@ -4,4 +4,29 @@ aspect ParameterExt {
 		Access acc = type().createLockedAccess();
 		return new ParameterDeclaration(mod, acc, getID());
 	}
+	
+	interface Parameterisable {
+		int getNumParameter();
+		ParameterDeclaration getParameter(int i);
+		int getIndexOfParameter(ParameterDeclaration d);
+	}
+	
+	CatchClause implements Parameterisable;
+	Callable extends Parameterisable;
+	
+	public int CatchClause.getNumParameter() { return 1; }
+	public ParameterDeclaration CatchClause.getParameter(int i) {
+		if(i == 0)
+			return getParameter();
+		throw new IllegalArgumentException("catch clauses only have one argument");
+	}
+	public int CatchClause.getIndexOfParameter(ParameterDeclaration pd) {
+		return pd == this.getParameter() ? 0 : -1;
+	}
+	
+	inh Parameterisable ParameterDeclaration.parameterOwner();
+	eq Program.getChild().parameterOwner() { throw new IllegalStateException("parameterOwner() invoked on ParameterDeclaration not in tree"); }
+	eq ConstructorDecl.getParameter().parameterOwner() = this;
+	eq MethodDecl.getParameter().parameterOwner() = this;
+	eq CatchClause.getParameter().parameterOwner() = this;
 }

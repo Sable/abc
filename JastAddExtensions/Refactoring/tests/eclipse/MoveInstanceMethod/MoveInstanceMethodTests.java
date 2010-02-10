@@ -74,9 +74,9 @@ public class MoveInstanceMethodTests extends TestCase {
 
 		try {
 			if(newReceiverType == PARAMETER)
-				m.doMoveToParameter(newReceiverName, inlineDelegator, removeDelegator);
+				m.doMoveToParameter(newReceiverName, inlineDelegator, removeDelegator, true);
 			else
-				m.doMoveToField(newReceiverName, inlineDelegator, removeDelegator);
+				m.doMoveToField(newReceiverName, inlineDelegator, removeDelegator, true);
 			assertEquals("<failed>", in.toString());
 		} catch(RefactoringException rfe) { }
 	}
@@ -121,9 +121,9 @@ public class MoveInstanceMethodTests extends TestCase {
 
 		try {
 			if(newTargetType == PARAMETER)
-				m.doMoveToParameter(newTargetName, inlineDelegator, removeDelegator);
+				m.doMoveToParameter(newTargetName, inlineDelegator, removeDelegator, true);
 			else
-				m.doMoveToField(newTargetName, inlineDelegator, removeDelegator);
+				m.doMoveToField(newTargetName, inlineDelegator, removeDelegator, true);
 			Program out = createProgram(true, false, cuQNames);
 			assertNotNull(out);
 			assertEquals(out.toString(), in.toString());
@@ -144,9 +144,9 @@ public class MoveInstanceMethodTests extends TestCase {
 
 		try {
 			if(newTargetType == PARAMETER)
-				m.doMoveToParameter(newTargetName, inlineDelegator, removeDelegator);
+				m.doMoveToParameter(newTargetName, inlineDelegator, removeDelegator, true);
 			else
-				m.doMoveToField(newTargetName, inlineDelegator, removeDelegator);
+				m.doMoveToField(newTargetName, inlineDelegator, removeDelegator, true);
 			Program out = createProgram(true, false, cuQNames);
 			assertNotNull(out);
 			assertEquals(out.toString(), in.toString());
