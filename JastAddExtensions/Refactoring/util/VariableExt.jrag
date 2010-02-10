@@ -1,5 +1,7 @@
 aspect VariableExt {
 	public VariableDeclaration Variable.asVariableDeclaration(Expr init) {
-		return new VariableDeclaration((Modifiers)getModifiers().fullCopy(), type().createLockedAccess(), name(), new Opt(init));
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		mods.removeModifiers("public", "protected", "private", "static");
+		return new VariableDeclaration(mods, type().createLockedAccess(), name(), new Opt(init));
 	}
 }

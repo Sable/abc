@@ -1,90 +1,77 @@
 aspect MoveMethod {
-	public void MethodDecl.moveToParameter(String name, boolean inlineDelegator, boolean removeDelegator) {
-		MethodDecl delegator = new MoveMethodRefactoring(this, name, inlineDelegator, removeDelegator).execute();
+	public void MethodDecl.doMoveToParameter(String name, boolean inlineDelegator, boolean removeDelegator) {
+		doMoveTo(getParameter(name), inlineDelegator, removeDelegator);
+	}
+	
+	public void MethodDecl.doMoveToField(String name, boolean inlineDelegator, boolean removeDelegator) {
+		doMoveTo((FieldDeclaration)hostType().localFields(name), inlineDelegator, removeDelegator);
+	}
+	
+	public void MethodDecl.moveToFirstParameter() {
+		doMoveTo(getNumParameter() > 0 ? getParameter(0) : null, false, false);
+	}
+
+	public void MethodDecl.doMoveTo(Variable target, boolean inlineDelegator, boolean removeDelegator) {
+		MethodDecl delegator = moveTo(target);
 		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 		if(inlineDelegator)
 			delegator.doInline();
 	}
 	
-	public void MethodDecl.moveToFirstParameter() {
-		new MoveMethodRefactoring(this).execute();
-		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
-	}
-	
-	class MoveMethodRefactoring {
-		private MethodDecl m;
-		private Variable b;
-		private boolean inlineDelegator;
-		private boolean removeDelegator;
-		
-		public MoveMethodRefactoring(MethodDecl m, Variable b, boolean inlineDelegator, boolean removeDelegator) {
-			this.m = m;
-			this.b = b;
-			this.inlineDelegator = inlineDelegator;
-			this.removeDelegator = removeDelegator;
-		}
-		
-		public MoveMethodRefactoring(MethodDecl m) {
-			this(m, m.getNumParameter() == 0 ? null : m.getParameter(0), false, false);
-		}
-		
-		public MoveMethodRefactoring(MethodDecl m, String name, boolean inlineDelegator, boolean removeDelegator) {
-			this(m, m.getParameter(name), inlineDelegator, removeDelegator);
-		}
-		
-		public MethodDecl execute() {
-			checkPreconditions();
-			MethodDecl m_copy = (MethodDecl)m.fullCopy();
-			for(MethodAccess ma : m.uses())
-				ma.lock(m_copy);
-			ParameterDeclaration b_copy = null;
-			List<Expr> args = new List<Expr>();
-			for(ParameterDeclaration pd : m_copy.getParameters()) {
-				if(pd.name().equals(b.name()))
-					b_copy = pd;
-				args.add(new LockedVarAccess(pd));
-			}
-			// NB: synchronization is done by delegating method
-			m.getModifiers().removeModifier("synchronized");
-			m.lockAllNames();
-			VariableDeclaration new_b = b.asVariableDeclaration(new ThisAccess("this"));
-			for(VarAccess va : b.allUses())
-				va.lock(new_b);
-			int i = m.getIndexOfParameter(b.name());
+	public MethodDecl MethodDecl.moveTo(Variable b) {
+		MethodDecl m = this;
+		checkMoveMethodPreconditions(m, b);
+		MethodDecl m_copy = (MethodDecl)m.fullCopy();
+		for(MethodAccess ma : m.uses())
+			ma.lock(m_copy);
+		Variable b_copy = b.isMethodParameter() ? m_copy.getParameter(b.name()) : b;
+		List<Expr> args = new List<Expr>();
+		for(ParameterDeclaration pd : m_copy.getParameters())
+			args.add(new LockedVarAccess(pd));
+		// NB: synchronization is done by delegating method
+		m.getModifiers().removeModifier("synchronized");
+		m.lockAllNames();
+		VariableDeclaration new_b = b.asVariableDeclaration(new ThisAccess("this"));
+		for(VarAccess va : b.allUses())
+			va.lock(new_b);
+		int i;
+		if(b.isMethodParameter()) {
+			i = m.getIndexOfParameter(b.name());
 			m.removeParameter(i);
 			args.removeChild(i);
-			List<Access> quals = new List<Access>();
-			for(TypeDecl A=m.hostType(); A!=null; A=A.enclosingType()) {
-				String a = A.name().toLowerCase();
-				ParameterDeclaration a_decl = new FreshParameter(A.createLockedAccess(), a); 
-				a_decl.setDemandFinal();
-				m.insertParameter(a_decl, i);
-				args.insertChild(A==m.hostType() ? new ThisAccess("this") : A.createLockedAccess().qualifiesAccess(new ThisAccess("this")), i);
-				quals.insertChild(new LockedVarAccess(a_decl), 0);
-			}
-			Block withBlock = m.getBlock();
-			m.setBlock(new Block(new_b, new WithStmt(quals, withBlock)));
-			m.replaceWith(m_copy);
-			m.programRoot().flushCaches(); m.flushCaches();
-			b.type().insertUnusedMethod(m);
-			LockedVarAccess b_acc = new LockedVarAccess(b_copy);
-			m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m.name(), args)))));
-			m.eliminate(ASTNode.LOCKED_NAMES, ASTNode.WITH_STMT);
-			new_b.inline();
-			withBlock.inline();
-			return m_copy;
+		} else {
+			i = 0;
 		}
-
-		private void checkPreconditions() {
-			if(m == null || b == null)
-				throw new RefactoringException("method or target does not exist");
-			if(!m.hostType().fromSource() || !b.type().fromSource())
-				throw new RefactoringException("cannot move inside bytecode");
-			if(m.isStatic())
-				throw new RefactoringException("cannot move static method (yet)");
-			if(!m.hasBlock())
-				throw new RefactoringException("cannot move body-less method");
+		List<Access> quals = new List<Access>();
+		for(TypeDecl A=m.hostType(); A!=null; A=A.enclosingType()) {
+			String a = A.name().toLowerCase();
+			ParameterDeclaration a_decl = new FreshParameter(A.createLockedAccess(), a); 
+			a_decl.setDemandFinal();
+			m.insertParameter(a_decl, i);
+			args.insertChild(A==m.hostType() ? new ThisAccess("this") : A.createLockedAccess().qualifiesAccess(new ThisAccess("this")), i);
+			quals.insertChild(new LockedVarAccess(a_decl), 0);
 		}
+		Block withBlock = m.getBlock();
+		m.setBlock(new Block(new_b, new WithStmt(quals, withBlock)));
+		m.replaceWith(m_copy);
+		m_copy.programRoot().flushCaches(); m.flushCaches();
+		b.type().insertUnusedMethod(m);
+		LockedVarAccess b_acc = new LockedVarAccess(b_copy);
+		m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m.name(), args)))));
+		m.eliminate(ASTNode.WITH_STMT, ASTNode.LOCKED_NAMES);
+		new_b.inline();
+		withBlock.inline();
+		return m_copy;
+	}
 
+	private void MethodDecl.checkMoveMethodPreconditions(MethodDecl m, Variable b) {
+		if(m == null || b == null)
+			throw new RefactoringException("method or target does not exist");
+		if(!m.hostType().fromSource() || !b.type().fromSource())
+			throw new RefactoringException("cannot move inside bytecode");
+		if(m.isStatic())
+			throw new RefactoringException("cannot move static method (yet)");
+		if(!m.hasBlock())
+			throw new RefactoringException("cannot move body-less method");
 	}
 }

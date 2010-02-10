@@ -193,5 +193,6 @@ aspect With {
 			}
 			throw new RefactoringException("cannot eliminate with");
 		}
+		super.eliminateWith(qualifiers, hostType);
 	}
 }

@@ -17,6 +17,11 @@ aspect Modifiers {
 		}
 	}
 	
+	public void Modifiers.removeModifiers(String... mods) {
+		for(String mod : mods)
+			removeModifier(mod);
+	}
+	
 	public Modifiers.Modifiers(String... mods) {
 		List<Modifier> l = new List<Modifier>();
 		for(String mod : mods)

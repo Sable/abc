@@ -47,6 +47,9 @@ aspect LockedVariableAccess {
 			setQualifier(e.qualifiesAccess((Access)getQualifier()));
 	}
 	
+	eq LockedVarAccess.isQualified() = hasQualifier();
+	eq LockedVarAccess.qualifier() = getQualifier();
+	
 	// introducing locked variable accesses
 	public ASTNode VarAccess.lockNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
