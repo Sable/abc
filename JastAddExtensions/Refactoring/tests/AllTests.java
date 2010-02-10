@@ -17,6 +17,8 @@ public class AllTests {
 		suite.addTestSuite(MoveMethodTests.class);
 		suite.addTestSuite(MakeMethodStaticTests.class);
 		suite.addTestSuite(InlineTempTests.class);
+		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
+		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		//$JUnit-END$
 		return suite;
 	}

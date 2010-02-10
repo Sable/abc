@@ -6,9 +6,15 @@ aspect InlineMethod {
 			((Block)n).inline();
 	}
 	
-	public void MethodDecl.doInline() {
+	public void MethodDecl.doInline(boolean delete) {
+		TypeDecl host = hostType();
+		int idx = host.getBodyDeclList().getIndexOfChild(this);
 		for(MethodAccess ma : this.polyUses())
 			ma.doInline();
+		if(delete) {
+			MethodDecl md = (MethodDecl)host.getBodyDecl(idx);
+			try { md.removeUnused(); } catch(RefactoringException rfe) { }			
+		}
 	}
 	
 	public void MethodAccess.doInline() {

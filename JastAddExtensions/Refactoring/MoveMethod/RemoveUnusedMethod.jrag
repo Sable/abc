@@ -1,0 +1,8 @@
+aspect RemoveUnusedMethod {
+	public void MethodDecl.removeUnused() {
+		for(MethodAccess ma : polyUses())
+			if(ma.enclosingBodyDecl() != this)
+				throw new RefactoringException("method is still used");
+		hostType().removeBodyDecl(this);
+	}
+}

@@ -19,7 +19,6 @@ aspect BlockExt {
 		ASTNode n = this;
 		while(n!=null && !(n instanceof Block))
 			n = n.getParent();
-		assert n != null;
 		return (Block)n;
 	}
 	
