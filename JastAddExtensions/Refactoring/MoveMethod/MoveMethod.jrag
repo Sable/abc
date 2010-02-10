@@ -56,10 +56,10 @@ aspect MoveMethod {
 			List<Access> quals = new List<Access>();
 			for(TypeDecl A=m.hostType(); A!=null; A=A.enclosingType()) {
 				String a = A.name().toLowerCase();
-				ParameterDeclaration a_decl = new FreshParameter(new TypeAccess(A), a); 
+				ParameterDeclaration a_decl = new FreshParameter(A.createLockedAccess(), a); 
 				a_decl.setDemandFinal();
 				m.insertParameter(a_decl, i);
-				args.insertChild(A==m.hostType() ? new ThisAccess("this") : new TypeAccess(A).qualifiesAccess(new ThisAccess("this")), i);
+				args.insertChild(A==m.hostType() ? new ThisAccess("this") : A.createLockedAccess().qualifiesAccess(new ThisAccess("this")), i);
 				quals.insertChild(new LockedVarAccess(a_decl), 0);
 			}
 			Block withBlock = m.getBlock();

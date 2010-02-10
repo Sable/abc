@@ -117,9 +117,18 @@ aspect LockedTypeAccess {
 		}
 	}
 	
-	public TypeAccess.TypeAccess(TypeDecl target) {
-		setID(target.name());
-		targetType = target.save();
+	public Access TypeDecl.createLockedAccess() {
+		TypeAccess acc = new TypeAccess(name());
+		acc.lock(this);
+		return acc;
+	}
+	
+	public Access GenericTypeDecl.createLockedAccess() {
+		Access tacc = rawType().createLockedAccess();
+		List<Access> targs = new List<Access>();
+		for(int i=0;i<getNumTypeParameter();++i)
+			targs.add(getTypeParameter(i).createLockedAccess());
+		return new ParTypeAccess(tacc, targs); 
 	}
 	
 	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
@@ -171,14 +180,14 @@ aspect LockedTypeAccess {
 	
 	public ASTNode TypeAccess.lock() { return lock(decl());	}
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
-		assert decl != unknownType();
+		assert decl != null && !decl.isUnknown();
 		targetType = decl.save();
 		return this;
 	}
 	
 	public ASTNode ParTypeAccess.lock() { return lock(type()); }
 	public ASTNode ParTypeAccess.lock(TypeDecl decl) {
-		TypeAccess tacc = new TypeAccess(decl);
+		Access tacc = decl.createLockedAccess();
 		replaceWith(tacc);
 		return tacc;
 	}
@@ -273,7 +282,7 @@ aspect LockedTypeAccess {
 				// trying to build an access to its raw type)
 				if(target.isGenericType() && outer.isGenericType())
 					outer = ((GenericTypeDecl)outer).rawType();
-				return new TypeAccess(outer).qualifiesAccess(this);
+				return outer.createLockedAccess().qualifiesAccess(this);
 			}
 		}
 	}
@@ -300,23 +309,23 @@ aspect LockedTypeAccess {
 	protected Access TypeAccess.unlockParTypeAccess(ParTypeDecl target) {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<target.getNumArgument();++i)
-			args.add(new TypeAccess(target.getArgument(i).type()));
-		return new ParTypeAccess(new TypeAccess(((GenericTypeDecl)target.genericDecl()).rawType()), args);
+			args.add(target.getArgument(i).type().createLockedAccess());
+		return new ParTypeAccess(((GenericTypeDecl)target.genericDecl()).rawType().createLockedAccess(), args);
 	}
 	
 	protected Access TypeAccess.unlockGenericTypeAccess(GenericTypeDecl target) {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<target.getNumTypeParameter();++i)
-			args.add(new TypeAccess(target.getTypeParameter(i)));
-		return new ParTypeAccess(new TypeAccess(target.rawType()), args);
+			args.add(target.getTypeParameter(i).createLockedAccess());
+		return new ParTypeAccess(target.rawType().createLockedAccess(), args);
 	}
 
 	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
-		return new ArrayTypeAccess(new TypeAccess(target.componentType()));
+		return new ArrayTypeAccess(target.componentType().createLockedAccess());
 	}
 	
 	protected Access ArrayTypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
-		setAccess(new TypeAccess(target.componentType()));
+		setAccess(target.componentType().createLockedAccess());
 		return this;
 	}
 }

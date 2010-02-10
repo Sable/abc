@@ -19,7 +19,7 @@ aspect SplitVarDecl {
     Expr init;
     // if the RHS is an array initializer, it has to be wrapped into an array creation expression
     if(getInit().isArrayInit())
-    	init = new ArrayCreationExpr(new TypeAccess(type()), new Opt(getInit()));
+    	init = new ArrayCreationExpr(type().createLockedAccess(), new Opt(getInit()));
     else
     	init = getInit();
     AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), init);

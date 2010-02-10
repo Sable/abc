@@ -23,4 +23,6 @@ aspect MethodExt {
 	public void MethodDecl.removeParameter(int i) {
 		getParameterList().removeChild(i);
 	}
+	
+	syn boolean MethodDecl.isUnknown() = hostType().isUnknown();
 }

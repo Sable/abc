@@ -140,7 +140,7 @@ aspect LockedVariableAccess {
 	public Access VariableAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing) {
 		FieldDeclaration target = (FieldDeclaration)getVariable();
 		if(target.isStatic()) {
-			return new TypeAccess(target.hostType()).qualifiesAccess(new VarAccess(target.name()));
+			return target.hostType().createLockedAccess().qualifiesAccess(new VarAccess(target.name()));
 		} else {
 			if(isDirectlyVisible()) {
 				if(qualifier != null)
@@ -154,23 +154,23 @@ aspect LockedVariableAccess {
 						if(bend.equals(enclosing)) {                                             // this.f
 							return new ThisAccess("this").qualifiesAccess(va);
 						} else {                                                                       // B.this.f
-							return new TypeAccess(bend).qualifiesAccess(
+							return bend.createLockedAccess().qualifiesAccess(
 									new ThisAccess("this").qualifiesAccess(va));
 						}
 					} else if(bend.isClassDecl() && source.equals(((ClassDecl)bend).superclass())) {
 						if(bend.equals(enclosing)) {                                             // super.f
 							return new SuperAccess("super").qualifiesAccess(va);
 						} else {
-							return new TypeAccess(bend).qualifiesAccess(                               // B.super.f
+							return bend.createLockedAccess().qualifiesAccess(                               // B.super.f
 									new SuperAccess("super").qualifiesAccess(va));
 						}
 					} else {
 						if(bend.equals(enclosing)) {
-							return new ParExpr(new CastExpr(new TypeAccess(source),                    // ((S)this).f 
+							return new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)this).f 
 									new ThisAccess("this"))).qualifiesAccess(va);
 						} else {
-							return new ParExpr(new CastExpr(new TypeAccess(source),                    // ((S)B.this).f
-									new TypeAccess(bend).qualifiesAccess(
+							return new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)B.this).f
+									bend.createLockedAccess().qualifiesAccess(
 											new ThisAccess("this")))).qualifiesAccess(va);
 						}
 					}
@@ -179,7 +179,7 @@ aspect LockedVariableAccess {
 						throw new RefactoringException("cannot access variable");
 					if(source.equals(qualifier.type()))
 						return qualifier.qualifiesAccess(va);
-					return new ParExpr(new CastExpr(new TypeAccess(source), qualifier)).qualifiesAccess(va);
+					return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(va);
 				}
 			}
 		}
@@ -224,7 +224,7 @@ aspect LockedVariableAccess {
 			throw new RefactoringException("cannot adjust this access");
 		if(!thisType().isInnerTypeOf(getTarget()))
 			throw new RefactoringException("enclosing instance not reachable");
-		return new TypeAccess(getTarget()).qualifiesAccess(new ThisAccess("this"));
+		return getTarget().createLockedAccess().qualifiesAccess(new ThisAccess("this"));
 	}
 	public Access LockedSuperAccess.eliminateLockedNames() {
 		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
@@ -235,7 +235,7 @@ aspect LockedVariableAccess {
 			throw new RefactoringException("cannot adjust this access");
 		if(!thisType().isInnerTypeOf(getTarget()))
 			throw new RefactoringException("super instance not reachable");
-		return new TypeAccess(getTarget()).qualifiesAccess(new SuperAccess("super"));
+		return getTarget().createLockedAccess().qualifiesAccess(new SuperAccess("super"));
 	}
 	
 	syn lazy boolean SuperAccess.qualifiesMethodAccess() = hasParentDot() && parentDot().isMethodAccess();

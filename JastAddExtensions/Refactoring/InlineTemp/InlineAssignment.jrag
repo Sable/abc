@@ -39,7 +39,7 @@ aspect InlineAssignment {
 	
 	public void AssignSimpleExpr.makeConversionExplicit() {
 		if(!getDest().type().equals(getSource().type()))
-			setSource(new CastExpr(new TypeAccess(getDest().type()), getSource()));
+			setSource(new CastExpr(getDest().type().createLockedAccess(), getSource()));
 	}
 	
 }

@@ -20,7 +20,7 @@ aspect UnfoldSynchronized {
 			return;
 		getModifiers().removeModifier("synchronized");
 		if(this.isStatic()) {
-			Stmt stmt = new SynchronizedStmt(new AbstractDot(new TypeAccess(hostType()), new ClassAccess()), getBlock());
+			Stmt stmt = new SynchronizedStmt(new AbstractDot(hostType().createLockedAccess(), new ClassAccess()), getBlock());
 			setBlock(new Block(new List<Stmt>().add(stmt)));
 		} else {
 			Stmt stmt = new SynchronizedStmt(new ThisAccess("this"), getBlock());

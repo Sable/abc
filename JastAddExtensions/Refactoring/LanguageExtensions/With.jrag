@@ -92,7 +92,7 @@ aspect With {
 	}
 	
 	public void TypeDecl.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
-		qualifiers.add(new TypeAccess(this).qualifiesAccess(new ThisAccess("this")));
+		qualifiers.add(this.createLockedAccess().qualifiesAccess(new ThisAccess("this")));
 		super.eliminateWith(qualifiers, hostType);
 		qualifiers.removeChild(qualifiers.getNumChild()-1);
 	}
@@ -101,7 +101,8 @@ aspect With {
 		if(isThisAccess()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
 				Access qual = qualifiers.getChild(i);
-				if(this.type().equals(qual.type())) {
+				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
+				if(this.type().equals(qual_type)) {
 					if(!qual.isThisAccess())
 						replaceWith(qual.fullCopy());
 					return;
@@ -111,12 +112,13 @@ aspect With {
 		} else if(isSuperAccess()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
 				Access qual = qualifiers.getChild(i);
-				if(!qual.type().isClassDecl() || !((ClassDecl)qual.type()).hasSuperclass())
+				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
+				if(!qual_type.isClassDecl() || !((ClassDecl)qual_type).hasSuperclass())
 					continue;
-				ClassDecl cd = (ClassDecl)qual.type();
+				ClassDecl cd = (ClassDecl)qual_type;
 				if(this.type().equals(cd.superclass())) {
 					if(!qual.isThisAccess())
-						replaceWith(new ParExpr(new CastExpr(new TypeAccess(cd.superclass()),
+						replaceWith(new ParExpr(new CastExpr(cd.superclass().createLockedAccess(),
 								                             (Expr)qual.fullCopy())));
 					return;
 				}
@@ -162,7 +164,8 @@ aspect With {
 			TypeDecl td = getAccess().type();
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
-				if(qual.type().subtype(td.enclosingType())) {
+				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
+				if(qual_type.subtype(td.enclosingType())) {
 					if(!getAccess().type().accessibleFrom(hostType))
 						throw new RefactoringException("type not accessible");
 					qualifyWith((Expr)qual.fullCopy());

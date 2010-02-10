@@ -11,7 +11,7 @@ aspect IntroduceOutParameter {
 		VarAccess v = (VarAccess)parent.getDest();
 		getBlock().lockDataFlow();
 		setReturnType(new PrimitiveTypeAccess("void"));
-		ParameterDeclaration pd = new FreshParameter(new Modifiers("out"), new TypeAccess(v.type()), "res");
+		ParameterDeclaration pd = new FreshParameter(new Modifiers("out"), v.type().createLockedAccess(), "res");
 		addParameter(pd);
 		addArg(new LockedVarAccess(v.decl()));
 		getBlock().addAssignToReturns(pd);
@@ -37,7 +37,7 @@ aspect IntroduceOutParameter {
 				varargs.insertChild(arg, 0);
 			}
 			varargs.insertChild(getArg(getNumParameter()-1), 0);
-			setArg(new ArrayCreationExpr(new TypeAccess(last.type()), new Opt(new ArrayInit(varargs))), getNumParameter()-1);
+			setArg(new ArrayCreationExpr(last.type().createLockedAccess(), new Opt(new ArrayInit(varargs))), getNumParameter()-1);
 		}
 	}
 

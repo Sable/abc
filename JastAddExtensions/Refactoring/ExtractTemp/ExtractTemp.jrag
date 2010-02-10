@@ -5,7 +5,7 @@ aspect ExtractTemp {
 		TypeDecl type = type();
 		if(type.isAnonymous())
 			type = ((AnonymousDecl)type).superType();
-		return insertUnusedLocal(new VariableDeclaration(new TypeAccess(type), name)).
+		return insertUnusedLocal(new VariableDeclaration(type.createLockedAccess(), name)).
 			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}
 	

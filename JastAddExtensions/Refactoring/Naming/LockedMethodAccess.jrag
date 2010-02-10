@@ -94,13 +94,12 @@ aspect LockedMethodAccess {
 	}
 	
 	public ASTNode MethodAccess.lock() {
-		assert decl() != unknownMethod();
 		return lock(decl());
 	}
 	
 	public ASTNode MethodAccess.lock(MethodDecl md) {
+		assert md != null && !md.isUnknown();
 		MethodDecl target = md.isSubstituted() ? md.sourceMethodDecl() : md;
-		assert target != unknownMethod();
 		LockedMethodAccess lma = new LockedMethodAccess(target, getArgs());
 		replaceWith(lma);
 		if(lma.isRightChildOfDot()) {
@@ -204,7 +203,7 @@ aspect LockedMethodAccess {
 	}
 	
 	public Access MethodAccessInfo.computeStaticAccess(TypeDecl enclosing, List<Expr> args) {
-		return new TypeAccess(source).qualifiesAccess(constructAccess(args));
+		return source.createLockedAccess().qualifiesAccess(constructAccess(args));
 	}
 	
 	public Access MethodAccessInfo.computeThisAccess(TypeDecl enclosing, List<Expr> args) {
@@ -212,7 +211,7 @@ aspect LockedMethodAccess {
 		if(source == enclosing)
 			return ma;
 		else
-			return new TypeAccess(bend).qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
+			return bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
 	}
 	
 	public Access MethodAccessInfo.computeSuperAccess(TypeDecl enclosing, List<Expr> args) {
@@ -220,7 +219,7 @@ aspect LockedMethodAccess {
 		if(bend == enclosing)
 			return new SuperAccess("super").qualifiesAccess(ma);
 		else
-			return new TypeAccess(bend).qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
+			return bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
 	}
 
 	protected MethodAccess MethodAccessInfo.constructAccess(List<Expr> args) {
@@ -240,7 +239,7 @@ aspect LockedMethodAccess {
 		for(int i=0;i<target.getNumParameter();++i) {
 			TypeDecl tp = target.getParameter(i).type();
 			Expr arg = args.getChild(i);
-			args.setChild(new CastExpr(new TypeAccess(tp), arg), i);
+			args.setChild(new CastExpr(tp.createLockedAccess(), arg), i);
 		}
 	}
 
@@ -258,7 +257,7 @@ aspect LockedMethodAccess {
 			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
 				return qualifier.qualifiesAccess(ma);
 			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
-				return new ParExpr(new CastExpr(new TypeAccess(source), qualifier)).qualifiesAccess(ma);
+				return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma);
 			return null;
 		} else {
 			return qualifier.qualifiesAccess(ma);

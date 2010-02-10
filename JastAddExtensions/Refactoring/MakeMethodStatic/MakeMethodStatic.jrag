@@ -12,7 +12,7 @@ aspect MakeMethodStatic {
 		newMethod.getModifiers().addModifier(new Modifier("static"));
 		// fix value arguments
 		String newParmName = hostType.name().toLowerCase();
-		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType), newParmName);
+		ParameterDeclaration newParm = new FreshParameter(hostType.createLockedAccess(), newParmName);
 		newParm.setDemandFinal();
 		newMethod.getParameterList().insertChild(newParm, 0);
 		// fix type arguments
