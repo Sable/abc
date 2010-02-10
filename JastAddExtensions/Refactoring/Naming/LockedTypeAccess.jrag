@@ -29,6 +29,14 @@ aspect LockedTypeAccess {
 		public TypeDecl getDecl() {
 			return td;
 		}
+		
+		public void collectUsedTypeVars(Collection<TypeVariable> vars) {
+			if(td.isGenericType()) {
+				GenericTypeDecl gtd = (GenericTypeDecl)td;
+				for(int i=0;i<gtd.getNumTypeParameter();++i)
+					vars.add(gtd.getTypeParameter(i));
+			}
+		}
 	}
 	
 	class SavedArrayDecl extends SavedTypeDecl {
@@ -41,6 +49,10 @@ aspect LockedTypeAccess {
 		
 		public TypeDecl getDecl() {
 			return componentType.getDecl().arrayType();
+		}
+		
+		public void collectUsedTypeVars(Collection<TypeVariable> vars) {
+			componentType.collectUsedTypeVars(vars);
 		}
 	}
 	
@@ -59,6 +71,11 @@ aspect LockedTypeAccess {
 				types.add(std.getDecl());
 			return ((GenericTypeDecl)super.getDecl()).lookupParTypeDecl(types);
 		}
+		
+		public void collectUsedTypeVars(Collection<TypeVariable> vars) {
+			for(SavedTypeDecl parm : parms)
+				parm.collectUsedTypeVars(vars);
+		}
 	}
 	
 	class SavedRawClassDecl extends SavedTypeDecl {
@@ -67,6 +84,8 @@ aspect LockedTypeAccess {
 		}
 		
 		public TypeDecl getDecl() { return ((GenericTypeDecl)super.getDecl()).rawType(); }
+		
+		public void collectUsedTypeVars(Collection<TypeVariable> vars) { }
 	}
 	
 	class SavedRawInterfaceDecl extends SavedTypeDecl {
@@ -75,6 +94,8 @@ aspect LockedTypeAccess {
 		}
 		
 		public TypeDecl getDecl() { return ((GenericTypeDecl)super.getDecl()).rawType(); }
+		
+		public void collectUsedTypeVars(Collection<TypeVariable> vars) { }
 	}
 	
 	public SavedTypeDecl TypeDecl.save() { return new SavedTypeDecl(this); }
@@ -83,17 +104,8 @@ aspect LockedTypeAccess {
 	public SavedTypeDecl RawClassDecl.save() { return new SavedRawClassDecl(this); }
 	public SavedTypeDecl RawInterfaceDecl.save() { return new SavedRawInterfaceDecl(this); }
 	
-	refine LookupType eq TypeAccess.decls() {
-		if(targetType == null)
-			return refined();
-		return SimpleSet.emptySet.add(targetType.getDecl());
-	}
-	
-	refine Generics eq TypeAccess.decl() {
-		if(targetType == null)
-			return refined();
-		return targetType.getDecl();
-	}
+	refine LookupType eq TypeAccess.decls() = targetType == null ? refined() : targetType.getDecl();
+	refine Generics eq TypeAccess.decl() = targetType == null ? refined() : targetType.getDecl();
 	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
 		if(targetType == null) {
@@ -113,7 +125,14 @@ aspect LockedTypeAccess {
 	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
 		if(targetType == null &&
 				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
-			lock();
+			return lock();
+		return super.lockNames(endangered);
+	}
+	
+	public ASTNode ParTypeAccess.lockNames(Collection<String> endangered) {
+		String name = getTypeAccess().type().name();
+		if(endangered.contains(name))
+			return lock();
 		return super.lockNames(endangered);
 	}
 	
@@ -144,14 +163,24 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
-	public ASTNode TypeAccess.lock() {
-		return lock(decl());
+	refine TypeVariableExt protected void TypeAccess.collectUsedTypeVars(Collection<TypeVariable> tvars) {
+		if(targetType != null)
+			targetType.collectUsedTypeVars(tvars);
+		refined(tvars);
 	}
 	
+	public ASTNode TypeAccess.lock() { return lock(decl());	}
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != unknownType();
 		targetType = decl.save();
 		return this;
+	}
+	
+	public ASTNode ParTypeAccess.lock() { return lock(type()); }
+	public ASTNode ParTypeAccess.lock(TypeDecl decl) {
+		TypeAccess tacc = new TypeAccess(decl);
+		replaceWith(tacc);
+		return tacc;
 	}
 	
 	public Access TypeAccess.unlock() {
@@ -167,16 +196,18 @@ aspect LockedTypeAccess {
 					throw new RefactoringException("cannot fix access in library");
 				return this;
 			}
+			if(target.isGenericType() && !inImportDecl())
+				return unlockGenericTypeAccess((GenericTypeDecl)target);
 			if(target.isRawType())
 				target = target.erasure();
-			if(target instanceof PrimitiveType || target instanceof VoidType)
-				return unlockPrimitiveTypeAccess(target);
-			if(target.isArrayDecl())
-				return unlockArrayTypeAccess((ArrayDecl)target);
 			if(target.isParameterizedType())
 				return unlockParTypeAccess((ParTypeDecl)target);
 			if(target.isTypeVariable())
 				return unlockTypeVariableAccess((TypeVariable)target);
+			if(target instanceof PrimitiveType || target instanceof VoidType)
+				return unlockPrimitiveTypeAccess(target);
+			if(target.isArrayDecl())
+				return unlockArrayTypeAccess((ArrayDecl)target);
 			if(target.isLocalClass())
 				return unlockLocalClassAccess((ClassDecl)target);
 			if(target.isMemberType())
@@ -237,6 +268,11 @@ aspect LockedTypeAccess {
 					throw new RefactoringException("cannot access shadowed member type");
 				setPackage("");
 				setID(target.name());
+				// TODO: more thought on when precisely this is necessary
+				// (rationale here is that if target is a generic type declaration, we are actually
+				// trying to build an access to its raw type)
+				if(target.isGenericType() && outer.isGenericType())
+					outer = ((GenericTypeDecl)outer).rawType();
 				return new TypeAccess(outer).qualifiesAccess(this);
 			}
 		}
@@ -265,7 +301,14 @@ aspect LockedTypeAccess {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<target.getNumArgument();++i)
 			args.add(new TypeAccess(target.getArgument(i).type()));
-		return new ParTypeAccess(new TypeAccess(target.genericDecl()), args);
+		return new ParTypeAccess(new TypeAccess(((GenericTypeDecl)target.genericDecl()).rawType()), args);
+	}
+	
+	protected Access TypeAccess.unlockGenericTypeAccess(GenericTypeDecl target) {
+		List<Access> args = new List<Access>();
+		for(int i=0;i<target.getNumTypeParameter();++i)
+			args.add(new TypeAccess(target.getTypeParameter(i)));
+		return new ParTypeAccess(new TypeAccess(target.rawType()), args);
 	}
 
 	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target) {

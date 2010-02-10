@@ -10,23 +10,25 @@ aspect MakeMethodStatic {
 		TypeDecl hostType = hostType();
 		// make new method static
 		newMethod.getModifiers().addModifier(new Modifier("static"));
-		// fix type arguments
-		if(newMethod.usesForeignTypeVars())
-			newMethod = newMethod.makeGeneric();
-		for(TypeVariable tv : newMethod.usedTypeVars()) {
-			if(!tv.isDescendantTo(newMethod)) {
-				TypeVariable new_tv = (TypeVariable)tv.fullCopy();
-				((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
-				for(TypeAccess tvu : tv.uses())
-					if(tvu.isDescendantTo(newMethod))
-						tvu.lock(new_tv);
-			}
-		}
 		// fix value arguments
 		String newParmName = hostType.name().toLowerCase();
 		ParameterDeclaration newParm = new FreshParameter(new TypeAccess(hostType), newParmName);
 		newParm.setDemandFinal();
 		newMethod.getParameterList().insertChild(newParm, 0);
+		// fix type arguments
+		if(newMethod.usesForeignTypeVars()) {
+			newMethod = newMethod.makeGeneric();
+			for(TypeVariable tv : newMethod.usedTypeVars()) {
+				if(!tv.isDescendantTo(newMethod)) {
+					TypeVariable new_tv = (TypeVariable)tv.fullCopy();
+					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
+					for(TypeAccess tvu : tv.uses())
+						if(tvu.isDescendantTo(newMethod))
+							tvu.lock(new_tv);
+				}
+			}
+		}
+		// fix body
 		Access newParmAcc = new LockedVarAccess(newParm);
 		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
 		newMethod.setBlock(new Block(new List<Stmt>().add(withStmt)));

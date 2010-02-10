@@ -35,20 +35,10 @@ aspect TypeVariableExt {
 
 	// does this subtree use type variables declared outside it?
 	public boolean ASTNode.usesForeignTypeVars() {
-		return usesTypeVarsOutside(this);
-	}
-	
-	syn lazy boolean ASTNode.usesTypeVarsOutside(ASTNode root) {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child.usesTypeVarsOutside(root))
+		Collection<TypeVariable> tvars = usedTypeVars();
+		for(TypeVariable tv : tvars)
+			if(!tv.isDescendantTo(this))
 				return true;
-		}
 		return false;
-	}
-	
-	eq TypeAccess.usesTypeVarsOutside(ASTNode root) {
-		return decl().isTypeVariable() && !decl().isDescendantTo(root) 
-		    || super.usesTypeVarsOutside(root);
 	}
 }

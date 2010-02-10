@@ -1,0 +1,6 @@
+aspect TypeAccessExt {
+	inh boolean TypeAccess.inImportDecl();
+	eq Program.getChild().inImportDecl() = false;
+	eq TypeDecl.getChild().inImportDecl() = false;
+	eq ImportDecl.getChild().inImportDecl() = true;
+}

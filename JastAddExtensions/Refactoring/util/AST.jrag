@@ -1,4 +1,12 @@
 aspect AST {
+	public ASTNode ASTNode.getParent(int i) {
+		if(i <= 0)
+			return this;
+		if(getParent() == null)
+			return null;
+		return getParent().getParent(i-1);
+	}
+	
 	public Program ASTNode.programRoot() {
 		ASTNode n=this;
 		while(n!=null && !(n instanceof Program))
