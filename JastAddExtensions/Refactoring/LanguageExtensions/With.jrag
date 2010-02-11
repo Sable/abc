@@ -51,7 +51,6 @@ aspect With {
 			if(!c.isEmpty())
 				return c;
 		}
-		// TODO: why not lookupMethod(name)? (filter out non-static ones?)
 		return Collections.EMPTY_LIST;
 	}
 	
@@ -117,9 +116,12 @@ aspect With {
 					continue;
 				ClassDecl cd = (ClassDecl)qual_type;
 				if(this.type().equals(cd.superclass())) {
-					if(!qual.isThisAccess())
+					if(!qual.isThisAccess()) {
+						if(((Access)this).qualifiesMethodAccess())
+							throw new RefactoringException("cannot eliminate with on super method calls");
 						replaceWith(new ParExpr(new CastExpr(cd.superclass().createLockedAccess(),
 								                             (Expr)qual.fullCopy())));
+					}
 					return;
 				}
 			}
@@ -141,8 +143,6 @@ aspect With {
 	
 	public void MethodAccess.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
 		if(isQualified()) {
-			if(qualifier().isSuperAccess())
-				throw new RefactoringException("cannot eliminate with");
 			super.eliminateWith(qualifiers, hostType);
 		} else {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
@@ -160,8 +160,8 @@ aspect With {
 	}
 	
 	public void ClassInstanceExpr.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
-		if(!isQualified() && getAccess().type().isInnerClass()) {
-			TypeDecl td = getAccess().type();
+		TypeDecl td = getAccess().type();
+		if(!isQualified() && td.isMemberType() && !td.isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
 				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();

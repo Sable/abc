@@ -250,5 +250,7 @@ aspect LockedVariableAccess {
 		return getTarget().createLockedAccess().qualifiesAccess(new SuperAccess("super"));
 	}
 	
-	syn lazy boolean SuperAccess.qualifiesMethodAccess() = hasParentDot() && parentDot().isMethodAccess();
+	syn lazy boolean Access.qualifiesMethodAccess() = 
+		hasParentDot() && parentDot().isMethodAccess()
+		|| getParent() instanceof Opt && getParent().getParent() instanceof LockedMethodAccess;
 }
