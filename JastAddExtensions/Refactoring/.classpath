@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="Concurrency/|ExtractTemp/|Flow/|InlineMethod/|InlineTemp/|InsertEmptyStmt/|InsertStmt/|IntertypeDeclarations/|LanguageExtensions/|MakeMethodStatic/|MoveMethod/|Naming/|PushDownMethod/|Renaming/|StmtManipulation/|tests/eclipse/ExtractTemp/canExtract/|tests/eclipse/ExtractTemp/cannotExtract/|tests/eclipse/InlineMethodWorkspace/TestCases/|tests/eclipse/MoveInstanceMethod/canMove/|tests/eclipse/MoveInstanceMethod/cannotMove/|util/|ChangeMethodSignature/|PushDown/" kind="src" path=""/>
+	<classpathentry excluding="ChangeMethodSignature/|Concurrency/|ExtractTemp/|Flow/|InlineMethod/|InlineTemp/|InsertEmptyStmt/|InsertStmt/|IntertypeDeclarations/|LanguageExtensions/|MakeMethodStatic/|MoveMethod/|Naming/|PushDown/|PushDownMethod/|Renaming/|StmtManipulation/|tests/eclipse/ExtractTemp/canExtract/|tests/eclipse/ExtractTemp/cannotExtract/|tests/eclipse/InlineMethodWorkspace/TestCases/|tests/eclipse/MoveInstanceMethod/canMove/|tests/eclipse/MoveInstanceMethod/cannotMove/|tests/eclipse/PushDown/test*/**|util/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path=""/>

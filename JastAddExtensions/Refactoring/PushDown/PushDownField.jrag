@@ -1,0 +1,37 @@
+aspect PushDownField {	
+	/**
+	 * The Push Down Field Refactoring.
+	 * 
+	 * Preconditions:
+	 *  - if field to be pushed has initialiser, that initialiser has to be constant
+	 *  - host type cannot have more than one child type
+	 *  - that child type cannot already contain a field with the same name
+	 *  
+	 * The preconditions ensure that it is enough to adjust all accesses to
+	 * the field being pushed and all accesses within that method.
+	 * 
+	 * If pushing from an interface to a class, we need to make the pushed
+	 * method public and abstract.
+	 */
+	public void FieldDeclaration.pushDown() {
+		if(hasInit() && !getInit().isConstant())
+			throw new RefactoringException("cannot push fields with non-constant initialiser");
+		Collection<TypeDecl> children = hostType().childTypes();
+		if(children.size() != 1)
+			throw new RefactoringException("can only push down to exactly one subclass");
+		TypeDecl child = children.iterator().next();
+		if(!child.localFields(name()).isEmpty())
+			throw new RefactoringException("field with that name already exists");
+		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
+			getModifiers().addModifiers("public", "static");
+		programRoot().lockNames(name());
+		hostType().removeBodyDecl(this);
+		child.addBodyDecl(this);
+		programRoot().flushCaches();
+	}
+	
+    public void FieldDeclaration.doPushDown() {
+    	pushDown();
+    	programRoot().eliminate(LOCKED_NAMES);
+    }
+}

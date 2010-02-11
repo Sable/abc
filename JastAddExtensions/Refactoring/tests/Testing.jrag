@@ -133,6 +133,24 @@ aspect Testing {
 		return super.findMethod(name);
 	}
 	
+	// find a field given its name
+	public FieldDeclaration ASTNode.findField(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				FieldDeclaration md = child.findField(name);
+				if(md != null) return md;
+			}
+		}
+		return null;		
+	}
+	
+	public FieldDeclaration FieldDeclaration.findField(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findField(name);
+	}
+	
 	// find a doubly-parenthesised expression
 	public Expr ASTNode.findDoublyParenthesised() {
 		for(int i=0;i<getNumChild();++i) {

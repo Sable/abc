@@ -1,0 +1,25 @@
+aspect MakeTypeAbstract {
+	public void TypeDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	public void AnonymousDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	public void ArrayDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	public void EnumDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	public void UnknownType.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	
+	public void InterfaceDecl.makeAbstract() { }
+	public void ClassDeclSubstituted.makeAbstract() { getOriginal().makeAbstract(); }
+	public void GenericClassDeclSubstituted.makeAbstract() { getOriginal().makeAbstract(); }
+	public void ParClassDecl.makeAbstract() { genericDecl().makeAbstract();	}
+	
+	public void ClassDecl.makeAbstract() {
+		if(isAbstract())
+			return;
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
+			for(Access acc : cd.uses()) {
+				if(acc instanceof ClassInstanceExpr &&
+						!((ClassInstanceExpr)acc).hasTypeDecl())
+					throw new RefactoringException("cannot make type abstract: constructor is used");
+			}
+		}
+		getModifiers().addModifier("abstract");
+	}
+}

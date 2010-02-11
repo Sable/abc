@@ -35,6 +35,12 @@ aspect Uses {
 	                              with add root Program;
 	MethodAccess contributes this to MethodDecl.uses() for decl();
 	
+	// bind all class instance expressions and constructor accesses to the constructor they resolve to
+	coll Collection<Access> ConstructorDecl.uses() [new HashSet<Access>()]
+	                        with add root Program;
+	ClassInstanceExpr contributes this to ConstructorDecl.uses() for decl();
+	ConstructorAccess contributes this to ConstructorDecl.uses() for decl();
+	
 	// bind all uses of a label to its declaration
 	coll Collection<Stmt> LabeledStmt.uses() [new HashSet<Stmt>()] 
 	                                         with add root BodyDecl;

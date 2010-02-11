@@ -16,9 +16,9 @@ aspect PushDownMethod {
 	 * If pushing from an interface to a class, we need to make the pushed
 	 * method public and abstract.
 	 */
-	public void MethodDecl.pushDown() {
-		if(isRootMethod() && !hostType().isAbstract())
-			throw new RefactoringException("cannot push a root method");
+	public MethodDecl MethodDecl.pushDown() {
+		if(isRootMethod())
+			hostType().makeAbstract();
 		Collection<TypeDecl> children = hostType().childTypes();
 		if(children.size() != 1)
 			throw new RefactoringException("can only push down to exactly one subclass");
@@ -37,6 +37,7 @@ aspect PushDownMethod {
 		child.addBodyDecl(this);
 		programRoot().flushCaches();
 		foldSynchronized();
+		return this;
 	}
 	
 	// check whether this method has ancestors, but all of them are abstract

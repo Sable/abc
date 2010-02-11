@@ -3,6 +3,7 @@ package tests;
 import junit.framework.TestCase;
 import AST.MethodDecl;
 import AST.Program;
+import AST.RawCU;
 import AST.RefactoringException;
 import AST.TypeDecl;
 
@@ -65,7 +66,7 @@ public class PushDownMethodTests extends TestCase {
     	testFail(Program.fromClasses(
     		  "interface I { void m(); }",
     		  "class A implements I { public void m() { } }",
-    		  "class B extends A { }"));
+    		  "class B extends A { { new A(); } }"));
     }
 
     public void test4() {
@@ -73,7 +74,7 @@ public class PushDownMethodTests extends TestCase {
     	testFail(Program.fromClasses(
     	           "abstract class S { abstract void m(); }",
     	           "class A extends S { void m() { } }",
-    	           "class B extends A { }"));
+    	           "class B extends A { { new A(); } }"));
     }
 
     public void test5() {
@@ -343,4 +344,62 @@ public class PushDownMethodTests extends TestCase {
     		  "}",
     		  "class B extends A { }"));
     }
+    
+    public void test28() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "interface I { void m(); }",
+    		  "class A implements I { public void m() { } }",
+    		  "class B extends A { }"),
+    		Program.fromClasses(
+    		  "interface I { void m(); }",
+    		  "abstract class A implements I { }",
+    		  "class B extends A { public void m() { } }"));
+    }
+    
+    public void test29() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "interface I { void m(); }",
+    		  "class A implements I { " +
+    		  "  int i; " +
+    		  "  A(int i) { this.i = i; } " +
+    		  "  public void m() { }" +
+    		  "}",
+    		  "class B extends A {" +
+    		  "  B() { super(23); }" +
+    		  "}"),
+    		Program.fromClasses(
+    	      "interface I { void m(); }",
+    	      "abstract class A implements I { " +
+    	      "  int i; " +
+    	   	  "  A(int i) { this.i = i; } " +
+    	   	  "}",
+    	   	  "class B extends A {" +
+    	   	  "  B() { super(23); }" +
+    	   	  "  public void m() { }" +
+    	   	  "}"));
+    }
+
+    public void test30() {
+    	testSucc(
+    		Program.fromClasses(
+    	      "abstract class S { abstract void m(); }",
+    	      "class A extends S { void m() { } }",
+    		  "class B extends A { }"),
+   		    Program.fromClasses(
+    	      "abstract class S { abstract void m(); }",
+    	      "abstract class A extends S { }",
+   		      "class B extends A { void m() { } }"));
+    }
+    
+    public void test31() {
+    	// push down should fail, since the pushed method cannot override the same method as before
+    	testFail(Program.fromCompilationUnits(
+    		  new RawCU("Super.java", "package p; class Super { int m() { return 23; } }"),
+    		  new RawCU("A.java",     "package p; public class A extends Super { int m() { return 42; } }"),
+    		  new RawCU("C.java",     "package p; class C { int f() { A a = new q.B(); return a.m(); } }"),
+    		  new RawCU("B.java",     "package q; public class B extends p.A { }"))); 
+    }
+
 }
