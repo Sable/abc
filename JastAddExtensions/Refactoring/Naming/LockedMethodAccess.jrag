@@ -1,4 +1,3 @@
-// TODO: check that possible targets stay the same, not only the decl
 aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */
@@ -268,5 +267,12 @@ aspect LockedMethodAccess {
 				throw new RefactoringException("method not accessible");
 			return qualifier.qualifiesAccess(ma);
 		}
-	}	
+	}
+	
+	/* NOTE: Locked method accesses only fix the static declaration a method resolves to; they do not consider
+	 *       possible polymorphic dispatch. One could think that it would be safer to actually compute the set
+	 *       of all targets a call could possibly resolve to, and fix that whole set. This would not actually
+	 *       be an improvement, however, since this set would be an overapproximation, and we still could not
+	 *       guarantee invariance of run-time dispatch. Instead, we have to guard against changes in dispatch
+	 *       behaviour on a refactoring-specific basis. */
 }

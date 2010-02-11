@@ -3,8 +3,12 @@ aspect PushDownMethod {
 	 * The Push Down Method Refactoring.
 	 * 
 	 * Preconditions:
-	 *  - host type of method to be pushed has exactly one child type
-	 *  - that child type does not already contain a method with the same signature
+	 *  - if method to be pushed overrides at least one other method and all its 
+	 *    ancestors are abstract, the host type must be abstract as well
+	 *  - host type cannot have more than one child type
+	 *  - that child type cannot already contain a method with the same signature
+	 *  - no virtual call to the method can statically resolve to one of its
+	 *    ancestors
 	 *  
 	 * The preconditions ensure that it is enough to adjust all accesses to
 	 * the method being pushed and all accesses within that method.
@@ -24,6 +28,9 @@ aspect PushDownMethod {
 		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
 			getModifiers().addModifiers("public", "abstract");
 		unfoldSynchronized();
+		for(MethodAccess ma : this.polyUses())
+			if(ma.isPolyCall() && overrides().contains(ma.decl()))
+				throw new RefactoringException("call target could change");
 		programRoot().lockMethodNames(name());
 		lockAllNames();
 		hostType().removeBodyDecl(this);

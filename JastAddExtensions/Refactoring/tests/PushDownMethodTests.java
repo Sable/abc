@@ -329,4 +329,18 @@ public class PushDownMethodTests extends TestCase {
     	      "  private int m(int i, int j) { return i-19; } " +
     		  "}"));
     }
+    
+    public void test27() {
+    	testFail(
+    		Program.fromClasses(
+    		  "class Super { int m() { return 23; } }",
+    		  "class A extends Super {" +
+    		  "  int m() { return 42; }" +
+    		  "  public static void main(String[] args) {" +
+    		  "    Super s = new A();" +
+    		  "    System.out.println(s.m());" +
+    		  "  }" +
+    		  "}",
+    		  "class B extends A { }"));
+    }
 }
