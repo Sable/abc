@@ -21,12 +21,8 @@ aspect RenameMethod {
 	// rename only the method itself
 	private void MethodDecl.renameSingleMethod(String new_name) {
 		checkRenamingPreconds(new_name);
-		String old_name = name();
-		Collection<String> endangered = new ArrayList<String>(2);
-		endangered.add(old_name);
-		endangered.add(new_name);
-		programRoot().lockMethodNames(endangered);
-		programRoot().pushMethodQualifiers();
+		programRoot().lockMethodNames(name(), new_name);
+		programRoot().triggerRewrites();
 		setID(new_name);
 		programRoot().eliminate(LOCKED_NAMES);
 	}

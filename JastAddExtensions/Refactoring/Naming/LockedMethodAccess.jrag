@@ -118,8 +118,6 @@ aspect LockedMethodAccess {
 	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
 	
 	// pushing qualifiers into LockedMethodAccess
-	public void ASTNode.pushMethodQualifiers() { }
-	
 	rewrite AbstractDot {
 	  when(getRight() instanceof LockedMethodAccess)
 	  to LockedMethodAccess {

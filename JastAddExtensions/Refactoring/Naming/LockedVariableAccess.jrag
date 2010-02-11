@@ -87,8 +87,6 @@ aspect LockedVariableAccess {
 	public boolean VariableArityParameterDeclarationSubstituted.isSubstituted() { return true; }
 	
 	// pushing qualifiers into LockedVarAccess
-	public void ASTNode.pushQualifiers() { }
-	
 	rewrite AbstractDot {
 		when(getRight() instanceof LockedVarAccess)
 		to LockedVarAccess {
