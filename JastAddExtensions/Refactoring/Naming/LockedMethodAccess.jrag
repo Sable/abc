@@ -223,22 +223,28 @@ aspect LockedMethodAccess {
 	protected MethodAccess MethodAccessInfo.constructAccess(List<Expr> args) {
 		// check if any of the competitors is more specific than the target for
 		// this argument list; then we need casts
-		List<Expr> new_args = (List<Expr>)args.fullCopy();
-		for(MethodDecl cand : competitors) {
-			if(cand.applicableTo(args) && cand.moreSpecificThan(target)) {
-				insertCasts(new_args);
-				break;
-			}
-		}
-		return new MethodAccess(target.name(), new_args);
+		for(MethodDecl cand : competitors)
+			if(cand.applicableTo(args) && cand.moreSpecificThan(target))
+				return new MethodAccess(target.name(), insertCasts(args));
+		return new MethodAccess(target.name(), args);
 	}
 	
-	protected void MethodAccessInfo.insertCasts(List<Expr> args) {
+	protected List<Expr> MethodAccessInfo.insertCasts(List<Expr> args) {
+		List<Expr> new_args = new List<Expr>();
 		for(int i=0;i<target.getNumParameter();++i) {
-			TypeDecl tp = target.getParameter(i).type();
+			ParameterDeclaration parm = target.getParameter(i);
 			Expr arg = args.getChild(i);
-			args.setChild(new CastExpr(tp.createLockedAccess(), arg), i);
+			TypeDecl tp = parm.type();
+			if(parm.isVariableArity() && !arg.type().methodInvocationConversionTo(tp)) {
+				List<Expr> varargs = new List<Expr>();
+				while(i<args.getNumChild())
+					varargs.add(args.getChild(i++));
+				new_args.addChild(new ArrayCreationExpr(tp.createLockedAccess(), new Opt(new ArrayInit(varargs))));
+			} else {
+				new_args.addChild(new CastExpr(tp.createLockedAccess(), arg));
+			}
 		}
+		return new_args;
 	}
 
 	public Access MethodAccessInfo.eliminateQualified(Expr qualifier, TypeDecl enclosing,

@@ -1,7 +1,6 @@
 package tests;
 
 import junit.framework.TestCase;
-import AST.Expr;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
@@ -62,13 +61,15 @@ public class PushDownMethodTests extends TestCase {
     }
 
     public void test3() {
+    	// cannot push or A ceases to properly implement I
     	testFail(Program.fromClasses(
-    	           "interface I { void m(); }",
-    	           "class A implements I { public void m() { } }",
-    	           "class B extends A { }"));
+    		  "interface I { void m(); }",
+    		  "class A implements I { public void m() { } }",
+    		  "class B extends A { }"));
     }
 
     public void test4() {
+    	// cannot push or A ceases to properly extend S 
     	testFail(Program.fromClasses(
     	           "abstract class S { abstract void m(); }",
     	           "class A extends S { void m() { } }",
@@ -255,5 +256,77 @@ public class PushDownMethodTests extends TestCase {
     	    Program.fromClasses(
     	      "class A { }",
     	      "class B extends A { static void m() { synchronized(A.class) { } } }"));
+    }
+    
+    public void test23() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "class A { private int m() { return 23; }	}",
+    		  "class Outer {" +
+    		  "  int m () { return 42; }" +
+    		  "  class B extends A {" +
+    		  "    class Inner {" +
+    		  "      int n() { return m(); }" +
+    		  "    }" +
+    		  "  }" +
+    		  "}"),
+   		    Program.fromClasses(
+    	      "class A { }",
+    	      "class Outer {" +
+    	      "  int m () { return 42; }" +
+    	      "  class B extends A {" +
+    	      "    private int m() { return 23; }" +
+    	      "    class Inner {" +
+    	      "      int n() { return Outer.this.m(); }" +
+    	      "    }" +
+    	      "  }" +
+   		      "}"));
+    }
+
+    public void test24() {
+    	// see test3; OK in this case
+    	testSucc(
+    		Program.fromClasses(
+    		  "interface I { void m(); }",
+    		  "abstract class A implements I { public void m() { } }",
+    		  "class B extends A { }"),
+   		    Program.fromClasses(
+    	      "interface I { void m(); }",
+    	      "abstract class A implements I { }",
+    	      "class B extends A { public void m() { } }"));
+    }
+    
+    public void test25() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "class A { private int m(int i) { return i-19; } }",
+    		  "class B extends A {" +
+    		  "  long m(long i) { return i; }" +
+    		  "  void m() { System.out.println(m(42)); }" +
+    		  "}"),
+    		Program.fromClasses(
+    		  "class A { }",
+    		  "class B extends A {" +
+    		  "  long m(long i) { return i; }" +
+    		  "  void m() { System.out.println(m((long)42)); }" +
+    		  "  private int m(int i) { return i - 19; }" +
+    		  "}"));
+    }
+    
+    public void test26() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "class A { private int m(int i, int j) { return i-19; } }",
+    		  "class B extends A {" +
+    		  "  int m(int... i) { return i[0]; }" +
+    		  "  void m() { System.out.println(m(42, 56)); }" +
+    		  "}"),
+    		Program.fromClasses(
+    	      "class A { }",
+    	      "class B extends A {" +
+    	      "  int m(int... i) { return i[0]; }" +
+    	      "  void m() { System.out.println(m(new int[] {42, 56})); }" +
+    	      "  private int m(int i, int j) { return i-19; } " +
+    		  "}"));
     }
 }

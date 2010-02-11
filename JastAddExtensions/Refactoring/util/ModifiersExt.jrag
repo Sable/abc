@@ -22,6 +22,18 @@ aspect Modifiers {
 			removeModifier(mod);
 	}
 	
+	public void Modifiers.addModifier(String mod) {
+		for(Modifier m : getModifiers())
+			if(m.getID().equals(mod))
+				return;
+		addModifier(new Modifier(mod));
+	}
+	
+	public void Modifiers.addModifiers(String... mods) {
+		for(String mod : mods)
+			addModifier(mod);
+	}
+	
 	public Modifiers.Modifiers(String... mods) {
 		List<Modifier> l = new List<Modifier>();
 		for(String mod : mods)

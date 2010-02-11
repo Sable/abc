@@ -3,7 +3,6 @@ aspect PushDownMethod {
 	 * The Push Down Method Refactoring.
 	 * 
 	 * Preconditions:
-	 * 	- method to be pushed does not override another method
 	 *  - host type of method to be pushed has exactly one child type
 	 *  - that child type does not already contain a method with the same signature
 	 *  
@@ -14,36 +13,33 @@ aspect PushDownMethod {
 	 * method public and abstract.
 	 */
 	public void MethodDecl.pushDown() {
-		if(!this.overrides().isEmpty())
-			throw new RefactoringException("cannot push down overriding method");
-		TypeDecl oldhost = hostType();
-		Collection<TypeDecl> children = oldhost.childTypes();
+		if(isRootMethod() && !hostType().isAbstract())
+			throw new RefactoringException("cannot push a root method");
+		Collection<TypeDecl> children = hostType().childTypes();
 		if(children.size() != 1)
 			throw new RefactoringException("can only push down to exactly one subclass");
 		TypeDecl child = children.iterator().next();
 		if(!child.localMethodsSignature(signature()).isEmpty())
 			throw new RefactoringException("method with that signature already exists");
+		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
+			getModifiers().addModifiers("public", "abstract");
 		unfoldSynchronized();
-		programRoot().lockMethodNames(Collections.singleton(name()));
+		programRoot().lockMethodNames(name());
 		lockAllNames();
-		moveTo(child);
-		if(oldhost.isInterfaceDecl() && !child.isInterfaceDecl())
-			makePublicAbstract();
+		hostType().removeBodyDecl(this);
+		child.addBodyDecl(this);
 		programRoot().flushCaches();
 		foldSynchronized();
 	}
 	
-	// move a method decl to a new type
-	private void MethodDecl.moveTo(TypeDecl target) {
-		hostType().removeBodyDecl(this);
-		target.addBodyDecl(this);
-	}
-	
-	// make a method public and abstract
-    private void MethodDecl.makePublicAbstract() {
-    	if(!getModifiers().isPublic())
-    		getModifiers().addModifier(new Modifier("public"));
-    	getModifiers().addModifier(new Modifier("abstract"));
+	// check whether this method has ancestors, but all of them are abstract
+    private boolean MethodDecl.isRootMethod() {
+    	if(overrides().isEmpty())
+    		return false;
+    	for(MethodDecl anc : overrides())
+    		if(!anc.isAbstract())
+    			return false;
+    	return true;
 	}
 	
     public void MethodDecl.doPushDown() {
