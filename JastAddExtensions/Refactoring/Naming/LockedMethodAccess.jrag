@@ -258,6 +258,8 @@ aspect LockedMethodAccess {
 				return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma);
 			return null;
 		} else {
+			if(!target.accessibleFrom(enclosing))
+				throw new RefactoringException("method not accessible");
 			return qualifier.qualifiesAccess(ma);
 		}
 	}	

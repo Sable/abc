@@ -129,8 +129,14 @@ aspect LockedVariableAccess {
 				acc = getQualifier().qualifiedAccessVariable(target);
 			else
 				acc = accessVariable(target);
-			if(acc == null)
+			if(acc == null) {
+				if(target.isStatic()) {
+					TypeDecl host = target.hostType();
+					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
+						return host.createLockedAccess().qualifiesAccess(new VarAccess(target.name()));
+				}
 				throw new RefactoringException("cannot access variable "+target.name());
+			}
 			return acc.eliminate(hasQualifier() ? getQualifier() : null, enclosingType());
 		} else {
 			throw new RefactoringException("cannot access variable "+target.name());

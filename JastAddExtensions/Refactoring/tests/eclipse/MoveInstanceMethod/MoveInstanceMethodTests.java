@@ -34,7 +34,7 @@ public class MoveInstanceMethodTests extends TestCase {
 			int pstartLine = ASTNode.getLine(start), pstartColumn = ASTNode.getColumn(start),
 			    pendLine = ASTNode.getLine(end), pendColumn = ASTNode.getColumn(end)+1;
 			if((pstartLine < startLine || pstartLine == startLine && pstartColumn <= startColumn)
-					||
+					&&
 				(endLine < pendLine || endLine == pendLine && endColumn <= pendColumn))
 				return (MethodDecl)p;
 		}
