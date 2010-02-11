@@ -316,14 +316,15 @@ public class InlineTempTests extends TestCase {
             "  int k;"+
             "  int incK() { ++k; return 0; }"+
             "  int m() {"+
-            "    int i = incK();"+
+            "    int i = incK();" +
+            "    k = 23;"+
             "    return i;"+
             "  }"+
             "}")));
     }
 
     public void test14() {
-        testFail(
+        testSucc(
             Program.fromCompilationUnits(
             new RawCU("A.java",
             "class A {"+
@@ -332,6 +333,15 @@ public class InlineTempTests extends TestCase {
             "  int m() {"+
             "    int i = nop();"+
             "    return i;"+
+            "  }"+
+            "}")),
+            Program.fromCompilationUnits(
+            new RawCU("A.java",
+            "class A {"+
+            "  int k;"+
+            "  int nop() { return 0; }"+
+            "  int m() {"+
+            "    return nop();"+
             "  }"+
             "}")));
     }

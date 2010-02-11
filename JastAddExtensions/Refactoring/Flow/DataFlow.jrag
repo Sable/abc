@@ -17,15 +17,25 @@ aspect DataFlow {
 			// we actually don't need to lock write dependences for local variables
 			// (since for them we can see every write), but that is not implemented at the moment
 			lockedWriteDeps = writeDeps();
+		super.lockDataFlow();
 	}
 	
-	public void MethodAccess.lockDataFlow() {
-		throw new RefactoringException("cannot preserve data flow for method invocations");
+	// conservative approximation of data flow for method accesses
+	MethodDecl implements Location;
+	eq MethodAccess.getLocation() = decl();
+	
+	refine Alias public boolean Variable.mayAlias(Location l) {
+		return l instanceof MethodDecl && (this.isClassVariable() || this.isInstanceVariable())
+		    || refined(l);
 	}
+	
+	refine Alias eq ArrayAccess.mayReferTo(Location l) = l instanceof MethodDecl || refined(l);
 	
 	public void ASTNode.unlockDataFlow() { }
 	
 	public void Access.unlockDataFlow() {
+		if(hostBodyDecl() != null)
+			hostBodyDecl().flushCollectionCache();
 		if(lockedReachingDefs != null) {
 			if(!reachingDefinitions().equals(lockedReachingDefs))
 				throw new RefactoringException("couldn't preserve data flow");

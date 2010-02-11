@@ -476,9 +476,10 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 28, 7, 42, true, true, "temp", "length");
 	}*/
 
-	public void test71() throws Exception{
+	// disabled: conservative dataflow
+	/*public void test71() throws Exception{
 		helper1(8, 24, 8, 34, true, false, "temp", "string");
-	}
+	}*/
 
 	public void test72() throws Exception{
 		helper1(8, 32, 8, 33, true, false, "temp", "i2");

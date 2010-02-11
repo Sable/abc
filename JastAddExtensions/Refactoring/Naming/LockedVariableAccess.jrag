@@ -191,6 +191,11 @@ aspect LockedVariableAccess {
 	eq LockedThisAccess.decl() = getTarget();
 	eq LockedSuperAccess.decl() = getTarget();
 	
+	public LockedThisAccess LockedThisAccess.lock() { return this; }
+	public LockedThisAccess LockedThisAccess.lock(TypeDecl target) { setTarget(target); return this; }
+	public LockedSuperAccess LockedSuperAccess.lock() { return this; }
+	public LockedSuperAccess LockedSuperAccess.lock(TypeDecl target) { setTarget(target); return this; }
+	
 	public void LockedThisAccess.toString(StringBuffer s) {
 		s.append("[[this]]");
 	}

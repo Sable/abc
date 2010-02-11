@@ -75,6 +75,7 @@ public class InlineMethodTests extends TestCase {
     }
 
     public void test2() {
+    	// fail because target of method call is not unique
         testFail(
             Program.fromCompilationUnits(new RawCU("A.java",
             "class A {" +
@@ -249,6 +250,7 @@ public class InlineMethodTests extends TestCase {
     }
 
     public void test8() {
+    	// fail due to shadowing
         testFail(
             Program.fromCompilationUnits(new RawCU("A.java",
             "class A {" +
@@ -493,6 +495,7 @@ public class InlineMethodTests extends TestCase {
     }
 
     public void test16() {
+    	// fail because we cannot inline library method
         testFail(Program.fromStmts("inline: Integer.parseInt(\"42\");"));
     }
     

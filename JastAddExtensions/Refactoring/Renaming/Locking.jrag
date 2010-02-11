@@ -36,7 +36,9 @@ aspect Locking {
 	
 	public ASTNode LockableName.lockAllNames() {
 		ASTNode res = lock();
-		super.lockAllNames();
-		return res;
+		if(res == this)
+			return super.lockAllNames();
+		else
+			return res.lockAllNames();
 	}
 }
