@@ -524,4 +524,14 @@ public class InlineMethodTests extends TestCase {
     		"    sum0 += x;" +
     		"  sum = sum0; }"));
     }
+    
+    public void test18() {
+    	testSucc(
+    		Program.fromClasses(
+    		"class A<T> { T f(T x) { T y = x; return y; } }",
+    		"class B extends A<String> { void m() { inline: f(\"hello\"); } }"),
+    		Program.fromClasses(
+    	    "class A<T> { T f(T x) { T y = x; return y; } }",
+    		"class B extends A<String> { void m() { String x = \"hello\"; String y = x; } }"));
+    }
 }
