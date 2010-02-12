@@ -5,15 +5,23 @@ aspect MethodAccessExt {
 	syn lazy Collection<MethodDecl> MethodAccess.possibleTargets() {
 		HashSet<MethodDecl> res = new HashSet<MethodDecl>();
 		res.add(decl());
-		if(isPolyCall())
-			res.addAll(decl().overriders());
+		if(!isPolyCall())
+			return res;
+		int sz;
+		do {
+			sz = res.size();
+			HashSet<MethodDecl> next_layer = new HashSet<MethodDecl>();
+			for(MethodDecl md : res)
+				next_layer.addAll(md.overriders());
+			res.addAll(next_layer);
+		} while(res.size() != sz);
 		return res;
 	}
 	
 	syn lazy MethodDecl MethodAccess.getUniqueTarget() {
-		Collection<MethodDecl> targets = possibleTargets();
-		if(targets.size() != 1)
+		MethodDecl md = decl();
+		if(isPolyCall() && !md.overriders().isEmpty())
 			return null;
-		return targets.iterator().next();
+		return decl();
 	}
 }

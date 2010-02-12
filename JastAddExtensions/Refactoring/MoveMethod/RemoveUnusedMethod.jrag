@@ -3,6 +3,15 @@ aspect RemoveUnusedMethod {
 		for(MethodAccess ma : polyUses())
 			if(ma.enclosingBodyDecl() != this)
 				throw new RefactoringException("method is still used");
+		if(!overrides().isEmpty() && allAbstract(overrides()))
+			hostType().makeAbstract();
 		hostType().removeBodyDecl(this);
+	}
+	
+	protected static boolean ASTNode.allAbstract(Collection<MethodDecl> mds) {
+		for(MethodDecl md : mds)
+			if(!md.isAbstract())
+				return false;
+		return true;
 	}
 }

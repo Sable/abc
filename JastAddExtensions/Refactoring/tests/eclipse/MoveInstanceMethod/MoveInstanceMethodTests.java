@@ -20,8 +20,8 @@ package tests.eclipse.MoveInstanceMethod;
  *  - test13, test14, test23, test25, test26, test27, test28, test29, test30, test32, test33, test34, test35, test37:
  *    our engine does not try to adjust the visibility of member fields and methods referenced from moved methods,
  *    hence these refactorings fail in our implementation
- *  - testFail5, testFail8, testFail 9: our engine can handle these
- *  - testFail10 does not actually fail in Eclipse, and neither does it in our refactoring engine
+ *  - testFail5, testFail6, testFail 8: our engine can handle these
+ *  - testFail9, testFail10 do not actually fail in Eclipse, and neither in our refactoring engine
  *  - testFail11: our refactoring engine always automatically chooses parameter names, so it never fails due to
  *    parameter name clashes
  *    
@@ -455,9 +455,10 @@ public class MoveInstanceMethodTests extends TestCase {
 	}*/
 
 	// Cannot move potentially directly recursive method
-	public void testFail6() throws Exception {
+	// disabled: we can do this
+	/*public void testFail6() throws Exception {
 		failHelper1(new String[] { "p1.A", "p2.B"}, "p1.A", 6, 16, 6, 17, PARAMETER, "b", true, true);
-	}
+	}*/
 
 	// Cannot move synchronized method
 	// disabled: we can do this

@@ -29,9 +29,9 @@ aspect InlineAnonymousMethod {
 			replaceWith(expr);
 			root.flushCaches();
 			return expr;
-		} else if(getParent() instanceof ReturnStmt) {
+		} else if(getParent().getParent() instanceof ReturnStmt) {
 			Block block = getBlock();
-			getParent().replaceWith(block);
+			getParent().getParent().replaceWith(block);
 			root.flushCaches();
 			return block;
 		} else {

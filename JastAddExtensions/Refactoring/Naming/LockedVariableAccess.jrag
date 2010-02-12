@@ -228,9 +228,8 @@ aspect LockedVariableAccess {
 	}
 	
 	public Access LockedThisAccess.eliminateLockedNames() {
-		// TODO: maybe this is OK as long as decl() is a subtype of getTarget()?
 		flushCaches();
-		if(super.decl().sameSourceDeclAs(getTarget()))
+		if(super.decl().instanceOf(getTarget()))
 			return new ThisAccess("this");
 		if(!fromSource() || isQualified())
 			throw new RefactoringException("cannot adjust this access");

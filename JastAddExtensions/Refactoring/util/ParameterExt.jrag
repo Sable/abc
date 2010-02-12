@@ -5,6 +5,14 @@ aspect ParameterExt {
 		return new ParameterDeclaration(mod, acc, getID());
 	}
 	
+	public ParameterDeclaration ParameterDeclaration.lockedCopy() {
+		return new ParameterDeclaration((Modifiers)getModifiers().fullCopy(), type().createLockedAccess(), name());
+	}
+	
+	public ParameterDeclaration VariableArityParameterDeclaration.lockedCopy() {
+		return new VariableArityParameterDeclaration((Modifiers)getModifiers().fullCopy(), getTypeAccess().type().createLockedAccess(), name());
+	}
+	
 	interface Parameterisable {
 		int getNumParameter();
 		ParameterDeclaration getParameter(int i);

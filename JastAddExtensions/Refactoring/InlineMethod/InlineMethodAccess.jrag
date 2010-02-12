@@ -7,6 +7,7 @@ aspect InlineMethodAccess {
 		if(!target.hasBlock() || !target.fromSource())
 			throw new RefactoringException("cannot inline call to method without body");
 		MethodDecl target_cp = target.fullCopy();
+		target.unfoldSynchronized();
 		target.lockAllNames();
 		AnonymousMethod anon = target.asAnonymousMethod();
 		bundleQualifier();

@@ -44,7 +44,7 @@ aspect LockedMethodAccess {
 	eq LockedMethodAccess.isQualified() = hasQualifier();
 	eq LockedMethodAccess.qualifier() = getQualifier();
 	eq LockedMethodAccess.isSuperCall() = hasQualifier() ? getQualifier().isSuperAccess() : super.isSuperCall();
-	eq LockedMethodAccess.unqualifiedScope() = this;
+	eq LockedMethodAccess.unqualifiedScope() = super.isQualified() ? super.nestedScope() : this; 
 	
 	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget().getDecl());
 	

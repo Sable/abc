@@ -1,59 +1,129 @@
-aspect PushDownMethod {	
-	/**
-	 * The Push Down Method Refactoring.
-	 * 
-	 * Preconditions:
-	 *  - if method to be pushed overrides at least one other method and all its 
-	 *    ancestors are abstract, the host type must be abstract as well
-	 *  - host type cannot have more than one child type
-	 *  - that child type cannot already contain a method with the same signature
-	 *  - no virtual call to the method can statically resolve to one of its
-	 *    ancestors
-	 *  
-	 * The preconditions ensure that it is enough to adjust all accesses to
-	 * the method being pushed and all accesses within that method.
-	 * 
-	 * If pushing from an interface to a class, we need to make the pushed
-	 * method public and abstract.
-	 */
-	public MethodDecl MethodDecl.pushDown() {
+aspect PushDownMethod {
+	public void MethodDecl.pushDown() {
 		if(!fromSource())
-			throw new RefactoringException("cannot push library methods");
-		if(isRootMethod())
-			hostType().makeAbstract();
-		Collection<TypeDecl> children = hostType().childTypes();
-		if(children.size() != 1)
-			throw new RefactoringException("can only push down to exactly one subclass");
-		TypeDecl child = children.iterator().next();
-		if(isStatic() && child.isInnerClass() || !child.localMethodsSignature(signature()).isEmpty())
-			throw new RefactoringException("method cannot be pushed");
-		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
-			getModifiers().addModifiers("public", "abstract");
-		unfoldSynchronized();
-		for(MethodAccess ma : this.polyUses())
-			if(ma.isPolyCall() && overrides().contains(ma.decl()))
-				throw new RefactoringException("call target could change");
-		programRoot().lockMethodNames(name());
-		lockAllNames();
-		hostType().removeBodyDecl(this);
-		child.addBodyDecl(this);
+			throw new RefactoringException("cannot push library method");
+		if(isAbstract())
+			pushDownAbstract();
+		else if(isPrivate() || isStatic())
+			pushDownMono();
+		else
+			pushDownVirtual();
+	}
+	
+	public void MethodDecl.pushDownAbstract() {
+		MethodDecl md = this;
+		for(TypeDecl child : hostType().childTypes()) {
+			if(!child.localMethods(md.signature()).isEmpty())
+				throw new RefactoringException("cannot insert method here");
+			if(!child.isAbstract())
+				child.makeAbstract();
+			md.lockAllNames();
+			MethodDecl md2 = md;
+			md = (MethodDecl)md.fullCopy();
+			md2.replaceWith(md);
+			if(md.hostType().isInterfaceDecl() && !child.isInterfaceDecl())
+				md2.getModifiers().addModifiers("public", "abstract");
+			md.programRoot().lockMethodNames(md.name());
+			child.addBodyDecl(md2);
+			md.programRoot().flushCaches();
+			md.programRoot().eliminateLockedNames();
+		}
+		md.removeUnused();		
+	}
+	
+	public void MethodDecl.pushDownMono() {
+		MethodDecl md = this;
+		md.unfoldSynchronized();
+		for(TypeDecl child : hostType().childTypes()) {
+			if(!child.localMethods(md.signature()).isEmpty() || md.isStatic() && child.isInnerClass())
+				throw new RefactoringException("cannot insert method here");
+			md.lockAllNames();
+			MethodDecl md2 = md;
+			md = (MethodDecl)md.fullCopy();
+			md2.replaceWith(md);
+			md.programRoot().lockMethodNames(md.name());
+			child.addBodyDecl(md2);
+			md2.foldSynchronized();
+			md.programRoot().flushCaches();
+			md.programRoot().eliminateLockedNames();
+		}
+		md.removeUnused();
+	}
+	
+	public void MethodDecl.pushDownVirtual() {
+		ASTNode parent = getParent();
+		int idx = parent.getIndexOfChild(this);
+		MethodDecl md = this;
+		for(TypeDecl child : hostType().childTypes()) {
+			MethodAccess ma = child.triviallyOverrideInheritedMethod(md);
+			MethodDecl md2 = (MethodDecl)ma.enclosingBodyDecl();
+			ma.inline();
+			md = (MethodDecl)parent.getChild(idx);
+			child.eliminate(WITH_STMT, FRESH_VARIABLES);
+			md2.foldSynchronized();
+		}
+		md.removeUnused();
+	}
+	
+	public void MethodDecl.doPushDown() {
+		Program root = programRoot();
+		pushDown();
+		root.eliminate(RETURN_VOID, LOCKED_NAMES, LOCKED_DATAFLOW);
+	}
+	
+	public MethodAccess TypeDecl.triviallyOverrideInheritedMethod(MethodDecl md) {
+		throw new RefactoringException("cannot override in this kind of type");
+	}
+	
+	public MethodAccess ClassDecl.triviallyOverrideInheritedMethod(MethodDecl md) {
+		if(md.isAbstract() || md.isFinal())
+			throw new RefactoringException("cannot override this method");
+		MethodDecl new_md = md.lockedCopyWithEmptyBody();
+		List<Expr> args = new List<Expr>();
+		for(ParameterDeclaration pd : new_md.getParameters())
+			args.add(new VarAccess(pd.name()));
+		ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), new LockedMethodAccess(md, args)));
+		new_md.setBlock(new Block(new List<Stmt>().add(ret)));
+		if(!localMethodsSignature(md.signature()).isEmpty())
+			throw new RefactoringException("local method of the same name exists");
+		addBodyDecl(new_md);
 		programRoot().flushCaches();
-		foldSynchronized();
-		return this;
+		return (MethodAccess)ret.getResult(); 
 	}
 	
-	// check whether this method has ancestors, but all of them are abstract
-    private boolean MethodDecl.isRootMethod() {
-    	if(overrides().isEmpty())
-    		return false;
-    	for(MethodDecl anc : overrides())
-    		if(!anc.isAbstract())
-    			return false;
-    	return true;
+	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		mods.removeModifiers("synchronized");
+		Access rettype = type().createLockedAccess();
+		String name = name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		for(ParameterDeclaration pd : getParameters())
+			parms.add(pd.lockedCopy());
+		List<Access> exns = new List<Access>();
+		for(Access exn : getExceptions())
+			exns.add(exn.type().createLockedAccess());
+		return new MethodDecl(mods, rettype, name, parms, exns, new Opt<Block>());
 	}
 	
-    public void MethodDecl.doPushDown() {
-    	pushDown();
-    	programRoot().eliminate(LOCKED_NAMES);
-    }
+	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		mods.removeModifiers("synchronized");
+		Access rettype = type().createLockedAccess();
+		String name = name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		for(ParameterDeclaration pd : getParameters())
+			parms.add(pd.lockedCopy());
+		List<Access> exns = new List<Access>();
+		for(Access exn : getExceptions())
+			exns.add(exn.type().createLockedAccess());
+		List<TypeVariable> typeparms = (List<TypeVariable>)getTypeParameters();
+		return new GenericMethodDecl(mods, rettype, name, parms, exns, new Opt<Block>(), typeparms);		
+	}
+	
+	public MethodDecl AnnotationMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl IntertypeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl IntroducedMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl MethodDeclSubstituted.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 }
