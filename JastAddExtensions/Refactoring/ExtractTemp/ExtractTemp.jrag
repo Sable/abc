@@ -5,12 +5,28 @@ aspect ExtractTemp {
 		TypeDecl type = type();
 		if(type.isAnonymous())
 			type = ((AnonymousDecl)type).superType();
+		else if(isInaccessibleTypeVariable(type))
+			type = ((TypeVariable)type).uniqueUpperBound();
 		return insertUnusedLocal(new VariableDeclaration(type.createLockedAccess(), name)).
 			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}
 	
 	public VariableDeclaration Expr.extractTemp(String name) {
 		return extractTemp(name, false);
+	}
+	
+	// JastAddJ represents type variable captures as bound accesses to type variables of the generic type
+	// this solution is a bit hackish, so let's solve it in a hackish way ;-)
+	public boolean Expr.isInaccessibleTypeVariable(TypeDecl td) {
+		if(!td.isTypeVariable())
+			return false;
+		return lookupType(td.name()) != td;
+	}
+	
+	public TypeDecl TypeVariable.uniqueUpperBound() {
+		if(getNumTypeBound() != 1)
+			throw new RefactoringException("captured type variable does not have unique bound");
+		return getTypeBound(0).type();
 	}
 
 	// an expression is inextractible if it cannot be replaced by a variable access

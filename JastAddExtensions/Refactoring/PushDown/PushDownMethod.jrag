@@ -13,10 +13,9 @@ aspect PushDownMethod {
 	public void MethodDecl.pushDownAbstract() {
 		MethodDecl md = this;
 		for(TypeDecl child : hostType().childTypes()) {
-			if(!child.localMethods(md.signature()).isEmpty())
-				throw new RefactoringException("cannot insert method here");
-			if(!child.isAbstract())
-				child.makeAbstract();
+			if(!child.localMethodsSignature(md.signature()).isEmpty())
+				continue;
+			child.makeAbstract();
 			md.lockAllNames();
 			MethodDecl md2 = md;
 			md = (MethodDecl)md.fullCopy();
@@ -35,7 +34,7 @@ aspect PushDownMethod {
 		MethodDecl md = this;
 		md.unfoldSynchronized();
 		for(TypeDecl child : hostType().childTypes()) {
-			if(!child.localMethods(md.signature()).isEmpty() || md.isStatic() && child.isInnerClass())
+			if(!child.localMethodsSignature(md.signature()).isEmpty() || md.isStatic() && child.isInnerClass())
 				throw new RefactoringException("cannot insert method here");
 			md.lockAllNames();
 			MethodDecl md2 = md;

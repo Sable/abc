@@ -85,8 +85,10 @@ public class PushDownTests extends TestCase {
 			String[][] signaturesOfMethodsToDeclareAbstract, Object object,
 			Object object2) {
 		if(selectedMethodNames.length > 0) {
+			assertTrue("Cannot push more than one method.", selectedMethodNames.length == 1);
 			pushDownMethod(selectedMethodNames[0], true);
 		} else {
+			assertTrue("Cannot push more than one field.", selectedFieldNames.length == 1);
 			pushDownField(selectedFieldNames[0], true);
 		}
 	}
@@ -99,8 +101,10 @@ public class PushDownTests extends TestCase {
 			String[] namesOfMethodsToDeclareAbstract,
 			String[][] signaturesOfMethodsToDeclareAbstract, Object object) {
 		if(selectedMethodNames.length > 0) {
+			assertTrue("Cannot push more than one method.", selectedMethodNames.length == 1);
 			pushDownMethod(selectedMethodNames[0], false);
 		} else {
+			assertTrue("Cannot push more than one field.", selectedFieldNames.length == 1);
 			pushDownField(selectedFieldNames[0], false);
 		}
 	}
@@ -113,8 +117,10 @@ public class PushDownTests extends TestCase {
 			String[] namesOfMethodsToDeclareAbstract,
 			String[][] signaturesOfMethodsToDeclareAbstract, Object object) {
 		if(selectedMethodNames.length > 0) {
+			assertTrue("Cannot push more than one method.", selectedMethodNames.length == 1);
 			pushDownMethod(selectedMethodNames[0], false);
 		} else {
+			assertTrue("Cannot push more than one field.", selectedFieldNames.length == 1);
 			pushDownField(selectedFieldNames[0], false);
 		}
 	}
