@@ -13,8 +13,12 @@ aspect InlineMethodAccess {
 		bundleQualifier();
 		if(isRightChildOfDot()) {
 			Expr qual = qualifier();
-			qual.lockAllNames();
-			anon.setBlock(new Block(new List<Stmt>().add(new WithStmt((Access)qual, anon.getBlock()))));
+			if(qual.isSuperAccess())
+				qual = qual.convertSuperToThis();
+			if(!(qual instanceof ThisAccess)) {
+				qual.lockAllNames();
+				anon.setBlock(new Block(new List<Stmt>().add(new WithStmt((Access)qual, anon.getBlock()))));
+			}
 			parentDot().replaceWith(anon);
 		} else {
 			replaceWith(anon);
@@ -43,4 +47,8 @@ aspect InlineMethodAccess {
 								   new List<Expr>());
 	}
 	
+	syn Expr Expr.convertSuperToThis() = this;
+	eq AbstractDot.convertSuperToThis() = new AbstractDot(getLeft().convertSuperToThis(), 
+														  (Access)getRight().convertSuperToThis());
+	eq SuperAccess.convertSuperToThis() = new ThisAccess("this");
 }

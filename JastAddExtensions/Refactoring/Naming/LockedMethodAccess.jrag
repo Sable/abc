@@ -1,8 +1,11 @@
 aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */
-	public LockedMethodAccess.LockedMethodAccess(MethodDecl target, List<Expr> args) {
-		this(target.name(), args, target.save(), new Opt());
+	private SavedMethodDecl MethodAccess.targetMethod = null;
+	
+	public MethodAccess.MethodAccess(MethodDecl target, List<Expr> args) {
+		this(target.name(), args);
+		targetMethod = target.save();
 	}
 	
 	/* If we just store the method declaration an access should bind to, we get into trouble with
@@ -25,63 +28,35 @@ aspect LockedMethodAccess {
 	}
 	
 	class SavedParMethodDecl extends SavedMethodDecl {
-		private ArrayList<TypeDecl> parms;
+		private ArrayList<SavedTypeDecl> parms;
 		public SavedParMethodDecl(ParMethodDecl pmd) {
 			super(pmd.genericMethodDecl());
-			parms = new ArrayList<TypeDecl>();
+			parms = new ArrayList<SavedTypeDecl>();
 			for(Access acc : pmd.getTypeArguments())
-				parms.add(acc.type());
+				parms.add(acc.type().save());
 		}
 		
 		public MethodDecl getDecl() {
-			return ((GenericMethodDecl)super.getDecl()).lookupParMethodDecl(parms);
+			ArrayList<TypeDecl> parmtypes = new ArrayList<TypeDecl>();
+			for(SavedTypeDecl std : parms)
+				parmtypes.add(std.getDecl());
+			return ((GenericMethodDecl)super.getDecl()).lookupParMethodDecl(parmtypes);
 		}
 	}
 	
 	public SavedMethodDecl MethodDecl.save() { return new SavedMethodDecl(this); }
 	public SavedParMethodDecl ParMethodDecl.save() { return new SavedParMethodDecl(this); }
 	
-	eq LockedMethodAccess.isQualified() = hasQualifier();
-	eq LockedMethodAccess.qualifier() = getQualifier();
-	eq LockedMethodAccess.isSuperCall() = hasQualifier() ? getQualifier().isSuperAccess() : super.isSuperCall();
-	eq LockedMethodAccess.unqualifiedScope() = super.isQualified() ? super.nestedScope() : this; 
+	refine LookupMethod eq MethodAccess.decls() = targetMethod == null ? refined() : targetMethod.getDecl();
 	
-	eq LockedMethodAccess.decls() = SimpleSet.emptySet.add(getTarget().getDecl());
-	
-	private MethodDecl LockedMethodAccess.unlockedDecl() {
-		flushCache();
-		SimpleSet set; 
-		if(hasQualifier())
-			set = maxSpecific(getQualifier().type().memberMethods(name()));
-		else
-			set = maxSpecific(lookupMethod(name()));
-		if(!set.isSingleton())
-			return unknownMethod();
-		MethodDecl res = (MethodDecl)set.iterator().next();
-		return res;
-	}
-	
-	public ASTNode LockedMethodAccess.lock() { return this; }
-	public ASTNode LockedMethodAccess.lock(MethodDecl md) {
-		this.setTarget(md.save());
-		return this;
-	}
-		
-	public void LockedMethodAccess.toString(StringBuffer s) {
-		s.append("[[");
-		if(hasQualifier()) {
-			getQualifier().toString(s);
-			s.append(".");
+	refine PrettyPrint public void MethodAccess.toString(StringBuffer s) {
+		if(targetMethod == null) {
+			refined(s);
+		} else {
+			s.append("[[");
+			refined(s);
+			s.append("]]");
 		}
-		super.toString(s);
-		s.append("]]");
-	}
-	
-	public void LockedMethodAccess.addQualifier(Expr e) {
-		if(!hasQualifier())
-			setQualifier(e);
-		else
-			setQualifier(e.qualifiesAccess((Access)getQualifier()));
 	}
 	
 	// introducing fixed method accesses
@@ -93,79 +68,54 @@ aspect LockedMethodAccess {
 	}
 	
 	public ASTNode MethodAccess.lock() {
-		return lock(decl());
+		return targetMethod == null ? lock(decl()) : this;
 	}
 	
 	public ASTNode MethodAccess.lock(MethodDecl md) {
 		assert md != null && !md.isUnknown();
 		MethodDecl target = md.isSubstituted() ? md.sourceMethodDecl() : md;
-		LockedMethodAccess lma = new LockedMethodAccess(target, getArgs());
-		replaceWith(lma);
-		if(lma.isRightChildOfDot()) {
-			lma.parentDot().is$Final(false);
-		} else if(lma.isLeftChildOfDot()) {
-			AbstractDot parent = lma.parentDot();
-			if(parent.isRightChildOfDot()) {
-				parent.is$Final(false);
-				parent.parentDot().is$Final(false);
-			}
-		}
-		return lma;
+		targetMethod = target.save();
+		return this;
 	}
 	
 	public boolean MethodDecl.isSubstituted() { return false; }
 	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
 	
-	// pushing qualifiers into LockedMethodAccess
-	rewrite AbstractDot {
-	  when(getRight() instanceof LockedMethodAccess)
-	  to LockedMethodAccess {
-		LockedMethodAccess lma = (LockedMethodAccess)getRight();
-		lma.addQualifier(getLeft());
-		if(hasParentDot())
-			parentDot().is$Final(false);
-		return lma;
-	  }
-	}
-	 
-	rewrite AbstractDot {
-	  when(getRight() instanceof AbstractDot &&
-			  ((AbstractDot)getRight()).getLeft() instanceof LockedMethodAccess)
-	  to AbstractDot {
-		AbstractDot r = (AbstractDot)getRight();
-		LockedMethodAccess ma = (LockedMethodAccess)r.getLeft();
-		ma.addQualifier(getLeft());
-		AbstractDot d = new AbstractDot(ma, r.getRight());
-		if(hasParentDot())
-			parentDot().is$Final(false);
-		return d;		  
-	  }
-	}
+	syn lazy boolean Access.isLockedMethodAccess() = false;
+	eq MethodAccess.isLockedMethodAccess() = targetMethod != null;
 	
 	// eliminating locked method accesses
-	inh TypeDecl LockedMethodAccess.enclosingType();
-	public Access LockedMethodAccess.eliminateLockedNames() {
-		if(hasQualifier())
-			setQualifier((Expr)getQualifier().eliminateLockedNames());
-		MethodDecl target = getTarget().getDecl();
+	inh TypeDecl MethodAccess.enclosingType();
+	public Access MethodAccess.eliminateLockedNames() {
+		return targetMethod == null ? this : unlock(null);
+	}
+	
+	public ASTNode AbstractDot.eliminateLockedNames() {
+		if(getRight() instanceof AbstractDot)
+			rotateLeft();
+		if(getRight().isLockedMethodAccess()) {
+			Expr qual = (Expr)getLeft().eliminateLockedNames();
+			Expr res = ((MethodAccess)getRight()).unlock(qual);
+			replaceWith(res);
+			return res;
+		} else {
+			return super.eliminateLockedNames();	
+		}
+	}
+	
+	public Access MethodAccess.unlock(Expr qual) {
+		MethodDecl target = targetMethod.getDecl();
+		targetMethod = null;
+		flushCache();
 		if(fromSource())
 			setID(target.name());
-		if(unlockedDecl().sameSourceDeclAs(target)) {
-			MethodAccess ma = new MethodAccess(name(), getArgs());
-			if(hasQualifier())
-				return getQualifier().qualifiesAccess(ma);
-			else
-				return ma;
+		if(decl().sameSourceDeclAs(target)) {
+			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource()) {
-			MethodAccessInfo acc;
-			if(hasQualifier())
-				acc = getQualifier().type().accessMemberMethod(target);
-			else
-				acc = accessMethod(target);
+			MethodAccessInfo acc = accessMethod(target);
 			if(acc == null)
 				throw new RefactoringException("cannot access method "+target.name());
-			Access res = acc.eliminate(hasQualifier() ? getQualifier() : null, 
-									   enclosingType(), inStaticContext(), getArgs());
+			Access res = acc.eliminate(qual, enclosingType(), inStaticContext(), getArgs());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());
 			return res;
@@ -175,8 +125,7 @@ aspect LockedMethodAccess {
 	}
 	
 	// eliminating locked method accesses
-	public Access MethodAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing, 
-			boolean inStaticCtxt, List<Expr> args) {
+	public Access MethodAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
 		if(qualifier == null)
 			return eliminate(enclosing, inStaticCtxt, args);
 		else
@@ -270,7 +219,7 @@ aspect LockedMethodAccess {
 			return qualifier.qualifiesAccess(ma);
 		}
 	}
-	
+
 	/* NOTE: Locked method accesses only fix the static declaration a method resolves to; they do not consider
 	 *       possible polymorphic dispatch. One could think that it would be safer to actually compute the set
 	 *       of all targets a call could possibly resolve to, and fix that whole set. This would not actually

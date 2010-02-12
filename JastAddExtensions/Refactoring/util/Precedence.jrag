@@ -77,7 +77,6 @@ aspect Precedence {
 	eq ElementConstantValue.getExpr().maxPrecedence() = Integer.MAX_VALUE;
 	eq EnhancedForStmt.getExpr().maxPrecedence() = Integer.MAX_VALUE;
 	eq EnumConstant.getArg().maxPrecedence() = Integer.MAX_VALUE;
-	eq LockedMethodAccess.getQualifier().maxPrecedence() = Integer.MAX_VALUE;
 	eq LockedVarAccess.getQualifier().maxPrecedence() = Integer.MAX_VALUE;
 	
 	eq Binary.getLeftOperand().maxPrecedence() = precedence();

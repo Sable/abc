@@ -38,7 +38,7 @@ public class RenameMethodTests extends TestCase {
 		MethodDecl md = (MethodDecl)s.iterator().next();
 		try {
 			md.rename(new_name);
-			fail("Refactoring was supposed to fail; succeeded with "+in);
+			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {	}
 	}
 	

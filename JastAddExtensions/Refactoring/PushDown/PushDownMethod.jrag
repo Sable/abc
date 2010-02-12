@@ -81,13 +81,14 @@ aspect PushDownMethod {
 		List<Expr> args = new List<Expr>();
 		for(ParameterDeclaration pd : new_md.getParameters())
 			args.add(new VarAccess(pd.name()));
-		ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), new LockedMethodAccess(md, args)));
+		MethodAccess lockedAccess = new MethodAccess(md, args);
+		ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), lockedAccess));
 		new_md.setBlock(new Block(new List<Stmt>().add(ret)));
 		if(!localMethodsSignature(md.signature()).isEmpty())
 			throw new RefactoringException("local method of the same name exists");
 		addBodyDecl(new_md);
 		programRoot().flushCaches();
-		return (MethodAccess)ret.getResult(); 
+		return lockedAccess; 
 	}
 	
 	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
