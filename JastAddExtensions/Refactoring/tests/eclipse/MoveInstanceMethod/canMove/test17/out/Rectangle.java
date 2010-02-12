@@ -26,8 +26,8 @@ public class Rectangle {
 	 * @return the area
 	 */
 	public int area() {
-		int width= getWidth();
-		int height= getHeight();
+		int width = this.getWidth();   ///int width= getWidth();
+		int height = this.getHeight(); ///int height= getHeight();
 		return width*height;
 	}
 }

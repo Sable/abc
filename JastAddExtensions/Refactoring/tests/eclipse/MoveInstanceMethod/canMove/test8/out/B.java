@@ -1,6 +1,6 @@
 package p2;
 
-import p1.A;
+///import p1.A;
 
 public class B {
 	public String bar= "bar";
@@ -11,10 +11,11 @@ public class B {
 	 * @return Object
 	 * @throws Exception
 	 */
-	public Object m(A a) throws Exception {
+	///public Object m(A a) throws Exception {
+	public Object m(p1.A a) throws Exception {
 		System.out.println(a.foo);
 		System.out.println(a.foo);
-		System.out.println(bar);
+		System.out.println(this.bar); ///System.out.println(bar);
 		return null;
 	}
 }

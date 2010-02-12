@@ -145,6 +145,8 @@ aspect LockedMethodAccess {
 	// eliminating locked method accesses
 	inh TypeDecl LockedMethodAccess.enclosingType();
 	public Access LockedMethodAccess.eliminateLockedNames() {
+		if(hasQualifier())
+			setQualifier((Expr)getQualifier().eliminateLockedNames());
 		MethodDecl target = getTarget().getDecl();
 		if(fromSource())
 			setID(target.name());

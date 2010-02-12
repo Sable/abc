@@ -27,6 +27,7 @@ public class Rectangle {
 	 * @return the filled area
 	 */
 	public int filledArea(Shape shape) {
-		return shape.area() -	getWidth() * getHeight();
+		///return shape.area() -	getWidth() * getHeight();
+		return shape.area() - this.getWidth() * this.getHeight();
 	}
 }

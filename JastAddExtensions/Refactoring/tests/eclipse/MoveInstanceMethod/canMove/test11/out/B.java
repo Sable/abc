@@ -1,6 +1,6 @@
 package p2;
 
-import p1.A;
+///import p1.A;
 
 public class B {
 	public void mB1() {}
@@ -14,8 +14,9 @@ public class B {
 	 * @param foo
 	 * @param bar
 	 */
-	public void mA1(A a, float j, int foo, String bar) {
-		mB1();
+	///public void mA1(A a, float j, int foo, String bar) {
+	public void mA1(p1.A a, float j, int foo, String bar) {
+		this.mB1(); ///mB1();
 		System.out.println(bar + j + a);
 		String z= a.fString + a.fBool;
 		a.fInt++;

@@ -27,6 +27,7 @@ public class Rectangle {
 	 * @return boolean
 	 */
 	public boolean isSmallerThan(Shape shape) {
-		return shape.area() < getWidth() * getHeight();
+		///return shape.area() < getWidth() * getHeight();
+		return shape.area() < this.getWidth() * this.getHeight();
 	}
 }

@@ -20,7 +20,8 @@ public class B {
 				public String decorate(String in) {
 					return "(" + super.decorate(in) + ")";
 				}
-			}.decorate(toString())
+			///}.decorate(toString())
+			}.decorate(this.toString())
 		);
 	}
 }

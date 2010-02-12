@@ -17,7 +17,8 @@ public class B {
 			}
 		}
 		System.out.println(
-			new StarDecorator1().decorate(toString())
+			///new StarDecorator1().decorate(toString())
+			new StarDecorator1().decorate(this.toString())
 		);
 	}
 }

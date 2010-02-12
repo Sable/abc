@@ -11,12 +11,12 @@ class Second {
 	}
 
 	public void print(A a) {
-		foo(this);
-		bar();
-		go(17, 18);
+		this.foo(this);  ///foo(this);
+		this.bar();      ///bar();
+		this.go(17, 18); ///go(17, 18);
 	
 		a.equals(a);
-		foo(a.s2);
+		this.foo(a.s2);  ///foo(a.s2);
 		a.s2.bar();
 	}
 }

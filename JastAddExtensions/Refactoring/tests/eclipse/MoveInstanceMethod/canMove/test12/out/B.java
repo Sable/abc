@@ -12,7 +12,7 @@ public class B {
 	 * @param bar a bar
 	 */
 	public void mA1(float j, int foo, String bar) {
-		mB1();
+		this.mB1(); ///mB1();
 		System.out.println(bar + j);
 	}
 }

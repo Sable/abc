@@ -11,8 +11,8 @@ class Second {
 	}
 
 	public void print() {
-		foo(this);
-		bar();
-		go(17, 18);
+		this.foo(this); ///foo(this);
+		this.bar();     ///bar();
+		this.go(17, 18); ///go(17, 18);
 	}
 }
