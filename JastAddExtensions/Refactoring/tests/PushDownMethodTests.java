@@ -402,4 +402,47 @@ public class PushDownMethodTests extends TestCase {
     		  new RawCU("B.java",     "package q; public class B extends p.A { }"))); 
     }
 
+    public void test32() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "class S {" +
+    		  "  void k() { }" +
+    		  "}",
+    		  "class A extends S {" +
+    		  "  void m() { super.k(); }" +
+    		  "}",
+    		  "class B extends A { }"),
+   		    Program.fromClasses(
+    	      "class S {" +
+    	      "  void k() { }" +
+    	      "}",
+    	      "class A extends S { }",
+    	      "class B extends A {" +
+    	      "  void m() { super.k(); }" +
+    	      "}"));
+    }
+    
+    public void test33() {
+    	testFail(
+    		Program.fromClasses(
+    		  "interface I { int m(); }",
+    		  "class Super implements I { public int m() { return 23; } }",
+    		  "class A extends Super {" +
+    		  "  public int m() { return 42; }" +
+    		  "  public static void main(String[] args) {" +
+    		  "    I i = new A();" +
+    		  "    System.out.println(i.m());" +
+    		  "  }" +
+    		  "}",
+    		  "class B extends A { }"));
+    }
+    
+    public void test34() {
+    	testFail(Program.fromClasses(
+    		  "class A { static void m() { } }",
+    		  "class Outer {" +
+    		  "  class B extends A { }" +
+    		  "}"));
+    }
+    
 }

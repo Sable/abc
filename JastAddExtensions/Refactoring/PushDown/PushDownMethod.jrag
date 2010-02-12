@@ -17,14 +17,16 @@ aspect PushDownMethod {
 	 * method public and abstract.
 	 */
 	public MethodDecl MethodDecl.pushDown() {
+		if(!fromSource())
+			throw new RefactoringException("cannot push library methods");
 		if(isRootMethod())
 			hostType().makeAbstract();
 		Collection<TypeDecl> children = hostType().childTypes();
 		if(children.size() != 1)
 			throw new RefactoringException("can only push down to exactly one subclass");
 		TypeDecl child = children.iterator().next();
-		if(!child.localMethodsSignature(signature()).isEmpty())
-			throw new RefactoringException("method with that signature already exists");
+		if(isStatic() && child.isInnerClass() || !child.localMethodsSignature(signature()).isEmpty())
+			throw new RefactoringException("method cannot be pushed");
 		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
 			getModifiers().addModifiers("public", "abstract");
 		unfoldSynchronized();
