@@ -10,7 +10,6 @@ aspect RenameVariable {
 			throw new RefactoringException("not a valid name: "+new_name);
 		checkRenamingPreconds(new_name);
 		programRoot().lockNames(name(), new_name);
-		programRoot().triggerRewrites();
 		setID(new_name);
 		programRoot().eliminate(LOCKED_NAMES);
 	}

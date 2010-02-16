@@ -9,9 +9,9 @@ aspect ExtractAssignment {
 		Expr expr = (Expr)getParent().getChild(idx);
 		expr.lockDataFlow();
 		block.lockSyncDependencies();
-		VarAccess vacc = new LockedVarAccess(v);
+		VarAccess vacc = v.createLockedAccess();
 		expr.replaceWith(vacc);
-		vacc.insertStmtBefore(AssignExpr.asStmt(new LockedVarAccess(v), expr));
+		vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), expr));
 		block.hostType().flushCaches();
 		// TODO: this shouldn't be needed
 		expr.unlockDataFlow();

@@ -29,7 +29,7 @@ aspect MakeMethodStatic {
 			}
 		}
 		// fix body
-		Access newParmAcc = new LockedVarAccess(newParm);
+		Access newParmAcc = newParm.createLockedAccess();
 		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
 		newMethod.setBlock(new Block(new List<Stmt>().add(withStmt)));
 		newMethod.flushCaches();

@@ -22,7 +22,6 @@ aspect RenameMethod {
 	private void MethodDecl.renameSingleMethod(String new_name) {
 		checkRenamingPreconds(new_name);
 		programRoot().lockMethodNames(name(), new_name);
-		programRoot().triggerRewrites();
 		setID(new_name);
 		programRoot().eliminate(LOCKED_NAMES);
 	}

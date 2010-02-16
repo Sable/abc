@@ -195,4 +195,6 @@ aspect With {
 		}
 		super.eliminateWith(qualifiers, hostType);
 	}
+	
+	syn lazy boolean Access.qualifiesMethodAccess() = hasParentDot() && parentDot().isMethodAccess(); 
 }

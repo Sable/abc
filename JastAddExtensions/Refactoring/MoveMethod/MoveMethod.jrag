@@ -27,7 +27,7 @@ aspect MoveMethod {
 		Variable b_copy = b.isMethodParameter() ? m_copy.getParameter(b.name()) : b;
 		List<Expr> args = new List<Expr>();
 		for(ParameterDeclaration pd : m_copy.getParameters())
-			args.add(new LockedVarAccess(pd));
+			args.add(pd.createLockedAccess());
 		// NB: synchronization is done by delegating method
 		m.getModifiers().removeModifier("synchronized");
 		m.lockAllNames();
@@ -49,14 +49,14 @@ aspect MoveMethod {
 			a_decl.setDemandFinal();
 			m.insertParameter(a_decl, i);
 			args.insertChild(A==m.hostType() ? new ThisAccess("this") : A.createLockedAccess().qualifiesAccess(new ThisAccess("this")), i);
-			quals.insertChild(new LockedVarAccess(a_decl), 0);
+			quals.insertChild(a_decl.createLockedAccess(), 0);
 		}
 		Block withBlock = m.getBlock();
 		m.setBlock(new Block(new_b, new WithStmt(quals, withBlock)));
 		m.replaceWith(m_copy);
 		m_copy.programRoot().flushCaches(); m.flushCaches();
 		b.type().insertUnusedMethod(m);
-		LockedVarAccess b_acc = new LockedVarAccess(b_copy);
+		VarAccess b_acc = b_copy.createLockedAccess();
 		m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m, args)))));
 		m.eliminate(ASTNode.WITH_STMT, ASTNode.LOCKED_NAMES);
 		new_b.inline();

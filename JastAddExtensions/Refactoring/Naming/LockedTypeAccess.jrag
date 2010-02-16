@@ -17,11 +17,14 @@ aspect LockedTypeAccess {
 	private SavedTypeDecl TypeAccess.targetType = null;
 	private boolean CompilationUnit.locked = false;
 	
-	refine LookupType eq TypeAccess.decls() = targetType == null ? refined() : targetType.getDecl();
-	refine Generics eq TypeAccess.decl() = targetType == null ? refined() : targetType.getDecl();
+	public boolean TypeAccess.isLocked() { return targetType != null; }
+	public boolean CompilationUnit.isLocked() { return locked; }
+	
+	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType.getDecl() : refined();
+	refine Generics eq TypeAccess.decl() = isLocked() ? targetType.getDecl() : refined();
 	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
-		if(targetType == null) {
+		if(!isLocked()) {
 			refined(s);
 		} else {
 			s.append("[[");
@@ -44,16 +47,29 @@ aspect LockedTypeAccess {
 		return new ParTypeAccess(tacc, targs); 
 	}
 	
-	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
-		if(targetType == null &&
-				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
-			return lock();
-		return super.lockNames(endangered);
+	public Access ParTypeDecl.createLockedAccess() {
+		List<Access> args = new List<Access>();
+		for(int i=0;i<getNumArgument();++i)
+			args.add(getArgument(i).type().createLockedAccess());
+		TypeDecl gen = ((GenericTypeDecl)genericDecl()).rawType();
+		return new ParTypeAccess(gen.createLockedAccess(), args);
 	}
 	
-	public ASTNode ParTypeAccess.lockNames(Collection<String> endangered) {
-		String name = getTypeAccess().type().name();
-		if(endangered.contains(name))
+	public Access RawClassDecl.createLockedAccess() {
+		TypeAccess acc = new TypeAccess(name());
+		acc.lock(this);
+		return acc;
+	}
+	
+	public Access RawInterfaceDecl.createLockedAccess() {
+		TypeAccess acc = new TypeAccess(name());
+		acc.lock(this);
+		return acc;
+	}
+	
+	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
+		if(!isLocked() &&
+				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
 			return lock();
 		return super.lockNames(endangered);
 	}
@@ -68,7 +84,7 @@ aspect LockedTypeAccess {
 	}
 	
 	public Access TypeAccess.eliminateLockedNames() {
-		return targetType == null ? this : unlock();
+		return isLocked() ? unlock(null) : this;
 	}
 
 	public CompilationUnit CompilationUnit.eliminateLockedNames() {
@@ -86,7 +102,7 @@ aspect LockedTypeAccess {
 	}
 	
 	refine TypeVariableExt protected void TypeAccess.collectUsedTypeVars(Collection<TypeVariable> tvars) {
-		if(targetType != null)
+		if(isLocked())
 			targetType.collectUsedTypeVars(tvars);
 		refined(tvars);
 	}
@@ -98,15 +114,10 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
-	public ASTNode ParTypeAccess.lock() { return lock(type()); }
-	public ASTNode ParTypeAccess.lock(TypeDecl decl) {
-		Access tacc = decl.createLockedAccess();
-		replaceWith(tacc);
-		return tacc;
-	}
-	
-	public Access TypeAccess.unlock() {
+	public Access TypeAccess.unlock(Expr qual) {
 		TypeDecl target = targetType.getDecl();
+		targetType = null;
+		flushCaches();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
 		try {
@@ -118,40 +129,38 @@ aspect LockedTypeAccess {
 					throw new RefactoringException("cannot fix access in library");
 				return this;
 			}
-			if(target.isGenericType() && !inImportDecl())
-				return unlockGenericTypeAccess((GenericTypeDecl)target);
 			if(target.isRawType())
 				target = target.erasure();
 			if(target.isParameterizedType())
-				return unlockParTypeAccess((ParTypeDecl)target);
+				return unlockParTypeAccess((ParTypeDecl)target, qual);
 			if(target.isTypeVariable())
-				return unlockTypeVariableAccess((TypeVariable)target);
+				return unlockTypeVariableAccess((TypeVariable)target, qual);
 			if(target instanceof PrimitiveType || target instanceof VoidType)
-				return unlockPrimitiveTypeAccess(target);
+				return unlockPrimitiveTypeAccess(target, qual);
 			if(target.isArrayDecl())
-				return unlockArrayTypeAccess((ArrayDecl)target);
+				return unlockArrayTypeAccess((ArrayDecl)target, qual);
 			if(target.isLocalClass())
-				return unlockLocalClassAccess((ClassDecl)target);
+				return unlockLocalClassAccess((ClassDecl)target, qual);
 			if(target.isMemberType())
-				return unlockMemberTypeAccess(target);
+				return unlockMemberTypeAccess(target, qual);
 			if(target.isTopLevelType())
-				return unlockTopLevelTypeAccess(target);
+				return unlockTopLevelTypeAccess(target, qual);
 			throw new Error("cannot fix access to this kind of type");
 		} finally {
 			targetType = null;
 		}
 	}
 	
-	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target) {
-		if(isQualified())
-			throw new RefactoringException("cannot access primitive type under qualifier");
+	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target, Expr qual) {
+		if(qual != null && !qual.isPure())
+			throw new RefactoringException("cannot access primitive type under impure qualifier");
 		setID(target.name());
 		return this;
 	}
 	
-	protected Access TypeAccess.unlockTypeVariableAccess(TypeVariable target) {
-		if(isQualified())
-			throw new RefactoringException("cannot access type variable under type qualifier");
+	protected Access TypeAccess.unlockTypeVariableAccess(TypeVariable target, Expr qual) {
+		if(qual != null && !qual.isPure())
+			throw new RefactoringException("cannot access type variable under impure type qualifier");
 		if(!lookupName(target.name()).isSingleton(target))
 			throw new RefactoringException("cannot access shadowed/obscured type variable");
 		setPackage("");
@@ -159,8 +168,8 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
-	protected Access TypeAccess.unlockLocalClassAccess(ClassDecl target) {
-		if(isQualified())
+	protected Access TypeAccess.unlockLocalClassAccess(ClassDecl target, Expr qual) {
+		if(qual != null && !qual.isPure())
 			throw new RefactoringException("cannot access local class under type qualifier");
 		if(!lookupName(target.name()).isSingleton(target))
 			throw new RefactoringException("cannot access shadowed/obscured local class");
@@ -169,16 +178,16 @@ aspect LockedTypeAccess {
 		return this;
 	}
 
-	protected Access TypeAccess.unlockMemberTypeAccess(TypeDecl target) {
-		if(isQualified()) {
-			if(!qualifier().isTypeAccess())
+	protected Access TypeAccess.unlockMemberTypeAccess(TypeDecl target, Expr qual) {
+		if(qual != null) {
+			if(!qual.isTypeAccess())
 				throw new RefactoringException("cannot access member type under non-type qualifier");
-			TypeDecl outer = qualifier().type();
+			TypeDecl outer = qual.type();
 			if(!outer.memberTypes(target.name()).isSingleton(target))
 				throw new RefactoringException("cannot access shadowed member type");
 			setPackage("");
 			setID(target.name());
-			return this;
+			return qual.qualifiesAccess(this);
 		} else {
 			if(lookupName(target.name()).isSingleton(target)) {
 				setPackage("");
@@ -200,9 +209,9 @@ aspect LockedTypeAccess {
 		}
 	}
 	
-	protected Access TypeAccess.unlockTopLevelTypeAccess(TypeDecl target) {
-		if(isQualified())
-			throw new RefactoringException("cannot access toplevel type under qualifier");
+	protected Access TypeAccess.unlockTopLevelTypeAccess(TypeDecl target, Expr qual) {
+		if(qual != null && !qual.isPure())
+			throw new RefactoringException("cannot access toplevel type under impure qualifier");
 		programRoot().flushCaches();
 		if(lookupName(target.name()).isSingleton(target)) {
 			setPackage("");
@@ -219,26 +228,35 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
-	protected Access TypeAccess.unlockParTypeAccess(ParTypeDecl target) {
+	protected Access TypeAccess.unlockParTypeAccess(ParTypeDecl target, Expr qual) {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<target.getNumArgument();++i)
 			args.add(target.getArgument(i).type().createLockedAccess());
-		return new ParTypeAccess(((GenericTypeDecl)target.genericDecl()).rawType().createLockedAccess(), args);
+		Access acc = new ParTypeAccess(((GenericTypeDecl)target.genericDecl()).rawType().createLockedAccess(), args);
+		if(qual != null)
+			acc = qual.qualifiesAccess(acc);
+		return acc;
 	}
 	
-	protected Access TypeAccess.unlockGenericTypeAccess(GenericTypeDecl target) {
+	protected Access TypeAccess.unlockGenericTypeAccess(GenericTypeDecl target, Expr qual) {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<target.getNumTypeParameter();++i)
 			args.add(target.getTypeParameter(i).createLockedAccess());
-		return new ParTypeAccess(target.rawType().createLockedAccess(), args);
+		Access acc = new ParTypeAccess(target.rawType().createLockedAccess(), args);
+		if(qual != null)
+			acc = qual.qualifiesAccess(acc);
+		return acc;
 	}
 
-	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
-		return new ArrayTypeAccess(target.componentType().createLockedAccess());
+	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target, Expr qual) {
+		Access acc = target.componentType().createLockedAccess();
+		if(qual != null)
+			acc = qual.qualifiesAccess(acc);
+		return new ArrayTypeAccess(acc);
 	}
 	
-	protected Access ArrayTypeAccess.unlockArrayTypeAccess(ArrayDecl target) {
+	protected Access ArrayTypeAccess.unlockArrayTypeAccess(ArrayDecl target, Expr qual) {
 		setAccess(target.componentType().createLockedAccess());
-		return this;
+		return qual == null ? this : qual.qualifiesAccess(this);
 	}
 }

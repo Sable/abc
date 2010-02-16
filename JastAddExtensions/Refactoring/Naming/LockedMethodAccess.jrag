@@ -59,7 +59,7 @@ aspect LockedMethodAccess {
 		}
 	}
 	
-	// introducing fixed method accesses
+	// introducing locked method accesses
 	public ASTNode MethodAccess.lockMethodNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
 			return lock();
@@ -81,26 +81,12 @@ aspect LockedMethodAccess {
 	public boolean MethodDecl.isSubstituted() { return false; }
 	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
 	
-	syn lazy boolean Access.isLockedMethodAccess() = false;
-	eq MethodAccess.isLockedMethodAccess() = targetMethod != null;
+	public boolean MethodAccess.isLocked() { return targetMethod != null; }
 	
 	// eliminating locked method accesses
 	inh TypeDecl MethodAccess.enclosingType();
 	public Access MethodAccess.eliminateLockedNames() {
 		return targetMethod == null ? this : unlock(null);
-	}
-	
-	public ASTNode AbstractDot.eliminateLockedNames() {
-		if(getRight() instanceof AbstractDot)
-			rotateLeft();
-		if(getRight().isLockedMethodAccess()) {
-			Expr qual = (Expr)getLeft().eliminateLockedNames();
-			Expr res = ((MethodAccess)getRight()).unlock(qual);
-			replaceWith(res);
-			return res;
-		} else {
-			return super.eliminateLockedNames();	
-		}
 	}
 	
 	public Access MethodAccess.unlock(Expr qual) {

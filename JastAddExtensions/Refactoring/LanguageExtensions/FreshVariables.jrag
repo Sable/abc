@@ -33,8 +33,8 @@ aspect FreshVariables {
 		String new_name = pickFreshName();
 		ParameterDeclaration pd = new ParameterDeclaration(getModifiers(), getTypeAccess(), new_name);
 		for(VarAccess va : uses()) {
-			assert va instanceof LockedVarAccess;
-			((LockedVarAccess)va).setTarget(pd);
+			assert va.isLocked();
+			va.lock(pd);
 		}
 		return pd;
 	}
@@ -43,8 +43,8 @@ aspect FreshVariables {
 		String new_name = pickFreshName();
 		VariableDeclaration vd = new VariableDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
 		for(VarAccess va : uses()) {
-			assert va instanceof LockedVarAccess;
-			((LockedVarAccess)va).setTarget(vd);
+			assert va.isLocked();
+			va.lock(vd);
 		}
 		return vd;
 	}

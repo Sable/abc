@@ -13,7 +13,7 @@ aspect IntroduceOutParameter {
 		setReturnType(new PrimitiveTypeAccess("void"));
 		ParameterDeclaration pd = new FreshParameter(new Modifiers("out"), v.type().createLockedAccess(), "res");
 		addParameter(pd);
-		addArg(new LockedVarAccess(v.decl()));
+		addArg(v.decl().createLockedAccess());
 		getBlock().addAssignToReturns(pd);
 		parent.replaceWith(this);
 		hostType().flushCaches();
@@ -26,8 +26,8 @@ aspect IntroduceOutParameter {
 		VariableArityParameterDeclaration last = (VariableArityParameterDeclaration)lastParameter();
 		ParameterDeclaration new_last = last.asFixedArityParameter();
 		for(VarAccess va : last.uses())
-			if(va instanceof LockedVarAccess)
-				((LockedVarAccess)va).lock(new_last);
+			if(va.isLocked())
+				va.lock(new_last);
 		setParameter(new_last, getNumParameter()-1);
 		if(!invokesVariableArityAsArray()) {
 			List<Expr> varargs = new List<Expr>();
@@ -56,7 +56,7 @@ aspect IntroduceOutParameter {
 	//    return;
 	public void ReturnStmt.addAssignToReturns(Variable v) {
 		if(hasResult()) {
-			insertStmtBefore(AssignExpr.asStmt(new LockedVarAccess(v), getResult()));
+			insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), getResult()));
 			setResultOpt(new Opt());
 			hostType().flushCaches();
 		}

@@ -1,54 +1,25 @@
 aspect LockedVariableAccess {
 	/* A locked variable access is a variable access that does not obey the normal variable lookup
 	 * rules, but instead immediately binds to its target. */
-	public LockedVarAccess.LockedVarAccess(Variable target) {
-		this(target.name(), target, new Opt());
+	private Variable VarAccess.targetVariable = null;
+	
+	public VarAccess Variable.createLockedAccess() {
+		VarAccess va = new VarAccess(this.name());
+		va.lock(this);
+		return va;
 	}
 	
-	eq LockedVarAccess.decls() = SimpleSet.emptySet.add(getTarget());
+	refine IntertypeFieldNameAnalysis eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
 	
-	LockedVarAccess contributes	this when getTarget() instanceof FieldDeclaration
-	to FieldDeclaration.uses() for (FieldDeclaration)getTarget();
-
-	LockedVarAccess contributes	this when getTarget() instanceof VariableDeclaration
-	to VariableDeclaration.uses() for (VariableDeclaration)getTarget();
-
-	LockedVarAccess contributes	this when getTarget() instanceof ParameterDeclaration
-	to ParameterDeclaration.uses() for (ParameterDeclaration)getTarget();
-	
-	private Variable LockedVarAccess.unlockedDecl() {
-		flushCache();
-		SimpleSet set;
-		if(hasQualifier())
-			// TODO: this is not quite correct; need to filter out some things (see LookupVariable.jrag)
-			set = getQualifier().qualifiedLookupVariable(name());
-		else
-			set = lookupVariable(name());
-		if(!set.isSingleton())
-			return unknownField();
-		Variable res = (Variable)set.iterator().next();
-		return res;
-	}
-		
-	public void LockedVarAccess.toString(StringBuffer s) {
-		s.append("[[");
-		if(hasQualifier()) {
-			getQualifier().toString(s);
-			s.append(".");
+	refine PrettyPrint public void VarAccess.toString(StringBuffer s) {
+		if(targetVariable == null) {
+			refined(s);
+		} else {
+			s.append("[[");
+			refined(s);
+			s.append("]]");
 		}
-		super.toString(s);
-		s.append("]]");
 	}
-	
-	public void LockedVarAccess.addQualifier(Expr e) {
-		if(!hasQualifier())
-			setQualifier(e);
-		else
-			setQualifier(e.qualifiesAccess((Access)getQualifier()));
-	}
-	
-	eq LockedVarAccess.isQualified() = hasQualifier();
-	eq LockedVarAccess.qualifier() = getQualifier();
 	
 	// introducing locked variable accesses
 	public ASTNode VarAccess.lockNames(Collection<String> endangered) {
@@ -59,85 +30,44 @@ aspect LockedVariableAccess {
 	}
 	
 	public ASTNode VarAccess.lock() {
-		return lock(decl());
+		return targetVariable == null ? lock(decl()) : this;
 	}
 	
 	public ASTNode VarAccess.lock(Variable target) {
-		target = target.isSubstituted() ? target.sourceVariableDecl() : target;
-		LockedVarAccess lva = new LockedVarAccess(target);
-		replaceWith(lva);
-		if(lva.isRightChildOfDot()) {
-			lva.parentDot().is$Final(false);
-		} else if(lva.isLeftChildOfDot()) {
-			AbstractDot parent = lva.parentDot();
-			if(parent.isRightChildOfDot()) {
-				parent.is$Final(false);
-				parent.parentDot().is$Final(false);
-			}
-		}
-		return lva;
+		assert target != null;
+		targetVariable = target.isSubstituted() ? target.sourceVariableDecl() : target;
+		return this;
 	}
-	
-	public ASTNode LockedVarAccess.lock() { return this; }
-	public ASTNode LockedVarAccess.lock(Variable target) { setTarget(target); return this; }
 	
 	public boolean Variable.isSubstituted() { return false; }
 	public boolean FieldDeclarationSubstituted.isSubstituted() { return true; }
 	public boolean ParameterDeclarationSubstituted.isSubstituted() { return true; }
 	public boolean VariableArityParameterDeclarationSubstituted.isSubstituted() { return true; }
 	
-	// pushing qualifiers into LockedVarAccess
-	rewrite AbstractDot {
-		when(getRight() instanceof LockedVarAccess)
-		to LockedVarAccess {
-			LockedVarAccess lva = (LockedVarAccess)getRight();
-			lva.addQualifier(getLeft());
-			if(hasParentDot())
-				parentDot().is$Final(false);
-			return lva;
-		  }
-		}
-		 
-	rewrite AbstractDot {
-		when(getRight() instanceof AbstractDot &&
-				((AbstractDot)getRight()).getLeft() instanceof LockedVarAccess)
-		to AbstractDot {
-			AbstractDot r = (AbstractDot)getRight();
-			LockedVarAccess lva = (LockedVarAccess)r.getLeft();
-			lva.addQualifier(getLeft());
-			AbstractDot d = new AbstractDot(lva, r.getRight());
-			if(hasParentDot())
-				parentDot().is$Final(false);
-			return d;		  
-		}
-	}
-		
+	public boolean VarAccess.isLocked() { return targetVariable != null; }
+	
 	// eliminating locked variable accesses
-	inh TypeDecl LockedVarAccess.enclosingType();
-	public Access LockedVarAccess.eliminateLockedNames() {
-		Variable target = getTarget();
+	inh TypeDecl VarAccess.enclosingType();
+	public Access VarAccess.eliminateLockedNames() { return targetVariable == null ? this : unlock(null); }
+	public Access VarAccess.unlock(Expr qual) {
+		Variable target = targetVariable;
+		targetVariable = null;
+		flushCache();
 		if(fromSource())
 			setID(target.name());
-		if(unlockedDecl().sameSourceDeclAs(target)) {
-			if(hasQualifier())
-				return getQualifier().qualifiesAccess(new VarAccess(name()));
-			else
-				return new VarAccess(name());
+		if(decl().sameSourceDeclAs(target)) {
+			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource() && !(target instanceof LocalVariable)) {
-			VariableAccessInfo acc;
-			if(hasQualifier())
-				acc = getQualifier().qualifiedAccessVariable(target);
-			else
-				acc = accessVariable(target);
-			if(acc == null) {
+			VariableAccessInfo acc = accessVariable(target);
+			if(acc == null && (qual == null || qual.isPure())) {
 				if(target.isStatic()) {
 					TypeDecl host = target.hostType();
 					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
-						return host.createLockedAccess().qualifiesAccess(new VarAccess(target.name()));
+						return host.createLockedAccess().qualifiesAccess(this);
 				}
 				throw new RefactoringException("cannot access variable "+target.name());
 			}
-			return acc.eliminate(hasQualifier() ? getQualifier() : null, enclosingType());
+			return acc.eliminate(qual, enclosingType());
 		} else {
 			throw new RefactoringException("cannot access variable "+target.name());
 		}
@@ -194,59 +124,59 @@ aspect LockedVariableAccess {
 	
 	// a locked this access remembers which enclosing instance it is supposed to refer to;
 	// a super access remembers the enclosing instance whose super class it is supposed to refer to
-	eq LockedThisAccess.decl() = getTarget();
-	eq LockedSuperAccess.decl() = getTarget();
+	private TypeDecl ThisAccess.targetType = null;
+	private TypeDecl SuperAccess.targetType = null;
 	
-	public LockedThisAccess LockedThisAccess.lock() { return this; }
-	public LockedThisAccess LockedThisAccess.lock(TypeDecl target) { setTarget(target); return this; }
-	public LockedSuperAccess LockedSuperAccess.lock() { return this; }
-	public LockedSuperAccess LockedSuperAccess.lock(TypeDecl target) { setTarget(target); return this; }
+	public boolean ThisAccess.isLocked() { return targetType != null; }
+	public boolean SuperAccess.isLocked() { return targetType != null; }
 	
-	public void LockedThisAccess.toString(StringBuffer s) {
-		s.append("[[this]]");
-	}
-	public void LockedSuperAccess.toString(StringBuffer s) {
-		s.append("[[super]]");
-	}
+	refine Glue eq ThisAccess.decl() = targetType == null ? refined() : targetType;
+	refine Glue eq SuperAccess.decl() = targetType == null ? refined() : targetType;
 	
-	public ThisAccess ThisAccess.lock() {
-		return isQualified() ? this : lock(decl());
-	}
-	public SuperAccess SuperAccess.lock() {
-		return isQualified() ? this : lock(decl());
-	}
+	public ThisAccess ThisAccess.lock() { return targetType == null ? lock(decl()) : this; }
+	public ThisAccess ThisAccess.lock(TypeDecl target) { targetType = target; return this; }
+	public SuperAccess SuperAccess.lock() { return targetType == null ? lock(decl()) : this; }
+	public SuperAccess SuperAccess.lock(TypeDecl target) { targetType = target; return this; }
 	
-	public LockedThisAccess ThisAccess.lock(TypeDecl target) {
-		LockedThisAccess lta = new LockedThisAccess("this", target);
-		replaceWith(lta);
-		return lta;
+	refine PrettyPrint public void ThisAccess.toString(StringBuffer s) {
+		if(targetType == null)
+			refined(s);
+		else
+			s.append("[[this]]");
 	}
-	public LockedSuperAccess SuperAccess.lock(TypeDecl target) {
-		LockedSuperAccess lsa = new LockedSuperAccess("super", target);
-		replaceWith(lsa);
-		return lsa;
+	refine PrettyPrint public void SuperAccess.toString(StringBuffer s) {
+		if(targetType == null)
+			refined(s);
+		else
+			s.append("[[super]]");
 	}
-	
-	public Access LockedThisAccess.eliminateLockedNames() {
+
+	public Access ThisAccess.eliminateLockedNames() { return targetType == null ? this : unlock(null); }
+	public Access ThisAccess.unlock(Expr qual) {
+		TypeDecl target = targetType;
+		targetType = null;
 		flushCaches();
-		if(super.decl().instanceOf(getTarget()))
-			return new ThisAccess("this");
-		if(!fromSource() || isQualified())
+		if(decl().instanceOf(target))
+			return qual == null ? this : qual.qualifiesAccess(this);
+		if(!fromSource())
 			throw new RefactoringException("cannot adjust this access");
-		if(!thisType().isInnerTypeOf(getTarget()))
+		if(!thisType().isInnerTypeOf(target))
 			throw new RefactoringException("enclosing instance not reachable");
-		return getTarget().createLockedAccess().qualifiesAccess(new ThisAccess("this"));
+		assert qual == null || qual.isPure();
+		return target.createLockedAccess().qualifiesAccess(new ThisAccess("this"));
 	}
-	public Access LockedSuperAccess.eliminateLockedNames() {
+	public Access SuperAccess.eliminateLockedNames() { return targetType == null ? this : unlock(null); }
+	public Access SuperAccess.unlock(Expr qual) {
+		TypeDecl target = targetType;
+		targetType = null;
 		flushCaches();
-		if(super.decl().instanceOf(getTarget()))
-			return new SuperAccess("super");
-		if(!fromSource() || isQualified() || qualifiesMethodAccess())
+		if(decl().instanceOf(target))
+			return qual == null ? this : qual.qualifiesAccess(this);
+		if(!fromSource())
 			throw new RefactoringException("cannot adjust this access");
-		if(!thisType().isInnerTypeOf(getTarget()))
+		if(!thisType().isInnerTypeOf(target))
 			throw new RefactoringException("super instance not reachable");
-		return getTarget().createLockedAccess().qualifiesAccess(new SuperAccess("super"));
+		assert qual == null || qual.isPure();
+		return target.createLockedAccess().qualifiesAccess(new SuperAccess("super"));
 	}
-	
-	syn lazy boolean Access.qualifiesMethodAccess() = hasParentDot() && parentDot().isMethodAccess();
 }

@@ -2,7 +2,7 @@ aspect LockedPackageAccess {
 	private PackageDecl PackageAccess.targetPackage = null;
 	
 	public ASTNode PackageAccess.lockNames(Collection<String> endangered) {
-		if(targetPackage == null && endangered.contains(getTopLevelPackage()))
+		if(!isLocked() && endangered.contains(getTopLevelPackage()))
 			lock();
 		return super.lockNames(endangered);
 	}
@@ -13,7 +13,12 @@ aspect LockedPackageAccess {
 	}
 	
 	public PackageAccess PackageAccess.eliminateLockedNames() {
-		if(targetPackage != null) {
+		return unlock(null);
+	}
+	
+	public PackageAccess PackageAccess.unlock(Expr qual) {
+		assert qual == null;
+		if(isLocked()) {
 			if(fromSource())
 				setPackage(targetPackage.getName());
 			if(!lookupName(getTopLevelPackage()).isSingleton(targetPackage))
@@ -22,4 +27,6 @@ aspect LockedPackageAccess {
 		}
 		return this;
 	}
+	
+	public boolean PackageAccess.isLocked() { return targetPackage != null; }
 }

@@ -8,13 +8,19 @@ aspect LockedConstructor {
 	}
 	
 	public ConstructorDecl ConstructorDecl.eliminateLockedNames() {
+		return unlock(null);
+	}
+	
+	public ConstructorDecl ConstructorDecl.unlock(Expr qualifier) {
+		assert qualifier == null;
 		if(locked && !getID().equals(hostType().name())) {
 			if(fromSource())
 				setID(hostType().name());
 			else
-				throw new RefactoringException("cannot adjust constructor in compiled code");
+				throw new RefactoringException("cannot adjust constructor in bytecode");
 		}
 		return this;
 	}
-	
+
+	public boolean ConstructorDecl.isLocked() { return locked; }
 }

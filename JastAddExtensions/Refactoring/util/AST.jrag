@@ -51,16 +51,6 @@ aspect AST {
 			ASTNode child = getChild(i);
 			if(child != null)
 				child.flushCaches();
-			if(!child.is$Final())
-				getChild(i).triggerRewrites();
-		}
-	}
-	
-	public void ASTNode.triggerRewrites() {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.flushCaches();
 		}
 	}
 	
