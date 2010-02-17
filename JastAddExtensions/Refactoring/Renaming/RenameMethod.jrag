@@ -44,12 +44,14 @@ aspect RenameMethod {
 		if(!mds.isEmpty() && !mds.isSingleton(md))
 			return false;
 		// if there are any like-named methods in superclasses, we must be able to override them
-		// TODO: same for descendant methods
 		for(Iterator i = ancestorMethods(sig).iterator();i.hasNext();) {
 			MethodDecl md2 = (MethodDecl)i.next();
 			if(!md.canOverrideOrHide(md2))
 				return false;
 		}
+		for(MethodDecl md2 : descendantMethods(sig))
+			if(!md2.canOverrideOrHide(md))
+				return false;
 		return true;
 	}
 }

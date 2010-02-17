@@ -5,14 +5,25 @@ aspect InsertUnusedMethod {
 	}
 	
 	public void ClassDecl.insertUnusedMethod(MethodDecl m) {
-		// TODO: think about parameterised classes, substituted classes, raw classes, and all that
-		if(!canIntroduceMethod(m))
-			throw new RefactoringException("cannot insert method here");
+		if(!localMethodsSignature(m.signature()).isEmpty())
+			throw new RefactoringException("method exists");
 		programRoot().lockMethodNames(Collections.singleton(m.name()));
 		addBodyDecl(m);
-		flushCaches();
-		if(!m.overrides().isEmpty() || !m.overriders().isEmpty())
+		programRoot().flushCaches();
+		if(!canIntroduceMethod(m))
+			throw new RefactoringException("cannot insert method here");
+		if(m.isDynamicallyCallable())
 			throw new RefactoringException("method is used");
+		if(m.isAbstract())
+			makeAbstract();
+	}
+	
+	public void ParClassDecl.insertUnusedMethod(MethodDecl m) {
+		genericDecl().insertUnusedMethod(m);
+	}
+	
+	public void ClassDeclSubstituted.insertUnusedMethod(MethodDecl m) {
+		original().insertUnusedMethod(m);
 	}
 	
 }

@@ -82,4 +82,9 @@ public class RemoveUnusedMethodTests extends TestCase {
     			                     "class B extends A { void n() { m(); } }",
     			                     "class C { B b = new B(); } "));
     }
+
+    public void test9() {
+    	testFail(Program.fromClasses("class A { void m() { } void n() { m(); } }",
+    			                     "class B extends A { void m() { super.m(); } }"));
+    }
 }

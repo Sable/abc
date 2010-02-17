@@ -1,0 +1,21 @@
+aspect PullUpMethod {
+	public void MethodDecl.pullUp() {
+		if(!hostType().isClassDecl() || !hostType().fromSource() || !((ClassDecl)hostType()).superclass().fromSource())
+			throw new RefactoringException("no fitting super class");
+		ClassDecl host = (ClassDecl)hostType();
+		ClassDecl sup = host.superclass();
+		MethodDecl md = this;
+		lockAllNames();
+		MethodDecl md_copy = (MethodDecl)fullCopy();
+		md_copy.setBlockOpt(new Opt());
+		md.replaceWith(md_copy);
+		sup.insertUnusedMethod(md);
+		host.removeBodyDecl(md_copy);
+		programRoot().flushCaches();
+	}
+	
+	public void MethodDecl.doPullUp() {
+		pullUp();
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+}

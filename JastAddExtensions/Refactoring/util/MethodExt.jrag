@@ -52,4 +52,24 @@ aspect MethodExt {
 	}
 	
 	syn boolean MethodDecl.canBeAbstract() = !(isStatic() || isPrivate() || isFinal());
+	
+	// descendantMethods: inverse of ancestorMethods
+	syn lazy Collection<MethodDecl> TypeDecl.descendantMethods(String sig) = Collections.EMPTY_SET;
+	
+	eq ClassDecl.descendantMethods(String sig) {
+		Collection<MethodDecl> desc = new HashSet<MethodDecl>();
+		for(TypeDecl td : childTypes()) {
+			boolean found = false;
+			for(Iterator<MethodDecl> iter = td.localMethodsSignature(sig).iterator(); iter.hasNext();) {
+				MethodDecl md = iter.next();
+				if(!md.isPrivate()) {
+					desc.add(md);
+					found = true;
+				}
+			}
+			if(!found)
+				desc.addAll(td.descendantMethods(sig));
+		}
+		return desc;
+	}
 }
