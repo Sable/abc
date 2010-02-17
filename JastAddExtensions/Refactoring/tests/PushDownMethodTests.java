@@ -20,7 +20,7 @@ public class PushDownMethodTests extends TestCase {
 		MethodDecl md = td.findMethod("m");
 		assertNotNull(md);
 		try {
-			md.doPushDown();
+			md.doPushDown(false);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
@@ -34,7 +34,7 @@ public class PushDownMethodTests extends TestCase {
 		MethodDecl md = td.findMethod("m");
 		assertNotNull(md);
 		try {
-			md.doPushDown();
+			md.doPushDown(false);
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) { }
 	}
@@ -101,9 +101,12 @@ public class PushDownMethodTests extends TestCase {
     }
     
     public void test8() {
-    	testFail(Program.fromClasses(
+    	testSucc(Program.fromClasses(
     	           "class A { void m() { } void f() { m(); } }",
-    	           "class B extends A { }"));
+    	           "class B extends A { }"),
+    	         Program.fromClasses(
+    	    	   "abstract class A { abstract void m(); void f() { m(); } }",
+    	    	   "class B extends A { void m() { } }"));
     }
     
     public void test9() {

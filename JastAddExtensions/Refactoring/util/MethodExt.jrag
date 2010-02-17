@@ -1,3 +1,55 @@
 aspect MethodExt {
 	syn boolean MethodDecl.isUnknown() = hostType().isUnknown();
+	
+	// whether this method could by called either dynamically or statically
+	syn lazy boolean MethodDecl.isCallable() = !monoUses().isEmpty() || isDynamicallyCallable();
+	
+	// all statically resolved calls to this method
+	syn lazy Collection<MethodAccess> MethodDecl.monoUses() {
+		Collection<MethodAccess> res = new HashSet<MethodAccess>();
+		for(MethodAccess ma : uses())
+			if(ma.isMonoCall())
+				res.add(ma);
+		return res;
+	}
+	
+	// whether this method could be called through dynamic dispatch
+	syn lazy boolean MethodDecl.isDynamicallyCallable() {
+		if(isStatic() || isPrivate())
+			return false;
+		// not if neither this method nor a method it overrides is ever called
+		if(polyUses().isEmpty())
+			return false;
+		// not if no object of a type that inherits this method is ever constructed
+		for(TypeDecl td : inheritingTypes())
+			if(td.instancesAreConstructed())
+				return true;
+		return false;
+	}
+	
+	// all types that inherit a certain method and do not provide an overriding definition
+	syn lazy Collection<TypeDecl> MethodDecl.inheritingTypes() {
+		if(isStatic() || isPrivate())
+			return Collections.singleton(hostType());
+		Collection<TypeDecl> result = new HashSet<TypeDecl>();
+		LinkedList<TypeDecl> worklist = new LinkedList<TypeDecl>();
+		worklist.add(hostType());
+		while(!worklist.isEmpty()) {
+			TypeDecl td = worklist.pop();
+			result.add(td);
+			for(TypeDecl child : td.childTypes())
+				if(!child.overrides(this))
+					worklist.push(child);
+		}
+		return result;
+	}
+	
+	syn lazy boolean TypeDecl.overrides(MethodDecl md) {
+    	for(Iterator<MethodDecl> iter=localMethodsSignature(md.signature()).iterator(); iter.hasNext();)
+			if(iter.next().overrides(md))
+				return true;
+		return false;
+	}
+	
+	syn boolean MethodDecl.canBeAbstract() = !(isStatic() || isPrivate() || isFinal());
 }

@@ -1,16 +1,16 @@
 aspect PushDownMethod {
-	public void MethodDecl.pushDown() {
+	public void MethodDecl.pushDown(boolean leaveAbstract) {
 		if(!fromSource())
 			throw new RefactoringException("cannot push library method");
 		if(isAbstract())
-			pushDownAbstract();
+			pushDownAbstract(leaveAbstract);
 		else if(isPrivate() || isStatic())
-			pushDownMono();
+			pushDownMono(leaveAbstract);
 		else
-			pushDownVirtual();
+			pushDownVirtual(leaveAbstract);
 	}
 	
-	public void MethodDecl.pushDownAbstract() {
+	public void MethodDecl.pushDownAbstract(boolean leaveAbstract) {
 		MethodDecl md = this;
 		for(TypeDecl child : hostType().childTypes()) {
 			if(!child.localMethodsSignature(md.signature()).isEmpty())
@@ -27,10 +27,10 @@ aspect PushDownMethod {
 			md.programRoot().flushCaches();
 			md.programRoot().eliminateLockedNames();
 		}
-		md.removeUnused();		
+		md.removeUnused(leaveAbstract);		
 	}
 	
-	public void MethodDecl.pushDownMono() {
+	public void MethodDecl.pushDownMono(boolean leaveAbstract) {
 		MethodDecl md = this;
 		md.unfoldSynchronized();
 		for(TypeDecl child : hostType().childTypes()) {
@@ -46,10 +46,10 @@ aspect PushDownMethod {
 			md.programRoot().flushCaches();
 			md.programRoot().eliminateLockedNames();
 		}
-		md.removeUnused();
+		md.removeUnused(leaveAbstract);
 	}
 	
-	public void MethodDecl.pushDownVirtual() {
+	public void MethodDecl.pushDownVirtual(boolean leaveAbstract) {
 		ASTNode parent = getParent();
 		int idx = parent.getIndexOfChild(this);
 		MethodDecl md = this;
@@ -61,12 +61,12 @@ aspect PushDownMethod {
 			child.eliminate(WITH_STMT, FRESH_VARIABLES);
 			md2.foldSynchronized();
 		}
-		md.removeUnused();
+		md.removeUnused(leaveAbstract);
 	}
 	
-	public void MethodDecl.doPushDown() {
+	public void MethodDecl.doPushDown(boolean leaveAbstract) {
 		Program root = programRoot();
-		pushDown();
+		pushDown(leaveAbstract);
 		root.eliminate(RETURN_VOID, LOCKED_NAMES, LOCKED_DATAFLOW);
 	}
 	

@@ -115,6 +115,7 @@ aspect LockedTypeAccess {
 	}
 	
 	public Access TypeAccess.unlock(Expr qual) {
+		assert qual == null || qual.isPure();
 		TypeDecl target = targetType.getDecl();
 		targetType = null;
 		flushCaches();
@@ -152,15 +153,11 @@ aspect LockedTypeAccess {
 	}
 	
 	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target, Expr qual) {
-		if(qual != null && !qual.isPure())
-			throw new RefactoringException("cannot access primitive type under impure qualifier");
 		setID(target.name());
 		return this;
 	}
 	
 	protected Access TypeAccess.unlockTypeVariableAccess(TypeVariable target, Expr qual) {
-		if(qual != null && !qual.isPure())
-			throw new RefactoringException("cannot access type variable under impure type qualifier");
 		if(!lookupName(target.name()).isSingleton(target))
 			throw new RefactoringException("cannot access shadowed/obscured type variable");
 		setPackage("");
@@ -169,8 +166,6 @@ aspect LockedTypeAccess {
 	}
 	
 	protected Access TypeAccess.unlockLocalClassAccess(ClassDecl target, Expr qual) {
-		if(qual != null && !qual.isPure())
-			throw new RefactoringException("cannot access local class under type qualifier");
 		if(!lookupName(target.name()).isSingleton(target))
 			throw new RefactoringException("cannot access shadowed/obscured local class");
 		setPackage("");
@@ -210,8 +205,6 @@ aspect LockedTypeAccess {
 	}
 	
 	protected Access TypeAccess.unlockTopLevelTypeAccess(TypeDecl target, Expr qual) {
-		if(qual != null && !qual.isPure())
-			throw new RefactoringException("cannot access toplevel type under impure qualifier");
 		programRoot().flushCaches();
 		if(lookupName(target.name()).isSingleton(target)) {
 			setPackage("");

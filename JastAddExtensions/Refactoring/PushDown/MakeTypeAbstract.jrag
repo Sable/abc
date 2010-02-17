@@ -13,13 +13,17 @@ aspect MakeTypeAbstract {
 	public void ClassDecl.makeAbstract() {
 		if(isAbstract())
 			return;
-		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
-			for(Access acc : cd.uses()) {
-				if(acc instanceof ClassInstanceExpr &&
-						!((ClassInstanceExpr)acc).hasTypeDecl())
-					throw new RefactoringException("cannot make type abstract: constructor is used");
-			}
-		}
+		if(instancesAreConstructed())
+			throw new RefactoringException("cannot make type abstract: it has instances constructed");
 		getModifiers().addModifier("abstract");
+	}
+	
+	syn lazy boolean TypeDecl.instancesAreConstructed() = false;
+	eq ClassDecl.instancesAreConstructed() {
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
+			for(Access acc : cd.uses())
+				if(acc instanceof ClassInstanceExpr &&!((ClassInstanceExpr)acc).hasTypeDecl())
+					return true;
+		return false;
 	}
 }

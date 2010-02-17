@@ -13,7 +13,7 @@ aspect InlineMethod {
 			ma.doInline();
 		if(delete) {
 			MethodDecl md = (MethodDecl)host.getBodyDecl(idx);
-			try { md.removeUnused(); } catch(RefactoringException rfe) { }			
+			try { md.removeUnused(false); } catch(RefactoringException rfe) { }			
 		}
 	}
 	
