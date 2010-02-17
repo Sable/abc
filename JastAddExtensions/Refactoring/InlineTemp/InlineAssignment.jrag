@@ -14,6 +14,7 @@ aspect InlineAssignment {
 		BodyDecl bd = hostBodyDecl();
 		// check that all the data successors have this as their only data predecessor and are not destinations
 		// and replace them by copies of the RHS
+		// fail if any of the data successors are not in the same method (e.g., inside an anonymous class)
 		for(Access w : dsuccs) {
 			getSource().lockAllNames();
 			bd.flushCaches();
@@ -22,6 +23,8 @@ aspect InlineAssignment {
 			bd.lockSyncDependencies();
 			if(w.isDest())
 				throw new RefactoringException("cannot inline into destinations");
+			if(w.hostBodyDecl() != stmt.hostBodyDecl())
+				throw new RefactoringException("cannot inline across method boundaries");
 			if(!w.reachingDefinitions().isSingleton())
 				throw new RefactoringException("ambiguous dataflow");
 			if(rhs.precedence() > w.maxPrecedence())

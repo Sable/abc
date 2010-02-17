@@ -502,7 +502,7 @@ public class InlineTempTests extends TestCase {
     }
     
     public void test23() {
-    	testSucc(
+    	testFail(
     		Program.fromClasses(
     		"class A {" +
     		"  void m() {" +
@@ -511,20 +511,12 @@ public class InlineTempTests extends TestCase {
     		"      void n() { A myi = i; }" +
     		"    };" +
     		"  }" +
-    		"}"),
-    		Program.fromClasses(
-    		"class A {" +
-    		"  void m() {" +
-    		"    new Object() {" +
-    		"      void n() { A myi = A.this; }" +
-    		"    };" +
-    		"  }" +
     		"}"));
     }
 
     
     public void test24() {
-    	testSucc(
+    	testFail(
     		Program.fromClasses(
     		"class Outer {" +
     		"  class A {" +
@@ -535,21 +527,11 @@ public class InlineTempTests extends TestCase {
     		"      };" +
     		"    }" +
     		"  }" +
-    		"}"),
-    		Program.fromClasses(
-    		"class Outer {" +
-    		"  class A {" +
-    		"    void m() {" +
-    		"      new Object() {" +
-    		"        void n() { Outer myi = Outer.this; }" +
-    		"      };" +
-    		"    }" +
-    		"  }" +
     		"}"));
     }
     
     public void test25() {
-    	testSucc(
+    	testFail(
     		Program.fromClasses(
     		"class Super {" +
     		"  int x;" +
@@ -561,22 +543,11 @@ public class InlineTempTests extends TestCase {
     		"      void n() { int myi = i; }" +
     		"    };" +
     		"  }" +
-    		"}"),
-    		Program.fromClasses(
-    		"class Super {" +
-    		"  int x;" +
-    		"}",
-    		"class A extends Super {" +
-    		"  void m() {" +
-    		"    new Object() {" +
-    		"      void n() { int myi = A.super.x; }" +
-    		"    };" +
-    		"  }" +
     		"}"));
     }
     
     public void test26() {
-    	testSucc(
+    	testFail(
     		Program.fromClasses(
     		"class Super {" +
     		"  int x;" +
@@ -587,19 +558,6 @@ public class InlineTempTests extends TestCase {
     		"      final int i = Outer.super.x;" +
     		"      new Object() {" +
     		"        void n() { int myi = i; }" +
-    		"      };" +
-    		"    }" +
-    		"  }" +
-    		"}"),
-    		Program.fromClasses(
-    		"class Super {" +
-    		"  int x;" +
-    		"}",
-    		"class Outer extends Super {" +
-    		"  class A {" +
-    		"    void m() {" +
-    		"      new Object() {" +
-    		"        void n() { int myi = Outer.super.x; }" +
     		"      };" +
     		"    }" +
     		"  }" +
