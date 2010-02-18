@@ -7,6 +7,6 @@ abstract class A<T>{
 }
 class B<T> extends A<T>{
 
-	@Override
+	///@Override
 	public T m() {return null;}
 }

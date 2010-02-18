@@ -1,32 +1,27 @@
 aspect Inheritance {
-	// collect all children of a type declaration
+	// collect all children of a type declaration A, i.e. all types B that extend A or one of its parameterizations
 	coll Collection<TypeDecl> TypeDecl.childTypes() circular [new HashSet<TypeDecl>()] 
 	                                                         with add root Program;
-	ClassDecl contributes
-	this when hasSuperclass()
-	to TypeDecl.childTypes() for superclass();
+	ClassDecl contributes this when hasSuperclass()
+	to TypeDecl.childTypes() for superclass().sourceTypeDecl();
 	
-	ClassDecl contributes
-	this
-	to TypeDecl.childTypes() for each interfaces();
+	ClassDecl contributes this
+	to TypeDecl.childTypes() for each interfacesSourceDecls();
 	
-	InterfaceDecl contributes
-	this
-	to TypeDecl.childTypes() for each superInterfaces();
+	InterfaceDecl contributes this
+	to TypeDecl.childTypes() for each superInterfacesSourceDecls();
 	
-	public Iterable<InterfaceDecl> ClassDecl.interfaces() {
-		return new Iterable<InterfaceDecl>() {
-			public Iterator<InterfaceDecl> iterator() {
-				return interfacesIterator();
-			}
-		};
+	public Iterable<InterfaceDecl> ClassDecl.interfacesSourceDecls() {
+		Collection<InterfaceDecl> res = new LinkedList<InterfaceDecl>();
+		for(Iterator<InterfaceDecl> iter=interfacesIterator();iter.hasNext();)
+			res.add((InterfaceDecl)iter.next().sourceTypeDecl());
+		return res;
 	}
 	
-	public Iterable<InterfaceDecl> InterfaceDecl.superInterfaces() {
-		return new Iterable<InterfaceDecl>() {
-			public Iterator<InterfaceDecl> iterator() {
-				return superinterfacesIterator();
-			}
-		};
+	public Iterable<InterfaceDecl> InterfaceDecl.superInterfacesSourceDecls() {
+		Collection<InterfaceDecl> res = new LinkedList<InterfaceDecl>();
+		for(Iterator<InterfaceDecl> iter=superinterfacesIterator();iter.hasNext();)
+			res.add((InterfaceDecl)iter.next().sourceTypeDecl());
+		return res;
 	}
 }

@@ -1523,6 +1523,7 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, null, null);
 	}
 
+	/* disabled: multipush
 	public void testGenerics18() throws Exception{
 		String[] selectedMethodNames= {"f", "m"};
 		String[][] selectedMethodSignatures= {new String[0], new String[] {"QT;"}};
@@ -1538,8 +1539,9 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToPushDown, signaturesOfMethodsToPushDown,
 			   namesOfFieldsToPushDown,
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, null, null);
-	}
+	}*/
 
+	/* disabled: multipush
 	public void testGenerics19() throws Exception{
 		String[] selectedMethodNames= {"f", "m"};
 		String[][] selectedMethodSignatures= {new String[0], new String[]{"QT;"}};
@@ -1555,5 +1557,5 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToPushDown, signaturesOfMethodsToPushDown,
 			   namesOfFieldsToPushDown,
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, null, null);
-	}
+	}*/
 }

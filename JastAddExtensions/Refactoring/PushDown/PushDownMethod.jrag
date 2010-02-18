@@ -11,23 +11,21 @@ aspect PushDownMethod {
 	}
 	
 	public void MethodDecl.pushDownAbstract(boolean leaveAbstract) {
-		MethodDecl md = this;
 		for(TypeDecl child : hostType().childTypes()) {
-			if(!child.localMethodsSignature(md.signature()).isEmpty())
+			MethodDecl md = child.memberMethod(this);
+			if(md == null)
+				// child type already contains a method with this signature
 				continue;
 			child.makeAbstract();
-			md.lockAllNames();
-			MethodDecl md2 = md;
-			md = (MethodDecl)md.fullCopy();
-			md2.replaceWith(md);
-			if(md.hostType().isInterfaceDecl() && !child.isInterfaceDecl())
+			MethodDecl md2 = md.lockedCopyWithEmptyBody();
+			if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
 				md2.getModifiers().addModifiers("public", "abstract");
-			md.programRoot().lockMethodNames(md.name());
+			programRoot().lockMethodNames(md.name());
 			child.addBodyDecl(md2);
-			md.programRoot().flushCaches();
-			md.programRoot().eliminateLockedNames();
+			programRoot().flushCaches();
+			programRoot().eliminateLockedNames();
 		}
-		md.removeUnused(leaveAbstract);		
+		removeUnused(leaveAbstract);		
 	}
 	
 	public void MethodDecl.pushDownMono(boolean leaveAbstract) {
@@ -77,6 +75,9 @@ aspect PushDownMethod {
 	public MethodAccess ClassDecl.triviallyOverrideInheritedMethod(MethodDecl md) {
 		if(md.isAbstract() || md.isFinal())
 			throw new RefactoringException("cannot override this method");
+		md = memberMethod(md);
+		if(md == null)
+			throw new RefactoringException("method with same signature exists in subclass");
 		MethodDecl new_md = md.lockedCopyWithEmptyBody();
 		List<Expr> args = new List<Expr>();
 		for(ParameterDeclaration pd : new_md.getParameters())
@@ -84,8 +85,6 @@ aspect PushDownMethod {
 		MethodAccess lockedAccess = new MethodAccess(md, args);
 		ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), lockedAccess));
 		new_md.setBlock(new Block(new List<Stmt>().add(ret)));
-		if(!localMethodsSignature(md.signature()).isEmpty())
-			throw new RefactoringException("local method of the same name exists");
 		addBodyDecl(new_md);
 		programRoot().flushCaches();
 		return lockedAccess; 
@@ -93,7 +92,6 @@ aspect PushDownMethod {
 	
 	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
 		Modifiers mods = (Modifiers)getModifiers().fullCopy();
-		mods.removeModifiers("synchronized");
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -107,7 +105,6 @@ aspect PushDownMethod {
 	
 	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
 		Modifiers mods = (Modifiers)getModifiers().fullCopy();
-		mods.removeModifiers("synchronized");
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -124,6 +121,22 @@ aspect PushDownMethod {
 	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl IntertypeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl IntroducedMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	public MethodDecl MethodDeclSubstituted.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	
+	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator iter=memberMethods(md.name()).iterator(); iter.hasNext();) {
+			MethodDecl md2 = (MethodDecl)iter.next();
+			if(md.sourceMethodDecl() == md2.sourceMethodDecl())
+				res = res.add(md2);
+		}
+		return res;
+	}
+	
+	public MethodDecl TypeDecl.memberMethod(MethodDecl md) {
+		SimpleSet res = memberMethods(md);
+		if(res.size() > 1)
+			throw new Error("inherited multiple methods with the same source declaration");
+		return res.isEmpty() ? null : (MethodDecl)res.iterator().next();
+	}
 }

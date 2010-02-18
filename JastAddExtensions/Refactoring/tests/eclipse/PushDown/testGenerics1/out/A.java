@@ -4,6 +4,6 @@ abstract class A<T>{
 }
 class B extends A<String>{
 
-	@Override
+	///@Override
 	public void m() {}
 }

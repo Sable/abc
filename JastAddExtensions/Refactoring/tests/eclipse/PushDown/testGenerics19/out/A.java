@@ -7,7 +7,7 @@ abstract class A<T>{
 }
 abstract class B extends A<String>{
 
-	@Override
+	///@Override
 	public String m(String t) {
 		String s= t;
 		return null;
@@ -18,7 +18,7 @@ abstract class B extends A<String>{
 class C extends A<Object>{
 	public void f(){}
 
-	@Override
+	///@Override
 	public Object m(Object t) {
 		Object s= t;
 		return null;

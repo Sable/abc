@@ -7,13 +7,13 @@ abstract class A<T>{
 }
 class B extends A<String>{
 
-	@Override
+	///@Override
 	public String m() {return null;}
 }
 class B1 extends B{
 }
 class C extends A<Object>{
 
-	@Override
+	///@Override
 	public Object m() {return null;}
 }
