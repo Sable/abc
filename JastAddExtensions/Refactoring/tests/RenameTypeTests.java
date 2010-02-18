@@ -3430,4 +3430,30 @@ public class RenameTypeTests extends TestCase {
                       ""))
         );
     }
+    
+    public void test105() {
+    	testSucc("X", "Y",
+    		Program.fromClasses(
+    			"class A<T> {" +
+    			"  class X {" +
+    			"    T x;" +
+    			"  }" +
+    			"}",
+    			"class B {" +
+    			"  String m(A<String>.X a) {" +
+    			"    return a.x;" +
+    			"  }" +
+    			"}"),
+       		Program.fromClasses(
+       			"class A<T> {" +
+       			"  class Y {" +
+       			"    T x;" +
+       			"  }" +
+       			"}",
+       			"class B {" +
+       			"  String m(A<String>.Y a) {" +
+       			"    return a.x;" +
+       			"  }" +
+       			"}"));    			
+    }
 }

@@ -35,7 +35,7 @@ aspect LockedVariableAccess {
 	
 	public ASTNode VarAccess.lock(Variable target) {
 		assert target != null;
-		targetVariable = target.isSubstituted() ? target.sourceVariableDecl() : target;
+		targetVariable = target;
 		return this;
 	}
 	
@@ -50,7 +50,7 @@ aspect LockedVariableAccess {
 	inh TypeDecl VarAccess.enclosingType();
 	public Access VarAccess.eliminateLockedNames() { return targetVariable == null ? this : unlock(null); }
 	public Access VarAccess.unlock(Expr qual) {
-		Variable target = targetVariable;
+		Variable target = targetVariable.refresh();
 		targetVariable = null;
 		flushCache();
 		if(fromSource())
@@ -59,8 +59,8 @@ aspect LockedVariableAccess {
 			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource() && !(target instanceof LocalVariable)) {
 			VariableAccessInfo acc = accessVariable(target);
-			if(acc == null && (qual == null || qual.isPure())) {
-				if(target.isStatic()) {
+			if(acc == null) {
+				if((qual == null || qual.isPure()) && target.isStatic()) {
 					TypeDecl host = target.hostType();
 					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
 						return host.createLockedAccess().qualifiesAccess(this);
@@ -120,63 +120,5 @@ aspect LockedVariableAccess {
 				}
 			}
 		}
-	}
-	
-	// a locked this access remembers which enclosing instance it is supposed to refer to;
-	// a super access remembers the enclosing instance whose super class it is supposed to refer to
-	private TypeDecl ThisAccess.targetType = null;
-	private TypeDecl SuperAccess.targetType = null;
-	
-	public boolean ThisAccess.isLocked() { return targetType != null; }
-	public boolean SuperAccess.isLocked() { return targetType != null; }
-	
-	refine Glue eq ThisAccess.decl() = targetType == null ? refined() : targetType;
-	refine Glue eq SuperAccess.decl() = targetType == null ? refined() : targetType;
-	
-	public ThisAccess ThisAccess.lock() { return targetType == null ? lock(decl()) : this; }
-	public ThisAccess ThisAccess.lock(TypeDecl target) { targetType = target; return this; }
-	public SuperAccess SuperAccess.lock() { return targetType == null ? lock(decl()) : this; }
-	public SuperAccess SuperAccess.lock(TypeDecl target) { targetType = target; return this; }
-	
-	refine PrettyPrint public void ThisAccess.toString(StringBuffer s) {
-		if(targetType == null)
-			refined(s);
-		else
-			s.append("[[this]]");
-	}
-	refine PrettyPrint public void SuperAccess.toString(StringBuffer s) {
-		if(targetType == null)
-			refined(s);
-		else
-			s.append("[[super]]");
-	}
-
-	public Access ThisAccess.eliminateLockedNames() { return targetType == null ? this : unlock(null); }
-	public Access ThisAccess.unlock(Expr qual) {
-		TypeDecl target = targetType;
-		targetType = null;
-		flushCaches();
-		if(decl().instanceOf(target))
-			return qual == null ? this : qual.qualifiesAccess(this);
-		if(!fromSource())
-			throw new RefactoringException("cannot adjust this access");
-		if(!thisType().isInnerTypeOf(target))
-			throw new RefactoringException("enclosing instance not reachable");
-		assert qual == null || qual.isPure();
-		return target.createLockedAccess().qualifiesAccess(new ThisAccess("this"));
-	}
-	public Access SuperAccess.eliminateLockedNames() { return targetType == null ? this : unlock(null); }
-	public Access SuperAccess.unlock(Expr qual) {
-		TypeDecl target = targetType;
-		targetType = null;
-		flushCaches();
-		if(decl().instanceOf(target))
-			return qual == null ? this : qual.qualifiesAccess(this);
-		if(!fromSource())
-			throw new RefactoringException("cannot adjust this access");
-		if(!thisType().isInnerTypeOf(target))
-			throw new RefactoringException("super instance not reachable");
-		assert qual == null || qual.isPure();
-		return target.createLockedAccess().qualifiesAccess(new SuperAccess("super"));
 	}
 }

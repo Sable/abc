@@ -28,18 +28,18 @@ aspect LockedMethodAccess {
 	}
 	
 	class SavedParMethodDecl extends SavedMethodDecl {
-		private ArrayList<SavedTypeDecl> parms;
+		private ArrayList<TypeDecl> parms;
 		public SavedParMethodDecl(ParMethodDecl pmd) {
 			super(pmd.genericMethodDecl());
-			parms = new ArrayList<SavedTypeDecl>();
+			parms = new ArrayList<TypeDecl>();
 			for(Access acc : pmd.getTypeArguments())
-				parms.add(acc.type().save());
+				parms.add(acc.type());
 		}
 		
 		public MethodDecl getDecl() {
 			ArrayList<TypeDecl> parmtypes = new ArrayList<TypeDecl>();
-			for(SavedTypeDecl std : parms)
-				parmtypes.add(std.getDecl());
+			for(TypeDecl std : parms)
+				parmtypes.add(std.refresh());
 			return ((GenericMethodDecl)super.getDecl()).lookupParMethodDecl(parmtypes);
 		}
 	}

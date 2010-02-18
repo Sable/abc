@@ -5,23 +5,20 @@ aspect LockedTypeAccess {
 	public boolean NullType.hasName() { return false; }
 	public boolean EmptyType.hasName() { return false; }
 	public boolean AnonymousDecl.hasName() { return false; }
-	public boolean ClassDeclSubstituted.hasName() { return false; }
-	public boolean GenericClassDeclSubstituted.hasName() { return false; }
 	public boolean UnknownType.hasName() { return false; }
 	public boolean GLBType.hasName() { return false; }
-	public boolean GenericInterfaceDeclSubstituted.hasName() { return false; }
 	public boolean LUBType.hasName() { return false; }
 	
 	/* A locked type access is a type access that does not obey the normal type lookup
 	 * rules, but instead immediately binds to its target. */
-	private SavedTypeDecl TypeAccess.targetType = null;
+	private TypeDecl TypeAccess.targetType = null;
 	private boolean CompilationUnit.locked = false;
 	
 	public boolean TypeAccess.isLocked() { return targetType != null; }
 	public boolean CompilationUnit.isLocked() { return locked; }
 	
-	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType.getDecl() : refined();
-	refine Generics eq TypeAccess.decl() = isLocked() ? targetType.getDecl() : refined();
+	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType : refined();
+	refine Generics eq TypeAccess.decl() = isLocked() ? targetType : refined();
 	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
 		if(!isLocked()) {
@@ -37,6 +34,10 @@ aspect LockedTypeAccess {
 		TypeAccess acc = new TypeAccess(name());
 		acc.lock(this);
 		return acc;
+	}
+	
+	public Access ArrayDecl.createLockedAccess() {
+		return new ArrayTypeAccess(componentType().createLockedAccess());
 	}
 	
 	public Access GenericTypeDecl.createLockedAccess() {
@@ -74,6 +75,11 @@ aspect LockedTypeAccess {
 		return super.lockNames(endangered);
 	}
 	
+	public ASTNode ArrayTypeAccess.lockNames(Collection<String> endangered) {
+		getAccess().lockNames(endangered);
+		return this;
+	}
+	
 	// absolute type access; can't get shadowed anyway
 	public ASTNode BytecodeTypeAccess.lockNames(Collection<String> endangered) { return this; }
 	
@@ -101,22 +107,20 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
-	refine TypeVariableExt protected void TypeAccess.collectUsedTypeVars(Collection<TypeVariable> tvars) {
-		if(isLocked())
-			targetType.collectUsedTypeVars(tvars);
-		refined(tvars);
-	}
-	
 	public ASTNode TypeAccess.lock() { return lock(decl());	}
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != null && !decl.isUnknown();
-		targetType = decl.save();
+		targetType = decl;
 		return this;
 	}
 	
+	// primitive types can never be shadowed, so there's no point in locking them
+	public ASTNode PrimitiveTypeAccess.lock() { return this; }
+	public Access PrimitiveTypeAccess.unlock(Expr qual) { assert qual == null; return this; }
+	
 	public Access TypeAccess.unlock(Expr qual) {
 		assert qual == null || qual.isPure();
-		TypeDecl target = targetType.getDecl();
+		TypeDecl target = targetType.refresh();
 		targetType = null;
 		flushCaches();
 		if(!target.hasName())
@@ -177,7 +181,7 @@ aspect LockedTypeAccess {
 		if(qual != null) {
 			if(!qual.isTypeAccess())
 				throw new RefactoringException("cannot access member type under non-type qualifier");
-			TypeDecl outer = qual.type();
+			TypeDecl outer = qual.type().refresh();
 			if(!outer.memberTypes(target.name()).isSingleton(target))
 				throw new RefactoringException("cannot access shadowed member type");
 			setPackage("");

@@ -1,0 +1,33 @@
+aspect GenericsExt {
+	refine Generics Opt MethodDecl.substituteBody(Parameterization parTypeDecl) {
+		return (Opt)getBlockOpt().substituteAll(parTypeDecl);
+	}
+	
+	public ASTNode ASTNode.substituteAll(Parameterization parTypeDecl) {
+		ASTNode res = (ASTNode)copy();
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child = child.substituteAll(parTypeDecl);
+			res.setChild(child, i);
+		}
+		return res;
+	}
+	
+	public ASTNode TypeAccess.substituteAll(Parameterization parTypeDecl) {
+		if(decl().isTypeVariable())
+			return parTypeDecl.substitute((TypeVariable)decl()).createBoundAccess();
+		else
+			return super.substituteAll(parTypeDecl);
+	}
+	
+	public TypeAccess BoundTypeAccess.substituteAll(Parameterization parTypeDecl) {
+		return decl().createBoundAccess();
+	}
+	
+	interface TypeDeclSubstituted { }
+	ClassDeclSubstituted implements TypeDeclSubstituted;
+	InterfaceDeclSubstituted implements TypeDeclSubstituted;
+	GenericClassDeclSubstituted implements TypeDeclSubstituted;
+	GenericInterfaceDeclSubstituted implements TypeDeclSubstituted;
+}

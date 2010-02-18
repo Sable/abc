@@ -11,6 +11,7 @@ aspect RenameVariable {
 		checkRenamingPreconds(new_name);
 		programRoot().lockNames(name(), new_name);
 		setID(new_name);
+		programRoot().flushCaches();
 		programRoot().eliminate(LOCKED_NAMES);
 	}
 	

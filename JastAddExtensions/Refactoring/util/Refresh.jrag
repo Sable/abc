@@ -1,0 +1,35 @@
+aspect Refresh {
+	public Variable Variable.refresh() { return refreshVariable(); }
+	
+	syn Variable Variable.refreshVariable() = this;	
+	eq FieldDeclarationSubstituted.refreshVariable() {
+		TypeDecl ptd = hostType().refreshType();
+		String name = sourceVariableDecl().name();
+		return (FieldDeclarationSubstituted)ptd.localFields(name).iterator().next();
+	}
+	
+	// TODO: same for ParameterDeclarationSubstituted and VariableArityParameterSubstituted
+	
+	public TypeDecl TypeDecl.refresh() { return refreshType(); }
+	
+	syn TypeDecl TypeDecl.refreshType() = this;
+	eq ArrayDecl.refreshType() = componentType().refresh().arrayType();
+	eq ParTypeDecl.refreshType() {
+		ArrayList<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(int i=0;i<getNumArgument();++i)
+			types.add(getArgument(i).type().refresh());
+		return ((GenericTypeDecl)genericDecl().refresh()).lookupParTypeDecl(types);
+	}
+	eq RawClassDecl.refreshType() = ((GenericTypeDecl)genericDecl().refresh()).rawType();
+	eq RawInterfaceDecl.refreshType() = ((GenericTypeDecl)genericDecl().refresh()).rawType();
+	eq WildcardType.refreshType() = programRoot().wildcards().typeWildcard();
+	eq WildcardExtendsType.refreshType() = programRoot().wildcards().lookupWildcardExtends(getAccess().type().refresh());
+	eq WildcardSuperType.refreshType() = programRoot().wildcards().lookupWildcardSuper(getAccess().type().refresh());
+	eq TypeDeclSubstituted.refreshType() {
+		TypeDecl encl = enclosingType().refreshType();
+		String name = sourceTypeDecl().name();
+		return (ClassDeclSubstituted)encl.localTypeDecls(name).iterator().next();
+	}
+	
+	// TODO: similar for SavedMethods
+}

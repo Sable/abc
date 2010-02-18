@@ -7,6 +7,10 @@ aspect AST {
 		return getParent().getParent(i-1);
 	}
 	
+	public int ASTNode.getChildIndex() {
+		return childIndex;
+	}
+	
 	public Program ASTNode.programRoot() {
 		ASTNode n=this;
 		while(n!=null && !(n instanceof Program))
