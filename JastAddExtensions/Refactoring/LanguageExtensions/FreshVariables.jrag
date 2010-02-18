@@ -21,6 +21,8 @@ aspect FreshVariables {
 		return "#fresh#" + super.name();
 	}
 	
+	eq FreshVariable.refreshVariable() = this;
+	
 	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables") {
 		public ASTNode eliminateOn(ASTNode n) {
 			return n.eliminateFreshVariables();

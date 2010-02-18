@@ -1,12 +1,20 @@
 aspect Refresh {
 	public Variable Variable.refresh() { return refreshVariable(); }
 	
-	syn Variable Variable.refreshVariable() = this;	
+	syn Variable Variable.refreshVariable();
+	eq FieldDeclaration.refreshVariable() {
+		// the "length" field of array types is synthesised anew for every new array type
+		if(name().equals("length") && hostType().isArrayDecl())
+			return (FieldDeclaration)hostType().refresh().localFields("length").iterator().next();
+		return this;
+	}
 	eq FieldDeclarationSubstituted.refreshVariable() {
-		TypeDecl ptd = hostType().refreshType();
+		TypeDecl ptd = hostType().refresh();
 		String name = sourceVariableDecl().name();
 		return (FieldDeclarationSubstituted)ptd.localFields(name).iterator().next();
 	}
+	eq ParameterDeclaration.refreshVariable() = this;
+	eq VariableDeclaration.refreshVariable() = this;
 	
 	// TODO: same for ParameterDeclarationSubstituted and VariableArityParameterSubstituted
 	

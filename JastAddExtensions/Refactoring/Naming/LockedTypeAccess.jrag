@@ -76,7 +76,7 @@ aspect LockedTypeAccess {
 	}
 	
 	public ASTNode ArrayTypeAccess.lockNames(Collection<String> endangered) {
-		getAccess().lockNames(endangered);
+		setAccess((Access)getAccess().lockNames(endangered));
 		return this;
 	}
 	
@@ -111,6 +111,11 @@ aspect LockedTypeAccess {
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != null && !decl.isUnknown();
 		targetType = decl;
+		return this;
+	}
+	
+	public ASTNode ArrayTypeAccess.lock() {
+		setAccess((Access)((TypeAccess)getAccess()).lock());
 		return this;
 	}
 	
