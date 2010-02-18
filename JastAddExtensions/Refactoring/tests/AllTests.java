@@ -18,9 +18,11 @@ public class AllTests {
 		suite.addTestSuite(MakeMethodStaticTests.class);
 		suite.addTestSuite(InlineTempTests.class);
 		suite.addTestSuite(RemoveUnusedMethodTests.class);
+		suite.addTestSuite(PullUpMethodTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
+		suite.addTestSuite(tests.eclipse.PullUp.PullUpTests.class);
 		//$JUnit-END$
 		return suite;
 	}

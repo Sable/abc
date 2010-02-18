@@ -5,12 +5,13 @@ abstract class A{
 }
 abstract class B extends A{
 }
+abstract ///
 class C extends A{
 
 	/* (non-Javadoc)
 	 * @see p.A#m()
 	 */
-	public int m() {
-		return 0;
-	}
+	///public int m() {
+	///	return 0;
+	///}
 }

@@ -4,8 +4,10 @@ class A {
 	void a(){}
 
 	public void m() { 
-		this.a();
-		this.a();
+		///this.
+                a();
+		///this.
+                a();
 	}
 }
 

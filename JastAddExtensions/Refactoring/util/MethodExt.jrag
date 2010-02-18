@@ -1,6 +1,13 @@
 aspect MethodExt {
 	syn boolean MethodDecl.isUnknown() = hostType().isUnknown();
 	
+	public void MethodDecl.makeAbstract() {
+		if(isNative() || isFinal() || isStatic())
+			throw new RefactoringException("cannot make this method abstract");
+		getModifiers().addModifier("abstract");
+		setBlockOpt(new Opt());
+	}
+	
 	// whether this method could by called either dynamically or statically
 	syn lazy boolean MethodDecl.isCallable() = !monoUses().isEmpty() || isDynamicallyCallable();
 	

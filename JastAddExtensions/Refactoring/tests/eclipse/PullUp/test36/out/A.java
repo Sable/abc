@@ -4,7 +4,7 @@ abstract class A{
 	public abstract void m();
 }
 class B extends A{
-	@Override
+	///@Override
 	public void m() {
 	}
 }

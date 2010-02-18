@@ -1,0 +1,32 @@
+aspect PullUpField {	
+	/**
+	 * The Pull Up Field Refactoring.
+	 * 
+	 * Preconditions:
+	 *  - if field to be pulled has initialiser, that initialiser has to be constant
+	 *  - field must be in a class
+	 *  - superclass cannot already contain a field with the same name
+	 *  
+	 * The preconditions ensure that it is enough to adjust all accesses to
+	 * the field being pulled and all accesses within its initialiser.
+	 */
+	public void FieldDeclaration.pullUp() {
+		if(hasInit() && !getInit().isConstant())
+			throw new RefactoringException("cannot pull fields with non-constant initialiser");
+		if(!hostType().isClassDecl() || !((ClassDecl)hostType()).superclass().fromSource())
+			throw new RefactoringException("cannot push this field");
+		ClassDecl sup = ((ClassDecl)hostType()).superclass();
+		if(!sup.localFields(name()).isEmpty())
+			throw new RefactoringException("field with that name already exists");
+		lockAllNames();
+		programRoot().lockNames(name());
+		hostType().removeBodyDecl(this);
+		sup.addBodyDecl(this);
+		programRoot().flushCaches();
+	}
+	
+    public void FieldDeclaration.doPullUp() {
+    	pullUp();
+    	programRoot().eliminate(LOCKED_NAMES);
+    }
+}

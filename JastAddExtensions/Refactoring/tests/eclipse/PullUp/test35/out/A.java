@@ -10,6 +10,6 @@ class B extends A{
 	B(){
 		super();
 	}
-	@Override
+	///@Override
 	public void m(){}
 }

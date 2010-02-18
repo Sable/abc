@@ -5,8 +5,6 @@ aspect InsertUnusedMethod {
 	}
 	
 	public void ClassDecl.insertUnusedMethod(MethodDecl m) {
-		if(!localMethodsSignature(m.signature()).isEmpty())
-			throw new RefactoringException("method exists");
 		programRoot().lockMethodNames(Collections.singleton(m.name()));
 		addBodyDecl(m);
 		programRoot().flushCaches();
@@ -15,10 +13,11 @@ aspect InsertUnusedMethod {
 		if(m.isDynamicallyCallable())
 			throw new RefactoringException("method is used");
 		if(m.isAbstract())
-			makeAbstract();
+			for(TypeDecl td : m.inheritingTypes())
+				td.makeAbstract();
 	}
 	
-	public void ParClassDecl.insertUnusedMethod(MethodDecl m) {
+	public void ParTypeDecl.insertUnusedMethod(MethodDecl m) {
 		genericDecl().insertUnusedMethod(m);
 	}
 	

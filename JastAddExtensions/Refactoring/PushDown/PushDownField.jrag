@@ -8,10 +8,10 @@ aspect PushDownField {
 	 *  - that child type cannot already contain a field with the same name
 	 *  
 	 * The preconditions ensure that it is enough to adjust all accesses to
-	 * the field being pushed and all accesses within that method.
+	 * the field being pushed and all accesses within its initialiser.
 	 * 
 	 * If pushing from an interface to a class, we need to make the pushed
-	 * method public and abstract.
+	 * field public and static.
 	 */
 	public void FieldDeclaration.pushDown() {
 		if(hasInit() && !getInit().isConstant())
@@ -24,6 +24,7 @@ aspect PushDownField {
 			throw new RefactoringException("field with that name already exists");
 		if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
 			getModifiers().addModifiers("public", "static");
+		lockAllNames();
 		programRoot().lockNames(name());
 		hostType().removeBodyDecl(this);
 		child.addBodyDecl(this);

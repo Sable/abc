@@ -5,7 +5,8 @@ class A{
 	}
 
 	void g() {
-		this.f(1,2);
+		///this.
+                f(1,2);
 	}
 }
 class B extends A{

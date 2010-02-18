@@ -58,23 +58,13 @@ public class PullUpMethodTests extends TestCase {
     }
 
     public void test3() {
-    	testSucc(
-        	    Program.fromClasses(
-        	      "interface Super { }",
-        	      "class A implements Super { void m() { } }"),
-        	    Program.fromClasses(
-        	      "interface Super { void m(); }",
-        	      "abstract class A implements Super { }"));
-    }
-
-    public void test4() {
     	testFail(
     		Program.fromClasses(
     		  "class Super { void m() { } }",
     		  "class A extends Super { void m() { } }"));
     }
 
-    public void test5() {
+    public void test4() {
     	testFail(
     		Program.fromClasses(
     		  "class SuperSuper { void m() { } }",
@@ -83,7 +73,7 @@ public class PullUpMethodTests extends TestCase {
     		  "class B { { SuperSuper s = new Super(); s.m(); } }"));
     }
     
-    public void test6() {
+    public void test5() {
     	testSucc(
     		Program.fromClasses(
     		  "class Super { }",
@@ -95,7 +85,7 @@ public class PullUpMethodTests extends TestCase {
     	      "class B extends Super { int m() { return 42; } }"));
     }
     
-    public void test7() {
+    public void test6() {
     	testFail(
     		Program.fromClasses(
     		  "class SuperSuper { int m() { return 56; } }",
@@ -105,7 +95,7 @@ public class PullUpMethodTests extends TestCase {
     		  "class C { { SuperSuper s = new Super(); s.m(); } } "));
     }
 
-    public void test8() {
+    public void test7() {
     	testFail(
     		Program.fromClasses(
     		  "class SuperSuper { int m() { return 56; } }",
@@ -114,7 +104,7 @@ public class PullUpMethodTests extends TestCase {
     		  "class B extends Super { int m() { return super.m(); } }"));
     }
     
-    public void test9() {
+    public void test8() {
     	testSucc(
     		Program.fromClasses(
     		  "class Super { }",
@@ -122,5 +112,21 @@ public class PullUpMethodTests extends TestCase {
     		Program.fromClasses(
     		  "abstract class Super { abstract void m(); }",
     		  "abstract class A extends Super { }"));
+    }
+    
+    public void test9() {
+    	testSucc(
+    		Program.fromClasses(
+    		  "class Super { int x; }",
+    		  "class A extends Super {" +
+    		  "  int x;" +
+    		  "  int m() { return super.x; }" +
+    		  "}"),
+    		Program.fromClasses(
+    		  "class Super {" +
+    		  "  int x;" +
+    		  "  int m() { return x; }" +
+    		  "}",
+    		  "class A extends Super { int x; }"));
     }
 }

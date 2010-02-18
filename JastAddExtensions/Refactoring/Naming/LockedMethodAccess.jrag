@@ -99,8 +99,14 @@ aspect LockedMethodAccess {
 			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource()) {
 			MethodAccessInfo acc = accessMethod(target);
-			if(acc == null)
+			if(acc == null) {
+				if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
+					acc = parentDot().accessMethod(target);
+					if(acc != null)
+						return acc.eliminate(null, enclosingType(), inStaticContext(), getArgs());
+				}
 				throw new RefactoringException("cannot access method "+target.name());
+			}
 			Access res = acc.eliminate(qual, enclosingType(), inStaticContext(), getArgs());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());

@@ -1,5 +1,5 @@
 aspect PullUpMethod {
-	public void MethodDecl.pullUp() {
+	public void MethodDecl.pullUp(boolean onlyAbstract) {
 		if(!hostType().isClassDecl() || !hostType().fromSource() || !((ClassDecl)hostType()).superclass().fromSource())
 			throw new RefactoringException("no fitting super class");
 		ClassDecl host = (ClassDecl)hostType();
@@ -7,15 +7,21 @@ aspect PullUpMethod {
 		MethodDecl md = this;
 		lockAllNames();
 		MethodDecl md_copy = (MethodDecl)fullCopy();
-		md_copy.setBlockOpt(new Opt());
 		md.replaceWith(md_copy);
+		if(onlyAbstract)
+			md.makeAbstract();
 		sup.insertUnusedMethod(md);
-		host.removeBodyDecl(md_copy);
+		if(!md.isAbstract() || md_copy.isAbstract())
+			host.removeBodyDecl(md_copy);
 		programRoot().flushCaches();
 	}
 	
-	public void MethodDecl.doPullUp() {
-		pullUp();
+	public void MethodDecl.doPullUp(boolean onlyAbstract) {
+		pullUp(onlyAbstract);
 		programRoot().eliminate(LOCKED_NAMES);
+	}
+	
+	public void MethodDecl.doPullUp() {
+		doPullUp(false);
 	}
 }

@@ -64,6 +64,10 @@ aspect LockedVariableAccess {
 					TypeDecl host = target.hostType();
 					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
 						return host.createLockedAccess().qualifiesAccess(this);
+				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
+					acc = parentDot().accessVariable(target);
+					if(acc != null)
+						return acc.eliminate(null, enclosingType());
 				}
 				throw new RefactoringException("cannot access variable "+target.name());
 			}

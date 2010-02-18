@@ -4,7 +4,8 @@ class A {
 	int x;
 
 	protected void m() { 
-		this.x++;
+		///this.
+                x++;
 	}
 }
 

@@ -4,7 +4,7 @@ abstract class A{
 	public abstract int[] m()[];
 }
 class B extends A{
-	@Override
+	///@Override
 	public int[] m()[] {
 		return null;
 	}

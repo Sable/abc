@@ -40,8 +40,24 @@ aspect RenameMethod {
 	
 	public boolean TypeDecl.canIntroduceMethod(MethodDecl md, String sig) {
 		// make sure there isn't already a different method with the same signature in this type
-		SimpleSet mds = localMethodsSignature(sig);
-		if(!mds.isEmpty() && !mds.isSingleton(md))
+		/* Note: To make it easier to compute attributes on md, we allow md to already be in
+		 *       this type. But then we cannot use localMethodsSignature directly to determine
+		 *       whether there is another method of the same signature, as it returns at most one
+		 *       result. So we temporarily remove md from this (if it is indeed a child), flush
+		 *       the local methods signature map, query for local methods of this signature,
+		 *       put md back in again (if it was in before), and flush again.
+		 *       Ugly, I know. */
+		int idx = getBodyDeclList().getIndexOfChild(md);
+		if(idx != -1) {
+			getBodyDeclList().removeChild(idx);
+			localMethodsSignatureMap_computed = false;
+		}
+		boolean found = !localMethodsSignature(sig).isEmpty();
+		if(idx != -1) {
+			getBodyDeclList().insertChild(md, idx);
+			localMethodsSignatureMap_computed = false;
+		}
+		if(found)
 			return false;
 		// if there are any like-named methods in superclasses, we must be able to override them
 		for(Iterator i = ancestorMethods(sig).iterator();i.hasNext();) {
@@ -54,4 +70,5 @@ aspect RenameMethod {
 				return false;
 		return true;
 	}
+	
 }

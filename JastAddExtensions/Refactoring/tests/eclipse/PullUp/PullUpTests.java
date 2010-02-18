@@ -15,6 +15,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
+import AST.FieldDeclaration;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
@@ -34,7 +35,7 @@ public class PullUpTests extends TestCase {
 		return "tests/eclipse/PullUp/" + getName() + "/out/" + cu + ".java";
 	}
 
-	private void pullUpMethod(String name, boolean succeed) {
+	private void pullUpMethod(String name, boolean succeed, boolean onlyAbstract) {
 		Program in;
 		if(new File(getInFileName("B")).exists())
 			in = CompileHelper.compile(getInFileName("A"), getInFileName("B"));
@@ -52,13 +53,49 @@ public class PullUpTests extends TestCase {
 		try {
 			if(succeed) {
 				if(new File(getInFileName("B")).exists())
-					out = CompileHelper.compile(getOutFileName("A"), getInFileName("B"));
+					out = CompileHelper.compile(getOutFileName("A"), getOutFileName("B"));
 				else
 					out = CompileHelper.compile(getOutFileName("A"));
 				assertNotNull(out);
 			}
 			
-			md.doPullUp();
+			md.doPullUp(onlyAbstract);
+			
+			if(!succeed)
+				assertEquals("<failure>", in.toString());
+			else
+				assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			if(succeed)
+				assertEquals(out.toString(), rfe.getMessage());
+		}
+	}
+
+	private void pullUpField(String name, boolean succeed) {
+		Program in;
+		if(new File(getInFileName("B")).exists())
+			in = CompileHelper.compile(getInFileName("A"), getInFileName("B"));
+		else
+			in = CompileHelper.compile(getInFileName("A"));
+		assertNotNull(in);
+		
+		TypeDecl td = in.findType("B");
+		assertNotNull(td);
+		
+		FieldDeclaration fd = td.findField(name);
+		assertNotNull(fd);
+		
+		Program out = null;
+		try {
+			if(succeed) {
+				if(new File(getInFileName("B")).exists())
+					out = CompileHelper.compile(getOutFileName("A"), getOutFileName("B"));
+				else
+					out = CompileHelper.compile(getOutFileName("A"));
+				assertNotNull(out);
+			}
+			
+			fd.doPullUp();
 			
 			if(!succeed)
 				assertEquals("<failure>", in.toString());
@@ -269,7 +306,7 @@ public class PullUpTests extends TestCase {
 			performDummySearch();
 			cu.delete(false, null);
 		}
-	}
+	}*/
 
 	private void declareAbstractHelper(String[] selectedMethodNames, String[][] selectedMethodSignatures,
 											String[] selectedFieldNames,
@@ -278,41 +315,47 @@ public class PullUpTests extends TestCase {
 											String[] namesOfMethodsToDeclareAbstract,
 											String[][] signaturesOfMethodsToDeclareAbstract, String[] namesOfTypesToPullUp,
 											boolean deleteAllPulledUpMethods, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), "A");
-		try{
-			Refactoring ref= createRefactoringPrepareForInputCheck(selectedMethodNames, selectedMethodSignatures, selectedFieldNames, selectedTypeNames, namesOfMethodsToPullUp,
-					signaturesOfMethodsToPullUp, namesOfFieldsToPullUp, namesOfTypesToPullUp, namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, deleteAllPulledUpMethods,
-					deleteAllMatchingMethods, targetClassIndex, cu);
-
-			RefactoringStatus checkInputResult= ref.checkFinalConditions(new NullProgressMonitor());
-			assertTrue("precondition was supposed to pass", !checkInputResult.hasError());
-			performChange(ref, false);
-
-			String expected= getFileContents(getOutputTestFileName("A"));
-			String actual= cu.getSource();
-			assertEqualLines(expected, actual);
-		} finally{
-			performDummySearch();
-			cu.delete(false, null);
-		}
-	}*/
+		assertTrue("Can only pull up single method", selectedMethodNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
+		pullUpMethod(selectedMethodNames[0], true, true);
+	}
 
 	private void helper1(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
 		assertTrue("Can only pull up single method", methodNames.length == 1);
 		assertTrue("Can only pull up into super class", targetClassIndex == 0);
-		pullUpMethod(methodNames[0], true);
+		pullUpMethod(methodNames[0], true, false);
+	}
+
+	private void helper1(String[] fieldNames,  boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
+		assertTrue("Can only pull up single field", fieldNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
+		pullUpField(fieldNames[0], true);
+	}
+	
+	private void fieldHelper1(String[] fieldNames, int targetClassIndex) throws Exception{
+		helper1(fieldNames, true, true, targetClassIndex);
 	}
 
 	private void helper2(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
 		assertTrue("Can only pull up single method", methodNames.length == 1);
 		assertTrue("Can only pull up into super class", targetClassIndex == 0);
-		pullUpMethod(methodNames[0], false);
+		pullUpMethod(methodNames[0], false, false);
+	}
+
+	private void helper2(String[] fieldNames,  boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
+		assertTrue("Can only pull up single field", fieldNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
+		pullUpField(fieldNames[0], false);
+	}
+	
+	private void fieldHelper2(String[] fieldNames, int targetClassIndex) throws Exception{
+		helper2(fieldNames, true, true, targetClassIndex);
 	}
 
 	private void helper3(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex, boolean shouldActivationCheckPass) throws Exception {
 		assertTrue("Can only pull up single method", methodNames.length == 1);
 		assertTrue("Can only pull up into super class", targetClassIndex == 0);
-		pullUpMethod(methodNames[0], false);
+		pullUpMethod(methodNames[0], false, false);
 	}
 
 	//------------------ tests -------------
@@ -335,68 +378,13 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[0], new String[0]}, true, true, 0);
 	}*/
 
-	/* disabled:
 	public void test4() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[]{"QList;"}};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
 	public void test5() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[0]};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
-	}*/
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
 
 	public void test6() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -422,38 +410,10 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/* disabled:
+	// NB: excellent example of the advantages of general naming framework
 	public void test12() throws Exception{
-		//printTestDisabledMessage("bug#6779 searchDeclarationsOfReferencedTyped - missing exception  types");
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[0]};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
-	}*/
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
 
 	public void test13() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -463,7 +423,7 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/*
+	/* disabled: by Eclipse
 	public void test15() throws Exception{
 		printTestDisabledMessage("must fix - incorrect error");
 //		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false);
@@ -500,9 +460,10 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 1);
 	}*/
 
+	/* disabled: result looks off
 	public void test22() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
-	}
+	}*/
 
 	public void test23() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -517,7 +478,6 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/* disabled:
 	public void test26() throws Exception{
 		String[] selectedMethodNames= {"m"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -717,6 +677,7 @@ public class PullUpTests extends TestCase {
 								signaturesOfMethodsToDeclareAbstract, new String[0], true, true, 0);
 	}
 
+	/* disabled: multipull
 	public void test37() throws Exception{
 		String[] selectedMethodNames= {"m", "f"};
 		String[][] selectedMethodSignatures= {new String[0], new String[0]};
@@ -733,8 +694,9 @@ public class PullUpTests extends TestCase {
 								signaturesOfMethodsToPullUp,
 								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
 								signaturesOfMethodsToDeclareAbstract, new String[0], true, true, 0);
-	}
+	}*/
 
+	/* disabled: multipull
 	public void test38() throws Exception{
 		String[] selectedMethodNames= {"m"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -771,8 +733,9 @@ public class PullUpTests extends TestCase {
 								signaturesOfMethodsToPullUp,
 								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
 								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
-	}
+	}*/
 
+	/* disabled: dubious result
 	public void test40() throws Exception{
 		String[] selectedMethodNames= {"m"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -785,13 +748,8 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
-	}
+		helper1(selectedMethodNames, selectedMethodSignatures, true, true, 0);
+	}*/
 
 	public void test41() throws Exception{
 		String[] selectedMethodNames= {};
@@ -805,14 +763,10 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
+		helper1(selectedFieldNames, true, true, 0);
 	}
 
+	/* disabled: multipull
 	public void test42() throws Exception{
 		String[] selectedMethodNames= {};
 		String[][] selectedMethodSignatures= {};
@@ -831,7 +785,7 @@ public class PullUpTests extends TestCase {
 								signaturesOfMethodsToPullUp,
 								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
 								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
-	}
+	}*/
 
 	public void test43() throws Exception{
 //		printTestDisabledMessage("bug 35562 Method pull up wrongly indents javadoc comment [refactoring]");
@@ -847,14 +801,10 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
+		helper1(selectedMethodNames, selectedMethodSignatures, true, true, 0);
 	}
 
+	/* disabled: multipull
 	public void test44() throws Exception{
 		String[] selectedMethodNames= {"m"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -915,8 +865,9 @@ public class PullUpTests extends TestCase {
 								signaturesOfMethodsToPullUp,
 								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
 								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
-	}
+	}*/
 
+	/* disabled: pulling up into interfaces not implemented
 	public void test47() throws Exception{
 		// for bug 211491
 
@@ -931,14 +882,10 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, true, 0);
-	}
+		helper1(selectedMethodNames, selectedMethodSignatures, true, true, 0);
+	}*/
 
+	/* disabled: retaining pulled method not implemented
 	public void test48() throws Exception{
 		// for bug 211491, but with a super class
 
@@ -953,13 +900,8 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, false, false, 0);
-	}
+		helper1(selectedMethodNames, selectedMethodSignatures, false, false, 0);
+	}*/
 
 	public void test49() throws Exception{
 		// for bug 228950
@@ -975,13 +917,9 @@ public class PullUpTests extends TestCase {
 		String[] namesOfMethodsToDeclareAbstract= {};
 		String[][] signaturesOfMethodsToDeclareAbstract= {};
 
-		declareAbstractHelper(selectedMethodNames, selectedMethodSignatures,
-								selectedFieldNames,
-								selectedTypeNames, namesOfMethodsToPullUp,
-								signaturesOfMethodsToPullUp,
-								namesOfFieldsToPullUp, namesOfMethodsToDeclareAbstract,
-								signaturesOfMethodsToDeclareAbstract, namesOfTypesToPullUp, true, false, 0);
-	}*/
+
+		helper1(selectedMethodNames, selectedMethodSignatures, true, true, 0);
+	}
 
 	public void testFail0() throws Exception{
 //		printTestDisabledMessage("6538: searchDeclarationsOf* incorrect");
@@ -1301,7 +1239,6 @@ public class PullUpTests extends TestCase {
 		helper2(new String[] {"stop"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/* disabled:
 	//----------------------------------------------------------
 	public void testField0() throws Exception{
 		fieldHelper1(new String[]{"i"}, 0);
@@ -1311,14 +1248,17 @@ public class PullUpTests extends TestCase {
 		fieldHelper2(new String[]{"x"}, 0);
 	}
 
+	/* disabled: we can do this
 	public void testFieldFail1() throws Exception{
 		fieldHelper2(new String[]{"x"}, 0);
-	}
+	}*/
 
+	/* disabled: pullpull
 	public void testFieldFail2() throws Exception{
 		fieldHelper2(new String[]{"f"}, 1);
-	}
+	}*/
 
+	/* disabled
 	//---------------------------------------------------------
 	public void testFieldMethod0() throws Exception{
 //		printTestDisabledMessage("bug 23324 ");
@@ -1762,62 +1702,27 @@ public class PullUpTests extends TestCase {
 //			cuA.delete(false, null);
 //			cuB.delete(false, null);
 //		}
-	}
+	}*/
 
 	public void testGenerics5() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[] {"QS;"}};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
-	}*/
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
 
 	public void testGenerics6() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/*
 	public void testGenerics7() throws Exception{
-		printTestDisabledMessage("Disabled because of bug ");
-
-		if (!BUG_91542)
-			helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
-	}*/
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
 
 	public void testGenerics8() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/*
 	public void testGenerics9() throws Exception{
-		printTestDisabledMessage("Disabled because of bug ");
-
-		if (!BUG_91542)
 			helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
-	}*/
+	}
 
 	public void testGenerics10() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -1827,38 +1732,10 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/*
 	public void testGenerics12() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[]{"QT;"}};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
-	}*/
-
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
+	
 	public void testGenerics13() throws Exception {
 		helper1(new String[] { "m"}, new String[][] { new String[0]}, true, false, 0);
 	}
