@@ -1,7 +1,8 @@
 package p;
 class A{
 
-	int[] m() throws java.lang.Exception, Throwable {
+	int[] m() throws ///java.lang.
+                         Exception, Throwable {
 		return null;
 	}	
 }

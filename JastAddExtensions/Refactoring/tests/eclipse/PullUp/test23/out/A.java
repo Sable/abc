@@ -1,7 +1,8 @@
 package p;
 
 class SuperA{
-	protected void x(){}
+	///protected
+    void x(){}
 }
 class A extends SuperA{
 

@@ -298,17 +298,20 @@ public class PullUpTests extends TestCase {
 	}*/
 
 	private void helper1(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
-		assertEquals(methodNames.length, 1);
+		assertTrue("Can only pull up single method", methodNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
 		pullUpMethod(methodNames[0], true);
 	}
 
 	private void helper2(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex) throws Exception{
-		assertEquals(methodNames.length, 1);
+		assertTrue("Can only pull up single method", methodNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
 		pullUpMethod(methodNames[0], false);
 	}
 
 	private void helper3(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex, boolean shouldActivationCheckPass) throws Exception {
-		assertEquals(methodNames.length, 1);
+		assertTrue("Can only pull up single method", methodNames.length == 1);
+		assertTrue("Can only pull up into super class", targetClassIndex == 0);
 		pullUpMethod(methodNames[0], false);
 	}
 
@@ -322,13 +325,15 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
+	/* disabled: multipull
 	public void test2() throws Exception{
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[0], new String[0]}, true, false, 0);
-	}
+	}*/
 
+	/* disabled: multipull
 	public void test3() throws Exception{
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[0], new String[0]}, true, true, 0);
-	}
+	}*/
 
 	/* disabled:
 	public void test4() throws Exception{
@@ -485,13 +490,15 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
+	/* disabled: pullpull
 	public void test20() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 1);
-	}
+	}*/
 
+	/* disabled: pullpull
 	public void test21() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 1);
-	}
+	}*/
 
 	public void test22() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -1073,21 +1080,23 @@ public class PullUpTests extends TestCase {
 		//removed - this (pulling up classes) is allowed now
 	}
 
+	/* disabled: pullpull
 	public void testFail15() throws Exception{
 		String[] methodNames= new String[]{"m"};
 		String[][] signatures= new String[][]{new String[0]};
 		boolean deleteAllInSourceType= true;
 		boolean deleteAllMatchingMethods= false;
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 1);
-	}
+	}*/
 
+	/* disabled: pullpull
 	public void testFail16() throws Exception{
 		String[] methodNames= new String[]{"m"};
 		String[][] signatures= new String[][]{new String[0]};
 		boolean deleteAllInSourceType= true;
 		boolean deleteAllMatchingMethods= false;
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 1);
-	}
+	}*/
 
 	/*
 	public void testFail17() throws Exception{
@@ -1108,13 +1117,14 @@ public class PullUpTests extends TestCase {
 //		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 0);
 	}*/
 
+	/* disabled: pullpull
 	public void testFail19() throws Exception{
 		String[] methodNames= new String[]{"m"};
 		String[][] signatures= new String[][]{new String[0]};
 		boolean deleteAllInSourceType= true;
 		boolean deleteAllMatchingMethods= false;
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 1);
-	}
+	}*/
 
 	/*
 	public void testFail20() throws Exception{
@@ -1713,13 +1723,15 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
+	/* disabled: multipull
 	public void testGenerics2() throws Exception{
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[] {"QT;"}, new String[0]}, true, false, 0);
-	}
+	}*/
 
+	/* disabled: multipull
 	public void testGenerics3() throws Exception{
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[] {"QT;"}, new String[0]}, true, true, 0);
-	}
+	}*/
 
 	/*
 	public void testGenerics4() throws Exception{

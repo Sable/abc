@@ -199,6 +199,8 @@ aspect LockedTypeAccess {
 				return this;
 			} else {
 				TypeDecl outer = target.enclosingType();
+				if(!target.isStatic() && getParent() instanceof ClassInstanceExpr && hostType().withinBodyThatSubclasses(outer) == null)
+					throw new RefactoringException("cannot access non-static member types without enclosing instance in instanceof");
 				if(!outer.memberTypes(target.name()).isSingleton(target))
 					throw new RefactoringException("cannot access shadowed member type");
 				setPackage("");
