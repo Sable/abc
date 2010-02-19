@@ -53,7 +53,29 @@ aspect Testing {
 	refine PrettyPrint public void CompilationUnit.toString(StringBuffer s) {
 		if(printCUNames)
 			s.append("compilation unit "+getID()+"\n");
-		refined(s);
+	    try {
+	        if(!getPackageDecl().equals("")) {
+	          s.append("package " + getPackageDecl() + ";\n");
+	        }
+	        for(int i = 0; i < getNumImportDecl(); i++) {
+	          getImportDecl(i).toString(s);
+	        }
+			ArrayList<TypeDecl> tds = new ArrayList<TypeDecl>();
+			for(int i=0;i<getNumTypeDecl();++i)
+				tds.add(getTypeDecl(i));
+			Collections.sort(tds, new Comparator<TypeDecl>() {
+				public int compare(TypeDecl td1, TypeDecl td2) {
+					return td1.name().compareTo(td2.name());
+				}
+			});
+	        for(TypeDecl td : tds) {
+	          td.toString(s);
+	          s.append("\n");
+	        }
+	      } catch (NullPointerException e) {
+	        System.out.print("Error in compilation unit hosting " + getTypeDecl(0).typeName());
+	        throw e;
+	      }
 	}
 	
 	// find a type given its package and name (both may contains dots)

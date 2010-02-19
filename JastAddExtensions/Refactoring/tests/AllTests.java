@@ -20,6 +20,7 @@ public class AllTests {
 		suite.addTestSuite(InlineTempTests.class);
 		suite.addTestSuite(RemoveUnusedMethodTests.class);
 		suite.addTestSuite(PullUpMethodTests.class);
+		suite.addTestSuite(MoveMemberTypeToToplevelTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
