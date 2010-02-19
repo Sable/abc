@@ -58,9 +58,8 @@ aspect MoveMethod {
 		b.type().insertUnusedMethod(m);
 		VarAccess b_acc = b_copy.createLockedAccess();
 		m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m, args)))));
-		m.eliminate(ASTNode.WITH_STMT, ASTNode.LOCKED_NAMES);
+		m.eliminate(ASTNode.WITH_STMT, ASTNode.FRESH_VARIABLES, ASTNode.LOCKED_NAMES);
 		new_b.inline();
-		withBlock.inline();
 		// remove spurious parameters
 		if(removeSpuriousParameters) {
 			for(int k=i+quals.getNumChild()-1;k>=i;--k)

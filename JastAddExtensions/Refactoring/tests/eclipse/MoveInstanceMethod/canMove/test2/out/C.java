@@ -6,7 +6,6 @@ import p2.B;
 class C {
 	C() {
 		A a= new A();
-		B b = new B(); ///
-                { b.mA1(a); }  ///new B().mA1(a);
+		B b = new B(); b.mA1(a); ///new B().mA1(a);
 	}	
 }

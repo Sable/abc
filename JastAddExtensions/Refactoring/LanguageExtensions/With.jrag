@@ -80,6 +80,19 @@ aspect With {
 	
 	public ASTNode ASTNode.eliminateWith() { return this; }
 	
+	public Block Block.eliminateWith() {
+		for(int i=0;i<getNumStmt();++i) {
+			Stmt s = getStmt(i);
+			if(s instanceof WithStmt) {
+				Stmt s2 = ((WithStmt)s).eliminateWith();
+				setStmt(s2, i);
+				if(s2 instanceof Block)
+					((Block)s2).inline();
+			}
+		}
+		return this;
+	}
+	
 	public Stmt WithStmt.eliminateWith() {
 		getStmt().eliminateWith(getQualifiers(), hostType());
 		return getStmt();
@@ -151,6 +164,7 @@ aspect With {
 					if(!decl().accessibleFrom(hostType))
 						throw new RefactoringException("method not accessible");
 					qualifyWith((Expr)qual.fullCopy());
+					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
 				}
@@ -169,6 +183,7 @@ aspect With {
 					if(!getAccess().type().accessibleFrom(hostType))
 						throw new RefactoringException("type not accessible");
 					qualifyWith((Expr)qual.fullCopy());
+					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
 				}
@@ -187,6 +202,7 @@ aspect With {
 					if(!((FieldDeclaration)decl()).accessibleFrom(hostType))
 						throw new RefactoringException("field not accessible");
 					qualifyWith((Expr)qual.fullCopy());
+					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
 				}

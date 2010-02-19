@@ -51,7 +51,7 @@ public class MakeMethodStaticTests extends TestCase {
             Program.fromClasses(
             "public class A {"+
             "    public void m() { m(this); }"+
-            "    public static void m(A a) {{}}"+
+            "    public static void m(A a) { }"+
             "}"));
     }
 
@@ -66,7 +66,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    static int i;"+
             "    public int m() { return m(this); }"+
-            "    public static int m(A a) {	{ return i; } }"+
+            "    public static int m(A a) {	return i; }"+
             "}"));
     }
 
@@ -81,7 +81,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    int i;"+
             "    public int m() { return m(this); }"+
-            "    public static int m(A a) { { return a.i; } }"+
+            "    public static int m(A a) { return a.i; }"+
             "}"));
     }
 
@@ -96,7 +96,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    public int i;"+
             "    public int m() { return m(this); }"+
-            "    public static int m(A a) { { return a.i; } }"+
+            "    public static int m(A a) { return a.i; }"+
             "}"));
     }
 
@@ -113,7 +113,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A extends Super {"+
             "    public int i;"+
             "    public int m() { return m(this); }"+
-            "    public static int m(A a) { { return ((Super)a).i; } }"+
+            "    public static int m(A a) { return ((Super)a).i; }"+
             "}"));
     }
 
@@ -128,7 +128,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    public int f(int i) { return 0; }"+
             "    public int m(int i) { return m(this, i); }"+
-            "    public static int m(A a, int i) { { return a.f(i); } }"+
+            "    public static int m(A a, int i) { return a.f(i); }"+
             "}"));
     }
 
@@ -152,15 +152,13 @@ public class MakeMethodStaticTests extends TestCase {
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
             "    static int m(final A a, int i) {"+
-            "        {"+
-            "          new Runnable () {"+
-            "              void f(int i) {};"+
-            "              public void run() {"+
-            "                  this.f(a.myData);"+
-            "              }"+
-            "          };"+
-            "          return a.myData + a.myData;"+
-            "        }"+
+            "        new Runnable () {"+
+            "            void f(int i) {};"+
+            "            public void run() {"+
+            "                this.f(a.myData);"+
+            "            }"+
+            "        };"+
+            "        return a.myData + a.myData;"+
             "    }"+
             "}"));
     }
@@ -179,7 +177,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
-            "    static int m(A a, int i) { { return a.myData + i; } }"+
+            "    static int m(A a, int i) { return a.myData + i; }"+
             "}"+
             ""+
             "public class B extends A {"+
@@ -202,7 +200,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
-            "    static int m(A a, int i) { { return a.myData+i; } }"+
+            "    static int m(A a, int i) { return a.myData+i; }"+
             "}",
             "class B {"+
             "    public A myA;"+
@@ -226,7 +224,7 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
-            "    static int m(A a, int i) { { return a.myData+i; } }"+
+            "    static int m(A a, int i) { return a.myData+i; }"+
             "}",
             "public class B extends A {"+
             "    int m(int b) {"+
@@ -253,7 +251,7 @@ public class MakeMethodStaticTests extends TestCase {
             Program.fromClasses(
             "class A {" +
             "   A m() { return m(this); }"+
-            "   static A m(A a) { { return a; } }"+
+            "   static A m(A a) { return a; }"+
             "}"));
     }
 
@@ -275,15 +273,13 @@ public class MakeMethodStaticTests extends TestCase {
             "public class A {" +
             "   A m() { return m(this); }"+
             "   static A m(final A a) {"+
-            "     {" +
-            "       final A[] result = new A[1];"+
-            "       new Runnable() {"+
-            "           public void run() {"+
-            "              result[0] = a;"+
-            "           }"+
-            "       }.run();"+
-            "       return result[0];" +
-            "     }"+
+            "     final A[] result = new A[1];"+
+            "     new Runnable() {"+
+            "         public void run() {"+
+            "            result[0] = a;"+
+            "         }"+
+            "     }.run();"+
+            "     return result[0];" +
             "   }"+
             "}"));
     }
@@ -302,7 +298,7 @@ public class MakeMethodStaticTests extends TestCase {
             "  A f() { return this; }"+
             "  void m(boolean b) { m(this, b); }"+
             "  static void m(A a, boolean b) {"+
-            "    { if(b) a.f().m(!b); }"+
+            "    if(b) a.f().m(!b);"+
             "  }"+
             "}"));
     }
@@ -323,7 +319,7 @@ public class MakeMethodStaticTests extends TestCase {
             "    String field;" +
             "    void m() { m(this); }"+
             "    static void m(A a) {"+
-            "      { a.f(a.field); }"+
+            "      a.f(a.field);"+
             "    }"+
             "}"));
     }
@@ -338,7 +334,7 @@ public class MakeMethodStaticTests extends TestCase {
             "class A<T> {" +
             "    void m() { m(this); }"+
             "    static <T> void m(A<T> a) {"+
-            "      { System.out.println(a); }"+
+            "      System.out.println(a);"+
             "    }"+
             "}"));
     }
@@ -355,7 +351,7 @@ public class MakeMethodStaticTests extends TestCase {
             "    int myField;" +
             "    void m(int i) { m(this, i); }"+
             "    static void m(A a, int i) {"+
-            "      { a.myField = i; }"+
+            "      a.myField = i;"+
             "    }"+
             "}"));
     }
@@ -395,7 +391,7 @@ public class MakeMethodStaticTests extends TestCase {
             ""+
             "    public void m() { m(this); }"+
             "    public static void m(A a) {"+
-            "      { a.addWindowListener(a.new MyWindowListener()); }"+
+            "      a.addWindowListener(a.new MyWindowListener());"+
             "    }"+
             ""+
             "    private class MyWindowListener"+
@@ -418,7 +414,7 @@ public class MakeMethodStaticTests extends TestCase {
             "class A {" +
             "    public void m() { m(this); }"+
             "    public static void m(A a) {"+
-            "      { a.m(); }"+
+            "      a.m();"+
             "    }"+
             "}"));
     }
@@ -441,7 +437,7 @@ public class MakeMethodStaticTests extends TestCase {
             "class A {" +
             "    public void m() { m(this); }"+
             "    public static void m(A a) {"+
-            "      { a.n(); }"+
+            "      a.n();"+
             "    }"+
             "    void n() { }"+
             "    class B {"+
@@ -462,7 +458,7 @@ public class MakeMethodStaticTests extends TestCase {
             "class A<T> {" +
             "    public T m(T t) { return m(this, t); }"+
             "    public static <T> T m(A<T> a, T t) {"+
-            "      { return t; }"+
+            "      return t;"+
             "    }"+
             "}"));
     }
