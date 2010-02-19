@@ -18,7 +18,9 @@ aspect Testing {
 		}
 		Collections.sort(cus, new Comparator<CompilationUnit>() {
 			public int compare(CompilationUnit cu1, CompilationUnit cu2) {
-				return cu1.pathName().compareTo(cu2.pathName());
+				String id1 = cu1.getPackageDecl() + "." + cu1.getID();
+				String id2 = cu2.getPackageDecl() + "." + cu2.getID();
+				return id1.compareTo(id2);
 			} 
 		});  
 		for(CompilationUnit cu : cus)

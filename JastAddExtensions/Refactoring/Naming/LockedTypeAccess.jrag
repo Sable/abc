@@ -107,6 +107,7 @@ aspect LockedTypeAccess {
 		return this;
 	}
 	
+	public ASTNode Access.lock() { return this; }
 	public ASTNode TypeAccess.lock() { return lock(decl());	}
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != null && !decl.isUnknown();
@@ -115,7 +116,7 @@ aspect LockedTypeAccess {
 	}
 	
 	public ASTNode ArrayTypeAccess.lock() {
-		setAccess((Access)((TypeAccess)getAccess()).lock());
+		setAccess((Access)getAccess().lock());
 		return this;
 	}
 	

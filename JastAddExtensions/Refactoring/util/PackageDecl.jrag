@@ -1,6 +1,29 @@
 aspect PackageDecl {
-	syn nta PackageDecl Program.getPackageDecl(String name) {
-		return new PackageDecl(name);
+	private Collection<PackageDecl> Program.packageDecls = new LinkedList<PackageDecl>();
+	
+	syn boolean Program.hasPackageDecl(String name) {
+		for(PackageDecl pd : packageDecls)
+			if(pd.getName().equals(name))
+				return true;
+		return false;
+	}
+	
+	syn lazy PackageDecl Program.getPackageDecl(String name) {
+		for(PackageDecl pd : packageDecls)
+			if(pd.getName().equals(name))
+				return pd;
+		PackageDecl pd = new PackageDecl(name);
+		packageDecls.add(pd);
+		pd.setParent(this);
+		return pd;
+	}
+	
+	syn lazy Collection<PackageDecl> Program.getSubPackageDecls(String name) {
+		Collection<PackageDecl> res = new LinkedList<PackageDecl>();
+		for(PackageDecl pd : packageDecls)
+			if(pd.getName().startsWith(name+"."))
+				res.add(pd);
+		return res;
 	}
 	
 	inh PackageDecl Expr.lookupPackage(String name);

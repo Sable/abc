@@ -1,5 +1,33 @@
 aspect LockedPackageAccess {
 	private PackageDecl PackageAccess.targetPackage = null;
+	private PackageDecl TypeAccess.targetPackage = null;
+	
+	public ASTNode ASTNode.lockAllPackageAccesses() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.lockAllPackageAccesses();
+		}
+		return this;
+	}
+	
+	public ASTNode CompilationUnit.lockAllPackageAccesses() {
+		// make sure the package of this compilation unit is registered with the program root
+		programRoot().getPackageDecl(getPackageDecl());
+		return super.lockAllPackageAccesses();
+	}
+	
+	public ASTNode PackageAccess.lockAllPackageAccesses() {
+		if(!isLocked())
+			lock();
+		return super.lockAllPackageAccesses();
+	}
+	
+	public ASTNode TypeAccess.lockAllPackageAccesses() {
+		if(!(this instanceof ArrayTypeAccess) && !getPackage().equals("") && !getPackage().equals("@primitive"))
+			lock();
+		return super.lockAllPackageAccesses();
+	}
 	
 	public ASTNode PackageAccess.lockNames(Collection<String> endangered) {
 		if(!isLocked() && endangered.contains(getTopLevelPackage()))
@@ -21,7 +49,7 @@ aspect LockedPackageAccess {
 		if(isLocked()) {
 			if(fromSource())
 				setPackage(targetPackage.getName());
-			if(!lookupName(getTopLevelPackage()).isSingleton(targetPackage))
+			if(!lookupName(getTopLevelPackage()).isSingleton(lookupPackage(getTopLevelPackage())))
 				throw new RefactoringException("cannot access obscured package");
 			targetPackage = null;
 		}

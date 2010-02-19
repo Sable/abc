@@ -14,6 +14,7 @@ public class AllTests {
 		suite.addTestSuite(PushDownMethodTests.class);
 		suite.addTestSuite(InlineMethodTests.class);
 		suite.addTestSuite(RenameTypeTests.class);
+		suite.addTestSuite(RenamePackageTests.class);
 		suite.addTestSuite(MoveMethodTests.class);
 		suite.addTestSuite(MakeMethodStaticTests.class);
 		suite.addTestSuite(InlineTempTests.class);
@@ -23,6 +24,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
 		suite.addTestSuite(tests.eclipse.PullUp.PullUpTests.class);
+		suite.addTestSuite(tests.eclipse.RenamePackage.RenamePackageTests.class);
 		//$JUnit-END$
 		return suite;
 	}

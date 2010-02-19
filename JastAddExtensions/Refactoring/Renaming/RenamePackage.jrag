@@ -1,0 +1,43 @@
+/* The Rename Package refactoring. */
+aspect RenamePackage {
+	public void PackageDecl.rename(String new_name) {
+		String old_name = getName();
+		if(old_name.equals(new_name))
+			return;
+		if(!isValidPackageName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
+		Program root = programRoot();
+		if(root.hasPackage(new_name))
+			throw new RefactoringException("package exists");
+		root.lockAllPackageAccesses();
+		setName(new_name);
+		for(Iterator<CompilationUnit> iter=root.compilationUnitIterator();iter.hasNext();) {
+			CompilationUnit cu = iter.next();
+			if(cu.getPackageDecl().equals(old_name))
+				cu.setPackageDecl(new_name);
+			else if(cu.getPackageDecl().startsWith(old_name + "."))
+				cu.setPackageDecl(new_name + "." + cu.getPackageDecl().substring(old_name.length()+1));
+		}
+		for(PackageDecl subpd : root.getSubPackageDecls(old_name))
+			subpd.setName(new_name + "." + subpd.getName().substring(old_name.length()+1));
+		root.flushCaches();
+		if(!root.typeWithSameNameAsPackage().isEmpty())
+			throw new RefactoringException("name clash between member type and subpackage");
+		root.eliminate(LOCKED_NAMES);
+	}
+	
+	protected static boolean ASTNode.isValidPackageName(String name) {
+		if(name.equals(""))
+			return false;
+		String[] comp = name.split("\\.");
+		for(int i=0;i<comp.length;++i)
+			if(!isValidName(comp[i]))
+				return false;
+		return true;
+	}
+	
+	coll Collection<TypeDecl> Program.typeWithSameNameAsPackage() [new HashSet<TypeDecl>()] 
+	                                                               with add root Program;
+	TypeDecl contributes this when !packageName().equals("") && programRoot().hasPackageDecl(fullName())
+	to Program.typeWithSameNameAsPackage() for programRoot();
+}
