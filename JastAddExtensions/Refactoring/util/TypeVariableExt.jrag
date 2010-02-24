@@ -11,6 +11,7 @@ aspect TypeVariableExt {
 	inh GenericElement TypeVariable.owner();
 	eq Program.getChild().owner() { throw new IllegalStateException("owner() on type variable that is not in tree"); }
 	eq GenericElement.getTypeParameter().owner() = this;
+	eq GenericTypeDecl.getTypeParameter().owner() = this;
 	
 	// collect all type variables used in a subtree
 	syn lazy Collection<TypeVariable> ASTNode.usedTypeVars() {

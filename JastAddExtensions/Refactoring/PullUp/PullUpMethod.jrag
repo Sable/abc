@@ -6,6 +6,7 @@ aspect PullUpMethod {
 		ClassDecl sup = host.superclass();
 		MethodDecl md = this;
 		lockAllNames();
+		translateTypeVars(host, sup);
 		MethodDecl md_copy = (MethodDecl)fullCopy();
 		md.replaceWith(md_copy);
 		if(onlyAbstract)
@@ -23,5 +24,30 @@ aspect PullUpMethod {
 	
 	public void MethodDecl.doPullUp() {
 		doPullUp(false);
+	}
+	
+	// this is a bit ugly: translate type variables from subclass to superclass
+	public void ASTNode.translateTypeVars(TypeDecl sub, TypeDecl sup) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.translateTypeVars(sub, sup);
+		}
+	}
+	
+	public void TypeAccess.translateTypeVars(TypeDecl sub, TypeDecl sup) {
+		if(decl().isTypeVariable()) {
+			TypeVariable tv = (TypeVariable)decl();
+			if(tv.owner() == sub && sup.isParameterizedType()) {
+				ParTypeDecl psup = (ParTypeDecl)sup;
+				for(int i=0;i<psup.getNumArgument();++i) {
+					if(psup.getArgument(i).type() == tv) {
+						this.lock(((GenericTypeDecl)psup.genericDecl()).getTypeParameter(i));
+						break;
+					}
+				}
+			}
+		}
+		super.translateTypeVars(sub, sup);
 	}
 }
