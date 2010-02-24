@@ -48,6 +48,21 @@ aspect Testing {
 		s.append(indent() + "}");
 	}
 	
+	refine PrettyPrint public void Modifiers.toString(StringBuffer s) {
+		ArrayList<Modifier> mods = new ArrayList<Modifier>();
+		for(Modifier mod : getModifiers())
+			mods.add(mod);
+		Collections.sort(mods, new Comparator<Modifier>() {
+			public int compare(Modifier mod1, Modifier mod2) {
+				return mod1.getID().compareTo(mod2.getID());
+			}
+		});
+		for(Modifier mod : mods) {
+			mod.toString(s);
+			s.append(" ");
+		}
+	}
+	
 	// output names of compilation units; this helps when comparing results
 	public static boolean CompilationUnit.printCUNames = false;
 	refine PrettyPrint public void CompilationUnit.toString(StringBuffer s) {
@@ -119,6 +134,23 @@ aspect Testing {
 		if(name().equals(name))
 			return this;
 		return super.findSimpleType(name);
+	}
+	
+	public LocalClassDeclStmt ASTNode.findLocalClass(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				LocalClassDeclStmt lcd = child.findLocalClass(name);
+				if(lcd!=null) return lcd;
+			}
+		}
+		return null;
+	}
+	
+	public LocalClassDeclStmt LocalClassDeclStmt.findLocalClass(String name) {
+		if(getClassDecl().name().equals(name))
+			return this;
+		return super.findLocalClass(name);
 	}
 	
 	// find a variable given its simple name

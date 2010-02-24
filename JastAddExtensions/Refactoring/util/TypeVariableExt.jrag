@@ -8,10 +8,35 @@ aspect TypeVariableExt {
 	GenericConstructorDecl implements GenericElement;
 	GenericTypeDecl implements GenericElement;
 	
+	public TypeVariable.TypeVariable(String name) {
+		
+	}
+	
 	inh GenericElement TypeVariable.owner();
 	eq Program.getChild().owner() { throw new IllegalStateException("owner() on type variable that is not in tree"); }
 	eq GenericElement.getTypeParameter().owner() = this;
 	eq GenericTypeDecl.getTypeParameter().owner() = this;
+	
+	// collect all references to type variables in a subtree
+	public java.util.Set<TypeAccess> ASTNode.typeVarAccesses() {
+		java.util.Set<TypeAccess> res = new LinkedHashSet<TypeAccess>();
+		typeVarAccesses(res);
+		return res;
+	}
+
+	public void ASTNode.typeVarAccesses(java.util.Set<TypeAccess> res) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.typeVarAccesses(res);
+		}
+	}
+	
+	public void TypeAccess.typeVarAccesses(java.util.Set<TypeAccess> res) {
+		if(decl().isTypeVariable())
+			res.add(this);
+		super.typeVarAccesses(res);
+	}
 	
 	// collect all type variables used in a subtree
 	syn lazy Collection<TypeVariable> ASTNode.usedTypeVars() {

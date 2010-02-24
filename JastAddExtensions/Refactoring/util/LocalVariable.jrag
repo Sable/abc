@@ -13,4 +13,25 @@ aspect LocalVariable {
 	eq Program.getChild().hostBodyDecl() = null;
 	eq TypeDecl.getChild().hostBodyDecl() = null;
 	eq BodyDecl.getChild().hostBodyDecl() = this;
+	
+	// determine all references to local declarations in a subtree
+	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
+		java.util.Set<VarAccess> res = new LinkedHashSet<VarAccess>();
+		localVarAccesses(res);
+		return res;
+	}
+
+	public void ASTNode.localVarAccesses(java.util.Set<VarAccess> res) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.localVarAccesses(res);
+		}
+	}
+	
+	public void VarAccess.localVarAccesses(java.util.Set<VarAccess> res) {
+		if(decl() instanceof LocalVariable)
+			res.add(this);
+		super.localVarAccesses(res);
+	}	
 }

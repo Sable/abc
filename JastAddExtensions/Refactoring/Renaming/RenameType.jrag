@@ -37,7 +37,7 @@ aspect RenameType {
 		}
 	}
 	
-    private boolean TypeDecl.hasNestedType(String name) {
+    public boolean TypeDecl.hasNestedType(String name) {
         for(int i=0;i<getNumBodyDecl();++i) {
             BodyDecl d = getBodyDecl(i);
             if(d instanceof MemberTypeDecl) {
@@ -49,7 +49,7 @@ aspect RenameType {
         return false;
     }
     
-    private boolean TypeDecl.hasEnclosingType(String name) {
+    public boolean TypeDecl.hasEnclosingType(String name) {
     	if(!isNestedType()) return false;
     	TypeDecl enc = enclosingType();
     	return enc.name().equals(name) || enc.hasEnclosingType(name);

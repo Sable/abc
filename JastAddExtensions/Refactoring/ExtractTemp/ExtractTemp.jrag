@@ -72,13 +72,14 @@ aspect ExtractTemp {
 	}
 	
     // stand-alone refactoring
-    public void Expr.doExtract(String name, boolean makeFinal) {
+    public VariableDeclaration Expr.doExtract(String name, boolean makeFinal) {
     	Program root = programRoot();
-    	extractTemp(name, makeFinal);
+    	VariableDeclaration decl = extractTemp(name, makeFinal);
     	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
+    	return decl;
     }
     
-    public void Expr.doExtract(String name) {
-    	doExtract(name, false);
+    public VariableDeclaration Expr.doExtract(String name) {
+    	return doExtract(name, false);
     }
 }

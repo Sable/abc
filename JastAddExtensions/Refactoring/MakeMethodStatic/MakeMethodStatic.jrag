@@ -22,9 +22,9 @@ aspect MakeMethodStatic {
 				if(!tv.isDescendantTo(newMethod)) {
 					TypeVariable new_tv = (TypeVariable)tv.fullCopy();
 					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
-					for(TypeAccess tvu : tv.uses())
+					for(Access tvu : tv.uses())
 						if(tvu.isDescendantTo(newMethod))
-							tvu.lock(new_tv);
+							((TypeAccess)tvu).lock(new_tv);
 				}
 			}
 		}

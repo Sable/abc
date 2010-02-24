@@ -1,0 +1,77 @@
+aspect AnonymousClassToLocalClass {
+	public LocalClassDeclStmt AnonymousDecl.promoteToLocalClass(String name, boolean makeFinal) {
+		Stmt stmt;
+		ClassInstanceExpr cie = (ClassInstanceExpr)getParent().getParent();
+		// check syntactic preconditions
+		if(cie.hostType().hasEnclosingType(name))
+			throw new RefactoringException("enclosing type of the same name exists");
+		if(cie.getParent() instanceof ExprStmt) {
+			stmt = (Stmt)cie.getParent();
+		} else if(cie.getParent().getParent() instanceof VariableDeclaration) {
+			stmt = (Stmt)cie.getParent().getParent();
+		} else {
+			stmt = cie.doExtract("x$");
+		}
+		// lock names
+		BodyDecl bd= stmt.enclosingBodyDecl();
+		bd.lockNames(name);
+		lockAllNames();
+		// move
+		ClassDecl cd = asLocalClass(name);
+		if(!makeFinal)
+			cd.getModifiers().removeModifier("final");
+		LocalClassDeclStmt lcd = new LocalClassDeclStmt(cd);
+		cie.setTypeDeclOpt(new Opt<TypeDecl>());
+		cie.setAccess(cd.createLockedAccess());
+		stmt.insertStmtBefore(lcd);
+		bd.flushCaches();
+		return lcd;
+	}
+	
+	public LocalClassDeclStmt AnonymousDecl.doPromoteToLocalClass(String name, boolean makeFinal) {
+		Program root = programRoot();
+		LocalClassDeclStmt lcd = promoteToLocalClass(name, makeFinal);
+		root.eliminate(LOCKED_NAMES);
+		return lcd;
+	}
+	
+	public LocalClassDeclStmt AnonymousDecl.doPromoteToLocalClass(String name) {
+		return doPromoteToLocalClass(name, true);
+	}
+	
+	public ClassDecl AnonymousDecl.asLocalClass(String name) {
+		ClassDecl cd = new ClassDecl(getModifiers(), name, new Opt<Access>(), new List<Access>(), getBodyDecls());
+		if(superType().isClassDecl() && !superType().isObject())
+			cd.setSuperClassAccess(superType().createLockedAccess());
+		for(Access iface : getImplementss())
+			cd.addImplements(iface.type().createLockedAccess());
+		Collection<ConstructorDecl> ctors = new LinkedList<ConstructorDecl>();
+		for(BodyDecl bd : getBodyDecls()) {
+			if(bd instanceof ConstructorDecl) {
+				ctors.add((ConstructorDecl)bd);
+				((ConstructorDecl)bd).setID(name);
+			}
+		}
+		// need to make initialisers explicit in constructor to ensure def-before-use
+		for(int i=cd.getNumBodyDecl()-1;i>=0;--i) {
+			BodyDecl bd = cd.getBodyDecl(i);
+			// TODO: handle instance initializers
+			if(bd instanceof FieldDeclaration) {
+				FieldDeclaration fd = (FieldDeclaration)bd;
+				if(!fd.hasInit())
+					continue;
+				for(ConstructorDecl ctor : ctors) {
+					if(ctor.isChained())
+						continue;
+					Expr init = fd.getInit();
+					Expr init_copy = (Expr)init.fullCopy();
+					init.lockAllNames();
+					fd.setInit(init_copy);
+					ctor.getBlock().insertStmt(0, AssignExpr.asStmt(fd.createLockedAccess(), init));
+				}
+				fd.setInitOpt(new Opt());
+			}
+		}
+		return cd;
+	}
+}

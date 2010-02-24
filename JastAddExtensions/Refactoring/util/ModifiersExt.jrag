@@ -40,4 +40,23 @@ aspect Modifiers {
 			l.add(new Modifier(mod));
 		setModifierList(l);
 	}
+	
+	public void Modifiers.setVisibility(String v) {
+		for(Modifier mod : getModifiers()) {
+			if(mod.isVisibility()) {
+				mod.setID(v);
+				return;
+			}
+		}
+		addModifier(v);
+	}
+	
+	syn boolean Modifier.isVisibility() = getID().equals("public") || getID().equals("protected") || getID().equals("private");
+	
+	public void ClassDecl.setVisibility(String v) {
+		getModifiers().setVisibility(v);
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
+			if(cd.isCompilerGenerated())
+				cd.getModifiers().setVisibility(v);
+	}
 }
