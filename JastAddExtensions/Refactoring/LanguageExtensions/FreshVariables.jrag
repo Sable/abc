@@ -1,9 +1,12 @@
 /* the names of fresh variables are guaranteed not to clash
  * with the names of other variables */
 aspect FreshVariables {
-	interface FreshVariable extends LocalVariable { }
+	interface FreshVariable extends Variable { 
+		String pickFreshName();
+	}
 	FreshParameter implements FreshVariable;
 	FreshLocalVariable implements FreshVariable;
+	FreshField implements FreshVariable;
 	
 	public FreshParameter.FreshParameter(Access type, String name) {
 		this(new Modifiers(new List()), type, name);
@@ -51,7 +54,43 @@ aspect FreshVariables {
 		return vd;
 	}
 	
-	public String FreshVariable.pickFreshName() {
+	public FieldDeclaration FreshField.eliminateFreshVariables() {
+		String new_name = pickFreshName();
+		FieldDeclaration fd = new FieldDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
+		for(VarAccess va : uses()) {
+			assert va.isLocked();
+			va.lock(fd);
+		}
+		return fd;
+	}
+	
+	public String FreshField.pickFreshName() {
+		String fresh_name = getID();
+		if(!hostType().localFields(fresh_name).isEmpty()) {
+			for(int i=0;;++i) {
+				fresh_name = getID()+i;
+				if(hostType().localFields(fresh_name).isEmpty())
+					break;
+			}
+		}
+		return fresh_name;
+	}
+	
+	public String FreshParameter.pickFreshName() {
+		String fresh_name = getID();
+		Collection<Declaration> decls = hostBodyDecl().allDecls();
+		if(conflicts(fresh_name, decls)) {
+			for(int i=0;;++i) {
+				fresh_name = getID()+i;
+				if(!conflicts(fresh_name, decls))
+					break;
+			}
+		}
+		return fresh_name;
+	}
+	
+	// duplicate of the preceding method
+	public String FreshLocalVariable.pickFreshName() {
 		String fresh_name = getID();
 		Collection<Declaration> decls = hostBodyDecl().allDecls();
 		if(conflicts(fresh_name, decls)) {

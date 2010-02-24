@@ -131,6 +131,9 @@ aspect LockedTypeAccess {
 		flushCaches();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
+		// the following check doesn't quite work: see test_nonstatic_8 of MoveInnerToTopLevel
+		/*if(!target.accessibleFrom(hostType()) || getParent() instanceof ClassInstanceExpr && ((ClassInstanceExpr)getParent()).decl().hostType().isUnknown())
+			throw new RefactoringException("cannot unlock access to inaccessible type");*/
 		try {
 			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
 					|| hostType() != null && !target.accessibleFrom(hostType()))

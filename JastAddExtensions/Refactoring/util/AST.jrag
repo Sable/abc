@@ -1,4 +1,10 @@
 aspect AST {
+	public static Object ASTNode.epsilon(SimpleSet set, Object alt) {
+		if(set.size() == 1)
+			return set.iterator().next();
+		return alt;
+	}
+	
 	public ASTNode ASTNode.getParent(int i) {
 		if(i <= 0)
 			return this;

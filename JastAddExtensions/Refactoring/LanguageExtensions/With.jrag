@@ -17,6 +17,8 @@ aspect With {
 	}
 	
 	// naming
+	eq WithStmt.getStmt().inStaticContext() = getNumQualifier() == 0;
+	
 	eq WithStmt.getStmt().hostType() = getQualifier(getNumQualifier()-1).type();
 	eq WithStmt.getStmt().thisType() = getQualifier(getNumQualifier()-1).type();
 	
@@ -160,7 +162,7 @@ aspect With {
 		} else {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
-				if(!qual.type().memberMethods(name()).isEmpty()) {
+				if(qual.type().memberMethods(name()).contains(decl())) {
 					if(!decl().accessibleFrom(hostType))
 						throw new RefactoringException("method not accessible");
 					qualifyWith((Expr)qual.fullCopy());
@@ -198,7 +200,7 @@ aspect With {
 		if(!isQualified() && decl() instanceof FieldDeclaration && !decl().isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
-				if(!qual.type().memberFields(name()).isEmpty()) {
+				if(qual.type().memberFields(name()).contains(decl())) {
 					if(!((FieldDeclaration)decl()).accessibleFrom(hostType))
 						throw new RefactoringException("field not accessible");
 					qualifyWith((Expr)qual.fullCopy());

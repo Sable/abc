@@ -1,20 +1,35 @@
 // move a member class to toplevel
 aspect MoveMemberTypeToToplevel {
-	public void MemberTypeDecl.moveToToplevel() {
+	public void MemberTypeDecl.moveToToplevel(boolean ownCU, String instanceName, boolean makeInstanceFieldFinal) {
 		Program root = programRoot();
+		CompilationUnit cu = compilationUnit();
 		TypeDecl td = typeDecl();
+		if(!cu.localLookupType(td.name()).isEmpty())
+			throw new RefactoringException("toplevel type of same name exists");
 		root.lockNames(td.name());
 		td.lockAllNames();
 		if(!td.isStatic()) {
-			LinkedList<FieldDeclaration> encls = td.addEnclosingInstanceFields(hostType(), 1);
+			LinkedList<FieldDeclaration> encls = td.addEnclosingInstanceFields(hostType(), instanceName, makeInstanceFieldFinal);
 			td.adjustMemberMethods(encls);
 		}
 		td.removeNonToplevelModifiers();
-		compilationUnit().addTypeDecl(td);
+		if(ownCU) {
+			CompilationUnit new_cu = new CompilationUnit(cu.getPackageDecl(),
+														 (List<ImportDecl>)cu.getImportDecls().fullCopy(),
+														 new List<TypeDecl>().add(td));
+			new_cu.setFromSource(true);
+			root.addCompilationUnit(new_cu);
+		} else {
+			cu.addTypeDecl(td);
+		}
 		getParent().removeChild(getChildIndex());
-		root.eliminate(WITH_STMT, LOCKED_NAMES);
+		root.eliminate(WITH_STMT, FRESH_VARIABLES, LOCKED_NAMES);
 	}
 	
+	public void MemberTypeDecl.moveToToplevel() {
+		moveToToplevel(false, null, true);
+	}
+
 	public void TypeDecl.removeNonToplevelModifiers() {
 		Modifiers new_mods = new Modifiers();
 		for(Modifier mod : getModifiers().getModifiers()) {
@@ -22,18 +37,23 @@ aspect MoveMemberTypeToToplevel {
 			if(id.equals("public") || id.equals("abstract") || id.equals("final"))
 				new_mods.addModifier(mod);
 		}
+		if(isPublic())
+			new_mods.addModifier("public");
 		setModifiers(new_mods);
 	}
 
-	public LinkedList<FieldDeclaration> TypeDecl.addEnclosingInstanceFields(TypeDecl encl, int i) {
+	public LinkedList<FieldDeclaration> TypeDecl.addEnclosingInstanceFields(TypeDecl encl, String instanceName, boolean makeInstanceFieldFinal) {
 		if(encl == null)
-			return new LinkedList<FieldDeclaration>();
-		LinkedList<FieldDeclaration> encls = addEnclosingInstanceFields(encl.enclosingType(), i+1);
-		FieldDeclaration fd = new FieldDeclaration(new Modifiers("private", "final"), encl.createLockedAccess(), "this$"+i);
+			return new LinkedList<FieldDeclaration>();		
+		LinkedList<FieldDeclaration> encls = addEnclosingInstanceFields(encl.enclosingType(), instanceName, makeInstanceFieldFinal);
+		if(instanceName == null)
+			instanceName = encl.name().toLowerCase();		
+		Modifiers mods = makeInstanceFieldFinal ? new Modifiers("private", "final") : new Modifiers("private");
+		FieldDeclaration fd = new FreshField(mods, encl.createLockedAccess(), instanceName, new Opt<Expr>());
 		addBodyDecl(fd);
 		encls.add(fd);
 		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
-			ParameterDeclaration pd = new ParameterDeclaration(encl.createLockedAccess(), "this$"+i); 
+			ParameterDeclaration pd = new FreshParameter(encl.createLockedAccess(), instanceName); 
 			cd.insertParameter(pd, 0);
 			ConstructorAccess cacc = (ConstructorAccess)((ExprStmt)cd.getConstructorInvocation()).getExpr();
 			if(cacc instanceof SuperConstructorAccess) {
@@ -41,41 +61,43 @@ aspect MoveMemberTypeToToplevel {
 			} else {
 				cacc.insertArg(pd.createLockedAccess(), 0);
 			}
-			for(Access acc : cd.uses()) {
-				boolean q = acc.isQualified();
-				if(acc instanceof SuperConstructorAccess) {
-					if(q)
-						acc.bundleQualifier();
-					Expr enclq = acc.enclosingInstanceQualifier(encl);
-					if(enclq == null)
-						throw new RefactoringException("no enclosing instance qualifier");
-					((SuperConstructorAccess)acc).insertArg(enclq, 0);
-					if(q)
-						acc.getParent().replaceWith(acc);
-				} else if(acc instanceof ClassInstanceExpr) {
-					if(q)
-						acc.bundleQualifier();
-					Expr enclq = acc.enclosingInstanceQualifier(encl);
-					if(enclq == null)
-						throw new RefactoringException("no enclosing instance qualifier");
-					((ClassInstanceExpr)acc).insertArg(enclq, 0);
-					if(q)
-						acc.getParent().replaceWith(acc);
-				}
+		}
+		for(Access acc : instantiations()) {
+			boolean q = acc.isQualified();
+			if(acc instanceof SuperConstructorAccess) {
+				if(q)
+					acc.bundleQualifier();
+				Expr enclq = acc.enclosingInstanceQualifier(encl);
+				if(enclq == null)
+					throw new RefactoringException("no enclosing instance qualifier");
+				((SuperConstructorAccess)acc).insertArg(enclq, 0);
+				if(q)
+					acc.getParent().replaceWith(acc);
+			} else if(acc instanceof ClassInstanceExpr) {
+				if(q)
+					acc.bundleQualifier();
+				Expr enclq = acc.enclosingInstanceQualifier(encl);
+				if(enclq == null)
+					throw new RefactoringException("no enclosing instance qualifier");
+				((ClassInstanceExpr)acc).insertArg(enclq, 0);
+				if(q)
+					acc.getParent().replaceWith(acc);
 			}
 		}
 		return encls;
 	}
-	
+
+	// TODO: this does not handle member classes, which also could be accessing fields from enclosing instances
 	public void TypeDecl.adjustMemberMethods(LinkedList<FieldDeclaration> encls) {
 		for(BodyDecl bd : getBodyDecls()) {
-			if(bd instanceof MethodDecl) {
-				MethodDecl md = (MethodDecl)bd;
+			if(bd instanceof Callable) {
+				Callable md = (Callable)bd;
 				if(md.isStatic() || !md.hasBlock())
 					continue;
 				List<Access> withargs = new List<Access>();
 				for(FieldDeclaration encl : encls)
 					withargs.add(encl.createLockedAccess());
+				withargs.add(new ThisAccess("this"));
 				md.setBlock(new Block(new WithStmt(withargs, md.getBlock())));
 			}
 		}
@@ -93,7 +115,7 @@ aspect MoveMemberTypeToToplevel {
 		return super.enclosingInstanceQualifier(td);
 	}
 	public Expr TypeDecl.enclosingInstanceQualifier(TypeDecl td, boolean innermost) {
-		if(this == td) {
+		if(this.instanceOf(td)) {
 			if(innermost)
 				return new ThisAccess("this");
 			else

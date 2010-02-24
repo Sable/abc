@@ -38,8 +38,14 @@ aspect Uses {
 	// bind all class instance expressions and constructor accesses to the constructor they resolve to
 	coll Collection<Access> ConstructorDecl.uses() [new HashSet<Access>()]
 	                        with add root Program;
-	ClassInstanceExpr contributes this to ConstructorDecl.uses() for decl();
+	ClassInstanceExpr contributes this to ConstructorDecl.uses() for decl(); 
 	ConstructorAccess contributes this to ConstructorDecl.uses() for decl();
+	
+	// bind all class instance expressions and constructor accesses to the type they instantiate
+	coll Collection<Access> TypeDecl.instantiations() [new HashSet<Access>()]
+	                        with add root Program;
+	ClassInstanceExpr contributes this to TypeDecl.instantiations() for getAccess().type();
+	ConstructorAccess contributes this to TypeDecl.instantiations() for decl().hostType();
 	
 	// bind all uses of a label to its declaration
 	coll Collection<Stmt> LabeledStmt.uses() [new HashSet<Stmt>()] 

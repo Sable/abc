@@ -26,6 +26,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
 		suite.addTestSuite(tests.eclipse.PullUp.PullUpTests.class);
 		suite.addTestSuite(tests.eclipse.RenamePackage.RenamePackageTests.class);
+		suite.addTestSuite(tests.eclipse.MoveInnerToTopLevel.MoveInnerToTopLevelTests.class);
 		//$JUnit-END$
 		return suite;
 	}

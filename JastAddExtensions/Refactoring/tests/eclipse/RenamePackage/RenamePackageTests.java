@@ -27,33 +27,16 @@ public class RenamePackageTests extends TestCase {
 		super(name);
 	}
 	
-	private Collection<String> findAllJavaFiles(File f) {
-		Collection<String> res = new LinkedList<String>();
-		findAllJavaFiles(f, res);
-		return res;
-	}
-	
-	private void findAllJavaFiles(File f, Collection<String> res) {
-		if(f.isDirectory()) {
-			for(File ff : f.listFiles())
-				findAllJavaFiles(ff, res);
-		} else {
-			if(f.getName().endsWith(".java"))
-				res.add(f.getPath());
-		}
-	}
- 	
 	public void renamePackageTest(String old_name, String new_name, boolean succeed) {
 		String name = this.getName();
-		Collection<String> files = findAllJavaFiles(new File("tests/eclipse/RenamePackage/"+name+"/in"));
-		Program in = CompileHelper.compile(files.toArray(new String[]{}));
+		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePackage/"+name+"/in");
 		assertNotNull(in);
 		PackageDecl pd = in.getPackageDecl(old_name);
 		assertNotNull(pd);
 		Program out = null;
 		try {
 			if(succeed) {
-				out = CompileHelper.compile(findAllJavaFiles(new File("tests/eclipse/RenamePackage/"+name+"/out")).toArray(new String[]{}));
+				out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePackage/"+name+"/out");
 				assertNotNull(out);
 			}
 			pd.rename(new_name);

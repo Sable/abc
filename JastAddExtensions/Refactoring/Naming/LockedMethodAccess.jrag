@@ -100,7 +100,11 @@ aspect LockedMethodAccess {
 		} else if(fromSource()) {
 			MethodAccessInfo acc = accessMethod(target);
 			if(acc == null) {
-				if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
+				if((qual == null || qual.isPure()) && target.isStatic()) {
+					TypeDecl host = target.hostType();
+					if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
+						return host.createLockedAccess().qualifiesAccess(this);
+				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessMethod(target);
 					if(acc != null)
 						return acc.eliminate(null, enclosingType(), inStaticContext(), getArgs());

@@ -14,6 +14,10 @@ aspect Call {
 	interface Callable { 
 		public void setParameter(ParameterDeclaration pd, int i);
 		public List<ParameterDeclaration> getParameterList();
+		public boolean isStatic();
+		public boolean hasBlock();
+		public Block getBlock();
+		public void setBlock(Block b);
 	}
 	ConstructorDecl implements Callable;
 	MethodDecl implements Callable;
@@ -49,5 +53,8 @@ aspect Call {
 			return null;
 		return getParameter(getIndexOfParameter(name));
 	}
+	
+	public boolean ConstructorDecl.isStatic() { return false; }
+	public boolean ConstructorDecl.hasBlock() { return true; }
 	
 }
