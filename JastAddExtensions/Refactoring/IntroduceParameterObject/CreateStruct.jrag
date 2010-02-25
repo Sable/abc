@@ -1,0 +1,22 @@
+aspect CreateStruct {
+	// create a struct, i.e. a class with public fields and no methods except a constructor
+	public static Pair<ClassDecl, Map<String, FieldDeclaration>> ASTNode.createStruct(String name, Iterable<? extends Variable> vars) {
+		Map<String, FieldDeclaration> map = new HashMap<String, FieldDeclaration>();
+		List<BodyDecl> bds = new List<BodyDecl>();
+		List<ParameterDeclaration> ctor_parms = new List<ParameterDeclaration>();
+		Block ctor_body = new Block();
+		ConstructorDecl ctor = new ConstructorDecl(new Modifiers("public"), name, ctor_parms, new List<Access>(), new Opt<Stmt>(), ctor_body);
+		bds.add(ctor);
+		for(Variable v : vars) {
+			if(map.containsKey(v.name()))
+				throw new RefactoringException("duplicate field name");
+			FieldDeclaration fd = new FieldDeclaration(new Modifiers("public"), v.type().createLockedAccess(), v.name(), new Opt<Expr>());
+			bds.add(fd);
+			map.put(v.name(), fd);
+			ParameterDeclaration pd = new ParameterDeclaration(v.type().createLockedAccess(), v.name());
+			ctor_parms.add(pd);
+			ctor_body.addStmt(AssignExpr.asStmt(fd.createLockedAccess(), pd.createLockedAccess()));
+		}
+		return new Pair(new ClassDecl(new Modifiers("public", "static"), name, new Opt<Access>(), new List<Access>(), bds), map);
+	}
+}

@@ -18,6 +18,8 @@ aspect MoveMemberTypeToToplevel {
 														 (List<ImportDecl>)cu.getImportDecls().fullCopy(),
 														 new List<TypeDecl>().add(td));
 			new_cu.setFromSource(true);
+			String path = cu.pathName();
+			new_cu.setPathName(path.substring(0, path.lastIndexOf(File.separatorChar)+1) + td.name() + ".java");
 			root.addCompilationUnit(new_cu);
 		} else {
 			cu.addTypeDecl(td);

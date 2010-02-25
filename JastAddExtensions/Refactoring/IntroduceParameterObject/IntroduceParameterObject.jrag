@@ -1,0 +1,79 @@
+aspect IntroduceParameterObject {
+	public MemberClassDecl MethodDecl.introduceParameterObject(Collection<String> parms_to_wrap, String className, String parmName) {
+		ArrayList<ParameterDeclaration> parms = new ArrayList<ParameterDeclaration>();
+		java.util.BitSet positions_to_wrap = new java.util.BitSet(this.getNumParameter());
+		List<ParameterDeclaration> old_parms = (List<ParameterDeclaration>)getParameters().fullCopy();
+		for(int i=0;i<getNumParameter();++i) {
+			if(parms_to_wrap == null || parms_to_wrap.contains(getParameter(i).name())) {
+				parms.add(getParameter(i));
+				positions_to_wrap.set(i);
+			}
+		}
+		Pair<ClassDecl, Map<String, FieldDeclaration>> tmp = createStruct(className, parms);
+		ClassDecl struct = tmp.fst();
+		programRoot().lockMethodNames(name());
+		
+		// adjust this method, all methods it overrides, and all methods overridden by them
+		// TODO: this is actually not enough; we also need to handle cousin methods
+		for(MethodDecl md : getRelatives())
+			md.uses();
+		for(MethodDecl md : getRelatives()) {
+			eliminateVarArgs();
+			for(MethodAccess ma : md.uses()) {
+				List<Expr> wrapped_args = new List<Expr>();
+				List<Expr> newargs = new List<Expr>().add(new ClassInstanceExpr(struct.createLockedAccess(), wrapped_args));
+				for(int i=0;i<md.getNumParameter();++i)
+					if(positions_to_wrap.get(i))
+						wrapped_args.add(ma.getArg(i));
+					else
+						newargs.add(ma.getArg(i));
+				ma.setArgList(newargs);
+			}
+			ParameterDeclaration parm = new ParameterDeclaration(struct.createLockedAccess(), parmName);
+			List<ParameterDeclaration> newparms = new List<ParameterDeclaration>().add(parm);
+			for(int i=0;i<md.getNumParameter();++i) {
+				ParameterDeclaration pd = md.getParameter(i);
+				if(positions_to_wrap.get(i) && md.hasBlock())
+					md.getBlock().insertStmt(i, pd.asVariableDeclaration(parm.createLockedAccess().qualifiesAccess(new VarAccess(old_parms.getChild(i).name()))));
+				if(!positions_to_wrap.get(i))
+					newparms.add(pd);
+			}
+			md.setParameterList(newparms);
+		}
+		
+		// TODO: should check some stuff here
+		MemberClassDecl mcd = new MemberClassDecl(struct);
+		hostType().addBodyDecl(mcd);
+		programRoot().flushCaches();
+		return mcd;
+	}
+	
+	public void MethodDecl.doIntroduceParameterObject(Collection<String> parms, String className, String parmName, boolean toplevel) {
+		MemberClassDecl mcd = introduceParameterObject(parms, className, parmName);
+		if(toplevel)
+			mcd.moveToToplevel(true, null, true);
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+	
+	public void MethodDecl.eliminateVarArgs() {
+		if(!isVariableArity())
+			return;
+		VariableArityParameterDeclaration last = (VariableArityParameterDeclaration)lastParameter();
+		ParameterDeclaration new_last = last.asFixedArityParameter();
+		for(VarAccess va : last.uses())
+			if(va.isLocked())
+				va.lock(new_last);
+		for(MethodAccess ma : uses()) {
+			if(!ma.invokesVariableArityAsArray()) {
+				List<Expr> varargs = new List<Expr>();
+				for(int i=ma.getNumArg()-1; i>=getNumParameter()-1;--i) {
+					Expr arg = ma.getArg(i);
+					ma.getArgList().removeChild(i);
+					varargs.insertChild(arg, 0);
+				}
+				ma.getArgList().insertChild(new ArrayCreationExpr(last.type().createLockedAccess(), new Opt(new ArrayInit(varargs))), getNumParameter()-1);
+			}
+		}
+		setParameter(new_last, getNumParameter()-1);
+	}
+}

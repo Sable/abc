@@ -64,5 +64,11 @@ aspect Overriding {
 		}
 		return ret;
 	}	
-	
+
+	syn lazy Collection<MethodDecl> MethodDecl.getRelatives() {
+		HashSet<MethodDecl> res = new HashSet<MethodDecl>(overriders());
+		res.addAll(overrides());
+		res.add(this);
+		return res;
+	}
 }
