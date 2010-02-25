@@ -8,6 +8,10 @@ aspect LockedMethodAccess {
 		targetMethod = target.save();
 	}
 	
+	public MethodAccess MethodDecl.createLockedAccess(List<Expr> args) {
+		return new MethodAccess(this, args);
+	}
+	
 	/* If we just store the method declaration an access should bind to, we get into trouble with
 	 * ParMethodDecls: we might store a reference to some ParMethodDecl, then somebody flushes the
 	 * caches, and a new ParMethodDecl will be created the next time we ask for it. Then inherited

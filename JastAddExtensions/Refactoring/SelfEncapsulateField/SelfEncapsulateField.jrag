@@ -1,0 +1,62 @@
+aspect SelfEncapsulateField {
+	public void FieldDeclaration.selfEncapsulate() {
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		old_mods.removeModifier("final");
+		
+		String cap_name = Character.toUpperCase(name().charAt(0))+name().substring(1);
+		// for Eclipse compatibility
+		String getter_name = type().isBoolean() ? "is"+cap_name : "get"+cap_name;
+		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
+										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
+		hostType().insertUnusedMethod(getter);
+		MethodDecl setter = null;
+		if(!isFinal()) {
+			ParameterDeclaration parm = new ParameterDeclaration(type().createLockedAccess(), name());
+			String setter_name = "set"+cap_name;
+			setter = new MethodDecl((Modifiers)old_mods.fullCopy(), type().createLockedAccess(), setter_name, 
+					  				new List<ParameterDeclaration>().add(parm), new List<Access>(),
+					  				new Opt<Block>(new Block(new ReturnStmt(new AssignSimpleExpr(this.createLockedAccess(), parm.createLockedAccess())))));
+			hostType().insertUnusedMethod(setter);
+		}
+		
+		for(VarAccess va : usesOfAllCopies()) {
+			if(va.hostBodyDecl() == getter || va.hostBodyDecl() == setter)
+				continue;
+			if(va.isDest()) {
+				// constructors can write final fields
+				if(setter == null)
+					continue;
+				va.bundleQualifier();
+				ASTNode p = va;
+				if(va.isRightChildOfDot())
+					p = va.getParent();
+				if(p.getParent() instanceof AssignSimpleExpr && p.getChildIndex() == 0) {
+					AssignSimpleExpr assgn = (AssignSimpleExpr)p.getParent();
+					Access setter_invocation = setter.createLockedAccess(new List<Expr>().add(assgn.getSource()));
+					if(va.isQualified())
+						setter_invocation = va.qualifier().qualifiesAccess(setter_invocation);
+					assgn.replaceWith(setter_invocation);
+				} else {
+					throw new RefactoringException("cannot encapsulate this access");
+				}
+			} else {
+				va.replaceWith(getter.createLockedAccess(new List<Expr>()));
+			}
+		}
+		
+		getModifiers().setVisibility("private");
+		programRoot().flushCaches();
+	}
+	
+	public void FieldDeclaration.doSelfEncapsulate() {
+		selfEncapsulate();
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+	
+	public Collection<VarAccess> FieldDeclaration.usesOfAllCopies() {
+		Collection<VarAccess> res = new HashSet<VarAccess>(uses());
+		for(FieldDeclaration fd : substitutedCopies())
+			res.addAll(fd.uses());
+		return res;
+	}
+}

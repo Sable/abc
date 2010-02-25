@@ -28,6 +28,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.RenamePackage.RenamePackageTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInnerToTopLevel.MoveInnerToTopLevelTests.class);
 		suite.addTestSuite(tests.eclipse.ConvertAnonymousToNested.ConvertAnonymousToNestedTests.class);
+		suite.addTestSuite(tests.eclipse.SelfEncapsulateField.SelfEncapsulateFieldTests.class);
 		//$JUnit-END$
 		return suite;
 	}

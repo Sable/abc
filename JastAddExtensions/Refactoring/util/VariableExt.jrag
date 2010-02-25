@@ -4,4 +4,17 @@ aspect VariableExt {
 		mods.removeModifiers("public", "protected", "private", "static");
 		return new VariableDeclaration(mods, type().createLockedAccess(), name(), new Opt(init));
 	}
+	
+	public Collection<FieldDeclarationSubstituted> FieldDeclaration.substitutedCopies() {
+		Collection<FieldDeclarationSubstituted> res = new LinkedList<FieldDeclarationSubstituted>();
+		if(!hostType().isGenericType())
+			return res;
+		GenericTypeDecl host = (GenericTypeDecl)hostType();
+		for(int i=0;i<host.getNumParTypeDecl();++i) {
+			ParTypeDecl ptd = host.getParTypeDecl(i);
+			for(Iterator<FieldDeclarationSubstituted> iter=ptd.localFields(name()).iterator();iter.hasNext();)
+				res.add(iter.next());
+		}
+		return res;
+	}
 }
