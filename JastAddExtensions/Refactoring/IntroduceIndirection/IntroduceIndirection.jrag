@@ -1,0 +1,77 @@
+aspect IntroduceIndirection {
+	public void MethodDeclSubstituted.introduceIndirection(String indname, String parmname, TypeDecl targetType) {
+		sourceMethodDecl().introduceIndirection(indname, parmname, targetType);
+	}
+	
+	public void MethodDecl.introduceIndirection(String indname, String parmname, TypeDecl targetType) {
+		MethodDecl indirection = lockedCopyWithEmptyBody();
+		indirection.setModifiers(new Modifiers("public", "static"));
+		indirection.setID(indname);
+		List<Expr> args = new List<Expr>();
+		for(ParameterDeclaration pd : indirection.getParameters())
+			args.addChild(pd.createLockedAccess());
+		ParameterDeclaration parm = null;
+		Block body = null;
+		if(isStatic()) {
+			body = new Block(new ReturnStmt(this.createLockedAccess(args)));
+		} else {
+			parm = new FreshParameter(hostType().createLockedAccess(), parmname);
+			indirection.insertParameter(parm, 0);
+			body = new Block(new ReturnStmt(parm.createLockedAccess().qualifiesAccess(this.createLockedAccess(args))));
+		}
+		indirection.setBlock(body);
+		targetType.insertUnusedMethod(indirection);
+		indirection = closeOverTypeVariables(indirection);
+		for(MethodAccess ma : usesOfAllCopies()) {
+			if(ma.hostBodyDecl() == indirection)
+				continue;
+			if(ma.isMonoCall() && !this.overriders().isEmpty())
+				continue;
+			if(!isStatic()) {
+				ma.bundleQualifier();
+				ASTNode p = this;
+				if(ma.isQualified())
+					p = p.getParent();
+				Expr qual = ma.isQualified() && !ma.qualifier().isSuperAccess() ? ma.qualifier() : null;
+				if(qual == null) {
+					for(TypeDecl enc=ma.hostType(); enc!=null; enc=enc.enclosingType()) {
+						if(enc.memberMethod(this) == this) {
+							if(enc == ma.hostType())
+								qual = new ThisAccess("this");
+							else
+								qual = enc.createLockedAccess().qualifiesAccess(new ThisAccess("this"));
+							break;
+						}
+					}
+				}
+				ma.getArgList().insertChild(qual == null ? new ThisAccess("this") : qual, 0);
+			}
+			ma.lock(indirection);
+		}
+		programRoot().flushCaches();
+	}
+	
+	public void MethodDecl.doIntroduceIndirection(String indname, String parmname, TypeDecl targetType) {
+		introduceIndirection(indname, parmname, targetType);
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, LOCKED_NAMES);
+	}
+	
+	public void MethodDecl.doIntroduceIndirection(String indname, TypeDecl targetType) {
+		String hostname = hostType().name();
+		doIntroduceIndirection(indname, Character.toLowerCase(hostname.charAt(0))+hostname.substring(1), targetType);
+	}
+	
+	public Collection<MethodAccess> MethodDecl.usesOfAllCopies() {
+		Collection<MethodAccess> res = new HashSet<MethodAccess>(uses());
+		for(MethodDecl md : substitutedCopies())
+			res.addAll(md.uses());
+		return res;
+	}
+	
+	public Collection<MethodAccess> GenericMethodDecl.usesOfAllCopies() {
+		Collection<MethodAccess> res = super.usesOfAllCopies();
+		for(ParMethodDecl md : (List<ParMethodDecl>)getParMethodDeclList())
+			res.addAll(md.uses());
+		return res;
+	}
+}

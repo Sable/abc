@@ -19,7 +19,12 @@ import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
 
-// NOTE: we don't support reuse of wrapped parameter object; the output files have been changed accordingly
+/* Things we don't support yet:
+ * 	- reusing wrapped parameter objects for recursive calls
+ * 	- using fields of parameter object directly (we always extract into a local first)
+ *  - reordering/renaming parameters
+ *  - creating delegates */
+
 public class IntroduceParameterObjectTests extends TestCase {
 	public IntroduceParameterObjectTests(String name) {
 		super(name);

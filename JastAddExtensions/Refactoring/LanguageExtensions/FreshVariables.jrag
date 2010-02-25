@@ -106,7 +106,7 @@ aspect FreshVariables {
 	// check whether the name conflicts with any of the decls
 	public boolean FreshVariable.conflicts(String name, Collection<Declaration> decls) {
 		for(Declaration decl : decls)
-			if(decl != this && decl.name().equals(name))
+			if(decl != this && !(decl instanceof MethodDecl) && decl.name().equals(name))
 				return true;
 		return false;
 	}

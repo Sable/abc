@@ -26,28 +26,20 @@ aspect PullUpMethod {
 		doPullUp(false);
 	}
 	
-	// this is a bit ugly: translate type variables from subclass to superclass
-	public void ASTNode.translateTypeVars(TypeDecl sub, TypeDecl sup) {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.translateTypeVars(sub, sup);
-		}
-	}
-	
-	public void TypeAccess.translateTypeVars(TypeDecl sub, TypeDecl sup) {
-		if(decl().isTypeVariable()) {
-			TypeVariable tv = (TypeVariable)decl();
-			if(tv.owner() == sub && sup.isParameterizedType()) {
-				ParTypeDecl psup = (ParTypeDecl)sup;
-				for(int i=0;i<psup.getNumArgument();++i) {
-					if(psup.getArgument(i).type() == tv) {
-						this.lock(((GenericTypeDecl)psup.genericDecl()).getTypeParameter(i));
-						break;
-					}
-				}
+	private void MethodDecl.translateTypeVars(TypeDecl sub, TypeDecl sup) {
+		if(!sub.isGenericType() || !sup.isParameterizedType())
+			return;
+		GenericTypeDecl gsub = (GenericTypeDecl)sub;
+		ParTypeDecl psup = (ParTypeDecl)sup;
+		GenericTypeDecl gsup = (GenericTypeDecl)psup.genericDecl();
+		Map<TypeVariable, TypeVariable> dict = new HashMap<TypeVariable, TypeVariable>();
+		for(TypeVariable tv : (List<TypeVariable>)gsub.getTypeParameterList()) {
+			for(int i=0;i<psup.getNumArgument();++i) {
+				if(psup.getArgument(i).type() == tv)
+					dict.put(tv, gsup.getTypeParameter(i));
 			}
 		}
-		super.translateTypeVars(sub, sup);
+		translateTypeVars(dict);
 	}
+	
 }

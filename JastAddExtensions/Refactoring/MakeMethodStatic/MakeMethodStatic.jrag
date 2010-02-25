@@ -16,18 +16,7 @@ aspect MakeMethodStatic {
 		newParm.setDemandFinal();
 		newMethod.getParameterList().insertChild(newParm, 0);
 		// fix type arguments
-		if(newMethod.usesForeignTypeVars()) {
-			newMethod = newMethod.makeGeneric();
-			for(TypeVariable tv : newMethod.usedTypeVars()) {
-				if(!tv.isDescendantTo(newMethod)) {
-					TypeVariable new_tv = (TypeVariable)tv.fullCopy();
-					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
-					for(Access tvu : tv.uses())
-						if(tvu.isDescendantTo(newMethod))
-							((TypeAccess)tvu).lock(new_tv);
-				}
-			}
-		}
+		newMethod = closeOverTypeVariables(newMethod);
 		// fix body
 		Access newParmAcc = newParm.createLockedAccess();
 		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
@@ -47,6 +36,22 @@ aspect MakeMethodStatic {
 			throw new RefactoringException("cannot introduce method");
 		hostType.addBodyDecl(newMethod);
 		newMethod.programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+	}
+	
+	MethodDecl MethodDecl.closeOverTypeVariables(MethodDecl newMethod) {
+		if(newMethod.usesForeignTypeVars()) {
+			newMethod = newMethod.makeGeneric();
+			for(TypeVariable tv : newMethod.usedTypeVars()) {
+				if(!tv.isDescendantTo(newMethod)) {
+					TypeVariable new_tv = (TypeVariable)tv.fullCopy();
+					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
+					for(Access tvu : tv.uses())
+						if(tvu.isDescendantTo(newMethod))
+							((TypeAccess)tvu).lock(new_tv);
+				}
+			}
+		}
+		return newMethod;
 	}
 	
 	GenericMethodDecl MethodDecl.makeGeneric() {

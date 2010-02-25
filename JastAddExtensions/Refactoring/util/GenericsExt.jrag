@@ -30,4 +30,32 @@ aspect GenericsExt {
 	InterfaceDeclSubstituted implements TypeDeclSubstituted;
 	GenericClassDeclSubstituted implements TypeDeclSubstituted;
 	GenericInterfaceDeclSubstituted implements TypeDeclSubstituted;
+	
+	
+	public Collection<FieldDeclarationSubstituted> FieldDeclaration.substitutedCopies() {
+		Collection<FieldDeclarationSubstituted> res = new LinkedList<FieldDeclarationSubstituted>();
+		if(!hostType().isGenericType())
+			return res;
+		GenericTypeDecl host = (GenericTypeDecl)hostType();
+		for(int i=0;i<host.getNumParTypeDecl();++i) {
+			ParTypeDecl ptd = host.getParTypeDecl(i);
+			for(Iterator<FieldDeclarationSubstituted> iter=ptd.localFields(name()).iterator();iter.hasNext();)
+				res.add(iter.next());
+		}
+		return res;
+	}
+
+	public Collection<MethodDeclSubstituted> MethodDecl.substitutedCopies() {
+		Collection<MethodDeclSubstituted> res = new LinkedList<MethodDeclSubstituted>();
+		if(!hostType().isGenericType())
+			return res;
+		GenericTypeDecl host = (GenericTypeDecl)hostType();
+		for(int i=0;i<host.getNumParTypeDecl();++i) {
+			ParTypeDecl ptd = host.getParTypeDecl(i);
+			for(Object o : ptd.localMethodsSignatureMap().values())
+				if(o instanceof MethodDeclSubstituted && ((MethodDeclSubstituted)o).sourceMethodDecl() == this)
+					res.add((MethodDeclSubstituted)o);
+		}
+		return res;
+	}
 }

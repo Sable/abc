@@ -1,4 +1,11 @@
 aspect TypeVariableExt {
+	public TypeVariable TypeVariable.lockedCopy() {
+		List<Access> bounds = new List<Access>();
+		for(Access bound : getTypeBounds())
+			bounds.add(bound.type().createLockedAccess());
+		return new TypeVariable(new Modifiers(new List()), name(), new List(), bounds);
+	}
+	
 	interface GenericElement {
 		int getNumTypeParameter();
 		TypeVariable getTypeParameter(int i);
@@ -66,5 +73,24 @@ aspect TypeVariableExt {
 			if(!tv.isDescendantTo(this))
 				return true;
 		return false;
+	}
+	
+	// translating type variables
+	public void ASTNode.translateTypeVars(Map<TypeVariable, TypeVariable> dict) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.translateTypeVars(dict);
+		}
+	}
+	
+	public void TypeAccess.translateTypeVars(Map<TypeVariable, TypeVariable> dict) {
+		if(decl().isTypeVariable()) {
+			TypeVariable tv = (TypeVariable)decl();
+			TypeVariable tv2 = dict.get(tv);
+			if(tv2 != null)
+				lock(tv2);
+		}
+		super.translateTypeVars(dict);
 	}
 }

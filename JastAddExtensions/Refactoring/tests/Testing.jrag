@@ -63,6 +63,43 @@ aspect Testing {
 		}
 	}
 	
+	refine GenericsPrettyPrint private void GenericClassDecl.ppTypeParameters(StringBuffer s) {
+		ArrayList<TypeVariable> typeparms = new ArrayList<TypeVariable>();
+		for(TypeVariable tv : getTypeParameters())
+			typeparms.add(tv);
+		Collections.sort(typeparms, new Comparator<TypeVariable>() {
+			public int compare(TypeVariable tv1, TypeVariable tv2) {
+				return tv1.name().compareTo(tv2.name());
+			}
+		});
+	    s.append('<');
+	    if(typeparms.size() > 0) {
+	    	typeparms.get(0).toString(s);
+	    	for (int i=1; i < typeparms.size(); i++) {
+	    		s.append(", ");
+	    		typeparms.get(i).toString(s);
+	    	}
+	    }
+	    s.append('>');
+	}
+	
+	refine GenericMethods private void GenericMethodDecl.ppTypeParameters(StringBuffer s) {
+		ArrayList<TypeVariable> typeparms = new ArrayList<TypeVariable>();
+		for(TypeVariable tv : original().getTypeParameters())
+			typeparms.add(tv);
+		Collections.sort(typeparms, new Comparator<TypeVariable>() {
+			public int compare(TypeVariable tv1, TypeVariable tv2) {
+				return tv1.name().compareTo(tv2.name());
+			}
+		});
+	    s.append(" <");
+	    for(int i = 0; i < typeparms.size(); i++) {
+	      if(i != 0) s.append(", ");
+	      typeparms.get(i).toString(s);
+	    }
+	    s.append("> ");		
+	}
+	
 	// output names of compilation units; this helps when comparing results
 	public static boolean CompilationUnit.printCUNames = false;
 	refine PrettyPrint public void CompilationUnit.toString(StringBuffer s) {

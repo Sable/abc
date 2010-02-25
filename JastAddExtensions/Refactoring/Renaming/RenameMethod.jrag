@@ -39,6 +39,8 @@ aspect RenameMethod {
 	}
 	
 	public boolean TypeDecl.canIntroduceMethod(MethodDecl md, String sig) {
+		if(md.isStatic() && isInnerClass())
+			return false;
 		// make sure there isn't already a different method with the same signature in this type
 		/* Note: To make it easier to compute attributes on md, we allow md to already be in
 		 *       this type. But then we cannot use localMethodsSignature directly to determine
