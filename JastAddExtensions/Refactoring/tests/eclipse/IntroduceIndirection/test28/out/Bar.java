@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class Bar {
 	
-	protected void foo() throws IOException {
+	/*///protected*/ void foo() throws IOException {
 		
 	}
 

@@ -3,6 +3,7 @@ aspect IntroduceIndirection {
 		sourceMethodDecl().introduceIndirection(indname, parmname, targetType);
 	}
 	
+	// TODO: rewrite this as Extract Method; Make Method Static; Move Static Method (but what about overriding methods?)
 	public void MethodDecl.introduceIndirection(String indname, String parmname, TypeDecl targetType) {
 		MethodDecl indirection = lockedCopyWithEmptyBody();
 		indirection.setModifiers(new Modifiers("public", "static"));
@@ -29,7 +30,7 @@ aspect IntroduceIndirection {
 				continue;
 			if(!isStatic()) {
 				ma.bundleQualifier();
-				ASTNode p = this;
+				ASTNode p = ma;
 				if(ma.isQualified())
 					p = p.getParent();
 				Expr qual = ma.isQualified() && !ma.qualifier().isSuperAccess() ? ma.qualifier() : null;
@@ -45,6 +46,7 @@ aspect IntroduceIndirection {
 					}
 				}
 				ma.getArgList().insertChild(qual == null ? new ThisAccess("this") : qual, 0);
+				p.replaceWith(ma);
 			}
 			ma.lock(indirection);
 		}
@@ -53,7 +55,7 @@ aspect IntroduceIndirection {
 	
 	public void MethodDecl.doIntroduceIndirection(String indname, String parmname, TypeDecl targetType) {
 		introduceIndirection(indname, parmname, targetType);
-		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, LOCKED_NAMES);
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, BARE_PARMETHODACCESS, LOCKED_NAMES);
 	}
 	
 	public void MethodDecl.doIntroduceIndirection(String indname, TypeDecl targetType) {
@@ -70,8 +72,7 @@ aspect IntroduceIndirection {
 	
 	public Collection<MethodAccess> GenericMethodDecl.usesOfAllCopies() {
 		Collection<MethodAccess> res = super.usesOfAllCopies();
-		for(ParMethodDecl md : (List<ParMethodDecl>)getParMethodDeclList())
-			res.addAll(md.uses());
+		res.addAll(parUses());
 		return res;
 	}
 }

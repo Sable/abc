@@ -21,7 +21,7 @@ public class Foo<E, F, G extends Comparable<E>> {
 	
 	{
 		Foo f= new Foo();
-		Foo.bar(f, null); // <-- invoke here
+		/*///Foo.*/bar(f, null); // <-- invoke here
 	}
 	
 }

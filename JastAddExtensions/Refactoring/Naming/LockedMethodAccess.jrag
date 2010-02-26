@@ -106,6 +106,9 @@ aspect LockedMethodAccess {
 			if(acc == null) {
 				if((qual == null || qual.isPure()) && target.isStatic()) {
 					TypeDecl host = target.hostType();
+					// since the target is static, we can access it through the raw type
+					if(host.isGenericType())
+						host = ((GenericTypeDecl)host).rawType();
 					if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
 						return host.createLockedAccess().qualifiesAccess(this);
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {

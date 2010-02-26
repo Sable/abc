@@ -7,7 +7,6 @@ aspect LocalClassToMemberClass {
 		// close over accesses to local variables
 		cd = closeOverTypeVariables();
 		closeOverLocalVariables();
-		// TODO: close over type variables
 		if(!cd.enclosingType().isLocalClass() && !cd.enclosingType().isAnonymous())
 			cd.setVisibility(makePublic ? "public" : "private");
 		if(cd.inStaticContext())

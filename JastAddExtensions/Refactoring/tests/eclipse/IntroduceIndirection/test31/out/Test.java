@@ -18,6 +18,6 @@ class TestO extends Test {
 	}
 
 	int useFoo() {
-            return TestO.foo(this);
+            return /*///TestO.*/foo(this);
     }
 }

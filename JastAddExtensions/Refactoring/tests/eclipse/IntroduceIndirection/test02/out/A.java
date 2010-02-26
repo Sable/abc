@@ -13,9 +13,9 @@ public class A extends B {
 
 	{
 		///super.foo(); //<------invoke here
-		A.bar(this);
+		bar(this);
 		/* NB: Eclipse does not replace the super call to avoid
-		       turning it into a polycall. It is easy to see,
+		       turning it into a polycall. Our analysis tells us,
 		       however, that this doesn't hurt in this case, so
 		       we do it anyway. */
 	}

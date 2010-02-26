@@ -13,10 +13,10 @@ public class MultiGenerics<E> {
 
 	{
 		MultiGenerics<Integer> intVec = new MultiGenerics<Integer>();
-		intVec/*///MultiGenerics*/.bar(intVec, 42);
-		intVec/*///MultiGenerics*/.bar(intVec, new Integer(42));
+		/*///MultiGenerics.*/bar(intVec, 42);
+		/*///MultiGenerics.*/bar(intVec, new Integer(42));
 		MultiGenerics<String> sVec = new MultiGenerics<String>();
-		sVec/*///MultiGenerics*/.bar(sVec, "X");
+		/*///MultiGenerics.*/bar(sVec, "X");
 	}
 
 	private void addElement(E e) {

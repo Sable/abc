@@ -1,6 +1,6 @@
 package p;
 
-import p.Foo.Inner.MoreInner;
+///import p.Foo.Inner.MoreInner;
 
 public class Foo {
 	
@@ -24,6 +24,7 @@ public class Foo {
 	}
 	
 	{
+		Inner.///
 		MoreInner.bar(this);
 	}
 

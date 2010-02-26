@@ -29,7 +29,7 @@ public class Foo<E, F, G extends Comparable<E>> {
 
 	{
 		Foo<String, String, X> f = new Foo<String, String, X>();
-		f/*///Foo*/.bar(f, null, null, null);	// <<-- invoke here
+		/*///Foo.*/bar(f, null, null, null);	// <<-- invoke here
 	}
 
 }

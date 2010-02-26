@@ -16,7 +16,7 @@ public class Foo {
 	
 	{
 		///this.<String>setE("");	// <-- invoke here
-		this.<String>bar(this, "");
+		Foo.<String>bar(this, "");
 		/* strangely, Eclipse seems to miss this opportunity... */
 	}
 

@@ -58,4 +58,13 @@ aspect GenericsExt {
 		}
 		return res;
 	}
+	
+	// all calls that resolve to a parameterized instance of a generic method
+	coll Collection<MethodAccess> GenericMethodDecl.parUses() [new HashSet<MethodAccess>()]
+	                                                          with add root Program;
+	MethodAccess contributes this
+	when decl() instanceof ParMethodDecl
+	to GenericMethodDecl.parUses()
+	for ((ParMethodDecl)decl()).sourceMethodDecl(); 
+	
 }

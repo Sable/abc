@@ -1,0 +1,36 @@
+aspect BareParMethodAccess {
+	syn boolean ParMethodAccess.isBare() = !isQualified();
+	
+	public static LanguageExtension ASTNode.BARE_PARMETHODACCESS = new LanguageExtension("bare ParMethodAccess") {
+		public ASTNode eliminateOn(ASTNode n) {
+			return n.eliminateBareParMethodAccess();
+		}
+	};
+	
+	public ASTNode ASTNode.eliminateBareParMethodAccess() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child instanceof ParMethodAccess && ((ParMethodAccess)child).isBare()) {
+				ParMethodAccess pma = (ParMethodAccess)child;
+				MethodDecl md = pma.decl().sourceMethodDecl();
+				if(md.isStatic()) {
+					setChild((T)md.hostType().createLockedAccess().qualifiesAccess(pma), i);
+				} else {
+					Access qual = null;
+					for(TypeDecl td=pma.enclosingType();td!=null;td=td.enclosingType()) {
+						if(td.memberMethod(md) == md) {
+							if(td == pma.enclosingType())
+								qual = new ThisAccess("this");
+							else
+								qual = td.createLockedAccess().qualifiesAccess(new ThisAccess("this"));
+							break;
+						}
+					}
+					setChild((T)qual.qualifiesAccess(pma), i);
+				}
+				pma.flushCache();
+			}
+		}
+		return this;
+	}
+}

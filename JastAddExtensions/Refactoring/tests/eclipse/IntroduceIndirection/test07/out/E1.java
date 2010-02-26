@@ -34,7 +34,7 @@ public class E1 {
 
 	{
 		E1Inner1 inner1= new E1Inner1();
-		E1.bar(inner1);					// <--------- invoke here
+		bar(inner1);					// <--------- invoke here
 	}
 	
 
