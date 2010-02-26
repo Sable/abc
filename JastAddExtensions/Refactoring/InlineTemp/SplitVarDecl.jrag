@@ -16,13 +16,7 @@ aspect SplitVarDecl {
   public AssignSimpleExpr VariableDeclaration.split() {
     if(!hasInit())
       return null;  // we could throw an exception here, but I think it's better this way
-    Expr init;
-    // if the RHS is an array initializer, it has to be wrapped into an array creation expression
-    if(getInit().isArrayInit())
-    	init = new ArrayCreationExpr(type().createLockedAccess(), new Opt(getInit()));
-    else
-    	init = getInit();
-    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), init);
+    AssignSimpleExpr assgn = new AssignSimpleExpr(new VarAccess(name()), getInit().wrapArrayInit());
     this.setInitOpt(new Opt());
     insertStmtAfter(new ExprStmt(assgn));
     return assgn;
@@ -30,4 +24,10 @@ aspect SplitVarDecl {
   
   syn lazy boolean Expr.isArrayInit() = false;
   eq ArrayInit.isArrayInit() = true;
+  
+  public Expr Expr.wrapArrayInit() {
+	  if(isArrayInit())
+		  return new ArrayCreationExpr(type().createLockedAccess(), new Opt(this));
+	  return this;
+  }
 }

@@ -2,7 +2,9 @@ package p;
 
 public class TestSimpleEnclosingCodeStyle {
 	public static class FooParameter {
-		public String[] strings;
+		public 
+		final ///
+		String[] strings;
 		public int b;
 		public FooParameter(String[] strings, int b) {
 			this.strings = strings;

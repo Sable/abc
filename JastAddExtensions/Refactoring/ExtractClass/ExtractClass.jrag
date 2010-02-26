@@ -1,0 +1,74 @@
+/** ExtractClass extracts fields into a new nested class.
+ * If fields were initialised, their value is passed to 
+ * the constructor of the new class.
+ */
+aspect ExtractClass {
+	public void ClassDecl.doExtractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
+		extractClass(fds, newClassName, newFieldName, encapsulate, toplevel);
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+		
+	public void ClassDecl.extractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
+		int maxvis = maxVisibility(fds);
+		Pair<ClassDecl, Map<String, FieldDeclaration>> res = createStruct(newClassName, toplevel ? VIS_PUBLIC : maxvis, fds);
+		ClassDecl wrapperClass = res.fst();
+		Map<String, FieldDeclaration> map = res.snd();
+		MemberTypeDecl mtd = insertUnusedType(wrapperClass);
+		FieldDeclaration wrapperField = this.createNewPublicMemberField(maxvis, wrapperClass.createLockedAccess(), newFieldName);
+		// wrap all fds into wrapperClass
+		for (FieldDeclaration fd: fds) {
+			if (fd.getModifiers().isStatic())
+				throw new RefactoringException("cannot extract this field");
+			wrapField(fd, wrapperField, map.get(fd.name()));
+		}
+		programRoot().eliminate(LOCKED_NAMES);
+		if(toplevel) {
+			for(FieldDeclaration fd : map.values()) {
+				fd.getModifiers().setVisibility(VIS_PUBLIC);
+			}
+			mtd.moveToToplevel(true, null, true);
+		}
+		if(encapsulate) {
+			for (FieldDeclaration wrappedField: map.values()) {
+				wrappedField.selfEncapsulate();
+			}
+		}
+	}
+	
+	private int ClassDecl.maxVisibility(Collection<FieldDeclaration> fds) {
+		int vis = VIS_PRIVATE;
+		for(FieldDeclaration fd : fds)
+			if(fd.getVisibility() > vis)
+				vis = fd.getVisibility();
+		return vis;
+	}
+	
+	public FieldDeclaration ClassDecl.createNewPublicMemberField(int vis, Access typeAccess, String fieldName) {
+		programRoot().lockNames(fieldName);
+		Expr expr = new ClassInstanceExpr(typeAccess, new List(), new Opt());
+		Modifiers mods = new Modifiers();
+		mods.setVisibility(vis);
+		FieldDeclaration fd = new FieldDeclaration(mods, typeAccess, fieldName, expr);
+		this.addMemberField(fd);
+		return fd;
+	}
+	
+	// assumes wrapperField is initialised in the program tree with an instance of wrapperClass
+	public FieldDeclaration ClassDecl.wrapField(FieldDeclaration toMove, FieldDeclaration wrapperField, FieldDeclaration wrappedField) {
+		String fieldName = toMove.name();
+		// pass init expr in constructor if needed
+		if (toMove.hasInit()) { 
+			Expr init = toMove.getInit().wrapArrayInit();
+			((ClassInstanceExpr)wrapperField.getInit()).getArgList().add(init);
+		}
+		// replace all uses to proxy uses
+		for(VarAccess va : toMove.uses()) {
+			VarAccess q = wrapperField.createLockedAccess();
+			va.replaceWith(q.qualifiesAccess(va.fullCopy()));
+		}
+		// remove old field
+		toMove.hostType().removeBodyDecl(toMove);
+		return wrappedField;
+	}
+		
+}

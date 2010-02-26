@@ -44,7 +44,7 @@ aspect SelfEncapsulateField {
 			}
 		}
 		
-		getModifiers().setVisibility("private");
+		getModifiers().setVisibility(VIS_PRIVATE);
 		programRoot().flushCaches();
 	}
 	

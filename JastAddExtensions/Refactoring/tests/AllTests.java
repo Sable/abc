@@ -21,6 +21,7 @@ public class AllTests {
 		suite.addTestSuite(RemoveUnusedMethodTests.class);
 		suite.addTestSuite(PullUpMethodTests.class);
 		suite.addTestSuite(MoveMemberTypeToToplevelTests.class);
+		suite.addTestSuite(ExtractClassTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
@@ -31,6 +32,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.SelfEncapsulateField.SelfEncapsulateFieldTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceParameterObject.IntroduceParameterObjectTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceIndirection.IntroduceIndirectionTests.class);
+		suite.addTestSuite(tests.eclipse.ExtractClass.ExtractClassTests.class);
 		//$JUnit-END$
 		return suite;
 	}

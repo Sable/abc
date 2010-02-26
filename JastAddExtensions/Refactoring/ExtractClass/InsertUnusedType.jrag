@@ -1,0 +1,51 @@
+aspect InsertUnusedType {
+	// insert an unused member type into a given type
+	public MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl td) {
+		throw new RefactoringException("cannot insert type into this kind of type declaration");
+	}
+	
+	protected static MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl host, MemberTypeDecl member) {
+		TypeDecl td = member.typeDecl();
+		if(!host.localTypeDecls(td.name()).isEmpty())
+			throw new RefactoringException("host type contains type of the same name");
+		host.addBodyDecl(member);
+		if(td.isStatic() && host.isInnerClass())
+			throw new RefactoringException("cannot insert static type into inner class");
+		for(TypeDecl encl=host;encl!=null;encl=encl.enclosingType())
+			if(encl.name().equals(td.name()))
+				throw new RefactoringException("enclosing type has same name");
+		Program root = host.programRoot();
+		root.lockNames(td.name());
+		root.flushCaches();
+		return member;
+	}
+	
+	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td) { return insertUnusedType(this, td.asMemberTypeDecl()); }
+	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td) { return insertUnusedType(this, td.asMemberTypeDecl()); }
+	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td) { return sourceTypeDecl().insertUnusedType(td); }
+	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td) { return sourceTypeDecl().insertUnusedType(td); }
+	
+	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
+	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
+	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }
+	
+	// insert an unused toplevel type into a given compilation unit
+	public void CompilationUnit.insertUnusedType(TypeDecl td) {
+		TypeDecl res = programRoot().lookupType(getPackageDecl(), td.name());
+		if(res != null && res != td)
+			throw new RefactoringException("different toplevel type of same name exists");
+		addTypeDecl(td);
+	}
+	
+	// insert an unused toplevel type in its own compilation unit
+	public CompilationUnit Program.insertUnusedType(String path, String pkg, List<ImportDecl> imports, TypeDecl td) {
+		TypeDecl res = lookupType(pkg, td.name());
+		if(res != null && res != td)
+			throw new RefactoringException("different toplevel type of same name exists");
+		CompilationUnit new_cu = new CompilationUnit(pkg, imports, new List<TypeDecl>().add(td));
+		new_cu.setFromSource(true);
+		new_cu.setPathName(path + td.name() + ".java");
+		addCompilationUnit(new_cu);
+		return new_cu;
+	}
+}

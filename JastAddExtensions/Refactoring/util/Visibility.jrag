@@ -1,0 +1,57 @@
+aspect Visibility {
+	// unfortunately, JastAdd doesn't support enums very well
+	public static final int ASTNode.VIS_PRIVATE = 0;
+	public static final int ASTNode.VIS_PACKAGE = 1;
+	public static final int ASTNode.VIS_PROTECTED = 2;
+	public static final int ASTNode.VIS_PUBLIC = 3;
+	
+	interface Visible {
+		public boolean isPrivate();
+		public boolean isProtected();
+		public boolean isPublic();
+		public Modifiers getModifiers();
+	}
+	TypeDecl implements Visible;
+	MethodDecl implements Visible;
+	ConstructorDecl implements Visible;
+	FieldDeclaration implements Visible;
+	
+	public int Visible.getVisibility() {
+		if(isPrivate()) return VIS_PRIVATE;
+		if(isProtected()) return VIS_PROTECTED;
+		if(isPublic()) return VIS_PUBLIC;
+		return VIS_PACKAGE;
+	}
+	
+	syn boolean Modifier.isVisibility() = getID().equals("public") || getID().equals("protected") || getID().equals("private");
+	public void Modifiers.setVisibility(int vis) {
+		String v;
+		switch(vis) {
+		case VIS_PRIVATE: v = "private"; break;
+		case VIS_PACKAGE: v = null; break;
+		case VIS_PROTECTED: v = "protected"; break;
+		case VIS_PUBLIC: v = "public"; break;
+		default: throw new Error("unknown visibility "+vis);
+		}
+		for(int i=0;i<getNumModifier();++i) {
+			Modifier mod = getModifier(i);
+			if(mod.isVisibility()) {
+				if(v == null) {
+					getModifierList().removeChild(i);
+				} else {
+					mod.setID(v);
+				}
+				return;
+			}
+		}
+		if(v != null)
+			addModifier(v);
+	}	
+	
+	public void ClassDecl.setVisibility(int v) {
+		getModifiers().setVisibility(v);
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
+			if(cd.isCompilerGenerated())
+				cd.getModifiers().setVisibility(v);
+	}
+}

@@ -1,5 +1,5 @@
 aspect IntroduceParameterObject {
-	public MemberClassDecl MethodDecl.introduceParameterObject(Collection<String> parms_to_wrap, String className, String parmName) {
+	public MemberTypeDecl MethodDecl.introduceParameterObject(Collection<String> parms_to_wrap, String className, String parmName) {
 		ArrayList<ParameterDeclaration> parms = new ArrayList<ParameterDeclaration>();
 		java.util.BitSet positions_to_wrap = new java.util.BitSet(this.getNumParameter());
 		List<ParameterDeclaration> old_parms = (List<ParameterDeclaration>)getParameters().fullCopy();
@@ -41,15 +41,11 @@ aspect IntroduceParameterObject {
 			md.setParameterList(newparms);
 		}
 		
-		// TODO: should check some stuff here
-		MemberClassDecl mcd = new MemberClassDecl(struct);
-		hostType().addBodyDecl(mcd);
-		programRoot().flushCaches();
-		return mcd;
+		return hostType().insertUnusedType(struct);
 	}
 	
 	public void MethodDecl.doIntroduceParameterObject(Collection<String> parms, String className, String parmName, boolean toplevel) {
-		MemberClassDecl mcd = introduceParameterObject(parms, className, parmName);
+		MemberTypeDecl mcd = introduceParameterObject(parms, className, parmName);
 		if(toplevel)
 			mcd.moveToToplevel(true, null, true);
 		programRoot().eliminate(LOCKED_NAMES);

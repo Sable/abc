@@ -4,8 +4,6 @@ aspect MoveMemberTypeToToplevel {
 		Program root = programRoot();
 		CompilationUnit cu = compilationUnit();
 		TypeDecl td = typeDecl();
-		if(!cu.localLookupType(td.name()).isEmpty())
-			throw new RefactoringException("toplevel type of same name exists");
 		root.lockNames(td.name());
 		td.lockAllNames();
 		if(!td.isStatic()) {
@@ -14,15 +12,11 @@ aspect MoveMemberTypeToToplevel {
 		}
 		td.removeNonToplevelModifiers();
 		if(ownCU) {
-			CompilationUnit new_cu = new CompilationUnit(cu.getPackageDecl(),
-														 (List<ImportDecl>)cu.getImportDecls().fullCopy(),
-														 new List<TypeDecl>().add(td));
-			new_cu.setFromSource(true);
 			String path = cu.pathName();
-			new_cu.setPathName(path.substring(0, path.lastIndexOf(File.separatorChar)+1) + td.name() + ".java");
-			root.addCompilationUnit(new_cu);
+			root.insertUnusedType(path.substring(0, path.lastIndexOf(File.separatorChar)+1),
+								  cu.getPackageDecl(), (List<ImportDecl>)cu.getImportDecls().fullCopy(), td);
 		} else {
-			cu.addTypeDecl(td);
+			cu.insertUnusedType(td);
 		}
 		getParent().removeChild(getChildIndex());
 		root.eliminate(WITH_STMT, FRESH_VARIABLES, LOCKED_NAMES);

@@ -2,22 +2,19 @@ aspect LocalClassToMemberClass {
 	public void LocalClassDeclStmt.promoteToMemberClass(boolean makePublic) {
 		Program root = programRoot();
 		ClassDecl cd = getClassDecl();
-		if(!cd.enclosingType().localTypeDecls(cd.name()).isEmpty())
-			throw new RefactoringException("enclosing type contains type of the same name");
 		// close over accesses to local variables
 		cd = closeOverTypeVariables();
 		closeOverLocalVariables();
 		if(!cd.enclosingType().isLocalClass() && !cd.enclosingType().isAnonymous())
-			cd.setVisibility(makePublic ? "public" : "private");
+			cd.setVisibility(makePublic ? VIS_PUBLIC : VIS_PRIVATE);
 		if(cd.inStaticContext())
 			cd.getModifiers().addModifier("static");
 		// lock names
 		root.lockNames(cd.name());
 		cd.lockAllNames();
 		// move
-		cd.enclosingType().addBodyDecl(new MemberClassDecl(cd));
+		cd.enclosingType().insertUnusedType(cd);
 		enclosingBlock().removeStmt(this);
-		root.flushCaches();
 	}
 	
 	public void LocalClassDeclStmt.doPromoteToMemberClass(boolean makePublic) {

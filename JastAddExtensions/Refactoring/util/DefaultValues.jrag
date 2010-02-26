@@ -1,0 +1,12 @@
+aspect DefaultValues {
+	syn Expr TypeDecl.defaultValue() = new NullLiteral("null");
+	eq BooleanType.defaultValue() = new BooleanLiteral(false);
+	eq IntegralType.defaultValue() = new IntegerLiteral(0);
+	eq CharType.defaultValue() = new CharacterLiteral("\\0");
+	eq LongType.defaultValue() = new LongLiteral("0l");
+	eq DoubleType.defaultValue() = new DoubleLiteral("0.0");
+	eq FloatType.defaultValue() = new FloatingPointLiteral("0.0f");
+	eq VoidType.defaultValue() {
+		throw new Error("void has no default value");
+	}
+}
