@@ -208,6 +208,24 @@ aspect Testing {
 		return super.findVariable(name);
 	}
 	
+	// find a local variable given its simple name
+	public VariableDeclaration ASTNode.findLocalVariable(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				VariableDeclaration v = child.findLocalVariable(name);
+				if(v != null) return v;
+			}
+		}
+		return null;		
+	}
+	
+	public VariableDeclaration VariableDeclaration.findLocalVariable(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findLocalVariable(name);
+	}
+	
 	// find a method given its name
 	public MethodDecl ASTNode.findMethod(String name) {
 		for(int i=0;i<getNumChild();++i) {

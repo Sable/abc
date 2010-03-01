@@ -1,0 +1,31 @@
+aspect PromoteTempToField {
+	public void VariableDeclaration.promoteToField() {
+		split();
+		FieldDeclaration fd = new FieldDeclaration(new Modifiers("private"), type().createLockedAccess(), name(), new Opt<Expr>());
+		hostType().insertField(fd);
+		for(VarAccess va : uses()) {
+			va.lock(fd);
+			va.lockDataFlow();
+			va.lockSyncDependencies();
+		}
+		/*hostBodyDecl().entry().lockSyncDependencies();
+		hostBodyDecl().exit().lockSyncDependencies();*/
+		programRoot().flushCaches();
+		removeUnused();
+	}
+	
+	public void VariableDeclaration.doPromoteToField() {
+		BodyDecl bd = this.hostBodyDecl();
+		promoteToField();
+		bd.programRoot().eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
+		bd.unlockSyncDependencies();
+	}
+	
+	public void TypeDecl.insertField(FieldDeclaration fd) {
+		SimpleSet res = localFields(fd.name());
+		if(!res.isEmpty() && !res.isSingleton(fd))
+			throw new RefactoringException("field of the same name exists");
+		programRoot().lockNames(fd.name());
+		addBodyDecl(fd);
+	}
+}

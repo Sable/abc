@@ -9,6 +9,10 @@
  *        x = 42;
  *
  *  The refactoring returns the newly created assignment, or null if none was created.
+ *  
+ *  Note that JastAdd splits up VarDeclStmts containing multiple declarations into several
+ *  VariableDeclarations; this makes the refactoring somewhat easier. Otherwise, we would
+ *  have to split the VarDeclStmt by hand, making sure to duplicate any annotations.
  */
 
 aspect SplitVarDecl {

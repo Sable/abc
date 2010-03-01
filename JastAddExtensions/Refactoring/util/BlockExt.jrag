@@ -32,4 +32,11 @@ aspect BlockExt {
 			l.add(stmt);
 		setStmtList(l);
 	}
+	
+	// whether this block is the body of a body declaration
+	syn boolean Block.isBodyDeclBody() =
+		   getParent() instanceof ConstructorDecl
+		|| getParent() instanceof InstanceInitializer
+		|| getParent() instanceof StaticInitializer
+		|| getParent() instanceof Opt && getParent().getParent() instanceof MethodDecl;
 }

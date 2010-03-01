@@ -1,6 +1,8 @@
 aspect ExtractAssignment {	
 	// extract an expression as an assignment to a variable
 	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v) {
+		if(inextractible())
+			throw new RefactoringException("expression is not extractible");
 		Block block = enclosingBlock();
 		if(block == null)
 			throw new RefactoringException("cannot extract assignment here");
@@ -13,10 +15,47 @@ aspect ExtractAssignment {
 		expr.replaceWith(vacc);
 		vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), expr));
 		block.hostType().flushCaches();
-		// TODO: this shouldn't be needed
 		expr.unlockDataFlow();
 		block.unlockSyncDependencies();
 		return v;
 	}
+	
+	public VariableDeclaration VariableDeclaration.extractAssignment(Expr expr) {
+		return expr.extractAssignment(this);
+	}
+	
+	// an expression is inextractible if it cannot be replaced by a variable access
+	syn boolean Expr.inextractible() = notAnObject() || inInextractiblePosition();
+
+	// expressions that do not by themselves stand for objects
+	syn boolean Expr.notAnObject() = type().isVoid();
+	eq AbstractDot.notAnObject() = super.notAnObject() || !isArrayAccess() && !isClassAccess() && getRight().notAnObject();
+	eq AbstractWildcard.notAnObject() = true;
+	eq ArrayAccess.notAnObject() = true;
+	eq ClassAccess.notAnObject() = true;
+	eq PackageAccess.notAnObject() = true;
+	eq ParTypeAccess.notAnObject() = true;
+	eq SuperAccess.notAnObject() = true;
+	eq TypeAccess.notAnObject() = true;
+	eq CastExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
+	eq ParExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
+	
+	// expressions in positions where they cannot be replaced by a local variable access
+	inh boolean Expr.inInextractiblePosition();
+	eq Program.getChild().inInextractiblePosition() = false;
+	eq ConstructorDecl.getConstructorInvocation().inInextractiblePosition() = true;
+	eq ExprStmt.getExpr().inInextractiblePosition() = true;
+	eq AssignExpr.getChild().inInextractiblePosition() = false;
+	eq PreIncExpr.getChild().inInextractiblePosition() = false;
+	eq PreDecExpr.getChild().inInextractiblePosition() = false;
+	eq PostfixExpr.getChild().inInextractiblePosition() = false;
+	eq AbstractDot.getRight().inInextractiblePosition() = true;
+	eq MethodAccess.getArg().inInextractiblePosition() = false;
+	eq ConstructorAccess.getArg().inInextractiblePosition() = false;
+	eq ArrayAccess.getExpr().inInextractiblePosition() = false;
+	eq ArrayTypeWithSizeAccess.getExpr().inInextractiblePosition() = false;
+	eq ClassInstanceExpr.getArg().inInextractiblePosition() = false;
+	eq ArrayCreationExpr.getArrayInit().inInextractiblePosition() = true;
+	eq VariableDeclaration.getInit().inInextractiblePosition() = false;
 	
 }

@@ -270,5 +270,41 @@ public class ExtractClassTests extends TestCase {
             "  Data java = new Data();" +
             "}")));
     }
+    
+    public void test5() {
+    	testSucc("Data", "data", new String[]{"x", "y"},
+    		Program.fromCompilationUnits(new RawCU("A.java",
+    		"package p;" +
+    		"class Super {" +
+    		"  int f() { return 23; }" +
+    		"}" +
+    		"" +
+    		"class A extends Super {" +
+    		"  int x = f();" +
+    		"  int y = x + 19;" +
+    		"}")),
+    		Program.fromCompilationUnits(new RawCU("A.java",
+    		"package p;" +
+    		"class Super {" +
+    		"  int f() { return 23; }" +
+    		"}" +
+    		"" +
+    		"class A extends Super {" +
+    		"  static class Data {" +
+    		"    int x;" +
+    		"    int y;" +
+    		"    Data(int x, int y) {" +
+    		"      this.x = x;" +
+    		"      this.y = y;" +
+    		"    }" +
+    		"  }" +
+    		"  Data data;" +
+    		"  {" +
+    		"    int x = f();" +
+    		"    int y = x + 19;" +
+    		"    data = new Data(x, y);" +
+    		"  }" +
+    		"}")));
+    }
 
 }

@@ -22,6 +22,7 @@ public class AllTests {
 		suite.addTestSuite(PullUpMethodTests.class);
 		suite.addTestSuite(MoveMemberTypeToToplevelTests.class);
 		suite.addTestSuite(ExtractClassTests.class);
+		suite.addTestSuite(PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
