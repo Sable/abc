@@ -1,0 +1,43 @@
+aspect MoveMembers {
+	public void TypeDecl.moveMembers(Collection<MemberDecl> members, TypeDecl target) {
+		for(MemberDecl md : members) {
+			md.makeModifiersExplicit();
+			md.moveTo(target);
+		}
+		programRoot().flushCaches();
+	}
+	
+	public void TypeDecl.doMoveMembers(Collection<MemberDecl> members, TypeDecl target) {
+		moveMembers(members, target);
+		programRoot().eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
+	}
+	
+	public void MemberDecl.moveTo(TypeDecl target) {
+		throw new RefactoringException("cannot move this kind of member");
+	}
+	
+	public void FieldDeclaration.moveTo(TypeDecl target) {
+		if(hasInit()) {
+			getInit().lockAllNames();
+			getInit().lockDataFlow();
+		}
+		programRoot().lockNames(name());
+		hostType().removeBodyDecl(this);
+		target.insertField(this);
+	}
+	
+	public void MethodDecl.moveTo(TypeDecl target) {
+		if(!isStatic())
+			throw new RefactoringException("cannot move instance methods");
+		lockAllNames();
+		TypeDecl host = hostType();
+		target.insertUnusedMethod(this);
+		host.removeBodyDecl(this);
+	}
+	
+	public void MemberTypeDecl.moveTo(TypeDecl target) {
+		typeDecl().lockAllNames();
+		hostType().removeBodyDecl(this);
+		target.insertUnusedType(typeDecl());
+	}
+}

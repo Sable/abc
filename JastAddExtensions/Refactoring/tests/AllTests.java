@@ -34,6 +34,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.IntroduceParameterObject.IntroduceParameterObjectTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceIndirection.IntroduceIndirectionTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractClass.ExtractClassTests.class);
+		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
 		//$JUnit-END$
 		return suite;
 	}

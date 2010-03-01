@@ -1,0 +1,28 @@
+aspect InsertUnusedMethod {
+	// insert an unused method into a given type
+	public void TypeDecl.insertUnusedMethod(MethodDecl m) {
+		throw new RefactoringException("cannot insert method into this kind of type declaration");
+	}
+	
+	public void ClassDecl.insertUnusedMethod(MethodDecl m) {
+		programRoot().lockMethodNames(m.name());
+		addBodyDecl(m);
+		programRoot().flushCaches();
+		if(!canIntroduceMethod(m))
+			throw new RefactoringException("cannot insert method here");
+		if(m.isDynamicallyCallable())
+			throw new RefactoringException("method is used");
+		if(m.isAbstract())
+			for(TypeDecl td : m.inheritingTypes())
+				td.makeAbstract();
+	}
+	
+	public void ParTypeDecl.insertUnusedMethod(MethodDecl m) {
+		genericDecl().insertUnusedMethod(m);
+	}
+	
+	public void ClassDeclSubstituted.insertUnusedMethod(MethodDecl m) {
+		original().insertUnusedMethod(m);
+	}
+	
+}

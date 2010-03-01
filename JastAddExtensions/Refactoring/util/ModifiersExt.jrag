@@ -40,4 +40,14 @@ aspect Modifiers {
 			l.add(new Modifier(mod));
 		setModifierList(l);
 	}
+	
+	public void MemberDecl.makeModifiersExplicit() { }
+	public void FieldDeclaration.makeModifiersExplicit() {
+		if(hostType().isInterfaceDecl())
+			getModifiers().addModifiers("public", "static", "final");
+	}
+	public void MethodDecl.makeModifiersExplicit() {
+		if(hostType().isInterfaceDecl())
+			getModifiers().addModifiers("public", "static", "abstract");
+	}
 }

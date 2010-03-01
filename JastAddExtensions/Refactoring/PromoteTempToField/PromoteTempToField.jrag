@@ -22,6 +22,8 @@ aspect PromoteTempToField {
 	}
 	
 	public void TypeDecl.insertField(FieldDeclaration fd) {
+		if(!isClassDecl() && !isInterfaceDecl())
+			throw new RefactoringException("cannot insert field into this type");
 		SimpleSet res = localFields(fd.name());
 		if(!res.isEmpty() && !res.isSingleton(fd))
 			throw new RefactoringException("field of the same name exists");
