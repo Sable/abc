@@ -6,7 +6,7 @@ aspect DataFlow {
 	
 	protected SmallSet<Definition> Access.lockedReachingDefs = null;
 	protected SmallSet<Access> Access.lockedReachedUses = null;
-	protected SmallSet<Access> Access.lockedWriteDeps = null;
+	protected SmallSet<Definition> Access.lockedWriteDeps = null;
 	
 	public void Access.lockDataFlow() {
 		if(lockedReachingDefs == null)
@@ -34,8 +34,8 @@ aspect DataFlow {
 	public void ASTNode.unlockDataFlow() { }
 	
 	public void Access.unlockDataFlow() {
-		if(hostBodyDecl() != null)
-			hostBodyDecl().flushCollectionCache();
+		if(hostType() != null)
+			hostType().flushCollectionCache();
 		if(lockedReachingDefs != null) {
 			if(!reachingDefinitions().equals(lockedReachingDefs))
 				throw new RefactoringException("couldn't preserve data flow");

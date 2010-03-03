@@ -29,14 +29,14 @@ public class MoveMembersTests extends TestCase {
 		super(name);
 	}
 
-	/* Move members from p.A to r.B */
-	private void fieldMethodTypeABHelper_passing(String[] fieldNames, String[] methodNames, String[][] signatures, String[] typeNames) throws Exception {
+	/* Move members from A to B */
+	private void fieldMethodTypeHelper(String[] fieldNames, String[] methodNames, String[][] signatures, String[] typeNames, boolean succeed, String AName, String BName) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/in");
-		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/out");
+		Program out = succeed ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/out") : null;
 		assertNotNull(in);
-		assertNotNull(out);
-		TypeDecl A = in.findSimpleType("A");
-		TypeDecl B = in.findSimpleType("B");
+		assertTrue(!succeed || out != null);
+		TypeDecl A = in.findSimpleType(AName);
+		TypeDecl B = in.findSimpleType(BName);
 		assertNotNull(A);
 		assertNotNull(B);
 		Collection<MemberDecl> members = new LinkedList<MemberDecl>();
@@ -58,14 +58,22 @@ public class MoveMembersTests extends TestCase {
 		}
 		try {
 			A.doMoveMembers(members, B);
-			assertEquals(out.toString(), in.toString());
+			if(succeed)
+				assertEquals(out.toString(), in.toString());
+			else
+				assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
-			assertEquals(out.toString(), rfe.getMessage());
+			if(succeed)
+				assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
 
 	private void fieldMethodTypeHelper_passing(String[] fieldNames, String[] methodNames, String[][] signatures, String[] typeNames, boolean addDelegates) throws Exception{
-		fieldMethodTypeABHelper_passing(fieldNames, methodNames, signatures, typeNames);
+		fieldMethodTypeHelper(fieldNames, methodNames, signatures, typeNames, true, "A", "B");
+	}
+
+	private void fieldMethodTypeHelper_failing(String[] fieldNames, String[] methodNames, String[][] signatures, String[] typeNames, String BName) throws Exception{
+		fieldMethodTypeHelper(fieldNames, methodNames, signatures, typeNames, false, "A", BName);
 	}
 
 	private void fieldHelper_passing(String[] fieldNames) throws Exception {
@@ -195,30 +203,13 @@ public class MoveMembersTests extends TestCase {
 		fieldHelper_passing(new String[]{"FRED"});
 	}
 
-	/*
 	public void test26() throws Exception{
-		IPackageFragment packageForB= null;
-		try{
-			packageForB= getRoot().createPackageFragment("r", false, null);
-			fieldMethodTypePackageHelper_passing(new String[0], new String[]{"n"}, new String[][]{new String[0]}, new String[0], getPackageP(), packageForB, false);
-		} finally{
-			performDummySearch();
-			if (packageForB != null)
-				packageForB.delete(true, null);
-		}
+		fieldMethodTypeHelper_passing(new String[0], new String[]{"n"}, new String[][]{new String[0]}, new String[0], false);
 	}
 
 	public void test27() throws Exception{
-		IPackageFragment packageForB= null;
-		try{
-			packageForB= getRoot().createPackageFragment("r", false, null);
-			fieldMethodTypePackageHelper_passing(new String[0], new String[]{"n"}, new String[][]{new String[0]}, new String[0], getPackageP(), packageForB, false);
-		} finally{
-			performDummySearch();
-			if (packageForB != null)
-				packageForB.delete(true, null);
-		}
-	}*/
+		fieldMethodTypeHelper_passing(new String[0], new String[]{"n"}, new String[][]{new String[0]}, new String[0], false);
+	}
 
 	public void test28() throws Exception{
 		methodHelper_passing(new String[]{"m", "n"}, new String[][]{new String[0], new String[0]});
@@ -236,7 +227,7 @@ public class MoveMembersTests extends TestCase {
 		fieldHelper_passing(new String[]{"odd"});
 	}
 
-	/*
+	/* disabled by Eclipse
 	public void test32() throws Exception{ //test for bug 41734, 41691
 		printTestDisabledMessage("test for 41734");
 		//methodHelper_passing(new String[]{"m"}, new String[][]{new String[0]});
@@ -260,17 +251,17 @@ public class MoveMembersTests extends TestCase {
 		typeHelper_passing(new String[]{"I"});
 	}
 
-	/*
+	/* disabled by Eclipse, but we can do it */
 	public void test37() throws Exception {
-		printTestDisabledMessage("qualified access to source");
-//		typeHelper_passing(new String[] {"Inner"});
-	}*/
-
-	public void test38() throws Exception {
-		fieldMethodTypeABHelper_passing(new String[0], new String[0], new String[0][0], new String[]{"Inner"});
+		//printTestDisabledMessage("qualified access to source");
+		typeHelper_passing(new String[] {"Inner"});
 	}
 
-	/*
+	public void test38() throws Exception {
+		fieldMethodTypeHelper(new String[0], new String[0], new String[0][0], new String[]{"Inner"}, true, "A", "B");
+	}
+
+	/* disabled by Eclipse
 	public void test39() throws Exception {
 		printTestDisabledMessage("complex imports - need more work");
 //		fieldMethodType3CUsHelper_passing(new String[0], new String[0], new String[0][0],
@@ -447,125 +438,109 @@ public class MoveMembersTests extends TestCase {
 	}
 
 	//---
-	/*public void testFail0() throws Exception{
+	/* disabled: we can do this
+	public void testFail0() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[0]},
-									  new String[0],
-									  RefactoringStatus.FATAL, "p.B");
-	}
+									  new String[0], "X");
+	}*/
 
 
 	public void testFail1() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[0]},
-									  new String[0],
-									  RefactoringStatus.ERROR, "p.B.X");
+									  new String[0], "X");
 	}
 
 	public void testFail2() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[0]},
-									  new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+									  new String[0], "B");
 	}
 
 	public void testFail3() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[]{"I", "I"}},
-									  new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+									  new String[0], "B");
 	}
 
+	/* disabled: we can do this
 	public void testFail4() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[]{"I", "I"}},
-									  new String[0],
-									  RefactoringStatus.WARNING, "p.B");
-	}
+									  new String[0], "B");
+	}*/
 
+	/* disabled: we can do this
 	public void testFail5() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[]{"I", "I"}},
-									  new String[0],
-									  RefactoringStatus.WARNING, "p.B");
-	}
+									  new String[0], "B");
+	}*/
 
 	public void testFail6() throws Exception{
-		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0], "B");
 	}
 
 	public void testFail7() throws Exception{
-		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0], "B");
 	}
 
 	public void testFail8() throws Exception{
-		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0], "B");
 	}
 
+	/* disabled: Eclipse doesn't move native methods
 	public void testFail15() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.WARNING, "p.B");
-	}
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "B");
+	}*/
 
 	public void testFail16() throws Exception{
-		IPackageFragment packageForB= null;
-		try{
-			packageForB= getRoot().createPackageFragment("r", false, null);
-			fieldMethodTypePackageHelper_failing(new String[]{"f"}, new String[0], new String[0][0], new String[0],
-										 RefactoringStatus.ERROR, "r.B",
-										 getPackageP(), packageForB);
-		} finally{
-			performDummySearch();
-			if (packageForB != null)
-				packageForB.delete(true, null);
-		}
+		fieldMethodTypeHelper_failing(new String[]{"f"}, new String[0], new String[0][0], new String[0], "B");
 	}
 
+	/* disabled: we can do this
 	public void testFail17() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.FATAL, "java.lang.Object");
-	}
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "X");
+	}*/
 
+	/* disabled: we can do this
 	public void testFail18() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.FATAL, "p.DontExist");
-	}
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "X");
+	}*/
 
 	public void testFail19() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.ERROR, "p.B");
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "B");
 	}
 
+	/* disabled: no test
 	public void testFail20() throws Exception{
 		// was same as test19
-	}
+	}*/
 
+	/* disabled: does not compile
 	public void testFail21() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.FATAL, "p.B");
-	}
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "X");
+	}*/
 
+	/* disabled: no test
 	public void testFail22() throws Exception{
 		//free slot
 	}
 
 	public void testFail23() throws Exception{
 		//free slot
-	}
+	}*/
 
 	public void testFail24() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
-									  new String[]{"m"}, new String[][]{new String[0]}, new String[0],
-									  RefactoringStatus.FATAL, "p.B");
-	}*/
+									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "B");
+	}
 
 	// Delegate creation
 

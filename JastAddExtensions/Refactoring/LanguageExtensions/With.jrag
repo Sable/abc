@@ -68,9 +68,9 @@ aspect With {
 	
 	// control flow
 	eq WithStmt.succ() = 
-		getNumQualifier() == 0 ? singleNode(getStmt()) : singleNode(getQualifier(0).first());
+		getNumQualifier() == 0 ? SmallSet.<CFGNode>singleton(getStmt()) : SmallSet.<CFGNode>singleton(getQualifier(0).first());
 	eq WithStmt.getQualifier(int i).following() = 
-		i+1 < getNumQualifier() ? singleNode(getQualifier(i+1).first()) : singleNode(getStmt()); 
+		i+1 < getNumQualifier() ? SmallSet.<CFGNode>singleton(getQualifier(i+1).first()) : SmallSet.<CFGNode>singleton(getStmt()); 
 	eq WithStmt.getStmt().following() = following();
 	
 	// eliminating with statements

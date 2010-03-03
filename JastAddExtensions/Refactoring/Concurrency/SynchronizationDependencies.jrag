@@ -10,11 +10,11 @@
  *******************************************************************************/
 
 aspect SynchronizationDependencies {
-	syn boolean ASTNode.isAcquire() = false;
-	syn boolean ASTNode.isRelease() = false;
-	syn boolean ASTNode.isThreadManagementAction() = false;
-	syn boolean ASTNode.isSyncAction() = isAcquire() || isRelease() || isThreadManagementAction();
-	syn boolean ASTNode.isMemoryAction() = isSyncAction();
+	syn boolean CFGNode.isAcquire() = false;
+	syn boolean CFGNode.isRelease() = false;
+	syn boolean CFGNode.isThreadManagementAction() = false;
+	syn boolean CFGNode.isSyncAction() = isAcquire() || isRelease() || isThreadManagementAction();
+	syn boolean CFGNode.isMemoryAction() = isSyncAction();
 	
 	eq SynchronizedStmt.isAcquire() = true;
 	eq SynchronizedStmt.isRelease() = true;
@@ -32,20 +32,20 @@ aspect SynchronizationDependencies {
 	
 	class AcquireDependency extends IrreflexiveBackwardEdge {
 		public static final AcquireDependency edge = new AcquireDependency();
-		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
-		public boolean isTarget(ASTNode start, ASTNode end) { return end.isAcquire(); }
-		public boolean terminates(ASTNode start, ASTNode end) { return end.isAcquire(); }
+		protected boolean isStart(CFGNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(CFGNode start, CFGNode end) { return end.isAcquire(); }
+		public boolean terminates(CFGNode start, CFGNode end) { return end.isAcquire(); }
 	}
 	
 	class ReleaseDependency extends IrreflexiveForwardEdge {
 		public static final ReleaseDependency edge = new ReleaseDependency();
-		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
-		public boolean isTarget(ASTNode start, ASTNode end) { return end.isRelease(); }
-		public boolean terminates(ASTNode start, ASTNode end) { return end.isRelease(); }
-		public SmallSet<CFNode> collect(ASTNode start) {
-			SmallSet<CFNode> res = super.collect(start);
+		protected boolean isStart(CFGNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(CFGNode start, CFGNode end) { return end.isRelease(); }
+		public boolean terminates(CFGNode start, CFGNode end) { return end.isRelease(); }
+		public SmallSet<CFGNode> collect(CFGNode start) {
+			SmallSet<CFGNode> res = super.collect(start);
 			// additionally, any sync block we are nested inside is also a release-after
-			for(ASTNode n=start.getParent();n!=null&&!(n instanceof TypeDecl);n=n.getParent())
+			for(ASTNode n=((ASTNode)start).getParent();n!=null&&!(n instanceof TypeDecl);n=n.getParent())
 				if(n instanceof SynchronizedStmt)
 					res = res.union((SynchronizedStmt)n);
 			return res;
@@ -54,9 +54,9 @@ aspect SynchronizationDependencies {
 	
 	class ThreadManagementDependency extends IrreflexiveForwardEdge {
 		public static final ThreadManagementDependency edge = new ThreadManagementDependency();
-		protected boolean isStart(ASTNode node) { return node.isMemoryAction(); }
-		public boolean isTarget(ASTNode start, ASTNode end) { return end.isThreadManagementAction(); }
-		public boolean terminates(ASTNode start, ASTNode end) { return end.isThreadManagementAction(); }
+		protected boolean isStart(CFGNode node) { return node.isMemoryAction(); }
+		public boolean isTarget(CFGNode start, CFGNode end) { return end.isThreadManagementAction(); }
+		public boolean terminates(CFGNode start, CFGNode end) { return end.isThreadManagementAction(); }
 	}
 	
 	public void ASTNode.lockSyncDependencies() {
@@ -65,10 +65,10 @@ aspect SynchronizationDependencies {
 	
 	public void ASTNode.unlockSyncDependencies() {
 		unlockDependencies(new PreservationStrategy(AcquireDependency.edge) {
-			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
+			public boolean reflect(CFGNode n) { return n.isSyncAction(); }
 		});
 		unlockDependencies(new PreservationStrategy(ReleaseDependency.edge) {
-			public boolean reflect(ASTNode n) { return n.isSyncAction(); }
+			public boolean reflect(CFGNode n) { return n.isSyncAction(); }
 		});
 		unlockDependencies(new PreservationStrategy(ThreadManagementDependency.edge));
 	}

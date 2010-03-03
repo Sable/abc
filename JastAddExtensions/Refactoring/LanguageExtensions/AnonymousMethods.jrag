@@ -62,7 +62,7 @@ aspect AnonymousMethods {
 	// control flow for AnonymousMethod invocations
 	eq AnonymousMethod.precedence() = 0;
 	
-	inh SmallSet<ASTNode> AnonymousMethod.throwTarget(TypeDecl exn);
+	inh SmallSet<CFGNode> AnonymousMethod.throwTarget(TypeDecl exn);
 	
 	// artificial node to represent throws of uncaught exceptions
 	private final ExitStmt AnonymousMethod.uncheckedExceptionExit = new ExitStmt();
@@ -70,29 +70,29 @@ aspect AnonymousMethods {
 	
 	eq AnonymousMethod.first() = getNumArg() == 0 ? getBlock() : getArg(0).first();
 	
-	syn ASTNode AnonymousMethod.entry() = getBlock();
-	syn ASTNode AnonymousMethod.exit() = this;
+	syn CFGNode AnonymousMethod.entry() = getBlock();
+	syn CFGNode AnonymousMethod.exit() = this;
 	
-	eq AnonymousMethod.getArg(int i).following() = i < getNumArg()-1 ? singleNode(getArg(i+1).first()) 
-			  			  											   : singleNode(getBlock());
-	eq AnonymousMethod.getBlock().following() = singleNode(exit());
-	eq AnonymousMethod.getReturnType().following() = singleNode(exit());
+	eq AnonymousMethod.getArg(int i).following() = i < getNumArg()-1 ? SmallSet.<CFGNode>singleton(getArg(i+1).first()) 
+			  			  											   : SmallSet.<CFGNode>singleton(getBlock());
+	eq AnonymousMethod.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
+	eq AnonymousMethod.getReturnType().following() = SmallSet.<CFGNode>singleton(exit());
 	eq AnonymousMethod.getException(int i).following() = throwTarget(getException(i).type());
 	eq AnonymousMethod.uncheckedExceptionExit().following() = uncheckedExnTarget();
 
 	eq AnonymousMethod.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq AnonymousMethod.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
-	eq AnonymousMethod.getChild().returnTarget() = singleNode(getReturnType());
+	eq AnonymousMethod.getChild().returnTarget() = SmallSet.<CFGNode>singleton(getReturnType());
 	eq AnonymousMethod.getChild().throwTarget(TypeDecl exn) {
 		// this selects (somewhat arbitrarily) the left-most matching exception type
 		for(Access acc : getExceptions())
 			if(exn.instanceOf(acc.type()))
-				return singleNode(acc);
+				return SmallSet.<CFGNode>singleton(acc);
 		if(exn.isCheckedException())	// JastAddJ's definition of checked/unchecked is confused...
-			return singleNode(uncheckedExceptionExit());
+			return SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 		return SmallSet.empty();
 	}
-	eq AnonymousMethod.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+	eq AnonymousMethod.getChild().uncheckedExnTarget() = SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 
 	/*
 	// data flow for AnonymousMethod invocations: parameters are aliased
@@ -174,7 +174,7 @@ aspect AnonymousMethods {
 	// all final, non-return statements inside the AnonymousMethod
 	syn lazy SmallSet<Stmt> AnonymousMethod.finals() {
     	SmallSet<Stmt> res = SmallSet.empty();
-    	for(ASTNode n : pred()) {
+    	for(CFGNode n : pred()) {
     		if(n == getReturnType())
     			continue;
     		if(n instanceof Stmt) {

@@ -24,7 +24,7 @@ aspect AnonymousClassToLocalClass {
 		cie.setTypeDeclOpt(new Opt<TypeDecl>());
 		cie.setAccess(cd.createLockedAccess());
 		stmt.insertStmtBefore(lcd);
-		bd.flushCaches();
+		bd.hostType().flushCaches();
 		return lcd;
 	}
 	

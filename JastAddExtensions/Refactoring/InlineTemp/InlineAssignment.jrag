@@ -17,7 +17,7 @@ aspect InlineAssignment {
 		// fail if any of the data successors are not in the same method (e.g., inside an anonymous class)
 		for(Access w : dsuccs) {
 			getSource().lockAllNames();
-			bd.flushCaches();
+			bd.hostType().flushCaches();
 			rhs = getSource();
 			rhs.lockDataFlow();
 			bd.lockSyncDependencies();
@@ -30,7 +30,6 @@ aspect InlineAssignment {
 			if(rhs.precedence() > w.maxPrecedence())
 				rhs = new ParExpr(rhs);
 			w.replaceWith(rhs);
-			bd.flushCaches();
 			compilationUnit().flushCaches();
 			rhs.unlockDataFlow();
 			bd.unlockSyncDependencies();
