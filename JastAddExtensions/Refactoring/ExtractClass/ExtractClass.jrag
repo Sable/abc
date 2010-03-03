@@ -5,34 +5,32 @@
 aspect ExtractClass {
 	public void ClassDecl.doExtractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
 		extractClass(fds, newClassName, newFieldName, encapsulate, toplevel);
-		programRoot().eliminate(LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
 	}
 		
 	public void ClassDecl.extractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
 		int maxvis = maxVisibility(fds);
-		Pair<ClassDecl, Map<String, FieldDeclaration>> res = createStruct(newClassName, toplevel ? VIS_PUBLIC : maxvis, fds);
-		ClassDecl wrapperClass = res.fst();
-		Map<String, FieldDeclaration> map = res.snd();
-		MemberTypeDecl mtd = insertUnusedType(wrapperClass);
-		FieldDeclaration wrapperField = this.createNewPublicMemberField(maxvis, wrapperClass.createLockedAccess(), newFieldName);
-		// wrap all fds into wrapperClass
-		for (FieldDeclaration fd: fds) {
+		Modifiers struct_mods = new Modifiers("static");
+		struct_mods.setVisibility(toplevel ? VIS_PUBLIC : maxvis);
+		ClassDecl struct = new ClassDecl(struct_mods, newClassName, new Opt<Access>(), new List<Access>(), new List<BodyDecl>());
+		MemberTypeDecl mtd = insertUnusedType(struct);
+		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct.createLockedAccess(), newFieldName);
+		for(FieldDeclaration fd : fds)
+			fd.lockDataFlow();
+		for(FieldDeclaration fd : fds) {
 			if (fd.getModifiers().isStatic())
 				throw new RefactoringException("cannot extract this field");
-			wrapField(fd, wrapperField, map.get(fd.name()));
+			wrapField(fd, wrapperField, struct);
 		}
 		programRoot().eliminate(LOCKED_NAMES);
 		if(toplevel) {
-			for(FieldDeclaration fd : map.values()) {
+			for(FieldDeclaration fd : fds)
 				fd.getModifiers().setVisibility(VIS_PUBLIC);
-			}
 			mtd.moveToToplevel(true, null, true);
 		}
-		if(encapsulate) {
-			for (FieldDeclaration wrappedField: map.values()) {
-				wrappedField.selfEncapsulate();
-			}
-		}
+		if(encapsulate)
+			for(FieldDeclaration fd : fds)
+				fd.selfEncapsulate();
 	}
 	
 	private int ClassDecl.maxVisibility(Collection<FieldDeclaration> fds) {
@@ -43,7 +41,7 @@ aspect ExtractClass {
 		return vis;
 	}
 	
-	public FieldDeclaration ClassDecl.createNewPublicMemberField(int vis, Access typeAccess, String fieldName) {
+	public FieldDeclaration ClassDecl.createNewMemberField(int vis, Access typeAccess, String fieldName) {
 		programRoot().lockNames(fieldName);
 		Expr expr = new ClassInstanceExpr(typeAccess, new List(), new Opt());
 		Modifiers mods = new Modifiers();
@@ -54,21 +52,25 @@ aspect ExtractClass {
 	}
 	
 	// assumes wrapperField is initialised in the program tree with an instance of wrapperClass
-	public FieldDeclaration ClassDecl.wrapField(FieldDeclaration toMove, FieldDeclaration wrapperField, FieldDeclaration wrappedField) {
-		String fieldName = toMove.name();
-		// pass init expr in constructor if needed
-		if (toMove.hasInit()) { 
-			Expr init = toMove.getInit().wrapArrayInit();
-			((ClassInstanceExpr)wrapperField.getInit()).getArgList().add(init);
-		}
+	public void ClassDecl.wrapField(FieldDeclaration toMove, FieldDeclaration wrapperField, ClassDecl struct) {
+		ConstructorDecl cd = (ConstructorDecl)struct.constructors().iterator().next();
 		// replace all uses to proxy uses
 		for(VarAccess va : toMove.uses()) {
 			VarAccess q = wrapperField.createLockedAccess();
 			va.replaceWith(q.qualifiesAccess(va.fullCopy()));
 		}
-		// remove old field
+		// move field to struct
 		toMove.hostType().removeBodyDecl(toMove);
-		return wrappedField;
+		struct.addBodyDecl(toMove);
+		// pass init expr in constructor if needed
+		if (toMove.hasInit()) { 
+			Expr init = toMove.getInit().wrapArrayInit();
+			((ClassInstanceExpr)wrapperField.getInit()).getArgList().add(init);
+			toMove.setInitOpt(new Opt());
+			ParameterDeclaration pd = new ParameterDeclaration(new Modifiers(), toMove.type().createLockedAccess(), toMove.name()); 
+			cd.addParameter(pd);
+			cd.getBlock().addStmt(AssignExpr.asStmt(toMove.createLockedAccess(), pd.createLockedAccess()));
+		}
 	}
 		
 }

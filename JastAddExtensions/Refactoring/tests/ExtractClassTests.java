@@ -34,6 +34,23 @@ public class ExtractClassTests extends TestCase {
 		}
 	}
 	
+	public void testFail(String newClassName, String newFieldName, String[] fns, Program in) {
+		assertNotNull(in);
+		TypeDecl td = in.findType("p", "A");
+		assertTrue(td instanceof ClassDecl);
+		ArrayList<FieldDeclaration> fds = new ArrayList<FieldDeclaration>();
+		for(String fn : fns) {
+			FieldDeclaration fd = td.findField(fn);
+			assertNotNull(fd);
+			fds.add(fd);
+		}
+		try {
+			((ClassDecl)td).doExtractClass(fds, newClassName, newFieldName, true, false);
+			assertEquals("<failure>", in.toString());
+		} catch(RefactoringException rfe) {
+		}
+	}
+	
     public void test1() {
         testSucc("Data", "data", new String[] { "x", "y" },
             Program.fromCompilationUnits(new RawCU("A.java",
@@ -272,7 +289,7 @@ public class ExtractClassTests extends TestCase {
     }
     
     public void test5() {
-    	testSucc("Data", "data", new String[]{"x", "y"},
+    	testFail("Data", "data", new String[]{"x", "y"},
     		Program.fromCompilationUnits(new RawCU("A.java",
     		"package p;" +
     		"class Super {" +
@@ -282,28 +299,6 @@ public class ExtractClassTests extends TestCase {
     		"class A extends Super {" +
     		"  int x = f();" +
     		"  int y = x + 19;" +
-    		"}")),
-    		Program.fromCompilationUnits(new RawCU("A.java",
-    		"package p;" +
-    		"class Super {" +
-    		"  int f() { return 23; }" +
-    		"}" +
-    		"" +
-    		"class A extends Super {" +
-    		"  static class Data {" +
-    		"    int x;" +
-    		"    int y;" +
-    		"    Data(int x, int y) {" +
-    		"      this.x = x;" +
-    		"      this.y = y;" +
-    		"    }" +
-    		"  }" +
-    		"  Data data;" +
-    		"  {" +
-    		"    int x = f();" +
-    		"    int y = x + 19;" +
-    		"    data = new Data(x, y);" +
-    		"  }" +
     		"}")));
     }
 
