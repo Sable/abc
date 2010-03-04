@@ -18,6 +18,15 @@ aspect ReachingDefinitions {
 		return res;
 	}
 	
+	public SmallSet<Definition> VarAccess.reachingDefinitions() {
+		if(decl().isField()) {
+			FieldDeclaration fd = (FieldDeclaration)decl();
+			if(fd.isConstant() && fd.hasInit())
+				return SmallSet.<Definition>singleton(fd);
+		}
+		return super.reachingDefinitions();
+	}
+	
 	coll SmallSet<Access> Definition.reachedUses() [SmallSet.mutable()] with add root TypeDecl;
 	Access contributes this to Definition.reachedUses() for each reachingDefinitions();
 	
