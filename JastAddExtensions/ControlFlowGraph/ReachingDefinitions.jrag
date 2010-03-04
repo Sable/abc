@@ -4,6 +4,8 @@ aspect ReachingDefinitions {
 	ParameterDeclaration implements Definition;
 	VariableDeclaration implements Definition;
 	MethodAccess implements Definition;
+	FieldDeclaration implements Definition;
+	EntryStmt implements Definition;
 	
 	public SmallSet<Definition> Access.reachingDefinitions() {
 		Location l = getLocation();
@@ -11,99 +13,89 @@ aspect ReachingDefinitions {
 			return SmallSet.<Definition>empty();
 		// we don't want the node to be its own reaching definition
 		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		for(ASTNode p : pred())
+		for(CFGNode p : pred())
 			res = res.union(p.reachingDefinitionsFor(l));
 		return res;
 	}
 	
-	coll SmallSet<Access> Definition.reachedUses() [SmallSet.mutable()] with add root BodyDecl;
+	coll SmallSet<Access> Definition.reachedUses() [SmallSet.mutable()] with add root TypeDecl;
 	Access contributes this to Definition.reachedUses() for each reachingDefinitions();
 	
 	// for a write, returns the set of writes to the same variable preceding it in the CFG
-	public SmallSet<Access> Access.writeDeps() {
+	public SmallSet<Definition> Access.writeDeps() {
 		Location l = getLocation();
 		if(!isDest() || l == null)
-			return SmallSet.<Access>empty();
+			return SmallSet.<Definition>empty();
 		// we don't want the node to write-depend on itself
-		SmallSet<Access> res = SmallSet.<Access>empty();
-		for(ASTNode p : pred())
+		SmallSet<Definition> res = SmallSet.<Definition>empty();
+		for(CFGNode p : pred())
 			res = res.union(p.reachingDefinitionsFor(l));
 		return res;
 	}
 	
-	syn lazy SmallSet<Definition> ASTNode.reachingDefinitionsFor(Location l)
+	syn lazy SmallSet<Definition> CFGNode.reachingDefinitionsFor(Location l)
 		circular [SmallSet.<Definition>empty()] {
 		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		for(ASTNode p : pred())
-			res = res.union(p.reachingDefinitionsFor(l));
-		return res;
-	}
-	
-	eq ParameterDeclaration.reachingDefinitionsFor(Location l) {
-		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		if(mayAlias(l)) {
+		if(isReachingDefinitionFor(l)) {
 			res = SmallSet.singleton((Definition)this);
-			if(mustAlias(l))
+			if(isBlockingDefinitionFor(l))
 				return res;
 		}
-		//return super.reachingDefinitionsFor(lv);
-		for(ASTNode p : pred())
+		for(CFGNode p : pred())
 			res = res.union(p.reachingDefinitionsFor(l));
 		return res;
 	}
 	
-	eq VariableDeclaration.reachingDefinitionsFor(Location l) {
-		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		if(mayAlias(l)) {
-			if(isInitialised())
-				res = SmallSet.singleton((Definition)this);
-			if(mustAlias(l))
-				return res;
+	syn boolean Stmt.isReachingDefinitionFor(Location l) = false;
+	syn boolean Stmt.isBlockingDefinitionFor(Location l) = false;
+	
+	syn boolean Expr.isReachingDefinitionFor(Location l) = false;
+	syn boolean Expr.isBlockingDefinitionFor(Location l) = false;
+	
+	syn boolean ParameterDeclaration.isReachingDefinitionFor(Location l) = mayAlias(l);
+	syn boolean ParameterDeclaration.isBlockingDefinitionFor(Location l) = mustAlias(l);
+
+	eq VariableDeclaration.isReachingDefinitionFor(Location l) = mayAlias(l) && isInitialised();
+	eq VariableDeclaration.isBlockingDefinitionFor(Location l) = mustAlias(l);
+
+	eq Access.isReachingDefinitionFor(Location l) = isDest() && mayReferTo(l);
+	eq Access.isBlockingDefinitionFor(Location l) = mustReferTo(l);
+
+	eq MethodAccess.isReachingDefinitionFor(Location l) = mayDefine(l);
+	eq MethodAccess.isBlockingDefinitionFor(Location l) = mustDefine(l);
+	
+	// take care of local variable references from within local/anonymous classes
+	eq EntryStmt.reachingDefinitionsFor(Location l) {
+		SmallSet<Definition> res = getParent() instanceof Callable && l.isHeapLocation() ? SmallSet.<Definition>singleton(this) : SmallSet.<Definition>empty();
+		if(hostType().isLocalClass()) {
+			return res.union(((LocalClassDeclStmt)hostType().getParent()).reachingDefinitionsFor(l));
+		} else if(hostType().isAnonymous()) {
+			return res.union(((ClassInstanceExpr)hostType().getParent().getParent()).reachingDefinitionsFor(l));
 		}
-		// return super.reachingDefinitionsFor(lv);
-		for(ASTNode p : pred())
+		//return super.reachingDefinitionsFor(l);
+		for(CFGNode p : pred())
 			res = res.union(p.reachingDefinitionsFor(l));
 		return res;
 	}
 	
-	eq Access.reachingDefinitionsFor(Location l) {
+	// add field declaration as reaching definition
+	eq ExitStmt.reachingDefinitionsFor(Location l) {
 		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		if(isDest()) {
-			if(mayReferTo(l)) {
-				res = SmallSet.singleton((Definition)this);
-				if(mustReferTo(l))
+		if(getParent() instanceof FieldDeclaration) {
+			FieldDeclaration fd = (FieldDeclaration)getParent();
+			if(fd.isReachingDefinitionFor(l)) {
+				res = SmallSet.singleton((Definition)fd);
+				if(fd.isBlockingDefinitionFor(l))
 					return res;
 			}
 		}
-		//return res.union(super.reachingDefinitionsFor(l));
-		for(ASTNode p : pred())
+		for(CFGNode p : pred())
 			res = res.union(p.reachingDefinitionsFor(l));
 		return res;
 	}
 	
-	eq MethodAccess.reachingDefinitionsFor(Location l) {
-		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		if(mayDefine(l)) {
-			res = SmallSet.singleton((Definition)this);
-			if(mustDefine(l))
-				return res;
-		}
-		//return res.union(super.reachingDefinitionsFor(l));
-		for(ASTNode p : pred())
-			res = res.union(p.reachingDefinitionsFor(l));
-		return res;
-	}
-	
-	// take care of local variable references from within local/anonymous classes
-	eq Modifiers.reachingDefinitionsFor(Location l) {
-		if(hostType().isLocalClass() || hostType().isAnonymous())
-			return hostType().reachingDefinitionsFor(l);
-		//return super.reachingDefinitionsFor(l);
-		SmallSet<Definition> res = SmallSet.<Definition>empty();
-		for(ASTNode p : pred())
-			res = res.union(p.reachingDefinitionsFor(l));
-		return res;
-	}
+	syn boolean FieldDeclaration.isReachingDefinitionFor(Location l) = this == l;
+	syn boolean FieldDeclaration.isBlockingDefinitionFor(Location l) = false;
 	
 	syn boolean VariableDeclaration.isInitialised() = 
 		hasInit() || getParent() instanceof EnhancedForStmt;

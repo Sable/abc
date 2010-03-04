@@ -2,9 +2,14 @@
 aspect Alias {
 	interface Location { 
 		TypeDecl type();
+		boolean isHeapLocation();
 	}
 	Variable extends Location;
 	ArrayAccess implements Location;
+	
+	public boolean Variable.isHeapLocation() { return false; }
+	public boolean FieldDeclaration.isHeapLocation() { return !isConstant(); }
+	public boolean ArrayAccess.isHeapLocation() { return true; }
 	
 	syn lazy Location Access.getLocation() = null;
 	eq AbstractDot.getLocation() = getRight().getLocation();
@@ -34,7 +39,12 @@ aspect Alias {
 	eq VarAccess.mustReferTo(Location l) = decl().mustAlias(l);
 	
 	// very crude interprocedural analysis
-	syn boolean MethodAccess.mayDefine(Location l) =
-		!(l instanceof ParameterDeclaration || l instanceof VariableDeclaration);
+	syn boolean MethodAccess.mayDefine(Location l) = l.isHeapLocation();
 	syn boolean MethodAccess.mustDefine(Location l) = false;
+	
+	syn boolean ConstructorAccess.mayDefine(Location l) = l.isHeapLocation();
+	syn boolean ConstructorAccess.mustDefine(Location l) = false;
+	
+	syn boolean ClassInstanceExpr.mayDefine(Location l) = l.isHeapLocation();
+	syn boolean ClassInstanceExpr.mustDefine(Location l) = false;
 }

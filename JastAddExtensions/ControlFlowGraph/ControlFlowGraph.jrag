@@ -1,128 +1,153 @@
 aspect ControlFlowGraph {
-	/** Every body declaration has an entry and an exit node.
-	 *  An earlier version used to implement these as NTAs; that's not a good idea
-	 *  since NTAs are not included in the search for contributors to collection
-	 *  attributes. Hence the definition of pred() below breaks. */
-	syn lazy ASTNode BodyDecl.entry();
-	syn lazy ASTNode BodyDecl.exit();
-	
-	eq BodyDecl.entry() = null;
-	eq BodyDecl.exit() = null;
-	
-	eq ConstructorDecl.entry() = getModifiers();   ///getParameterList();
-	eq ConstructorDecl.exit() = this;
-	
-	eq InstanceInitializer.entry() = getBlock();
-	eq InstanceInitializer.exit() = this;
-	
-	eq FieldDeclaration.entry() = hasInit() ? getInit().first() : null;
-	eq FieldDeclaration.exit() = this;
+	interface CFGNode { 
+	}
 
-
-	// EnumConstant: Inherits from FieldDeclaration but adds arguments (Expr node children)
-	// control flow for enum constants: first the arguments, then the init expression, then the exit node
-	eq EnumConstant.entry() = (getNumArg() > 0) ? getArg(0).first() : (hasInit() ? getInit().first() : null);
-	eq EnumConstant.exit() = this;
-	eq EnumConstant.getInit().following() = singleNode(exit());
-	eq EnumConstant.getArg(int i).following() {
-		if (i + 1 < getNumArg())
-			return singleNode(getArg(i + 1));
-		return hasInit() ? singleNode(getInit().first()) : singleNode(exit());
+	Stmt implements CFGNode;
+	Expr implements CFGNode;
+	ParameterDeclaration implements CFGNode;
+	FieldDeclaration implements CFGNode;
+	
+	/** Every body declaration has an entry and an exit node. We implement these as
+	 *  NTAs for clarity, but this complicates the definition of pred() below.
+	 *  These nodes are only placeholders that do not need to be recomputed after
+	 *  a cache flush, so we cache them explicitly. */
+	private EntryStmt BodyDecl.entry = new EntryStmt();
+	syn nta Stmt BodyDecl.entry() = entry;
+	private ExitStmt BodyDecl.exit = new ExitStmt();
+	syn nta Stmt BodyDecl.exit() = exit;
+	
+	public void EntryStmt.toString(StringBuffer s) {
+		s.append("<entry>");
 	}
 	
-
-	eq MethodDecl.entry() = getModifiers();      ///getParameterList();
-	eq MethodDecl.exit() = this;
-	
-	eq StaticInitializer.entry() = getBlock();
-	eq StaticInitializer.exit() = this;
-	
-	// although it is more convenient to formulate cflow attributes in terms of ASTNodes, we're
-	// actually not interested in getting control flow for _all_ nodes, only "control flow nodes"
-	interface CFNode { }
-	Stmt implements CFNode;
-	Expr implements CFNode;
-	ParameterDeclaration implements CFNode;
-	Modifiers implements CFNode;                  // see discussion for ConstructorDecl below
-	TypeDecl implements CFNode;					  // for anonymous and local classes
+	public void ExitStmt.toString(StringBuffer s) {
+		s.append("<exit>");
+	}
 
 	// the "following" attribute models non-branching control flow, "succ" takes
 	// branches, throws and other control flow into account
-	inh lazy SmallSet<ASTNode> ASTNode.following();
-	syn lazy SmallSet<ASTNode> ASTNode.succ();
+	inh lazy SmallSet<CFGNode> CFGNode.following();
+	syn lazy SmallSet<CFGNode> CFGNode.succ();
 	
 	// subtrees have "first" nodes from where evaluation starts
-	syn ASTNode ASTNode.first() = this;     
+	syn CFGNode CFGNode.first() = this;
 
 	// predecessors are computed as inverses of successors
-	coll SmallSet<ASTNode> ASTNode.pred() [SmallSet.mutable()] with add root BodyDecl;
-	Stmt contributes this to ASTNode.pred() for each succ();
-	Expr contributes this to ASTNode.pred() for each succ();
-	ParameterDeclaration contributes this to ASTNode.pred() for each succ();
-	Modifiers contributes this to ASTNode.pred() for each succ();
-	TypeDecl contributes this to ASTNode.pred() for each succ();
-
+	coll SmallSet<CFGNode> CFGNode.collPred() [SmallSet.mutable()] with add root TypeDecl;
+	Stmt contributes this to CFGNode.collPred() for each succ();
+	Expr contributes this to CFGNode.collPred() for each succ();
+	ParameterDeclaration contributes this to CFGNode.collPred() for each succ();
+	FieldDeclaration contributes this to CFGNode.collPred() for each succ();
+	
+	// NTAs are not, in general, included in the collection attribute traversal; we have to fudge around this
+    protected void BodyDecl.collect_contributors_CFGNode_collPred() {
+    	entry().collect_contributors_CFGNode_collPred();
+    	exit().collect_contributors_CFGNode_collPred();
+    	super.collect_contributors_CFGNode_collPred();
+    }
+    
+    public SmallSet<CFGNode> CFGNode.pred() { return collPred(); }
+	
 	// default implementations of following and succ
 	eq Program.getChild().following() = SmallSet.empty();
 	eq TypeDecl.getChild().following() = SmallSet.empty();
-	eq ASTNode.succ() = SmallSet.empty();
 	
 	// normally, the successor is just the following statement/expression
-	eq CFNode.succ() = following();
+	eq CFGNode.succ() = following();
 	
-	// little helper
-	public static SmallSet<ASTNode> ASTNode.singleNode(ASTNode n) {
-		return SmallSet.singleton(n);
-	}
-	
-	// control flow for constructors: first the parameters, then the constructor invocation,
-	// then the block, then the exit node
-	// NOTE: unfortunately, JastAdd does not allow us to specify equations for list children;
-	//       hence, we take the Modifiers child as entry node instead
-	eq ConstructorDecl.getModifiers().following() {            ///getParameterList()
+	// control flow for constructors: first the parameters, then the constructor invocation;
+	// if the constructor invokes another this constructor, the following node is its block;
+	// otherwise (if it invokes a super constructor), all instance fields and initializers are
+	// inserted between the constructor invocation and the block
+	eq ConstructorDecl.entry().following() {
 		if(getNumParameter() > 0)
-			return singleNode(getParameter(0));
-		if(hasConstructorInvocation())
-			return singleNode(getConstructorInvocation());
-		return singleNode(getBlock());
+			return SmallSet.<CFGNode>singleton(getParameter(0).first());
+		return SmallSet.<CFGNode>singleton(getConstructorInvocation().first());
 	}
 	
 	eq ConstructorDecl.getParameter(int i).following() {
 		if(i + 1 < getNumParameter())
-			return singleNode(getParameter(i + 1));
-		if(hasConstructorInvocation())
-			return singleNode(getConstructorInvocation());
-		return singleNode(getBlock());
+			return SmallSet.<CFGNode>singleton(getParameter(i + 1).first());
+		return SmallSet.<CFGNode>singleton(getConstructorInvocation().first());
 	}
 	
-	eq ConstructorDecl.getConstructorInvocation().following()
-		= singleNode(getBlock());
+	eq ConstructorDecl.getConstructorInvocation().following() {
+		if(invokesSuperConstructor()) {
+			BodyDecl bd = hostType().getFieldOrInitializerAfter(0, false);
+			if(bd != null)
+				return SmallSet.<CFGNode>singleton(bd.entry());
+		}
+		return SmallSet.<CFGNode>singleton(getBlock().first());
+	}
 	
-	eq ConstructorDecl.getBlock().following() = singleNode(exit());
+	eq ConstructorDecl.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
+	
+	syn boolean ConstructorDecl.invokesSuperConstructor() = 
+		((ExprStmt)getConstructorInvocation()).getExpr() instanceof SuperConstructorAccess;
+	
+	syn BodyDecl TypeDecl.getFieldOrInitializerAfter(int i, boolean statik) {
+		for(;i<getNumBodyDecl();++i) {
+			BodyDecl bd = getBodyDecl(i);
+			if(statik && bd instanceof StaticInitializer ||
+			   !statik && bd instanceof InstanceInitializer ||
+			   bd instanceof FieldDeclaration && ((FieldDeclaration)bd).isStatic() == statik)
+				return bd;
+		}
+		return null;
+	}
+	
+	syn SmallSet<CFGNode> BodyDecl.getFollowingFieldOrInitializer(boolean statik) {
+		BodyDecl bd = hostType().getFieldOrInitializerAfter(getParent().getIndexOfChild(this)+1, statik);
+		if(bd != null)
+			return SmallSet.<CFGNode>singleton(bd.entry());
+		SmallSet<CFGNode> res = SmallSet.empty();
+		if(!statik)
+			for(ConstructorDecl cd : (Collection<ConstructorDecl>)hostType().constructors())
+				if(cd.invokesSuperConstructor())
+					res = res.union(cd.getBlock().first());
+		return res;
+	}
 	
 	// control flow for instance initializers: first the block, then the exit node
-	eq InstanceInitializer.getBlock().following() = singleNode(exit());
+	eq InstanceInitializer.entry().following() = SmallSet.<CFGNode>singleton(getBlock().first()); 
+	eq InstanceInitializer.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
+	eq InstanceInitializer.exit().following() = getFollowingFieldOrInitializer(false);
 			
 	// control flow for field declarations: first the initializer, then the exit node
-	eq FieldDeclaration.getInit().following() = singleNode(exit());
+	eq FieldDeclaration.entry().following() = SmallSet.<CFGNode>singleton(hasInit() ? getInit().first() : exit()); 
+	eq FieldDeclaration.getInit().following() = SmallSet.<CFGNode>singleton(exit());
+	eq FieldDeclaration.exit().following() = getFollowingFieldOrInitializer(isStatic());
+	
+	// EnumConstant: Inherits from FieldDeclaration but adds arguments (Expr node children)
+	// control flow for enum constants: first the arguments, then the init expression, then the exit node
+	eq EnumConstant.entry().following() = SmallSet.<CFGNode>singleton(getNumArg() > 0 ? getArg(0).first() : hasInit() ? getInit().first() : exit());
+	eq EnumConstant.getArg(int i).following() {
+		if (i + 1 < getNumArg())
+			return SmallSet.<CFGNode>singleton(getArg(i + 1));
+		return SmallSet.<CFGNode>singleton(hasInit() ? getInit().first() : exit());
+	}
+	eq EnumConstant.getInit().following() = SmallSet.<CFGNode>singleton(exit());
+	// TODO: eq EnumConstant.exit().following() = ???
 	
 	// control flow for methods: first the parameters, then the block, then the exit node
-	eq MethodDecl.getModifiers().following() {					/// getParameterList
+	eq MethodDecl.entry().following() {
 		if(getNumParameter() > 0)
-			return singleNode(getParameter(0));
-		return hasBlock() ? singleNode(getBlock()) : singleNode(exit());
+			return SmallSet.<CFGNode>singleton(getParameter(0).first());
+		return hasBlock() ? SmallSet.<CFGNode>singleton(getBlock().first()) : SmallSet.<CFGNode>singleton(exit());
 	}
 	
 	eq MethodDecl.getParameter(int i).following() {
 		if(i + 1 < getNumParameter())
-			return singleNode(getParameter(i + 1));
-		return hasBlock() ? singleNode(getBlock()) : singleNode(exit());
+			return SmallSet.<CFGNode>singleton(getParameter(i + 1).first());
+		return hasBlock() ? SmallSet.<CFGNode>singleton(getBlock().first()) : SmallSet.<CFGNode>singleton(exit());
 	}
 	
-	eq MethodDecl.getBlock().following() = singleNode(exit());
+	eq MethodDecl.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
 
 	// control flow for static initializers: first the block, then the exit node
-	eq StaticInitializer.getBlock().following() = singleNode(exit());
+	eq StaticInitializer.entry().following() = SmallSet.<CFGNode>singleton(getBlock().first()); 
+	eq StaticInitializer.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
+	eq StaticInitializer.exit().following() = getFollowingFieldOrInitializer(true);
 			
 	// VarAccess
 	/* VarAccesses are easy, except when they occur on the LHS of an assignment
@@ -149,7 +174,7 @@ aspect ControlFlowGraph {
 		AssignExpr assgn = modifyingAssignExpr();
 		if(assgn == null)
 			return following();
-		return singleNode(assgn);
+		return SmallSet.<CFGNode>singleton(assgn);
 	}
 
 	// find the modifying assign expression of a node -- modelled after isDest()
@@ -165,22 +190,22 @@ aspect ControlFlowGraph {
 
 	// Unary
 	eq Unary.first() = getOperand().first();
-	eq Unary.getOperand().following() = singleNode(this);
+	eq Unary.getOperand().following() = SmallSet.<CFGNode>singleton(this);
 
 
 	// Binary
 	eq Binary.first() = getLeftOperand().first();
-	eq Binary.getLeftOperand().following() = singleNode(getRightOperand().first());
-	eq Binary.getRightOperand().following() = singleNode(this);
+	eq Binary.getLeftOperand().following() = SmallSet.<CFGNode>singleton(getRightOperand().first());
+	eq Binary.getRightOperand().following() = SmallSet.<CFGNode>singleton(this);
 
 	// short-circuiting logical expressions are handled differently: see below
 	
 	// AssignExpr and its subclasses
 	eq AssignExpr.first() = getDest().first();
-	eq AssignExpr.getDest().following() = singleNode(getSource().first());
+	eq AssignExpr.getDest().following() = SmallSet.<CFGNode>singleton(getSource().first());
 	eq AssignExpr.getSource().following() {
 		VarAccess destloc = getDest().getDestLocation();
-		return singleNode(destloc == null ? this : destloc);
+		return SmallSet.<CFGNode>singleton(destloc == null ? this : destloc);
 	}
 
 	// descend through ParExprs and AbstractDots to find a VarAccess
@@ -199,27 +224,27 @@ aspect ControlFlowGraph {
 
 	// InstanceOfExpr
 	eq InstanceOfExpr.first() = getExpr().first();
-	eq InstanceOfExpr.getExpr().following() = singleNode(this);
+	eq InstanceOfExpr.getExpr().following() = SmallSet.<CFGNode>singleton(this);
 	eq InstanceOfExpr.getTypeAccess().following() = SmallSet.empty();
 
 	// CastExpr
 	eq CastExpr.first() = getExpr().first();
-	eq CastExpr.getExpr().following() = singleNode(this);
+	eq CastExpr.getExpr().following() = SmallSet.<CFGNode>singleton(this);
 	eq CastExpr.getTypeAccess().following() = SmallSet.empty();
 
 	// ParExpr 
 	eq ParExpr.first() = getExpr().first();
-	eq ParExpr.getExpr().following() = singleNode(this);
+	eq ParExpr.getExpr().following() = SmallSet.<CFGNode>singleton(this);
 
 
 	// MethodAccess
 	eq MethodAccess.first() = getNumArg() == 0 ? this : getArg(0).first();
 	eq MethodAccess.getArg(int i).following() 
-		= singleNode(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
+		= SmallSet.<CFGNode>singleton(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
 	// a method may either return normally or throw exceptions
-	inh SmallSet<ASTNode> Expr.throwTarget(TypeDecl exn);
+	inh SmallSet<CFGNode> Expr.throwTarget(TypeDecl exn);
 	eq MethodAccess.succ() {
-		SmallSet<ASTNode> res = following();
+		SmallSet<CFGNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
 		res = res.union(uncheckedExnTarget());
@@ -229,35 +254,29 @@ aspect ControlFlowGraph {
 	// ConstructorAccess
 	eq ConstructorAccess.first() = getNumArg() == 0 ? this : getArg(0).first();
 	eq ConstructorAccess.getArg(int i).following()
-		= singleNode(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
+		= SmallSet.<CFGNode>singleton(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
 	eq ConstructorAccess.succ() {
-		SmallSet<ASTNode> res = following();
+		SmallSet<CFGNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
 		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 
-	// ClassInstanceExpr: first iterate over the arguments, then the type declaration,
-	//                    then the expression itself
-	eq ClassInstanceExpr.first() {
+	// ClassInstanceExpr: first type access, then arguments, then expression itself
+	eq ClassInstanceExpr.first() = getAccess().first();
+	eq ClassInstanceExpr.getAccess().following() {
 		if(getNumArg() > 0)
-			return getArg(0).first();
-		if(hasTypeDecl())
-			return getTypeDecl();
-		return this;
+			return SmallSet.<CFGNode>singleton(getArg(0).first());
+		return SmallSet.<CFGNode>singleton(this);
 	}
 	eq ClassInstanceExpr.getArg(int i).following() {
 		if(i + 1 < getNumArg())
-			return singleNode(getArg(i + 1).first());
-		if(hasTypeDecl())
-			return singleNode(getTypeDecl());
-		return singleNode(this);
+			return SmallSet.<CFGNode>singleton(getArg(i + 1).first());
+		return SmallSet.<CFGNode>singleton(this);
 	}
-	eq ClassInstanceExpr.getTypeDecl().following() = singleNode(this);
-	eq ClassInstanceExpr.getAccess().following() = SmallSet.empty();
 	eq ClassInstanceExpr.succ() {
-		SmallSet<ASTNode> res = following();
+		SmallSet<CFGNode> res = following();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
 		res = res.union(uncheckedExnTarget());
@@ -266,36 +285,36 @@ aspect ControlFlowGraph {
 		
 	// AbstractDot
 	eq AbstractDot.first() = getLeft().first();
-	eq AbstractDot.getLeft().following() = singleNode(getRight().first());
-	eq AbstractDot.getRight().following() = singleNode(this);
+	eq AbstractDot.getLeft().following() = SmallSet.<CFGNode>singleton(getRight().first());
+	eq AbstractDot.getRight().following() = SmallSet.<CFGNode>singleton(this);
 
 	// ArrayAccess
 	eq ArrayAccess.first() = getExpr().first();
-	eq ArrayAccess.getExpr().following() = singleNode(this);
+	eq ArrayAccess.getExpr().following() = SmallSet.<CFGNode>singleton(this);
 
 	// ArrayCreationExpr
 	eq ArrayCreationExpr.first() = getTypeAccess().first();
 	eq ArrayCreationExpr.getTypeAccess().following() 
-		= singleNode(hasArrayInit() ? getArrayInit().first() : this);
-	eq ArrayCreationExpr.getArrayInit().following() = singleNode(this);
+		= SmallSet.<CFGNode>singleton(hasArrayInit() ? getArrayInit().first() : this);
+	eq ArrayCreationExpr.getArrayInit().following() = SmallSet.<CFGNode>singleton(this);
 
 	// ArrayInit 
 	eq ArrayInit.first() 
 		= getNumInit() == 0 ?	this : getInit(0).first();
 	eq ArrayInit.getInit(int i).following() 
-		= singleNode(i + 1 < getNumInit() ? getInit(i + 1).first() : this);
+		= SmallSet.<CFGNode>singleton(i + 1 < getNumInit() ? getInit(i + 1).first() : this);
 
 	// PrimitiveTypeAccess - default
 
 	// ArrayTypeAccess/ArrayTypeWithSizeAccess
 	eq ArrayTypeAccess.first() = getAccess().first();
-	eq ArrayTypeAccess.getAccess().following() = singleNode(this);
-	eq ArrayTypeWithSizeAccess.getAccess().following() = singleNode(getExpr().first());
-	eq ArrayTypeWithSizeAccess.getExpr().following() = singleNode(this);
+	eq ArrayTypeAccess.getAccess().following() = SmallSet.<CFGNode>singleton(this);
+	eq ArrayTypeWithSizeAccess.getAccess().following() = SmallSet.<CFGNode>singleton(getExpr().first());
+	eq ArrayTypeWithSizeAccess.getExpr().following() = SmallSet.<CFGNode>singleton(this);
 
 	// Special case for short circuiting logical expressions (&&, ||)	
-	inh SmallSet<ASTNode> Expr.followingWhenTrue();
-	inh SmallSet<ASTNode> Expr.followingWhenFalse();
+	inh SmallSet<CFGNode> Expr.followingWhenTrue();
+	inh SmallSet<CFGNode> Expr.followingWhenFalse();
 
 	eq Program.getChild().followingWhenTrue() = SmallSet.empty();
 	eq Program.getChild().followingWhenFalse() = SmallSet.empty();
@@ -304,40 +323,40 @@ aspect ControlFlowGraph {
 	// AndLogicalExpr.first() is not needed (same equation as in superclass)
 	eq AndLogicalExpr.getLeftOperand().followingWhenFalse() = followingWhenFalse();      
 	eq AndLogicalExpr.getLeftOperand().followingWhenTrue() 
-		= singleNode(getRightOperand().first());
+		= SmallSet.<CFGNode>singleton(getRightOperand().first());
 	eq AndLogicalExpr.getLeftOperand().following() 
 		= getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-	eq AndLogicalExpr.getRightOperand().following() = singleNode(this);
+	eq AndLogicalExpr.getRightOperand().following() = SmallSet.<CFGNode>singleton(this);
 
 	// OrLogicalExpr
 	// OrLogicalExpr.first() is not needed (same equation as in superclass)
 	eq OrLogicalExpr.getLeftOperand().followingWhenTrue() = followingWhenTrue();
 	eq OrLogicalExpr.getLeftOperand().followingWhenFalse() 
-		= singleNode(getRightOperand().first());     
+		= SmallSet.<CFGNode>singleton(getRightOperand().first());     
 	eq OrLogicalExpr.getLeftOperand().following() 
 		= getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-	eq OrLogicalExpr.getRightOperand().following() = singleNode(this);
+	eq OrLogicalExpr.getRightOperand().following() = SmallSet.<CFGNode>singleton(this);
 
 	// equations for followingWhenTrue() and followingWhenFalse() for other nodes
 	// Unary
-	eq Unary.getOperand().followingWhenTrue() = singleNode(this);
-	eq Unary.getOperand().followingWhenFalse() = singleNode(this);
+	eq Unary.getOperand().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq Unary.getOperand().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// AssignExpr
-	eq AssignExpr.getSource().followingWhenTrue() = singleNode(this);
-	eq AssignExpr.getSource().followingWhenFalse() = singleNode(this);
+	eq AssignExpr.getSource().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq AssignExpr.getSource().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// InstanceOfExpr
-	eq InstanceOfExpr.getExpr().followingWhenTrue() = singleNode(this);
-	eq InstanceOfExpr.getExpr().followingWhenFalse() = singleNode(this);
+	eq InstanceOfExpr.getExpr().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq InstanceOfExpr.getExpr().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// CastExpr
-	eq CastExpr.getExpr().followingWhenTrue() = singleNode(this);
-	eq CastExpr.getExpr().followingWhenFalse() = singleNode(this);
+	eq CastExpr.getExpr().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq CastExpr.getExpr().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// ParExpr 
-	eq ParExpr.getExpr().followingWhenTrue() = singleNode(this);
-	eq ParExpr.getExpr().followingWhenFalse() = singleNode(this);
+	eq ParExpr.getExpr().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq ParExpr.getExpr().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// MethodAccess
 	eq MethodAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
@@ -357,31 +376,31 @@ aspect ControlFlowGraph {
 
 	// ConditionalExpr (special)
 	eq ConditionalExpr.first() = getCondition().first();
-	eq ConditionalExpr.getCondition().followingWhenTrue() = singleNode(getTrueExpr().first());
-	eq ConditionalExpr.getCondition().followingWhenFalse() = singleNode(getFalseExpr().first());		
+	eq ConditionalExpr.getCondition().followingWhenTrue() = SmallSet.<CFGNode>singleton(getTrueExpr().first());
+	eq ConditionalExpr.getCondition().followingWhenFalse() = SmallSet.<CFGNode>singleton(getFalseExpr().first());		
 	eq ConditionalExpr.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());	
-	eq ConditionalExpr.getTrueExpr().following() = singleNode(this);
-	eq ConditionalExpr.getFalseExpr().following() = singleNode(this);
+	eq ConditionalExpr.getTrueExpr().following() = SmallSet.<CFGNode>singleton(this);
+	eq ConditionalExpr.getFalseExpr().following() = SmallSet.<CFGNode>singleton(this);
 
-	eq ConditionalExpr.getTrueExpr().followingWhenTrue() = singleNode(this);
-	eq ConditionalExpr.getTrueExpr().followingWhenFalse() = singleNode(this);
-	eq ConditionalExpr.getFalseExpr().followingWhenTrue() = singleNode(this);
-	eq ConditionalExpr.getFalseExpr().followingWhenFalse() = singleNode(this);
+	eq ConditionalExpr.getTrueExpr().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq ConditionalExpr.getTrueExpr().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
+	eq ConditionalExpr.getFalseExpr().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
+	eq ConditionalExpr.getFalseExpr().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
 	// *** Statements ***  
      
 	// Block
 	// If a block is empty the successor is the node given by following()
 	// or the first node amongst its child nodes. 
-	eq Block.succ() = getNumStmt() == 0 ? following() : singleNode(getStmt(0));
+	eq Block.succ() = getNumStmt() == 0 ? following() : SmallSet.<CFGNode>singleton(getStmt(0));
 	eq Block.getStmt(int i).following() 
-		= i + 1 < getNumStmt() ? singleNode(getStmt(i + 1)) : following();   
+		= i + 1 < getNumStmt() ? SmallSet.<CFGNode>singleton(getStmt(i + 1)) : following();   
 
 	// IfStmt
-	eq IfStmt.succ() = singleNode(getCondition().first());
-	eq IfStmt.getCondition().followingWhenTrue() = singleNode(getThen());
+	eq IfStmt.succ() = SmallSet.<CFGNode>singleton(getCondition().first());
+	eq IfStmt.getCondition().followingWhenTrue() = SmallSet.<CFGNode>singleton(getThen());
 	eq IfStmt.getCondition().followingWhenFalse() 
-		= hasElse() ? singleNode(getElse()) : following();
+		= hasElse() ? SmallSet.<CFGNode>singleton(getElse()) : following();
 	eq IfStmt.getCondition().following() 
 		= getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());
 	eq IfStmt.getThen().following() = following();
@@ -389,11 +408,11 @@ aspect ControlFlowGraph {
 
 
 	// SwitchStmt
-	eq SwitchStmt.succ() = singleNode(getExpr().first());
+	eq SwitchStmt.succ() = SmallSet.<CFGNode>singleton(getExpr().first());
 	// ConstCase & DefaultCase are handled in Block.getStmt(int i).following()	
 	eq SwitchStmt.getExpr().following() {
 		Block b = getBlock();
-		SmallSet<ASTNode> set = SmallSet.empty(); 
+		SmallSet<CFGNode> set = SmallSet.empty(); 
 		// b should _not_ be in "set"; this helps catch malformed switch statements
 		boolean hasDefault = false;
 		for(int i = 0; i < b.getNumStmt(); i++)
@@ -410,35 +429,35 @@ aspect ControlFlowGraph {
 	eq SwitchStmt.getBlock().following() = following();
 
 	// ConstCase
-	eq ConstCase.succ() = singleNode(getValue().first());
+	eq ConstCase.succ() = SmallSet.<CFGNode>singleton(getValue().first());
 	eq ConstCase.getValue().following() = following();
 
 	// WhileStmt
-	eq WhileStmt.succ() = singleNode(getCondition().first());
-	eq WhileStmt.getCondition().followingWhenTrue() = singleNode(getStmt());
+	eq WhileStmt.succ() = SmallSet.<CFGNode>singleton(getCondition().first());
+	eq WhileStmt.getCondition().followingWhenTrue() = SmallSet.<CFGNode>singleton(getStmt());
 	eq WhileStmt.getCondition().followingWhenFalse() = following();
 	eq WhileStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
-	eq WhileStmt.getStmt().following() = singleNode(getCondition().first());
+	eq WhileStmt.getStmt().following() = SmallSet.<CFGNode>singleton(getCondition().first());
 
 	// DoStmt
-	eq DoStmt.succ() = singleNode(getStmt());
-	eq DoStmt.getStmt().following() = singleNode(getCondition().first());
-	eq DoStmt.getCondition().followingWhenTrue() = singleNode(getStmt());
+	eq DoStmt.succ() = SmallSet.<CFGNode>singleton(getStmt());
+	eq DoStmt.getStmt().following() = SmallSet.<CFGNode>singleton(getCondition().first());
+	eq DoStmt.getCondition().followingWhenTrue() = SmallSet.<CFGNode>singleton(getStmt());
 	eq DoStmt.getCondition().followingWhenFalse() = following();
 	eq DoStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
 
 	// ForStmt
 	eq ForStmt.succ() 
-		= singleNode(getNumInitStmt() > 0 ? getInitStmt(0) : getCondition().first());
+		= SmallSet.<CFGNode>singleton(getNumInitStmt() > 0 ? getInitStmt(0) : getCondition().first());
 	eq ForStmt.getInitStmt(int i).following() 
-		= singleNode(i + 1 < getNumInitStmt() ? getInitStmt(i + 1) : getCondition().first());
-	eq ForStmt.getCondition().followingWhenTrue() = singleNode(getStmt());
+		= SmallSet.<CFGNode>singleton(i + 1 < getNumInitStmt() ? getInitStmt(i + 1) : getCondition().first());
+	eq ForStmt.getCondition().followingWhenTrue() = SmallSet.<CFGNode>singleton(getStmt());
 	eq ForStmt.getCondition().followingWhenFalse() = following();
 	eq ForStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
 	eq ForStmt.getStmt().following() 
-		= singleNode(getNumUpdateStmt() > 0 ? getUpdateStmt(0) : getCondition().first()); 		
+		= SmallSet.<CFGNode>singleton(getNumUpdateStmt() > 0 ? getUpdateStmt(0) : getCondition().first()); 		
 	eq ForStmt.getUpdateStmt(int i).following() 
-	    = singleNode(i + 1 < getNumUpdateStmt() ? getUpdateStmt(i + 1) : getCondition().first());
+	    = SmallSet.<CFGNode>singleton(i + 1 < getNumUpdateStmt() ? getUpdateStmt(i + 1) : getCondition().first());
 
 	// enhanced for loop: first, the expression is evaluated (only once!);
 	//                    then, we go to the variable declaration (to express
@@ -446,28 +465,28 @@ aspect ControlFlowGraph {
 	//                    go to the statement following the loop (iterator is
 	//                    done), or to the body statement; after finishing
 	//                    the body statement, we go back to the declaration
-	eq EnhancedForStmt.succ() = singleNode(getExpr().first());
-	eq EnhancedForStmt.getExpr().following() = singleNode(getVariableDeclaration());
+	eq EnhancedForStmt.succ() = SmallSet.<CFGNode>singleton(getExpr().first());
+	eq EnhancedForStmt.getExpr().following() = SmallSet.<CFGNode>singleton(getVariableDeclaration());
 	eq EnhancedForStmt.getVariableDeclaration().following() = following().union(getStmt());
-	eq EnhancedForStmt.getStmt().following() = singleNode(getVariableDeclaration());
+	eq EnhancedForStmt.getStmt().following() = SmallSet.<CFGNode>singleton(getVariableDeclaration());
 
 	// EnumConstant: Inherits from FieldDeclaration but adds additional Expr node children (arguments)
 
 	// ExprStmt
-	eq ExprStmt.succ() = singleNode(getExpr().first());
+	eq ExprStmt.succ() = SmallSet.<CFGNode>singleton(getExpr().first());
 	eq ExprStmt.getExpr().following() = following();
 
 	// LabeledStmt
-	eq LabeledStmt.succ() = singleNode(getStmt());
+	eq LabeledStmt.succ() = SmallSet.<CFGNode>singleton(getStmt());
 	eq LabeledStmt.getStmt().following() = following();
 
 	// SynchronizedStmt
-	eq SynchronizedStmt.succ() = singleNode(getExpr().first());
-	eq SynchronizedStmt.getExpr().following() = singleNode(getBlock());
+	eq SynchronizedStmt.succ() = SmallSet.<CFGNode>singleton(getExpr().first());
+	eq SynchronizedStmt.getExpr().following() = SmallSet.<CFGNode>singleton(getBlock());
 	eq SynchronizedStmt.getBlock().following() = following();
 
 	// AssertStmt: note that an assertion failure is just an exception
-	eq AssertStmt.succ() = singleNode(getfirst().first());
+	eq AssertStmt.succ() = SmallSet.<CFGNode>singleton(getfirst().first());
 	
 	eq AssertStmt.getfirst().followingWhenTrue() = following();
 	eq AssertStmt.getfirst().followingWhenFalse() 
@@ -480,14 +499,14 @@ aspect ControlFlowGraph {
 	eq AssertStmt.getExpr().followingWhenFalse() = getExpr().following();
 
 	// LocalClassDeclStmt
-	eq LocalClassDeclStmt.succ() = singleNode(getClassDecl());
-	eq LocalClassDeclStmt.getClassDecl().following() = following();
+	//eq LocalClassDeclStmt.succ() = SmallSet.<CFGNode>singleton(getClassDecl());
+	//eq LocalClassDeclStmt.getClassDecl().following() = following();
 
 	// EmptyStmt -- no need handling
 
 	// VariableDeclaration
 	eq VariableDeclaration.succ() 
-		= hasInit() ? singleNode(getInit().first()) : following();
+		= hasInit() ? SmallSet.<CFGNode>singleton(getInit().first()) : following();
 		
 	eq VariableDeclaration.getInit().following() = following();	
 	eq VariableDeclaration.getInit().followingWhenTrue() = following();
@@ -503,30 +522,30 @@ aspect ControlFlowGraph {
 
 	// Either pass through the first enclosing finally block
 	// or take the exit block
-	eq ReturnStmt.succ() = hasResult() ? singleNode(getResult().first()) : returnTarget();  	    
+	eq ReturnStmt.succ() = hasResult() ? SmallSet.<CFGNode>singleton(getResult().first()) : returnTarget();  	    
 	eq ReturnStmt.getResult().following() = returnTarget();
 	eq ReturnStmt.getResult().followingWhenTrue() = returnTarget();
 	eq ReturnStmt.getResult().followingWhenFalse() = returnTarget();
 
 	// Search for catch-finally .. catch-finally. 
 	// When no enclosing try-catch-finally take the exit block
-	eq ThrowStmt.succ() = singleNode(getExpr().first());
+	eq ThrowStmt.succ() = SmallSet.<CFGNode>singleton(getExpr().first());
 	eq ThrowStmt.getExpr().following() = throwTarget(getExpr().type());
 
 	// TryStmt
-	eq TryStmt.succ() = singleNode(getBlock());  
-	eq TryStmt.getBlock().following() = hasFinally() ? singleNode(getFinally()) : following();
-	eq TryStmt.getCatchClause(int index).following() = hasFinally() ? singleNode(getFinally()) : following();
-	eq CatchClause.getParameter().following() = singleNode(getBlock());
+	eq TryStmt.succ() = SmallSet.<CFGNode>singleton(getBlock());  
+	eq TryStmt.getBlock().following() = hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : following();
+	eq TryStmt.getCatchClause(int index).following() = hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : following();
+	eq CatchClause.getParameter().following() = SmallSet.<CFGNode>singleton(getBlock());
 
 	// delete unnecessary edge for catch clause
 	eq ParameterDeclaration.getTypeAccess().following() = SmallSet.empty();
 
 	eq TryStmt.getFinally().following() { 
-		SmallSet<ASTNode> branches = collectBranches(); // all the branches accumulated at the end of Finally()
-		SmallSet<ASTNode> succ = SmallSet.empty();
+		SmallSet<CFGNode> branches = collectBranches(); // all the branches accumulated at the end of Finally()
+		SmallSet<CFGNode> succ = SmallSet.empty();
 
-		for(ASTNode branch : branches) {
+		for(CFGNode branch : branches) {
 			// TODO: this is very ugly
 			if(branch instanceof EmptyStmt) // can complete normally
 				succ = succ.union(following());
@@ -544,24 +563,24 @@ aspect ControlFlowGraph {
 	}
 	
 	// Propagate upwards
-	syn SmallSet<ASTNode> ASTNode.collectBranches() {
-		SmallSet<ASTNode> collectBranches = SmallSet.empty();
+	syn SmallSet<CFGNode> ASTNode.collectBranches() {
+		SmallSet<CFGNode> collectBranches = SmallSet.empty();
 		for(int i = 0; i < getNumChild(); i++)
 			collectBranches = collectBranches.union(getChild(i).collectBranches());
 		return collectBranches;
 	}
 
-	eq ThrowStmt.collectBranches() = singleNode(this);
-	eq BreakStmt.collectBranches() = singleNode(this);
-	eq ContinueStmt.collectBranches() = singleNode(this);
-	eq ReturnStmt.collectBranches() = singleNode(this);
+	eq ThrowStmt.collectBranches() = SmallSet.<CFGNode>singleton(this);
+	eq BreakStmt.collectBranches() = SmallSet.<CFGNode>singleton(this);
+	eq ContinueStmt.collectBranches() = SmallSet.<CFGNode>singleton(this);
+	eq ReturnStmt.collectBranches() = SmallSet.<CFGNode>singleton(this);
 
 	eq BranchTargetStmt.collectBranches() {
-		SmallSet<ASTNode> branches = super.collectBranches();
-		SmallSet<ASTNode> targetSet = SmallSet.empty();
+		SmallSet<CFGNode> branches = super.collectBranches();
+		SmallSet<CFGNode> targetSet = SmallSet.empty();
 		//delete 'target' BreakStmt/ContinueStmt in BranchTargetStmt
 		//suppose: try{ while{break;} } finally{}
-		for(ASTNode branch : branches) {
+		for(CFGNode branch : branches) {
 			if(branch instanceof BreakStmt && this == ((BreakStmt)branch).targetStmt())
 				continue;
 			else if(branch instanceof ContinueStmt && this == ((ContinueStmt)branch).targetStmt())
@@ -574,14 +593,14 @@ aspect ControlFlowGraph {
 
 	eq TryStmt.collectBranches() {
 		// Try
-		SmallSet<ASTNode> branchesInTry = getBlock().collectBranches(); //add try
+		SmallSet<CFGNode> branchesInTry = getBlock().collectBranches(); //add try
 		EmptyStmt emptyStmt = new EmptyStmt();
 		if(getBlock().canCompleteNormally())
 			branchesInTry = branchesInTry.union(emptyStmt); //try_normally
 
 		// Catch
-		SmallSet<ASTNode> remainingBranches = SmallSet.empty();
-		for(ASTNode branch : branchesInTry) {
+		SmallSet<CFGNode> remainingBranches = SmallSet.empty();
+		for(CFGNode branch : branchesInTry) {
 			if(branch instanceof ThrowStmt) {
 				ThrowStmt throwStmt = (ThrowStmt)branch;
 				boolean caught = false;
@@ -604,11 +623,11 @@ aspect ControlFlowGraph {
 		if(!hasFinally()) return remainingBranches;
 
 		// hasFinally
-		SmallSet<ASTNode> branchesInFinally = SmallSet.empty();
-		SmallSet<ASTNode> branchesInAll = SmallSet.empty();
+		SmallSet<CFGNode> branchesInFinally = SmallSet.empty();
+		SmallSet<CFGNode> branchesInAll = SmallSet.empty();
 
 		// Ensure that branchesInFinally does not contain EmptyStmt
-		for(ASTNode branch : getFinally().collectBranches())
+		for(CFGNode branch : getFinally().collectBranches())
 			if(!(branch instanceof EmptyStmt))
 				branchesInFinally = branchesInFinally.union(branch);
 
@@ -626,12 +645,12 @@ aspect ControlFlowGraph {
 	}
 
 	// targets for branching statements
-	inh SmallSet<ASTNode> Stmt.breakTarget(BreakStmt stmt);
-	inh SmallSet<ASTNode> Stmt.continueTarget(ContinueStmt stmt);
-	inh SmallSet<ASTNode> Stmt.returnTarget();
-	inh SmallSet<ASTNode> Stmt.throwTarget(TypeDecl exn);
-	inh lazy SmallSet<ASTNode> Expr.uncheckedExnTarget();        // target for throwing an unchecked exception
-	inh lazy SmallSet<ASTNode> Stmt.uncheckedExnTarget();
+	inh SmallSet<CFGNode> Stmt.breakTarget(BreakStmt stmt);
+	inh SmallSet<CFGNode> Stmt.continueTarget(ContinueStmt stmt);
+	inh SmallSet<CFGNode> Stmt.returnTarget();
+	inh SmallSet<CFGNode> Stmt.throwTarget(TypeDecl exn);
+	inh lazy SmallSet<CFGNode> Expr.uncheckedExnTarget();        // target for throwing an unchecked exception
+	inh lazy SmallSet<CFGNode> Stmt.uncheckedExnTarget();
 
 	// default values
 	eq Program.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
@@ -651,36 +670,36 @@ aspect ControlFlowGraph {
 	eq BranchTargetStmt.getChild().breakTarget(BreakStmt stmt) 
 		= this.targetOf(stmt) ? following() : breakTarget(stmt);
 	eq BranchTargetStmt.getChild().continueTarget(ContinueStmt stmt)
-		= this.targetOf(stmt) ? singleNode(targetForContinue()) : continueTarget(stmt);
+		= this.targetOf(stmt) ? SmallSet.<CFGNode>singleton(targetForContinue()) : continueTarget(stmt);
 
 	// body declarations are a barrier	
 	eq BodyDecl.getChild().breakTarget(BreakStmt stmt) = SmallSet.empty();
 	eq BodyDecl.getChild().continueTarget(ContinueStmt stmt) = SmallSet.empty();
-	eq BodyDecl.getChild().returnTarget() = singleNode(exit());
-	eq BodyDecl.getChild().throwTarget(TypeDecl exn) = singleNode(exit());
-	eq BodyDecl.getChild().uncheckedExnTarget() = singleNode(exit());
+	eq BodyDecl.getChild().returnTarget() = SmallSet.<CFGNode>singleton(exit());
+	eq BodyDecl.getChild().throwTarget(TypeDecl exn) = SmallSet.<CFGNode>singleton(exit());
+	eq BodyDecl.getChild().uncheckedExnTarget() = SmallSet.<CFGNode>singleton(exit());
 	
 	// for method declarations, we can be a bit more precise
 	eq MethodDecl.getChild().throwTarget(TypeDecl exn) {
 		// this selects (somewhat arbitrarily) the left-most matching exception type
 		for(Access acc : getExceptions())
 			if(exn.instanceOf(acc.type()))
-				return singleNode(acc);
+				return SmallSet.<CFGNode>singleton(acc);
 		if(exn.isCheckedException())	// JastAddJ's definition of checked/unchecked is confused...
-			return singleNode(uncheckedExceptionExit());
+			return SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 		return SmallSet.empty();
 	}
-	eq MethodDecl.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+	eq MethodDecl.getChild().uncheckedExnTarget() = SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 	
 	// same for constructor declarations
 	eq ConstructorDecl.getChild().throwTarget(TypeDecl exn) {
 		// this selects (somewhat arbitrarily) the left-most matching exception type
 		for(Access acc : getExceptions())
 			if(exn.instanceOf(acc.type()))
-				return singleNode(acc);
+				return SmallSet.<CFGNode>singleton(acc);
 		return SmallSet.empty();
 	}
-	eq ConstructorDecl.getChild().uncheckedExnTarget() = singleNode(uncheckedExceptionExit());
+	eq ConstructorDecl.getChild().uncheckedExnTarget() = SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 	
 	// artificial node to represent throws of uncaught exceptions
 	private final ExitStmt MethodDecl.uncheckedExceptionExit = new ExitStmt();
@@ -690,22 +709,22 @@ aspect ControlFlowGraph {
 
 	// try statements and finally blocks
 	eq TryStmt.getBlock().breakTarget(BreakStmt stmt) 
-		= hasFinally() ? singleNode(getFinally()) : breakTarget(stmt);
+		= hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : breakTarget(stmt);
 	eq TryStmt.getBlock().continueTarget(ContinueStmt stmt) 
-		= hasFinally() ? singleNode(getFinally()) : continueTarget(stmt);
+		= hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : continueTarget(stmt);
 	eq TryStmt.getBlock().returnTarget() 
-		= hasFinally() ? singleNode(getFinally()) : returnTarget();
+		= hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : returnTarget();
 	eq TryStmt.getBlock().throwTarget(TypeDecl exn) {
 		for(int i = 0; i < getNumCatchClause(); i++) 
 			if(getCatchClause(i).handles(exn))
-				return singleNode(getCatchClause(i).getParameter());
-		return hasFinally() ? singleNode(getFinally()) : throwTarget(exn);
+				return SmallSet.<CFGNode>singleton(getCatchClause(i).getParameter());
+		return hasFinally() ? SmallSet.<CFGNode>singleton(getFinally()) : throwTarget(exn);
 	}
 	
 	// all catch clauses that handle some unchecked exception are a possible target
 	// if there is a catch clause that can handle all unchecked exceptions, we stop
 	eq TryStmt.getBlock().uncheckedExnTarget() {
-		SmallSet<ASTNode> res = SmallSet.empty();
+		SmallSet<CFGNode> res = SmallSet.empty();
 		for(CatchClause clause : getCatchClauses()) {
 			if(clause.handlesAllUncheckedExceptions())
 				return res.union(clause.getParameter());
@@ -730,7 +749,7 @@ aspect ControlFlowGraph {
 			|| getParameter().type().instanceOf(typeError());
 
 	// different statements have different targets for continue
-	syn ASTNode Stmt.targetForContinue() = this;
+	syn CFGNode Stmt.targetForContinue() = this;
 	eq WhileStmt.targetForContinue() = getCondition().first();
 	eq DoStmt.targetForContinue() = getCondition().first();
 	eq ForStmt.targetForContinue() 
@@ -739,9 +758,9 @@ aspect ControlFlowGraph {
 	eq LabeledStmt.targetForContinue() = getStmt().targetForContinue();
 	
 	// convenience attributes: finding the preceding/succeeding statement
-	syn SmallSet<Stmt> ASTNode.succStmt() {
+	syn SmallSet<Stmt> CFGNode.succStmt() {
 		SmallSet<Stmt> res = new SmallSet<Stmt>();
-		for(ASTNode n : succ()) {
+		for(CFGNode n : succ()) {
 			if(n instanceof Stmt)
 				res = res.union((Stmt)n);
 			else
@@ -750,9 +769,9 @@ aspect ControlFlowGraph {
 		return res;
 	}
 	
-	syn SmallSet<Stmt> ASTNode.predStmt() {
+	syn SmallSet<Stmt> CFGNode.predStmt() {
 		SmallSet<Stmt> res = new SmallSet<Stmt>();
-		for(ASTNode n : pred()) {
+		for(CFGNode n : pred()) {
 			if(n instanceof Stmt)
 				res = res.union((Stmt)n);
 			else
