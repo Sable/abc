@@ -53,15 +53,29 @@ aspect DataFlow {
 	
 	// conservative approximation of data flow for method accesses
 	MethodDecl implements Location;
-	eq MethodAccess.getLocation() = decl();
+	eq MethodAccess.getLocation() = decl().isConstantMethod() ? null : decl();
 	public boolean MethodDecl.isHeapLocation() { return true; }
 	
+	/* currently very crude: checks whether the method body is 'return c;' for a constant c */
+	syn lazy boolean MethodDecl.isConstantMethod() {
+		if(!isStatic() && !isPrivate() || !hasBlock())
+			return false;
+		Block body = getBlock();
+		if(body.getNumStmt() != 1)
+			return false;
+		if(!(body.getStmt(0) instanceof ReturnStmt))
+			return false;
+		ReturnStmt ret = (ReturnStmt)body.getStmt(0);
+		return !ret.hasResult() || ret.getResult().isConstant() || ret.getResult() instanceof NullLiteral;
+	}
+	
 	refine Alias public boolean Variable.mayAlias(Location l) {
-		return l instanceof MethodDecl && (this.isClassVariable() || this.isInstanceVariable())
-		    || refined(l);
+		return l instanceof MethodDecl && this.isField() || refined(l);
 	}
 	
 	refine Alias eq ArrayAccess.mayReferTo(Location l) = l instanceof MethodDecl || refined(l);
+	
+	refine Alias eq MethodAccess.mayDefine(Location l) = !decl().isConstantMethod() && refined(l);
 	
 	public void ASTNode.unlockDataFlow() { }
 	

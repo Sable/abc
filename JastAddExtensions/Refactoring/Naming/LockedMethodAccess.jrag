@@ -102,7 +102,7 @@ aspect LockedMethodAccess {
 		if(decl().sameSourceDeclAs(target)) {
 			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource()) {
-			if(inStaticContext() && !target.isStatic())
+			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
 				throw new RefactoringException("cannot access instance method in static context");
 			MethodAccessInfo acc = accessMethod(target);
 			if(acc == null) {

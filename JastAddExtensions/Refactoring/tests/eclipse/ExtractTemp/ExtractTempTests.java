@@ -88,7 +88,7 @@ public class ExtractTempTests extends TestCase {
 		return fileName + getSimpleTestFileName(canExtract, input);
 	}
 
-	private Expr findExpr(ASTNode p, int startLine, int startColumn, int endLine, int endColumn) {
+	public static Expr findExpr(ASTNode p, int startLine, int startColumn, int endLine, int endColumn) {
 		if(p == null)
 			return null;
 		if(p instanceof Expr) {

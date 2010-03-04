@@ -68,6 +68,18 @@ aspect LockedTypeAccess {
 		return acc;
 	}
 	
+	public Access WildcardType.createLockedAccess() {
+		return new Wildcard();
+	}
+	
+	public Access WildcardExtendsType.createLockedAccess() {
+		return new WildcardExtends(extendsType().createLockedAccess());
+	}
+	
+	public Access WildcardSuperType.createLockedAccess() {
+		return new WildcardSuper(superType().createLockedAccess());
+	}
+	
 	public ASTNode TypeAccess.lockNames(Collection<String> endangered) {
 		if(!isLocked() &&
 				(endangered.contains(name()) || endangered.contains(getTopLevelPackage())))
@@ -109,6 +121,7 @@ aspect LockedTypeAccess {
 	
 	public ASTNode Access.lock() { return this; }
 	public ASTNode TypeAccess.lock() { return lock(decl());	}
+	public ASTNode AbstractWildcard.lock() { return this; }
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != null && !decl.isUnknown();
 		targetType = decl;

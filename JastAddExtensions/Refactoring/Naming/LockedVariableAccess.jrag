@@ -58,6 +58,8 @@ aspect LockedVariableAccess {
 		if(decl().sameSourceDeclAs(target)) {
 			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource() && !(target instanceof LocalVariable)) {
+			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
+				throw new RefactoringException("cannot access instance method in static context");
 			VariableAccessInfo acc = accessVariable(target);
 			if(acc == null) {
 				if((qual == null || qual.isPure()) && target.isStatic()) {

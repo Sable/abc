@@ -5,8 +5,10 @@ aspect ExtractConstant {
 		lockAllNames();
 		lockDataFlow();
 		Opt<Expr> fd_init = new Opt<Expr>();
-		FieldDeclaration fd = new FieldDeclaration(new Modifiers("private", "static", "final"), effectiveType().createLockedAccess(), name, fd_init);
-		hostType().insertField(fd);
+		Modifiers mods = new Modifiers("static", "final");
+		mods.addModifier(hostType().isInterfaceDecl() ? "public" : "private");
+		FieldDeclaration fd = new FieldDeclaration(mods, effectiveType().createLockedAccess(), name, fd_init);
+		hostType().insertField(fd, hostBodyDecl());
 		replaceWith(fd.createLockedAccess());
 		fd_init.setChild(this, 0);
 		fd.hostType().flushCaches();
