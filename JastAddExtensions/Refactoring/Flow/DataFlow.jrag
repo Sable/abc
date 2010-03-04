@@ -8,21 +8,53 @@ aspect DataFlow {
 	protected SmallSet<Access> Access.lockedReachedUses = null;
 	protected SmallSet<Definition> Access.lockedWriteDeps = null;
 	
-	public void Access.lockDataFlow() {
+	public void Access.lockReachingDefsAndUses() {
 		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
 		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
+	}
+	
+	public void Access.lockWriteDeps() {
 		if(lockedWriteDeps == null)
-			// we actually don't need to lock write dependences for local variables
-			// (since for them we can see every write), but that is not implemented at the moment
 			lockedWriteDeps = writeDeps();
+	}
+	
+	public void ArrayAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
+		lockWriteDeps();
+		super.lockDataFlow();
+	}
+	
+	public void ClassInstanceExpr.lockDataFlow() {
+		lockReachingDefsAndUses();
+		lockWriteDeps();
+		super.lockDataFlow();
+	}
+	
+	public void ConstructorAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
+		lockWriteDeps();
+		super.lockDataFlow();
+	}
+	
+	public void MethodAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
+		lockWriteDeps();
+		super.lockDataFlow();
+	}
+	
+	public void VarAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
+		if(decl().isField())
+			lockWriteDeps();
 		super.lockDataFlow();
 	}
 	
 	// conservative approximation of data flow for method accesses
 	MethodDecl implements Location;
 	eq MethodAccess.getLocation() = decl();
+	public boolean MethodDecl.isHeapLocation() { return true; }
 	
 	refine Alias public boolean Variable.mayAlias(Location l) {
 		return l instanceof MethodDecl && (this.isClassVariable() || this.isInstanceVariable())

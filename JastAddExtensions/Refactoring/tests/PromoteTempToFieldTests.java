@@ -166,4 +166,20 @@ public class PromoteTempToFieldTests extends TestCase {
     public void test10() {
     	testFail(Program.fromBodyDecls("<T> void k(T t) { T x = null; }"));
     }
+
+    public void test11() {
+    	testSucc(
+       	    Program.fromBodyDecls(
+       	    "static int m() {" +
+       	    "  int x = 23;" +
+       	    "  return x;" +
+       	    "}"),
+       	    Program.fromBodyDecls(
+       		"private static int x;" +
+       		"static int m() {" +
+       		"  x = 23;" +
+       		"  return x;" +
+       		"}"));    	
+    }
+    
 }

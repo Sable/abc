@@ -1,16 +1,22 @@
 aspect ExtractTemp {
 	public VariableDeclaration Expr.extractTemp(String name, boolean makeFinal) {
-		TypeDecl type = type();
-		if(type.isAnonymous())
-			type = ((AnonymousDecl)type).superType();
-		else if(isInaccessibleTypeVariable(type))
-			type = ((TypeVariable)type).uniqueUpperBound();
+		TypeDecl type = effectiveType();
 		return insertUnusedLocal(new VariableDeclaration(type.createLockedAccess(), name)).
 			   extractAssignment(this).merge().makeFinal(makeFinal);
 	}
 	
 	public VariableDeclaration Expr.extractTemp(String name) {
 		return extractTemp(name, false);
+	}
+	
+	// the effective type of an expression is a best-effort approximation to the type of an expression
+	syn TypeDecl Expr.effectiveType() {
+		TypeDecl type = type();
+		if(type.isAnonymous())
+			return ((AnonymousDecl)type).superType();
+		else if(isInaccessibleTypeVariable(type))
+			return ((TypeVariable)type).uniqueUpperBound();
+		return type;
 	}
 	
 	// JastAddJ represents type variable captures as bound accesses to type variables of the generic type

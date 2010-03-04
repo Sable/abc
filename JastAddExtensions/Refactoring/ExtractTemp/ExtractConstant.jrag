@@ -1,0 +1,20 @@
+aspect ExtractConstant {
+	public void Expr.extractConstant(String name) {
+		if(inextractible())
+			throw new RefactoringException("not extractible");
+		lockAllNames();
+		lockDataFlow();
+		Opt<Expr> fd_init = new Opt<Expr>();
+		FieldDeclaration fd = new FieldDeclaration(new Modifiers("private", "static", "final"), effectiveType().createLockedAccess(), name, fd_init);
+		hostType().insertField(fd);
+		replaceWith(fd.createLockedAccess());
+		fd_init.setChild(this, 0);
+		fd.hostType().flushCaches();
+	}
+	
+	public void Expr.doExtractConstant(String name) {
+		Program root = programRoot();
+		extractConstant(name);
+		root.eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
+	}
+}

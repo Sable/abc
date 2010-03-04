@@ -1,7 +1,12 @@
 aspect PromoteTempToField {
+	inh boolean VariableDeclaration.inStaticContext();
+	
 	public void VariableDeclaration.promoteToField() {
 		split();
-		FieldDeclaration fd = new FieldDeclaration(new Modifiers("private"), type().createLockedAccess(), name(), new Opt<Expr>());
+		Modifiers mods = new Modifiers("private");
+		if(inStaticContext())
+			mods.addModifier("static");
+		FieldDeclaration fd = new FieldDeclaration(mods, type().createLockedAccess(), name(), new Opt<Expr>());
 		hostType().insertField(fd);
 		for(VarAccess va : uses()) {
 			va.lock(fd);

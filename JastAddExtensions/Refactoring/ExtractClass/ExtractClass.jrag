@@ -9,14 +9,14 @@ aspect ExtractClass {
 	}
 		
 	public void ClassDecl.extractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
+		for(FieldDeclaration fd : fds)
+			fd.lockDataFlow();
 		int maxvis = maxVisibility(fds);
 		Modifiers struct_mods = new Modifiers("static");
 		struct_mods.setVisibility(toplevel ? VIS_PUBLIC : maxvis);
 		ClassDecl struct = new ClassDecl(struct_mods, newClassName, new Opt<Access>(), new List<Access>(), new List<BodyDecl>());
 		MemberTypeDecl mtd = insertUnusedType(struct);
 		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct.createLockedAccess(), newFieldName);
-		for(FieldDeclaration fd : fds)
-			fd.lockDataFlow();
 		for(FieldDeclaration fd : fds) {
 			if (fd.getModifiers().isStatic())
 				throw new RefactoringException("cannot extract this field");
