@@ -24,6 +24,7 @@ public class AllTests {
 		suite.addTestSuite(ExtractClassTests.class);
 		suite.addTestSuite(PromoteTempToFieldTests.class);
 		suite.addTestSuite(ExtractConstantTests.class);
+		suite.addTestSuite(InlineConstantTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
@@ -36,6 +37,8 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.IntroduceIndirection.IntroduceIndirectionTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractClass.ExtractClassTests.class);
 		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
+		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);
+		suite.addTestSuite(tests.eclipse.InlineConstant.InlineConstantTests.class);
 		//$JUnit-END$
 		return suite;
 	}

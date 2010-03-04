@@ -33,7 +33,7 @@ aspect PromoteTempToField {
 	public void TypeDecl.insertField(FieldDeclaration fd, BodyDecl before) {
 		if(!isClassDecl() && !isInterfaceDecl())
 			throw new RefactoringException("cannot insert field into this type");
-		if(fd.isStatic() && (isLocalClass() || isAnonymous()))
+		if(fd.getModifiers().isStatic() && (isLocalClass() || isAnonymous()))
 			throw new RefactoringException("cannot insert static field into this type");
 		SimpleSet res = localFields(fd.name());
 		if(!res.isEmpty() && !res.isSingleton(fd))

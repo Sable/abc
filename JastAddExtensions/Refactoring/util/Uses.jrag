@@ -2,6 +2,8 @@ aspect Uses {
 	// bind all uses of a variable to its declaration
 	public Collection<VarAccess> Variable.allUses() { return uses(); }
 	
+	public boolean Variable.isUsed() { return !allUses().isEmpty(); }
+	
 	coll Collection<VarAccess> FieldDeclaration.uses() [new HashSet<VarAccess>()] 
 	                           with add root Program;
 	VarAccess contributes
@@ -58,4 +60,24 @@ aspect Uses {
 	ContinueStmt contributes
 	this when targetStmt() instanceof LabeledStmt
 	to LabeledStmt.uses() for (LabeledStmt)targetStmt();
+
+	// field declarations can be used by static imports
+	public boolean FieldDeclaration.isUsed() {
+		return !uses().isEmpty() || isStatic() && !staticImports().isEmpty();
+	}
+
+	coll Collection<StaticImportDecl> FieldDeclaration.staticImports() [new HashSet<StaticImportDecl>()]
+	                                                                    with add root Program;
+	StaticImportDecl contributes this
+	to FieldDeclaration.staticImports() for each importedFields();
+	
+	public abstract SimpleSet StaticImportDecl.importedFields();
+	syn lazy SimpleSet SingleStaticImportDecl.importedFields() = removeInstanceVariables(type().memberFields(name()));
+	syn lazy SimpleSet StaticImportOnDemandDecl.importedFields() {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Object o : type().memberFieldsMap().values())
+			if(o instanceof FieldDeclaration && ((FieldDeclaration)o).isStatic())
+				res = res.add(o);
+		return res;
+	}
 }

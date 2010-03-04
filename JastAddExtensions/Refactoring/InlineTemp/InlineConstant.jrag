@@ -1,0 +1,30 @@
+aspect InlineConstant {
+	public void FieldDeclaration.inlineConstant(boolean remove) {
+		if(!hasInit())
+			throw new RefactoringException("no initialiser");
+		if(!isFinal())
+			throw new RefactoringException("not final");
+		for(VarAccess va : uses()) {
+			va.bundleQualifier();
+			if(va.isQualified() && !va.qualifier().isPure())
+				throw new RefactoringException("cannot discard impure qualifier");
+			ASTNode p = va;
+			if(va.isQualified())
+				p = p.getParent();
+			Expr init = getInit();
+			init.lockAllNames();
+			init.lockDataFlow();
+			setInit((Expr)getInit().fullCopy());
+			p.replaceWith(init);
+		}
+		programRoot().flushCaches();
+		if(remove && !isUsed() && getInit().isPure())
+			getParent().removeChild(getChildIndex());
+	}
+	
+	public void FieldDeclaration.doInlineConstant(boolean remove) {
+		Program root = programRoot();
+		inlineConstant(remove);
+		root.eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
+	}
+}
