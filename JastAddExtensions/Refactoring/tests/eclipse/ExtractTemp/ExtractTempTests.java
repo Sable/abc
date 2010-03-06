@@ -7,41 +7,9 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Max Schaefer	   - rewrite of driver code to work with this refactoring engine
+ *     Max Schaefer    - rewrite of driver code to work with JRRT
  *******************************************************************************/
 package tests.eclipse.ExtractTemp;
-
-/* Several test cases are currently disabled for the following reasons:
- *   - We do not implement clone detection, so only a single instance of an expression
- *     can be extracted (succeeding tests 5, 6, 8, 10, 11, 12, 17, 25, 26, 51, 53, 54,
- *     62, 63, 64, 95, 100; failing tests 27, 28; overall 20 tests).
- *     
- *     This feature would take some thought and effort to implement.
- *   - Sometimes we produce different, equally valid output (succeeding tests 12, 32, 
- *     39, 83, 85; overall 5 tests
- *   - Our dataflow analysis is quite conservative (succeeding tests 19, 23, 44, 45, 52, 
- *     70, 73, 78, 88, 92, 97, 98, 103; overall 13 tests).
- *     
- *     Note that Eclipse does not do systematic dataflow analysis. These test cases could
- *     be refactored with a slight extension of our analysis.
- *   - We do not support extracting expressions that form statements by themselves 
- *     (succeeding tests 40, 46, 47, 48, 77, 82, 89, 94, 101; overall 9 tests).
- *     
- *     This feature would be easy to support, but seems of questionable value.
- *   - We do not support selections that require associative regrouping 
- *     (succeeding tests 55, 56, 79; overall 3 tests).
- *     
- *     This feature would not be hard to support (we do something similar for AbstractDots
- *     already).
- *   - We can refactor an example on which Eclipse fails (failing test 19; overall 1 test).
- *   
- * So overall 51 tests (out of 133) are disabled.
- *
- * We currently fail two tests: test91 due to the way JastAddJ handles capture conversion,
- * and test99 due to a problem in type access construction (constructs access to raw type
- * instead of access to generic type).
- *
- * Furthermore, two tests result in errors (test86, test87) during rewriting. */
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
@@ -55,7 +23,6 @@ import AST.RefactoringException;
 
 public class ExtractTempTests extends TestCase {
 
-	private static final Class clazz= ExtractTempTests.class;
 	private static final String TEST_PATH_PREFIX = "tests/eclipse/ExtractTemp/";
 
 	public ExtractTempTests(String name) {
@@ -228,10 +195,9 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 17, 5, 22, true, false, "temp", "i");
 	}*/
 
-	// disabled: different output
-	/*public void test13() throws Exception{
+	public void test13() throws Exception{
 		helper1(7, 16, 7, 42, true, false, "temp", "iterator");
-	}*/
+	}
 
 	public void test14() throws Exception{
 		helper1(6, 15, 6, 20, false, false, "temp", "y2");
@@ -255,22 +221,19 @@ public class ExtractTempTests extends TestCase {
 		helper1(6, 20, 6, 25, true, false, "temp", "i");
 	}*/
 
-	// disabled: conservative dataflow
+	// disabled: clone detection
 	/*public void test19() throws Exception{
 		helper1(5, 20, 5, 23, true, false, "temp", "f");
 	}*/
-
 
 	public void test21() throws Exception{
 		helper1(5, 16, 5, 17, false, false, "temp", "f2");
 	}
 
-
 	// disabled: conservative dataflow
 	/*public void test23() throws Exception{
 		helper1(7, 17, 7, 20, false, false, "temp", "b");
 	}*/
-
 
 	// disabled: clone detection
 	/*public void test25() throws Exception{
@@ -302,10 +265,9 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 16, 5, 20, true, false, "temp", "j");
 	}
 
-	// disabled: different output
-	/*public void test32() throws Exception{
+	public void test32() throws Exception{
 		helper1(4, 16, 4, 22, true, false, "temp", "j");
-	}*/
+	}
 
 	public void test33() throws Exception{
 		helper1(4, 19, 4, 33, true, false, "temp", "object");
@@ -331,7 +293,7 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 28, 5, 32, true, false, "temp1", "temp2");
 	}
 
-	// disabled: different output
+	// disabled: clone detection
 	/*public void test39() throws Exception{
 		helper1(4, 14, 4, 26, true, false, "temp", "object");
 	}*/
@@ -353,15 +315,13 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 20, 5, 36, true, false, "temp", "fred");
 	}
 
-	// disabled: conservative dataflow
-	/*public void test44() throws Exception{
+	public void test44() throws Exception{
 		helper1(5, 20, 5, 28, true, false, "temp", "fred");
-	}*/
+	}
 
-	// disabled: conservative dataflow
-	/*public void test45() throws Exception{
+	public void test45() throws Exception{
 		helper1(4, 16, 4, 19, true, false, "temp", "f");
-	}*/
+	}
 
 	// disabled: lone expr
 	/*public void test46() throws Exception{
@@ -476,10 +436,9 @@ public class ExtractTempTests extends TestCase {
 		helper1(7, 28, 7, 42, true, true, "temp", "length");
 	}*/
 
-	// disabled: conservative dataflow
-	/*public void test71() throws Exception{
+	public void test71() throws Exception{
 		helper1(8, 24, 8, 34, true, false, "temp", "string");
-	}*/
+	}
 
 	public void test72() throws Exception{
 		helper1(8, 32, 8, 33, true, false, "temp", "i2");
@@ -507,7 +466,7 @@ public class ExtractTempTests extends TestCase {
 		helper1(10, 13, 10, 17, true, false, "temp", "f");
 	}*/
 
-	// disabled: conservative dataflow
+	// disabled: clone detection
 	/*public void test78() throws Exception {
 		helper1(5, 21, 5, 27, true, false, "o2", "o");
 	}*/
@@ -530,19 +489,17 @@ public class ExtractTempTests extends TestCase {
 		helper1(5, 1, 6, 1, true, false, "one", "integer");
 	}*/
 
-	// disabled: different output
-	/*public void test83() throws Exception{
+	public void test83() throws Exception{
 		helper1(7, 17, 7, 27, false, false, "temp", "test");
-	}*/
+	}
 
 	public void test84() throws Exception{
 		helper1(5, 16, 5, 17, false, false, "temp", "j");
 	}
 
-	// disabled: different output
-	/*public void test85() throws Exception{
+	public void test85() throws Exception{
 		helper1(11, 22, 11, 32, true, true, "temp", "test2");
-	}*/
+	}
 
 	public void test86() throws Exception{
 		helper1(15, 22, 15, 37, true, true, "name", "a");
@@ -552,10 +509,9 @@ public class ExtractTempTests extends TestCase {
 		helper1(16, 17, 16, 27, true, true, "a2", "a2");
 	}
 
-	// disabled: conservative dataflow
-	/*public void test88() throws Exception{
+	public void test88() throws Exception{
 		helper1(14, 14, 14, 19, true, false, "foo", "foo");
-	}*/
+	}
 
 	// disabled: lone expr
 	/*public void test89() throws Exception{
@@ -628,10 +584,9 @@ public class ExtractTempTests extends TestCase {
 		helper1(9, 24, 9, 29, true, false, "temp", "j");
 	}
 
-	// disabled: conservative dataflow
-	/*public void test103() throws Exception {
+	public void test103() throws Exception {
 		helper1(7, 21, 7, 33, true, false, "temp", "valueOf");
-	}*/
+	}
 
 
 	public void testZeroLengthSelection0() throws Exception {

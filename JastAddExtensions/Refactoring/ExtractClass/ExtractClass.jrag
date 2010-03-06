@@ -9,15 +9,15 @@ aspect ExtractClass {
 	}
 		
 	public void ClassDecl.extractClass(Collection<FieldDeclaration> fds, String newClassName, String newFieldName, boolean encapsulate, boolean toplevel) {
-		for(FieldDeclaration fd : fds)
-			fd.lockDataFlow();
 		int maxvis = maxVisibility(fds);
 		Modifiers struct_mods = new Modifiers("static");
 		struct_mods.setVisibility(toplevel ? VIS_PUBLIC : maxvis);
 		ClassDecl struct = new ClassDecl(struct_mods, newClassName, new Opt<Access>(), new List<Access>(), new List<BodyDecl>());
 		MemberTypeDecl mtd = insertUnusedType(struct);
-		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct.createLockedAccess(), newFieldName);
+		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct, newFieldName);
+		programRoot().flushCaches();
 		for(FieldDeclaration fd : fds) {
+			fd.lockDataFlow();
 			if (fd.getModifiers().isStatic())
 				throw new RefactoringException("cannot extract this field");
 			wrapField(fd, wrapperField, struct);
@@ -41,12 +41,12 @@ aspect ExtractClass {
 		return vis;
 	}
 	
-	public FieldDeclaration ClassDecl.createNewMemberField(int vis, Access typeAccess, String fieldName) {
+	public FieldDeclaration ClassDecl.createNewMemberField(int vis, TypeDecl type, String fieldName) {
 		programRoot().lockNames(fieldName);
-		Expr expr = new ClassInstanceExpr(typeAccess, new List(), new Opt());
+		Expr expr = new ClassInstanceExpr(type.createLockedAccess(), new List(), new Opt());
 		Modifiers mods = new Modifiers();
 		mods.setVisibility(vis);
-		FieldDeclaration fd = new FieldDeclaration(mods, typeAccess, fieldName, expr);
+		FieldDeclaration fd = new FieldDeclaration(mods, type.createLockedAccess(), fieldName, expr);
 		this.addMemberField(fd);
 		return fd;
 	}

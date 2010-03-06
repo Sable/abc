@@ -64,6 +64,12 @@ aspect AST {
 		}
 	}
 	
+	public void BodyDecl.flushCaches() {
+		entry.flushCaches();
+		exit.flushCaches();
+		super.flushCaches();
+	}
+	
 	protected void ASTNode.replaceWith(ASTNode newnode) {
 		ASTNode parent = getParent();
 		parent.setChild(newnode, parent.getIndexOfChild(this));

@@ -8,8 +8,9 @@ public class A<T> {
         B<T> b= getB();
     }
     B<T> getB() {
-        final A.TEST test2= TEST.FIRST;
-        A.TEST test= test2;
+        final ///A.
+	      TEST temp= TEST.FIRST;
+        A.TEST test= temp;
         return null;
     }
     void bar() {

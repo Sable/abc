@@ -251,11 +251,11 @@ public class MoveMembersTests extends TestCase {
 		typeHelper_passing(new String[]{"I"});
 	}
 
-	/* disabled by Eclipse, but we can do it */
+	/* disabled by Eclipse
 	public void test37() throws Exception {
 		//printTestDisabledMessage("qualified access to source");
 		typeHelper_passing(new String[] {"Inner"});
-	}
+	}*/
 
 	public void test38() throws Exception {
 		fieldMethodTypeHelper(new String[0], new String[0], new String[0][0], new String[]{"Inner"}, true, "A", "B");

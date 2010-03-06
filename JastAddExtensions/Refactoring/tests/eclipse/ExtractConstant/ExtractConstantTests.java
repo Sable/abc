@@ -190,12 +190,12 @@ public class ExtractConstantTests extends TestCase {
 		helper1(9, 29, 9, 53, false, false, "ITEMS", "ARRAY_LIST");
 	}*/
 
-	/* disabled: JastAdd bug
+	/* disabled: JastAddJ bug
 	public void test23() throws Exception {
 		helper1(14, 6, 14, 9, true, false, "COLOR");
 	}*/
 
-	/* disabled: JastAdd bug
+	/* disabled: JastAddJ bug
 	public void test24() throws Exception {
 		helper1(9, 22, 9, 30, true, false, "NUM", "ENUM");
 	}*/

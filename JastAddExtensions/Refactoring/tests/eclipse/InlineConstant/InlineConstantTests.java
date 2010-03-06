@@ -149,7 +149,7 @@ public class InlineConstantTests extends TestCase {
 		helper1(new String[] {"p1.Declarer", "p2.InlineSite"}, "p2.InlineSite", 7, 37, 7, 43, true, false);
 	}*/
 
-	/* disabled: input does not compile
+	/* disabled: does not compile
 	public void test13() throws Exception {
 		helper1(new String[] {"p1.A", "p2.InlineSite"}, "p2.InlineSite", 8, 19, 8, 29, false, false);
 	}*/
@@ -189,7 +189,7 @@ public class InlineConstantTests extends TestCase {
 		helper1(new String[] {"p.A", "q.Consts"}, "q.Consts", 5, 5, 5, 5, true, false);
 	}
 
-	/* disabled: input does not compile
+	/* disabled: does not compile
 	public void test22() throws Exception {
 		helper1(new String[] {"p.A", "q.Consts", "r.Third"}, "p.A", 11, 16, 11, 19, true, true);
 	}*/
