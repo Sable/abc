@@ -778,6 +778,7 @@ public class PushDownTests extends TestCase {
 			   null);
 	}*/
 
+	/* disabled: we can do this
 	public void testFail2() throws Exception {
 		String[] selectedMethodNames= {"f"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -794,7 +795,7 @@ public class PushDownTests extends TestCase {
 			   namesOfFieldsToPushDown,
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract,
 			   null);
-	}
+	}*/
 
 	public void testFail3() throws Exception {
 		String[] selectedMethodNames= {};

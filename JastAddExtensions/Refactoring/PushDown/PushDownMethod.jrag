@@ -2,30 +2,10 @@ aspect PushDownMethod {
 	public void MethodDecl.pushDown(boolean leaveAbstract) {
 		if(!fromSource())
 			throw new RefactoringException("cannot push library method");
-		if(isAbstract())
-			pushDownAbstract(leaveAbstract);
-		else if(isPrivate() || isStatic())
+		if(isPrivate() || isStatic())
 			pushDownMono(leaveAbstract);
 		else
 			pushDownVirtual(leaveAbstract);
-	}
-	
-	public void MethodDecl.pushDownAbstract(boolean leaveAbstract) {
-		for(TypeDecl child : hostType().childTypes()) {
-			MethodDecl md = child.memberMethod(this);
-			if(md == null)
-				// child type already contains a method with this signature
-				continue;
-			child.makeAbstract();
-			MethodDecl md2 = md.lockedCopyWithEmptyBody();
-			if(hostType().isInterfaceDecl() && !child.isInterfaceDecl())
-				md2.getModifiers().addModifiers("public", "abstract");
-			programRoot().lockMethodNames(md.name());
-			child.addBodyDecl(md2);
-			programRoot().flushCaches();
-			programRoot().eliminateLockedNames();
-		}
-		removeUnused(leaveAbstract);		
 	}
 	
 	public void MethodDecl.pushDownMono(boolean leaveAbstract) {
@@ -51,13 +31,17 @@ aspect PushDownMethod {
 		ASTNode parent = getParent();
 		int idx = parent.getIndexOfChild(this);
 		MethodDecl md = this;
+		if(hostType().isInterfaceDecl())
+			md.getModifiers().addModifiers("public", "abstract");
 		for(TypeDecl child : hostType().childTypes()) {
 			MethodAccess ma = child.triviallyOverrideInheritedMethod(md);
-			MethodDecl md2 = (MethodDecl)ma.enclosingBodyDecl();
-			ma.inline();
+			if(ma != null) {
+				MethodDecl pushed_down = (MethodDecl)ma.hostBodyDecl();
+				ma.inline();
+				pushed_down.foldSynchronized();
+			}
 			md = (MethodDecl)parent.getChild(idx);
 			child.eliminate(WITH_STMT, FRESH_VARIABLES);
-			md2.foldSynchronized();
 		}
 		md.removeUnused(leaveAbstract);
 	}
@@ -73,21 +57,37 @@ aspect PushDownMethod {
 	}
 	
 	public MethodAccess ClassDecl.triviallyOverrideInheritedMethod(MethodDecl md) {
-		if(md.isAbstract() || md.isFinal())
-			throw new RefactoringException("cannot override this method");
 		md = memberMethod(md);
 		if(md == null)
-			throw new RefactoringException("method with same signature exists in subclass");
+			return null;
 		MethodDecl new_md = md.lockedCopyWithEmptyBody();
-		List<Expr> args = new List<Expr>();
-		for(ParameterDeclaration pd : new_md.getParameters())
-			args.add(new VarAccess(pd.name()));
-		MethodAccess lockedAccess = new MethodAccess(md, args);
-		ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), lockedAccess));
-		new_md.setBlock(new Block(new List<Stmt>().add(ret)));
+		md.getModifiers().removeModifier("final");
+		MethodAccess lockedAccess = null;
+		if(md.isAbstract()) {
+			makeAbstract();
+		} else {
+			List<Expr> args = new List<Expr>();
+			for(ParameterDeclaration pd : new_md.getParameters())
+				args.add(new VarAccess(pd.name()));
+			lockedAccess = new MethodAccess(md, args);
+			ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), lockedAccess));
+			new_md.setBlock(new Block(new List<Stmt>().add(ret)));
+		}
 		addBodyDecl(new_md);
 		programRoot().flushCaches();
 		return lockedAccess; 
+	}
+	
+	public MethodAccess InterfaceDecl.triviallyOverrideInheritedMethod(MethodDecl md) {
+		assert md.isAbstract();
+		md = memberMethod(md);
+		if(md == null)
+			return null;
+		MethodDecl new_md = md.lockedCopyWithEmptyBody();
+		new_md.getModifiers().removeModifiers("public", "abstract");
+		addBodyDecl(new_md);
+		programRoot().flushCaches();
+		return null;
 	}
 	
 	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {

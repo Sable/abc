@@ -95,8 +95,11 @@ public class PushDownMethodTests extends TestCase {
     }
     
     public void test7() {
-    	testFail(Program.fromClasses(
+    	testSucc(Program.fromClasses(
     	           "class A { void m() { } }",
+    	           "class B extends A { void m() { } }"),
+    	         Program.fromClasses(
+    	    	   "class A { }",
     	           "class B extends A { void m() { } }"));
     }
     
@@ -453,5 +456,23 @@ public class PushDownMethodTests extends TestCase {
     		  "  class B extends A { }" +
     		  "}"));
     }
+
+    public void test35() {
+    	testSucc(
+        	Program.fromClasses(
+        	  "class A { final void m() { } }",
+        	  "class B extends A { }"),
+        	Program.fromClasses(
+        	  "class A { }",
+        	  "class B extends A { final void m() { } }"));
+    }
     
+    public void test36() {
+    	testSucc(Program.fromClasses(
+    	           "class A { final void m() { } void f() { m(); } }",
+    	           "class B extends A { }"),
+    	         Program.fromClasses(
+    	    	   "abstract class A { abstract void m(); void f() { m(); } }",
+    	    	   "class B extends A { final void m() { } }"));
+    }
 }

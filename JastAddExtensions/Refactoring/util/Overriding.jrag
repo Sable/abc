@@ -50,12 +50,20 @@ aspect Overriding {
 	}
 
 	// collect all method declarations overriding a given method declaration
-	coll HashSet<MethodDecl> MethodDecl.overriders() [new HashSet<MethodDecl>()] with add root Program;
-	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
+	coll HashSet<MethodDecl> MethodDecl.coll_overriders() [new HashSet<MethodDecl>()] with add root Program;
+	MethodDecl contributes this to MethodDecl.coll_overriders() for each overrides();
+	
+	public HashSet<MethodDecl> MethodDecl.overriders() {
+		if(this.isFinal() || this.isPrivate() || this.isStatic())
+			return new HashSet<MethodDecl>();
+		return coll_overriders();
+	}
 	
 	// get all method declarations overridden by a given method declaration
 	syn lazy HashSet<MethodDecl> MethodDecl.overrides() {
 		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
+		if(this.isPrivate() || this.isStatic())
+			return ret;
 		for(Iterator<MethodDecl> iter=hostType().ancestorMethods(signature()).iterator();
 			iter.hasNext();) {
 			MethodDecl md = iter.next();
