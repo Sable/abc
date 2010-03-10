@@ -51,6 +51,35 @@ aspect DataFlow {
 		super.lockDataFlow();
 	}
 	
+	public void ASTNode.unlockDataFlow() { }
+	
+	public void Access.unlockDataFlow() {
+		if(hostType() != null)
+			hostType().flushCollectionCache();
+		if(lockedReachingDefs != null) {
+			if(!reachingDefinitions().equals(lockedReachingDefs))
+				throw new RefactoringException("couldn't preserve data flow");
+			lockedReachingDefs = null;
+		}
+		if(lockedReachedUses != null) {
+			if(!reachedUses().equals(lockedReachedUses))
+				throw new RefactoringException("couldn't preserve data flow");
+			lockedReachedUses = null;
+		}
+		if(lockedWriteDeps != null) {
+			if(!writeDeps().equals(lockedWriteDeps))
+				throw new RefactoringException("couldn't preserve data flow");
+			lockedWriteDeps = null;
+		}
+	}
+	
+	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow") {
+		public ASTNode eliminateOn(ASTNode n) {
+			n.unlockDataFlow();
+			return n;
+		}
+	};
+	
 	// conservative approximation of data flow for method accesses
 	Callable extends Location;
 	
@@ -85,32 +114,71 @@ aspect DataFlow {
 	
 	refine Alias eq MethodAccess.mayDefine(Location l) = !decl().isConstantMethod() && refined(l);
 	
-	public void ASTNode.unlockDataFlow() { }
-	
-	public void Access.unlockDataFlow() {
-		if(hostType() != null)
-			hostType().flushCollectionCache();
-		if(lockedReachingDefs != null) {
-			if(!reachingDefinitions().equals(lockedReachingDefs))
-				throw new RefactoringException("couldn't preserve data flow");
-			lockedReachingDefs = null;
+	// more precise analysis for fields of the receiver object (well-defined, since our analysis is always intra-procedural)
+	class FieldInReceiver implements Location {
+		private MethodDecl method;
+		private FieldDeclaration field;
+		
+		public FieldInReceiver(MethodDecl method, FieldDeclaration field) {
+			this.method = method;
+			this.field = field;
 		}
-		if(lockedReachedUses != null) {
-			if(!reachedUses().equals(lockedReachedUses))
-				throw new RefactoringException("couldn't preserve data flow");
-			lockedReachedUses = null;
+		
+		public MethodDecl getMethod() {
+			return method;
 		}
-		if(lockedWriteDeps != null) {
-			if(!writeDeps().equals(lockedWriteDeps))
-				throw new RefactoringException("couldn't preserve data flow");
-			lockedWriteDeps = null;
+		
+		public FieldDeclaration getField() {
+			return field;
+		}
+		
+		public TypeDecl type() {
+			return field.type();
+		}
+		
+		public boolean isHeapLocation() {
+			return true;
+		}
+		
+		public boolean isArrayElement() {
+			return false;
+		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof FieldInReceiver))
+				return false;
+			FieldInReceiver that = (FieldInReceiver)o;
+			return this.method.equals(that.method) && this.field.equals(that.field);
 		}
 	}
 	
-	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow") {
-		public ASTNode eliminateOn(ASTNode n) {
-			n.unlockDataFlow();
-			return n;
+	refine Alias eq VarAccess.getLocation() {
+		Variable decl = decl();
+		BodyDecl host = hostBodyDecl();
+		if(decl.isInstanceVariable() && host instanceof MethodDecl && 
+				(!isQualified() || qualifier().isThisAccess() || qualifier().isSuperAccess()))
+			return new FieldInReceiver((MethodDecl)host, (FieldDeclaration)decl);
+		return decl;
+	}
+	
+	refine Alias eq VarAccess.mayReferTo(Location l) {
+		if(l instanceof FieldInReceiver) {
+			FieldInReceiver fir = (FieldInReceiver)l;
+			if(decl() == fir.getField())
+				return true;
 		}
-	};
+		return refined(l);
+	}
+	
+	refine Alias eq VarAccess.mustReferTo(Location l) {
+		if(l instanceof FieldInReceiver) {
+			FieldInReceiver fir = (FieldInReceiver)l;
+			if(decl() == fir.getField() && hostBodyDecl() == fir.getMethod() &&
+					(!isQualified() || qualifier().isThisAccess() || qualifier().isSuperAccess()))
+				return true;
+		} else if(l instanceof FieldDeclaration && ((FieldDeclaration)l).isStatic()) {
+			return decl() == l;
+		}
+		return refined(l);
+	}
 }

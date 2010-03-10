@@ -59,10 +59,12 @@ public class PromoteTempToFieldTests extends TestCase {
     		Program.fromBodyDecls(
     		"int fac(int y) {" +
     		"  int x;" +
-    		"  if(y == 0)" +
+    		"  if(y == 0) {" +
     		"    x = 1;" +
-    		"  else" +
-    		"    x = y * fac(y-1);" +
+    		"  } else {" +
+    		"    x = y; " +
+    		"    x = fac(y-1) * x;" +
+    		"  }" +
     		"  return x;" +
     		"}"));
     }

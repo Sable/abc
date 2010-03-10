@@ -8,7 +8,9 @@ public class TestPostfixInt {
 		setField(getField() - 1);
 	}
 
-	void setField(int field) {
+	int ///void 
+        setField(int field) {
+		return ///
 		this.field = field;
 	}
 

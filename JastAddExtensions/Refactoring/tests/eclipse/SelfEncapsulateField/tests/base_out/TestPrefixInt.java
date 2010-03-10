@@ -12,7 +12,9 @@ public class TestPrefixInt {
 		i= ~getField();
 	}
 
-	void setField(int field) {
+	int ///void 
+        setField(int field) {
+		return ///
 		this.field = field;
 	}
 

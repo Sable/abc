@@ -384,11 +384,10 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		validatePassingTest("A", "Inner", new String[]{"A"}, new String[]{"p"}, "a", true, false);
 	}
 
-	/* disabled: member types not handled yet
 	public void test_nonstatic_36() throws Exception{
 //		printTestDisabledMessage("test for bug 34591");
 		validatePassingTest("A", "Inner", new String[]{"A"}, new String[]{"p"}, "a", true, true);
-	}*/
+	}
 
 	public void test_nonstatic_37() throws Exception{
 //		printTestDisabledMessage("test for bug 38114");
@@ -423,10 +422,9 @@ public class MoveInnerToTopLevelTests extends TestCase {
 	}*/
 
 	// Using member of enclosing type, non-static edition
-	/* disabled: member types not handled yet
 	public void test_nonstatic_43() throws Exception{
 		validatePassingTest("A", "Inner", "MoreInner", "p5", new String[]{"A"}, new String[]{"p5"}, "inner", true, true, true, true);
-	}*/
+	}
 
 	/* disabled: visibility
 	// Move inner class and create field; enclosing class must be changed to use default visibility.

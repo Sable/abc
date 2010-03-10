@@ -214,11 +214,10 @@ public class IntroduceIndirectionTests extends TestCase {
 		helperPass(new String[] { "p.Foo" }, "bar", "p.Foo", 16, 24, 16, 27);
 	}
 
-	/* disabled: would need to special-case
 	public void test23() throws Exception {
 		// warn about incorrect qualified static calls and don't update them.
 		helperWarn(new String[] { "p.Foo" }, "bar", "p.Foo", 11, 25, 11, 28);
-	}*/
+	}
 
 	/* disabled: different interpretation
 	public void test24() throws Exception {

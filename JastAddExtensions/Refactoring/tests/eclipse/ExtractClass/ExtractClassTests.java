@@ -82,15 +82,13 @@ public class ExtractClassTests extends TestCase {
 		runRefactoring("InheritanceUpdateParameter", false);
 	}
 
-	/* disabled: no special-casing for encapsulation
 	public void testInheritanceUpdateGetterSetter() throws Exception {
-		runRefactoring("InheritanceUpdateGetterSetterParameter", false);
-	}*/
+		runRefactoring("InheritanceUpdateGetterSetterParameter", "parameterObject", (Collection<String>)null, true, true, false);
+	}
 
-	/* disabled: no special-casing for encapsulation
 	public void testComplexExtractGetterSetter() throws Exception {
-		runRefactoring("ComplexExtractGetterSetterParameter", false);
-	}*/
+		runRefactoring("ComplexExtractGetterSetterParameter", "parameterObject", (Collection<String>)null, true, true, false);
+	}
 
 	public void testComplexExtractNested() throws Exception {
 		runRefactoring("ComplexExtractNestedParameter", "parameterObject", null, false, false, false);
@@ -129,10 +127,9 @@ public class ExtractClassTests extends TestCase {
 		runRefactoring("VariableDeclarationInitializerParameter", "parameterObject", null, true, true, false);
 	}
 
-	/* disabled: special-casing for encapsulation
 	public void testUpdateSimpleName() throws Exception {
 		runRefactoring("UpdateSimpleNameParameter", "parameterObject", null, true, true, false);
-	}*/
+	}
 
 	public void testArrayLengthAccess() throws Exception {
 		runRefactoring("ArrayLengthAccessParameter", "parameterObject", null, true, true, false);
@@ -164,7 +161,7 @@ public class ExtractClassTests extends TestCase {
 		runRefactoring("FieldsWithJavadocData", "data", null, true, true, false);
 	}
 
-	/* disabled: no special-casing for encapsulating increments
+	/* disabled: conservative dataflow
 	public void testQualifiedIncrements() throws Exception {
 		runRefactoring("QualifiedIncrementsParameter", "parameterObject", null, true, true, false);
 	}*/

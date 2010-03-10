@@ -65,12 +65,13 @@
 			<exclude name="**/*Codegen*"/>
 		</fileset>
 		<fileset dir="${ControlFlowGraph}">
-		        <include name="Nodes.ast"/>
+		    <include name="Nodes.ast"/>
 			<include name="ControlFlowGraph.jrag"/>
 			<include name="Sets.jrag"/>
 			<include name="Exceptions.jrag"/>
 			<include name="Alias.jrag"/>
 			<include name="ReachingDefinitions.jrag"/>
+			<include name="DotGeneration.jrag"/>
 		</fileset>
 		<fileset dir="${Refactoring}/util">
 		        <include name="**/*.ast"/>

@@ -7,8 +7,7 @@ public class TestThisExpressionInner {
 		int field;
 		public void foo() {
 			field= 10;
-			///TestThisExpressionInner.this.
-			setField(11);
+			TestThisExpressionInner.this.setField(11);
 		}
 	}
 	

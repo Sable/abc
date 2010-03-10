@@ -98,10 +98,9 @@ public class InlineConstantTests extends TestCase {
 		helper1("C", 3, 33, 3, 40, true, false);
 	}*/
 
-	/* disabled: no support for selective inlining
 	public void test2() throws Exception {
 		helper1("p.Klass", 10, 22, 10, 30, false, false);
-	}*/
+	}
 
 	public void test3() throws Exception {
 		helper1("p.LeVinSuperieure", 5, 32, 5, 43, true, true);
@@ -134,10 +133,9 @@ public class InlineConstantTests extends TestCase {
 		helper1(new String[] {"p1.C", "p2.D", "p3.E"}, "p1.C", 4, 4, 4, 4, true, true);
 	}
 
-	/* disabled: no support for selective inlining
 	public void test10() throws Exception {
 		helper1(new String[] {"p1.A", "p2.B"}, "p2.B", 9, 28, 9, 37, false, false);
-	}*/
+	}
 
 	/* disabled: does not compile
 	public void test11() throws Exception {
@@ -194,10 +192,9 @@ public class InlineConstantTests extends TestCase {
 		helper1(new String[] {"p.A", "q.Consts", "r.Third"}, "p.A", 11, 16, 11, 19, true, true);
 	}*/
 
-	/* disabled: no support for selective inlining
 	public void test23() throws Exception {
 		helper1("p.Test", 6, 26, 6, 26, false, false);
-	}*/
+	}
 
 	/* disabled: conservative data flow
 	public void test24() throws Exception {
@@ -238,10 +235,9 @@ public class InlineConstantTests extends TestCase {
 		failHelper1("foo.NeueZuercherZeitung", 5, 5, 5, 5, true, false);
 	}
 
-	/* disabled: no support for selective inlining
 	public void testFail1() throws Exception {
 		failHelper1("fun.Fun", 8, 35, 8, 35, false, false);
-	}*/
+	}
 
 	public void testFail2() throws Exception {
 		failHelper1("p.EnumRef", 7, 22, 7, 22, true, true);

@@ -3,20 +3,23 @@ aspect ExtractAssignment {
 	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v) {
 		if(inextractible())
 			throw new RefactoringException("expression is not extractible");
-		Block block = enclosingBlock();
-		if(block == null)
-			throw new RefactoringException("cannot extract assignment here");
-		int idx = getParent().getIndexOfChild(this);
-		lockAllNames();
-		Expr expr = (Expr)getParent().getChild(idx);
-		expr.lockDataFlow();
-		block.lockSyncDependencies();
-		VarAccess vacc = v.createLockedAccess();
-		expr.replaceWith(vacc);
-		vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), expr));
-		block.hostType().flushCaches();
-		expr.unlockDataFlow();
-		block.unlockSyncDependencies();
+		if(getParent() instanceof ExprStmt) {
+			ExprStmt parent = (ExprStmt)getParent();
+			parent.setExpr(new AssignSimpleExpr(v.createLockedAccess(), this));
+		} else {
+			Block block = enclosingBlock();
+			if(block == null)
+				throw new RefactoringException("cannot extract assignment here");
+			lockAllNames();
+			lockDataFlow();
+			block.lockSyncDependencies();
+			VarAccess vacc = v.createLockedAccess();
+			replaceWith(vacc);
+			vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), this));
+			block.hostType().flushCaches();
+			unlockDataFlow();
+			block.unlockSyncDependencies();
+		}
 		return v;
 	}
 	
@@ -40,11 +43,10 @@ aspect ExtractAssignment {
 	eq CastExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
 	eq ParExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
 	
-	// expressions in positions where they cannot be replaced by a local variable access
+	// expressions in positions where they cannot be extracted into an assignment
 	inh boolean Expr.inInextractiblePosition();
 	eq Program.getChild().inInextractiblePosition() = false;
 	eq ConstructorDecl.getConstructorInvocation().inInextractiblePosition() = true;
-	eq ExprStmt.getExpr().inInextractiblePosition() = true;
 	eq AssignExpr.getChild().inInextractiblePosition() = false;
 	eq PreIncExpr.getChild().inInextractiblePosition() = false;
 	eq PreDecExpr.getChild().inInextractiblePosition() = false;

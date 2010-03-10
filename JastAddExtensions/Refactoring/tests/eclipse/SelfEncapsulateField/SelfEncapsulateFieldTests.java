@@ -13,6 +13,8 @@
  *******************************************************************************/
 package tests.eclipse.SelfEncapsulateField;
 
+/* Note: our setters always return a value; the result files have been adapted to adjust that. */
+
 import junit.framework.TestCase;
 import tests.CompileHelper;
 import AST.FieldDeclaration;
@@ -95,19 +97,17 @@ public class SelfEncapsulateFieldTests extends TestCase {
 	// Primitiv Data Test
 	//=====================================================================================
 
-	/* disabled: special-casing for ++ and --
 	public void testPrefixInt() throws Exception {
 		baseTest("field");
-	}*/
+	}
 
 	public void testPrefixBoolean() throws Exception {
 		baseTest("field");
 	}
 
-	/* disabled: special-casing for ++ and --
 	public void testPostfixInt() throws Exception {
 		baseTest("field");
-	}*/
+	}
 
 	public void testThisExpression() throws Exception {
 		baseTest("field");
@@ -179,7 +179,6 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		objectTest("field");
 	}
 
-	/* disabled: special-casing for +=
 	public void testCompoundWrite() throws Exception {
 		objectTest("field");
 	}
@@ -190,7 +189,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 
 	public void testCompoundWrite3() throws Exception {
 		objectTest("field");
-	}*/
+	}
 
 	public void testFinalField() throws Exception {
 		objectTest("field");
@@ -211,9 +210,10 @@ public class SelfEncapsulateFieldTests extends TestCase {
 	//=====================================================================================
 	// static import tests
 	//=====================================================================================
-/*
+
+	/* disabled: TODO
 	private void performStaticImportTest(String referenceName) throws Exception {
-		Program in = CompileHelper.compile(getResourceLocation() + "/static_ref__in/" + adaptName(referenceName));
+		Program in = CompileHelper.compile(getResourceLocation() + "/static_ref_in/" + adaptName(referenceName));
 		Program out = CompileHelper.compile(getResourceLocation() + "/static_ref_out/" + adaptName(referenceName));
 		assertNotNull(in);
 		assertNotNull(out);
@@ -247,7 +247,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 	// existing getter/setter
 	//=====================================================================================
 
-	/* disabled: we don't support this
+	/* disabled: no support for reusing existing getters/setters
 	public void testThisExpressionInnerWithSetter() throws Exception {
 		existingTest("field");
 	}

@@ -1,0 +1,28 @@
+aspect AssignExt {
+	// replace "a op= b" by "a = a op b" and return the new copy of a
+	// for "a = b", don't do anything and return null
+	public Access AssignExpr.unfold() {
+		Binary b = implicitOperator();
+		if(b == null)
+			return null;
+		Expr dest_copy = (Expr)getDest().fullCopy();
+		Expr src = getSource();
+		b.setLeftOperand(dest_copy);
+		b.setRightOperand(src.precedence() > b.precedence()-1 ? new ParExpr(src) : src);
+		replaceWith(new AssignSimpleExpr(getDest(), b));
+		return (Access)dest_copy;
+	}
+	
+	syn Binary AssignExpr.implicitOperator() = null;
+	eq AssignMinusExpr.implicitOperator() = new SubExpr();
+	eq AssignPlusExpr.implicitOperator() = new AddExpr();
+	eq AssignAndExpr.implicitOperator() = new AndLogicalExpr();
+	eq AssignOrExpr.implicitOperator() = new OrLogicalExpr();
+	eq AssignXorExpr.implicitOperator() = new XorBitwiseExpr();
+	eq AssignDivExpr.implicitOperator() = new DivExpr();
+	eq AssignModExpr.implicitOperator() = new ModExpr();
+	eq AssignMulExpr.implicitOperator() = new MulExpr();
+	eq AssignLShiftExpr.implicitOperator() = new LShiftExpr();
+	eq AssignRShiftExpr.implicitOperator() = new RShiftExpr();
+	eq AssignURShiftExpr.implicitOperator() = new URShiftExpr();
+}

@@ -8,13 +8,17 @@ public class InheritanceUpdateGetterSetterParameter {
 	public String getTest() {
 		return test;
 	}
-	public void setTest(String test) {
+	public String ///void 
+	       setTest(String test) {
+		return ///
 		this.test = test;
 	}
 	public int getTest2() {
 		return test2;
 	}
-	public void setTest2(int test2) {
+	public int ///void 
+	       setTest2(int test2) {
+		return ///
 		this.test2 = test2;
 	}
 }

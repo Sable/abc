@@ -719,7 +719,7 @@ public class PushDownTests extends TestCase {
 			   new String[]{"B", "C"}, new String[]{"p", "p"});
 	}*/
 	
-/* disabled
+	/* disabled: by Eclipse
 	public void test34() throws Exception{
 		printTestDisabledMessage("disabled due to missing support for statically imported methods");
 
@@ -994,7 +994,8 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, null, null);
 	}*/
 
-	/*public void testAddingRequiredMembers0() throws Exception{
+	/* disabled: TODO
+	public void testAddingRequiredMembers0() throws Exception{
 		String[] fieldNames= {};
 		String[] methodNames= {"m"};
 		String[][] methodSignatures= {new String[0]};

@@ -139,9 +139,8 @@ public class ExtractConstantTests extends TestCase {
 
 	public void test11() throws Exception {
 		helper1(10, 31, 10, 37, true, true, "CONSTANT", "INT");
-	}*/
+	}
 
-	/* disabled: associative rebalancing not supported
 	public void test12() throws Exception {
 		helper1(9, 13, 9, 18, true, true, "CONSTANT", "INT");
 	}*/
@@ -243,14 +242,13 @@ public class ExtractConstantTests extends TestCase {
 		helper1(7, 14, 7, 31, true, false, "STRING", "STRING");
 	}*/
 
-	/* disabled: we don't support inserting constant field into enclosing types
 	public void test35() throws Exception { // bug 218108
 		helper1(7, 11, 7, 16, true, false, "BUG", "BUG");
 	}
 
 	public void test36() throws Exception { // bug 218108
 		helper1(6, 11, 6, 16, true, false, "BUG", "BUG");
-	}*/
+	}
 
 	public void testZeroLengthSelection0() throws Exception {
 		helper1(5, 10, 5, 13, false, false, "CONSTANT", "_100");

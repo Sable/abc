@@ -490,11 +490,10 @@ public class MoveMembersTests extends TestCase {
 		fieldMethodTypeHelper_failing(new String[]{"i"}, new String[0], new String[0][0], new String[0], "B");
 	}
 
-	/* disabled: Eclipse doesn't move native methods
 	public void testFail15() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
 									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "B");
-	}*/
+	}
 
 	public void testFail16() throws Exception{
 		fieldMethodTypeHelper_failing(new String[]{"f"}, new String[0], new String[0][0], new String[0], "B");

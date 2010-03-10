@@ -926,7 +926,7 @@ public class PullUpTests extends TestCase {
 		helper2(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
-	/*
+	/* disabled: by Eclipse
 	public void testFail1() throws Exception{
 		printTestDisabledMessage("overloading - current limitation");
 //		helper2(new String[]{"m"}, new String[][]{new String[0]}, true, false);
@@ -996,7 +996,7 @@ public class PullUpTests extends TestCase {
 		helper3(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 0, true);
 	}
 
-	/*
+	/* disabled: by Eclipse
 	public void testFail12() throws Exception{
 		printTestDisabledMessage("overloading - current limitation");
 //		String[] methodNames= new String[]{"m"};
@@ -1014,9 +1014,10 @@ public class PullUpTests extends TestCase {
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 0);
 	}
 
+	/* disabled: no test
 	public void testFail14() throws Exception{
 		//removed - this (pulling up classes) is allowed now
-	}
+	}*/
 
 	/* disabled: pullpull
 	public void testFail15() throws Exception{
@@ -1036,7 +1037,7 @@ public class PullUpTests extends TestCase {
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 1);
 	}*/
 
-	/*
+	/* disabled: by Eclipse
 	public void testFail17() throws Exception{
 		printTestDisabledMessage("unimplemented test - see bug 29522");
 //		String[] methodNames= new String[]{"m"};
@@ -1064,7 +1065,7 @@ public class PullUpTests extends TestCase {
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 1);
 	}*/
 
-	/*
+	/* disabled: TODO
 	public void testFail20() throws Exception{
 		String[] selectedMethodNames= {"m"};
 		String[][] selectedMethodSignatures= {new String[0]};
@@ -1258,7 +1259,7 @@ public class PullUpTests extends TestCase {
 		fieldHelper2(new String[]{"f"}, 1);
 	}*/
 
-	/* disabled
+	/* disabled: TODO
 	//---------------------------------------------------------
 	public void testFieldMethod0() throws Exception{
 //		printTestDisabledMessage("bug 23324 ");
@@ -1409,7 +1410,7 @@ public class PullUpTests extends TestCase {
 		addRequiredMembersHelper(fieldNames, methodNames, methodSignatures, expectedFieldNames, expectedMethodNames, expectedMethodSignatures);
 	}*/
 
-	/* disabled:
+	/* disabled: TODO
 	public void testEnablement0() throws Exception {
 		ICompilationUnit cu= createCUfromTestFile(getPackageP(), "A");
 		IType typeB= cu.getType("B");
@@ -1592,7 +1593,7 @@ public class PullUpTests extends TestCase {
 
 	//------------------ tests -------------
 
-	/* disabled:
+	/* disabled: TODO
 	public void testStaticImports0() throws Exception{
 		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
 		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
@@ -1673,7 +1674,7 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"mmm", "n"}, new String[][]{new String[] {"QT;"}, new String[0]}, true, true, 0);
 	}*/
 
-	/*
+	/* disabled: by Eclipse
 	public void testGenerics4() throws Exception{
 		printTestDisabledMessage("see bug 75642");
 

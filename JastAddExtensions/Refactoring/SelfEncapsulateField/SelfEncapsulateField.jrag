@@ -1,32 +1,20 @@
 aspect SelfEncapsulateField {
 	public void FieldDeclaration.selfEncapsulate() {
-		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
-		old_mods.removeModifier("final");
-		
-		String cap_name = Character.toUpperCase(name().charAt(0))+name().substring(1);
-		// for Eclipse compatibility
-		String getter_name = type().isBoolean() ? "is"+cap_name : "get"+cap_name;
-		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
-										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
-		hostType().insertUnusedMethod(getter);
+		MethodDecl getter = createGetter();
 		MethodDecl setter = null;
-		if(!isFinal()) {
-			ParameterDeclaration parm = new ParameterDeclaration(type().createLockedAccess(), name());
-			String setter_name = "set"+cap_name;
-			setter = new MethodDecl((Modifiers)old_mods.fullCopy(), type().createLockedAccess(), setter_name, 
-					  				new List<ParameterDeclaration>().add(parm), new List<Access>(),
-					  				new Opt<Block>(new Block(new ReturnStmt(new AssignSimpleExpr(this.createLockedAccess(), parm.createLockedAccess())))));
-			hostType().insertUnusedMethod(setter);
-		}
+		if(!isFinal())
+			setter = createSetter();
 		
-		for(VarAccess va : usesOfAllCopies()) {
+		ArrayList<VarAccess> uses = usesOfAllCopies();
+		for(int i=0;i<uses.size();++i) {
+			VarAccess va = uses.get(i);
 			if(va.hostBodyDecl() == getter || va.hostBodyDecl() == setter)
 				continue;
 			if(va.isDest()) {
 				// constructors can write final fields
 				if(setter == null)
 					continue;
-				va.bundleQualifier();
+				va.unfoldAbbrevAssign(uses);
 				ASTNode p = va;
 				if(va.isRightChildOfDot())
 					p = va.getParent();
@@ -53,8 +41,71 @@ aspect SelfEncapsulateField {
 		programRoot().eliminate(LOCKED_NAMES);
 	}
 	
-	public Collection<VarAccess> FieldDeclaration.usesOfAllCopies() {
-		Collection<VarAccess> res = new HashSet<VarAccess>(uses());
+	syn String FieldDeclaration.capitalisedName() = Character.toUpperCase(name().charAt(0))+name().substring(1); 
+	
+	public MethodDecl FieldDeclaration.createGetter() {
+		String getter_name = type().isBoolean() ? "is"+capitalisedName() : "get"+capitalisedName();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		old_mods.removeModifier("final");
+		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
+										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
+		hostType().insertUnusedMethod(getter);
+		return getter;
+	}
+	
+	public MethodDecl FieldDeclaration.createSetter() {
+		String setter_name = "set"+capitalisedName();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		old_mods.removeModifier("final");
+		ParameterDeclaration parm = new ParameterDeclaration(type().createLockedAccess(), name());
+		MethodDecl setter = new MethodDecl(old_mods, type().createLockedAccess(), setter_name, 
+				  					      new List<ParameterDeclaration>().add(parm), new List<Access>(),
+				  					      new Opt<Block>(new Block(new ReturnStmt(new AssignSimpleExpr(this.createLockedAccess(), 
+				  					    		  													   parm.createLockedAccess())))));
+		hostType().insertUnusedMethod(setter);
+		return setter;
+	}
+
+	// pattern matching in JastAdd is not very pleasant...
+	syn lazy boolean MethodDecl.isGetterFor(FieldDeclaration fd) {
+		if(getNumParameter() != 0 || type() != fd.type() || !hasBlock())
+			return false;
+		Block body = getBlock();
+		if(body.getNumStmt() != 1 || !(body.getStmt(0) instanceof ReturnStmt))
+			return false;
+		ReturnStmt ret = (ReturnStmt)body.getStmt(0);
+		return ret.hasResult() && ret.getResult().isFieldAccessInThis(fd);
+	}
+
+	// whether the expression is either a variable access to fd, or this.x where x is a variable access to fd
+	syn boolean Expr.isFieldAccessInThis(FieldDeclaration fd) = false;
+	eq AbstractDot.isFieldAccessInThis(FieldDeclaration fd) = getLeft().isThisAccess() && getRight().isFieldAccessInThis(fd);
+	eq VarAccess.isFieldAccessInThis(FieldDeclaration fd) = decl() == fd;
+	
+	public void VarAccess.unfoldAbbrevAssign(ArrayList<VarAccess> uses) {
+		bundleQualifier();
+		flushCaches();
+		if(isQualified() && !qualifier().isPure())
+			return;
+		Access unqual = isQualified() ? (Access)getParent() : this;
+		ASTNode p = unqual.getParent();
+		if(p instanceof PreIncExpr || p instanceof PostIncExpr && p.getParent() instanceof ExprStmt) {
+			Access unqual_copy = (Access)unqual.fullCopy();
+			p.replaceWith(new AssignSimpleExpr(unqual, new AddExpr(unqual_copy, new IntegerLiteral("1"))));
+			uses.add((VarAccess)unqual_copy.lastAccess());
+		} else if(p instanceof PreDecExpr || p instanceof PostDecExpr && p.getParent() instanceof ExprStmt) {
+			Access unqual_copy = (Access)unqual.fullCopy();
+			p.replaceWith(new AssignSimpleExpr(unqual, new SubExpr(unqual_copy, new IntegerLiteral("1"))));
+			uses.add((VarAccess)unqual_copy.lastAccess());
+		} else if(p instanceof AssignExpr && !(p instanceof AssignSimpleExpr)) {
+			Access unqual_copy = ((AssignExpr)p).unfold();
+			if(unqual_copy != null)
+				uses.add((VarAccess)unqual_copy.lastAccess());
+		}
+	}
+	
+	public ArrayList<VarAccess> FieldDeclaration.usesOfAllCopies() {
+		ArrayList<VarAccess> res = new ArrayList<VarAccess>(uses());
 		for(FieldDeclaration fd : substitutedCopies())
 			res.addAll(fd.uses());
 		return res;

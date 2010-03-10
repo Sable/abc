@@ -11,23 +11,6 @@
  *******************************************************************************/
 package tests.eclipse.MoveInstanceMethod;
 
-/* In some cases, our refactoring engine produces syntactically different, yet semantically equivalent
- * results. We have changed the test output files to reflect this, with the original version in comments.
- * The differences in behaviour are caused by our refactoring engine not rearranging imports and not eliding
- * superfluous this qualifiers.
- *
- * We have disabled some test cases:
- *  - test13, test14, test23, test25, test26, test27, test28, test29, test30, test32, test33, test34, test35, test37:
- *    our engine does not try to adjust the visibility of member fields and methods referenced from moved methods,
- *    hence these refactorings fail in our implementation
- *  - testFail5, testFail6, testFail 8: our engine can handle these
- *  - testFail9, testFail10 do not actually fail in Eclipse, and neither in our refactoring engine
- *  - testFail11: our refactoring engine always automatically chooses parameter names, so it never fails due to
- *    parameter name clashes
- *    
- * Some other test cases were disabled by the Eclipse team; we have not tried to enable them.
- */
-
 import junit.framework.TestCase;
 import tests.CompileHelper;
 import AST.ASTNode;
@@ -214,12 +197,14 @@ public class MoveInstanceMethodTests extends TestCase {
 	}
 
 	// junit case
-	/*public void test13() throws Exception {
+	/* disabled: visibility
+	public void test13() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false);
 	}*/
 
 	// simplified junit case
-	/*public void test14() throws Exception {
+	/* disabled: visibility
+	public void test14() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false);
 	}*/
 
@@ -273,7 +258,8 @@ public class MoveInstanceMethodTests extends TestCase {
 	}
 
 	// "this"-qualified field access: this.s -> this (bug 41597)
-	/*public void test23() throws Exception {
+	/* disabled: visibility
+	public void test23() throws Exception {
 		helper1(new String[] { "p.A", "p.Second"}, "p.A", 5, 17, 5, 22, FIELD, "s", false, false);
 	}*/
 
@@ -283,59 +269,62 @@ public class MoveInstanceMethodTests extends TestCase {
 	}
 
 	// extended junit case
-	/*public void test25() throws Exception {
+	/* disabled: visibility
+	public void test25() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 4, 20, 4, 23, PARAMETER, "test", false, false);
-	}*/
+	}
 
 	// extended junit case with generics (bug 77653)
-	/*public void test26() throws Exception {
+	public void test26() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false);
-	}*/
+	}
 
 	// extended junit case with generics and deprecation message
-	/*public void test27() throws Exception {
+	public void test27() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false, true);
-	}*/
+	}
 
 	// extended junit case with generics, enums and deprecation message
-	/*public void test28() throws Exception {
+	public void test28() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false, true);
-	}*/
+	}
 
 	// extended junit case with generics, enums and deprecation message
-	/*public void test29() throws Exception {
+	public void test29() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 9, 20, 9, 23, PARAMETER, "test", false, false, true);
-	}*/
+	}
 
 	// extended junit case with generics, enums, static imports and deprecation message
-	/*public void test30() throws Exception {
+	public void test30() throws Exception {
 		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 10, 21, 10, 21, PARAMETER, "test", false, false, true);
 	}*/
 
 	// extended junit case with generics, enums, static imports and deprecation message
+	/* disabled: by Eclipse
 	public void test31() throws Exception {
 //		printTestDisabledMessage("disabled due to missing support for statically imported methods");
 //		helper1(new String[] { "p1.TR", "p1.TC", "p1.P"}, "p1.TR", 10, 21, 10, 21, PARAMETER, "test", false, false, true);
+	}*/
+
+	/* disabled: visibility
+	public void test32() throws Exception {
+		helper1(new String[] { "p1.A"}, "p1.A", 9, 25, 9, 26, PARAMETER, "p", true, true);
 	}
 
-	/*public void test32() throws Exception {
-		helper1(new String[] { "p1.A"}, "p1.A", 9, 25, 9, 26, PARAMETER, "p", true, true);
-	}*/
-
 	// Test visibility of a target field is not affected.
-	/*public void test33() throws Exception {
+	public void test33() throws Exception {
 		helper1(new String[] { "p.Foo", "p.Bar" }, "p.Foo", 6, 18, 6, 21, FIELD, "_bar", false, false);
-	}*/
+	}
 
 	// Test visibility of target field is changed to public
 	// in case a caller is in another package (bug 117465).
-	/*public void test34() throws Exception {
+	public void test34() throws Exception {
 		helper1(new String[] { "test1.TestTarget", "test1.Test1", "test2.Test2"}, "test1.Test1", 3, 21, 3, 33, FIELD, "target", true, true);
-	}*/
+	}
 
 	// Test visibility of target field is changed to default
 	// in case a caller is in the same package (bug 117465).
-	/*public void test35() throws Exception {
+	public void test35() throws Exception {
 		helper1(new String[] { "test1.TestTarget", "test1.Test1", "test1.Test2"}, "test1.Test1", 3, 21, 3, 33, FIELD, "target", true, true);
 	}*/
 
@@ -345,7 +334,8 @@ public class MoveInstanceMethodTests extends TestCase {
 	}
 
 	// Test name conflicts in the moved method between fields and parameters (bug 227876)
-	/*public void test37() throws Exception {
+	/* disabled: visibility
+	public void test37() throws Exception {
 		helper1(new String[] { "p.A", "p.B" }, "p.A", 4, 17, 4, 42, FIELD, "destination", true, true);
 	}*/
 
@@ -417,7 +407,8 @@ public class MoveInstanceMethodTests extends TestCase {
 	}*/
 
 	// Cannot move method - parameter name conflict
-	/*public void testFail11() throws Exception {
+	/* disabled: we can do this
+	public void testFail11() throws Exception {
 		failHelper2(new String[] { "p1.A", "p2.B"}, "p1.A", 7, 17, 7, 20, PARAMETER, "b", "a", true, true);
 	}*/
 
@@ -428,10 +419,11 @@ public class MoveInstanceMethodTests extends TestCase {
 	}
 
 	// Cannot move method - annotations are not supported
+	/* disabled: by Eclipse
 	public void testFail13() throws Exception {
 //		printTestDisabledMessage("disabled - jcore does not have elements for annotation members");
 //		failHelper2(new String[] { "p1.A", "p2.B"}, "p1.A", 5, 12, 5, 13, PARAMETER, "b", "a", true, true);
-	}
+	}*/
 
 	// Cannot move static method
 	public void testFail2() throws Exception {
