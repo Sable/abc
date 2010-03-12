@@ -13,14 +13,15 @@ aspect ExtractClass {
 		Modifiers struct_mods = new Modifiers("static");
 		struct_mods.setVisibility(toplevel ? VIS_PUBLIC : maxvis);
 		ClassDecl struct = new ClassDecl(struct_mods, newClassName, new Opt<Access>(), new List<Access>(), new List<BodyDecl>());
-		MemberTypeDecl mtd = insertUnusedType(struct);
-		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct, newFieldName);
+		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct, newFieldName, 0);
+		MemberTypeDecl mtd = insertUnusedType(struct, 0);
 		programRoot().flushCaches();
+		int i=0;
 		for(FieldDeclaration fd : fds) {
 			fd.lockDataFlow();
 			if (fd.getModifiers().isStatic())
 				throw new RefactoringException("cannot extract this field");
-			wrapField(fd, wrapperField, struct);
+			wrapField(fd, wrapperField, struct, i++);
 		}
 		programRoot().eliminate(LOCKED_NAMES);
 		if(toplevel) {
@@ -41,18 +42,18 @@ aspect ExtractClass {
 		return vis;
 	}
 	
-	public FieldDeclaration ClassDecl.createNewMemberField(int vis, TypeDecl type, String fieldName) {
+	public FieldDeclaration ClassDecl.createNewMemberField(int vis, TypeDecl type, String fieldName, int idx) {
 		programRoot().lockNames(fieldName);
 		Expr expr = new ClassInstanceExpr(type.createLockedAccess(), new List(), new Opt());
 		Modifiers mods = new Modifiers();
 		mods.setVisibility(vis);
 		FieldDeclaration fd = new FieldDeclaration(mods, type.createLockedAccess(), fieldName, expr);
-		this.addMemberField(fd);
+		this.getBodyDeclList().insertChild(fd, idx);
 		return fd;
 	}
 	
 	// assumes wrapperField is initialised in the program tree with an instance of wrapperClass
-	public void ClassDecl.wrapField(FieldDeclaration toMove, FieldDeclaration wrapperField, ClassDecl struct) {
+	public void ClassDecl.wrapField(FieldDeclaration toMove, FieldDeclaration wrapperField, ClassDecl struct, int idx) {
 		ConstructorDecl cd = (ConstructorDecl)struct.constructors().iterator().next();
 		// replace all uses to proxy uses
 		for(VarAccess va : toMove.uses()) {
@@ -61,7 +62,7 @@ aspect ExtractClass {
 		}
 		// move field to struct
 		toMove.hostType().removeBodyDecl(toMove);
-		struct.addBodyDecl(toMove);
+		struct.getBodyDeclList().insertChild(toMove, idx);
 		// pass init expr in constructor if needed
 		if (toMove.hasInit()) { 
 			Expr init = toMove.getInit().wrapArrayInit();

@@ -4,10 +4,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class Foo {
-	public static <A extends Comparable<A>> A foo(Collection<A> xs) {
-		return null;
-	}
-
 	/**
 	 * @param <A>
 	 * @param xs
@@ -15,6 +11,10 @@ public class Foo {
 	 */
 	public static <A extends Comparable<A>> A bar(Collection<A> xs) {
 		return /*///Foo.*/foo(xs);
+	}
+
+	public static <A extends Comparable<A>> A foo(Collection<A> xs) {
+		return null;
 	}
 
 	{

@@ -92,9 +92,6 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    g++;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -130,9 +127,6 @@ public class RenameVariableTests extends TestCase {
                       "    }"+
                       "    g.k = 0;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -161,18 +155,12 @@ public class RenameVariableTests extends TestCase {
                       ""+
                       "class A {"+
                       "  int g;"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B extends A {"+
                       "  A a;"+
                       "  void m() {"+
                       "    int g = a.g;"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -202,9 +190,6 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    A.g = 0;"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -233,9 +218,6 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    p.A.g = 0;"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -262,16 +244,10 @@ public class RenameVariableTests extends TestCase {
                       "  "+
                       "  class B {"+
                       "    int b;"+
-                      "    B() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  "+
                       "  class C extends B {"+
                       "    int b;"+
-                      "    C() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  "+
                       "  class D {"+
@@ -279,12 +255,6 @@ public class RenameVariableTests extends TestCase {
                       "    int m() {"+
                       "      return ((B)c).b;"+
                       "    }"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -333,9 +303,6 @@ public class RenameVariableTests extends TestCase {
                       "  public int getF() {"+
                       "    return (this.g);"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -363,9 +330,6 @@ public class RenameVariableTests extends TestCase {
                       "  int g;"+
                       "  public int getF() {"+
                       "    return (this.g);"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -398,9 +362,6 @@ public class RenameVariableTests extends TestCase {
                       "    y = 42;"+
                       "    System.out.println(y);"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -431,9 +392,6 @@ public class RenameVariableTests extends TestCase {
                       "    int z;"+
                       "    x = 42;"+
                       "    System.out.println(x);"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -492,9 +450,6 @@ public class RenameVariableTests extends TestCase {
                       "      System.out.println(y);"+
                       "    }"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -529,9 +484,6 @@ public class RenameVariableTests extends TestCase {
                       "    catch (ArrayIndexOutOfBoundsException exc) {"+
                       "      exc.printStackTrace();"+
                       "    }"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -571,10 +523,9 @@ public class RenameVariableTests extends TestCase {
                       "public class A {"+
                       "    int y;"+
                       "    class C extends B {"+
-                      "	int m() { return y; }"+
+                      "	       int m() { return y; }"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -582,9 +533,6 @@ public class RenameVariableTests extends TestCase {
                       ""+
                       "class B {"+
                       "  int y;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "public class A {"+
@@ -594,15 +542,8 @@ public class RenameVariableTests extends TestCase {
                       "    int m() {"+
                       "      return A.this.y;"+
                       "    }"+
-                      "    C() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -631,9 +572,6 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    for(int y = 0; true; ++y) "+
                       "      y = this.y;"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -664,9 +602,6 @@ public class RenameVariableTests extends TestCase {
                       "  int y;"+
                       "  void m(int[] ys) {for (int y : ys) "+
                       "      y = this.y;"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -711,9 +646,6 @@ public class RenameVariableTests extends TestCase {
                       "  public static void main(String[] args) {"+
                       "    System.out.println(\"23\");"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -741,9 +673,6 @@ public class RenameVariableTests extends TestCase {
                       "  T g;"+
                       "  T m(int g) {"+
                       "    return this.g;"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -774,9 +703,6 @@ public class RenameVariableTests extends TestCase {
                       "  T m(int g) {"+
                       "    String s = new A<String>().g;"+
                       "    return null;"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -809,16 +735,10 @@ public class RenameVariableTests extends TestCase {
                       "  String m() {"+
                       "    return ((A<String>)new B()).g;"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B extends A<String> {"+
                       "  String g;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -854,9 +774,6 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    g++;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B {"+
@@ -864,9 +781,6 @@ public class RenameVariableTests extends TestCase {
                       "  protected int f;"+
                       "  void m() {"+
                       "    a.g = 0;"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -908,9 +822,6 @@ public class RenameVariableTests extends TestCase {
                       "    }"+
                       "    return false;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -944,12 +855,6 @@ public class RenameVariableTests extends TestCase {
                       "    {"+
                       "      B b = ((A)super.f).f;"+
                       "    }"+
-                      "    B() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -984,12 +889,6 @@ public class RenameVariableTests extends TestCase {
                       "    {"+
                       "      B b = ((A)((A)B.this).f).f;"+
                       "    }"+
-                      "    B() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1024,12 +923,6 @@ public class RenameVariableTests extends TestCase {
                       "    {"+
                       "      B b = ((A)((A)((B)this)).f).f;"+
                       "    }"+
-                      "    B() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1110,9 +1003,6 @@ public class RenameVariableTests extends TestCase {
                       "      System.out.println(z);"+
                       "    }"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""))
         );
@@ -1158,7 +1048,7 @@ public class RenameVariableTests extends TestCase {
                       "class Indiana {"+
                       "    static double myPI = 3.2;"+
                       "    static double circleArea(double r) {"+
-                      "	return PI*r*r;"+
+		      "	       return PI*r*r;"+
                       "    }"+
                       "}"+
                       ""))
@@ -1172,9 +1062,6 @@ public class RenameVariableTests extends TestCase {
                       "  static double PI = 3.2D;"+
                       "  static double circleArea(double r) {"+
                       "    return Math.PI * r * r;"+
-                      "  }"+
-                      "  Indiana() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1202,9 +1089,6 @@ public class RenameVariableTests extends TestCase {
                       "  int String;"+
                       "  {"+
                       "    System.out.println(java.lang.String.valueOf(23));"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1239,17 +1123,11 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    g++;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B extends A {"+
                       "  void m() {"+
                       "    g = 0;"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1277,9 +1155,6 @@ public class RenameVariableTests extends TestCase {
                       "  int java;"+
                       "  {"+
                       "    System.out.println(String.valueOf(23));"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1343,25 +1218,16 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    g++;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class AA extends A {"+
                       "  protected int f;"+
-                      "  AA() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B {"+
                       "  A a;"+
                       "  void m() {"+
                       "    a.g = 0;"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1406,16 +1272,10 @@ public class RenameVariableTests extends TestCase {
                       "  void m() {"+
                       "    g++;"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class AA extends A {"+
                       "  protected int f;"+
-                      "  AA() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       ""+
                       "class B {"+
@@ -1426,9 +1286,6 @@ public class RenameVariableTests extends TestCase {
                       "    a.g = 0;"+
                       "    b.f = 0;"+
                       "    ab.g = 0;"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1457,9 +1314,6 @@ public class RenameVariableTests extends TestCase {
                       "  int g;"+
                       "  void m(int g) {"+
                       "    this.g = 0;"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1490,9 +1344,6 @@ public class RenameVariableTests extends TestCase {
                       "  public int k;"+
                       "  void m() {"+
                       "    g.g.g.k = 0;"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))
@@ -1529,9 +1380,6 @@ public class RenameVariableTests extends TestCase {
                       "      int g;"+
                       "    }"+
                       "    g.k = 0;"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
                       ""))

@@ -7,7 +7,7 @@ aspect PromoteTempToField {
 		if(inStaticContext())
 			mods.addModifier("static");
 		FieldDeclaration fd = new FieldDeclaration(mods, type().createLockedAccess(), name(), new Opt<Expr>());
-		hostType().insertField(fd);
+		hostType().insertField(fd, hostBodyDecl());
 		for(VarAccess va : uses()) {
 			va.lock(fd);
 			va.lockDataFlow();

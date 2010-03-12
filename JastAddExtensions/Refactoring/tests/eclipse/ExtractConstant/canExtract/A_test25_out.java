@@ -2,7 +2,6 @@
 package p;
 
 @interface A {
-	public static final String DEFAULT_NAME= "Jean-Pierre";
-
 	String name() default DEFAULT_NAME;
+	public static final String DEFAULT_NAME= "Jean-Pierre";
 }

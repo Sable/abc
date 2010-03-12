@@ -1,6 +1,13 @@
 package p;
 
 public class E1 {
+
+	/**
+	 * @param inner1
+	 */
+	public static void bar(E1Inner1 e1Inner1) {
+		e1Inner1.foo();
+	}
 	
 	// Test warning if anonymous class cannot be qualified.
 	
@@ -10,13 +17,6 @@ public class E1 {
 	}
 	public class E1Inner2 {
 		public void run() {}
-	}
-
-	/**
-	 * @param inner1
-	 */
-	public static void bar(E1Inner1 e1Inner1) {
-		e1Inner1.foo();
 	}
 
 	public void foo() {

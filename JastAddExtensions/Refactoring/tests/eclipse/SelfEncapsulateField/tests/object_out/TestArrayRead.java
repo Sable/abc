@@ -6,15 +6,15 @@ public class TestArrayRead {
 	public TestArrayRead() {
 		setField(new Object[0]);
 	}
-	private Object[] ///void 
-		setField(Object[] field) {
-		return ///
-		this.field = field;
+	public void basicRun() {
+		System.err.println(getField().length);
 	}
 	private Object[] getField() {
 		return field;
 	}
-	public void basicRun() {
-		System.err.println(getField().length);
+	private Object[] ///void 
+		setField(Object[] field) {
+		return ///
+		this.field = field;
 	}
 }

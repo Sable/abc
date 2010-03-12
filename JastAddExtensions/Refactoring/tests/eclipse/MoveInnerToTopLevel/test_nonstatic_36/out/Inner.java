@@ -5,13 +5,6 @@ public class Inner
 	/** Comment */
 	private A a;
 
-	/**
-	 * @param a
-	 */
-	Inner(A a) {
-		this.a = a;
-	}
-
 	public void bar0(){
 		class Local{
 			public void run()
@@ -40,5 +33,12 @@ public class Inner
 			System.out.println(Inner.this.a.bar2());
 			Inner.this.a.bar3= "fred";
 		}
+	}
+
+	/**
+	 * @param a
+	 */
+	Inner(A a) {
+		this.a = a;
 	}
 }

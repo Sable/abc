@@ -3,11 +3,11 @@ package p;
 class A{
 	private final class Inner extends A {
 		int X; /// = 0;
+		void f(){
+		}
 		private Inner(int i) {
 			super(i);
 			X = 0; ///
-		}
-		void f(){
 		}
 	}
 	A(int i){

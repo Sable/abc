@@ -2,14 +2,14 @@ package p;
 public class A {
 
 	private final class Inner1Extension extends Inner1 {
-		private final String param;
+		public void m1(String s2) {
+			String s3 = param + s2;
+		}
 		private Inner1Extension(String param0, int param) {
 			super(param);
 			this.param= param0;
 		}
-		public void m1(String s2) {
-			String s3 = param + s2;
-		}
+		private final String param;
 	}
 
 	class Inner1 {

@@ -388,16 +388,14 @@ public class MakeMethodStaticTests extends TestCase {
             "    public A() {"+
             "        m();"+
             "    }"+
-            ""+
             "    public void m() { m(this); }"+
-            "    public static void m(A a) {"+
-            "      a.addWindowListener(a.new MyWindowListener());"+
-            "    }"+
-            ""+
             "    private class MyWindowListener"+
             "       extends WindowAdapter {"+
             "        public void windowActivated(WindowEvent e) {"+
             "        }"+
+            "    }"+
+            "    public static void m(A a) {"+
+            "      a.addWindowListener(a.new MyWindowListener());"+
             "    }"+
             "}")));
     }
@@ -436,14 +434,14 @@ public class MakeMethodStaticTests extends TestCase {
             Program.fromClasses(
             "class A {" +
             "    public void m() { m(this); }"+
-            "    public static void m(A a) {"+
-            "      a.n();"+
-            "    }"+
             "    void n() { }"+
             "    class B {"+
             "        void f() {"+
             "            m();"+
             "        }"+
+            "    }"+
+            "    public static void m(A a) {"+
+            "      a.n();"+
             "    }"+
             "}"));
     }

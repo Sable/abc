@@ -137,11 +137,11 @@ public class PromoteTempToFieldTests extends TestCase {
     	    Program.fromBodyDecls(
     		"void f() {" +
     	    "  new Object() {" +
+    	    "    private int x;" +
     	    "    void fx() {" +
     	    "      x = 23;" +
     	    "    }" +
     	    "    int s() { return 3; }" +
-    	    "    private int x;" +
     	    "  };" +
     	    "}"));
     }

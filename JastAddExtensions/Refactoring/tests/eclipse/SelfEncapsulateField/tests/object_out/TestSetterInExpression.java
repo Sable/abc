@@ -9,13 +9,13 @@ public class TestSetterInExpression {
 			foo();
 	}
 
+	String getField() {
+		return field;
+	}
+
 	String setField(String field) {
 		return ///
 		this.field = field;
 		///return field;
-	}
-
-	String getField() {
-		return field;
 	}
 }

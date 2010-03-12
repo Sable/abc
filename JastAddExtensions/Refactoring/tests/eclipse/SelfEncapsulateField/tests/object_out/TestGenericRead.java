@@ -7,13 +7,13 @@ public class TestGenericRead<E> {
 		E e = getField();
 	}
 
+	public E getField() {
+		return field;
+	}
+
 	public E ///void 
 	       setField(E field) {
 		return ///
 		this.field = field;
-	}
-
-	public E getField() {
-		return field;
 	}
 }

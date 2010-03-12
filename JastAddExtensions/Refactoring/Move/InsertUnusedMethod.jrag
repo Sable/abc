@@ -1,12 +1,15 @@
 aspect InsertUnusedMethod {
 	// insert an unused method into a given type
 	public void TypeDecl.insertUnusedMethod(MethodDecl m) {
+		insertUnusedMethod(m, getNumBodyDecl());
+	}
+	public void TypeDecl.insertUnusedMethod(MethodDecl m, int idx) {
 		throw new RefactoringException("cannot insert method into this kind of type declaration");
 	}
 	
-	public void ClassDecl.insertUnusedMethod(MethodDecl m) {
+	public void ClassDecl.insertUnusedMethod(MethodDecl m, int idx) {
 		programRoot().lockMethodNames(m.name());
-		addBodyDecl(m);
+		getBodyDeclList().insertChild(m, idx);
 		programRoot().flushCaches();
 		if(!canIntroduceMethod(m))
 			throw new RefactoringException("cannot insert method here");
@@ -17,11 +20,11 @@ aspect InsertUnusedMethod {
 				td.makeAbstract();
 	}
 	
-	public void ParTypeDecl.insertUnusedMethod(MethodDecl m) {
+	public void ParTypeDecl.insertUnusedMethod(MethodDecl m, int idx) {
 		genericDecl().insertUnusedMethod(m);
 	}
 	
-	public void ClassDeclSubstituted.insertUnusedMethod(MethodDecl m) {
+	public void ClassDeclSubstituted.insertUnusedMethod(MethodDecl m, int idx) {
 		original().insertUnusedMethod(m);
 	}
 	

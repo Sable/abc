@@ -68,19 +68,13 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -92,20 +86,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  A a;"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B a;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -125,13 +113,11 @@ public class RenameTypeTests extends TestCase {
                       "        }"+
                       "      return A;"+
                       "   };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B A;"+
                       "  B A(B A) {"+
@@ -142,11 +128,7 @@ public class RenameTypeTests extends TestCase {
                       "      }"+
                       "    return A;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -156,22 +138,18 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    class C { "+
                       "        public <T> C() { }"+
                       "    }"+
                       "}"+
-                      ""+
                       "class D {"+
                       "    Object o = new A().new<A> C();"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  "+
                       "  class C {"+
@@ -179,18 +157,10 @@ public class RenameTypeTests extends TestCase {
                       "      super();"+
                       "    }"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class D {"+
                       "  Object o = new B().new<B> C();"+
-                      "  D() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -200,51 +170,36 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A { }"+
-                      ""+
                       "class X {"+
                       "    class Y {"+
-                      "	<T> Y() { }"+
+                      "	       <T> Y() { }"+
                       "    }"+
                       "}"+
-                      ""+
                       "class Z extends X.Y {"+
                       "    Z() {"+
-                      "	new X().<A> super();"+
+                      "	       new X().<A> super();"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class X {"+
                       "  "+
                       "  class Y {"+
                       "     <T extends java.lang.Object> Y() {"+
-                      "    "+
                       "      super();"+
                       "    }"+
                       "  }"+
-                      "  X() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class Z extends X.Y {"+
                       "  Z() {"+
                       "    new X().<B>super();"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -254,7 +209,6 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "	       new Thread() {"+
@@ -264,18 +218,15 @@ public class RenameTypeTests extends TestCase {
                       "	       }.start();"+
                       "    }"+
                       "}"+
-                      ""+
                       "class MyThread {"+
                       "    public void start() {"+
                       "	       System.out.println(42);"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  public static void main(String[] args) {"+
                       "    new java.lang.Thread() {"+
@@ -284,20 +235,12 @@ public class RenameTypeTests extends TestCase {
                       "        }"+
                       "    }.start();"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class Thread {"+
                       "  public void start() {"+
                       "    System.out.println(42);"+
                       "  }"+
-                      "  Thread() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -307,32 +250,22 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    class C { }"+
                       "    { java.lang.System.out.println(\"Hello, world!\"); }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  "+
                       "  class java {"+
-                      "    java() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  {"+
                       "    System.out.println(\"Hello, world!\");"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -342,7 +275,6 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  static class B {"+
                       "    static class C {"+
@@ -350,44 +282,21 @@ public class RenameTypeTests extends TestCase {
                       "    }"+
                       "  }"+
                       "}"+
-                      ""+
-                      "class E extends A.B.C.D { }"+
-                      ""))
+                      "class E extends A.B.C.D { }"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
-                      "  "+
                       "  static class B {"+
-                      "    "+
                       "    static class F {"+
-                      "      "+
                       "      static class D {"+
-                      "        D() {"+
-                      "          super();"+
-                      "        }"+
-                      "      }"+
-                      "      F() {"+
-                      "        super();"+
                       "      }"+
                       "    }"+
-                      "    B() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  public A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
-                      ""+
                       "class E extends A.B.F.D {"+
-                      "  E() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -397,23 +306,16 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class A {"+
                       "  p.A a;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B a;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -424,19 +326,13 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -450,22 +346,16 @@ public class RenameTypeTests extends TestCase {
                       "  void m(){"+
                       "    A a = (A)new Object();"+
                       "  };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m() {"+
                       "    B a = (B)new Object();"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -479,22 +369,16 @@ public class RenameTypeTests extends TestCase {
                       "  void m(){"+
                       "    boolean b = (new A()) instanceof A;"+
                       "  };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m() {"+
                       "    boolean b = (new B()) instanceof B;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -506,20 +390,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  A a = new A();"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B a = new B();"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -536,28 +414,21 @@ public class RenameTypeTests extends TestCase {
                       "   AA(){ "+
                       "     A.s();"+
                       "   };   "+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  static void s() {"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class AA {"+
                       "  AA() {"+
                       "    super();"+
                       "    B.s();"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -588,13 +459,11 @@ public class RenameTypeTests extends TestCase {
                       "        }"+
                       "      return A;"+
                       "   };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  boolean A = new B() instanceof B;"+
                       "  B A(B A) {"+
@@ -605,11 +474,7 @@ public class RenameTypeTests extends TestCase {
                       "      }"+
                       "    return A;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class AA extends B {"+
                       "  B A = (B)new B();"+
                       "  B A(B A) {"+
@@ -620,11 +485,7 @@ public class RenameTypeTests extends TestCase {
                       "      }"+
                       "    return A;"+
                       "  }"+
-                      "  AA() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -639,24 +500,17 @@ public class RenameTypeTests extends TestCase {
                       "}"+
                       "class A{"+
                       "  int A = I.A; "+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "interface I {"+
                       "  int A = 0;"+
                       "}"+
-                      ""+
                       "class B {"+
                       "  int A = I.A;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -675,19 +529,13 @@ public class RenameTypeTests extends TestCase {
                       "    }"+
                       "    catch(A a){}"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B extends Exception {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class AA {"+
                       "  void m() {"+
                       "    try {"+
@@ -696,11 +544,7 @@ public class RenameTypeTests extends TestCase {
                       "    catch (B a) {"+
                       "    }"+
                       "  }"+
-                      "  AA() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -717,13 +561,11 @@ public class RenameTypeTests extends TestCase {
                       "    }"+
                       "    catch(A A){}"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B extends Exception {"+
                       "  void m() {"+
                       "    try {"+
@@ -732,11 +574,7 @@ public class RenameTypeTests extends TestCase {
                       "    catch (B A) {"+
                       "    }"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -748,20 +586,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  int A;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  int A;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -772,19 +604,13 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package A;"+
                       "class A{"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package A;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -794,41 +620,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("B.java", 
                       "package RenameType.test21.in;"+
-                      ""+
                       "import RenameType.test21.in.A;"+
-                      ""+
                       "class B {"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("A.java", 
                       "package RenameType.test21.in;"+
-                      ""+
                       "class A{"+
                       "    B b;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package RenameType.test21.in;"+
                       "import RenameType.test21.in.C;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("A.java",
                       "package RenameType.test21.in;"+
-                      ""+
                       "class C {"+
                       "  B b;"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -840,19 +651,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  A(){};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+		      "  B(){};"+
+                      "}"))
         );
     }
 
@@ -864,20 +670,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  A[] a = new A[5];"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B[] a = new B[5];"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -890,21 +690,15 @@ public class RenameTypeTests extends TestCase {
                       "class A extends Exception{"+
                       "  void m() throws A"+
                       "  {};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B extends Exception {"+
                       "  void m() throws B {"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -916,20 +710,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  Class c = A.class;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  Class c = B.class;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -946,13 +734,11 @@ public class RenameTypeTests extends TestCase {
                       "      A.this.x++;"+
                       "    }"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  int x;"+
                       "  "+
@@ -960,15 +746,8 @@ public class RenameTypeTests extends TestCase {
                       "    void m() {"+
                       "      B.this.x++;"+
                       "    }"+
-                      "    Inner() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -988,20 +767,14 @@ public class RenameTypeTests extends TestCase {
                       "      A.super.x++;"+
                       "    }"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class Super {"+
                       "  int x;"+
-                      "  Super() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class B extends Super {"+
                       "  String x;"+
                       "  "+
@@ -1009,15 +782,8 @@ public class RenameTypeTests extends TestCase {
                       "    void m() {"+
                       "      B.super.x++;"+
                       "    }"+
-                      "    Inner() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1036,36 +802,23 @@ public class RenameTypeTests extends TestCase {
                       "      A.super.m1();"+
                       "    }"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class Super {"+
                       "  void m1() {"+
                       "  }"+
-                      "  Super() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class B extends Super {"+
                       "  "+
                       "  class Inner {"+
                       "    void m() {"+
                       "      B.super.m1();"+
                       "    }"+
-                      "    Inner() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1075,19 +828,13 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      "public class A{};"+
-                      ""))
+                      "public class A{};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1100,25 +847,15 @@ public class RenameTypeTests extends TestCase {
                       "class A{"+
                       "}"+
                       "class AA extends A{"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class AA extends B {"+
-                      "  AA() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1130,20 +867,14 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "   static int f;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  static int f;"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1153,19 +884,13 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      "class A{};"+
-                      ""))
+                      "class A{};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1179,25 +904,18 @@ public class RenameTypeTests extends TestCase {
                       "}"+
                       "class C{"+
                       "  C(A a){};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  C(B a) {"+
                       "    super();"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1211,25 +929,18 @@ public class RenameTypeTests extends TestCase {
                       "}"+
                       "class C{"+
                       "  C() throws A {};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B extends Exception {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  C() throws B {"+
                       "    super();"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1241,22 +952,16 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A {"+
                       "	{A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  {"+
                       "    B a;"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1268,22 +973,16 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A {"+
                       "	static {A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  static {"+
                       "    B a;"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1296,13 +995,11 @@ public class RenameTypeTests extends TestCase {
                       "public class A {"+
                       "	static {A a;}"+
                       "	static {A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  static {"+
                       "    B a;"+
@@ -1310,11 +1007,7 @@ public class RenameTypeTests extends TestCase {
                       "  static {"+
                       "    B a;"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1327,13 +1020,11 @@ public class RenameTypeTests extends TestCase {
                       "public class A {"+
                       "	static {A a;}"+
                       "	{A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  static {"+
                       "    B a;"+
@@ -1341,11 +1032,7 @@ public class RenameTypeTests extends TestCase {
                       "  {"+
                       "    B a;"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1357,31 +1044,20 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A {"+
                       "}"+
-                      ""+
                       "class C{"+
                       "	{A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  {"+
                       "    B a;"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1393,31 +1069,20 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A {"+
                       "}"+
-                      ""+
                       "class C{"+
                       "	static {A a;}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  static {"+
                       "    B a;"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1429,21 +1094,15 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "   void A(){};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void A() {"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1455,40 +1114,26 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A {"+
                       "}"+
-                      ""+
                       "class C {"+
                       "	void m() {"+
                       "		class A{"+
                       "		}"+
                       "		new A();"+
                       "	}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  void m() {"+
                       "      class A {"+
-                      "        A() {"+
-                      "          super();"+
-                      "        }"+
                       "      }"+
                       "    new A();"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1504,13 +1149,11 @@ public class RenameTypeTests extends TestCase {
                       "		A= new A(new A(A));"+
                       "		return A;"+
                       "	}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  B(B A) {"+
                       "    super();"+
@@ -1519,8 +1162,7 @@ public class RenameTypeTests extends TestCase {
                       "    A = new B(new B(A));"+
                       "    return A;"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1536,13 +1178,11 @@ public class RenameTypeTests extends TestCase {
                       "		A= new A(new A(A));"+
                       "		return A;"+
                       "	}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B(B A) {"+
                       "    super();"+
@@ -1551,8 +1191,7 @@ public class RenameTypeTests extends TestCase {
                       "    A = new B(new B(A));"+
                       "    return A;"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1569,29 +1208,19 @@ public class RenameTypeTests extends TestCase {
                       "	 void x(){"+
                       "    p.A.A = A.A;"+
                       "	 }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  static B A;"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class X extends B {"+
                       "  void x() {"+
                       "    B.A = A.A;"+
                       "  }"+
-                      "  X() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1605,25 +1234,17 @@ public class RenameTypeTests extends TestCase {
                       "}"+
                       "class K implements A{"+
                       "}"+
-                      "interface C extends A{}"+
-                      ""))
+                      "interface C extends A{}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "interface B {"+
                       "}"+
-                      ""+
                       "class K implements B {"+
-                      "  K() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "interface C extends B {"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1633,19 +1254,13 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      "public class A{};"+
-                      ""))
+                      "public class A{};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1656,34 +1271,23 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "	A	( ){};"+
                       "};"+
                       "class C{"+
                       "	void s(){"+
                       "	new A ( );"+
                       "	}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  void s() {"+
                       "    new B();"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1694,34 +1298,23 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "	A	( ){};"+
                       "};"+
                       "class C{"+
                       "	void s(){"+
                       "	new p . A ( );"+
                       "	}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  void s() {"+
                       "    new B();"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1746,30 +1339,21 @@ public class RenameTypeTests extends TestCase {
                       "	="+
                       "	6;"+
                       "	}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
+		      "  B() { };"+
                       "  static int fgT;"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  void s() {"+
                       "    new B();"+
                       "    B.fgT = 6;"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1781,21 +1365,15 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "   void m(A a){};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m(B a) {"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1810,31 +1388,17 @@ public class RenameTypeTests extends TestCase {
                       " * @see A#A()"+
                       " */"+
                       "class A{"+
-                      "	A( ){};"+
                       "};"+
                       "class C extends A{"+
-                      "	C(){"+
-                      "		super();"+
-                      "	}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C extends B {"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1846,25 +1410,16 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "public class A{"+
                       " public class X{}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  "+
                       "  public class X {"+
-                      "    public X() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1878,22 +1433,16 @@ public class RenameTypeTests extends TestCase {
                       "	A[] m(){"+
                       "		return (A[])new A[3];"+
                       "	}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  B[] m() {"+
                       "    return (B[])new B[3];"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1909,25 +1458,20 @@ public class RenameTypeTests extends TestCase {
                       "	A m(){"+
                       "		return (A)new A();"+
                       "	}"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
+		      "  B() {}"+
                       "  B(B A) {"+
                       "    super();"+
                       "  }"+
                       "  B m() {"+
                       "    return (B)new B();"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -1950,13 +1494,11 @@ public class RenameTypeTests extends TestCase {
                       "};"+
                       "class B{"+
                       "	A.X ax= new A().new X(null);"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  "+
                       "  class XYZ {"+
@@ -1976,14 +1518,9 @@ public class RenameTypeTests extends TestCase {
                       "    return (A)new A();"+
                       "  }"+
                       "}"+
-                      ""+
                       "class B {"+
                       "  A.XYZ ax = new A().new XYZ(null);"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2006,8 +1543,7 @@ public class RenameTypeTests extends TestCase {
                       "};"+
                       "class B{"+
                       "	A.X ax= new A().new X(null);"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2018,20 +1554,13 @@ public class RenameTypeTests extends TestCase {
             new RawCU("A.java", 
                       "package a.a;"+
                       "class A {"+
-                      "    A() {}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package a.a;"+
-                      ""+
                       "class B {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2049,21 +1578,15 @@ public class RenameTypeTests extends TestCase {
                       "public class A{"+
                       " A a;"+
                       "	String aa= \"A\";"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  B a;"+
                       "  String aa = \"A\";"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2078,40 +1601,25 @@ public class RenameTypeTests extends TestCase {
                       "}"+
                       "class A extends Sup {"+
                       "}"+
-                      ""+
                       "class Test {"+
                       "  public static void main(String[] arguments) {"+
                       "    System.out.println(A.CONSTANT);"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class Sup {"+
                       "  static int CONSTANT = 0;"+
-                      "  Sup() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class B extends Sup {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class Test {"+
                       "  public static void main(String[] arguments) {"+
                       "    System.out.println(B.CONSTANT);"+
                       "  }"+
-                      "  Test() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2125,22 +1633,16 @@ public class RenameTypeTests extends TestCase {
                       "	void f(){"+
                       "		A a= ( A )this;"+
                       "	}"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void f() {"+
                       "    B a = (B)this;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2152,21 +1654,15 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "   void m(A A){};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m(B A) {"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2183,21 +1679,15 @@ public class RenameTypeTests extends TestCase {
                       "public class A{"+
                       " A a;"+
                       "	String aa= \"C:\\\\A.java\";"+
-                      "};"+
-                      ""))
+                      "};"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  B a;"+
                       "  String aa = \"C:\\\\A.java\";"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2210,25 +1700,15 @@ public class RenameTypeTests extends TestCase {
                       "class A{"+
                       "   class Inner{"+
                       "   }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
-                      "  "+
                       "  class Inner {"+
-                      "    Inner() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2238,36 +1718,24 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class A {"+
                       "    class B { }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "    static class D extends A {"+
                       "	int D;"+
                       "	static int m() { return 23; }"+
                       "	int i = C.D.m();"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class A {"+
-                      "  "+
                       "  class C {"+
-                      "    C() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  A() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  "+
                       "  static class D extends A {"+
@@ -2276,15 +1744,8 @@ public class RenameTypeTests extends TestCase {
                       "      return 23;"+
                       "    }"+
                       "    int i = p.C.D.m();"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2294,20 +1755,14 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A<S> {"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
                       "public class A<T extends java.lang.Object> {"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2317,38 +1772,22 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A { }"+
-                      ""+
                       "class C<T> { }"+
-                      ""+
                       "class D {"+
                       "    C<A> b;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       "class C<T extends java.lang.Object> {"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class D {"+
                       "  C<B> b;"+
-                      "  D() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2358,46 +1797,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A { }"+
-                      ""+
                       "class C {"+
                       "  class D<T> { }"+
                       "}"+
-                      ""+
                       "class E {"+
                       "    C.D<A> b = new C().new D<A>();"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  class D<T extends java.lang.Object> {"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  C() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
-                      ""+
                       "class E {"+
                       "  C.D<B> b = new C().new D<B>();"+
-                      "  E() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2410,8 +1829,7 @@ public class RenameTypeTests extends TestCase {
                       "class A {"+
                       "}"+
                       "class B extends A{"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2421,15 +1839,12 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class A {"+
                       "}"+
                       "class C extends A{"+
                       "}"+
                       "class B extends C{"+
-                      "}"+
-                      " "+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2442,9 +1857,7 @@ public class RenameTypeTests extends TestCase {
                       "class A extends B{"+
                       "}"+
                       "class B{"+
-                      "}"+
-                      " "+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2459,9 +1872,7 @@ public class RenameTypeTests extends TestCase {
                       "class B{"+
                       "}"+
                       "class C extends B{"+
-                      "}"+
-                      ""+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2473,22 +1884,16 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "   A m(){return null;};"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  B m() {"+
                       "    return null;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2498,46 +1903,28 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("B.java", 
                       "package p;"+
-                      ""+
                       "import p.A.*;"+
-                      ""+
                       "class B extends D {"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class A {"+
                       "  static class D { }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
                       "import p.C.*;"+
-                      ""+
                       "class B extends D {"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class C {"+
                       "  "+
                       "  static class D {"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2548,19 +1935,15 @@ public class RenameTypeTests extends TestCase {
             new RawCU("B.java", 
                       "package p;"+
                       "class B extends C{"+
-                      "}"+
-                      " "+
-                      ""),
+                      "}"),
             new RawCU("C.java", 
                       "package p;"+
                       "class C extends A{"+
-                      "} "+
-                      ""),
+                      "} "),
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2571,19 +1954,15 @@ public class RenameTypeTests extends TestCase {
             new RawCU("B.java", 
                       "package p;"+
                       "class B{"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("C.java", 
                       "package p;"+
                       "class C extends B{"+
-                      "}"+
-                      ""+
-                      ""),
+                      "}"),
             new RawCU("A.java", 
                       "package p;"+
                       "class A extends C{"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2595,10 +1974,7 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "}"+
-                      "class B{}"+
-                      ""+
-                      " "+
-                      ""))
+                      "class B{}"))
         );
     }
 
@@ -2608,15 +1984,11 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("B.java", 
                       "package p;"+
-                      "class B{}"+
-                      " "+
-                      ""),
+                      "class B{}"),
             new RawCU("A.java", 
                       "package p;"+
                       "class A{"+
-                      "}"+
-                      " "+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2628,8 +2000,7 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  class B{}"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2646,8 +2017,7 @@ public class RenameTypeTests extends TestCase {
                       "        }"+
                       "     }"+
                       "  }"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2659,8 +2029,7 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class B{"+
                       "  class A{}"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2672,8 +2041,7 @@ public class RenameTypeTests extends TestCase {
                       "package p;"+
                       "class A{"+
                       "  interface B{}"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2683,54 +2051,33 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class B {"+
                       "    class C { }"+
                       "}"+
-                      ""+
                       "class A {"+
                       "    class D { }"+
                       "    class E extends B {"+
                       "	D d;"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  "+
                       "  class D {"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  B() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
-                      ""+
                       "class A {"+
                       "  "+
                       "  class D {"+
-                      "    D() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  "+
                       "  class E extends B {"+
                       "    A.D d;"+
-                      "    E() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
-                      "  A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2744,23 +2091,17 @@ public class RenameTypeTests extends TestCase {
                       "   void m(){"+
                       "     A: return;"+
                       "   };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m() {"+
                       "    A:"+
                       "      return ;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2770,39 +2111,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "import static java.util.Map.Entry;"+
-                      ""+
                       "class B {"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "        System.out.println(Entry.class.getName());"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
                       "import static java.util.Map.Entry;"+
-                      ""+
                       "class Entry {"+
-                      "  Entry() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "  public static void main(String[] args) {"+
                       "    System.out.println(java.util.Map.Entry.class.getName());"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2812,39 +2140,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "import java.util.Map.Entry;"+
-                      ""+
                       "class B {"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "        System.out.println(Entry.class.getName());"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
                       "import java.util.Map.Entry;"+
-                      ""+
                       "class Entry {"+
-                      "  Entry() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "  public static void main(String[] args) {"+
                       "    System.out.println(java.util.Map.Entry.class.getName());"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2857,8 +2172,7 @@ public class RenameTypeTests extends TestCase {
                       "class Outer{"+
                       "  class A{}"+
                       "  class B{}"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2871,8 +2185,7 @@ public class RenameTypeTests extends TestCase {
                       "class Outer{"+
                       "  class A{}"+
                       "  interface B{}"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2887,8 +2200,7 @@ public class RenameTypeTests extends TestCase {
                       "    class A{}"+
                       "    class B{}"+
                       "  }"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2903,8 +2215,7 @@ public class RenameTypeTests extends TestCase {
                       "    class A{}"+
                       "    class B{}"+
                       "  }"+
-                      "} "+
-                      ""))
+                      "} "))
         );
     }
 
@@ -2914,11 +2225,8 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "interface A<V> { }"+
-                      ""+
-                      "interface B<S> extends A<S> { }"+
-                      ""))
+                      "interface B<S> extends A<S> { }"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
@@ -2926,8 +2234,7 @@ public class RenameTypeTests extends TestCase {
                       "interface A<V extends java.lang.Object> {"+
                       "}"+
                       "interface B<T extends java.lang.Object> extends A<T> {"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2937,27 +2244,20 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class A {"+
                       "    void m() {"+
                       "    	 A.class.getName();"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m() {"+
                       "    B.class.getName();"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -2967,13 +2267,11 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "class D {"+
                       "    static class B {"+
                       "	static int x = 42;"+
                       "    }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "    static class C extends D {"+
                       "	static int x = 23;"+
@@ -2982,26 +2280,17 @@ public class RenameTypeTests extends TestCase {
                       "    public static void main(String[] args) {"+
                       "	System.out.println(C.m());"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class D {"+
                       "  "+
                       "  static class C {"+
                       "    static int x = 42;"+
-                      "    C() {"+
-                      "      super();"+
-                      "    }"+
-                      "  }"+
-                      "  D() {"+
-                      "    super();"+
                       "  }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "  "+
                       "  static class C extends D {"+
@@ -3009,18 +2298,11 @@ public class RenameTypeTests extends TestCase {
                       "    static int m() {"+
                       "      return A.C.x;"+
                       "    }"+
-                      "    C() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  public static void main(String[] args) {"+
                       "    System.out.println(C.m());"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3030,39 +2312,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "import static java.util.Map.*;"+
-                      ""+
                       "class B {"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "        System.out.println(Entry.class.getName());"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
                       "import static java.util.Map.*;"+
-                      ""+
                       "class Entry {"+
-                      "  Entry() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "  public static void main(String[] args) {"+
                       "    System.out.println(java.util.Map.Entry.class.getName());"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3076,22 +2345,16 @@ public class RenameTypeTests extends TestCase {
                       "   void m(){"+
                       "     A A; "+
                       "   };"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "class B {"+
                       "  void m() {"+
                       "    B A;"+
                       "  }"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3101,39 +2364,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "import java.util.Map.*;"+
-                      ""+
                       "class B {"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "        System.out.println(Entry.class.getName());"+
                       "    }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
                       "import java.util.Map.*;"+
-                      ""+
                       "class Entry {"+
-                      "  Entry() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "public class A {"+
                       "  public static void main(String[] args) {"+
                       "    System.out.println(java.util.Map.Entry.class.getName());"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3143,15 +2393,13 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A<T> {"+
                       "  T f;"+
                       "  T m(int g) {"+
                       "    String s = new A<String>().f;"+
                       "    return null;"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
@@ -3162,11 +2410,7 @@ public class RenameTypeTests extends TestCase {
                       "    String s = new B<String>().f;"+
                       "    return null;"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3176,24 +2420,16 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public @interface A { }"+
-                      ""+
-                      "@A class C { }"+
-                      ""))
+                      "@A class C { }"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
                       "public @interface B {"+
                       "}"+
-                      ""+
                       "@B() class C {"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3202,23 +2438,18 @@ public class RenameTypeTests extends TestCase {
             "p", "A", "B",
             Program.fromCompilationUnits(
             new RawCU("package-info.java", 
-                      "@A package p;"+
-                      ""),
+                      "@A package p;"),
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
-                      "public @interface A { }"+
-                      ""))
+                      "public @interface A { }"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
                       "public @interface B {"+
-                      "}"+
-                      ""),
+                      "}"),
             new RawCU("package-info.java",
-                      "@B() package p;"+
-                      ""))
+                      "@B() package p;"))
         );
     }
 
@@ -3228,31 +2459,20 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "}"+
-                      ""+
                       "class C<B> {"+
                       "  A a;"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       "class C<B extends java.lang.Object> {"+
                       "  p.B a;"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3262,41 +2482,26 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    public static void main(String[] args) {"+
                       "        C<A> a = new D<String>();"+
                       "    }"+
                       "}"+
-                      ""+
                       "class C<T> { }"+
-                      ""+
-                      "class D<B> extends C<A> { }"+
-                      ""))
+                      "class D<B> extends C<A> { }"))
             ,
             Program.fromCompilationUnits(
             new RawCU("B.java",
                       "package p;"+
-                      ""+
                       "public class B {"+
                       "  public static void main(String[] args) {"+
                       "    C<B> a = new D<String>();"+
                       "  }"+
-                      "  public B() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       "class C<T extends java.lang.Object> {"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
                       "class D<B extends java.lang.Object> extends C<p.B> {"+
-                      "  D() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3306,12 +2511,10 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A<S> {"+
                       "    class T { }"+
                       "    S x;"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3321,36 +2524,24 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    <T> int m() { return 23; }"+
                       "}"+
-                      ""+
                       "class B {"+
                       "    int x = new A().<B>m();"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "   <T extends java.lang.Object> int m() {"+
                       "    return 23;"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class C {"+
                       "  int x = new A().<C>m();"+
-                      "  C() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3360,37 +2551,25 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "    <S> int m() { S s; return 23; }"+
                       "}"+
-                      ""+
                       "class B {"+
                       "    int x = new A().<B>m();"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "   <T extends java.lang.Object> int m() {"+
                       "    T s;"+
                       "    return 23;"+
                       "  }"+
-                      "  public A() {"+
-                      "    super();"+
-                      "  }"+
                       "}"+
-                      ""+
                       "class B {"+
                       "  int x = new A().<B>m();"+
-                      "  B() {"+
-                      "    super();"+
-                      "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
 
@@ -3400,34 +2579,25 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java", 
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  class S { }"+
                       "  public <T>A() {"+
                       "    S s;"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
             ,
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      ""+
                       "public class A {"+
                       "  "+
                       "  class T {"+
-                      "    T() {"+
-                      "      super();"+
-                      "    }"+
                       "  }"+
                       "  public  <T extends java.lang.Object> A() {"+
-                      "  "+
                       "    super();"+
-                      "  "+
                       "    A.T s;"+
                       "  }"+
-                      "}"+
-                      ""))
+                      "}"))
         );
     }
     

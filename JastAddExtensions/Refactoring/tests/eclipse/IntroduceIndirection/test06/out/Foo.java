@@ -1,6 +1,13 @@
 package p;
 
 public class Foo {
+
+	/**
+	 * @param bar
+	 */
+	public static void bar(Bar bar) {
+		bar.getDisplay();
+	}
 	
 	// Test correct "thisification".
 
@@ -9,12 +16,5 @@ public class Foo {
 		{
 			/*///Foo.*/bar(this);
 		}
-	}
-
-	/**
-	 * @param bar
-	 */
-	public static void bar(Bar bar) {
-		bar.getDisplay();
 	}
 }

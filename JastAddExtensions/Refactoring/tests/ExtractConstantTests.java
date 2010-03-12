@@ -42,10 +42,10 @@ public class ExtractConstantTests extends TestCase {
         	"  return ((23));" +
         	"}"),
         	Program.fromBodyDecls(
-        	"private static final int C = 23;",
         	"int m() {" +
         	"  return C;" +
-        	"}"));
+        	"}",
+        	"private static final int C = 23;"));
     }
     
     public void test2() {
@@ -58,13 +58,13 @@ public class ExtractConstantTests extends TestCase {
            	"  return 23;" +
            	"}"),
            	Program.fromBodyDecls(
-           	"private static final int C = f();",
            	"int m() {" +
            	"  return C;" +
            	"}",
            	"static int f() {" +
            	"  return 23;" +
-           	"}"));    	
+           	"}",
+           	"private static final int C = f();"));    	
     }
 
     public void test3() {

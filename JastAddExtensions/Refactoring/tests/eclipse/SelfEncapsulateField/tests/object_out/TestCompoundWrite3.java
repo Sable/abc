@@ -8,13 +8,13 @@ public class TestCompoundWrite3 {
 		a.a.setField(a.a.getField() + "d");
 	}
 
+	String getField() {
+		return field;
+	}
+
 	String ///void 
 	setField(String field) {
 		return ///
 		this.field = field;
-	}
-
-	String getField() {
-		return field;
 	}
 }

@@ -8,14 +8,14 @@ public class TestNestedRead {
 		return getField().getField().getField().getField().i;
 	}
 
+	public TestNestedRead getField() {
+		return field;
+	}
+
 	public TestNestedRead ///void 
 	       setField(TestNestedRead field) {
 		return ///
 		this.field = field;
-	}
-
-	public TestNestedRead getField() {
-		return field;
 	}
 }
 

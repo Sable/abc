@@ -2,10 +2,10 @@ package p;
 //private, static, final
 class A{
 	private final class Inner extends A {
+		void f(){
+		}
 		private Inner(int i) {
 			super(i);
-		}
-		void f(){
 		}
 	}
 	A(int i){

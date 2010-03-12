@@ -53,8 +53,8 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 	public void test2() {
 		testSucc(Program.fromClasses("class Outer { class A { class B { } } }"),
 				 Program.fromClasses("class Outer { class A { } }",
-						             "class B { private final Outer outer; " +
-						             "          private final Outer.A a; " +
+						             "class B { private final Outer.A a; " +
+						             "          private final Outer outer; " +
 						             "          B(Outer.A a, Outer outer) {" +
 						             "            this.a = a;" +
 						             "            this.outer = outer;" +
@@ -65,8 +65,8 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 		testSucc(Program.fromClasses("class A { int x; class B { int m() { return x; } } }"),
 				 Program.fromClasses("class A { int x; }",
 						             "class B { private final A a;" +
-						             "          B(A a) { this.a = a; } " +
-						             "          int m() { return a.x; } }"));
+						             "          int m() { return a.x; } " +
+						             "          B(A a) { this.a = a; } }"));
 	}
 	
 	public void test4() {
@@ -95,16 +95,16 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 	public void test8() {
 		testSucc(Program.fromClasses("class A { class B { int x; B(int x) { this.x = x; } } }"),
 				 Program.fromClasses("class A { }",
-						             "class B { int x;" +
-						             "          private final A a; " +
+						             "class B { private final A a; " +
+						             "          int x;" +
 						             "          B(A a, int x) { this.a = a; this.x = x; } }"));
 	}
 	
 	public void test9() {
 		testSucc(Program.fromClasses("class A { class B { int x; B(int x) { this.x = x; } B() { this(23); } } }"),
 				 Program.fromClasses("class A { }",
-						             "class B { int x;" +
-						             "          private final A a; " +
+						             "class B { private final A a; " +
+						             "          int x;" +
 						             "          B(A a, int x) { this.a = a; this.x = x; } " +
 						             "          B(A a) { this(a, 23); } }"));
 	}
@@ -132,12 +132,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "class B {" +
 				    "  private final Outer.A a;" +
 				    "  private final Outer outer;" +
+				    "  int m() {" +
+				    "    return outer.x + a.y;" +
+				    "  }" +
 				    "  B(Outer.A a, Outer outer) {" +
 				    "    this.a = a;" +
 				    "    this.outer = outer;" +
-				    "  }" +
-				    "  int m() {" +
-				    "    return outer.x + a.y;" +
 				    "  }" +
 				    "}"));
 	}
@@ -167,12 +167,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "class B {" +
 				    "  private final Outer.A a;" +
 				    "  private final Outer outer;" +
+				    "  int m() {" +
+				    "    return outer.x + a.y;" +
+				    "  }" +
 				    "  B(Outer.A a, Outer outer) {" +
 				    "    this.a = a;" +
 				    "    this.outer = outer;" +
-				    "  }" +
-				    "  int m() {" +
-				    "    return outer.x + a.y;" +
 				    "  }" +
 				    "}"));
 	}
@@ -306,12 +306,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "}" +
 				    "class B {" +
 				    "  private final A a;" +
-				    "  B(A a) {" +
-				    "    this.a = a;" +
-				    "  }" + 
 				    "  int m() {" +
 				    "    return a.y;" +
 				    "  }" +
+				    "  B(A a) {" +
+				    "    this.a = a;" +
+				    "  }" + 
 				    "}" +
 				    "class C {" +
 				    "  B b = new B(new A());" +
@@ -342,12 +342,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "}",
 				    "class B {" +
 				    "  private final  A a;" +
-				    "  B(A a) {" +
-				    "    this.a = a;" +
-				    "  }" + 
 				    "  int m() {" +
 				    "    return a.y;" +
 				    "  }" +
+				    "  B(A a) {" +
+				    "    this.a = a;" +
+				    "  }" + 
 				    "}",
 				    "class D {" +
 				    "  A a;" +
@@ -383,12 +383,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "}",
 				    "class B {" +
 				    "  private final A a;" +
-				    "  B(A a) {" +
-				    "    this.a = a;" +
-				    "  }" + 
 				    "  int m() {" +
 				    "    return a.y;" +
 				    "  }" +
+				    "  B(A a) {" +
+				    "    this.a = a;" +
+				    "  }" + 
 				    "}",
 				    "class D {" +
 				    "  A a;" +
@@ -424,12 +424,12 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				    "}",
 				    "class B {" +
 				    "  private final A a;" +
-				    "  B(A a) {" +
-				    "    this.a = a;" +
-				    "  }" + 
 				    "  int m() {" +
 				    "    return a.y;" +
 				    "  }" +
+				    "  B(A a) {" +
+				    "    this.a = a;" +
+				    "  }" + 
 				    "}",
 				    "class D {" +
 				    "  A a;" +
@@ -446,8 +446,11 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 				 Program.fromClasses("class A { }",
 						             "class B { private final A a;" +
 						             "          private int x;" +
-						             "          B(A a) { this.a = a; }" +
-						             "          int getX() { return this.x; } }"));
+						             "          int getX() { return this.x; } " +
+						             "          B(A a) { this.a = a; } }"));
 	}
-	
+
+	public void test22() {
+		testFail(Program.fromClasses("class A { int x; class B { int y = x; } }"));
+	}
 }

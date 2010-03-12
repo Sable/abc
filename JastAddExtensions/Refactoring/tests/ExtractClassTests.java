@@ -92,9 +92,6 @@ public class ExtractClassTests extends TestCase {
             "" +
             "class B {" +
             "  int data = 0;" +
-            "  B() {" +
-            "    super();" +
-            "  }" +
             "}" +
             "" +
             "public class A extends B {" +
@@ -110,9 +107,6 @@ public class ExtractClassTests extends TestCase {
             "  }" +
             "  public void g() {" +
             "    p.Data data;" +
-            "  }" +
-            "  public A() {" +
-            "    super();" +
             "  }" +
             "  " +
             "  static class Data {" +
@@ -141,9 +135,6 @@ public class ExtractClassTests extends TestCase {
             "" +
             "class Data {" +
             "  int z;" +
-            "  Data() {" +
-            "    super();" +
-            "  }" +
             "}")));
     }
 
@@ -171,17 +162,11 @@ public class ExtractClassTests extends TestCase {
             "" +
             "class B {" +
             "  int d = 0;" +
-            "  B() {" +
-            "    super();" +
-            "  }" +
             "}" +
             "" +
             "public class A extends B {" +
             "  public int init() {" +
             "    return 4 + super.d;" +
-            "  }" +
-            "  public A() {" +
-            "    super();" +
             "  }" +
             "  " +
             "  static class Data {" +
@@ -217,14 +202,8 @@ public class ExtractClassTests extends TestCase {
             "package p;" +
             "" +
             "public class A {" +
-            "  public A() {" +
-            "    super();" +
-            "  }" +
             "  " +
             "  static class Data {" +
-            "    Data() {" +
-            "      super();" +
-            "    }" +
             "    private p.Data x;" +
             "    p.Data getX() {" +
             "      return x;" +
@@ -237,9 +216,6 @@ public class ExtractClassTests extends TestCase {
             "}" +
             "" +
             "class Data {" +
-            "  Data() {" +
-            "    super();" +
-            "  }" +
             "}")));
     }
 
@@ -258,17 +234,7 @@ public class ExtractClassTests extends TestCase {
             "package p;" +
             "" +
             "class A {" +
-            "  {" +
-            "    System.out.println();" +
-            "  }" +
-            "  A() {" +
-            "    super();" +
-            "  }" +
-            "  " +
             "  static class Data {" +
-            "    Data() {" +
-            "      super();" +
-            "    }" +
             "    private int x;" +
             "    private int y;" +
             "    int getX() {" +
@@ -285,6 +251,9 @@ public class ExtractClassTests extends TestCase {
             "    }" +
             "  }" +
             "  Data java = new Data();" +
+            "  {" +
+            "    System.out.println();" +
+            "  }" +
             "}")));
     }
     

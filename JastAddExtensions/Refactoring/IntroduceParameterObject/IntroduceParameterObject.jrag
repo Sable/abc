@@ -14,7 +14,6 @@ aspect IntroduceParameterObject {
 		programRoot().lockMethodNames(name());
 		
 		// adjust this method, all methods it overrides, and all methods overridden by them
-		// TODO: this is actually not enough; we also need to handle cousin methods
 		for(MethodDecl md : getRelatives())
 			md.uses();
 		for(MethodDecl md : getRelatives()) {
@@ -41,7 +40,7 @@ aspect IntroduceParameterObject {
 			md.setParameterList(newparms);
 		}
 		
-		return hostType().insertUnusedType(struct);
+		return hostType().insertUnusedType(struct, getChildIndex());
 	}
 	
 	public void MethodDecl.doIntroduceParameterObject(Collection<String> parms, String className, String parmName, boolean toplevel) {

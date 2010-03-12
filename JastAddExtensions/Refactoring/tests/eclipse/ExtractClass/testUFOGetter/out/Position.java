@@ -4,8 +4,6 @@ public class Position {
 	private int x;
 	private int y;
 	private int z;
-	public Position() {
-	}
 	public int getX() {
 		return x;
 	}

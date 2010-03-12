@@ -5,6 +5,10 @@ aspect ConstructorExt {
 	syn boolean ConstructorDecl.isChained() = getConstructorAccess() != null && !(getConstructorAccess() instanceof SuperConstructorAccess); 
 		
 	// TODO: this check is too brittle
-	syn boolean ConstructorDecl.isCompilerGenerated() = getStart() == 0;
+	syn boolean ConstructorDecl.isCompilerGenerated() = 
+		   getStart() == 0 
+		&& getBlock().getNumStmt() == 0
+		&& getConstructorAccess() instanceof SuperConstructorAccess
+		&& ((SuperConstructorAccess)getConstructorAccess()).getNumArg() == 0;
 	
 }

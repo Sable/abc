@@ -288,10 +288,10 @@ public class PushDownMethodTests extends TestCase {
     	      "class Outer {" +
     	      "  int m () { return 42; }" +
     	      "  class B extends A {" +
-    	      "    private int m() { return 23; }" +
     	      "    class Inner {" +
     	      "      int n() { return Outer.this.m(); }" +
     	      "    }" +
+    	      "    private int m() { return 23; }" +
     	      "  }" +
    		      "}"));
     }

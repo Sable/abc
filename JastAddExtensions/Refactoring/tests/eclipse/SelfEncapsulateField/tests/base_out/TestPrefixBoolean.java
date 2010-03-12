@@ -8,13 +8,13 @@ public class TestPrefixBoolean {
 		b= !isField();
 	}
 
+	boolean isField() {
+		return field;
+	}
+
 	boolean ///void 
 	setField(boolean field) {
 		return ///
 		this.field = field;
-	}
-
-	boolean isField() {
-		return field;
 	}
 }

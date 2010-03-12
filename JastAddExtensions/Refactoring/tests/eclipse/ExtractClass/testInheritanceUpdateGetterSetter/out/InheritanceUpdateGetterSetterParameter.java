@@ -3,8 +3,6 @@ package p;
 public class InheritanceUpdateGetterSetterParameter {
 	private String test;
 	private int test2;
-	public InheritanceUpdateGetterSetterParameter() {
-	}
 	public String getTest() {
 		return test;
 	}

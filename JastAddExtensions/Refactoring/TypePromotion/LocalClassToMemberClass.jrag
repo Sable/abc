@@ -13,7 +13,7 @@ aspect LocalClassToMemberClass {
 		root.lockNames(cd.name());
 		cd.lockAllNames();
 		// move
-		cd.enclosingType().insertUnusedType(cd);
+		cd.enclosingType().insertUnusedType(cd, 0);
 		enclosingBlock().removeStmt(this);
 	}
 	

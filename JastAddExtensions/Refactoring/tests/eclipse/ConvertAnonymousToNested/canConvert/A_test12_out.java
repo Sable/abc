@@ -1,7 +1,6 @@
 package p;
 class A{
 	private final class Inner extends A {
-		private final int u;
 		int k;
 		private Inner(int u, int x) {
 			super(x);
@@ -9,6 +8,7 @@ class A{
 			k= this.///
 			   u;
 		}
+		private final int u;
 	}
 	A(int x){
 	}

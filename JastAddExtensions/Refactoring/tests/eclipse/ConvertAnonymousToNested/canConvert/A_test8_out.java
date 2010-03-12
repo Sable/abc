@@ -2,11 +2,11 @@ package p;
 //private, nonstatic, final
 class A{
 	private final class Inner extends A {
-		private Inner(int i) {
-			super(i);
-		}
 		void f(){
 			x();
+		}
+		private Inner(int i) {
+			super(i);
 		}
 	}
 	A(int i){

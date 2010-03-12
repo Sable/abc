@@ -8,13 +8,13 @@ public class TestGenericReadWrite<E extends String> {
 		setField(temp);
 	}
 
+	public E getField() {
+		return field;
+	}
+
 	public E ///void 
 	       setField(E field) {
 		return ///
 		this.field = field;
-	}
-
-	public E getField() {
-		return field;
 	}
 }

@@ -1,14 +1,17 @@
 aspect InsertUnusedType {
 	// insert an unused member type into a given type
 	public MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl td) {
+		return insertUnusedType(td, getNumBodyDecl());
+	}
+	public MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl td, int idx) {
 		throw new RefactoringException("cannot insert type into this kind of type declaration");
 	}
 	
-	protected static MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl host, MemberTypeDecl member) {
+	protected static MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl host, MemberTypeDecl member, int idx) {
 		TypeDecl td = member.typeDecl();
 		if(!host.localTypeDecls(td.name()).isEmpty())
 			throw new RefactoringException("host type contains type of the same name");
-		host.addBodyDecl(member);
+		host.getBodyDeclList().insertChild(member, idx);
 		if(td.isStatic() && host.isInnerClass())
 			throw new RefactoringException("cannot insert static type into inner class");
 		for(TypeDecl encl=host;encl!=null;encl=encl.enclosingType())
@@ -20,10 +23,10 @@ aspect InsertUnusedType {
 		return member;
 	}
 	
-	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td) { return insertUnusedType(this, td.asMemberTypeDecl()); }
-	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td) { return insertUnusedType(this, td.asMemberTypeDecl()); }
-	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td) { return sourceTypeDecl().insertUnusedType(td); }
-	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td) { return sourceTypeDecl().insertUnusedType(td); }
+	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
+	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
+	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
+	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
 	
 	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
 	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }

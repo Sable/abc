@@ -7,8 +7,6 @@ public class FieldsWithJavadocData {
 	private String[] test;
 	/** val field */
 	private int[] val;
-	public FieldsWithJavadocData() {
-	}
 	public String[] getTest() {
 		return test;
 	}

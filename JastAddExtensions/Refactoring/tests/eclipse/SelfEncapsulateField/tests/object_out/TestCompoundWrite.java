@@ -7,13 +7,13 @@ public class TestCompoundWrite {
 		setField(getField() + "d");
 	}
 
+	String getField() {
+		return field;
+	}
+
 	String ///void 
 	setField(String field) {
 		return ///
 		this.field = field;
-	}
-
-	String getField() {
-		return field;
 	}
 }

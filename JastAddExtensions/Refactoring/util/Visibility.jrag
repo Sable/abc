@@ -51,7 +51,6 @@ aspect Visibility {
 	public void ClassDecl.setVisibility(int v) {
 		getModifiers().setVisibility(v);
 		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
-			if(cd.isCompilerGenerated())
-				cd.getModifiers().setVisibility(v);
+			cd.getModifiers().setVisibility(v);
 	}
 }

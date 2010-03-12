@@ -8,11 +8,10 @@ class R {
 	}
 	
 	static class S extends R {
-		private static final int CONSTANT= ///p.
-						   R.rG();
-
 		void f(){
 			int d= CONSTANT;	
 		}
+		private static final int CONSTANT= ///p.
+						   R.rG();
 	}	
 }

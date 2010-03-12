@@ -4,16 +4,6 @@ package p;
 
 public class Foo<E> {
 
-	static class Bar<F> {
-
-		static class FooBar<G> {
-
-			static <E, F, G, H> void foo(E e, F f, G g, H h) {
-
-			}
-		}
-	}
-
 	/**
 	 * @param <E>
 	 * @param <F>
@@ -27,6 +17,16 @@ public class Foo<E> {
 	public static <E, F, G, H> void bar(E e, F f, G g, H h) {
 		Bar.///
 		FooBar.foo(e, f, g, h);
+	}
+
+	static class Bar<F> {
+
+		static class FooBar<G> {
+
+			static <E, F, G, H> void foo(E e, F f, G g, H h) {
+
+			}
+		}
 	}
 
 	{

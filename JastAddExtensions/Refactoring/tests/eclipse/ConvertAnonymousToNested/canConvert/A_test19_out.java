@@ -1,7 +1,6 @@
 package p;
 class A{
 	private final class Inner extends A {
-		private final int u;
 		int l; ///= 9;
 		int p0 /*///= 2*/, k, k1;
 		int l1 /*///=l+1*/, p, q;
@@ -16,6 +15,7 @@ class A{
 			q= p+ this.///
 			      u;
 		}
+		private final int u;
 	}
 
 	void f(){

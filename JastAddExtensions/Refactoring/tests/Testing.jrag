@@ -37,14 +37,12 @@ aspect Testing {
 		ArrayList<BodyDecl> bds = new ArrayList<BodyDecl>();
 		for(int i=0;i<getNumBodyDecl();++i)
 			bds.add(getBodyDecl(i));
-		Collections.sort(bds, new Comparator<BodyDecl>() {
-			public int compare(BodyDecl bd1, BodyDecl bd2) {
-				return bd1.ppID().compareTo(bd2.ppID());
-			}
-		});
 		s.append("  {");
-		for(BodyDecl bd : bds)
+		for(BodyDecl bd : bds) {
+			if(bd instanceof ConstructorDecl && ((ConstructorDecl)bd).isCompilerGenerated())
+				continue;
 			bd.toString(s);
+		}
 		s.append(indent() + "}");
 	}
 	

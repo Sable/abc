@@ -4,7 +4,6 @@ package p;
 import java.util.List;
 
 class A {
-    private static final List<?>[] FOO= foo();
 	public static List<?>[] foo() {
         return null;
     }
@@ -13,4 +12,5 @@ class A {
     void bar() {
         take(FOO);
     }
+    private static final List<?>[] FOO= foo();
 }

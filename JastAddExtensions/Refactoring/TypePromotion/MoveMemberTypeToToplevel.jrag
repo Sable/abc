@@ -46,7 +46,7 @@ aspect MoveMemberTypeToToplevel {
 			instanceName = encl.name().toLowerCase();		
 		Modifiers mods = makeInstanceFieldFinal ? new Modifiers("private", "final") : new Modifiers("private");
 		FieldDeclaration fd = new FreshField(mods, encl.createLockedAccess(), instanceName, new Opt<Expr>());
-		addBodyDecl(fd);
+		getBodyDeclList().insertChild(fd, 0);
 		encls.add(fd);
 		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
 			ParameterDeclaration pd = new FreshParameter(encl.createLockedAccess(), instanceName); 

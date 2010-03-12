@@ -6,17 +6,17 @@ class Inner {
 	/** Comment */
 	private A a;
 
-	/**
-	 * @param a
-	 */
-	Inner(A a) {
-		this.a = a;
-	}
-
 	void f(){
 		A.///
 		X x= 
 		///this.
 		a.new X();
+	}
+
+	/**
+	 * @param a
+	 */
+	Inner(A a) {
+		this.a = a;
 	}
 }

@@ -15,13 +15,13 @@ public class TestThisExpressionInner {
 		setField(10);
 	}
 
+	int getField() {
+		return field;
+	}	
+
 	int ///void 
 	setField(int field) {
 		return ///
 		this.field = field;
 	}
-
-	int getField() {
-		return field;
-	}	
 }

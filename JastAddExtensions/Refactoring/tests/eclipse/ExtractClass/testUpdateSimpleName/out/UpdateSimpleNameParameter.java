@@ -3,8 +3,6 @@ package p;
 public class UpdateSimpleNameParameter {
 	private int foo;
 	private int foo2;
-	public UpdateSimpleNameParameter() {
-	}
 	public int getFoo() {
 		return foo;
 	}

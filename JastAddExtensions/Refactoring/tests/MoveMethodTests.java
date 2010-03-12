@@ -387,10 +387,10 @@ public class MoveMethodTests extends TestCase {
 			"}"),
 			Program.fromClasses(
 			"class B {" +
+			"  class Inner {}" +
 			"  void foo(A a, A.Inner i) {" +
 			"    a.new Inner();" +
 			"  }" +
-			"  class Inner {}" +
 			"}" +
 			"public abstract class A {" +
 			"  void foo(B f, Inner i) {" +

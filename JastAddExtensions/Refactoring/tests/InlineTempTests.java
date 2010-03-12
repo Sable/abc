@@ -51,9 +51,6 @@ public class InlineTempTests extends TestCase {
             "  void m() {"+
             "    System.out.println(23 + 23);"+
             "  }"+
-            "  A() {"+
-            "    super();"+
-            "  }"+
             "}")));
     }
 
@@ -70,9 +67,6 @@ public class InlineTempTests extends TestCase {
             new RawCU("A.java",
             "class A {"+
             "  void m() {"+
-            "  }"+
-            "  A() {"+
-            "    super();"+
             "  }"+
             "}")));
     }
@@ -93,9 +87,6 @@ public class InlineTempTests extends TestCase {
             "  int m() {"+
             "    return 23;"+
             "  }"+
-            "  A() {"+
-            "    super();"+
-            "  }"+
             "}")));
     }
 
@@ -114,9 +105,6 @@ public class InlineTempTests extends TestCase {
             "class A {"+
             "  int m() {"+
             "    return 23 + 1;"+
-            "  }"+
-            "  A() {"+
-            "    super();"+
             "  }"+
             "}")));
     }
@@ -174,9 +162,6 @@ public class InlineTempTests extends TestCase {
             "  void n(char c) {"+
             "    System.out.println(\"there\");"+
             "  }"+
-            "  A() {"+
-            "    super();"+
-            "  }"+
             "}")));
     }
 
@@ -201,14 +186,7 @@ public class InlineTempTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java",
             "class B {"+
-            "  "+
             "  class C {"+
-            "    C() {"+
-            "      super();"+
-            "    }"+
-            "  }"+
-            "  B() {"+
-            "    super();"+
             "  }"+
             "}"+
             ""+
@@ -217,15 +195,9 @@ public class InlineTempTests extends TestCase {
             "    C c = new C();"+
             "    {"+
             "        class C {"+
-            "          C() {"+
-            "            super();"+
-            "          }"+
             "        }"+
             "      System.out.println((Object)(B.C)c);"+
             "    }"+
-            "  }"+
-            "  A() {"+
-            "    super();"+
             "  }"+
             "}")));
     }
@@ -278,9 +250,6 @@ public class InlineTempTests extends TestCase {
             "    (new int[]{ 23, 42 }) [1] = 72;"+
             "    return (new int[]{ 23, 42 }) [0];"+
             "  }"+
-            "  public A() {"+
-            "    super();"+
-            "  }"+
             "}")));
     }
 
@@ -301,9 +270,6 @@ public class InlineTempTests extends TestCase {
             "  int m() {"+
             "    int j = 23;"+
             "    return j++;"+
-            "  }"+
-            "  A() {"+
-            "    super();"+
             "  }"+
             "}")));
     }

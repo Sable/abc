@@ -21,7 +21,7 @@ aspect IntroduceIndirection {
 			body = new Block(new ReturnStmt(parm.createLockedAccess().qualifiesAccess(this.createLockedAccess(args))));
 		}
 		indirection.setBlock(body);
-		targetType.insertUnusedMethod(indirection);
+		targetType.insertUnusedMethod(indirection, getChildIndex());
 		indirection = closeOverTypeVariables(indirection);
 		for(MethodAccess ma : usesOfAllCopies()) {
 			if(ma.hostBodyDecl() == indirection)

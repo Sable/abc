@@ -5,9 +5,11 @@ aspect RemoveUnusedMethod {
 	public void MethodDecl.removeUnused(boolean leaveAbstract) {
 		if(isCallableFromOutside())
 			throw new RefactoringException("method is still used");
-		if((leaveAbstract || isReferencedFromOutside()) && canBeAbstract()) {
+		if(leaveAbstract || isReferencedFromOutside()) {
 			if(isAbstract())
 				return;
+			if(!canBeAbstract())
+				throw new RefactoringException("cannot make method abstract");
 			for(TypeDecl td : inheritingTypes())
 				td.makeAbstract();
 			setBlockOpt(new Opt());

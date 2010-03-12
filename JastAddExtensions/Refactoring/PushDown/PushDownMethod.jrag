@@ -31,8 +31,6 @@ aspect PushDownMethod {
 		ASTNode parent = getParent();
 		int idx = parent.getIndexOfChild(this);
 		MethodDecl md = this;
-		if(hostType().isInterfaceDecl())
-			md.getModifiers().addModifiers("public", "abstract");
 		for(TypeDecl child : hostType().childTypes()) {
 			MethodAccess ma = child.triviallyOverrideInheritedMethod(md);
 			if(ma != null) {
@@ -61,6 +59,8 @@ aspect PushDownMethod {
 		if(md == null)
 			return null;
 		MethodDecl new_md = md.lockedCopyWithEmptyBody();
+		if(md.hostType().isInterfaceDecl())
+			new_md.getModifiers().addModifiers("public", "abstract");
 		md.getModifiers().removeModifier("final");
 		MethodAccess lockedAccess = null;
 		if(md.isAbstract()) {

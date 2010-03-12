@@ -6,8 +6,6 @@ public class ControlBodyUpdatesParameter {
 	private ArrayList<Integer> arraylists;
 	private Integer[] ints;
 	private int fNewStart;
-	public ControlBodyUpdatesParameter() {
-	}
 	public ArrayList<Integer> getArraylists() {
 		return arraylists;
 	}

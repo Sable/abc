@@ -3,8 +3,6 @@ package p;
 public class LowestVisibilityParameter {
 	private int test2;
 	private int test;
-	public LowestVisibilityParameter() {
-	}
 	public int getTest2() {
 		return test2;
 	}

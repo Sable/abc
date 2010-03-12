@@ -12,7 +12,6 @@ aspect CreateStruct {
 		Modifiers ctor_mods = new Modifiers();
 		ctor_mods.setVisibility(vis);
 		ConstructorDecl ctor = new ConstructorDecl(ctor_mods, name, ctor_parms, new List<Access>(), new Opt<Stmt>(), ctor_body);
-		bds.add(ctor);
 		for(Variable v : vars) {
 			if(map.containsKey(v.name()))
 				throw new RefactoringException("duplicate field name");
@@ -27,6 +26,7 @@ aspect CreateStruct {
 				ctor_body.addStmt(AssignExpr.asStmt(fd.createLockedAccess(), pd.createLockedAccess()));
 			}
 		}
+		bds.add(ctor);
 		Modifiers class_mods = (Modifiers)ctor_mods.fullCopy();
 		class_mods.addModifier("static");
 		return new Pair(new ClassDecl(class_mods, name, new Opt<Access>(), new List<Access>(), bds), map);
