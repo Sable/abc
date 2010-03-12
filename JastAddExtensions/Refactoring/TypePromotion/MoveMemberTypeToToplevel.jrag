@@ -8,7 +8,9 @@ aspect MoveMemberTypeToToplevel {
 		td.lockAllNames();
 		if(!td.isStatic()) {
 			LinkedList<FieldDeclaration> encls = td.addEnclosingInstanceFields(hostType(), instanceName, makeInstanceFieldFinal);
-			td.adjustMemberMethods(encls);
+			ArrayList<TypeDecl> encl_types = new ArrayList<TypeDecl>();
+			encl_types.add(td);
+			td.adjustMemberMethods(encls, encl_types);
 		}
 		td.removeNonToplevelModifiers();
 		if(ownCU) {
@@ -84,17 +86,29 @@ aspect MoveMemberTypeToToplevel {
 	}
 
 	// TODO: this does not handle member classes, which also could be accessing fields from enclosing instances
-	public void TypeDecl.adjustMemberMethods(LinkedList<FieldDeclaration> encls) {
+	public void TypeDecl.adjustMemberMethods(LinkedList<FieldDeclaration> encl_fields, ArrayList<TypeDecl> encl_types) {
 		for(BodyDecl bd : getBodyDecls()) {
 			if(bd instanceof Callable) {
 				Callable md = (Callable)bd;
 				if(md.isStatic() || !md.hasBlock())
 					continue;
 				List<Access> withargs = new List<Access>();
-				for(FieldDeclaration encl : encls)
+				for(FieldDeclaration encl : encl_fields)
 					withargs.add(encl.createLockedAccess());
-				withargs.add(new ThisAccess("this"));
+				for(TypeDecl encl : encl_types) {
+					if(encl == this)
+						withargs.add(new ThisAccess("this"));
+					else
+						withargs.add(encl.createLockedAccess().qualifiesAccess(new ThisAccess("this")));
+				}
 				md.setBlock(new Block(new WithStmt(withargs, md.getBlock())));
+			} else if(bd instanceof MemberTypeDecl) {
+				MemberTypeDecl mtd = (MemberTypeDecl)bd;
+				if(mtd.isStatic())
+					continue;
+				encl_types.add(mtd.typeDecl());
+				mtd.typeDecl().adjustMemberMethods(encl_fields, encl_types);
+				encl_types.remove(encl_types.size()-1);
 			}
 		}
 	}

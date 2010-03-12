@@ -9,8 +9,8 @@ public class Inner
 		class Local{
 			public void run()
 			{
-				System.out.println(Inner.this.a.bar2());
-				Inner.this.a.bar3= "fred";
+				System.out.println(/*///Inner.this.*/a.bar2());
+				/*///Inner.this.*/a.bar3= "fred";
 			}
 		}
 	}
@@ -21,8 +21,8 @@ public class Inner
 		{
 			public void run()
 			{
-				System.out.println(Inner.this.a.bar2());
-				Inner.this.a.bar3= "fred";
+				System.out.println(/*///Inner.this.*/a.bar2());
+				/*///Inner.this.*/a.bar3= "fred";
 			}
 		};
 	}
@@ -30,14 +30,15 @@ public class Inner
 	class InnerInner{
 		public void run()
 		{
-			System.out.println(Inner.this.a.bar2());
-			Inner.this.a.bar3= "fred";
+			System.out.println(/*///Inner.this.*/a.bar2());
+			/*///Inner.this.*/a.bar3= "fred";
 		}
 	}
 
 	/**
 	 * @param a
 	 */
+	public ///
 	Inner(A a) {
 		this.a = a;
 	}

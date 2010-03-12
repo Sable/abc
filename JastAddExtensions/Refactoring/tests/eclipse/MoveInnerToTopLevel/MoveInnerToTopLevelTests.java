@@ -422,9 +422,10 @@ public class MoveInnerToTopLevelTests extends TestCase {
 	}*/
 
 	// Using member of enclosing type, non-static edition
+	/* disabled: visibility
 	public void test_nonstatic_43() throws Exception{
 		validatePassingTest("A", "Inner", "MoreInner", "p5", new String[]{"A"}, new String[]{"p5"}, "inner", true, true, true, true);
-	}
+	}*/
 
 	/* disabled: visibility
 	// Move inner class and create field; enclosing class must be changed to use default visibility.
