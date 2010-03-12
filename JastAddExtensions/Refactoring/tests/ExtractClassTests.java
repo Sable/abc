@@ -95,28 +95,14 @@ public class ExtractClassTests extends TestCase {
             "}" +
             "" +
             "public class A extends B {" +
-            "  public void f() {" +
-            "    int data;" +
-            "    this.data.setX(0);" +
-            "    this.data.setY(new p.Data());" +
-            "    this.data.setX(2);" +
-            "    this.data.getY().z = 3;" +
-            "  }" +
-            "  public int init() {" +
-            "    return 4 + super.data;" +
-            "  }" +
-            "  public void g() {" +
-            "    p.Data data;" +
-            "  }" +
-            "  " +
             "  static class Data {" +
+            "    private int x;" +
+            "    private p.Data y;" +
             "    Data(int x, p.Data y) {" +
             "      super();" +
             "      this.setX(x);" +
             "      this.setY(y);" +
             "    }" +
-            "    private int x;" +
-            "    private p.Data y;" +
             "    int getX() {" +
             "      return x;" +
             "    }" +
@@ -131,6 +117,19 @@ public class ExtractClassTests extends TestCase {
             "    }" +
             "  }" +
             "  Data data = new Data(init(), new p.Data());" +
+            "  public void f() {" +
+            "    int data;" +
+            "    this.data.setX(0);" +
+            "    this.data.setY(new p.Data());" +
+            "    this.data.setX(2);" +
+            "    this.data.getY().z = 3;" +
+            "  }" +
+            "  public int init() {" +
+            "    return 4 + super.data;" +
+            "  }" +
+            "  public void g() {" +
+            "    p.Data data;" +
+            "  }" +
             "}" +
             "" +
             "class Data {" +
@@ -165,16 +164,12 @@ public class ExtractClassTests extends TestCase {
             "}" +
             "" +
             "public class A extends B {" +
-            "  public int init() {" +
-            "    return 4 + super.d;" +
-            "  }" +
-            "  " +
             "  static class Data {" +
+            "    private int x;" +
             "    Data(int x) {" +
             "      super();" +
             "      this.setX(x);" +
             "    }" +
-            "    private int x;" +
             "    int getX() {" +
             "      return x;" +
             "    }" +
@@ -183,6 +178,10 @@ public class ExtractClassTests extends TestCase {
             "    }" +
             "  }" +
             "  Data d = new Data(init());" +
+            "  public int init() {" +
+            "    return 4 + super.d;" +
+            "  }" +
+            "  " +
             "}")));
     }
     

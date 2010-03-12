@@ -13,7 +13,10 @@ aspect ExtractClass {
 		Modifiers struct_mods = new Modifiers("static");
 		struct_mods.setVisibility(toplevel ? VIS_PUBLIC : maxvis);
 		ClassDecl struct = new ClassDecl(struct_mods, newClassName, new Opt<Access>(), new List<Access>(), new List<BodyDecl>());
-		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct, newFieldName, 0);
+		int last_index = -1;
+		for(FieldDeclaration fd : fds)
+			last_index = Math.max(last_index, fd.getChildIndex());
+		FieldDeclaration wrapperField = createNewMemberField(maxvis, struct, newFieldName, last_index+1);
 		MemberTypeDecl mtd = insertUnusedType(struct, 0);
 		programRoot().flushCaches();
 		int i=0;
