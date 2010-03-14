@@ -1,22 +1,24 @@
 aspect RemoveParameter {
+	// TODO: check that we don't pick up new overriding relations
 	public void MethodDecl.removeUnusedParameter(int i) {
-		// TODO: should consider ancestors and descendants
-		// check preconditions
-		if(!getParameter(i).allUses().isEmpty())
-			throw new RefactoringException("parameter is used");
-		Collection<MethodAccess> uses = uses();
-		for(MethodAccess call : uses)
-			if(!call.getArg(i).isPure())
-				throw new RefactoringException("invocation has impure argument");
 		// lock all calls
 		programRoot().lockMethodNames(name());
-		// remove arguments and parameter
-		removeParameter(i);
-		flushCaches();
-		if(!hostType().canIntroduceMethod(this))
-			throw new RefactoringException("signature conflict");
-		for(MethodAccess call : uses)
-			call.getArgList().removeChild(i);
+		// consider every relative in turn
+		for(MethodDecl rel : relatives()) {
+			if(!rel.getParameter(i).allUses().isEmpty())
+				throw new RefactoringException("parameter is used");
+			Collection<MethodAccess> uses = rel.uses();
+			for(MethodAccess call : uses)
+				if(!call.getArg(i).isPure())
+					throw new RefactoringException("invocation has impure argument");
+			// remove arguments and parameter
+			rel.removeParameter(i);
+			rel.flushCaches();
+			if(!rel.hostType().canIntroduceMethod(rel))
+				throw new RefactoringException("signature conflict");
+			for(MethodAccess call : uses)
+				call.getArgList().removeChild(i);
+		}
 	}
 	
 	public void MethodDecl.doRemoveUnusedParameter(int i) {

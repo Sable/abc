@@ -9,6 +9,8 @@ aspect Modifiers {
 	eq VariableDeclaration.getModifiers().getModifiedVariable() = this;
 	eq ParameterDeclaration.getModifiers().getModifiedVariable() = this;
 	
+	syn boolean MethodDecl.isPackageProtected() = !isPublic() && !isPrivate() && !isProtected();
+	
 	public void Modifiers.removeModifier(String mod) {
 		for(int i=0;i<getNumModifier();++i) {
 			Modifier m = getModifier(i);

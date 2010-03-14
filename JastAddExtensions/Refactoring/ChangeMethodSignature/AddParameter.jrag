@@ -1,0 +1,29 @@
+aspect AddParameter {
+	// TODO: check that we don't pick up new overriding relationships
+	public void MethodDecl.addParameter(ParameterDeclaration pd, int idx, Literal value) {
+		if(idx < 0 || idx > getNumParameter())
+			throw new RefactoringException("invalid index for new parameter");
+		programRoot().lockMethodNames(name());
+		for(MethodDecl md : relatives()) {
+			if(!md.parameterDeclaration(pd.name()).isEmpty())
+				throw new RefactoringException("parameter of same name exists");
+			if(idx == md.getNumParameter() && md.isVariableArity())
+				throw new RefactoringException("cannot insert parameter after vararg");
+			if(idx != md.getNumParameter() && pd.isVariableArity())
+				throw new RefactoringException("cannot insert vararg parameter anywhere except in last position");
+			// TODO: use locked copy
+			Collection<MethodAccess> uses = md.uses();
+			md.getParameterList().insertChild(pd.fullCopy(), idx);
+			md.flushCaches();
+			if(!md.hostType().canIntroduceMethod(md))
+				throw new RefactoringException("signature conflict");
+			for(MethodAccess ma : uses)
+				ma.getArgList().insertChild((Expr)value.fullCopy(), idx);
+		}
+	}
+	
+	public void MethodDecl.doAddParameter(ParameterDeclaration pd, int idx, Literal value) {
+		addParameter(pd, idx, value);
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+}

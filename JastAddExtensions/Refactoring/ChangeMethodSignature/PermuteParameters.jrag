@@ -1,0 +1,68 @@
+aspect PermuteParameters {
+	// TODO: ensure we do not pick up any new overriding relationships
+	public void MethodDecl.permuteParameters(int[] perm, boolean createDelegate) {
+		int n = getNumParameter();
+		if(!isPerm(perm, n))
+			throw new RefactoringException("not a permutation");
+		if(isIdentityPerm(perm))
+			return;
+		programRoot().lockMethodNames(name());
+		for(MethodDecl md : relatives()) {
+			Collection<MethodAccess> uses = md.uses();
+			if(md.isVariableArity() && perm[n-1] != n-1)
+				throw new RefactoringException("variable arity parameter has to come last");
+			if(createDelegate) {
+				MethodDecl delegate = (MethodDecl)md.fullCopy();
+				if(!md.hostType().isInterfaceDecl()) {
+					delegate.getModifiers().removeModifiers("abstract", "native");
+					List<Expr> args = new List<Expr>();
+					for(ParameterDeclaration pd : md.getParameters())
+						args.add(new VarAccess(pd.name()));
+					args.permute(perm);
+					delegate.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(md.createLockedAccess(args)))));
+				}
+				md.hostType().getBodyDeclList().insertChild(delegate, md.getChildIndex());
+			}
+			md.getParameterList().permute(perm);
+			md.flushCaches();
+			for(MethodAccess ma : uses) {
+				ma.getArgList().lockDataFlow();
+				ma.getArgList().permute(perm);
+			}
+		}
+	}
+	
+	public void MethodDecl.doPermuteParameters(int[] perm, boolean createDelegate) {
+		permuteParameters(perm, createDelegate);
+		programRoot().eliminate(RETURN_VOID, LOCKED_DATAFLOW, LOCKED_NAMES);
+	}
+	
+	// check whether perm is a permutation of the integers {0, ..., max-1}
+	public static boolean ASTNode.isPerm(int[] perm, int max) {
+		if(perm.length != max)
+			return false;
+		boolean[] gotit = new boolean[max];
+		for(int i=0;i<max;++i) {
+			if(perm[i] < 0 || perm[i] >= max)
+				return false;
+			if(gotit[perm[i]])
+				return false;
+			gotit[perm[i]] = true;
+		}
+		return true;
+	}
+	
+	public static boolean ASTNode.isIdentityPerm(int[] perm) {
+		for(int i=0;i<perm.length;++i)
+			if(perm[i] != i)
+				return false;
+		return true;
+	}
+	
+	public void ASTNode.permute(int[] perm) {
+		ASTNode[] children_copy = new ASTNode[children.length];
+		System.arraycopy(children, 0, children_copy, 0, children.length);
+		for(int i=0;i<perm.length;++i)
+			children[perm[i]] = children_copy[i];
+	}
+}

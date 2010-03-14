@@ -99,7 +99,7 @@ public class InlineConstantTests extends TestCase {
 	}*/
 
 	public void test2() throws Exception {
-		helper1("p.Klass", 10, 22, 10, 30, false, false);
+		helper1("p.Klass", 10, 3, 10, 25, false, false);
 	}
 
 	public void test3() throws Exception {
@@ -134,7 +134,7 @@ public class InlineConstantTests extends TestCase {
 	}
 
 	public void test10() throws Exception {
-		helper1(new String[] {"p1.A", "p2.B"}, "p2.B", 9, 28, 9, 37, false, false);
+		helper1(new String[] {"p1.A", "p2.B"}, "p2.B", 9, 22, 9, 31, false, false);
 	}
 
 	/* disabled: does not compile
@@ -193,7 +193,7 @@ public class InlineConstantTests extends TestCase {
 	}*/
 
 	public void test23() throws Exception {
-		helper1("p.Test", 6, 26, 6, 26, false, false);
+		helper1("p.Test", 6, 10, 6, 30, false, false);
 	}
 
 	/* disabled: conservative data flow

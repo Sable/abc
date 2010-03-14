@@ -79,4 +79,41 @@ aspect MethodExt {
 		}
 		return desc;
 	}
+	
+	// rootdefs
+	syn lazy LinkedList<MethodDecl> MethodDecl.rootdefs() = rootdefs(new LinkedList<MethodDecl>());
+	
+	public LinkedList<MethodDecl> MethodDecl.rootdefs(LinkedList<MethodDecl> res) {
+		if(isPrivate() || isStatic())
+			return res;
+		SimpleSet ancs = hostType().ancestorMethods(signature());
+		if(ancs.isEmpty()) {
+			res.add(this);
+			return res;
+		}
+		for(Iterator iter=ancs.iterator();iter.hasNext();)
+			((MethodDecl)iter.next()).rootdefs(res);
+		return res;
+	}
+	
+	// relatives: all (reflexive, transitive) descendants of rootdefs
+	syn lazy LinkedList<MethodDecl> MethodDecl.relatives() {
+		LinkedList<MethodDecl> res = new LinkedList<MethodDecl>();
+		if(isPrivate() || isStatic()) {
+			res.add(this);
+		} else {
+			for(MethodDecl md : rootdefs())
+				md.hostType().descStar(signature(), res, !isPublic() && !isProtected());
+		}
+		return res;
+	}
+
+	public void TypeDecl.descStar(String sig, LinkedList<MethodDecl> res, boolean isPkg) {
+		for(Iterator<MethodDecl> iter = localMethodsSignature(sig).iterator(); iter.hasNext();)
+			res.add(iter.next());
+		for(TypeDecl child : childTypes()) {
+			if(!isPkg || this.packageName().equals(child.packageName()))
+				child.descStar(sig, res, isPkg);
+		}
+	}
 }
