@@ -39,6 +39,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);
 		suite.addTestSuite(tests.eclipse.InlineConstant.InlineConstantTests.class);
+		suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
 		//$JUnit-END$
 		return suite;
 	}

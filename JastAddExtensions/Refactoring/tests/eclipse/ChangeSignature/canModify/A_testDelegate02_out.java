@@ -1,6 +1,6 @@
 package p;
 
-import java.util.List;
+///import java.util.List;
 
 class A{
 	/**
@@ -10,7 +10,8 @@ class A{
 		m(null);
 	}
 
-	private void m(List list) {
+	private void m(java.util.///
+				   List list) {
 		m(list);
 	}
 }

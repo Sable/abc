@@ -144,9 +144,18 @@ aspect Testing {
 	// find a type given its name (may contain dots)
 	public TypeDecl Program.findType(String name) {
 		String path[] = name.split("\\.");
-		TypeDecl tp = findSimpleType(path[0]);
-		if(tp == null) return null;
-		for(int i=1;i<path.length;++i) {
+		String pkg = "";
+		int i;
+		for(i=0;i<path.length;++i) {
+			String new_pkg = pkg + (i == 0 ? "" : ".") + path[i];
+			if(!hasPackage(new_pkg))
+				break;
+			pkg = new_pkg;
+		}
+		TypeDecl tp = pkg.isEmpty() ? findSimpleType(path[(i=1)-1]) : findType(pkg, path[i++]);
+		if(tp == null)
+			return null;
+		for(;i<path.length;++i) {
 			Iterator<TypeDecl> iter = tp.memberTypes(path[i]).iterator();
 			if(!iter.hasNext()) return null;
 			tp = iter.next();

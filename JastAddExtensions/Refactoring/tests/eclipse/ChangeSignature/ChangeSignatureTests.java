@@ -12,7 +12,12 @@ package tests.eclipse.ChangeSignature;
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
+import AST.BooleanLiteral;
+import AST.GenericTypeDecl;
+import AST.IntegerLiteral;
+import AST.Literal;
 import AST.MethodDecl;
+import AST.NullLiteral;
 import AST.ParameterDeclaration;
 import AST.Program;
 import AST.RefactoringException;
@@ -50,66 +55,37 @@ public class ChangeSignatureTests extends TestCase {
 		fileName += (canModify ? "canModify/": "cannotModify/");
 		return fileName;
 	}
-
+	
 	//---helpers
 
-	/*protected ICompilationUnit createCUfromTestFile(IPackageFragment pack, boolean canRename, boolean input) throws Exception {
-		return createCU(pack, getSimpleTestFileName(canRename, input), getFileContents(getTestFileName(canRename, input)));
+	private void helperAdd(String[] signature, String[] newTypes, String[] newNames, Literal[] newDefaultValues, int[] newIndices) throws Exception {
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, false);
 	}
 
-	static ParameterInfo[] createNewParamInfos(String[] newTypes, String[] newNames, String[] newDefaultValues) {
-		if (newTypes == null)
-			return new ParameterInfo[0];
-		ParameterInfo[] result= new ParameterInfo[newTypes.length];
-		for (int i= 0; i < newDefaultValues.length; i++) {
-			result[i]= ParameterInfo.createInfoForAddedParameter(newTypes[i], newNames[i], newDefaultValues[i]);
+	private void helperAdd(String[] signature, String[] newTypes, String[] newNames, Literal[] newDefaultValues, int[] newIndices, boolean createDelegate) throws Exception {
+		Program in = CompileHelper.compile(getTestFileName(true, true));
+		Program out = CompileHelper.compile(getTestFileName(true, false));
+		assertNotNull(in);
+		assertNotNull(out);
+		
+		TypeDecl td = in.findSimpleType("A");
+		assertNotNull(td);
+		MethodDecl md = td.findMethod("m");
+		assertNotNull(md);
+		
+		try {
+			for(int i=0;i<newTypes.length;++i) {
+				TypeDecl parmtp = in.findType(newTypes[i]);
+				assertNotNull(parmtp);
+				if(parmtp.isGenericType())
+					parmtp = ((GenericTypeDecl)parmtp).rawType();
+				md.doAddParameter(new ParameterDeclaration(parmtp.createLockedAccess(), newNames[i]), newIndices[i], newDefaultValues[i], createDelegate);
+			}
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			assertEquals(out.toString(), rfe.getMessage());
 		}
-		return result;
 	}
-
-	static void addInfos(List list, ParameterInfo[] newParamInfos, int[] newIndices) {
-		if (newParamInfos == null || newIndices == null)
-			return;
-		for (int i= newIndices.length - 1; i >= 0; i--) {
-			list.add(newIndices[i], newParamInfos[i]);
-		}
-	}
-
-	private void helperAdd(String[] signature, ParameterInfo[] newParamInfos, int[] newIndices) throws Exception {
-		helperAdd(signature, newParamInfos, newIndices, false);
-	}
-
-	private void helperAdd(String[] signature, ParameterInfo[] newParamInfos, int[] newIndices, boolean createDelegate) throws Exception {
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), true, true);
-		IType classA= getType(cu, "A");
-		IMethod method = classA.getMethod("m", signature);
-		assertTrue("method does not exist", method.exists());
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		processor.setDelegateUpdating(createDelegate);
-		addInfos(processor.getParameterInfos(), newParamInfos, newIndices);
-		RefactoringStatus initialConditions= ref.checkInitialConditions(new NullProgressMonitor());
-		assertTrue("precondition was supposed to pass:"+initialConditions.getEntryWithHighestSeverity(), initialConditions.isOK());
-		JavaRefactoringDescriptor descriptor= processor.createDescriptor();
-		RefactoringStatus result= performRefactoring(descriptor);
-		assertEquals("precondition was supposed to pass", null, result);
-
-		IPackageFragment pack= (IPackageFragment)cu.getParent();
-		String newCuName= getSimpleTestFileName(true, true);
-		ICompilationUnit newcu= pack.getCompilationUnit(newCuName);
-		assertTrue(newCuName + " does not exist", newcu.exists());
-		String expectedFileContents= getFileContents(getTestFileName(true, false));
-		assertEqualLines("invalid renaming", expectedFileContents, newcu.getSource());
-
-		assertParticipant(classA);
-	}
-
-	private static void assertParticipant(IType typeOfMethod) throws JavaModelException {
-		TestChangeMethodSignaturParticipant.testParticipant(typeOfMethod);
-	}*/
 
 	/*
 	 * Rename method 'A.m(signature)' to 'A.newMethodName(signature)'
@@ -934,67 +910,61 @@ public class ChangeSignatureTests extends TestCase {
 		helper1(new String[]{"a", "y"}, new String[]{"Z", "I"}, new String[]{"y", "a"}, new String[]{"yyy", "a"}, true);
 	}
 
-	/*public void testAdd28()throws Exception{
+	public void testAdd28()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {1};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
 	public void testAdd29()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {0};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
 	public void testAdd30()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {1};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
 	public void testAdd31()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {1};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
 	public void testAdd32()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {0};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
 	public void testAdd33()throws Exception{
 		String[] signature= {};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new IntegerLiteral(0) };
 		int[] newIndices= {0};
-		helperAdd(signature, newParamInfo, newIndices, true);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
-	public void testAddReorderRename34()throws Exception{
+	/*public void testAddReorderRename34()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"Object"};
@@ -1394,21 +1364,19 @@ public class ChangeSignatureTests extends TestCase {
 		int newVisibility= Modifier.NONE;
 		String newReturnTypeName= null;
 		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+	}*/
 
 	public void testAll55()throws Exception{
 //		printTestDisabledMessage("test for bug 32654 [Refactoring] Change method signature with problems");
 		String[] signature= {"[QObject;", "I", "Z"};
 		String[] newNames= {"e"};
 		String[] newTypes= {"boolean"};
-		String[] newDefaultValues= {"true"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new BooleanLiteral(true) };
 		int[] newIndices= {2};
-		helperAdd(signature, newParamInfo, newIndices);
-
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, false);
 	}
 
-	public void testAll56()throws Exception{
+	/*public void testAll56()throws Exception{
 		if (! RUN_CONSTRUCTOR_TEST){
 			printTestDisabledMessage("disabled for constructors for now");
 			return;
@@ -1583,19 +1551,19 @@ public class ChangeSignatureTests extends TestCase {
 
 		String expectedRefContents= getFileContents(getTestFolderPath(true) + refNameOut);
 		assertEqualLines(expectedRefContents, refCu.getSource());
-	}
+	}*/
 
+	/* disabled: different interpretation
 	public void testAddRecursive1()throws Exception{ //bug 42100
 		String[] signature= {"I"};
 		String[] newNames= {"bool"};
 		String[] newTypes= {"boolean"};
-		String[] newDefaultValues= {"true"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= { new BooleanLiteral(true) };
 		int[] newIndices= {1};
-		helperAdd(signature, newParamInfo, newIndices, true);
-	}
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
+	}*/
 
-	public void testException01() throws Exception {
+	/*public void testException01() throws Exception {
 		String[] signature= {"J"};
 		String[] remove= {};
 		String[] add= {"java.util.zip.ZipException"};
@@ -1669,49 +1637,46 @@ public class ChangeSignatureTests extends TestCase {
 		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
 		int[] newIndices= {0};
 		helperAddFail(signature, newParamInfo, newIndices, RefactoringStatus.ERROR);
-	}
-
+	}*/
+	
+	/* disabled:default value
 	public void testImport01() throws Exception {
 		String[] signature= {};
 		String[] newTypes= {"java.security.acl.Permission", "Permission"};
 		String[] newNames= {"acl", "p"};
-		String[] newDefaultValues= {"null", "perm"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null"), "perm"};
 		int[] newIndices= {0, 0};
-		helperAdd(signature, newParamInfo, newIndices);
-	}
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
+	} */
 
 	public void testImport02() throws Exception {
 		String[] signature= {};
 		String[] newTypes= {"Permission", "java.security.acl.Permission"};
 		String[] newNames= {"p", "acl"};
-		String[] newDefaultValues= {"null", "null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
-		int[] newIndices= {0, 0};
-		helperAdd(signature, newParamInfo, newIndices);
+		Literal[] newDefaultValues= {new NullLiteral("null"), new NullLiteral("null")};
+		int[] newIndices= {0, 1};
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, false);
 	}
 
 	public void testImport03() throws Exception {
 		String[] signature= {};
 		String[] newTypes= {"java.security.acl.Permission", "java.security.Permission"};
 		String[] newNames= {"p", "pp"};
-		String[] newDefaultValues= {"0", "0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
-		int[] newIndices= {0, 0};
-		helperAdd(signature, newParamInfo, newIndices);
+		Literal[] newDefaultValues= { new NullLiteral("null"), new NullLiteral("null") };
+		int[] newIndices= {0, 1};
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, false);
 	}
 
 	public void testImport04() throws Exception {
 		String[] signature= {};
 		String[] newTypes= {"Object"};
 		String[] newNames= {"o"};
-		String[] newDefaultValues= {"null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null")};
 		int[] newIndices= {0};
-		helperAdd(signature, newParamInfo, newIndices);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, false);
 	}
 
-	public void testImport05() throws Exception {
+	/*public void testImport05() throws Exception {
 		// printTestDisabledMessage("49772: Change method signature: remove unused imports [refactoring]");
 		String[] signature= {};
 		String[] newNames= null;
@@ -1865,17 +1830,16 @@ public class ChangeSignatureTests extends TestCase {
 		helperRenameMethod(new String[0], "abc", false);
 	}
 
-	/*public void testStaticImport02() throws Exception {
+	public void testStaticImport02() throws Exception {
 		String[] signature= {"QInteger;"};
 		String[] newTypes= {"Object"};
 		String[] newNames= {"o"};
-		String[] newDefaultValues= {"null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null")};
 		int[] newIndices= {1};
-		helperAdd(signature, newParamInfo, newIndices);
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices);
 	}
 
-	public void testVararg01() throws Exception {
+	/*public void testVararg01() throws Exception {
 		String[] signature= {"I", "[QString;"};
 		String[] newNames= {};
 		String[] newTypes= {};
@@ -2147,16 +2111,15 @@ public class ChangeSignatureTests extends TestCase {
 		helper1(new String[]{"j", "i"}, new String[]{"I", "QString;"}, null, null, true);
 	}
 
-	/*public void testDelegate02() throws Exception {
+	public void testDelegate02() throws Exception {
 		// add a parameter -> import it
 		String[] signature= {};
 		String[] newTypes= {"java.util.List" };
 		String[] newNames= {"list" };
-		String[] newDefaultValues= {"null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null")};
 		int[] newIndices= { 0 };
-		helperAdd(signature, newParamInfo, newIndices, true);
-	}*/
+		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
+	}
 
 	public void testDelegate03() throws Exception {
 		// reordering with imported type in body => don't remove import
