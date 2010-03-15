@@ -1,30 +1,39 @@
 aspect InlineConstant {
 	public void FieldDeclaration.inlineConstant(boolean remove) {
-		if(!hasInit())
-			throw new RefactoringException("no initialiser");
-		if(!isFinal())
-			throw new RefactoringException("not final");
-		for(VarAccess va : uses()) {
-			va.bundleQualifier();
-			if(va.isQualified() && !va.qualifier().isPure())
-				throw new RefactoringException("cannot discard impure qualifier");
-			ASTNode p = va;
-			if(va.isQualified())
-				p = p.getParent();
-			Expr init = getInit();
-			init.lockAllNames();
-			init.lockDataFlow();
-			setInit((Expr)getInit().fullCopy());
-			p.replaceWith(init);
-		}
+		for(VarAccess va : uses())
+			va.inlineConstant();
 		programRoot().flushCaches();
-		if(remove && !isUsed() && getInit().isPure())
+		if(remove && !isUsed() && hasInit() && getInit().isPure())
 			getParent().removeChild(getChildIndex());
+	}
+	
+	public void VarAccess.inlineConstant() {
+		if(!decl().isField() || !decl().isFinal())
+			throw new RefactoringException("not a use of a constant");
+		FieldDeclaration cnst = (FieldDeclaration)decl();
+		if(!cnst.hasInit())
+			throw new RefactoringException("no initialiser");
+		bundleQualifier();
+		if(isQualified() && !qualifier().isPure())
+			throw new RefactoringException("cannot discard impure qualifier");
+		ASTNode p = this;
+		if(isQualified())
+			p = p.getParent();
+		Expr init = cnst.getInit();
+		init.lockAllNames();
+		init.lockDataFlow();
+		cnst.setInit((Expr)init.fullCopy());
+		p.replaceWith(init);
 	}
 	
 	public void FieldDeclaration.doInlineConstant(boolean remove) {
 		Program root = programRoot();
 		inlineConstant(remove);
 		root.eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
+	}
+	
+	public void VarAccess.doInlineConstant() {
+		inlineConstant();
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
 	}
 }

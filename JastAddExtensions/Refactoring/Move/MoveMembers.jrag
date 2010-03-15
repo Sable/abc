@@ -1,6 +1,8 @@
 aspect MoveMembers {
 	public void TypeDecl.moveMembers(Collection<MemberDecl> members, TypeDecl target) {
 		for(MemberDecl md : members) {
+			if(!md.fromSource() || md.isNative())
+				throw new RefactoringException("cannot move this member");
 			md.makeModifiersExplicit();
 			md.moveTo(target);
 		}

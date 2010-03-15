@@ -6,8 +6,8 @@ class Test {
 		PINK, YELLOW
 	}
 	private enum Box {
-		FIRST(Test.Color.PINK);
+		FIRST(/*///Test.*/Color.PINK);
 		public Box(Color c) {}
 	}
-	Color c= Test.Color.PINK;
+	Color c= /*///Test.*/Color.PINK;
 }

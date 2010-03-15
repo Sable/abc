@@ -1,10 +1,8 @@
 package tests;
 
 import junit.framework.TestCase;
-import AST.Expr;
 import AST.Program;
 import AST.RefactoringException;
-import AST.Variable;
 import AST.VariableDeclaration;
 
 public class PromoteTempToFieldTests extends TestCase {

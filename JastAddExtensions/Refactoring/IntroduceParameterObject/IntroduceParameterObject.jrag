@@ -13,10 +13,10 @@ aspect IntroduceParameterObject {
 		ClassDecl struct = tmp.fst();
 		programRoot().lockMethodNames(name());
 		
-		// adjust this method, all methods it overrides, and all methods overridden by them
-		for(MethodDecl md : getRelatives())
+		// adjust this method and all its relatives
+		for(MethodDecl md : relatives())
 			md.uses();
-		for(MethodDecl md : getRelatives()) {
+		for(MethodDecl md : relatives()) {
 			eliminateVarArgs();
 			for(MethodAccess ma : md.uses()) {
 				List<Expr> wrapped_args = new List<Expr>();

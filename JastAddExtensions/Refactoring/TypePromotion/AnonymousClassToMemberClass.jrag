@@ -1,0 +1,22 @@
+aspect AnonymousClassToMemberClass {
+	public MemberTypeDecl AnonymousDecl.doPromoteToMemberClass(String className, boolean makeFinal, boolean makePublic) {
+		BodyDecl bd = hostBodyDecl();
+		if(bd instanceof FieldDeclaration) {
+			ClassInstanceExpr cie = (ClassInstanceExpr)getParent().getParent();
+			lockAllNames();
+			ClassDecl cd = asNamedClass(className);
+			if(!makeFinal)
+				cd.getModifiers().removeModifier("final");
+			cd.getModifiers().setVisibility(makePublic ? VIS_PUBLIC : VIS_PRIVATE);
+			if(((FieldDeclaration)bd).isStatic())
+				cd.getModifiers().addModifier("static");
+			cie.setTypeDeclOpt(new Opt<TypeDecl>());
+			cie.setAccess(cd.createLockedAccess());
+			MemberTypeDecl mtd = bd.hostType().insertUnusedType(cd, bd.getChildIndex());
+			cie.programRoot().eliminate(LOCKED_NAMES);
+			return mtd;
+		} else {
+			return doPromoteToLocalClass(className, makeFinal).doPromoteToMemberClass(makePublic);
+		}
+	}
+}

@@ -52,4 +52,6 @@ aspect Modifiers {
 		if(hostType().isInterfaceDecl())
 			getModifiers().addModifiers("public", "static", "abstract");
 	}
+	
+	public boolean MemberDecl.isNative() { return false; }
 }

@@ -67,7 +67,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
-			anon.doPromoteToLocalClass(className, makeFinal).doPromoteToMemberClass(makePublic);
+			anon.doPromoteToMemberClass(className, makeFinal, makePublic);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
@@ -82,7 +82,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
-			anon.doPromoteToLocalClass(className, makeFinal).doPromoteToMemberClass(makePublic);
+			anon.doPromoteToMemberClass(className, makeFinal, makePublic);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
@@ -95,7 +95,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
-			anon.doPromoteToLocalClass(className, makeFinal).doPromoteToMemberClass(makePublic);
+			anon.doPromoteToMemberClass(className, makeFinal, makePublic);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
@@ -107,7 +107,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
-			anon.doPromoteToLocalClass("Inner").doPromoteToMemberClass(false);
+			anon.doPromoteToMemberClass("Inner", true, false);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
@@ -267,10 +267,11 @@ public class ConvertAnonymousToNestedTests extends TestCase {
     	helper1(11, 39, 11, 39, true, "Inner", false);
     }*/
 
+    /* disabled: differing interpretation
     public void test28() throws Exception{
 //        printTestDisabledMessage("disabled: bug 43360");
-    	helper1(10, 27, 10, 27, true, "Inner", false);
-    }
+    	helper1(10, 17, 10, 17, true, "Inner", false);
+    }*/
 
 	// adjusted position -- MS
     public void test29() throws Exception{

@@ -17,7 +17,7 @@ aspect AnonymousClassToLocalClass {
 		bd.lockNames(name);
 		lockAllNames();
 		// move
-		ClassDecl cd = asLocalClass(name);
+		ClassDecl cd = asNamedClass(name);
 		if(!makeFinal)
 			cd.getModifiers().removeModifier("final");
 		LocalClassDeclStmt lcd = new LocalClassDeclStmt(cd);
@@ -39,7 +39,7 @@ aspect AnonymousClassToLocalClass {
 		return doPromoteToLocalClass(name, true);
 	}
 	
-	public ClassDecl AnonymousDecl.asLocalClass(String name) {
+	public ClassDecl AnonymousDecl.asNamedClass(String name) {
 		ClassDecl cd = new ClassDecl(getModifiers(), name, new Opt<Access>(), new List<Access>(), getBodyDecls());
 		if(superType().isClassDecl() && !superType().isObject())
 			cd.setSuperClassAccess(superType().createLockedAccess());

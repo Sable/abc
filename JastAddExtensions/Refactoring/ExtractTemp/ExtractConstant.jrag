@@ -4,14 +4,15 @@ aspect ExtractConstant {
 			throw new RefactoringException("not extractible");
 		lockAllNames();
 		lockDataFlow();
+		TypeDecl host = hostType();
 		Opt<Expr> fd_init = new Opt<Expr>();
 		Modifiers mods = new Modifiers("static", "final");
 		mods.addModifier(hostType().isInterfaceDecl() ? "public" : "private");
 		FieldDeclaration fd = new FieldDeclaration(mods, effectiveType().createLockedAccess(), name, fd_init);
-		hostType().insertField(fd);
 		replaceWith(fd.createLockedAccess());
 		fd_init.setChild(this, 0);
-		fd.hostType().flushCaches();
+		host.insertField(fd);
+		host.flushCaches();
 	}
 	
 	public void Expr.doExtractConstant(String name) {
