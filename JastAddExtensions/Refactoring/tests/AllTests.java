@@ -40,6 +40,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);
 		suite.addTestSuite(tests.eclipse.InlineConstant.InlineConstantTests.class);
 		suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
+		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		//$JUnit-END$
 		return suite;
 	}

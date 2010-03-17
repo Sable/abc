@@ -36,7 +36,11 @@ aspect LockedPackageAccess {
 	}
 	
 	public ASTNode PackageAccess.lock() {
-		targetPackage = decl();
+		return lock(decl());
+	}
+	
+	public ASTNode PackageAccess.lock(PackageDecl target) { 
+		targetPackage = target;
 		return this;
 	}
 	

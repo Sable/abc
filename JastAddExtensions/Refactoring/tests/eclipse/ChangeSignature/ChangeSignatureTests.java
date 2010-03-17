@@ -87,6 +87,22 @@ public class ChangeSignatureTests extends TestCase {
 		}
 	}
 
+	private void helperPermuteFail(int[] perm) {
+		Program in = CompileHelper.compile(getTestFileName(false, true));
+		assertNotNull(in);
+		
+		TypeDecl td = in.findSimpleType("A");
+		assertNotNull(td);
+		MethodDecl md = td.findMethod("m");
+		assertNotNull(md);
+		
+		try {
+			md.doPermuteParameters(perm, false);
+			assertEquals("<failure>", in.toString());
+		} catch(RefactoringException rfe) {
+		}
+	}
+
 	/*
 	 * Rename method 'A.m(signature)' to 'A.newMethodName(signature)'
 	 */
@@ -108,69 +124,6 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
-
-	/*private void helperDoAll(String typeName,
-								String methodName,
-							  	String[] signature,
-							  	ParameterInfo[] newParamInfos,
-							  	int[] newIndices,
-							  	String[] oldParamNames,
-							  	String[] newParamNames,
-							  	String[] newParameterTypeNames,
-							  	int[] permutation,
-							  	int newVisibility,
-							  	int[] deleted, String returnTypeName, boolean createDelegate)  throws Exception{
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), true, true);
-		IType classA= getType(cu, typeName);
-		IMethod method = classA.getMethod(methodName, signature);
-		assertTrue("method " + methodName +" does not exist", method.exists());
-		helperDoAll(method, newParamInfos, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation, newVisibility, deleted, returnTypeName, createDelegate);
-	}
-
-	private void helperDoAll(IMethod method, ParameterInfo[] newParamInfos, int[] newIndices, String[] oldParamNames, String[] newParamNames, String[] newParameterTypeNames, int[] permutation, int newVisibility, int[] deleted, String returnTypeName, boolean createDelegate) throws Exception {
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-
-		if (returnTypeName != null)
-			processor.setNewReturnTypeName(returnTypeName);
-		processor.setDelegateUpdating(createDelegate);
-		markAsDeleted(processor.getParameterInfos(), deleted);
-		modifyInfos(processor.getParameterInfos(), newParamInfos, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation);
-		if (newVisibility != JdtFlags.VISIBILITY_CODE_INVALID)
-			processor.setVisibility(newVisibility);
-		RefactoringStatus initialConditions= ref.checkInitialConditions(new NullProgressMonitor());
-		assertTrue(initialConditions.isOK());
-		JavaRefactoringDescriptor descriptor= processor.createDescriptor();
-		RefactoringStatus result= performRefactoring(descriptor);
-		assertEquals("precondition was supposed to pass", null, result);
-
-		IPackageFragment pack= (IPackageFragment)method.getCompilationUnit().getParent();
-		String newCuName= getSimpleTestFileName(true, true);
-		ICompilationUnit newcu= pack.getCompilationUnit(newCuName);
-		assertTrue(newCuName + " does not exist", newcu.exists());
-		String expectedFileContents= getFileContents(getTestFileName(true, false));
-		assertEqualLines(expectedFileContents, newcu.getSource());
-
-		assertParticipant(method.getDeclaringType());
-	}
-
-	private void helperDoAll(String typeName, String methodName, String[] signature, ParameterInfo[] newParamInfos, int[] newIndices,
-			String[] oldParamNames, String[] newParamNames, String[] newParameterTypeNames, int[] permutation, int newVisibility, int[] deleted,
-			String returnTypeName) throws Exception {
-		helperDoAll(typeName, methodName, signature, newParamInfos, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation,
-				newVisibility, deleted, returnTypeName, false);
-	}
-
-	private void markAsDeleted(List list, int[] deleted) {
-		if (deleted == null)
-			return;
-		for (int i= 0; i < deleted.length; i++) {
-			((ParameterInfo)list.get(deleted[i])).markAsDeleted();
-		}
-	}*/
 
 	private void helper1(String[] newOrder, String[] signature) throws Exception{
 		helper1(newOrder, signature, null, null);
@@ -219,288 +172,74 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
-
-	/*private void modifyInfos(List infos, ParameterInfo[] newParamInfos, int[] newIndices, String[] oldParamNames, String[] newParamNames, String[] newParamTypeNames, int[] permutation) {
-		addInfos(infos, newParamInfos, newIndices);
-		List swapped= new ArrayList(infos.size());
-		List oldNameList= Arrays.asList(oldParamNames);
-		List newNameList= Arrays.asList(newParamNames);
-		for (int i= 0; i < permutation.length; i++) {
-			if (((ParameterInfo)infos.get(i)).isAdded())
-				continue;
-			if (! swapped.contains(new Integer(i))){
-				swapped.add(new Integer(permutation[i]));
-
-				ParameterInfo infoI= (ParameterInfo)infos.get(i);
-				infoI.setNewName((String)newNameList.get(oldNameList.indexOf(infoI.getOldName())));
-				if (newParamTypeNames != null)
-					infoI.setNewTypeName(newParamTypeNames[oldNameList.indexOf(infoI.getOldName())]);
-
-				ParameterInfo infoI1= (ParameterInfo)infos.get(permutation[i]);
-				infoI1.setNewName((String)newNameList.get(oldNameList.indexOf(infoI1.getOldName())));
-				if (newParamTypeNames != null)
-					infoI1.setNewTypeName(newParamTypeNames[oldNameList.indexOf(infoI1.getOldName())]);
-
-				swap(infos, i, permutation[i]);
+	
+	private void helperDoAll(String typeName, String methodName, String[] newNames, String[] newTypes, Literal[] newDefaultValues,
+			int[] newIndices, String[] newParamNames, int[] permutation, int[] deletedIndices, boolean createDelegate) {
+		Program in = CompileHelper.compile(getTestFileName(true, true));
+		Program out = CompileHelper.compile(getTestFileName(true, false));
+		assertNotNull(in);
+		assertNotNull(out);
+		
+		TypeDecl td = in.findSimpleType(typeName);
+		assertNotNull(td);
+		MethodDecl md = td.findMethod(methodName);
+		assertNotNull(md);
+		
+		try {
+			for(int i=0; i<md.getNumParameter(); ++i)
+				md.getParameter(i).rename(newParamNames[i]);
+			md.doPermuteParameters(permutation, createDelegate);
+			for(int i=0;i<newTypes.length;++i) {
+				TypeDecl parmtp = in.findType(newTypes[i]);
+				assertNotNull(parmtp);
+				if(parmtp.isGenericType())
+					parmtp = ((GenericTypeDecl)parmtp).rawType();
+				md.doAddParameter(new ParameterDeclaration(parmtp.createLockedAccess(), newNames[i]), newIndices[i], newDefaultValues[i], false);
 			}
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
-
-	private static void modifyInfos(List infos, String[] newOrder, String[] oldNames, String[] newNames) {
-		int[] permutation= createPermutation(infos, newOrder);
-		List swapped= new ArrayList(infos.size());
-		if (oldNames == null || newNames == null){
-			ParameterInfo[] newInfos= new  ParameterInfo[infos.size()];
-			for (int i= 0; i < permutation.length; i++) {
-				newInfos[i]= (ParameterInfo)infos.get(permutation[i]);
-			}
-			infos.clear();
-			for (int i= 0; i < newInfos.length; i++) {
-				infos.add(newInfos[i]);
-			}
-			return;
-		} else {
-			List oldNameList= Arrays.asList(oldNames);
-			List newNameList= Arrays.asList(newNames);
-			for (int i= 0; i < permutation.length; i++) {
-				if (! swapped.contains(new Integer(i))){
-					swapped.add(new Integer(permutation[i]));
-					ParameterInfo infoI= (ParameterInfo)infos.get(i);
-					infoI.setNewName((String)newNameList.get(oldNameList.indexOf(infoI.getOldName())));
-					ParameterInfo infoI1= (ParameterInfo)infos.get(permutation[i]);
-					infoI1.setNewName((String)newNameList.get(oldNameList.indexOf(infoI1.getOldName())));
-					swap(infos, i, permutation[i]);
-				}
-			}
-		}
-	}
-
-	private static void swap(List infos, int i, int i1) {
-		Object o= infos.get(i);
-		infos.set(i, infos.get(i1));
-		infos.set(i1, o);
-	}
-
-	private static int[] createPermutation(List infos, String[] newOrder) {
-		int[] result= new int[infos.size()];
-		for (int i= 0; i < result.length; i++) {
-			result[i]= indexOfOldName(infos, newOrder[i]);
-		}
-		return result;
-	}
-
-	private static int indexOfOldName(List infos, String string) {
-		for (Iterator iter= infos.iterator(); iter.hasNext();) {
-			ParameterInfo info= (ParameterInfo) iter.next();
-			if (info.getOldName().equals(string))
-				return infos.indexOf(info);
-		}
-		assertTrue(false);
-		return -1;
-	}
-
-	private void helperFail(String[] newOrder, String[] signature, int expectedSeverity) throws Exception{
-		IType classA= getType(createCUfromTestFile(getPackageP(), false, false), "A");
-		IMethod method= classA.getMethod("m", signature);
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		modifyInfos(processor.getParameterInfos(), newOrder, null, null);
-		ref.checkInitialConditions(new NullProgressMonitor());
-		RefactoringStatus result= ref.checkInitialConditions(new NullProgressMonitor());
-		if (result.isOK()) {
-			JavaRefactoringDescriptor descriptor= processor.createDescriptor();
-			result= performRefactoring(descriptor, true);
-		}
-		assertNotNull("precondition was supposed to fail", result);
-		assertEquals("Severity:", expectedSeverity, result.getSeverity());
-	}
-
-	private void helperAddFail(String[] signature, ParameterInfo[] newParamInfos, int[] newIndices, int expectedSeverity) throws Exception{
-		IType classA= getType(createCUfromTestFile(getPackageP(), false, false), "A");
-		IMethod method= classA.getMethod("m", signature);
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		addInfos(processor.getParameterInfos(), newParamInfos, newIndices);
-		RefactoringStatus result= ref.checkInitialConditions(new NullProgressMonitor());
-		if (result.isOK()) {
-			JavaRefactoringDescriptor descriptor= processor.createDescriptor();
-			result= performRefactoring(descriptor, true);
-		}
-		assertNotNull("precondition was supposed to fail", result);
-		assertEquals("Severity:" + result.getMessageMatchingSeverity(result.getSeverity()), expectedSeverity, result.getSeverity());
-	}
-
-	private void helperDoAllFail(String methodName,
-								String[] signature,
-							  	ParameterInfo[] newParamInfos,
-							  	int[] newIndices,
-							  	String[] oldParamNames,
-							  	String[] newParamNames,
-							  	String[] newParameterTypeNames,
-							  	int[] permutation,
-							  	int newVisibility,
-							  	int[] deleted, int expectedSeverity)  throws Exception{
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), false, false);
-		IType classA= getType(cu, "A");
-		IMethod method = classA.getMethod(methodName, signature);
-		assertTrue("method does not exist", method.exists());
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		markAsDeleted(processor.getParameterInfos(), deleted);
-		modifyInfos(processor.getParameterInfos(), newParamInfos, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation);
-		if (newVisibility != JdtFlags.VISIBILITY_CODE_INVALID)
-			processor.setVisibility(newVisibility);
-		RefactoringStatus result= ref.checkInitialConditions(new NullProgressMonitor());
-		if (result.isOK()) {
-			JavaRefactoringDescriptor descriptor= processor.createDescriptor();
-			result= performRefactoring(descriptor);
-		}
-		assertNotNull("precondition was supposed to fail", result);
-		assertEquals("Severity:" + result.getMessageMatchingSeverity(result.getSeverity()), expectedSeverity, result.getSeverity());
-	}
-
-	private void helperDoAllWithExceptions(String typeName,
-			String methodName,
-		  	String[] signature,
-		  	ParameterInfo[] newParamInfos,
-		  	int[] newIndices,
-		  	String[] oldParamNames,
-		  	String[] newParamNames,
-		  	String[] newParameterTypeNames,
-		  	int[] permutation,
-		  	int newVisibility,
-		  	int[] deleted,
-			String returnTypeName,
-			String [] removeExceptions,
-			String[] addExceptions) throws Exception {
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), true, true);
-		IType classA= getType(cu, typeName);
-		IMethod method = classA.getMethod(methodName, signature);
-		assertTrue("method " + methodName +" does not exist", method.exists());
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		if (returnTypeName != null)
-			processor.setNewReturnTypeName(returnTypeName);
-		markAsDeleted(processor.getParameterInfos(), deleted);
-		modifyInfos(processor.getParameterInfos(), newParamInfos, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation);
-		if (newVisibility != JdtFlags.VISIBILITY_CODE_INVALID)
-			processor.setVisibility(newVisibility);
-
-		// from RefactoringTest#performRefactoring():
-		RefactoringStatus status= ref.checkInitialConditions(new NullProgressMonitor());
-		assertTrue("checkActivation was supposed to pass", status.isOK());
-
-		mangleExceptions(processor.getExceptionInfos(), removeExceptions, addExceptions, method.getCompilationUnit());
-
-		status= ref.checkFinalConditions(new NullProgressMonitor());
-		assertTrue("checkInput was supposed to pass", status.isOK());
-		Change undo= performChange(ref, true);
-		assertNotNull(undo);
-
-		IPackageFragment pack= (IPackageFragment)cu.getParent();
-		String newCuName= getSimpleTestFileName(true, true);
-		ICompilationUnit newcu= pack.getCompilationUnit(newCuName);
-		assertTrue(newCuName + " does not exist", newcu.exists());
-		String expectedFileContents= getFileContents(getTestFileName(true, false));
-		assertEqualLines(expectedFileContents, newcu.getSource());
-	}
-
-
-	private void helperException(String[] signature, String[] removeExceptions, String[] addExceptions) throws Exception {
-		ICompilationUnit cu= createCUfromTestFile(getPackageP(), true, true);
-		IType classA= getType(cu, "A");
-		IMethod method = classA.getMethod("m", signature);
-		assertTrue("method does not exist", method.exists());
-		assertTrue("refactoring not available", RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-
-		ChangeSignatureProcessor processor= new ChangeSignatureProcessor(method);
-		Refactoring ref= new ProcessorBasedRefactoring(processor);
-
-		// from RefactoringTest#performRefactoring():
-		RefactoringStatus status= ref.checkInitialConditions(new NullProgressMonitor());
-		assertTrue("checkActivation was supposed to pass", status.isOK());
-
-		mangleExceptions(processor.getExceptionInfos(), removeExceptions, addExceptions, method.getCompilationUnit());
-
-		status= ref.checkFinalConditions(new NullProgressMonitor());
-		assertTrue("checkInput was supposed to pass", status.isOK());
-		Change undo= performChange(ref, true);
-		assertNotNull(undo);
-
-		IPackageFragment pack= (IPackageFragment)cu.getParent();
-		String newCuName= getSimpleTestFileName(true, true);
-		ICompilationUnit newcu= pack.getCompilationUnit(newCuName);
-		assertTrue(newCuName + " does not exist", newcu.exists());
-		String expectedFileContents= getFileContents(getTestFileName(true, false));
-		assertEqualLines("invalid renaming", expectedFileContents, newcu.getSource());
-	}
-
-
-	private void mangleExceptions(List list, String[] removeExceptions, String[] addExceptions, ICompilationUnit cu) throws Exception {
-		for (Iterator iter= list.iterator(); iter.hasNext(); ) {
-			ExceptionInfo info= (ExceptionInfo) iter.next();
-			String name= info.getType().getFullyQualifiedName('.');
-			for (int i= 0; i < removeExceptions.length; i++) {
-				if (name.equals(removeExceptions[i]))
-					info.markAsDeleted();
-			}
-		}
-		for (int i= 0; i < addExceptions.length; i++) {
-			IType type= cu.getJavaProject().findType(addExceptions[i]);
-			list.add(ExceptionInfo.createInfoForAddedException(type));
-		}
-	}*/
 
 	//------- tests
 
-	/*public void testFail0() throws Exception{
-		helperFail(new String[]{"j", "i"}, new String[]{"I", "I"}, RefactoringStatus.ERROR);
+	public void testFail0() throws Exception{
+		helperPermuteFail(new int[]{1, 0});
 	}
 
+	/* disabled: tests invalid arguments
 	public void testFail1() throws Exception{
-		helperFail(new String[0], new String[0], RefactoringStatus.FATAL);
-	}
+		helperFail(new String[0], new String[0]);
+	}*/
 
+	/* disabled: does not compile
 	public void testFailAdd2() throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new IntegerLiteral(0)};
 		int[] newIndices= {0};
-		helperAddFail(signature, newParamInfo, newIndices, RefactoringStatus.ERROR);
-	}
+		helperAddFail(signature, newNames, newTypes, newDefaultValues, newIndices);
+	}*/
 
+	/* disabled: these test invalid arguments
 	public void testFailAdd3() throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"int"};
 		String[] newDefaultValues= {"not good"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
 		int[] newIndices= {0};
-		helperAddFail(signature, newParamInfo, newIndices, RefactoringStatus.FATAL);
+		helperAddFail(signature, newNames, newTypes, newIndices);
 	}
 
 	public void testFailAdd4() throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"not a type"};
-		String[] newDefaultValues= {"0"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new IntegerLiteral(0)};
 		int[] newIndices= {0};
-		helperAddFail(signature, newParamInfo, newIndices, RefactoringStatus.FATAL);
+		helperAddFail(signature, newNames, newTypes, newIndices);
 	}
 
 	public void testFailDoAll5()throws Exception{
@@ -573,26 +312,13 @@ public class ChangeSignatureTests extends TestCase {
 		IMethod method= classA.getMethod("name", new String[0]);
 		assertNotNull(method);
 		assertFalse(RefactoringAvailabilityTester.isChangeSignatureAvailable(method));
-	}
+	}*/
 
 	public void testFailVararg01() throws Exception {
-		//cannot change m(int, String...) to m(String..., int)
-		String[] signature= {"I", "[QString;"};
-		String[] newNames= null;
-		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"i", "names"};
-		String[] newParamNames= {"i", "names"};
-		int[] permutation= {1, 0};
-		int[] deletedIndices= {};
-		int newVisibility= Modifier.PUBLIC;
-		int expectedSeverity= RefactoringStatus.FATAL;
-		helperDoAllFail("m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, expectedSeverity);
+		helperPermuteFail(new int[]{1, 0});
 	}
 
+	/* disabled: change type
 	public void testFailVararg02() throws Exception {
 		//cannot introduce vararg in non-last position
 		String[] signature= {"I", "[QString;"};
@@ -648,26 +374,13 @@ public class ChangeSignatureTests extends TestCase {
 		int newVisibility= Modifier.PUBLIC;
 		int expectedSeverity= RefactoringStatus.FATAL;
 		helperDoAllFail("m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, newParamTypeNames, permutation, newVisibility, deletedIndices, expectedSeverity);
-	}
+	}*/
 
 	public void testFailVararg05() throws Exception {
-		//cannot move parameter which is vararg in ripple method
-		String[] signature= {"I", "[QString;"};
-		String[] newNames= null;
-		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"i", "names"};
-		String[] newParamNames= {"i", "names"};
-		int[] permutation= {1, 0};
-		int[] deletedIndices= {};
-		int newVisibility= Modifier.PUBLIC;
-		int expectedSeverity= RefactoringStatus.FATAL;
-		helperDoAllFail("m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, expectedSeverity);
+		helperPermuteFail(new int[]{1, 0});
 	}
 
+	/* disabled: test would fail as expected, but test harness hard to set up
 	public void testFailGenerics01() throws Exception {
 		//type variable name may not be available in related methods
 		String[] signature= {"QE;"};
@@ -760,7 +473,6 @@ public class ChangeSignatureTests extends TestCase {
 		helper1(new String[]{"b", "i"}, new String[]{"I", "Z"}, true);
 	}
 
-	// bug: rootmethods
 	public void test18() throws Exception{
 		//exception because of bug 11151
 		helper1(new String[]{"b", "i"}, new String[]{"I", "Z"}, true);
@@ -775,131 +487,33 @@ public class ChangeSignatureTests extends TestCase {
 		helper1(new String[]{"b", "a"}, new String[]{"I", "[I"}, true);
 	}
 
-	/*
 //constructor tests
+	/* disabled
 	public void test21() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 	public void test22() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 	public void test23() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 	public void test24() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-//		if (true){
-//			printTestDisabledMessage("Bug 24230");
-//			return;
-//		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 	public void test25() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 	public void test26() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
-		String[] signature= {"I", "I"};
-		ParameterInfo[] newParamInfo= null;
-		int[] newIndices= null;
-
-		String[] oldParamNames= {"a", "b"};
-		String[] newParamNames= {"a", "b"};
-		int[] permutation= {1, 0};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("A", "A", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName);
+		helperPermute(1, 0);
 	}
 
 	public void test27() throws Exception{
-		if (! RUN_CONSTRUCTOR_TEST){
-			printTestDisabledMessage("disabled for constructors for now");
-			return;
-		}
 		String[] signature= {"QString;", "QObject;", "I"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(new String[]{"Object"}, new String[]{"newParam"}, new String[]{"null"});
-		int[] newIndices= { 3 };
-
-		String[] oldParamNames= {"msg", "xml", "id"};
-		String[] newParamNames= {"msg", "xml", "id"};
-		int[] permutation= {0, 1, 2};
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		int[] deleted= null;
-		String newReturnTypeName= null;
-		helperDoAll("Query.PoolMessageEvent", "PoolMessageEvent", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deleted, newReturnTypeName, true);
+		String[] newNames = {"newParam"};
+		String[] newTypes = {"Object"};
+		Literal[] newDefaultValues = {new NullLiteral("null")};
+		int[] newIndices = { 3 };
 	}*/
 
 	public void testRenameReorder26() throws Exception{
@@ -964,24 +578,19 @@ public class ChangeSignatureTests extends TestCase {
 		helperAdd(signature, newTypes, newNames, newDefaultValues, newIndices, true);
 	}
 
-	/*public void testAddReorderRename34()throws Exception{
-		String[] signature= {"I", "Z"};
+	public void testAddReorderRename34()throws Exception{
 		String[] newNames= {"x"};
 		String[] newTypes= {"Object"};
-		String[] newDefaultValues= {"null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null")};
 		int[] newIndices= {1};
 
-		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= {"i", "jj"};
-		int[] permutation= {2, -1, 0};
+		int[] permutation= {1, 0};
 		int[] deletedIndices= null;
-		int newVisibility= JdtFlags.VISIBILITY_CODE_INVALID;//retain
-		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName, true);
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
 	}
 
-	public void testAll35()throws Exception{
+	/*public void testAll35()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= null;
 		String[] newTypes= null;

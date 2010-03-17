@@ -1,0 +1,41 @@
+aspect IntroduceParameter {
+	public void Expr.introduceParameter(String name) {
+		if(inextractible() || !isFlowInvariant())
+			throw new RefactoringException("expression cannot be extracted");
+		if(!(hostBodyDecl() instanceof MethodDecl))
+			throw new RefactoringException("cannot introduce parameter for non-method");
+		MethodDecl md = (MethodDecl)hostBodyDecl();
+		if(md.relatives().size() != 1)
+			throw new RefactoringException("cannot introduce parameter in methods with relatives");
+		programRoot().lockMethodNames(md.name());
+		TypeDecl td = effectiveType();
+		int idx = md.isVariableArity() ? md.getNumParameter()-1 : md.getNumParameter();
+		if(!md.parameterDeclaration(name).isEmpty())
+			throw new RefactoringException("parameter of same name exists");
+		ParameterDeclaration pd = new ParameterDeclaration(td.createLockedAccess(), name);
+		md.getParameterList().insertChild(pd, idx);
+		for(MethodAccess ma : md.uses())
+			ma.getArgList().insertChild((Expr)lockedCopy(), idx);
+		replaceWith(pd.createLockedAccess());
+	}
+	
+	public void Expr.doIntroduceParameter(String name) {
+		Program root = programRoot();
+		introduceParameter(name);
+		root.eliminate(LOCKED_NAMES);
+	}
+	
+	// an expression is flow invariant if it can be moved arbitrarily within the program (assuming that name bindings are preserved)
+	syn boolean Expr.isFlowInvariant() = isConstant();
+	eq ArrayCreationExpr.isFlowInvariant() = getTypeAccess().isFlowInvariant() && (!hasArrayInit() || getArrayInit().isFlowInvariant());
+	eq ArrayInit.isFlowInvariant() {
+		for(Expr e : getInits())
+			if(!e.isFlowInvariant())
+				return false;
+		return true;
+	}
+	eq TypeAccess.isFlowInvariant() = true;
+	eq ArrayTypeWithSizeAccess.isFlowInvariant() = getExpr().isConstant();
+	eq ClassInstanceExpr.isFlowInvariant() = decl().signature().equals("<init>(java.lang.String p0)") || super.isFlowInvariant();
+	eq MethodAccess.isFlowInvariant() = decl().isConstantMethod() || super.isFlowInvariant();
+}

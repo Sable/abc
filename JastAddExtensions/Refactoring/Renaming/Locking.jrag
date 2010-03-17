@@ -53,5 +53,41 @@ aspect Locking {
 		} else {
 			return super.eliminateLockedNames();	
 		}
-	}	
+	}
+	
+	// locked copy of a subtree
+	public ASTNode ASTNode.lockedCopy() {
+		ASTNode res = (ASTNode)copy();
+		for(int i=0;i<getNumChildNoTransform();++i) {
+			ASTNode child = getChildNoTransform(i);
+			if(child != null)
+				child = child.lockedCopy();
+			res.setChild(child, i);
+		}
+		return res;
+	}
+	
+	public PackageAccess PackageAccess.lockedCopy() {
+		PackageAccess res = (PackageAccess)super.lockedCopy();
+		res.lock(decl());
+		return res;
+	}
+	
+	public TypeAccess TypeAccess.lockedCopy() {
+		TypeAccess res = (TypeAccess)super.lockedCopy();
+		res.lock(decl());
+		return res;
+	}
+	
+	public VarAccess VarAccess.lockedCopy() {
+		VarAccess res = (VarAccess)super.lockedCopy();
+		res.lock(decl());
+		return res;
+	}
+	
+	public MethodAccess MethodAccess.lockedCopy() {
+		MethodAccess res = (MethodAccess)super.lockedCopy();
+		res.lock(decl());
+		return res;
+	}
 }

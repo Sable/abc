@@ -9,6 +9,8 @@ aspect PermuteParameters {
 		programRoot().lockMethodNames(name());
 		for(MethodDecl md : relatives()) {
 			Collection<MethodAccess> uses = md.uses();
+			if(md.isNative() || !md.fromSource())
+				throw new RefactoringException("cannot permute parameters");
 			if(md.isVariableArity() && perm[n-1] != n-1)
 				throw new RefactoringException("variable arity parameter has to come last");
 			if(createDelegate) {
