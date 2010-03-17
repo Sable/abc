@@ -27,9 +27,7 @@ aspect InlineAssignment {
 				throw new RefactoringException("cannot inline across method boundaries");
 			if(!w.reachingDefinitions().isSingleton())
 				throw new RefactoringException("ambiguous dataflow");
-			if(rhs.precedence() > w.maxPrecedence())
-				rhs = new ParExpr(rhs);
-			w.replaceWith(rhs);
+			w.replaceWith(rhs.precedence() > w.maxPrecedence() ? new ParExpr(rhs) : rhs);
 			compilationUnit().flushCaches();
 			rhs.unlockDataFlow();
 			bd.unlockSyncDependencies();

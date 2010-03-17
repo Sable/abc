@@ -42,6 +42,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
+		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);
 		//$JUnit-END$
 		return suite;
 	}

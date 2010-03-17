@@ -44,7 +44,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		return fileName + getSimpleTestFileName(canRename, input);
 	}
 
-	private <T extends ASTNode> T findNode(ASTNode p, Class<T> clazz, int startLine, int startColumn, int endLine, int endColumn) {
+	public static <T extends ASTNode> T findNode(ASTNode p, Class<T> clazz, int startLine, int startColumn, int endLine, int endColumn) {
 		if(p == null)
 			return null;
 		for(int i=0;i<p.getNumChild();++i) {
