@@ -23,6 +23,15 @@ aspect Visibility {
 		return VIS_PACKAGE;
 	}
 	
+	public Modifiers.Modifiers(int vis) {
+		this();
+		switch(vis) {
+		case VIS_PRIVATE: addModifier("private"); return;
+		case VIS_PROTECTED: addModifier("protected"); return;
+		case VIS_PUBLIC: addModifier("public"); return;
+		}
+	}
+	
 	syn boolean Modifier.isVisibility() = getID().equals("public") || getID().equals("protected") || getID().equals("private");
 	public void Modifiers.setVisibility(int vis) {
 		String v;

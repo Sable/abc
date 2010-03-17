@@ -1,9 +1,9 @@
 aspect PromoteTempToField {
 	inh boolean VariableDeclaration.inStaticContext();
 	
-	public void VariableDeclaration.promoteToField() {
+	public void VariableDeclaration.promoteToField(int vis) {
 		split();
-		Modifiers mods = new Modifiers("private");
+		Modifiers mods = new Modifiers(vis);
 		if(inStaticContext())
 			mods.addModifier("static");
 		FieldDeclaration fd = new FieldDeclaration(mods, type().createLockedAccess(), name(), new Opt<Expr>());
@@ -19,11 +19,15 @@ aspect PromoteTempToField {
 		removeUnused();
 	}
 	
-	public void VariableDeclaration.doPromoteToField() {
+	public void VariableDeclaration.doPromoteToField(int vis) {
 		BodyDecl bd = this.hostBodyDecl();
-		promoteToField();
+		promoteToField(vis);
 		bd.programRoot().eliminate(LOCKED_NAMES, LOCKED_DATAFLOW);
 		bd.unlockSyncDependencies();
+	}
+	
+	public void VariableDeclaration.doPromoteToField() {
+		doPromoteToField(VIS_PRIVATE);
 	}
 	
 	public void TypeDecl.insertField(FieldDeclaration fd) {
