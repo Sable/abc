@@ -32,6 +32,7 @@ aspect MoveMembers {
 		if(!isStatic())
 			throw new RefactoringException("cannot move instance methods");
 		lockAllNames();
+		programRoot().lockNames(name());
 		TypeDecl host = hostType();
 		target.insertUnusedMethod(this);
 		host.removeBodyDecl(this);
@@ -39,6 +40,7 @@ aspect MoveMembers {
 	
 	public void MemberTypeDecl.moveTo(TypeDecl target) {
 		typeDecl().lockAllNames();
+		programRoot().lockNames(typeDecl().name());
 		hostType().removeBodyDecl(this);
 		target.insertUnusedType(typeDecl());
 	}

@@ -40,6 +40,7 @@ aspect PromoteTempToField {
 		SimpleSet res = localFields(fd.name());
 		if(!res.isEmpty() && !res.isSingleton(fd))
 			throw new RefactoringException("field of the same name exists");
+		fd.checkEnclosingTypeNames(this);
 		programRoot().lockNames(fd.name());
 		if(before == null)
 			addBodyDecl(fd);

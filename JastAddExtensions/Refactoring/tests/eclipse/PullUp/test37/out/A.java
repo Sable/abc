@@ -1,11 +1,9 @@
 package p;
 abstract class A{
-
-	public abstract void f();
-
 	public void m() {
 		f();
 	}
+	public abstract void f();
 }
 class B extends A{
 	///@Override

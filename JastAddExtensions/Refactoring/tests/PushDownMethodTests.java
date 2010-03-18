@@ -475,4 +475,22 @@ public class PushDownMethodTests extends TestCase {
     	    	   "abstract class A { abstract void m(); void f() { m(); } }",
     	    	   "class B extends A { final void m() { } }"));
     }
+    
+    public void test37() {
+    	testFail(Program.fromCompilationUnits(
+    			 new RawCU("Super.java",
+    			 "package p;" +
+    			 "public class Super {" +
+    			 "  int m() { return 23; }" +
+    			 "  public static void main(String[] args) {" +
+    			 "    System.out.println(((Super)new q.B()).m());" +
+    			 "  }" +
+    			 "}"),
+    			 new RawCU("A.java",
+    			 "package p;" +
+    			 "public class A extends Super { int m() { return 42; } }"),
+    			 new RawCU("B.java",
+    			 "package q;" +
+    			 "public class B extends p.A { }")));
+    }
 }
