@@ -43,6 +43,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);
+		suite.addTestSuite(tests.eclipse.IntroduceFactory.IntroduceFactoryTests.class);
 		//$JUnit-END$
 		return suite;
 	}

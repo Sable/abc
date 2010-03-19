@@ -1,0 +1,79 @@
+aspect IntroduceFactory {
+	public void ClassInstanceExpr.introduceFactory() {
+		if(hasTypeDecl())
+			return;
+		MethodDecl md = decl().createFactoryMethod();
+		if(hostBodyDecl() == md)
+			return;
+		replaceWith(md.createLockedAccess(getArgs()));
+	}
+	
+	public void ClassInstanceExpr.doIntroduceFactory() {
+		Program root = programRoot();
+		introduceFactory();
+		root.eliminate(LOCKED_NAMES);
+	}
+	
+	public void ConstructorDecl.introduceFactory(boolean makePrivate) {
+		int vis = makePrivate ? VIS_PRIVATE : getVisibility();
+		for(Access acc : uses()) {
+			if(acc instanceof ClassInstanceExpr) {
+				ClassInstanceExpr cie = (ClassInstanceExpr)acc;
+				cie.introduceFactory();
+				if(cie.hasTypeDecl()) {
+					vis = Math.max(vis, VIS_PROTECTED);
+				}
+			} else if(acc instanceof SuperConstructorAccess) {
+				vis = Math.max(vis, VIS_PROTECTED);
+			}
+		}
+		if(makePrivate)
+			getModifiers().setVisibility(vis);
+	}
+	
+	public void ConstructorDeclSubstituted.introduceFactory(boolean makePrivate) {
+		sourceConstructorDecl().introduceFactory(makePrivate);
+	}
+	
+	public void ParConstructorDecl.introduceFactory(boolean makePrivate) {
+		sourceConstructorDecl().introduceFactory(makePrivate);
+	}
+	
+	public void ConstructorDecl.doIntroduceFactory() {
+		doIntroduceFactory(true);
+	}
+	
+	public void ConstructorDecl.doIntroduceFactory(boolean makePrivate) {
+		introduceFactory(makePrivate);
+		programRoot().eliminate(LOCKED_NAMES);
+	}
+	
+	private MethodDecl ConstructorDecl.factoryMethod = null;
+	public MethodDecl ConstructorDecl.createFactoryMethod() {
+		if(factoryMethod != null)
+			return factoryMethod;
+		if(hostType().isEnumDecl())
+			throw new RefactoringException("cannot introduce factory method for enum constructor");
+		String name = "create" + hostType().name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		List<Expr> args = new List<Expr>();
+		for(ParameterDeclaration pd : getParameters()) {
+			parms.add((ParameterDeclaration)pd.lockedCopy());
+			args.add(new VarAccess(pd.name()));
+		}
+		List<Access> exns = new List<Access>();
+		for(Access acc : getExceptions())
+			exns.add(acc.type().createLockedAccess());
+		Block body = new Block(new List<Stmt>().add(new ReturnStmt(new ClassInstanceExpr(hostType().createLockedAccess(), args))));
+		factoryMethod = new MethodDecl(new Modifiers("public", "static"), hostType().createLockedAccess(), name, parms, exns, new Opt<Block>(body));
+		hostType().insertUnusedMethod(factoryMethod, 0);
+		return factoryMethod;
+	}
+	public MethodDecl ConstructorDeclSubstituted.createFactoryMethod() {
+		return sourceConstructorDecl().createFactoryMethod();
+	}
+	public MethodDecl ParConstructorDecl.createFactoryMethod() {
+		return sourceConstructorDecl().createFactoryMethod();
+	}
+	
+}

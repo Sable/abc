@@ -69,10 +69,8 @@ aspect MethodExt {
 			boolean found = false;
 			for(Iterator<MethodDecl> iter = td.localMethodsSignature(sig).iterator(); iter.hasNext();) {
 				MethodDecl md = iter.next();
-				if(!md.isPrivate()) {
-					desc.add(md);
-					found = true;
-				}
+				desc.add(md);
+				found = true;
 			}
 			if(!found)
 				desc.addAll(td.descendantMethods(sig));

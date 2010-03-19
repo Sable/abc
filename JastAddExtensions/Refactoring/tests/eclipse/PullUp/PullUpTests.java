@@ -12,6 +12,8 @@
 package tests.eclipse.PullUp;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
@@ -67,7 +69,7 @@ public class PullUpTests extends TestCase {
 			TypeDecl m = td.findSimpleType(memberTypeNames[i]);
 			assertNotNull(m);
 			assertTrue(m.getParent() instanceof MemberTypeDecl);
-			memberTypes[i] = ((MemberTypeDecl)m.getParent());
+			memberTypes[i] = (MemberTypeDecl)m.getParent();
 		}
 		
 		Program out = null;
@@ -82,7 +84,10 @@ public class PullUpTests extends TestCase {
 
 			do {
 				in.flushCaches();
-				td.doPullUpMembers(meths, makeAbstract, fields, memberTypes);
+				td.doPullUpMembers(meths, 
+								   makeAbstract, 
+								   fields, 
+								   memberTypes);
 				td = ((ClassDecl)td).superclass();
 			} while(targetClassIndex-- > 0);
 			
@@ -152,6 +157,51 @@ public class PullUpTests extends TestCase {
 
 	private void helper3(String[] methodNames, String[][] signatures, boolean deleteAllInSourceType, boolean deleteAllMatchingMethods, int targetClassIndex, boolean shouldActivationCheckPass) throws Exception {
 		pullUpMembers(methodNames, new boolean[methodNames.length], new String[0], new String[0], false, targetClassIndex);
+	}
+
+	private void addRequiredMembersHelper(String[] fieldNames, String[] methodNames, String[][] methodSignatures, String[] expectedFieldNames, 
+			String[] expectedMethodNames, String[][] expectedMethodSignatures) {
+		Program in;
+		if(new File(getInFileName("B")).exists())
+			in = CompileHelper.compile(getInFileName("A"), getInFileName("B"));
+		else
+			in = CompileHelper.compile(getInFileName("A"));
+		assertNotNull(in);
+		
+		TypeDecl td = in.findType("B");
+		assertNotNull(td);
+		
+		HashSet<MethodDecl> meths = new HashSet<MethodDecl>();
+		for(int i=0;i<methodNames.length;++i) {
+			MethodDecl md = td.findMethod(methodNames[i]);
+			assertNotNull(md);
+			meths.add(md);
+		}
+		
+		HashSet<FieldDeclaration> fields = new HashSet<FieldDeclaration>();
+		for(int i=0;i<fieldNames.length;++i) {
+			FieldDeclaration fd = td.findField(fieldNames[i]);
+			assertNotNull(fd);
+			fields.add(fd);
+		}
+
+		td.addRequiredMembers(meths, fields, new HashSet<MemberTypeDecl>());
+		
+		f_outer:
+		for(String efn : expectedFieldNames) {
+			for(FieldDeclaration f : fields)
+				if(f.name().equals(efn))
+					continue f_outer;
+			fail(efn+" not added");
+		}
+		
+		m_outer:
+		for(String emn : expectedMethodNames) {
+			for(MethodDecl m : meths)
+				if(m.name().equals(emn))
+					continue m_outer;
+			fail(emn+" not added");
+		}
 	}
 
 	//------------------ tests -------------
@@ -1044,11 +1094,10 @@ public class PullUpTests extends TestCase {
 		fieldHelper2(new String[]{"f"}, 1);
 	}
 
-	/* disabled: TODO
 	//---------------------------------------------------------
 	public void testFieldMethod0() throws Exception{
-//		printTestDisabledMessage("bug 23324 ");
-		fieldMethodHelper1(new String[]{"f"}, new String[]{"m"}, new String[][]{new String[0]}, true, false);
+		declareAbstractHelper(new String[]{"m"}, null, new String[]{"f"}, new String[0], new String[]{"m"},
+							  null, new String[]{"f"}, new String[0], null, new String[0], true, true, 0);
 	}
 
 	//----
@@ -1193,7 +1242,7 @@ public class PullUpTests extends TestCase {
 		String[] expectedMethodNames= {"foo", "m"};
 		String[][] expectedMethodSignatures= {new String[0], new String[0]};
 		addRequiredMembersHelper(fieldNames, methodNames, methodSignatures, expectedFieldNames, expectedMethodNames, expectedMethodSignatures);
-	}*/
+	}
 
 	/* disabled: tests idiosyncratic features
 	public void testEnablement0() throws Exception {
@@ -1378,68 +1427,13 @@ public class PullUpTests extends TestCase {
 
 	//------------------ tests -------------
 
-	/* disabled: TODO
 	public void testStaticImports0() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[] {"QS;"}};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
 	public void testStaticImports1() throws Exception{
-		ICompilationUnit cuA= createCUfromTestFile(getPackageP(), "A");
-		ICompilationUnit cuB= createCUfromTestFile(getPackageP(), "B");
-
-		try{
-			String[] methodNames= new String[]{"m"};
-			String[][] signatures= new String[][]{new String[] {"QS;"}};
-
-			IType type= getType(cuB, "B");
-			IMethod[] methods= getMethods(type, methodNames, signatures);
-
-			PullUpRefactoringProcessor processor= createRefactoringProcessor(methods);
-			Refactoring ref= processor.getRefactoring();
-
-			assertTrue("activation", ref.checkInitialConditions(new NullProgressMonitor()).isOK());
-			setSuperclassAsTargetClass(processor);
-
-			processor.setDeletedMethods(getMethods(processor.getMatchingElements(new NullProgressMonitor(), false)));
-
-			RefactoringStatus result= performRefactoring(ref);
-			assertTrue("precondition was supposed to pass", result == null || !result.hasError());
-
-			assertEqualLines("A", cuA.getSource(), getFileContents(getOutputTestFileName("A")));
-			assertEqualLines("B", cuB.getSource(), getFileContents(getOutputTestFileName("B")));
-		} finally{
-			performDummySearch();
-			cuA.delete(false, null);
-			cuB.delete(false, null);
-		}
-	}*/
+		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
+	}
 
 	public void testGenerics0() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
