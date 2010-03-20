@@ -11,4 +11,41 @@ aspect ConstructorExt {
 		&& getConstructorAccess() instanceof SuperConstructorAccess
 		&& ((SuperConstructorAccess)getConstructorAccess()).getNumArg() == 0;
 	
+	// uses of a constructor, including its substituted and parameterised copies
+	public Collection<Access> ConstructorDecl.usesOfAllCopies() {
+		Collection<Access> res = new HashSet<Access>(uses());
+		for(ConstructorDecl cd : substitutedCopies())
+			res.addAll(cd.uses());
+		return res;
+	}
+	
+	public Collection<Access> GenericConstructorDecl.usesOfAllCopies() {
+		Collection<Access> res = super.usesOfAllCopies();
+		res.addAll(parUses());
+		return res;
+	}
+	
+	public Collection<ConstructorDeclSubstituted> ConstructorDecl.substitutedCopies() {
+		Collection<ConstructorDeclSubstituted> res = new LinkedList<ConstructorDeclSubstituted>();
+		if(!hostType().isGenericType())
+			return res;
+		GenericTypeDecl host = (GenericTypeDecl)hostType();
+		for(int i=0;i<host.getNumParTypeDecl();++i) {
+			ParClassDecl pcd = (ParClassDecl)host.getParTypeDecl(i);
+			for(Object o : pcd.constructors())
+				if(o instanceof ConstructorDeclSubstituted && ((ConstructorDeclSubstituted)o).sourceConstructorDecl() == this)
+					res.add((ConstructorDeclSubstituted)o);
+		}
+		return res;
+	}
+	
+	// all class instantiations and constructor calls that resolve to a parameterized instance of a generic method
+	coll Collection<Access> GenericConstructorDecl.parUses() [new HashSet<Access>()]
+	                                                          with add root Program;
+	ClassInstanceExpr contributes this when decl() instanceof ParConstructorDecl 
+									   to GenericConstructorDecl.parUses()
+									   for ((ParConstructorDecl)decl()).sourceConstructorDecl(); 
+	ConstructorAccess contributes this when decl() instanceof ParConstructorDecl
+									   to GenericConstructorDecl.parUses()
+									   for ((ParConstructorDecl)decl()).sourceConstructorDecl();
 }

@@ -48,6 +48,8 @@ aspect LockedTypeAccess {
 		return new ParTypeAccess(tacc, targs); 
 	}
 	
+	// TODO: at the moment, this will create type accesses of the form [[T]]<[[A]]>, where [[T]] is
+	//       locked to the _raw_ type of T, not the generic type; this is obviously not the right thing to do
 	public Access ParTypeDecl.createLockedAccess() {
 		List<Access> args = new List<Access>();
 		for(int i=0;i<getNumArgument();++i)

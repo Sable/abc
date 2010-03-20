@@ -16,7 +16,7 @@ aspect IntroduceFactory {
 	
 	public void ConstructorDecl.introduceFactory(boolean makePrivate) {
 		int vis = makePrivate ? VIS_PRIVATE : getVisibility();
-		for(Access acc : uses()) {
+		for(Access acc : usesOfAllCopies()) {
 			if(acc instanceof ClassInstanceExpr) {
 				ClassInstanceExpr cie = (ClassInstanceExpr)acc;
 				cie.introduceFactory();
@@ -67,6 +67,7 @@ aspect IntroduceFactory {
 		Block body = new Block(new List<Stmt>().add(new ReturnStmt(new ClassInstanceExpr(hostType().createLockedAccess(), args))));
 		factoryMethod = new MethodDecl(new Modifiers("public", "static"), hostType().createLockedAccess(), name, parms, exns, new Opt<Block>(body));
 		hostType().insertUnusedMethod(factoryMethod, 0);
+		factoryMethod = factoryMethod.closeOverTypeVariables(factoryMethod);
 		return factoryMethod;
 	}
 	public MethodDecl ConstructorDeclSubstituted.createFactoryMethod() {

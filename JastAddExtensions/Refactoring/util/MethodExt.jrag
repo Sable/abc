@@ -60,6 +60,42 @@ aspect MethodExt {
 	
 	syn boolean MethodDecl.canBeAbstract() = !(isStatic() || isPrivate() || isFinal());
 	
+	// uses of a method, including its substituted and parameterised copies
+	public Collection<MethodAccess> MethodDecl.usesOfAllCopies() {
+		Collection<MethodAccess> res = new HashSet<MethodAccess>(uses());
+		for(MethodDecl md : substitutedCopies())
+			res.addAll(md.uses());
+		return res;
+	}
+	
+	public Collection<MethodAccess> GenericMethodDecl.usesOfAllCopies() {
+		Collection<MethodAccess> res = super.usesOfAllCopies();
+		res.addAll(parUses());
+		return res;
+	}
+	
+	public Collection<MethodDeclSubstituted> MethodDecl.substitutedCopies() {
+		Collection<MethodDeclSubstituted> res = new LinkedList<MethodDeclSubstituted>();
+		if(!hostType().isGenericType())
+			return res;
+		GenericTypeDecl host = (GenericTypeDecl)hostType();
+		for(int i=0;i<host.getNumParTypeDecl();++i) {
+			ParTypeDecl ptd = host.getParTypeDecl(i);
+			for(Object o : ptd.localMethodsSignatureMap().values())
+				if(o instanceof MethodDeclSubstituted && ((MethodDeclSubstituted)o).sourceMethodDecl() == this)
+					res.add((MethodDeclSubstituted)o);
+		}
+		return res;
+	}
+	
+	// all calls that resolve to a parameterized instance of a generic method
+	coll Collection<MethodAccess> GenericMethodDecl.parUses() [new HashSet<MethodAccess>()]
+	                                                          with add root Program;
+	MethodAccess contributes this
+	when decl() instanceof ParMethodDecl
+	to GenericMethodDecl.parUses()
+	for ((ParMethodDecl)decl()).sourceMethodDecl(); 
+	
 	// descendantMethods: inverse of ancestorMethods
 	syn lazy Collection<MethodDecl> TypeDecl.descendantMethods(String sig) = Collections.EMPTY_SET;
 	

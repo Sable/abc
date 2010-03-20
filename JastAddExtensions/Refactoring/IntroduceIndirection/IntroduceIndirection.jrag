@@ -62,17 +62,4 @@ aspect IntroduceIndirection {
 		String hostname = hostType().name();
 		doIntroduceIndirection(indname, Character.toLowerCase(hostname.charAt(0))+hostname.substring(1), targetType);
 	}
-	
-	public Collection<MethodAccess> MethodDecl.usesOfAllCopies() {
-		Collection<MethodAccess> res = new HashSet<MethodAccess>(uses());
-		for(MethodDecl md : substitutedCopies())
-			res.addAll(md.uses());
-		return res;
-	}
-	
-	public Collection<MethodAccess> GenericMethodDecl.usesOfAllCopies() {
-		Collection<MethodAccess> res = super.usesOfAllCopies();
-		res.addAll(parUses());
-		return res;
-	}
 }

@@ -44,27 +44,4 @@ aspect GenericsExt {
 		}
 		return res;
 	}
-
-	public Collection<MethodDeclSubstituted> MethodDecl.substitutedCopies() {
-		Collection<MethodDeclSubstituted> res = new LinkedList<MethodDeclSubstituted>();
-		if(!hostType().isGenericType())
-			return res;
-		GenericTypeDecl host = (GenericTypeDecl)hostType();
-		for(int i=0;i<host.getNumParTypeDecl();++i) {
-			ParTypeDecl ptd = host.getParTypeDecl(i);
-			for(Object o : ptd.localMethodsSignatureMap().values())
-				if(o instanceof MethodDeclSubstituted && ((MethodDeclSubstituted)o).sourceMethodDecl() == this)
-					res.add((MethodDeclSubstituted)o);
-		}
-		return res;
-	}
-	
-	// all calls that resolve to a parameterized instance of a generic method
-	coll Collection<MethodAccess> GenericMethodDecl.parUses() [new HashSet<MethodAccess>()]
-	                                                          with add root Program;
-	MethodAccess contributes this
-	when decl() instanceof ParMethodDecl
-	to GenericMethodDecl.parUses()
-	for ((ParMethodDecl)decl()).sourceMethodDecl(); 
-	
 }
