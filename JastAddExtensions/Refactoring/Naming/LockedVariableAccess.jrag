@@ -9,7 +9,7 @@ aspect LockedVariableAccess {
 		return va;
 	}
 	
-	refine IntertypeFieldNameAnalysis eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
+	refine VariableScopePropagation eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
 	
 	refine PrettyPrint public void VarAccess.toString(StringBuffer s) {
 		if(targetVariable == null) {

@@ -125,8 +125,6 @@ aspect PushDownMethod {
 	
 	public MethodDecl AnnotationMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	public MethodDecl IntertypeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	public MethodDecl IntroducedMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	
 	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
