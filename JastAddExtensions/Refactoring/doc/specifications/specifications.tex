@@ -1,0 +1,67 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{xcolor}
+\usepackage{stmaryrd}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{supertabular}
+
+\title{Specifications of Implemented Refactorings}
+\author{Max Sch\"afer}
+
+\newcommand{\refactoring}[1]{\textsc{#1}}
+\newcommand{\type}[1]{\ensuremath{\text{\textsl{#1}}}}
+\newcommand{\util}[1]{\ensuremath{\text{\texttt{#1}}}}
+\newcommand{\orelse}{\,\textbf{or}\,}
+\newcommand{\assert}{\textbf{assert}\,\,}
+\newcommand{\locked}[1]{\ensuremath{\llbracket #1\rrbracket}}
+\newcommand{\option}[1]{\ensuremath{\text{\texttt{option}\xspace #1}}}
+\newcommand{\sourcelink}[1]{\texttt{#1}}
+
+\definecolor{KWColor}{rgb}{0.5,0,0.67}
+
+\lstset{
+  language=[JastAdd]Java,
+  basicstyle=\ttfamily\small,
+  commentstyle=\footnotesize\rmfamily\emph,
+  keywordstyle=\bf\ttfamily\small\color{KWColor},
+  morekeywords={with},
+  escapeinside={/*@}{@*/},
+  literate={[}{{$\lfloor$}}1 {]}{{$\rfloor$}}1,
+}
+
+\newcommand{\code}[1]{\lstinline$#1$}
+\newcommand{\progoutput}[1]{\texttt{#1}}
+\lstnewenvironment{java}{}{}
+\newcommand{\kw}[1]{\textbf{\color{KWColor}{#1}}}
+
+\begin{document}
+\maketitle
+
+This document collects the pseudo-code specifications of all refactoring implemented in our engine.
+
+\section{Pseudocode Conventions}
+We give our specifications in generic, imperative pseudocode. Parameters and return values are informally typed, with syntax tree nodes having one of the types from Fig.~\ref{fig:node types}. Additionally, we use an ML-like \util{option} type with constructors \util{None} and \util{Some} for functions that may or may not return a value.
+
+The names of refactorings are written in \refactoring{small caps}, whereas utility functions appear in \util{monospace}. A list of utility functions with brief descriptions appears in Fig.~\ref{fig:utility}.
+
+Where convenient, we make use of ML-like lists, with list literals of the form $[1; 2; 3]$ and $|xs|$ indicating the length of list $xs$. We also use the higher-order function \util{map}, with lambda expressions to denote the function being mapped over the list. The notation $\locked{d}$ denotes a locked name that binds to declaration $d$. 
+
+Creation of a node is denoted by $\type{NodeType}(a_1,\ldots,a_n)$, where \type{NodeType} is the type of the node being created and $a_i$ are child nodes or other arguments.
+
+\section{The Refactorings}
+
+\input{ConvertAnonymousToLocal.tex}
+\input{ConvertLocalToMemberClass.tex}
+\input{ConvertAnonymousToNested.tex}
+
+\section{Node Types}
+\input{nodetypes.tex}
+
+\section{Utility Functions}
+\input{utility.tex}
+
+\end{document}

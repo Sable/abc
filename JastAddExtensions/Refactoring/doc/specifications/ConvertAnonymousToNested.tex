@@ -1,0 +1,15 @@
+\subsection{\refactoring{Convert Anonymous to Nested}}
+This refactoring converts an anonymous class to a member class.
+
+\begin{algorithm}
+\caption{$\refactoring{Convert Anonymous to Nested}(A : \type{AnonymousClass}) : \type{MemberType}$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\STATE $L \leftarrow \refactoring{Convert Anonymous to Local}(A)$
+\RETURN $\refactoring{Convert Local to Member Class}(L)$
+\end{algorithmic}
+\end{algorithm}
+
+Note that this specification does not handle the special case where $A$ occurs in a field initialiser.

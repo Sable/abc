@@ -1,0 +1,21 @@
+\subsection{\refactoring{Convert Local to Member Class}}
+This refactoring converts a local class to a member class. Implemented in \sourcelink{TypePromotion/LocalClassToMemberClass.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Convert Local to Member Class}(L : \type{LocalClass}) : \type{MemberType}$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE $h \leftarrow \util{enclosingType}(L)$
+\STATE $\util{closeOverTypeVariables}(L)$
+\STATE $\util{closeOverLocalVariables}(L)$
+\IF{$\util{inStaticContext}(L)$}
+  \STATE $\util{addModifier}(L, \text{\code{static}})$
+\ENDIF
+\STATE $\util{lockTypeNames}(\util{programRoot}(), \util{name}(L))$
+\STATE $\util{lockNames}(L)$
+\STATE $\util{removeStmt}(L)$
+\RETURN $\util{insertMemberType}(h, L)$
+\end{algorithmic}
+\end{algorithm}

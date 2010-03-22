@@ -2,28 +2,24 @@ aspect AnonymousClassToLocalClass {
 	public LocalClassDeclStmt AnonymousDecl.promoteToLocalClass(String name, boolean makeFinal) {
 		Stmt stmt;
 		ClassInstanceExpr cie = (ClassInstanceExpr)getParent().getParent();
-		// check syntactic preconditions
-		if(cie.hostType().hasEnclosingType(name))
-			throw new RefactoringException("enclosing type of the same name exists");
+		// the first two are special cases to mimick Eclipse behaviour
 		if(cie.getParent() instanceof ExprStmt) {
 			stmt = (Stmt)cie.getParent();
 		} else if(cie.getParent().getParent() instanceof VariableDeclaration) {
 			stmt = (Stmt)cie.getParent().getParent();
 		} else {
-			stmt = cie.doExtract("x$");
+			stmt = cie.doExtract(unCapitalise(name));
 		}
 		// lock names
 		BodyDecl bd= stmt.enclosingBodyDecl();
 		bd.lockNames(name);
-		lockAllNames();
 		// move
 		ClassDecl cd = asNamedClass(name);
 		if(!makeFinal)
 			cd.getModifiers().removeModifier("final");
-		LocalClassDeclStmt lcd = new LocalClassDeclStmt(cd);
+		LocalClassDeclStmt lcd = stmt.insertLocalClass(cd);
 		cie.setTypeDeclOpt(new Opt<TypeDecl>());
 		cie.setAccess(cd.createLockedAccess());
-		stmt.insertStmtBefore(lcd);
 		bd.hostType().flushCaches();
 		return lcd;
 	}

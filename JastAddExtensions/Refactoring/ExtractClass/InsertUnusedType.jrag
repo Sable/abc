@@ -7,6 +7,15 @@ aspect InsertUnusedType {
 		throw new RefactoringException("cannot insert type into this kind of type declaration");
 	}
 	
+	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
+	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
+	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
+	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
+	
+	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
+	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
+	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }
+	
 	protected static MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl host, MemberTypeDecl member, int idx) {
 		TypeDecl td = member.typeDecl();
 		if(!host.localTypeDecls(td.name()).isEmpty())
@@ -37,14 +46,16 @@ aspect InsertUnusedType {
 		super.checkEnclosingTypeNames(td);
 	}
 	
-	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
-	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
-	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
-	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
+	// insert a local class before this statement
+	public LocalClassDeclStmt Stmt.insertLocalClass(ClassDecl cd) {
+		LocalClassDeclStmt lcd = new LocalClassDeclStmt(cd);
+		insertStmtBefore(lcd);
+		cd.checkEnclosingTypeNames(hostType());
+		hostBodyDecl().flushCaches();
+		return lcd;
+	}
 	
-	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
-	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
-	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }
+	// TODO: same for StaticInitializer, InstanceInitializer
 	
 	// insert an unused toplevel type into a given compilation unit
 	public void CompilationUnit.insertUnusedType(TypeDecl td) {

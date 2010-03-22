@@ -1,0 +1,19 @@
+\subsection{\refactoring{Convert Anonymous to Local}}
+This refactoring converts an anonymous class to a local class. Implemented in \sourcelink{TypePromotion/AnonymousClassToLocalClass.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Convert Anonymous to Local}(A : \type{AnonymousClass}, n : \type{Name}) : \type{LocalClass}$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE $c \leftarrow \util{getClassInstanceExpr}(A)$
+\STATE $s \leftarrow [\refactoring{Extract Temp}](c, \util{unCapitalise}(n))$
+\STATE $b \leftarrow \util{enclosingBodyDecl}(s)$
+\STATE $\util{lockTypeNames}(b, n)$
+\STATE $t \leftarrow \util{asNamedClass}(A, n)$
+\STATE $\util{removeTypeDecl}(c)$
+\STATE $\util{setTypeAccess}(c, \locked{t})$
+\RETURN $\util{insertLocalClass}(s, t)$
+\end{algorithmic}
+\end{algorithm}

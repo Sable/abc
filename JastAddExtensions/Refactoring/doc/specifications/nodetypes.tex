@@ -1,0 +1,30 @@
+\begin{center}
+\bottomcaption{Node Types}\label{fig:node types}
+\begin{supertabular}{|l|l|}
+\hline
+\textbf{Node Type} & \textbf{Description} \\ \hline\hline
+\type{AnonymousClass} & anonymous class declaration; is an \type{Expr} \\
+\type{Assignment} & expression statement consisting of a simple assignment; is a \type{Stmt} \\
+\type{Block} & block of statements; is a \type{Stmt} \\
+\type{Class} & class declaration; is a \type{Type} \\
+\type{Callable} & either a method or a constructor \\
+\type{Expr} & expression \\
+\type{Field} & field declaration \\
+\type{LocalClass} & local class declaration, contains a \type{Class}; is a \type{Stmt} \\
+\type{LocalVarDecl} & local variable declaration, part of a \type{LocalVarDeclStmt} \\
+\type{LocalVarDeclStmt} & local variable declaration statement; is a \type{Stmt} \\
+\type{MemberType} & type declared inside another type; is a \type{Type} \\
+\type{Method} & method declaration; is a \type{Callable} \\
+\type{MethodCall} & method call \\
+\type{Parameter} & parameter declaration \\
+\type{Return} & return statement; is a \type{Stmt} \\
+\type{Stmt} & statement \\
+\type{SuperCall} & super call of a method; is a \type{MethodCall} \\
+\type{Type} & type declaration \\
+\type{VirtualMethod} & non-\code{private} instance method; is a \type{Method} \\
+\type{With} & \code{with} construct (language extension) \\
+\hline
+\end{supertabular}
+\end{center}
+
+We also use the non-node type \type{Name} to represent names.
