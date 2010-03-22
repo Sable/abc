@@ -13,7 +13,6 @@ package tests.eclipse.PullUp;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
@@ -854,10 +853,9 @@ public class PullUpTests extends TestCase {
 		helper2(methodNames, signatures, deleteAllInSourceType, deleteAllMatchingMethods, 0);
 	}
 
-	/* disabled: no test
 	public void testFail14() throws Exception{
 		//removed - this (pulling up classes) is allowed now
-	}*/
+	}
 
 	public void testFail15() throws Exception{
 		String[] methodNames= new String[]{"m"};

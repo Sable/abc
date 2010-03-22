@@ -740,8 +740,8 @@ public class PushDownTests extends TestCase {
 //			   new String[]{"B", "C"}, new String[]{"p", "p"});
 	}*/
 
-	/* disabled: push into outer space
 	public void testFail0() throws Exception {
+		/* disabled: push into outer space
 		String[] selectedMethodNames= {"f"};
 		String[][] selectedMethodSignatures= {new String[0]};
 		String[] selectedFieldNames= {};
@@ -756,11 +756,11 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToPushDown, signaturesOfMethodsToPushDown,
 			   namesOfFieldsToPushDown,
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract,
-			   null);
-	}*/
+			   null);*/
+	}
 
-	/* disabled: push into outer space
 	public void testFail1() throws Exception {
+		/* disabled: push into outer space
 		String[] selectedMethodNames= {"f"};
 		String[][] selectedMethodSignatures= {new String[0]};
 		String[] selectedFieldNames= {};
@@ -775,8 +775,8 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToPushDown, signaturesOfMethodsToPushDown,
 			   namesOfFieldsToPushDown,
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract,
-			   null);
-	}*/
+			   null);*/
+	}
 
 	/* disabled: we can do this
 	public void testFail2() throws Exception {
@@ -1104,8 +1104,9 @@ public class PushDownTests extends TestCase {
 		String[] expectedMethodNames= {};
 		String[][] expectedMethodSignatures= {new String[0]};
 		addRequiredMembersHelper(fieldNames, methodNames, methodSignatures, expectedFieldNames, expectedMethodNames, expectedMethodSignatures);
-	}
+	}*/
 
+	/* disabled: tests idiosyncratic feature
 	public void testEnablement0() throws Exception{
 		ICompilationUnit cu= createCUfromTestFile(getPackageP(), "A");
 		IType typeA= cu.getType("A");

@@ -134,11 +134,11 @@ public class IntroduceIndirectionTests extends TestCase {
 		helperWarn(new String[] { "p.E1" }, "bar", "p.E1", 30, 16, 30, 19);
 	}
 
-	/* disabled: different interpretations
 	public void test08() throws Exception {
+		/* disabled: different interpretations
 		// open hierarchy failure
-		helperFail(new String[] { "p.SeaLevel", "p.Eiger", "p.Moench" }, "bar", "p.SeaLevel", 13, 11, 13, 14);
-	}*/
+		helperFail(new String[] { "p.SeaLevel", "p.Eiger", "p.Moench" }, "bar", "p.SeaLevel", 13, 11, 13, 14);*/
+	}
 
 	public void test09() throws Exception {
 		// create static intermediary
@@ -214,17 +214,17 @@ public class IntroduceIndirectionTests extends TestCase {
 		helperPass(new String[] { "p.Foo" }, "bar", "p.Foo", 16, 24, 16, 27);
 	}
 
-	/* disabled: different interpretation
 	public void test23() throws Exception {
+		/* disabled: different interpretation
 		// warn about incorrect qualified static calls and don't update them.
-		helperWarn(new String[] { "p.Foo" }, "bar", "p.Foo", 11, 25, 11, 28);
-	}*/
+		helperWarn(new String[] { "p.Foo" }, "bar", "p.Foo", 11, 25, 11, 28);*/
+	}
 
-	/* disabled: different interpretation
 	public void test24() throws Exception {
+		/* disabled: different interpretation
 		// assure common super type is used even if the hierarchy branches downwards
-		helperPass(new String[] { "p.Foo" }, "bar", "p.Foo", 11, 11, 11, 14);
-	}*/
+		helperPass(new String[] { "p.Foo" }, "bar", "p.Foo", 11, 11, 11, 14);*/
+	}
 
 	/* disabled: no support for adjusting visibility
 	public void test25() throws Exception {
@@ -245,12 +245,12 @@ public class IntroduceIndirectionTests extends TestCase {
 		helperWarn(new String[] { "p0.Foo", "p0.RealFoo", "p0.NonOriginalSubFoo", "p0.VerySuperFoo", "p1.Bar" }, "bar", "p1.Bar", 7, 13, 7, 16);
 	}*/
 
-	/* disabled: difference of interpretation
 	public void test28() throws Exception {
+		/* disabled: different interpretation
 		// the template for the intermediary must be the method inside the real
 		// target (for parameter names and exceptions)
-		helperWarn(new String[] { "p.Foo", "p.Bar",}, "bar", "p.Foo", 10, 9, 10, 12);
-	}*/
+		helperWarn(new String[] { "p.Foo", "p.Bar",}, "bar", "p.Foo", 10, 9, 10, 12);*/
+	}
 
 	/* disabled: no support for adjusting visibility
 	public void test29() throws Exception {

@@ -237,41 +237,41 @@ public class ConvertAnonymousToNestedTests extends TestCase {
         helper1(4, 25, 4, 25, true, "Inner", false);
     }
 
-    /* disabled: differing interpretation
     public void test22() throws Exception{
-    	helper1(9, 34, 9, 34, true, "Inner", false);
-    }*/
+        /* disabled: differing interpretation
+    	helper1(9, 34, 9, 34, true, "Inner", false);*/
+    }
 
-    /* disabled: differing interpretation
     // adjusted position -- MS
     public void test23() throws Exception{
-    	helper1(6, 20, 6, 21, true, "Inner", false);
-    }*/
+        /* disabled: differing interpretation
+    	helper1(6, 20, 6, 21, true, "Inner", false);*/
+    }
 
     public void test24() throws Exception{
     	helper1(3, 26, 3, 26, true, "Inner", false);
     }
 
-    /* disabled: differing interpretation
     public void test25() throws Exception{
-    	helper1(8, 28, 8, 28, true, "Inner", false);
-    }*/
+    	/* disabled: differing interpretation
+    	helper1(8, 28, 8, 28, true, "Inner", false);*/
+    }
 
-    /* disabled: differing interpretation
     public void test26() throws Exception{
-    	helper1(8, 28, 8, 28, true, "Inner", false);
-    }*/
+        /* disabled: differing interpretation
+    	helper1(8, 28, 8, 28, true, "Inner", false);*/
+    }
 
-    /* disabled: differing interpretation
     public void test27() throws Exception{
-    	helper1(11, 39, 11, 39, true, "Inner", false);
-    }*/
+        /* disabled: differing interpretation
+    	helper1(11, 39, 11, 39, true, "Inner", false);*/
+    }
 
-    /* disabled: differing interpretation
     public void test28() throws Exception{
 //        printTestDisabledMessage("disabled: bug 43360");
-    	helper1(10, 17, 10, 17, true, "Inner", false);
-    }*/
+        /* disabled: differing interpretation
+    	helper1(10, 17, 10, 17, true, "Inner", false);*/
+    }
 
 	// adjusted position -- MS
     public void test29() throws Exception{

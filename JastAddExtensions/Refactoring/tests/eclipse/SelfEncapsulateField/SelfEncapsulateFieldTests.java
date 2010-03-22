@@ -141,14 +141,15 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		objectTest("field");
 	}
 
-	/* disabled: works, but enums pretty-print in a strange way
 	public void testEnumRead() throws Exception {
-		objectTest("field");
+		/* disabled: works, but enums pretty-print in a strange way
+		objectTest("field");*/
 	}
 
 	public void testEnumReadWrite() throws Exception {
-		objectTest("field");
-	}*/
+		/* disabled: works, but enums pretty-print in a strange way
+		objectTest("field");*/
+	}
 
 	public void testNestedRead() throws Exception {
 		objectTest("field");

@@ -180,7 +180,7 @@ public class MoveMembersTests extends TestCase {
 		methodHelper_passing(new String[]{"m"}, new String[][]{new String[0]});
 	}
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void test21() throws Exception{
 		printTestDisabledMessage("not currently handling visibility issues induced by moving more than one static member");
 		//fieldHelper_passing(new String[]{"F", "i"});
@@ -227,7 +227,7 @@ public class MoveMembersTests extends TestCase {
 		fieldHelper_passing(new String[]{"odd"});
 	}
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void test32() throws Exception{ //test for bug 41734, 41691
 		printTestDisabledMessage("test for 41734");
 		//methodHelper_passing(new String[]{"m"}, new String[][]{new String[0]});
@@ -251,7 +251,7 @@ public class MoveMembersTests extends TestCase {
 		typeHelper_passing(new String[]{"I"});
 	}
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void test37() throws Exception {
 		//printTestDisabledMessage("qualified access to source");
 		typeHelper_passing(new String[] {"Inner"});
@@ -261,7 +261,7 @@ public class MoveMembersTests extends TestCase {
 		fieldMethodTypeHelper(new String[0], new String[0], new String[0][0], new String[]{"Inner"}, true, "A", "B");
 	}
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void test39() throws Exception {
 		printTestDisabledMessage("complex imports - need more work");
 //		fieldMethodType3CUsHelper_passing(new String[0], new String[0], new String[0][0],
@@ -516,10 +516,9 @@ public class MoveMembersTests extends TestCase {
 									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "B");
 	}
 
-	/* disabled: no test
 	public void testFail20() throws Exception{
 		// was same as test19
-	}*/
+	}
 
 	/* disabled: does not compile
 	public void testFail21() throws Exception{
@@ -527,14 +526,13 @@ public class MoveMembersTests extends TestCase {
 									  new String[]{"m"}, new String[][]{new String[0]}, new String[0], "X");
 	}*/
 
-	/* disabled: no test
 	public void testFail22() throws Exception{
 		//free slot
 	}
 
 	public void testFail23() throws Exception{
 		//free slot
-	}*/
+	}
 
 	public void testFail24() throws Exception{
 		fieldMethodTypeHelper_failing(new String[0],
@@ -543,7 +541,7 @@ public class MoveMembersTests extends TestCase {
 
 	// Delegate creation
 
-	/* no support for delegates
+	/* disabled: no support for delegates
 	public void testDelegate01() throws Exception {
 		// simple delegate method
 		methodHelperDelegate_passing(new String[] { "foo" }, new String[][]{new String[0]});
