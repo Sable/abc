@@ -17,3 +17,5 @@ This refactoring converts an anonymous class to a local class. Implemented in \s
 \RETURN $\util{insertLocalClass}(s, t)$
 \end{algorithmic}
 \end{algorithm}
+
+We first retrieve the class instance expression $c$ of which $A$ is a part. Then we apply the \code{Extract Temp} refactoring to move $c$ into its own statement. All references to types named $n$ are locked within the enclosing body declaration $b$. Then $A$ is converted into a class $t$ with name $n$. We remove $A$ from $c$, make sure that $c$ constructs an object of type $t$, and insert $t$ as a local class right before the statement containing $c$.

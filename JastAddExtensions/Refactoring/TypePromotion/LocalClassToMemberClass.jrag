@@ -37,7 +37,7 @@ aspect LocalClassToMemberClass {
 	
 	public void ClassDecl.closeOver(VarAccess va, Map<LocalVariable, FieldDeclaration> fmap) {
 		// only need to close over local variables declared in the enclosing body declaration;
-		// variables further out our further in will still be visible to the new member class
+		// variables further out or further in will still be visible to the new member class
 		ASTNode decl = (ASTNode)va.decl();
 		if(decl.isDescendantTo(this) || !decl.isDescendantTo(enclosingBodyDecl()))
 			return;

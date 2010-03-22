@@ -1,0 +1,23 @@
+\subsection{\refactoring{Extract Constant}}
+This refactoring extracts a constant expression into a field. Implemented in \sourcelink{ExtractTemp/ExtractConstant.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Extract Constant}(e : \type{Expr}, n : \type{Name})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked dependencies
+\medskip
+\STATE \assert $\util{extractible}(e)$
+\STATE $h \leftarrow \util{enclosingType}(e)$
+\STATE $\util{lock}(e)$
+\STATE $f \leftarrow \type{Field}([\text{\code{static}}; \text{\code{final}}; \text{\code{public}}], \locked{\util{effectiveType}(e)}, e)$
+\STATE $\util{replaceExpr}(e, \locked{f})$
+\STATE $\util{insertField}(h, f)$
+\end{algorithmic}
+\end{algorithm}
+
+We first ensure that $e$ is extractible: this means that its type cannot be \code{void}, and it cannot be a reference to a type or package, nor can it be the keyword \code{super}; furthermore, it cannot be on the right-hand side of a dot.
+
+Then all dependencies within $e$ are locked, and we construct a \code{public} \code{static} \code{final} field $f$ that is initialised to $e$. The type of $f$ is the \emph{effective type} of $e$, which is the same as the type of $e$, except when the type of $e$ is an anonymous class, in which case the effective type is its superclass, or when the type of $e$ is a captured type variable, in which case the effective type is its upper bound.
+
+Now $e$ is simply replaced by a locked access to $f$, and $f$ is inserted into the enclosing type. 

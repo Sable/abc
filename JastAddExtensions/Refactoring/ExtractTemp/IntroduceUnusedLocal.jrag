@@ -11,9 +11,6 @@ aspect InsertUnusedLocal {
 		block.lockNames(Collections.singleton(decl.name()));
 		insertStmtBefore(decl);
 		block.hostType().flushCaches();
-		// ensure that there are no references
-		if(!decl.uses().isEmpty())
-			throw new RefactoringException("declaration is used");
 		return decl;
 	}
 	

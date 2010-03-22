@@ -1,0 +1,62 @@
+\subsection{\refactoring{Inline Temp}}
+This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Inline Temp}(d : \type{LocalVarDecl})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\STATE $a = \lfloor\refactoring{Split Declaration}\rfloor(d)$
+\STATE $\lfloor\refactoring{Inline Assignment}\rfloor(a)$
+\STATE $\lfloor\refactoring{Remove Decl}\rfloor(v)$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Split Declaration}(d : \type{LocalVarDecl}) : \type{Assignment}$}
+\begin{algorithmic}[1]
+\REQUIRE Java $\setminus$ multi-declarations
+\ENSURE Java $\cup$ locked names, first-class array init
+\medskip
+\STATE $a = \type{Assignment}(\locked{d}, \util{getInit}(d))$  
+\STATE $\util{insertStmtAfter}(d, a)$
+\STATE $\util{removeInit}(d)$
+\RETURN $a$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked dependencies
+\medskip
+\STATE $x = \util{lhs}(a)$
+\STATE \assert $x$ is local variable
+\STATE $e = \util{rhs}(a)$
+\STATE $\util{lock}(e)$
+\STATE $U = \{ u \mid u\rightarrow_r x\}$
+\FORALL{$u\in U$}
+  \STATE \assert $\neg\exists x'.u\rightarrow_r x' \wedge x\neq x'$
+  \STATE \assert $u$ is not an lvalue
+  \STATE \assert $u,x$ are in same body declaration
+  \STATE $\util{replaceExpr}(u, \util{copy}(e))$
+\ENDFOR
+\IF{$U\neq\emptyset$}
+  \STATE $\util{removeStmt}(a)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Remove Decl}(d : \type{LocalVarDecl})$}
+\begin{algorithmic}[1]
+\REQUIRE Java $\setminus$ multi-declarations
+\ENSURE Java
+\medskip
+\IF{$\neg\util{hasInit}(d)\wedge\neg\exists u.u\rightarrow_b d$}
+  \STATE $\util{removeStmt}(d)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}

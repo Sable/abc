@@ -1,0 +1,9 @@
+
+\DeclareSymbolFont{italics}{\encodingdefault}{\rmdefault}{m}{it}
+
+\def\@setmcodes#1#2#3{{\count0=#1 \count1=#3
+    \loop \global\mathcode\count0=\count1 \ifnum \count0<#2
+    \advance\count0 by1 \advance\count1 by1 \repeat}}
+\@setmcodes{`A}{`Z}{"7\hexnumber@\symitalics41} 
+\@setmcodes{`a}{`z}{"7\hexnumber@\symitalics61} 
+

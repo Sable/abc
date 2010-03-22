@@ -48,9 +48,7 @@ aspect ExtractClass {
 	public FieldDeclaration ClassDecl.createNewMemberField(int vis, TypeDecl type, String fieldName, int idx) {
 		programRoot().lockNames(fieldName);
 		Expr expr = new ClassInstanceExpr(type.createLockedAccess(), new List(), new Opt());
-		Modifiers mods = new Modifiers();
-		mods.setVisibility(vis);
-		FieldDeclaration fd = new FieldDeclaration(mods, type.createLockedAccess(), fieldName, expr);
+		FieldDeclaration fd = new FieldDeclaration(new Modifiers(vis), type.createLockedAccess(), fieldName, expr);
 		this.getBodyDeclList().insertChild(fd, idx);
 		return fd;
 	}

@@ -1,0 +1,46 @@
+\subsection{\refactoring{Move Inner To Toplevel}}
+
+\begin{algorithm}
+\caption{$\refactoring{Move Inner to Toplevel}(M : \type{MemberType})$}
+\label{alg:MoveMemberTypeToToplevel}
+\begin{algorithmic}[1]
+\REQUIRE Java $\setminus$ implicit constructor invocations
+\ENSURE Java $\cup$ \code{with}, locked names
+\medskip
+\STATE $\util{lockTypeNames}(\util{programRoot}(), \util{name}(M))$
+\STATE $\util{lockNames}(M)$
+\IF{$\neg\util{isStatic}(M)$}
+  \STATE $[A_n;\ldots;A_1] = \util{enclosingTypes}(M)$
+  \STATE $[f_n;\ldots;f_1] = [\type{Field}(\locked{A_n}); \ldots; \type{Field}(\locked{A_1})]$
+  \FORALL{$i\in\{1,\ldots,n\}$}
+    \STATE $\util{addField}(M, f_i)$
+    \FORALL{$c\in\util{constructors}(M)$}
+      \STATE $p := \type{Parameter}(\locked{A_i})$
+      \STATE $\util{addParameter}(c, p)$
+      \IF{$\util{isChaining}(c)$}
+        \STATE $\util{addArgument}(\util{thisCall}(c), \locked{p})$
+      \ELSE
+        \STATE $\util{addStmt}(c, \type{Assignment}(\locked{f_i}, \locked{p}))$
+      \ENDIF
+    \ENDFOR
+  \ENDFOR
+  \FORALL{$c\in\util{constructors}(M)$}
+    \FORALL{$u\in\util{nonChainingInvocations}(c)$}
+      \STATE $es = \util{enclosingInstances}(u)$
+      \STATE \assert $|es|=n$
+      \STATE $\util{addArguments}(u, es)$
+      \STATE $\util{discardQualifier}(u)$
+    \ENDFOR
+  \ENDFOR
+  \FORALL{$m\in\util{callables}(M)$}
+    \IF{$\util{hasBody}(m)$}
+      \STATE $b := \util{getBody}(m)$
+      \STATE $b' := \type{With}([\locked{f_n}; \ldots; \locked{f_1}; \text{\code{this}}], b)$
+      \STATE $\util{setBody}(m, b')$
+    \ENDIF
+  \ENDFOR
+\ENDIF
+\STATE $\util{removeBodyDecl}(M)$
+\STATE $\util{addToplevelType}(M)$
+\end{algorithmic}
+\end{algorithm}

@@ -1,6 +1,8 @@
 aspect MergeVarDecl {
 	// merge variable declaration with the assignment following it
 	public VariableDeclaration VariableDeclaration.merge()  {
+		if(hasInit())
+			return this;
 		if(!isInBlock())
 			throw new RefactoringException("cannot merge declarations outside blocks");
 		Block block = (Block)getParent().getParent();

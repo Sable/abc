@@ -8,6 +8,7 @@
 \usepackage{algorithmic}
 \usepackage{listings}
 \usepackage{supertabular}
+\usepackage{multiletter}
 
 \title{Specifications of Implemented Refactorings}
 \author{Max Sch\"afer}
@@ -16,9 +17,10 @@
 \newcommand{\type}[1]{\ensuremath{\text{\textsl{#1}}}}
 \newcommand{\util}[1]{\ensuremath{\text{\texttt{#1}}}}
 \newcommand{\orelse}{\,\textbf{or}\,}
-\newcommand{\assert}{\textbf{assert}\,\,}
+\newcommand{\assert}{\textbf{assert}\xspace}
 \newcommand{\locked}[1]{\ensuremath{\llbracket #1\rrbracket}}
 \newcommand{\option}[1]{\ensuremath{\text{\texttt{option}\xspace #1}}}
+\newcommand{\listtp}[1]{\ensuremath{\text{\texttt{list}\xspace #1}}}
 \newcommand{\sourcelink}[1]{\texttt{#1}}
 
 \definecolor{KWColor}{rgb}{0.5,0,0.67}
@@ -55,8 +57,26 @@ Creation of a node is denoted by $\type{NodeType}(a_1,\ldots,a_n)$, where \type{
 \section{The Refactorings}
 
 \input{ConvertAnonymousToLocal.tex}
-\input{ConvertLocalToMemberClass.tex}
 \input{ConvertAnonymousToNested.tex}
+\input{ConvertLocalToMemberClass.tex}
+\input{ExtractClass.tex}
+\input{ExtractConstant.tex}
+\input{ExtractMethod.tex}
+\input{ExtractTemp.tex}
+\input{InlineConstant.tex}
+\input{InlineMethod.tex}
+\input{InlineTemp.tex}
+\input{IntroduceFactory.tex}
+\input{IntroduceParameter.tex}
+\input{IntroduceParameterObject.tex}
+\input{MoveInnerToToplevel.tex}
+\input{MoveInstanceMethod.tex}
+\input{MoveMembers.tex}
+\input{PromoteTempToField.tex}
+\input{PullUp.tex}
+\input{PushDown.tex}
+\input{Rename.tex}
+\input{SelfEncapsulateField.tex}
 
 \section{Node Types}
 \input{nodetypes.tex}

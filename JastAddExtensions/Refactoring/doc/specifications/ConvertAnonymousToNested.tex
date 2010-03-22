@@ -1,5 +1,5 @@
 \subsection{\refactoring{Convert Anonymous to Nested}}
-This refactoring converts an anonymous class to a member class.
+This refactoring converts an anonymous class to a member class. Implemented in \sourcelink{TypePromotion/AnonymousClassToMemberClass.jrag}.
 
 \begin{algorithm}
 \caption{$\refactoring{Convert Anonymous to Nested}(A : \type{AnonymousClass}) : \type{MemberType}$}
@@ -12,4 +12,4 @@ This refactoring converts an anonymous class to a member class.
 \end{algorithmic}
 \end{algorithm}
 
-Note that this specification does not handle the special case where $A$ occurs in a field initialiser.
+We can implement this refactoring simply as the composition of \refactoring{Convert Anonymous to Local} and \refactoring{Convert Local to Member Class}. Note that this specification does not handle the special case where $A$ occurs in a field initialiser.
