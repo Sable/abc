@@ -259,6 +259,8 @@ aspect EmitJimple {
       hostType().getSootClassDecl().addMethod(m);
       m.addTag(new soot.tagkit.ParamNamesTag(paramnames));
       sootMethod = m;
+    } else {
+    	sootMethod = hostType().getSootClassDecl().getMethod(signature);
     }
     addAttributes();
   }
