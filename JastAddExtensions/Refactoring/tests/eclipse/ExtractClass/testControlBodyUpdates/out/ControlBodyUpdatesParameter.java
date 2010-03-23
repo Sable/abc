@@ -9,19 +9,25 @@ public class ControlBodyUpdatesParameter {
 	public ArrayList<Integer> getArraylists() {
 		return arraylists;
 	}
-	public void setArraylists(ArrayList<Integer> arraylists) {
-		this.arraylists = arraylists;
+	public ArrayList<Integer> ///void 
+			setArraylists(ArrayList<Integer> arraylists) {
+		return ///
+			this.arraylists = arraylists;
 	}
 	public Integer[] getInts() {
 		return ints;
 	}
-	public void setInts(Integer[] ints) {
-		this.ints = ints;
+	public Integer[] ///void 
+	        setInts(Integer[] ints) {
+		return ///
+			this.ints = ints;
 	}
-	public int getNewStart() {
+	public int getFNewStart() {
 		return fNewStart;
 	}
-	public void setNewStart(int newStart) {
-		fNewStart = newStart;
+	public int ///void 
+		    setFNewStart(int fNewStart) {
+		return ///
+			this.fNewStart = fNewStart;
 	}
 }

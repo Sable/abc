@@ -28,13 +28,13 @@ public class ControlBodyUpdates {
 			parameterObject.setArraylists(null);
 		}
 		if (newRange[0] > 0)
-			parameterObject.setNewStart(newRange[0]-1);	// line number start at 0!
+			parameterObject.setFNewStart(newRange[0]-1);	// line number start at 0!
 		else
-			parameterObject.setNewStart(0);
+			parameterObject.setFNewStart(0);
 		if (newRange[0] > 0) {
-			parameterObject.setNewStart(newRange[0]-1);	// line number start at 0!
+			parameterObject.setFNewStart(newRange[0]-1);	// line number start at 0!
 		} else {
-			parameterObject.setNewStart(0);
+			parameterObject.setFNewStart(0);
 		}
 	}
 }

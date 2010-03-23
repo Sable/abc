@@ -269,15 +269,5 @@
     </zipfileset>
   </jar>
 </target>
-
-<target name="test" depends="build">
-  <java 
-     classname="junit.awtui.TestRunner"
-     classpath=".:tools/junit.jar" 
-     fork="true" 
-     maxmemory="4096M">
-    <arg line="tests.AllTests"/>
-  </java>
-</target>
 </project>
 

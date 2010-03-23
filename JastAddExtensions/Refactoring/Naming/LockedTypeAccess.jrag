@@ -41,21 +41,21 @@ aspect LockedTypeAccess {
 	}
 	
 	public Access GenericTypeDecl.createLockedAccess() {
-		Access tacc = rawType().createLockedAccess();
+		TypeAccess tacc = new TypeAccess(name());
+		tacc.lock(this);
 		List<Access> targs = new List<Access>();
 		for(int i=0;i<getNumTypeParameter();++i)
 			targs.add(getTypeParameter(i).createLockedAccess());
 		return new ParTypeAccess(tacc, targs); 
 	}
 	
-	// TODO: at the moment, this will create type accesses of the form [[T]]<[[A]]>, where [[T]] is
-	//       locked to the _raw_ type of T, not the generic type; this is obviously not the right thing to do
 	public Access ParTypeDecl.createLockedAccess() {
-		List<Access> args = new List<Access>();
+		TypeAccess tacc = new TypeAccess(genericDecl().name());
+		tacc.lock(genericDecl());
+		List<Access> targs = new List<Access>();
 		for(int i=0;i<getNumArgument();++i)
-			args.add(getArgument(i).type().createLockedAccess());
-		TypeDecl gen = ((GenericTypeDecl)genericDecl()).rawType();
-		return new ParTypeAccess(gen.createLockedAccess(), args);
+			targs.add(getArgument(i).type().createLockedAccess());
+		return new ParTypeAccess(tacc, targs);
 	}
 	
 	public Access RawClassDecl.createLockedAccess() {
@@ -146,9 +146,6 @@ aspect LockedTypeAccess {
 		flushCaches();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
-		// the following check doesn't quite work: see test_nonstatic_8 of MoveInnerToTopLevel
-		/*if(!target.accessibleFrom(hostType()) || getParent() instanceof ClassInstanceExpr && ((ClassInstanceExpr)getParent()).decl().hostType().isUnknown())
-			throw new RefactoringException("cannot unlock access to inaccessible type");*/
 		try {
 			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
 					|| hostType() != null && !target.accessibleFrom(hostType()))
@@ -264,16 +261,6 @@ aspect LockedTypeAccess {
 		return acc;
 	}
 	
-	protected Access TypeAccess.unlockGenericTypeAccess(GenericTypeDecl target, Expr qual) {
-		List<Access> args = new List<Access>();
-		for(int i=0;i<target.getNumTypeParameter();++i)
-			args.add(target.getTypeParameter(i).createLockedAccess());
-		Access acc = new ParTypeAccess(target.rawType().createLockedAccess(), args);
-		if(qual != null)
-			acc = qual.qualifiesAccess(acc);
-		return acc;
-	}
-
 	protected Access TypeAccess.unlockArrayTypeAccess(ArrayDecl target, Expr qual) {
 		Access acc = target.componentType().createLockedAccess();
 		if(qual != null)
