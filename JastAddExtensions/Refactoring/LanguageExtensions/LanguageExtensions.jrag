@@ -24,8 +24,13 @@ aspect LanguageExtensions {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);			
 			ASTNode new_child = le.eliminateOn(child);
-			setChild((T)new_child, i);
-			new_child.eliminate(le);
+			if(new_child == null) {
+				removeChild(i);
+				--i;
+			} else {
+				setChild((T)new_child, i);
+				new_child.eliminate(le);
+			}
 		}
 	}
 }

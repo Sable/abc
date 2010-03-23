@@ -212,16 +212,15 @@ public class SelfEncapsulateFieldTests extends TestCase {
 	// static import tests
 	//=====================================================================================
 
-	/* disabled: TODO
-	private void performStaticImportTest(String referenceName) throws Exception {
-		Program in = CompileHelper.compile(getResourceLocation() + "/static_ref_in/" + adaptName(referenceName));
-		Program out = CompileHelper.compile(getResourceLocation() + "/static_ref_out/" + adaptName(referenceName));
+	private void performStaticImportTest(String name, String referenceName) throws Exception {
+		Program in = CompileHelper.compile(getResourceLocation() + "/static_in/" + name + ".java", getResourceLocation() + "/static_ref_in/" + referenceName + ".java");
+		Program out = CompileHelper.compile(getResourceLocation() + "/static_out/" + name + ".java", getResourceLocation() + "/static_ref_out/" + referenceName + ".java");
 		assertNotNull(in);
 		assertNotNull(out);
 		try {
-			FieldDeclaration fd = in.findField(fieldName);
+			FieldDeclaration fd = in.findField("x");
 			assertNotNull(fd);
-			fd.selfEncapsulate();
+			fd.doSelfEncapsulate();
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
@@ -229,20 +228,20 @@ public class SelfEncapsulateFieldTests extends TestCase {
 	}
 
 	public void testStaticImportRead() throws Exception {
-		performStaticImportTest("StaticImportReadReference");
+		performStaticImportTest("TestStaticImportRead", "StaticImportReadReference");
 	}
 
 	public void testStaticImportWrite() throws Exception {
-		performStaticImportTest("StaticImportWriteReference");
+		performStaticImportTest("TestStaticImportWrite", "StaticImportWriteReference");
 	}
 
 	public void testStaticImportReadWrite() throws Exception {
-		performStaticImportTest("StaticImportReadWriteReference");
+		performStaticImportTest("TestStaticImportReadWrite", "StaticImportReadWriteReference");
 	}
 
 	public void testStaticImportNone() throws Exception {
-		performStaticImportTest("StaticImportNoReference");
-	}*/
+		performStaticImportTest("TestStaticImportNone", "StaticImportNoReference");
+	}
 
 	//=====================================================================================
 	// existing getter/setter

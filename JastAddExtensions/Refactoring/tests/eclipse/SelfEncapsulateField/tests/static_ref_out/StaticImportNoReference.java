@@ -1,4 +1,4 @@
-package static_ref_out;
+package static_ref_in;
 
 
 public class StaticImportNoReference {

@@ -1,9 +1,10 @@
-package static_ref_out;
+package static_ref_in;
 
-import static static_out.TestStaticImportWrite.setX;
+///import static static_in.TestStaticImportWrite.setX;
 
 public class StaticImportWriteReference {
 	public void foo() {
+		static_in.TestStaticImportWrite.///
 		setX(10);
 	}
 }

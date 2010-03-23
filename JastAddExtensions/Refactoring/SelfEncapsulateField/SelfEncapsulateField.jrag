@@ -5,6 +5,7 @@ aspect SelfEncapsulateField {
 		if(!isFinal())
 			setter = createSetter();
 		
+		programRoot().lockNames(name());
 		ArrayList<VarAccess> uses = usesOfAllCopies();
 		for(int i=0;i<uses.size();++i) {
 			VarAccess va = uses.get(i);

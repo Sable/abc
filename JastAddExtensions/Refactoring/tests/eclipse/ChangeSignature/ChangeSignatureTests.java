@@ -186,10 +186,10 @@ public class ChangeSignatureTests extends TestCase {
 		assertNotNull(md);
 		
 		try {
-			for(int i=0; i<md.getNumParameter(); ++i)
-				md.getParameter(i).rename(newParamNames[i]);
 			md.doPermuteParameters(permutation, createDelegate);
-			for(int i=0;i<newTypes.length;++i) {
+			for(int i=0; i<md.getNumParameter(); ++i)
+				md.getParameter(i).rename(newParamNames[permutation[i]]);
+			for(int i=0;newTypes!=null&&i<newTypes.length;++i) {
 				TypeDecl parmtp = in.findType(newTypes[i]);
 				assertNotNull(parmtp);
 				if(parmtp.isGenericType())
@@ -590,91 +590,90 @@ public class ChangeSignatureTests extends TestCase {
 		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
 	}
 
-	/*public void testAll35()throws Exception{
-		String[] signature= {"I", "Z"};
+	/* disabled: no support for adjusting visibility
+	public void testAll35()throws Exception{
 		String[] newNames= null;
 		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= null;
 		int[] newIndices= null;
 
 		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= oldParamNames;
 		int[] permutation= {0, 1};
 		int[] deletedIndices= null;
-		int newVisibility= Modifier.PUBLIC;
-		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+		int newVisibility= VIS_PUBLIC;
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
+	}*/
 
+	/* disabled: no support for adjusting visibility
 	public void testAll36()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= null;
 		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= null;
 		int[] newIndices= null;
 
 		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= oldParamNames;
 		int[] permutation= {0, 1};
 		int[] deletedIndices= null;
-		int newVisibility= Modifier.PRIVATE;
+		//int newVisibility= Modifier.PRIVATE;
 		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
+	}*/
 
+	/* disabled: no support for adjusting visibility
 	public void testAll37()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= null;
 		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= null;
 		int[] newIndices= null;
 
 		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= oldParamNames;
 		int[] permutation= {0, 1};
 		int[] deletedIndices= null;
-		int newVisibility= Modifier.PROTECTED;
+		//int newVisibility= Modifier.PROTECTED;
 		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
+	}*/
 
+	/* disabled: no support for adjusting visibility
 	public void testAll38()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= null;
 		String[] newTypes= null;
-		String[] newDefaultValues= null;
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= null;
 		int[] newIndices= null;
 
 		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= oldParamNames;
 		int[] permutation= {0, 1};
 		int[] deletedIndices= null;
-		int newVisibility= Modifier.PROTECTED;
+		//int newVisibility= Modifier.PROTECTED;
 		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, true);
+	}*/
 
+	/* disabled: no support for adjusting visibility
 	public void testAll39()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= {"x"};
 		String[] newTypes= {"Object"};
-		String[] newDefaultValues= {"null"};
-		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		Literal[] newDefaultValues= {new NullLiteral("null")};
 		int[] newIndices= {1};
 
 		String[] oldParamNames= {"iii", "j"};
 		String[] newParamNames= {"i", "jj"};
-		int[] permutation= {2, -1, 0};
+		int[] permutation= {1, 0};
 		int[] deletedIndices= null;
-		int newVisibility= Modifier.PUBLIC;
+		//int newVisibility= Modifier.PUBLIC;
 		String newReturnTypeName= null;
-		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+		helperDoAll("A", "m", newNames, newTypes, newDefaultValues, newIndices, newParamNames, permutation, deletedIndices, false);
+	}*/
 
+	/* disabled: cannot parse "int[]"
 	public void testAll40()throws Exception{
 		String[] signature= {"I", "Z"};
 		String[] newNames= {"x"};
@@ -690,9 +689,9 @@ public class ChangeSignatureTests extends TestCase {
 		int newVisibility= Modifier.PUBLIC;
 		String newReturnTypeName= null;
 		helperDoAll("A", "m", signature, newParamInfo, newIndices, oldParamNames, newParamNames, null, permutation, newVisibility, deletedIndices, newReturnTypeName);
-	}
+	}*/
 
-	public void testAll41()throws Exception{
+	/*public void testAll41()throws Exception{
 		String[] signature= {"I"};
 		String[] newNames= null;
 		String[] newTypes= null;

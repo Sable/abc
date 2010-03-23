@@ -1,9 +1,10 @@
-package static_ref_out;
+package static_ref_in;
 
-import static static_out.TestStaticImportRead.getX;
+///import static static_in.TestStaticImportRead.getX;
 
 public class StaticImportReadReference {
 	public void foo() {
-		int y= getX();
+		int y= static_in.TestStaticImportRead.///
+			   getX();
 	}
 }

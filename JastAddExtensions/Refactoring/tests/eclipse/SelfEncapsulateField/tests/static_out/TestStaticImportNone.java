@@ -1,4 +1,4 @@
-package static_out;
+package static_in;
 
 public class TestStaticImportNone {
 	private static final int x= 0;
