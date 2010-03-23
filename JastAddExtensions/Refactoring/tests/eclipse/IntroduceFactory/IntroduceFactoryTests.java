@@ -7,9 +7,11 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Max Schaefer    - adapted to work with JRRT
  *******************************************************************************/
 package tests.eclipse.IntroduceFactory;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -19,8 +21,11 @@ import AST.ClassInstanceExpr;
 import AST.CompilationUnit;
 import AST.ConstructorDecl;
 import AST.FileRange;
+import AST.MemberDecl;
+import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
+import AST.TypeDecl;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -213,33 +218,33 @@ public class IntroduceFactoryTests extends TestCase {
 	 * @param factoryClassName the name of the factory class
 	 * @throws Exception
 	 */
-	/*
 	void namesHelper(String factoryMethodName, String factoryClassName)
 		throws Exception
 	{
-		ICompilationUnit	cu= createCUForSimpleTest(getPackageP(), true, true);
-		ISourceRange		selection= findSelectionInSource(cu.getSource());
-		IntroduceFactoryRefactoring	ref= new IntroduceFactoryRefactoring(cu, selection.getOffset(), selection.getLength());
-
-		RefactoringStatus	activationResult= ref.checkInitialConditions(new NullProgressMonitor());
-
-		assertTrue("activation was supposed to be successful", activationResult.isOK());
-
-		if (factoryMethodName != null)
-			ref.setNewMethodName(factoryMethodName);
-		if (factoryClassName != null)
-			ref.setFactoryClass(factoryClassName);
-
-		RefactoringStatus	checkInputResult= ref.checkFinalConditions(new NullProgressMonitor());
-
-		assertTrue("precondition was supposed to pass but was " + checkInputResult.toString(), checkInputResult.isOK());
-
-		performChange(ref, false);
-
-		String newSource = cu.getSource();
-
-		assertEqualLines(getName() + ": ", getFileContents(getTestFileName(true, false)), newSource);
-	}*/
+		assertNotNull(factoryMethodName);
+		assertNull(factoryClassName);
+		CompilationUnit cu= createCUForSimpleTest(true, true);
+		Program out = CompileHelper.compile(getTestFileName(true, false));
+		assertNotNull(out);
+		
+		FileRange selection= findSelectionInSource(cu);
+		ConstructorDecl cd;
+		ClassInstanceExpr cie = PromoteTempToFieldTests.findNode(cu, ClassInstanceExpr.class, selection.sl, selection.sc, selection.el, selection.ec-1);
+		if(cie != null) {
+			cd = cie.decl();
+		} else {
+			cd = PromoteTempToFieldTests.findNode(cu, ConstructorDecl.class, selection.sl, selection.sc, selection.el, selection.ec-1);
+			assertNotNull(cd);
+		}
+		
+		try {
+			MethodDecl md = cd.doIntroduceFactory(true);
+			md.rename(factoryMethodName);
+			assertEquals(out.toString(), cu.toString());
+		} catch(RefactoringException rfe) {
+			assertEquals(out.toString(), rfe.getMessage());
+		}
+	}
 
 	/**
 	 * Creates a compilation unit for a source file with a given base name (plus
@@ -251,41 +256,74 @@ public class IntroduceFactoryTests extends TestCase {
 	 * @return the ICompilationUnit for the newly-created unit
 	 * @throws Exception
 	 */
-	/*private ICompilationUnit createCUFromFileName(String fileName, IPackageFragment pack) throws Exception {
-		String fullName = TEST_PATH_PREFIX + getRefactoringPath() + "positive/" + fileName + "_in.java";
-
-		return createCU(pack, fileName + "_in.java", getFileContents(fullName));
+	private CompilationUnit[] createCUsFromBaseNames(String... baseNames) {
+		String[] fileNames = new String[baseNames.length];
+		for(int i=0;i<baseNames.length;++i)
+			fileNames[i] = "tests/eclipse/IntroduceFactory/positive/" + baseNames[i] + "_in.java";
+		Program prog = CompileHelper.compile(fileNames);
+		CompilationUnit[] cus = new CompilationUnit[baseNames.length];
+		for(Iterator<CompilationUnit> iter=prog.compilationUnitIterator();iter.hasNext();) {
+			CompilationUnit next = iter.next();
+			if(next.fromSource()) {
+				for(int i=0;i<baseNames.length;++i)
+					if(next.getID().equals(baseNames[i]+"_in"))
+						cus[i] = next;
+			}
+		}
+		return cus;
 	}
 
-	private void doMultiUnitTest(ICompilationUnit[] CUs, String testPath, String[] outputFileBaseNames, String factoryClassName) throws Exception, JavaModelException, IOException {
-		ISourceRange selection= findSelectionInSource(CUs[0].getSource());
-		IntroduceFactoryRefactoring	ref= new IntroduceFactoryRefactoring(CUs[0], selection.getOffset(), selection.getLength());
-
-		RefactoringStatus activationResult= ref.checkInitialConditions(new NullProgressMonitor());
-
-		assertTrue("activation was supposed to be successful", activationResult.isOK());
-
-		if (factoryClassName != null)
-			ref.setFactoryClass(factoryClassName);
-
-		RefactoringStatus	checkInputResult= ref.checkFinalConditions(new NullProgressMonitor());
-
-		assertTrue("precondition was supposed to pass but was " + checkInputResult.toString(), checkInputResult.isOK());
-
-		performChange(ref, false);
-
+	private CompilationUnit[] createCUsForBugTestCase(String... baseNames) {
+		String testName= getName();
+		String testNumber= testName.substring("test".length());
+		String[] fileNames = new String[baseNames.length];
+		for(int i=0;i<baseNames.length;++i)
+			fileNames[i] = "tests/eclipse/IntroduceFactory/Bugzilla/" + testNumber + "/" + baseNames[i] + ".java";
+		Program prog = CompileHelper.compile(fileNames);
+		CompilationUnit[] cus = new CompilationUnit[baseNames.length];
+		for(Iterator<CompilationUnit> iter=prog.compilationUnitIterator();iter.hasNext();) {
+			CompilationUnit next = iter.next();
+			if(next.fromSource()) {
+				for(int i=0;i<baseNames.length;++i)
+					if(next.relativeName().equals(fileNames[i]))
+						cus[i] = next;
+			}
+		}
+		return cus;
+	}
+	
+	private void doMultiUnitTest(CompilationUnit[] CUs, String testPath, String[] outputFileBaseNames, String factoryClassName) {
 		String	testName= getName();
-
+		String[] outputFileNames = new String[outputFileBaseNames.length];
 		for (int i = 0; i < CUs.length; i++) {
 			int optIdx= testName.indexOf("_");
 			String testOptions= (optIdx >= 0) ? testName.substring(optIdx) : "";
-			String outFileName= testPath + outputFileBaseNames[i] + testOptions + "_out.java";
-			String xformedSrc= CUs[i].getSource();
-			String expectedSrc= getFileContents(outFileName);
-
-			assertEqualLines(getName() + ": ", expectedSrc, xformedSrc);
+			outputFileNames[i] = testPath + outputFileBaseNames[i] + testOptions + "_out.java";
 		}
-	}*/
+		Program out = CompileHelper.compile(outputFileNames);
+		FileRange selection= findSelectionInSource(CUs[0]);
+		ConstructorDecl cd;
+		ClassInstanceExpr cie = PromoteTempToFieldTests.findNode(CUs[0], ClassInstanceExpr.class, selection.sl, selection.sc, selection.el, selection.ec-1);
+		if(cie != null) {
+			cd = cie.decl();
+		} else {
+			cd = PromoteTempToFieldTests.findNode(CUs[0], ConstructorDecl.class, selection.sl, selection.sc, selection.el, selection.ec-1);
+			assertNotNull(cd);
+		}
+		
+		try {
+			Program in = CUs[0].programRoot();
+			MethodDecl factory = cd.doIntroduceFactory(true);
+			if(factoryClassName != null) {
+				TypeDecl factoryClass = in.findType(factoryClassName);
+				assertNotNull(factoryClass);
+				factory.hostType().doMoveMembers(Collections.singleton((MemberDecl)factory), factoryClass);
+			}
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			assertEquals(out.toString(), rfe.getMessage());
+		}
+	}
 
 	/**
 	 * Tests the IntroduceFactoryRefactoring refactoring on a set of input source files
@@ -297,19 +335,11 @@ public class IntroduceFactoryTests extends TestCase {
 	 * @param inputFileBaseNames an array of input source file base names
 	 * @throws Exception
 	 */
-	/*void multiUnitHelper(boolean staticFactoryMethod, String[] inputFileBaseNames)
-		throws Exception
-	{
-		IPackageFragment	pkg= getPackageP();
-		ICompilationUnit	CUs[]= new ICompilationUnit[inputFileBaseNames.length];
-
-		for (int i = 0; i < inputFileBaseNames.length; i++)
-			CUs[i] = createCUFromFileName(inputFileBaseNames[i], pkg);
-
-		String	testPath= TEST_PATH_PREFIX + getRefactoringPath() + "positive/";
-
-		doMultiUnitTest(CUs, testPath, inputFileBaseNames, null);
-	}*/
+	void multiUnitHelper(boolean staticFactoryMethod, String[] inputFileBaseNames) {
+		CompilationUnit[] cus = createCUsFromBaseNames(inputFileBaseNames);
+		String	testPath= "tests/eclipse/IntroduceFactory/positive/";
+		doMultiUnitTest(cus, testPath, inputFileBaseNames, null);
+	}
 
 	/**
 	 * Tests the IntroduceFactoryRefactoring refactoring on a set of input source files
@@ -323,135 +353,14 @@ public class IntroduceFactoryTests extends TestCase {
 	 * if the factory method is to be placed on the class defining the given constructor
 	 * @throws Exception
 	 */
-	/*void multiUnitBugHelper(boolean staticFactoryMethod, String[] inputFileBaseNames, String factoryClassName)
-		throws Exception
-	{
-		ICompilationUnit CUs[]= new ICompilationUnit[inputFileBaseNames.length];
-
-		for(int i= 0; i < inputFileBaseNames.length; i++) {
-			int pkgEnd= inputFileBaseNames[i].lastIndexOf('/')+1;
-			boolean explicitPkg= (pkgEnd > 0);
-			IPackageFragment pkg= explicitPkg ? getRoot().createPackageFragment(inputFileBaseNames[i].substring(0, pkgEnd-1), true, new NullProgressMonitor()) : getPackageP();
-
-			CUs[i]= createCUForBugTestCase(null, pkg, inputFileBaseNames[i].substring(pkgEnd), true);
-		}
-
+	void multiUnitBugHelper(boolean staticFactoryMethod, String[] inputFileBaseNames, String factoryClassName) {
+		CompilationUnit[] cus = createCUsForBugTestCase(inputFileBaseNames);
 		String	testName= getName();
 		String	testNumber= testName.substring("test".length());
-		String	testPath= TEST_PATH_PREFIX + getRefactoringPath() + "Bugzilla/" + testNumber + "/";
+		String	testPath= "tests/eclipse/IntroduceFactory/Bugzilla/" + testNumber + "/";
 
-		doMultiUnitTest(CUs, testPath, inputFileBaseNames, factoryClassName);
+		doMultiUnitTest(cus, testPath, inputFileBaseNames, factoryClassName);
 	}
-
-	void multiProjectBugHelper(String[] inputFileBaseNames, String[] dependencies) throws Exception {
-		Map projName2PkgNames= collectProjectPackages(inputFileBaseNames);
-		Map projName2Project= new HashMap();
-		Map proj2PkgRoot= new HashMap();
-
-		try {
-			createProjectPackageStructure(projName2PkgNames, projName2Project, proj2PkgRoot);
-
-			ICompilationUnit[] CUs= createCUs(inputFileBaseNames, projName2Project, proj2PkgRoot);
-
-			addProjectDependencies(dependencies, projName2Project);
-
-			String testName= getName();
-			String testNumber= testName.substring("test".length());
-			String testPath= TEST_PATH_PREFIX + getRefactoringPath() + "Bugzilla/" + testNumber + "/";
-
-			doMultiUnitTest(CUs, testPath, inputFileBaseNames, null);
-
-		} finally {
-			for (Iterator iter= proj2PkgRoot.keySet().iterator(); iter.hasNext();) {
-				IJavaProject project= (IJavaProject) iter.next();
-				if (project.exists()) {
-					try {
-						project.getProject().delete(true, null);
-					} catch (CoreException e) {
-						// swallow exception to avoid destroying the original one
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	private ICompilationUnit[] createCUs(String[] inputFileBaseNames, Map projName2Project, Map proj2PkgRoot) throws Exception {
-		ICompilationUnit CUs[]= new ICompilationUnit[inputFileBaseNames.length];
-
-		for(int i= 0; i < inputFileBaseNames.length; i++) {
-			String filePath= inputFileBaseNames[i];
-
-			int projEnd= filePath.indexOf('/');
-			int pkgEnd= filePath.lastIndexOf('/');
-			int fileBegin= pkgEnd+1;
-
-			String projName= filePath.substring(0, projEnd);
-			String pkgName= filePath.substring(projEnd+1, pkgEnd).replace('/', '.');
-
-			IJavaProject project= (IJavaProject) projName2Project.get(projName);
-			IPackageFragmentRoot root= (IPackageFragmentRoot) proj2PkgRoot.get(project);
-			IPackageFragment pkg= root.getPackageFragment(pkgName);
-
-			CUs[i]= createCUForBugTestCase(project, pkg, filePath.substring(fileBegin), true);
-		}
-		return CUs;
-	}
-
-	private void addProjectDependencies(String[] dependencies, Map projName2Project) throws JavaModelException {
-		for(int i= 0; i < dependencies.length; i++) {
-			// dependent:provider
-			String dependency= dependencies[i];
-			int colonIdx= dependency.indexOf(':');
-			String depName= dependency.substring(0, colonIdx);
-			String provName= dependency.substring(colonIdx+1);
-
-			IJavaProject depProj= (IJavaProject) projName2Project.get(depName);
-			IJavaProject provProj= (IJavaProject) projName2Project.get(provName);
-
-			JavaProjectHelper.addRequiredProject(depProj, provProj);
-		}
-	}
-
-	private void createProjectPackageStructure(Map projName2PkgNames, Map projName2Project, Map proj2PkgRoot) throws CoreException, JavaModelException {
-		for(Iterator iter= projName2PkgNames.keySet().iterator(); iter.hasNext(); ) {
-			String projName= (String) iter.next();
-			Set projPkgNames= (Set) projName2PkgNames.get(projName);
-
-			IJavaProject project= JavaProjectHelper.createJavaProject(projName, "bin");
-			IPackageFragmentRoot root= JavaProjectHelper.addSourceContainer(project, CONTAINER);
-
-			JavaProjectHelper.addRTJar(project);
-
-			Set pkgs= new HashSet();
-
-			projName2Project.put(projName, project);
-			proj2PkgRoot.put(project, root);
-			for(Iterator pkgIter= projPkgNames.iterator(); pkgIter.hasNext(); ) {
-				String pkgName= (String) pkgIter.next();
-
-				pkgs.add(root.createPackageFragment(pkgName, true, null));
-			}
-		}
-	}
-
-	private Map collectProjectPackages(String[] inputFileBaseNames) {
-		Map proj2Pkgs= new HashMap();
-
-		for(int i= 0; i < inputFileBaseNames.length; i++) {
-			String filePath= inputFileBaseNames[i];
-			int projEnd= filePath.indexOf('/');
-			String projName= filePath.substring(0, projEnd);
-			String pkgName= filePath.substring(projEnd+1, filePath.lastIndexOf('/'));
-
-			Set projPkgs= (Set) proj2Pkgs.get(projName);
-
-			if (projPkgs == null)
-				proj2Pkgs.put(projName, projPkgs= new HashSet());
-			projPkgs.add(pkgName);
-		}
-		return proj2Pkgs;
-	}*/
 
 	private void failHelper(int expectedStatus) throws Exception {
 		CompilationUnit	cu= createCUForSimpleTest(false, true);
@@ -489,10 +398,9 @@ public class IntroduceFactoryTests extends TestCase {
 	//
 	static final String[]	k_Names = { "createThing", "ThingFactory", "IThingFactory" };
 
-	/* disabled: TODO
 	public void testNames_FFF() throws Exception {
 		namesHelper(k_Names[0], null);
-	}*/
+	}
 	//
 	// ================================================================================
 	//
@@ -602,7 +510,7 @@ public class IntroduceFactoryTests extends TestCase {
 		singleUnitHelper(true);
 	}
 
-	/* disabled: TODO
+	/* disabled: no support for creating factory class
     public void testTypeParam2() throws Exception {
         namesHelper(null, "p.Factory");
     }*/
@@ -632,16 +540,15 @@ public class IntroduceFactoryTests extends TestCase {
     //
 	// ================================================================================
 	//
-	/* disabled: TODO
 	public void testMultipleUnits_FFF() throws Exception {
 		multiUnitHelper(false, new String[] { "MultiUnit1A", "MultiUnit1B", "MultiUnit1C" });
-	}*/
+	}
 	//
 	// ================================================================================
 	// Bugzilla bug regression tests
 	// ================================================================================
 	//
-	/* disabled: TODO
+	/* disabled: does not compile
 	public void test45942() throws Exception {
 		multiUnitBugHelper(true, new String[] { "TestClass", "UseTestClass" }, null);
 	}*/
@@ -662,10 +569,9 @@ public class IntroduceFactoryTests extends TestCase {
 		singleUnitBugHelper("QualifiedName", false);
 	}
 
-	/* disabled: TODO
 	public void test46608() throws Exception {
 		multiUnitBugHelper(true, new String[] { "p1/TT", "p2/TT" }, null);
-	}*/
+	}
 
 	public void test59284() throws Exception {
 		singleUnitBugHelper("ArgTypeImport", true);
@@ -675,16 +581,15 @@ public class IntroduceFactoryTests extends TestCase {
 		singleUnitBugHelper("ExplicitSuperCtorCall", true);
 	}
 
-	/* disabled: TODO
 	public void test48504() throws Exception {
 		multiUnitBugHelper(true, new String[] { "p1/A", "p1/B" }, "p1.B");
-	}*/
+	}
 
 	public void test58293() throws Exception {
 		singleUnitBugHelper("ImplicitSuperCtorCall", true);
 	}
 
-	/* disabled: TODO
+	/* disabled: tests idiosyncratic feature
 	public void test59283() throws Exception {
 		multiProjectBugHelper(new String[] { "proj1/pA/A", "proj2/pB/B" },
 				new String[] { "proj2:proj1" });

@@ -1,5 +1,5 @@
 aspect IntroduceFactory {
-	public void ConstructorDecl.introduceFactory(boolean protectConstructor) {
+	public MethodDecl ConstructorDecl.introduceFactory(boolean protectConstructor) {
 		int vis = protectConstructor ? VIS_PRIVATE : getVisibility();
 		MethodDecl factory = createFactoryMethod();
 		for(Access acc : usesOfAllCopies()) {
@@ -17,23 +17,25 @@ aspect IntroduceFactory {
 			}
 		}
 		getModifiers().setVisibility(vis);
+		return factory;
 	}
 	
-	public void ConstructorDeclSubstituted.introduceFactory(boolean protectConstructor) {
-		sourceConstructorDecl().introduceFactory(protectConstructor);
+	public MethodDecl ConstructorDeclSubstituted.introduceFactory(boolean protectConstructor) {
+		return sourceConstructorDecl().introduceFactory(protectConstructor);
 	}
 	
-	public void ParConstructorDecl.introduceFactory(boolean protectConstructor) {
-		sourceConstructorDecl().introduceFactory(protectConstructor);
+	public MethodDecl ParConstructorDecl.introduceFactory(boolean protectConstructor) {
+		return sourceConstructorDecl().introduceFactory(protectConstructor);
 	}
 	
-	public void ConstructorDecl.doIntroduceFactory() {
-		doIntroduceFactory(true);
+	public MethodDecl ConstructorDecl.doIntroduceFactory() {
+		return doIntroduceFactory(true);
 	}
 	
-	public void ConstructorDecl.doIntroduceFactory(boolean protectConstructor) {
-		introduceFactory(protectConstructor);
+	public MethodDecl ConstructorDecl.doIntroduceFactory(boolean protectConstructor) {
+		MethodDecl factory = introduceFactory(protectConstructor);
 		programRoot().eliminate(LOCKED_NAMES);
+		return factory;
 	}
 	
 	public MethodDecl ConstructorDecl.createFactoryMethod() {

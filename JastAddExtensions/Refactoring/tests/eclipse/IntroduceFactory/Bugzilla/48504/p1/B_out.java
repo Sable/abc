@@ -1,4 +1,4 @@
-package p;
+package p1;
 
 public class B {
 	private static interface I {
@@ -8,12 +8,8 @@ public class B {
 
 		public void foo() {
 		}
-	}
+	}	
 	
-	public static A createA() {
-		return new A();
-	}
-
 	public void foo() {
 		I i= new I() {
 			public void foo() {
@@ -39,5 +35,9 @@ public class B {
 				
 			}
 		}
+	}
+	
+	public static A createA() {
+		return new A();
 	}
 }
