@@ -13,18 +13,23 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
+We proceed in three steps: first, we split off the variable initialisation into an assignment, then inline all uses of the assignment, and finally remove the variable.
+
 \begin{algorithm}
 \caption{$\refactoring{Split Declaration}(d : \type{LocalVarDecl}) : \type{Assignment}$}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ multi-declarations
 \ENSURE Java $\cup$ locked names, first-class array init
 \medskip
+\STATE \assert $\util{hasInit}(d)$
 \STATE $a = \type{Assignment}(\locked{d}, \util{getInit}(d))$  
 \STATE $\util{insertStmtAfter}(d, a)$
 \STATE $\util{removeInit}(d)$
 \RETURN $a$
 \end{algorithmic}
 \end{algorithm}
+
+To split a variable declaration, it needs to have an initialiser, which we turn into its own statement.
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
@@ -33,21 +38,21 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \ENSURE Java $\cup$ locked dependencies
 \medskip
 \STATE $x = \util{lhs}(a)$
-\STATE \assert $x$ is local variable
-\STATE $e = \util{rhs}(a)$
-\STATE $\util{lock}(e)$
+\STATE \assert $\util{decl}(x)$ is local variable
 \STATE $U = \{ u \mid u\rightarrow_r x\}$
 \FORALL{$u\in U$}
   \STATE \assert $\neg\exists x'.u\rightarrow_r x' \wedge x\neq x'$
   \STATE \assert $u$ is not an lvalue
-  \STATE \assert $u,x$ are in same body declaration
-  \STATE $\util{replaceExpr}(u, \util{copy}(e))$
+  \STATE \assert $u,a$ are in same body declaration
+  \STATE $\util{replaceExpr}(u, \util{lockedCopy}(\util{rhs}(a)))$
 \ENDFOR
 \IF{$U\neq\emptyset$}
   \STATE $\util{removeStmt}(a)$
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
+
+To inline an assignment $a$, we check that it is indeed an assignment to a local variable $x$. For every use $u$ we check that $a$ is its only reaching definition, that $u$ is not an lvalue, and that $u$ and $a$ are in the same body declaration. (If $x$ is final, $u$ could be inside a local class, for instance.) Assuming that all these conditions are fulfilled, we can replace $u$ by a locked copy of the right-hand side of $a$. Finally, if $x$ was inlined at least once we can delete the assignment.
 
 \begin{algorithm}
 \caption{$\refactoring{Remove Decl}(d : \type{LocalVarDecl})$}
@@ -60,3 +65,5 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
+
+To remove a variable declaration $d$, we need to ensure that it does not have an initialiser, and that it is never used.

@@ -39,7 +39,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);
 		suite.addTestSuite(tests.eclipse.InlineConstant.InlineConstantTests.class);
-		suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
+		//suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);

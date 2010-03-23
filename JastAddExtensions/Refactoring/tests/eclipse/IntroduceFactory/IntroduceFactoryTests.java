@@ -167,7 +167,6 @@ public class IntroduceFactoryTests extends TestCase {
 		}
 		
 		try {
-			cd.createFactoryMethod();
 			cd.doIntroduceFactory(protectConstructor);
 			assertEquals(out.toString(), cu.toString());
 		} catch(RefactoringException rfe) {
@@ -469,7 +468,6 @@ public class IntroduceFactoryTests extends TestCase {
 		}
 		
 		try {
-			cd.createFactoryMethod();
 			cd.doIntroduceFactory();
 			assertEquals("<failure>", cu.toString());
 		} catch(RefactoringException rfe) {

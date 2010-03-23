@@ -1,1 +1,35 @@
 \subsection{\refactoring{Inline Constant}}
+This refactoring inlines a constant field into all its uses. Implemented in \sourcelink{InlineTemp/InlineConstant.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Inline Constant}(f : \type{Field})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\FORALL{$u\in\{u \mid u \rightarrow_b f\}$}
+  \STATE $[\refactoring{Inline Constant}](u)$
+\ENDFOR
+\IF{$\not\exists u.(u rightarrow_b f) \wedge (\util{hasInit}(f) \rightarrow \util{isPure}(\util{getInit}(f)))$}
+  \STATE $\util{removeField}(f)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+The basic algorithm is like for \refactoring{Inline Temp}: inline every use, then remove the field if it is no longer used. Of course, removing the field means discarding its initialiser, so we can only do this if the field either has no initialiser, or the initialiser is a pure expression without side effects.
+
+\begin{algorithm}
+\caption{$\refactoring{Inline Constant}(u : \type{FieldAccess})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked dependencies
+\medskip
+\STATE $f \leftarrow \util{decl}()$
+\STATE \assert $\util{isFinal}(f) \wedge \util{isStatic}(f) \wedge \util{hasInit}(f)$
+\STATE $e \leftarrow \util{lockedCopy}(\util{getInit}(f))$
+\STATE \assert $\util{isQualified}(u) \rightarrow \util{isPure}(\util{getQualifier}(u))$
+\STATE $\util{replaceExpr}(\util{getUnqualified}(u), e)$
+\end{algorithmic}
+\end{algorithm}
+
+To inline a use $u$ of a field, we make sure that the referenced field is static and final and has an initialiser. We obtain a locked copy $e'$ of the initialiser, and replace the field use (along with its qualifier) by $e'$. Again, this is only possible if either $u$ has no qualifier, or the qualifier is side-effect free.

@@ -32,8 +32,33 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-	<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" 
-               classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
+	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar">
+	  <include name="**/*.java"/>
+	  <exclude name="tests/eclipse/ChangeSignature/can*/**"/>
+	  <exclude name="tests/eclipse/ConvertAnonymousToNested/can*/**"/>
+          <exclude name="tests/eclipse/ExtractClass/test*/**"/>
+          <exclude name="tests/eclipse/ExtractConstant/can*/**"/>
+          <exclude name="tests/eclipse/ExtractTemp/can*/**"/>
+          <exclude name="tests/eclipse/InlineConstant/can*/**"/>
+          <exclude name="tests/eclipse/InlineMethodWorkspace/TestCases/**"/>
+          <exclude name="tests/eclipse/InlineTemp/can*/**"/>
+          <exclude name="tests/eclipse/IntroduceFactory/Bugzilla/*/**"/>
+          <exclude name="tests/eclipse/IntroduceFactory/negative/*"/>
+          <exclude name="tests/eclipse/IntroduceFactory/positive/*"/>
+          <exclude name="tests/eclipse/IntroduceIndirection/test*/**"/>
+          <exclude name="tests/eclipse/IntroduceParameter/invalid/**"/>
+          <exclude name="tests/eclipse/IntroduceParameter/simple/**"/>
+          <exclude name="tests/eclipse/IntroduceParameterObject/test*/**"/>
+          <exclude name="tests/eclipse/MoveInnerToTopLevel/test*/**"/>
+          <exclude name="tests/eclipse/MoveInstanceMethod/can*/**"/>
+          <exclude name="tests/eclipse/MoveMembers/test*/**"/>
+          <exclude name="tests/eclipse/PromoteTempToField/can*/**"/>
+          <exclude name="tests/eclipse/PromoteTempToField/test*/**"/>
+          <exclude name="tests/eclipse/PullUp/test*/**"/>
+          <exclude name="tests/eclipse/PushDown/test*/**"/>
+          <exclude name="tests/eclipse/RenamePackage/test*/**"/>
+          <exclude name="tests/eclipse/SelfEncapsulateField/tests/**"/>
+	</javac>
 </target>
 
 <!-- generate compiler source files and compile sources; change
@@ -208,7 +233,7 @@
     <!-- delete all .class files recursively -->
     <delete>
       <fileset dir="." includes="**/*.class"/>
-      <fileset file="JastAddJRefactoring.tar.gz"/>
+      <fileset file="Refactoring.jar"/>
     </delete>
 </target>
 
@@ -236,11 +261,23 @@
       <include name="ControlFlowGraph/ControlFlowGraph.jrag"/>
       <include name="ControlFlowGraph/Sets.jrag"/>
       <include name="ControlFlowGraph/Exceptions.jrag"/>
+      <include name="ControlFlowGraph/Alias.jrag"/>
+      <include name="ControlFlowGraph/ReachingDefinitions.jrag"/>
       <include name="Refactoring/**"/>
       <exclude name="**/*.class"/>
+      <exclude name="Refactoring/doc/**"/>
     </zipfileset>
   </jar>
 </target>
 
+<target name="test" depends="build">
+  <java 
+     classname="junit.awtui.TestRunner"
+     classpath=".:tools/junit.jar" 
+     fork="true" 
+     maxmemory="4096M">
+    <arg line="tests.AllTests"/>
+  </java>
+</target>
 </project>
 

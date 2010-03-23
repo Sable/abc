@@ -8,7 +8,7 @@ aspect InlineConstant {
 	}
 	
 	public void VarAccess.inlineConstant() {
-		if(!decl().isField() || !decl().isFinal())
+		if(!decl().isField() || !decl().isFinal() || !decl().isStatic())
 			throw new RefactoringException("not a use of a constant");
 		FieldDeclaration cnst = (FieldDeclaration)decl();
 		if(!cnst.hasInit())
