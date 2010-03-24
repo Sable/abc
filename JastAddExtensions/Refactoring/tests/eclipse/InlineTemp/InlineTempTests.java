@@ -223,6 +223,46 @@ public class InlineTempTests extends TestCase {
 		helper1(10, 27, 10, 27);
 	}*/
 
+	public void test33() throws Exception{
+		// add explicit cast for primitive types: https://bugs.eclipse.org/bugs/show_bug.cgi?id=46216
+		helper1(5, 22, 5, 22);
+	}
+	
+	public void test34() throws Exception{
+		// add explicit cast for boxing: https://bugs.eclipse.org/bugs/show_bug.cgi?id=201434#c4
+		helper1(5, 11, 5, 11);
+	}
+	
+	public void test35() throws Exception{
+		// add explicit cast for unchecked conversion: https://bugs.eclipse.org/bugs/show_bug.cgi?id=201434#c0
+		helper1(7, 32, 7, 36);
+	}
+	
+	public void test36() throws Exception{
+		// parenthesize complex cast expression
+		helper1(7, 8, 7, 10);
+	}
+	
+	public void test37() throws Exception{
+		// parameterized method invocation needs class expression: https://bugs.eclipse.org/bugs/show_bug.cgi?id=277968
+		helper1(5, 16, 5, 17);
+	}
+	
+	public void test38() throws Exception{
+		// parameterized method invocation needs this expression: https://bugs.eclipse.org/bugs/show_bug.cgi?id=277968
+		helper1(5, 16, 5, 17);
+	}
+	
+	public void test39() throws Exception{
+		// parameterized method invocation needs to keep super expression: https://bugs.eclipse.org/bugs/show_bug.cgi?id=277968
+		helper1(5, 16, 5, 17);
+	}
+	
+	public void test40() throws Exception{
+		// better cast for unboxing: https://bugs.eclipse.org/bugs/show_bug.cgi?id=297868
+		helper1(5, 43, 5, 46);
+	}
+	
 	//------
 
 	/* disabled: by Eclipse

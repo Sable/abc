@@ -1712,6 +1712,24 @@ public class ChangeSignatureTests extends TestCase {
 		String newReturnTypeName= null;
 		helperDoAll("I", "test", signature, newParamInfo, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation,
 				newVisibility, deletedIndices, newReturnTypeName);
+	}
+	
+	public void testGenerics06() throws Exception {
+		String[] signature= { "QString;" };
+		String[] newNames= {};
+		String[] newTypes= {};
+		String[] newDefaultValues= {};
+		ParameterInfo[] newParamInfo= createNewParamInfos(newTypes, newNames, newDefaultValues);
+		int[] newIndices= {};
+
+		String[] oldParamNames= { "string" };
+		String[] newParamNames= {};
+		String[] newParameterTypeNames= {};
+		int[] permutation= {};
+		int[] deletedIndices= {0};
+		int newVisibility= Modifier.PRIVATE;
+		String newReturnTypeName= null;
+		helperDoAll("C", "foo", signature, newParamInfo, newIndices, oldParamNames, newParamNames, newParameterTypeNames, permutation, newVisibility, deletedIndices, newReturnTypeName);
 	}*/
 
 	public void testDelegate01() throws Exception {

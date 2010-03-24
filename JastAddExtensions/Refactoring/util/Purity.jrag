@@ -4,7 +4,16 @@ aspect Purity {
 	eq Access.isPure() = true;
 	eq AbstractDot.isPure() = getLeft().isPure() && getRight().isPure();
 	eq ArrayAccess.isPure() = getExpr().isPure();
-	eq ClassInstanceExpr.isPure() = false;
+	eq ClassInstanceExpr.isPure() {
+		/* whitelist some constructors from the standard library we know are impervious to dataflow */
+		TypeDecl host = decl().hostType();
+		if(hasTypeDecl() || host.unboxed().isUnknown() && !host.isString())
+			return false;
+		for(Expr arg : getArgs())
+			if(!arg.isPure())
+				return false;
+		return true;
+	}
 	eq ConstructorAccess.isPure() = false;
 	eq MethodAccess.isPure() = false;
 	eq ArrayTypeWithSizeAccess.isPure() = getExpr().isPure();

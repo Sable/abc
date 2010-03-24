@@ -615,6 +615,10 @@ public class IntroduceFactoryTests extends TestCase {
 		singleUnitBugHelper("Test", true);
 	}
 	
+	public void test298281() throws Exception {
+		singleUnitBugHelper("Thing", true);
+	}
+	
 	public void testFactoryClash() throws Exception {
 		failHelper(RefactoringStatus.ERROR);
 	}

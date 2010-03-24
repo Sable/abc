@@ -1,5 +1,7 @@
 aspect InlineConstant {
 	public void FieldDeclaration.inlineConstant(boolean remove) {
+		if(hasInit())
+			setInit(getInit().makeConversionExplicit(type()));
 		for(VarAccess va : uses())
 			va.inlineConstant();
 		programRoot().flushCaches();
@@ -16,14 +18,14 @@ aspect InlineConstant {
 		bundleQualifier();
 		if(isQualified() && !qualifier().isPure())
 			throw new RefactoringException("cannot discard impure qualifier");
-		ASTNode p = this;
+		Expr p = this;
 		if(isQualified())
-			p = p.getParent();
+			p = (Expr)p.getParent();
 		Expr init = cnst.getInit();
 		init.lockAllNames();
 		init.lockDataFlow();
 		cnst.setInit((Expr)init.fullCopy());
-		p.replaceWith(init);
+		p.replaceWith(init.precedence() > p.maxPrecedence() ? new ParExpr(init) : init);
 	}
 	
 	public void FieldDeclaration.doInlineConstant(boolean remove) {

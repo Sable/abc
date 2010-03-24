@@ -449,4 +449,49 @@ public class MoveInnerToTopLevelTests extends TestCase {
 	public void testFail_nonstatic_3() throws Exception{
 		validateFailingTest("Local", "NestedLocal", new String[]{"A"}, new String[]{"p"}, "a");
 	}
+	
+	/* disabled: these tests are arguably for a different refactoring
+	public void test_secondary_0() throws Exception {
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_1() throws Exception {
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_2() throws Exception {
+		if (BUG_304827)
+			return;
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_3() throws Exception {
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A", "S" }, new String[] { "p", "q" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_4() throws Exception {
+		if (BUG_304827)
+			return;
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_5() throws Exception {
+		if (BUG_304827)
+			return;
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_6() throws Exception {
+		if (BUG_304827)
+			return;
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A" }, new String[] { "p" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_7() throws Exception {
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A", "S", "T" }, new String[] { "p", "q", "q" }, null, false, false, false, false);
+	}
+
+	public void test_secondary_8() throws Exception {
+		validatePassingTestSecondaryType("A", "Secondary", "p", new String[] { "A", "S", "T" }, new String[] { "p", "q", "q" }, null, false, false, false, false);
+	}*/
 }

@@ -995,7 +995,7 @@ public class PushDownTests extends TestCase {
 			   namesOfMethodsToDeclareAbstract, signaturesOfMethodsToDeclareAbstract, null, null);
 	}*/
 
-	/* disabled: TODO
+	/* disabled: tests idiosyncratic feature
 	public void testAddingRequiredMembers0() throws Exception{
 		String[] fieldNames= {};
 		String[] methodNames= {"m"};

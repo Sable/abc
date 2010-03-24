@@ -85,7 +85,7 @@ aspect DataFlow {
 	
 	eq MethodAccess.getLocation() = decl().isConstantMethod() ? null : decl();
 	eq ConstructorAccess.getLocation() = decl();
-	eq ClassInstanceExpr.getLocation() = decl();
+	eq ClassInstanceExpr.getLocation() = isPure() ? null : decl();
 	
 	public boolean MethodDecl.isArrayElement() { return false; }
 	public boolean ConstructorDecl.isArrayElement() { return false; }

@@ -84,7 +84,7 @@ aspect Precedence {
 	eq AssignExpr.getDest().maxPrecedence() = precedence()-1;
 	eq AssignExpr.getSource().maxPrecedence() = precedence();
 	
-	eq CastExpr.getExpr().maxPrecedence() = precedence()-1;
+	eq CastExpr.getExpr().maxPrecedence() = precedence();
 	
 	eq Unary.getOperand().maxPrecedence() = precedence();
 	

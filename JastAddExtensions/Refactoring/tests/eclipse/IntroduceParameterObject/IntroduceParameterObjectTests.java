@@ -93,6 +93,10 @@ public class IntroduceParameterObjectTests extends TestCase {
 	public void testInlineRename() throws Exception {
 		runRefactoring(new String[]{"xg", "yg"}, false, false);
 	}
+	
+	public void testSubclassInCU() throws Exception {
+		runRefactoring("FooParameter", "parameterObject", false, true);
+	}
 
 	public void testInterfaceMethod() throws Exception {
 		runRefactoring(false, true);
