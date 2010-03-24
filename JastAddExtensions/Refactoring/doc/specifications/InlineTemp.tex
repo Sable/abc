@@ -34,7 +34,7 @@ To split a variable declaration, it needs to have an initialiser, which we turn 
 \begin{algorithm}
 \caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
 \begin{algorithmic}[1]
-\REQUIRE Java
+\REQUIRE Java $\setminus$ implicit assignment conversion
 \ENSURE Java $\cup$ locked dependencies
 \medskip
 \STATE $x = \util{lhs}(a)$

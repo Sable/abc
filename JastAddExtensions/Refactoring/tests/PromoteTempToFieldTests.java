@@ -55,15 +55,51 @@ public class PromoteTempToFieldTests extends TestCase {
     public void test2() {
     	testFail(
     		Program.fromBodyDecls(
-    		"int fac(int y) {" +
-    		"  int x;" +
-    		"  if(y == 0) {" +
-    		"    x = 1;" +
-    		"  } else {" +
-    		"    x = y; " +
-    		"    x = fac(y-1) * x;" +
+    		"int f(int y) {" +
+    		"  if(y <= 1)" +
+    		"    return 1;" +
+    		"  int x = y;" +
+    		"  return f(y-1) * x;" +
+    		"}"));
+    }
+    
+    public void test3() {
+    	testSucc(
+        		Program.fromBodyDecls(
+        		"int f(int y) {" +
+        		"  if(y <= 1)" +
+        		"    return 1;" +
+        		"  int x = y;" +
+        		"  return x * f(y-1);" +
+        		"}"),
+        		Program.fromBodyDecls(
+        		"private int x;" +
+        		"int f(int y) {" +
+        		"  if(y <= 1)" +
+        		"    return 1;" +
+        		"  x = y;" +
+        		"  return x * f(y-1);" +
+        		"}"));
+    }
+    
+    public void test4() {
+    	testSucc(
+    		Program.fromClasses(
+    		"class Super { int x = 42; }",
+    		"class A extends Super {" +
+    		"  int f() { return x; }" +
+    		"  void m() {" +
+    		"    int x = 23;" +
     		"  }" +
-    		"  return x;" +
+    		"}"),
+    		Program.fromClasses(
+    		"class Super { int x = 42; }",
+    		"class A extends Super {" +
+    		"  int f() { return super.x; }" +
+    		"  private int x;" +
+    		"  void m() {" +
+    		"    x = 23;" +
+    		"  }" +
     		"}"));
     }
     
@@ -72,7 +108,7 @@ public class PromoteTempToFieldTests extends TestCase {
     // renaming the promoted field), and our dataflow analysis is very paranoid about method
     // calls, so we only pass a handful of Eclipse's tests
     
-    public void test3() {
+    public void test5() {
     	testSucc(
         	Program.fromClasses(
         	"class A<T> {" +
@@ -89,7 +125,7 @@ public class PromoteTempToFieldTests extends TestCase {
         	"}"));
     }
 
-    public void test4() {
+    public void test6() {
     	testSucc(
     	    Program.fromBodyDecls(
     	    "enum Member { FIRST, SECOND; }" +
@@ -106,7 +142,7 @@ public class PromoteTempToFieldTests extends TestCase {
     	    "}"));
     }
 
-    public void test5() {
+    public void test7() {
     	testSucc(
     	    Program.fromBodyDecls(
     	    "void f() {" +
@@ -121,7 +157,7 @@ public class PromoteTempToFieldTests extends TestCase {
     	    "}"));
     }
 
-    public void test6() {
+    public void test8() {
     	testSucc(
     	    Program.fromBodyDecls(
     	    "void f() {" +
@@ -144,7 +180,7 @@ public class PromoteTempToFieldTests extends TestCase {
     	    "}"));
     }
     
-    public void test7() {
+    public void test9() {
     	testSucc(
        	    Program.fromBodyDecls(
        	    "void m() {" +
@@ -155,19 +191,19 @@ public class PromoteTempToFieldTests extends TestCase {
        		"void m() { }"));    	
     }
     
-    public void test8() {
+    public void test10() {
     	testFail(Program.fromStmts("class Local{}", "Local x;"));
     }
     
-    public void test9() {
+    public void test11() {
     	testFail(Program.fromBodyDecls("Object x;", "void m() { int x; }"));
     }
     
-    public void test10() {
+    public void test12() {
     	testFail(Program.fromBodyDecls("<T> void k(T t) { T x = null; }"));
     }
 
-    public void test11() {
+    public void test13() {
     	testSucc(
        	    Program.fromBodyDecls(
        	    "static int m() {" +

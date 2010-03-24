@@ -1,6 +1,7 @@
 aspect PromoteTempToField {
 	inh boolean VariableDeclaration.inStaticContext();
-	
+
+	// note: not thread-safe
 	public void VariableDeclaration.promoteToField(int vis) {
 		split();
 		Modifiers mods = new Modifiers(vis);
@@ -10,11 +11,8 @@ aspect PromoteTempToField {
 		hostType().insertField(fd, hostBodyDecl());
 		for(VarAccess va : uses()) {
 			va.lock(fd);
-			va.lockDataFlow();
-			va.lockSyncDependencies();
+			va.lockReachingDefs();
 		}
-		/*hostBodyDecl().entry().lockSyncDependencies();
-		hostBodyDecl().exit().lockSyncDependencies();*/
 		programRoot().flushCaches();
 		removeUnused();
 	}

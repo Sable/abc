@@ -4,7 +4,7 @@ This refactoring inlines a constant field into all its uses. Implemented in \sou
 \begin{algorithm}
 \caption{$\refactoring{Inline Constant}(f : \type{Field})$}
 \begin{algorithmic}[1]
-\REQUIRE Java
+\REQUIRE Java $\setminus$ implicit assignment conversion
 \ENSURE Java
 \medskip
 \FORALL{$u\in\{u \mid u \rightarrow_b f\}$}

@@ -8,11 +8,19 @@ aspect DataFlow {
 	protected SmallSet<Access> Access.lockedReachedUses = null;
 	protected SmallSet<Definition> Access.lockedWriteDeps = null;
 	
-	public void Access.lockReachingDefsAndUses() {
+	public void Access.lockReachingDefs() {
 		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
+	}
+	
+	public void Access.lockReachedUses() {
 		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
+	}
+	
+	public void Access.lockReachingDefsAndUses() {
+		lockReachingDefs();
+		lockReachedUses();
 	}
 	
 	public void Access.lockWriteDeps() {

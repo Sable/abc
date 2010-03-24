@@ -1,1 +1,41 @@
 \subsection{\refactoring{Promote Temp to Field}}
+This refactoring turns a local variable into a field. Implemented in \sourcelink{PromoteTempToField/PromoteTempToField.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Promote Temp to Field}(d : \type{LocalVarDecl})$}
+\label{alg:PromoteTemp}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked dependencies
+\medskip
+\STATE $\lfloor\refactoring{Split Declaration}\rfloor(d)$
+\STATE $d' \leftarrow \type{Field}(\locked{\util{type}(d)}, \util{name}(d))$
+\IF{$\util{inStaticContext(d)}$}
+  \STATE $\util{makeStatic}(d')$
+\ENDIF
+\STATE $\lfloor\refactoring{Insert Field}\rfloor(\util{hostType}(d), d')$
+\FORALL{$u\in\util{uses}(d)$}
+  \STATE $\util{lockName}(u, d')$
+  \STATE $\util{lockReachingDefs}(u)$
+\ENDFOR
+\STATE $\lfloor\refactoring{Remove Decl}\rfloor(d)$
+\end{algorithmic}
+\end{algorithm}
+
+Note that this specification of the refactoring (like Eclipse's implementation) is not thread-safe.
+
+\begin{algorithm}
+\caption{$\refactoring{Insert Field}(T : \type{ClassOrInterface}, d : \type{Field})$}
+\label{alg:InsertField}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $\neg\exists d'\in\util{localFields}(T).$
+\STATE \qquad\qquad\qquad$\util{name}(d)=\util{name}(d')$
+\STATE \assert $\neg\util{hasInit}(d)$
+\STATE \assert $\util{inner}(T) \wedge \util{static}(d) \rightarrow \util{constant}(d)$
+\STATE $\util{lockNames}(\util{programRoot}, \util{name}(d))$
+\STATE $\util{insertField}(T, d)$
+\end{algorithmic}
+\end{algorithm}
