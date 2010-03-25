@@ -28,27 +28,4 @@ aspect InlineMethodAccess {
 		target_cp.hostType().flushCaches();
 		return anon;
 	}
-	
-	syn AnonymousMethod MethodDecl.asAnonymousMethod() {
-		return new AnonymousMethod(getParameterList(),
-								   new List<TypeVariable>(),
-								   getTypeAccess(),
-								   getExceptions(),
-								   getBlock(),
-								   new List<Expr>());
-	}
-	
-	syn AnonymousMethod GenericMethodDecl.asAnonymousMethod() {
-		return new AnonymousMethod(getParameterList(),
-								   getTypeParameterList(),
-								   getTypeAccess(),
-								   getExceptions(),
-								   getBlock(),
-								   new List<Expr>());
-	}
-	
-	syn Expr Expr.convertSuperToThis() = this;
-	eq AbstractDot.convertSuperToThis() = new AbstractDot(getLeft().convertSuperToThis(), 
-														  (Access)getRight().convertSuperToThis());
-	eq SuperAccess.convertSuperToThis() = new ThisAccess("this");
 }

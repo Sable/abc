@@ -1,0 +1,17 @@
+aspect Nesting {
+	// make sure there are no types below this node whose name is equal to an enclosing type of td
+	public void ASTNode.checkEnclosingTypeNames(TypeDecl td) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.checkEnclosingTypeNames(td);
+		}
+	}
+	
+	public void TypeDecl.checkEnclosingTypeNames(TypeDecl td) {
+		for(TypeDecl encl=td;encl!=null;encl=encl.enclosingType())
+			if(encl.name().equals(this.name()))
+				throw new RefactoringException("enclosing type has same name");
+		super.checkEnclosingTypeNames(td);
+	}	
+}

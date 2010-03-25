@@ -1,0 +1,24 @@
+aspect UnfoldAssign {
+	// unfold uses of o= and ++,--
+	public void VarAccess.unfoldAbbrevAssign(ArrayList<VarAccess> uses) {
+		bundleQualifier();
+		flushCaches();
+		if(isQualified() && !qualifier().isPure())
+			return;
+		Access unqual = isQualified() ? (Access)getParent() : this;
+		ASTNode p = unqual.getParent();
+		if(p instanceof PreIncExpr || p instanceof PostIncExpr && p.getParent() instanceof ExprStmt) {
+			Access unqual_copy = (Access)unqual.fullCopy();
+			p.replaceWith(new AssignSimpleExpr(unqual, new AddExpr(unqual_copy, new IntegerLiteral("1"))));
+			uses.add((VarAccess)unqual_copy.lastAccess());
+		} else if(p instanceof PreDecExpr || p instanceof PostDecExpr && p.getParent() instanceof ExprStmt) {
+			Access unqual_copy = (Access)unqual.fullCopy();
+			p.replaceWith(new AssignSimpleExpr(unqual, new SubExpr(unqual_copy, new IntegerLiteral("1"))));
+			uses.add((VarAccess)unqual_copy.lastAccess());
+		} else if(p instanceof AssignExpr && !(p instanceof AssignSimpleExpr)) {
+			Access unqual_copy = ((AssignExpr)p).unfold();
+			if(unqual_copy != null)
+				uses.add((VarAccess)unqual_copy.lastAccess());
+		}
+	}	
+}

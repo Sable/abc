@@ -37,31 +37,4 @@ aspect IntroduceFactory {
 		programRoot().eliminate(LOCKED_NAMES);
 		return factory;
 	}
-	
-	public MethodDecl ConstructorDecl.createFactoryMethod() {
-		if(hostType().isEnumDecl())
-			throw new RefactoringException("cannot introduce factory method for enum constructor");
-		String name = "create" + hostType().name();
-		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
-		List<Expr> args = new List<Expr>();
-		for(ParameterDeclaration pd : getParameters()) {
-			parms.add((ParameterDeclaration)pd.lockedCopy());
-			args.add(new VarAccess(pd.name()));
-		}
-		List<Access> exns = new List<Access>();
-		for(Access acc : getExceptions())
-			exns.add(acc.type().createLockedAccess());
-		Block body = new Block(new List<Stmt>().add(new ReturnStmt(new ClassInstanceExpr(hostType().createLockedAccess(), args))));
-		MethodDecl factoryMethod = new MethodDecl(new Modifiers("public", "static"), hostType().createLockedAccess(), name, parms, exns, new Opt<Block>(body));
-		hostType().insertUnusedMethod(factoryMethod, 0);
-		factoryMethod = factoryMethod.closeOverTypeVariables(factoryMethod);
-		return factoryMethod;
-	}
-	public MethodDecl ConstructorDeclSubstituted.createFactoryMethod() {
-		return sourceConstructorDecl().createFactoryMethod();
-	}
-	public MethodDecl ParConstructorDecl.createFactoryMethod() {
-		return sourceConstructorDecl().createFactoryMethod();
-	}
-	
 }

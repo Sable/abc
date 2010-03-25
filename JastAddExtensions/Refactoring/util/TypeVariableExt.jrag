@@ -93,4 +93,35 @@ aspect TypeVariableExt {
 		}
 		super.translateTypeVars(dict);
 	}
+	
+	// translate type variables in a method from sup to sub
+	private void MethodDecl.translateTypeVars(TypeDecl sub, TypeDecl sup) {
+		if(!sub.isGenericType() || !sup.isParameterizedType())
+			return;
+		GenericTypeDecl gsub = (GenericTypeDecl)sub;
+		ParTypeDecl psup = (ParTypeDecl)sup;
+		GenericTypeDecl gsup = (GenericTypeDecl)psup.genericDecl();
+		Map<TypeVariable, TypeVariable> dict = new HashMap<TypeVariable, TypeVariable>();
+		for(TypeVariable tv : (List<TypeVariable>)gsub.getTypeParameterList()) {
+			for(int i=0;i<psup.getNumArgument();++i) {
+				if(psup.getArgument(i).type() == tv)
+					dict.put(tv, gsup.getTypeParameter(i));
+			}
+		}
+		translateTypeVars(dict);
+	}
+	
+	// JastAddJ represents type variable captures as bound accesses to type variables of the generic type
+	// this solution is a bit hackish, so let's solve it in a hackish way ;-)
+	public boolean Expr.isInaccessibleTypeVariable(TypeDecl td) {
+		if(!td.isTypeVariable())
+			return false;
+		return lookupType(td.name()) != td;
+	}
+	
+	public TypeDecl TypeVariable.uniqueUpperBound() {
+		if(getNumTypeBound() != 1)
+			throw new RefactoringException("captured type variable does not have unique bound");
+		return getTypeBound(0).type();
+	}
 }

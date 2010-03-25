@@ -1,0 +1,29 @@
+aspect LabelExt {
+	public boolean BreakStmt.removeUseless() {
+		if(following().equals(succ())) {
+			delete();
+			return true;
+		}
+		return false;
+	}
+	
+	public Stmt LabeledStmt.removeUselessLabel() {
+		if(uses().isEmpty()) {
+			Stmt stmt = getStmt();
+			replaceWith(stmt);
+			return stmt;
+		}
+		return this;
+	}
+	
+	inh LabeledStmt Block.lookupLabel(String name);
+	public String Block.pickFreshLabel(String base) {
+		if(lookupLabel(base) == null && canIntroduceLabel(base))
+			return base;
+		for(int i=0;;++i) {
+			String l = base + i;
+			if(lookupLabel(l) == null && canIntroduceLabel(l))
+				return l;
+		}
+	}	
+}

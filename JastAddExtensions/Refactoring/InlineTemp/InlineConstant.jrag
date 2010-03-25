@@ -5,8 +5,8 @@ aspect InlineConstant {
 		for(VarAccess va : uses())
 			va.inlineConstant();
 		programRoot().flushCaches();
-		if(remove && !isUsed() && hasInit() && getInit().isPure())
-			getParent().removeChild(getChildIndex());
+		if(remove)
+			removeUnused();
 	}
 	
 	public void VarAccess.inlineConstant() {

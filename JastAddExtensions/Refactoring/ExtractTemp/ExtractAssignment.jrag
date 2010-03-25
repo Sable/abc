@@ -27,37 +27,4 @@ aspect ExtractAssignment {
 		return expr.extractAssignment(this);
 	}
 	
-	// an expression is inextractible if it cannot be replaced by a variable access
-	syn boolean Expr.inextractible() = notAnObject() || inInextractiblePosition();
-
-	// expressions that do not by themselves stand for objects
-	syn boolean Expr.notAnObject() = type().isVoid();
-	eq AbstractDot.notAnObject() = super.notAnObject() || !isArrayAccess() && !isClassAccess() && getRight().notAnObject();
-	eq AbstractWildcard.notAnObject() = true;
-	eq ArrayAccess.notAnObject() = true;
-	eq ClassAccess.notAnObject() = true;
-	eq PackageAccess.notAnObject() = true;
-	eq ParTypeAccess.notAnObject() = true;
-	eq SuperAccess.notAnObject() = true;
-	eq TypeAccess.notAnObject() = true;
-	eq CastExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
-	eq ParExpr.notAnObject() = super.notAnObject() || getExpr().notAnObject();
-	
-	// expressions in positions where they cannot be extracted into an assignment
-	inh boolean Expr.inInextractiblePosition();
-	eq Program.getChild().inInextractiblePosition() = false;
-	eq ConstructorDecl.getConstructorInvocation().inInextractiblePosition() = true;
-	eq AssignExpr.getChild().inInextractiblePosition() = false;
-	eq PreIncExpr.getChild().inInextractiblePosition() = false;
-	eq PreDecExpr.getChild().inInextractiblePosition() = false;
-	eq PostfixExpr.getChild().inInextractiblePosition() = false;
-	eq AbstractDot.getRight().inInextractiblePosition() = true;
-	eq MethodAccess.getArg().inInextractiblePosition() = false;
-	eq ConstructorAccess.getArg().inInextractiblePosition() = false;
-	eq ArrayAccess.getExpr().inInextractiblePosition() = false;
-	eq ArrayTypeWithSizeAccess.getExpr().inInextractiblePosition() = false;
-	eq ClassInstanceExpr.getArg().inInextractiblePosition() = false;
-	eq ArrayCreationExpr.getArrayInit().inInextractiblePosition() = true;
-	eq VariableDeclaration.getInit().inInextractiblePosition() = false;
-	
 }

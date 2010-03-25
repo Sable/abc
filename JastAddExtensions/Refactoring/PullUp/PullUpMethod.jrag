@@ -24,22 +24,5 @@ aspect PullUpMethod {
 	
 	public void MethodDecl.doPullUp() {
 		doPullUp(false);
-	}
-	
-	private void MethodDecl.translateTypeVars(TypeDecl sub, TypeDecl sup) {
-		if(!sub.isGenericType() || !sup.isParameterizedType())
-			return;
-		GenericTypeDecl gsub = (GenericTypeDecl)sub;
-		ParTypeDecl psup = (ParTypeDecl)sup;
-		GenericTypeDecl gsup = (GenericTypeDecl)psup.genericDecl();
-		Map<TypeVariable, TypeVariable> dict = new HashMap<TypeVariable, TypeVariable>();
-		for(TypeVariable tv : (List<TypeVariable>)gsub.getTypeParameterList()) {
-			for(int i=0;i<psup.getNumArgument();++i) {
-				if(psup.getArgument(i).type() == tv)
-					dict.put(tv, gsup.getTypeParameter(i));
-			}
-		}
-		translateTypeVars(dict);
-	}
-	
+	}	
 }

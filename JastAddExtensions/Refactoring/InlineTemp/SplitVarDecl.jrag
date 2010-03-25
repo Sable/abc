@@ -25,13 +25,4 @@ aspect SplitVarDecl {
     insertStmtAfter(new ExprStmt(assgn));
     return assgn;
   }
-  
-  syn lazy boolean Expr.isArrayInit() = false;
-  eq ArrayInit.isArrayInit() = true;
-  
-  public Expr Expr.wrapArrayInit() {
-	  if(isArrayInit())
-		  return new ArrayCreationExpr(type().createLockedAccess(), new Opt(this));
-	  return this;
-  }
 }

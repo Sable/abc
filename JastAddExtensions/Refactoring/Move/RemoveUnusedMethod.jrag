@@ -20,33 +20,4 @@ aspect RemoveUnusedMethod {
 			hostType().removeBodyDecl(this);
 		}
 	}
-	
-	// whether this method could be called from outside itself
-	syn lazy boolean MethodDecl.isCallableFromOutside() {
-		if(isDynamicallyCallable()) {
-			for(MethodAccess ma : polyUses())
-				if(!ma.isDescendantTo(getBlock()))
-					return true;
-		} else {
-			for(MethodAccess ma : monoUses())
-				if(!ma.isDescendantTo(getBlock()))
-					return true;
-		}
-		return false;
-	}
-	
-	// whether this method is referenced from outside itself
-	syn lazy boolean MethodDecl.isReferencedFromOutside() {
-		for(MethodAccess ma : uses())
-			if(!ma.isDescendantTo(getBlock()))
-				return true;
-		return false;
-	}
-	
-	protected static boolean ASTNode.allAbstract(Collection<MethodDecl> mds) {
-		for(MethodDecl md : mds)
-			if(!md.isAbstract())
-				return false;
-		return true;
-	}
 }

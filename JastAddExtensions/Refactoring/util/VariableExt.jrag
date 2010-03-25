@@ -4,4 +4,51 @@ aspect VariableExt {
 		mods.removeModifiers("public", "protected", "private", "static");
 		return new VariableDeclaration(mods, type().createLockedAccess(), name(), new Opt(init));
 	}
+	
+	public MethodDecl FieldDeclaration.createGetter() {
+		String getter_name = type().isBoolean() ? "is"+capitalisedName() : "get"+capitalisedName();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		old_mods.removeModifier("final");
+		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
+										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
+		hostType().insertUnusedMethod(getter);
+		return getter;
+	}
+	
+	public MethodDecl FieldDeclaration.createSetter() {
+		String setter_name = "set"+capitalisedName();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		old_mods.removeModifier("final");
+		ParameterDeclaration parm = new ParameterDeclaration(type().createLockedAccess(), name());
+		MethodDecl setter = new MethodDecl(old_mods, type().createLockedAccess(), setter_name, 
+				  					      new List<ParameterDeclaration>().add(parm), new List<Access>(),
+				  					      new Opt<Block>(new Block(new ReturnStmt(new AssignSimpleExpr(this.createLockedAccess(), 
+				  					    		  													   parm.createLockedAccess())))));
+		hostType().insertUnusedMethod(setter);
+		return setter;
+	}
+
+	// pattern matching in JastAdd is not very pleasant...
+	syn lazy boolean MethodDecl.isGetterFor(FieldDeclaration fd) {
+		if(getNumParameter() != 0 || type() != fd.type() || !hasBlock())
+			return false;
+		Block body = getBlock();
+		if(body.getNumStmt() != 1 || !(body.getStmt(0) instanceof ReturnStmt))
+			return false;
+		ReturnStmt ret = (ReturnStmt)body.getStmt(0);
+		return ret.hasResult() && ret.getResult().isFieldAccessInThis(fd);
+	}
+
+	// whether the expression is either a variable access to fd, or this.x where x is a variable access to fd
+	syn boolean Expr.isFieldAccessInThis(FieldDeclaration fd) = false;
+	eq AbstractDot.isFieldAccessInThis(FieldDeclaration fd) = getLeft().isThisAccess() && getRight().isFieldAccessInThis(fd);
+	eq VarAccess.isFieldAccessInThis(FieldDeclaration fd) = decl() == fd;
+	
+	// uses of a field, including all its substituted copies
+	public ArrayList<VarAccess> FieldDeclaration.usesOfAllCopies() {
+		ArrayList<VarAccess> res = new ArrayList<VarAccess>(uses());
+		for(FieldDeclaration fd : substitutedCopies())
+			res.addAll(fd.uses());
+		return res;
+	}
 }

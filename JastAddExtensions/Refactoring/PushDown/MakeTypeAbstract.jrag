@@ -17,13 +17,4 @@ aspect MakeTypeAbstract {
 			throw new RefactoringException("cannot make type abstract: it has instances constructed");
 		getModifiers().addModifier("abstract");
 	}
-	
-	syn lazy boolean TypeDecl.instancesAreConstructed() = false;
-	eq ClassDecl.instancesAreConstructed() {
-		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
-			for(Access acc : cd.uses())
-				if(acc instanceof ClassInstanceExpr &&!((ClassInstanceExpr)acc).hasTypeDecl())
-					return true;
-		return false;
-	}
 }

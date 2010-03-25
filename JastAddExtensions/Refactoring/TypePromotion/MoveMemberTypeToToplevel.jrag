@@ -85,7 +85,6 @@ aspect MoveMemberTypeToToplevel {
 		return encls;
 	}
 
-	// TODO: this does not handle member classes, which also could be accessing fields from enclosing instances
 	public void TypeDecl.adjustMemberMethods(LinkedList<FieldDeclaration> encl_fields, ArrayList<TypeDecl> encl_types) {
 		for(BodyDecl bd : getBodyDecls()) {
 			if(bd instanceof Callable) {
@@ -111,35 +110,5 @@ aspect MoveMemberTypeToToplevel {
 				encl_types.remove(encl_types.size()-1);
 			}
 		}
-	}
-	
-	syn Expr Access.enclosingInstanceQualifier(TypeDecl td) = hostType().enclosingInstanceQualifier(td, true);
-	eq ClassInstanceExpr.enclosingInstanceQualifier(TypeDecl td) {
-		if(isQualified())
-			return qualifier().type().instanceOf(td) ? parentDot().getLeft() : null;
-		return super.enclosingInstanceQualifier(td);
-	}
-	eq SuperConstructorAccess.enclosingInstanceQualifier(TypeDecl td) {
-		if(isQualified())
-			return qualifier().type().instanceOf(td) ? parentDot().getLeft() : null;
-		return super.enclosingInstanceQualifier(td);
-	}
-	public Expr TypeDecl.enclosingInstanceQualifier(TypeDecl td, boolean innermost) {
-		if(this.instanceOf(td)) {
-			if(innermost)
-				return new ThisAccess("this");
-			else
-				return createLockedAccess().qualifiesAccess(new ThisAccess("this"));
-		} else {
-			return enclosingType() == null ? null : enclosingType().enclosingInstanceQualifier(td, false);
-		}
-	}
-	
-	public void ConstructorAccess.insertArg(Expr arg, int i) {
-		getArgList().insertChild(arg, i);
-	}
-	
-	public void ClassInstanceExpr.insertArg(Expr arg, int i) {
-		getArgList().insertChild(arg, i);
 	}
 }

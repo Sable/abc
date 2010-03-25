@@ -12,10 +12,6 @@ aspect InsertUnusedType {
 	public MemberTypeDecl ParTypeDecl.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
 	public MemberTypeDecl ClassDeclSubstituted.insertUnusedType(TypeDecl td, int idx) { return sourceTypeDecl().insertUnusedType(td, idx); }
 	
-	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
-	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
-	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }
-	
 	protected static MemberTypeDecl TypeDecl.insertUnusedType(TypeDecl host, MemberTypeDecl member, int idx) {
 		TypeDecl td = member.typeDecl();
 		if(!host.localTypeDecls(td.name()).isEmpty())
@@ -30,22 +26,6 @@ aspect InsertUnusedType {
 		return member;
 	}
 	
-	// make sure there are no types below this node whose name is equal to an enclosing type of td
-	public void ASTNode.checkEnclosingTypeNames(TypeDecl td) {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.checkEnclosingTypeNames(td);
-		}
-	}
-	
-	public void TypeDecl.checkEnclosingTypeNames(TypeDecl td) {
-		for(TypeDecl encl=td;encl!=null;encl=encl.enclosingType())
-			if(encl.name().equals(this.name()))
-				throw new RefactoringException("enclosing type has same name");
-		super.checkEnclosingTypeNames(td);
-	}
-	
 	// insert a local class before this statement
 	public LocalClassDeclStmt Stmt.insertLocalClass(ClassDecl cd) {
 		LocalClassDeclStmt lcd = new LocalClassDeclStmt(cd);
@@ -55,12 +35,10 @@ aspect InsertUnusedType {
 		return lcd;
 	}
 	
-	// TODO: same for StaticInitializer, InstanceInitializer
-	
 	// insert an unused toplevel type into a given compilation unit
 	public void CompilationUnit.insertUnusedType(TypeDecl td) {
 		TypeDecl res = programRoot().lookupType(getPackageDecl(), td.name());
-		if(res != null && res != td)
+		if(res != null && res != td || programRoot().hasPackage(getPackageDecl()+td.name()))
 			throw new RefactoringException("different toplevel type of same name exists");
 		addTypeDecl(td);
 	}
@@ -68,7 +46,7 @@ aspect InsertUnusedType {
 	// insert an unused toplevel type in its own compilation unit
 	public CompilationUnit Program.insertUnusedType(String path, String pkg, List<ImportDecl> imports, TypeDecl td) {
 		TypeDecl res = lookupType(pkg, td.name());
-		if(res != null && res != td)
+		if(res != null && res != td || hasPackage(pkg + td.name()))
 			throw new RefactoringException("different toplevel type of same name exists");
 		CompilationUnit new_cu = new CompilationUnit(pkg, imports, new List<TypeDecl>().add(td));
 		new_cu.setFromSource(true);

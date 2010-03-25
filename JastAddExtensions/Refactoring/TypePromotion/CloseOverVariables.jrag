@@ -1,0 +1,80 @@
+aspect CloseOverVariables {
+	// closing a local class over local variables and type variables
+	public void LocalClassDeclStmt.closeOverLocalVariables() {
+		Map<LocalVariable, FieldDeclaration> fmap = new HashMap<LocalVariable, FieldDeclaration>();
+		for(VarAccess va : localVarAccesses())
+			getClassDecl().closeOver(va, fmap);		
+	}
+	
+	public void ClassDecl.closeOver(VarAccess va, Map<LocalVariable, FieldDeclaration> fmap) {
+		// only need to close over local variables declared in the enclosing body declaration;
+		// variables further out or further in will still be visible to the new member class
+		ASTNode decl = (ASTNode)va.decl();
+		if(decl.isDescendantTo(this) || !decl.isDescendantTo(enclosingBodyDecl()))
+			return;
+		FieldDeclaration fd = fmap.get(va.decl());
+		if(fd == null) {
+			fd = new FreshField(new Modifiers("private", "final"), va.type().createLockedAccess(), va.name(), new Opt<Expr>());
+			addBodyDecl(fd);
+			fmap.put((LocalVariable)va.decl(), fd);
+			for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
+				ParameterDeclaration pd = new FreshParameter(va.type().createLockedAccess(), va.name()); 
+				cd.insertParameter(pd, 0);
+				ConstructorAccess cacc = cd.getConstructorAccess();
+				if(cacc instanceof SuperConstructorAccess) {
+					cd.getBlock().insertStmt(0, AssignExpr.asStmt(fd.createLockedAccess(), pd.createLockedAccess()));
+				} else {
+					cacc.insertArg(pd.createLockedAccess(), 0);
+				}
+			}
+			for(Access acc : instantiations()) {
+				if(acc instanceof SuperConstructorAccess) {
+					((SuperConstructorAccess)acc).insertArg(va.decl().createLockedAccess(), 0);
+				} else if(acc instanceof ClassInstanceExpr) {
+					((ClassInstanceExpr)acc).insertArg(va.decl().createLockedAccess(), 0);
+				}
+			}
+		}
+		va.lock(fd);
+	}
+	
+	public ClassDecl LocalClassDeclStmt.closeOverTypeVariables() {
+		Map<TypeVariable, TypeVariable> tvmap = new HashMap<TypeVariable, TypeVariable>();
+		ArrayList<TypeVariable> tvs = new ArrayList<TypeVariable>();
+		ClassDecl cd = getClassDecl();
+		Collection<Access> cd_uses = cd.uses();
+		for(TypeAccess ta : typeVarAccesses()) {
+			TypeVariable tv = (TypeVariable)ta.decl();
+			if(tv.owner() == enclosingBodyDecl()) {
+				TypeVariable tv2 = tvmap.get(tv);
+				if(tv2 == null) {
+					if(!cd.isGenericType())
+						setClassDecl(cd = new GenericClassDecl(cd.getModifiers(), cd.getID(), cd.getSuperClassAccessOpt(), cd.getImplementsList(), cd.getBodyDeclList(), new List<TypeVariable>()));
+					GenericClassDecl gcd = (GenericClassDecl)cd;
+					gcd.addTypeParameter(tv2 = (TypeVariable)tv.fullCopy());
+					tvmap.put(tv, tv2);
+					tvs.add(tv);
+				}
+				ta.lock(tv2);
+			}
+		}
+		if(tvs.size() > 0) {
+			for(Access tacc : cd_uses) {
+				if(tacc instanceof ParTypeAccess) {
+					ParTypeAccess ptacc = (ParTypeAccess)tacc;
+					for(TypeVariable tv : tvs)
+						ptacc.addTypeArgument(tv.createLockedAccess());
+				} else {
+					List<Access> parms = new List<Access>();
+					for(TypeVariable tv : tvs)
+						parms.add(tv.createLockedAccess());
+					int idx = tacc.getChildIndex();
+					ASTNode parent = tacc.getParent();
+					parent.setChild(new ParTypeAccess(tacc, parms), idx);
+				}
+			}
+			enclosingBodyDecl().flushCaches();
+		}
+		return cd;
+	}	
+}

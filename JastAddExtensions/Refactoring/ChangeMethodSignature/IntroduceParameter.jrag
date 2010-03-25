@@ -24,18 +24,4 @@ aspect IntroduceParameter {
 		introduceParameter(name);
 		root.eliminate(LOCKED_NAMES);
 	}
-	
-	// an expression is flow invariant if it can be moved arbitrarily within the program (assuming that name bindings are preserved)
-	syn boolean Expr.isFlowInvariant() = isConstant();
-	eq ArrayCreationExpr.isFlowInvariant() = getTypeAccess().isFlowInvariant() && (!hasArrayInit() || getArrayInit().isFlowInvariant());
-	eq ArrayInit.isFlowInvariant() {
-		for(Expr e : getInits())
-			if(!e.isFlowInvariant())
-				return false;
-		return true;
-	}
-	eq TypeAccess.isFlowInvariant() = true;
-	eq ArrayTypeWithSizeAccess.isFlowInvariant() = getExpr().isConstant();
-	eq ClassInstanceExpr.isFlowInvariant() = decl().signature().equals("<init>(java.lang.String p0)") || super.isFlowInvariant();
-	eq MethodAccess.isFlowInvariant() = decl().isConstantMethod() || super.isFlowInvariant();
 }

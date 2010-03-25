@@ -57,4 +57,12 @@ aspect Call {
 	public boolean ConstructorDecl.isStatic() { return false; }
 	public boolean ConstructorDecl.hasBlock() { return true; }
 	
+	
+	public void ConstructorAccess.insertArg(Expr arg, int i) {
+		getArgList().insertChild(arg, i);
+	}
+	
+	public void ClassInstanceExpr.insertArg(Expr arg, int i) {
+		getArgList().insertChild(arg, i);
+	}
 }

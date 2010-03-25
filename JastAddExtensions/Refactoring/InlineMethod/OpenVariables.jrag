@@ -33,39 +33,4 @@ aspect OpenVariables {
 			}
 		}
 	}
-
-	// replace all declarations in this subtree by their fresh counterparts
-	public void ASTNode.freshenAllDeclarations() {
-		freshenDeclaration();
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.freshenAllDeclarations();
-		}
-	}
-	public void TypeDecl.lockAllLocalDeclarations() { }
-
-	public void ASTNode.freshenDeclaration() { }
-	public void ParameterDeclaration.freshenDeclaration() {
-		Collection<VarAccess> uses = allUses();
-		FreshParameter fp = new FreshParameter(getModifiers(), getTypeAccess(), getID());
-		for(VarAccess va : uses)
-			va.lock(fp);
-		replaceWith(fp);
-	}
-	public void VariableDeclaration.freshenDeclaration() {
-		Collection<VarAccess> uses = allUses();
-		FreshLocalVariable fv = new FreshLocalVariable(getModifiers(), getTypeAccess(), getID(), getInitOpt());
-		for(VarAccess va : uses)
-			va.lock(fv);
-		replaceWith(fv);
-	}
-
-	public FreshLocalVariable ParameterDeclaration.asFreshVariableDeclaration() {
-		Collection<VarAccess> uses = allUses();
-		FreshLocalVariable fv = new FreshLocalVariable(getModifiers(), getTypeAccess(), getID(), new Opt());
-		for(VarAccess va : uses)
-			va.lock(fv);
-		return fv;
-	}
 }

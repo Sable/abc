@@ -1,0 +1,33 @@
+aspect MakeConversionExplicit {	
+	public Expr Expr.makeConversionExplicit(TypeDecl destType) {
+		if(shouldMakeConversionExplicit(destType))
+			return createConversion(destType, this);
+		return this;
+	}
+		
+	syn lazy boolean Expr.shouldMakeConversionExplicit(TypeDecl destType) = !type().equals(destType);
+	eq AbstractDot.shouldMakeConversionExplicit(TypeDecl destType) = getRight().shouldMakeConversionExplicit(destType);
+	eq MethodAccess.shouldMakeConversionExplicit(TypeDecl destType) {
+		// we need to handle the case where the result type of a method is inferred from a surrounding assignment conversion
+		if(!(this instanceof ParMethodAccess) && decl() instanceof ParMethodDecl) {
+			ParMethodDecl pmd = (ParMethodDecl)decl();
+			// TODO: this will insert spurious conversions in cases where the result type can be inferred from the arguments
+			return pmd.genericMethodDecl().type().isTypeVariable();
+		}
+		return super.shouldMakeConversionExplicit(destType);
+	}
+	
+	public static Expr ASTNode.createConversion(TypeDecl dest, Expr src) {
+		// check whether src can be boxe into dest (we assume there is an assignment conversion)
+		if(src.type() instanceof PrimitiveType && !dest.unboxed().isUnknown()) {
+			if(!src.type().equals(dest.unboxed()))
+				src = createConversion(dest.unboxed(), src);
+			return new ClassInstanceExpr(dest.createLockedAccess(), new List<Expr>().add(src));
+		} else {
+			CastExpr ce = new CastExpr(dest.createLockedAccess(), src);
+			if(src.precedence() > src.maxPrecedence())
+				ce.setExpr(new ParExpr(src));
+			return ce;
+		}
+	}	
+}

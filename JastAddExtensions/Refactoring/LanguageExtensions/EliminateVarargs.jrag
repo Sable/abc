@@ -1,0 +1,23 @@
+aspect EliminateVarargs {	
+	public void MethodDecl.eliminateVarArgs() {
+		if(!isVariableArity())
+			return;
+		VariableArityParameterDeclaration last = (VariableArityParameterDeclaration)lastParameter();
+		ParameterDeclaration new_last = last.asFixedArityParameter();
+		for(VarAccess va : last.uses())
+			if(va.isLocked())
+				va.lock(new_last);
+		for(MethodAccess ma : uses()) {
+			if(!ma.invokesVariableArityAsArray()) {
+				List<Expr> varargs = new List<Expr>();
+				for(int i=ma.getNumArg()-1; i>=getNumParameter()-1;--i) {
+					Expr arg = ma.getArg(i);
+					ma.getArgList().removeChild(i);
+					varargs.insertChild(arg, 0);
+				}
+				ma.getArgList().insertChild(new ArrayCreationExpr(last.type().createLockedAccess(), new Opt(new ArrayInit(varargs))), getNumParameter()-1);
+			}
+		}
+		setParameter(new_last, getNumParameter()-1);
+	}	
+}

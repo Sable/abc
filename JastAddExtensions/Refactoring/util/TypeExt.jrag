@@ -1,0 +1,79 @@
+aspect TypeExt {
+	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
+	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
+	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }
+	
+	public ClassDecl AnonymousDecl.asNamedClass(String name) {
+		ClassDecl cd = new ClassDecl(getModifiers(), name, new Opt<Access>(), new List<Access>(), getBodyDecls());
+		if(superType().isClassDecl() && !superType().isObject())
+			cd.setSuperClassAccess(superType().createLockedAccess());
+		for(Access iface : getImplementss())
+			cd.addImplements(iface.type().createLockedAccess());
+		Collection<ConstructorDecl> ctors = new LinkedList<ConstructorDecl>();
+		for(BodyDecl bd : getBodyDecls()) {
+			if(bd instanceof ConstructorDecl) {
+				ctors.add((ConstructorDecl)bd);
+				((ConstructorDecl)bd).setID(name);
+			}
+		}
+		// need to make initialisers explicit in constructor to ensure def-before-use
+		for(int i=cd.getNumBodyDecl()-1;i>=0;--i) {
+			BodyDecl bd = cd.getBodyDecl(i);
+			// TODO: handle instance initializers
+			if(bd instanceof FieldDeclaration) {
+				FieldDeclaration fd = (FieldDeclaration)bd;
+				if(!fd.hasInit())
+					continue;
+				for(ConstructorDecl ctor : ctors) {
+					if(ctor.isChained())
+						continue;
+					Expr init = fd.getInit();
+					Expr init_copy = (Expr)init.fullCopy();
+					init.lockAllNames();
+					fd.setInit(init_copy);
+					ctor.getBlock().insertStmt(0, AssignExpr.asStmt(fd.createLockedAccess(), init));
+				}
+				fd.setInitOpt(new Opt());
+			}
+		}
+		return cd;
+	}
+	
+	// the effective type of an expression is a best-effort approximation to the type of an expression
+	syn TypeDecl Expr.effectiveType() {
+		TypeDecl type = type();
+		if(type.isAnonymous())
+			return ((AnonymousDecl)type).superType();
+		else if(isInaccessibleTypeVariable(type))
+			return ((TypeVariable)type).uniqueUpperBound();
+		return type;
+	}
+
+	// whether or not instances of this type are ever constructed
+	syn lazy boolean TypeDecl.instancesAreConstructed() = false;
+	eq ClassDecl.instancesAreConstructed() {
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
+			for(Access acc : cd.uses())
+				if(acc instanceof ClassInstanceExpr &&!((ClassInstanceExpr)acc).hasTypeDecl())
+					return true;
+		return false;
+	}
+	
+	// for an inherited method, get the method that is actually inherited (may be substituted copy)
+	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator iter=memberMethods(md.name()).iterator(); iter.hasNext();) {
+			MethodDecl md2 = (MethodDecl)iter.next();
+			if(md.sourceMethodDecl() == md2.sourceMethodDecl())
+				res = res.add(md2);
+		}
+		return res;
+	}
+	
+	public MethodDecl TypeDecl.memberMethod(MethodDecl md) {
+		SimpleSet res = memberMethods(md);
+		if(res.size() > 1)
+			throw new Error("inherited multiple methods with the same source declaration");
+		return res.isEmpty() ? null : (MethodDecl)res.iterator().next();
+	}
+}

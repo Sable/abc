@@ -1,0 +1,21 @@
+aspect InsertField {
+	public void TypeDecl.insertField(FieldDeclaration fd) {
+		insertField(fd, null);
+	}
+	
+	public void TypeDecl.insertField(FieldDeclaration fd, BodyDecl before) {
+		if(!isClassDecl() && !isInterfaceDecl())
+			throw new RefactoringException("cannot insert field into this type");
+		SimpleSet res = localFields(fd.name());
+		if(!res.isEmpty() && !res.isSingleton(fd))
+			throw new RefactoringException("field of the same name exists");
+		fd.checkEnclosingTypeNames(this);
+		programRoot().lockNames(fd.name());
+		if(before == null)
+			addBodyDecl(fd);
+		else
+			getBodyDeclList().insertChild(fd, getBodyDeclList().getIndexOfChild(before));
+		if(fd.isStatic() && !fd.isConstant() && isInnerClass())
+			throw new RefactoringException("cannot insert static field into this type");
+	}	
+}

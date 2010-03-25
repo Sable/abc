@@ -89,58 +89,5 @@ aspect PushDownMethod {
 		programRoot().flushCaches();
 		return null;
 	}
-	
-	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
-		Access rettype = type().createLockedAccess();
-		String name = name();
-		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
-		for(ParameterDeclaration pd : getParameters())
-			parms.add(pd.lockedCopy());
-		List<Access> exns = new List<Access>();
-		for(Access exn : getExceptions())
-			exns.add(exn.type().createLockedAccess());
-		return new MethodDecl(mods, rettype, name, parms, exns, new Opt<Block>());
-	}
-	
-	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
-		Access rettype = type().createLockedAccess();
-		String name = name();
-		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
-		for(ParameterDeclaration pd : getParameters())
-			parms.add(pd.lockedCopy());
-		List<Access> exns = new List<Access>();
-		for(Access exn : getExceptions())
-			exns.add(exn.type().createLockedAccess());
-		Map<TypeVariable, TypeVariable> tvdict = new HashMap<TypeVariable, TypeVariable>();
-		getTypeParameters().lockAllNames();
-		List<TypeVariable> typeparms = getTypeParameters();
-		setTypeParameterList((List<TypeVariable>)typeparms.fullCopy());
-		for(int i=0;i<getNumTypeParameter();++i)
-			tvdict.put(typeparms.getChild(i), getTypeParameter(i));
-		translateTypeVars(tvdict);
-		return new GenericMethodDecl(mods, rettype, name, parms, exns, new Opt<Block>(), typeparms);
-	}
-	
-	public MethodDecl AnnotationMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	
-	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
-		SimpleSet res = SimpleSet.emptySet;
-		for(Iterator iter=memberMethods(md.name()).iterator(); iter.hasNext();) {
-			MethodDecl md2 = (MethodDecl)iter.next();
-			if(md.sourceMethodDecl() == md2.sourceMethodDecl())
-				res = res.add(md2);
-		}
-		return res;
-	}
-	
-	public MethodDecl TypeDecl.memberMethod(MethodDecl md) {
-		SimpleSet res = memberMethods(md);
-		if(res.size() > 1)
-			throw new Error("inherited multiple methods with the same source declaration");
-		return res.isEmpty() ? null : (MethodDecl)res.iterator().next();
-	}
+
 }

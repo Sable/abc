@@ -9,4 +9,8 @@ aspect MakeFinal {
 		this.getModifiers().addModifier(new Modifier("final"));
 		return this;
 	}
+
+	public VariableDeclaration VariableDeclaration.makeFinal(boolean makeFinal) {
+		return makeFinal ? makeFinal() : this;
+	}
 }

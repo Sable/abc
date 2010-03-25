@@ -3,6 +3,8 @@ aspect AST {
 		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
 	
+	syn String FieldDeclaration.capitalisedName() = Character.toUpperCase(name().charAt(0))+name().substring(1); 
+	
 	public static Object ASTNode.epsilon(SimpleSet set, Object alt) {
 		if(set.size() == 1)
 			return set.iterator().next();

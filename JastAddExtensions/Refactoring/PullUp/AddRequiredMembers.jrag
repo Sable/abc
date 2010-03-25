@@ -1,0 +1,35 @@
+aspect AddRequiredMembers {	
+	public void TypeDecl.addRequiredMembers(java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {
+		LinkedList<MemberDecl> worklist = new LinkedList<MemberDecl>();
+		worklist.addAll(meths);
+		worklist.addAll(fds);
+		worklist.addAll(mtds);
+		while(!worklist.isEmpty())
+			worklist.pop().addRequiredMembers(this, meths, fds, mtds);
+	}
+	
+	public void ASTNode.addRequiredMembers(TypeDecl host, java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			child.addRequiredMembers(host, meths, fds, mtds);
+		}
+	}
+	
+	public void VarAccess.addRequiredMembers(TypeDecl host, java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {
+		if(decl().isInstanceVariable() && ((FieldDeclaration)decl()).hostType() == host)
+			fds.add((FieldDeclaration)decl());
+		super.addRequiredMembers(host, meths, fds, mtds);
+	}
+	
+	public void MethodAccess.addRequiredMembers(TypeDecl host, java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {
+		if(/*!decl().isStatic() &&*/ decl().hostType() == host)
+			meths.add(decl());
+		super.addRequiredMembers(host, meths, fds, mtds);
+	}
+	
+	public void TypeAccess.addRequiredMembers(TypeDecl host, java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {
+		if(!decl().isStatic() && decl().enclosingType() == host)
+			mtds.add((MemberTypeDecl)decl().getParent());
+		super.addRequiredMembers(host, meths, fds, mtds);
+	}	
+}

@@ -175,4 +175,72 @@ aspect MethodExt {
 		for(TypeDecl child : childTypes())
 			((ClassDecl)child).collectRelatives(sig, res);
 	}
+
+	// copy of method with locked names, but empty body
+	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Access rettype = type().createLockedAccess();
+		String name = name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		for(ParameterDeclaration pd : getParameters())
+			parms.add(pd.lockedCopy());
+		List<Access> exns = new List<Access>();
+		for(Access exn : getExceptions())
+			exns.add(exn.type().createLockedAccess());
+		return new MethodDecl(mods, rettype, name, parms, exns, new Opt<Block>());
+	}
+	
+	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Access rettype = type().createLockedAccess();
+		String name = name();
+		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
+		for(ParameterDeclaration pd : getParameters())
+			parms.add(pd.lockedCopy());
+		List<Access> exns = new List<Access>();
+		for(Access exn : getExceptions())
+			exns.add(exn.type().createLockedAccess());
+		Map<TypeVariable, TypeVariable> tvdict = new HashMap<TypeVariable, TypeVariable>();
+		getTypeParameters().lockAllNames();
+		List<TypeVariable> typeparms = getTypeParameters();
+		setTypeParameterList((List<TypeVariable>)typeparms.fullCopy());
+		for(int i=0;i<getNumTypeParameter();++i)
+			tvdict.put(typeparms.getChild(i), getTypeParameter(i));
+		translateTypeVars(tvdict);
+		return new GenericMethodDecl(mods, rettype, name, parms, exns, new Opt<Block>(), typeparms);
+	}
+	
+	public MethodDecl AnnotationMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
+	
+	
+	// whether this method could be called from outside itself
+	syn lazy boolean MethodDecl.isCallableFromOutside() {
+		if(isDynamicallyCallable()) {
+			for(MethodAccess ma : polyUses())
+				if(!ma.isDescendantTo(getBlock()))
+					return true;
+		} else {
+			for(MethodAccess ma : monoUses())
+				if(!ma.isDescendantTo(getBlock()))
+					return true;
+		}
+		return false;
+	}
+	
+	// whether this method is referenced from outside itself
+	syn lazy boolean MethodDecl.isReferencedFromOutside() {
+		for(MethodAccess ma : uses())
+			if(!ma.isDescendantTo(getBlock()))
+				return true;
+		return false;
+	}
+	
+	protected static boolean ASTNode.allAbstract(Collection<MethodDecl> mds) {
+		for(MethodDecl md : mds)
+			if(!md.isAbstract())
+				return false;
+		return true;
+	}
 }
