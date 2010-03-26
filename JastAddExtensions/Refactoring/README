@@ -48,8 +48,8 @@ the implementations of various language extensions and restrictions.
 
 The folder tests/ contains several test suites and their data, on
 which see below. Folder util/ contains utility code. Folder doc/
-contains specifications of the refactorings (this is work in
-progress).
+contains specifications of the refactorings, collected in file
+specifications.tex (this is work in progress).
 
 All other folders contain implementations of individual refactorings.
 
@@ -71,8 +71,18 @@ projects within Eclipse.
 
 The complete set of tests can then be run through the test suite
 tests.AllTests. Note that we have disabled all tests on which our
-results are not the same as Eclipse's (with detailed comments in the
-individual test suites explaining why the results are different), so
-you should not see any failing test cases. If you only want to run the
-Eclipse test cases (without our own internal tests), use
-tests.eclipse.EclipseTests instead.
+results are not the same as Eclipse's, with detailed comments in the
+individual test suites explaining why the results are different.
+However, you will see four failing test cases that test features of
+the synchronisation dependency implementation, which cannot be
+distributed at the moment.
+
+If you only want to run the Eclipse test cases (without our own
+internal tests), use tests.eclipse.EclipseTests instead.
+
+If you have junit.jar on your classpath, you can also run the test
+cases from the command line by issuing a command like
+
+  java -classpath .:/path/to/junit.jar junit.awtui.TestRunner tests.AllTests
+
+from the Refactoring/ directory.
