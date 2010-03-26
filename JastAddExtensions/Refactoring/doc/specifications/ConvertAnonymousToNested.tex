@@ -12,4 +12,4 @@ This refactoring converts an anonymous class to a member class. Implemented in \
 \end{algorithmic}
 \end{algorithm}
 
-We can implement this refactoring simply as the composition of \refactoring{Convert Anonymous to Local} and \refactoring{Convert Local to Member Class}. Note that this specification does not handle the special case where $A$ occurs in a field initialiser.
+Note: the implementation additionally handles the case where $A$ occurs in a field initialiser.

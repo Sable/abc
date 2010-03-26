@@ -2,27 +2,23 @@
 This refactoring turns a local variable into a field. Implemented in \sourcelink{PromoteTempToField/PromoteTempToField.jrag}.
 
 \begin{algorithm}
-\caption{$\refactoring{Promote Temp to Field}(d : \type{LocalVarDecl})$}
+\caption{$\refactoring{Promote Temp to Field}(d : \type{LocalVar})$}
 \label{alg:PromoteTemp}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies
 \medskip
 \STATE $\lfloor\refactoring{Split Declaration}\rfloor(d)$
-\STATE $d' \leftarrow \type{Field}(\locked{\util{type}(d)}, \util{name}(d))$
-\IF{$\util{inStaticContext(d)}$}
-  \STATE $\util{makeStatic}(d')$
-\ENDIF
+\STATE $d' \leftarrow \text{new \code{private} field of same type and name as $d$}$
+\STATE make $d'$ \code{static} if $d$ is in static context
 \STATE $\lfloor\refactoring{Insert Field}\rfloor(\util{hostType}(d), d')$
-\FORALL{$u\in\util{uses}(d)$}
-  \STATE $\util{lockName}(u, d')$
-  \STATE $\util{lockReachingDefs}(u)$
+\FORALL{uses $u$ of $d$}
+  \STATE lock $u$ onto $d'$
+  \STATE lock reaching definitions of $u$
 \ENDFOR
-\STATE $\lfloor\refactoring{Remove Decl}\rfloor(d)$
+\STATE $\refactoring{Remove Decl}(d)$
 \end{algorithmic}
 \end{algorithm}
-
-Note that this specification of the refactoring (like Eclipse's implementation) is not thread-safe.
 
 \begin{algorithm}
 \caption{$\refactoring{Insert Field}(T : \type{ClassOrInterface}, d : \type{Field})$}
@@ -31,11 +27,10 @@ Note that this specification of the refactoring (like Eclipse's implementation) 
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
 \medskip
-\STATE \assert $\neg\exists d'\in\util{localFields}(T).$
-\STATE \qquad\qquad\qquad$\util{name}(d)=\util{name}(d')$
-\STATE \assert $\neg\util{hasInit}(d)$
-\STATE \assert $\util{inner}(T) \wedge \util{static}(d) \rightarrow \util{constant}(d)$
-\STATE $\util{lockNames}(\util{programRoot}, \util{name}(d))$
-\STATE $\util{insertField}(T, d)$
+\STATE \assert $T$ has no local field with same name as $d$
+\STATE \assert $d$ has no initialiser
+\STATE \assert if $T$ is inner and $d$ is static, then $d$ is a constant
+\STATE $\util{lockNames}(\util{name}(d))$
+\STATE insert field $d$ into $T$
 \end{algorithmic}
 \end{algorithm}

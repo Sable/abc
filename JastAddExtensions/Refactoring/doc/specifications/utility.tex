@@ -1,62 +1,18 @@
+\begin{figure}
 \begin{center}
-\bottomcaption{Utility Functions}\label{fig:utility}
-\begin{supertabular}{|l|p{10cm}|}
+\begin{tabular}{|l|p{5.3cm}|}
 \hline
 \textbf{Name} & \textbf{Description} \\ \hline\hline
-$\util{addParameter}(c, p)$ & gives callable $c$ a new parameter $p$ \\
-$\util{addToplevelType}(p, T)$ & introduces a new toplevel type $T$ into package $p$; fails if a type of the same name exists\\
-$\util{asNamedClass}(A, n)$ & constructs a class declaration with name $n$ that has the same body as anonymous class $A$ \\
-$\util{callables}(T)$ & returns the set of all callables defined in type $T$ \\
-$\util{chainingInvocations}(c)$ & returns all invocations of constructor $c$ from within constructors of the same class\\
-$\util{constructors}(T)$ & returns the set of constructors of type $T$ \\
-$\util{copy}(t)$ & returns a copy of the subtree $t$ \\
-$\util{copyWithLockedNames}(t)$ & returns a copy of the subtree $t$, where all names have been locked to their declarations \\
-$\util{definesMethod}(T, s)$ & checks whether type $T$ defines a method with signature $s$ \\
-$\util{discardQualifier}(e)$ & delete any qualifier that expression $e$ might have \\
-$\util{enclosingBodyDecl}(s)$ & returns the innermost syntactically enclosing body declaration around statement $s$ \\
-$\util{enclosingInstances}(e)$ & returns the list of enclosing instances of an expression \\
-$\util{enclosingTypes}(T)$ & returns the list of enclosing types of type $T$ \\
-$\util{getBody}(c)$ & returns the body of callable $c$, fails if $c$ is a method without body \\
-$\util{getClassInstanceExpr}(A)$ & returns the class instance expression for anonymous class $A$ \\
-$\util{getInit}(d)$ & returns the initialiser of variable declaration $d$; fails if there is none \\
-$\util{getParms}(c)$ & returns the list of parameters of callable $c$ \\
-$\util{hasBody}(c)$ & checks whether callable $c$ has a body \\
-$\util{hasInit}(d)$ & checks whether variable declaration $d$ has an initialiser \\
-$\util{hostType}(b)$ & returns the host type of body declaration $b$ \\
-$\util{insertField}(T, f)$ & inserts field $f$ into type $T$ \\
-$\util{insertLocalClass}(s, c)$ & wraps $c$ into a \type{LocalClass} and inserts it right before statement $s$; fails if $s$ is not directly enclosed by a block, or if an enclosing type of $s$ has the same name as $c$ or a type declared syntactically within $c$ \\
-$\util{insertMethod}(T, m)$ & inserts method $m$ into type $T$ \\
-$\util{insertStmt}(c, s)$ & inserts statement $s$ as the first statement into the body of callable $c$ \\
-$\util{insertStmtAfter}(s, s')$ & inserts statement $s'$ after statement $s$; fails if $s$ is not directly enclosed by a block \\
-$\util{instantiations}(C)$ & returns the set of all class instance expressions constructing instances of class $C$ \\
-$\util{invocations}(c)$ & returns the set of all invocations of constructor $c$, including instantiations\\
-$\util{isAbstract}(q)$ & checks whether type or method $q$ is abstract \\
-$\util{isChaining}(c)$ & checks whether constructor $c$ recursively invokes a constructor of the same class \\
-$\util{isClass}(T)$ & checks whether type $T$ is a class \\
-$\util{isInterface}(T)$ & checks whether type $T$ is an interface \\
-$\util{lhs}(a)$ & returns the left hand side of assignment $a$ \\
-$\util{lock}(t)$ & locks all naming, flow, and synchronization dependencies in subtree $t$ \\
-$\util{lockNames}(t)$ & locks all naming dependencies in subtree $t$ \\
-$\util{lockTypeNames}(t, n)$ & locks type names referring to a type named $n$ in subtree $t$ \\
-$\util{makeAbstract}(q)$ & puts an \code{abstract} qualifier on type or method $q$ (if it does not have one already) \\
-$\util{memberMethods}(T)$ & returns the set of member methods of $T$, including methods inherited from an ancestor type that are not overridden in $T$ \\
-$\util{monoCalls}(m)$ & returns the set of all calls that statically resolve to method $m$ \\
+$\util{below}(n)$ & returns the set of all nodes below $n$ in the syntax tree \\
+$\util{calls}(m)$ & returns all calls that may dynamically resolve to method $m$; can be a conservative over-approximation \\
+$\util{hostPkg}(e)$ & returns the package of the compilation unit containing $e$ \\
+$\util{hostType}(e)$ & returns the closest enclosing type declaration around $e$ \\
+$\util{lockNames}(n)$ & locks all names anywhere in the program that refer to a declaration with name $n$ \\
 $\util{name}(e)$ & returns the name of program entity $e$ \\
-$\util{nonChainingInvocations}(c)$ & $\util{invocations}(c)\setminus\util{chainingInvocations}(c)$ \\
-$\util{polyCalls}(m)$ & returns an over-approximation of the set of all calls that may dynamically resolve to method $m$ \\
-$\util{programRoot}()$ & returns the root node of the AST \\
-$\util{removeInit}(d)$ & removes the initialiser of variable declaration $d$, if any \\
-$\util{removeBodyDecl}(b)$ & removes the body declaration $b$ from its host type \\
-$\util{removeStmt}(s)$ & removes the statement $s$ from its enclosing block; fails if $s$ is not in a block \\
-$\util{removeTypeDecl}(c)$ & removes the type declaration attached to class instance expression $c$, if any \\
-$\util{replaceExpr}(e, e')$ & replaces expression $e$ with $e'$, wrapping $e'$ into parentheses if needed \\
-$\util{rhs}(a)$ & returns the right hand side of assignment $a$ \\
-$\util{setBody}(c, b)$ & makes block $b$ the body of callable $c$ \\
-$\util{setTypeAccess}(c, a)$ & replaces the type access for class instance expression $c$ with $a$ \\
-$\util{signature}(m)$ & returns the signature of method $m$ \\
-$\util{subtree}(t)$ & returns the set of all nodes in the subtree $t$ \\
-$\util{thisCall}(c)$ & returns the recursive constructor invocation of constructor $c$; fails if it does not have one \\
-$\util{unCapitalise}(n)$ & returns the name $n$ with its first letter converted to lowercase \\
+$\util{uses}(m)$ & returns all calls that statically bind to method $m$ \\
 \hline
-\end{supertabular}
+\end{tabular}
 \end{center}
+\caption{Utility Functions}
+\label{fig:utility}
+\end{figure}

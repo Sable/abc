@@ -1,46 +1,74 @@
 \subsection{\refactoring{Move Inner To Toplevel}}
+This refactoring converts a member type to a toplevel type. Implemented in \sourcelink{TypePromotion/MoveMemberTypeToToplevel.jrag}.
 
 \begin{algorithm}
-\caption{$\refactoring{Move Inner to Toplevel}(M : \type{MemberType})$}
+\caption{$\refactoring{Move Member Type to Toplevel}(M : \type{MemberType})$}
 \label{alg:MoveMemberTypeToToplevel}
 \begin{algorithmic}[1]
-\REQUIRE Java $\setminus$ implicit constructor invocations
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\IF{$M$ is not static}
+  \STATE $\lfloor\refactoring{Make Type Static}\rfloor(M)$
+\ENDIF
+\STATE $p \leftarrow \util{hostPkg}(M)$
+\STATE lock all names in $M$
+\STATE remove $M$ from its host type
+\STATE $\refactoring{Insert Type}(p, M)$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Insert Type}(p : \type{Package}, T : \type{ClassOrInterface})$}
+\label{alg:InsertType}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert no type or subpackage of same name as $T$ in $p$
+\STATE $\util{lockNames}(\util{name}(T))$
+\STATE remove modifiers \code{static}, \code{private}, \code{protected} from $T$
+\STATE insert $T$ into $p$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Make Type Static}(M : \type{MemberType})$}
+\label{alg:MakeTypeStatic}
+\begin{algorithmic}[1]
+\REQUIRE Java
 \ENSURE Java $\cup$ \code{with}, locked names
 \medskip
-\STATE $\util{lockTypeNames}(\util{programRoot}(), \util{name}(M))$
-\STATE $\util{lockNames}(M)$
-\IF{$\neg\util{isStatic}(M)$}
-  \STATE $[A_n;\ldots;A_1] = \util{enclosingTypes}(M)$
-  \STATE $[f_n;\ldots;f_1] = [\type{Field}(\locked{A_n}); \ldots; \type{Field}(\locked{A_1})]$
-  \FORALL{$i\in\{1,\ldots,n\}$}
-    \STATE $\util{addField}(M, f_i)$
-    \FORALL{$c\in\util{constructors}(M)$}
-      \STATE $p := \type{Parameter}(\locked{A_i})$
-      \STATE $\util{addParameter}(c, p)$
-      \IF{$\util{isChaining}(c)$}
-        \STATE $\util{addArgument}(\util{thisCall}(c), \locked{p})$
-      \ELSE
-        \STATE $\util{addStmt}(c, \type{Assignment}(\locked{f_i}, \locked{p}))$
-      \ENDIF
-    \ENDFOR
-  \ENDFOR
-  \FORALL{$c\in\util{constructors}(M)$}
-    \FORALL{$u\in\util{nonChainingInvocations}(c)$}
-      \STATE $es = \util{enclosingInstances}(u)$
-      \STATE \assert $|es|=n$
-      \STATE $\util{addArguments}(u, es)$
-      \STATE $\util{discardQualifier}(u)$
-    \ENDFOR
-  \ENDFOR
-  \FORALL{$m\in\util{callables}(M)$}
-    \IF{$\util{hasBody}(m)$}
-      \STATE $b := \util{getBody}(m)$
-      \STATE $b' := \type{With}([\locked{f_n}; \ldots; \locked{f_1}; \text{\code{this}}], b)$
-      \STATE $\util{setBody}(m, b')$
+\STATE $[A_n;\ldots;A_1] \leftarrow \text{enclosing types of $M$}$
+\FORALL{$i\in\{1,\ldots,n\}$}
+  \STATE $f \leftarrow \text{new field of type $A_i$ with name \texttt{this\$i}}$
+  \STATE $\refactoring{Insert Field}(M, f)$
+  \FORALL{constructors $c$ of $M$}
+    \STATE $p \leftarrow \text{parameter of type $A_i$ with name \texttt{this\$i}}$
+    \STATE \assert no parameter or variable \texttt{this\$i} in $c$
+    \STATE insert $p$ as first parameter of $c$
+    \IF{$c$ is chaining}
+      \STATE add \texttt{this\$i} as first argument of chaining call
+    \ELSE
+      \STATE $a \leftarrow \text{new assignment of $p$ to $f$}$
+      \STATE insert $a$ after \code{super} call
     \ENDIF
   \ENDFOR
-\ENDIF
-\STATE $\util{removeBodyDecl}(M)$
-\STATE $\util{addToplevelType}(M)$
+\ENDFOR
+\FORALL{constructors $c$ of $M$}
+  \FORALL{non-chaining invocations $u$ of $c$}
+    \STATE $es \leftarrow \text{enclosing instances of $u$}$
+    \STATE \assert $|es|=n$
+    \STATE insert $es$ as initial arguments to $u$
+    \STATE discard qualifier of $u$, if any
+  \ENDFOR
+\ENDFOR
+\STATE put modifier \code{static} on $M$
+\FORALL{callables $m$ of $M$}
+  \IF{$m$ has a body}
+    \STATE surround body of $m$ by\\
+           \code{with(this\$n, ..., this\$1, this) \{...\}}%\\
+  \ENDIF
+\ENDFOR
 \end{algorithmic}
 \end{algorithm}

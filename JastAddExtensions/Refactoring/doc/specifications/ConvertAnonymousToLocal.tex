@@ -7,15 +7,14 @@ This refactoring converts an anonymous class to a local class. Implemented in \s
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
 \medskip
-\STATE $c \leftarrow \util{getClassInstanceExpr}(A)$
-\STATE $s \leftarrow [\refactoring{Extract Temp}](c, \util{unCapitalise}(n))$
-\STATE $b \leftarrow \util{enclosingBodyDecl}(s)$
-\STATE $\util{lockTypeNames}(b, n)$
-\STATE $t \leftarrow \util{asNamedClass}(A, n)$
-\STATE $\util{removeTypeDecl}(c)$
-\STATE $\util{setTypeAccess}(c, \locked{t})$
-\RETURN $\util{insertLocalClass}(s, t)$
+\STATE $c \leftarrow \text{class instance expression containing $A$}$
+\STATE $d \leftarrow [\refactoring{Extract Temp}](c, \util{unCapitalise}(n))$
+\STATE $b \leftarrow \text{enclosing body declaration of $s$}$
+\STATE $\util{lockNames}(b, n)$
+\STATE convert $A$ to class named $n$, remove it from $c$
+\STATE $\refactoring{Insert Type}(b, A)$
+\STATE lock type access of $c$ to $A$
+\STATE $\refactoring{Inline Temp}(d)$
+\RETURN $A$
 \end{algorithmic}
 \end{algorithm}
-
-We first retrieve the class instance expression $c$ of which $A$ is a part. Then we apply the \code{Extract Temp} refactoring to move $c$ into its own statement. All references to types named $n$ are locked within the enclosing body declaration $b$. Then $A$ is converted into a class $t$ with name $n$. We remove $A$ from $c$, make sure that $c$ constructs an object of type $t$, and insert $t$ as a local class right before the statement containing $c$.

@@ -248,6 +248,11 @@
       <fileset dir="parser" includes="JavaParser.java"/>
       <fileset dir="parser" includes="JavaParser.beaver"/>
       <fileset dir="parser" includes="JavaParser.all"/>
+      <fileset dir="doc/specifications">
+    	<exclude name="*.tex"/>
+      	<exclude name="*.sty"/>
+      	<exclude name="*.pdf"/>
+      </fileset>
     </delete>
 </target>
 
@@ -265,7 +270,6 @@
       <include name="ControlFlowGraph/ReachingDefinitions.jrag"/>
       <include name="Refactoring/**"/>
       <exclude name="**/*.class"/>
-      <exclude name="Refactoring/doc/**"/>
     </zipfileset>
   </jar>
 </target>

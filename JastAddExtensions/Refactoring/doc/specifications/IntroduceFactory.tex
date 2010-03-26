@@ -7,13 +7,13 @@ This refactoring introduces a static factory method as a replacement for a given
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
 \medskip
-\STATE $f \leftarrow \util{createFactoryMethod}(cd)$
-\FORALL{$c \in \{c : \type{ClassInstanceExpr} \mid \util{original}(\util{decl}(c)) = cd \wedge \neg\util{hasTypeDecl}(c)$}
-  \STATE $\util{replaceExpr}(c, \type{MethodCall}(\locked{f}, \util{getArgs}(c)))$
+\STATE $f \leftarrow \text{static factory method for $cd$}$
+\FORALL{uses $u$ of $cd$ and its parameterised copies}
+  \IF{$u$ is a class instance expression without anonymous class and it is not in $f$}
+    \STATE replace $u$ with a call to $f$
+  \ENDIF
 \ENDFOR
 \end{algorithmic}
 \end{algorithm}
 
-We first use \util{createFactoryMethod} to create the factory method corresponding to constructor $cd$ and insert it into the host type of $cd$. The factory method has the same signature as $cd$, but it has its own copies of all type variables of the host type used in $cd$.
-
-Then every class instance expression that uses $cd$ or a parameterised instance of $cd$ and does not have its own anonymous type declaration is replaced by a call to the factory method.
+We use \util{createFactoryMethod} (implemented in \sourcelink{util/ConstructorExt.jrag}) to create the factory method corresponding to constructor $cd$ and insert it into the host type of $cd$. The factory method has the same signature as $cd$, but it has its own copies of all type variables of the host type used in $cd$.

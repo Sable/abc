@@ -7,23 +7,17 @@ This refactoring converts a local class to a member class. Implemented in \sourc
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names, fresh variables
 \medskip
-\STATE $h \leftarrow \util{enclosingType}(L)$
-\STATE $\util{closeOverTypeVariables}(L)$
-\STATE $\util{closeOverLocalVariables}(L)$
-\IF{$\util{inStaticContext}(L)$}
-  \STATE $\util{addModifier}(L, \text{\code{static}})$
+\STATE $A \leftarrow \text{enclosing type of $L$}$
+\STATE close $L$ over type variables
+\STATE close $L$ over local variables
+\IF{$L$ is in static context}
+  \STATE make $L$ static
 \ENDIF
-\STATE $\util{lockTypeNames}(\util{programRoot}(), \util{name}(L))$
-\STATE $\util{lockNames}(L)$
-\STATE $\util{removeStmt}(L)$
-\RETURN $\util{insertMemberType}(h, L)$
+\STATE $\util{lockNames}(\util{name}(L))$
+\STATE lock all names in $L$
+\STATE remove $L$ from its declaring method
+\STATE $\refactoring{Insert Type}(A, L)$
 \end{algorithmic}
 \end{algorithm}
 
-We start by computing the enclosing type $h$ of $L$, into which we want to eventually insert $L$ as a member type. Then we close $L$ over type variables and local variables from the enclosing body declaration.
-
-The utility function $\util{closeOverTypeVariables}(L)$ collects all type variables $V$ of the enclosing body declaration of $L$ which are used inside $L$. Every such $L$ is added as a type parameter to $L$, and every use of $L$ is augmented by a corresponding type access.
-
-Similarly, $\util{closeOverLocalVariables}(L)$ adds a field $f_v$ to $L$ for every local variable $v$ of the enclosing body declaration of $L$. All uses of $v$ from within $L$ are replaced by locked accesses to $f_v$, and the constructors and instantiations of $L$ are adjusted to initialise $f_v$ to the value of $v$.
-
-If $L$ is in a static context (for example because its enclosing body declaration is static), a \code{static} qualifier is added. All references to types with the same name as $L$ throughout the program are locked; likewise, all names within $L$ are locked. Then $L$ is removed from its enclosing body declaration and inserted as a member type into $h$.
+TODO: provide specification of close over type variables and close over local variables (implemented in TypePromotion/CloseOverVariables.jrag)

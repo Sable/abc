@@ -2,34 +2,34 @@
 This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}.
 
 \begin{algorithm}
-\caption{$\refactoring{Inline Temp}(d : \type{LocalVarDecl})$}
+\caption{$\refactoring{Inline Temp}(d : \type{LocalVar})$}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java
 \medskip
-\STATE $a = \lfloor\refactoring{Split Declaration}\rfloor(d)$
+\STATE $a \leftarrow \lfloor\refactoring{Split Declaration}\rfloor(d)$
 \STATE $\lfloor\refactoring{Inline Assignment}\rfloor(a)$
 \STATE $\lfloor\refactoring{Remove Decl}\rfloor(v)$
 \end{algorithmic}
 \end{algorithm}
 
-We proceed in three steps: first, we split off the variable initialisation into an assignment, then inline all uses of the assignment, and finally remove the variable.
-
 \begin{algorithm}
-\caption{$\refactoring{Split Declaration}(d : \type{LocalVarDecl}) : \type{Assignment}$}
+\caption{$\refactoring{Split Declaration}(d : \type{LocalVar}) : \option{\type{Assignment}}$}
 \begin{algorithmic}[1]
-\REQUIRE Java $\setminus$ multi-declarations
+\REQUIRE Java $\setminus$ compound declarations
 \ENSURE Java $\cup$ locked names, first-class array init
 \medskip
-\STATE \assert $\util{hasInit}(d)$
-\STATE $a = \type{Assignment}(\locked{d}, \util{getInit}(d))$  
-\STATE $\util{insertStmtAfter}(d, a)$
-\STATE $\util{removeInit}(d)$
-\RETURN $a$
+\IF{$d$ has initialiser}
+  \STATE $x \leftarrow \text{variable declared in $d$}$
+  \STATE $a \leftarrow \text{new assignment from initialiser of $d$ to $x$}$
+  \STATE insert $a$ as statement after $d$
+  \STATE remove initialiser of $d$
+  \RETURN \Some{$a$}
+\ELSE
+  \RETURN \None
+\ENDIF
 \end{algorithmic}
 \end{algorithm}
-
-To split a variable declaration, it needs to have an initialiser, which we turn into its own statement.
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
@@ -37,33 +37,29 @@ To split a variable declaration, it needs to have an initialiser, which we turn 
 \REQUIRE Java $\setminus$ implicit assignment conversion
 \ENSURE Java $\cup$ locked dependencies
 \medskip
-\STATE $x = \util{lhs}(a)$
-\STATE \assert $\util{decl}(x)$ is local variable
-\STATE $U = \{ u \mid u\rightarrow_r x\}$
+\STATE $x \leftarrow \text{LHS of $a$}$
+\STATE \assert $x$ refers to local variable
+\STATE $U \leftarrow \text{all $u$ such that $a$ is a reaching definition of $u$}$
 \FORALL{$u\in U$}
-  \STATE \assert $\neg\exists x'.u\rightarrow_r x' \wedge x\neq x'$
+  \STATE \assert $a$ is the only reaching definition of $u$
   \STATE \assert $u$ is not an lvalue
   \STATE \assert $u,a$ are in same body declaration
-  \STATE $\util{replaceExpr}(u, \util{lockedCopy}(\util{rhs}(a)))$
+  \STATE replace $u$ with a locked copy of the RHS of $a$
 \ENDFOR
 \IF{$U\neq\emptyset$}
-  \STATE $\util{removeStmt}(a)$
+  \STATE remove $a$
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
-
-To inline an assignment $a$, we check that it is indeed an assignment to a local variable $x$. For every use $u$ we check that $a$ is its only reaching definition, that $u$ is not an lvalue, and that $u$ and $a$ are in the same body declaration. (If $x$ is final, $u$ could be inside a local class, for instance.) Assuming that all these conditions are fulfilled, we can replace $u$ by a locked copy of the right-hand side of $a$. Finally, if $x$ was inlined at least once we can delete the assignment.
 
 \begin{algorithm}
-\caption{$\refactoring{Remove Decl}(d : \type{LocalVarDecl})$}
+\caption{$\refactoring{Remove Decl}(d : \type{LocalVar})$}
 \begin{algorithmic}[1]
-\REQUIRE Java $\setminus$ multi-declarations
+\REQUIRE Java $\setminus$ compound declarations
 \ENSURE Java
 \medskip
-\IF{$\neg\util{hasInit}(d)\wedge\neg\exists u.u\rightarrow_b d$}
-  \STATE $\util{removeStmt}(d)$
+\IF{$d$ is not used and has no initialiser}
+  \STATE remove $d$
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
-
-To remove a variable declaration $d$, we need to ensure that it does not have an initialiser, and that it is never used.

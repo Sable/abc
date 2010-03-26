@@ -7,35 +7,31 @@ This refactoring extracts some fields of a class into a newly created member cla
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies, first-class array init
 \medskip
-\STATE $v \leftarrow \util{max}(\util{getVisibility}(fs))$
-\STATE $W \leftarrow \type{ClassDecl}([\text{\code{static}}; v], n)$
-\STATE $\util{insertMemberType}(C, W)$
-\STATE $w \leftarrow \type{Field}(v, \locked{W}, fn, \type{ClassInstanceExpr}(\locked{W}))$
-\STATE $\util{insertField}(C, w)$
+\STATE $v \leftarrow \text{maximum visibility of any of the $fs$}$
+\STATE $W \leftarrow \text{new \code{static} class of name $n$ with visibility $v$}$
+\STATE $\refactoring{Insert Type}(C, W)$
+\STATE $w \leftarrow \text{new field of type $W$ and name $fn$, initialised to a new instance of $W$}$
+\STATE $\refactoring{Insert Field}(C, w)$
 \FORALL{$f\in fs$}
-  \STATE \assert $\neg\util{isStatic}(f)$
-  \FORALL{$v\in\{v\mid v\rightarrow_b f\}$}
-    \STATE $\util{replaceExpr}(v, \util{Dot}(\locked{w}, v))$
+  \STATE \assert $f$ is not static
+  \FORALL{uses $v$ of $f$}
+    \STATE qualify $v$ with a locked access to $w$
   \ENDFOR
-  \STATE $\util{removeField}(f)$
-  \STATE $\util{insertField}(W, f)$
-  \IF{$\util{hasInit}(f)$}
-    \STATE $\util{lockFlow}(f)$
-    \STATE $e \leftarrow \util{removeInit}(f)$
-    \STATE $\util{addArgument}(\util{getInit}(w), e)$
-    \STATE $p \leftarrow \util{Parameter}(\locked{\util{type}(f)}, \util{name}(f))$
-    \FORALL{$cd \in \util{constructors}(W)$}
-      \STATE $p' \leftarrow \util{copy}(p)$
-      \STATE $\util{addParameter}(cd, p')$
-      \STATE $\util{addStmt}(cd, \type{Assignment}(\locked{f}, \locked{p'}))$
+  \STATE remove $f$
+  \STATE $\refactoring{Insert Field}(W, f)$
+  \IF{$f$ has initialiser}
+    \STATE lock flow dependencies of $f$
+    \STATE $e \leftarrow \text{initialiser of $f$}$
+    \STATE remove initialiser of $f$
+    \STATE add $e$ as argument to initialisation of $w$
+    \STATE $p \leftarrow \text{new parameter of same name and type as $f$}$
+    \FORALL{constructors $cd$ of $W$}
+      \STATE add copy of $p$ as parameter of $W$
+      \STATE add assignment from parameter to $f$ to body of $cd$
     \ENDFOR
   \ENDIF
 \ENDFOR
 \end{algorithmic}
 \end{algorithm}
 
-It first determines the maximum visibility $v$ of any of the fields $fs$ to be extracted. Then it creates a static wrapper class $W$ of visibility $v$ and name $n$, and inserts it as a member type into $C$. Likewise, it creates a wrapper field $w$ of visibility $v$ and type $W$, which is initialised to a new instance of $W$, and inserts it as a member field into $C$.
-
-Now it examines every field $f\in fs$ in turn. None of the fields can be static. Every access $v$ that binds to $f$ is qualified by $\locked{w}$ (note that this will work even if $v$ is already qualified). Then $f$ is moved from $C$ to $W$. If $f$ has an initialiser $e$, that initialising expression is added as an argument to the class instance expression initialising $w$, after locking its flow dependencies. Additionally, every constructor $c$ of $W$ (there will only be one) is given a new parameter $p$ and an assignment that assigns the value of $p$ to the field $f$.
-
-It might be nicer to implement this refactoring as a step-by-step transformation using a Scala-like \textcolor{KWColor}{\texttt{object}} construct: We first construct a wrapper object $w$ without any members. Then, one by one, the fields in $fs$ are moved into $w$, adding their initialisers as constructor arguments if necessary.
+This is only a bare-bones specification. The implementation additionally allows t encapsulate the extracted fields, and to move the wrapper class $W$ to the toplevel.

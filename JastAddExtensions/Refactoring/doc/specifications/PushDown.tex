@@ -1,1 +1,94 @@
 \subsection{\refactoring{Push Down}}
+This refactoring pushes a method down to all subclasses of its defining class. Implemented in \sourcelink{PushDown/PushDownMethod.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Trivially Override}(B : \type{Type}, m : \type{VirtualMethod}) : \option{\type{MethodCall}}$}
+\label{alg:TriviallyOverride}
+\begin{algorithmic}[1]
+\REQUIRE Java $\setminus$ implicit method modifiers
+\ENSURE Java $+$ locked names, \code{return void}
+\medskip
+\STATE \assert $m$ is not \code{final}
+\IF{$m$ not a member method of $B$}
+  \RETURN \None
+\ENDIF
+\STATE $m' \leftarrow \text{copy of $m$ with locked names}$
+\IF{$m$ is \code{abstract}}
+  \STATE insert method $m'$ into $B$
+  \RETURN \None
+\ELSE
+  \STATE $xs \leftarrow \text{list of locked accesses to parameters of $m'$}$
+  \STATE $c \leftarrow \text{\code{super.}$m$\code{(}$xs$\code{)}}$
+  \STATE set body of $m'$ to \code{return}\xspace $c$\code{;}
+  \STATE insert method $m'$ into $B$
+  \RETURN \Some{c}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Remove Method}(m : \type{Method})$}
+\label{alg:RemoveMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\STATE \assert $(\util{uses}(m)\cup\util{calls}(m))\setminus\util{below}(m)=\emptyset$
+\STATE $o \leftarrow \{ m' \mid m <: m' \}$
+\IF{$o\neq\emptyset\wedge\forall m'\in o.\text{$m'$ is abstract}$}
+  \FORALL{types $B$ that inherit $m$}
+    \STATE $\refactoring{Make Type Abstract}(B)$
+  \ENDFOR
+\ENDIF
+\STATE remove $m$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Make Method Abstract}(m : \type{Method})$}
+\label{alg:MakeMethodAbstract}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\STATE \assert $\util{calls}(m)\setminus\util{below}(m)=\emptyset$
+\FORALL{types $B$ that inherit $m$}
+  \STATE $\refactoring{Make Type Abstract}(B)$
+\ENDFOR
+\STATE make $m$ \code{abstract}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Make Type Abstract}(T : \type{Type})$}
+\label{alg:MakeTypeAbstract}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\IF{$T$ is interface}
+    \RETURN
+\ENDIF
+\STATE \assert $T$ is class and never instantiated
+\STATE make $T$ \code{abstract}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{Push Down Virtual Method}(m : \type{VirtualMethod})$}
+\label{alg:PushDownVirtualMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\FORALL{types $B<:\util{hostType}(m)$}
+  \STATE $c \leftarrow \lfloor\refactoring{Trivially Override}\rfloor(B, m)$
+  \IF{$c\neq\util{None}$}
+    \STATE $\refactoring{Inline Method}(c)$
+  \ENDIF
+\ENDFOR
+\STATE $\refactoring{Remove Method}(m)$
+\STATE \qquad\orelse$\refactoring{Make Method Abstract}(m)$
+\STATE \qquad\orelse$\refactoring{Id}()$
+\end{algorithmic}
+\end{algorithm}

@@ -1,0 +1,78 @@
+			JastAdd Refactoring Tools (JRRT)
+
+The JastAdd Refactoring Tools are part of the JastAdd project
+(http://www.jastadd.org). The newest version of these tools will
+always be available from http://www.jastadd.org/refactoring-tools.
+
+The source code of JRRT is covered by the Eclipse Public License
+Version 1.0, which is distributed together with this software (in file
+EPL.html), and is available online at
+http://www.eclipse.org/legal/epl-v10.html.
+
+Included in the distribution are the JastAddJ Java 1.4 and Java 1.5
+frontend (in folders Java1.4Frontend, Java1.5Frontend) and parts of
+the JastAddJ control flow package (in folder
+ControlFlowGraph). Details on licenses for these tools are available
+in their respective folders.
+
+Overview:
+=========
+This is the command-line version of the refactoring engine for
+JastAddJ.  It comes with a number of test and driver programs, but it
+should not be thought of as an end-user tool. Most refactorings from
+recent versions of Eclipse are implemented, with the notable exception
+of type-based refactorings.
+
+Building:
+=========
+Make sure that projects ControlFlowGraph, Java1.4Frontend and
+Java1.5Frontend are unpacked into sibling directories of this one,
+then do `ant clean' to be on the safe side. All necessary projects are
+included in the web distribution.  The project is built using ant with
+build file build.xml
+
+The most commonly used ant goals in build.xml are:
+gen        run JastAdd no generate node definitions and the scanner and
+           parser; does not compile the resulting Java code
+build      first runs gen, then compiles the resulting Java files
+cleanGen   deletes all generated Java code and subdirectories
+
+Implementation:
+===============
+The folder Naming/ contains the source code for the naming component
+of JRRT, Flow/ implements flow dependencies. The folder Concurrency/
+should contain the implementation of synchronisation dependencies, but
+currently only contains stubs due to unresolved licensing issues with
+this part of the framework. The folder LanguageExtensions/ contains
+the implementations of various language extensions and restrictions.
+
+The folder tests/ contains several test suites and their data, on
+which see below. Folder util/ contains utility code. Folder doc/
+contains specifications of the refactorings (this is work in
+progress).
+
+All other folders contain implementations of individual refactorings.
+
+Testing:
+========
+The package tests contains several test cases comprising our own
+internal test suite. The package tests.eclipse and its subpackages
+contain a copy of the relevant bits of the most recent (as of March
+2010) version of Eclipse's own test suite, modified so that it can be
+run under our implementation.
+
+In some cases, result files had to be edited lightly; we have
+commented out the original version of the code using '///'.
+
+In order to run the tests, it is probably easiest to import
+Refactoring/ as an Eclipse project (it is already set up as one). See
+instructions on the JastAdd homepage on how to compile JastAdd
+projects within Eclipse.
+
+The complete set of tests can then be run through the test suite
+tests.AllTests. Note that we have disabled all tests on which our
+results are not the same as Eclipse's (with detailed comments in the
+individual test suites explaining why the results are different), so
+you should not see any failing test cases. If you only want to run the
+Eclipse test cases (without our own internal tests), use
+tests.eclipse.EclipseTests instead.
