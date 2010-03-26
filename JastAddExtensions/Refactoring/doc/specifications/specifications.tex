@@ -24,6 +24,7 @@
 \newcommand{\None}{\util{None}\xspace}
 \newcommand{\Some}[1]{\util{Some}\xspace #1}
 \newcommand{\listtp}[1]{\ensuremath{\text{\texttt{list}\xspace #1}}}
+\newcommand{\settp}[1]{\ensuremath{\text{\texttt{set}\xspace #1}}}
 \newcommand{\sourcelink}[1]{\texttt{#1}}
 
 \definecolor{KWColor}{rgb}{0.5,0,0.67}
@@ -46,7 +47,7 @@
 \begin{document}
 \maketitle
 
-This document collects the pseudo-code specifications of all refactoring implemented in our engine.
+This document collects the pseudo-code specifications of all refactoring implemented in our engine. \textbf{Note:} This is work in progress; some specifications are missing, and not all implementations agree completely with the specifications.
 
 \section{Pseudocode Conventions}
 We give our specifications in generic, imperative pseudocode. Parameters and return values are informally typed, with syntax tree nodes having one of the types from Fig.~\ref{fig:node types}. Additionally, we use an ML-like \util{option} type with constructors \util{None} and \util{Some} for functions that may or may not return a value.

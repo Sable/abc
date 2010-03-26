@@ -64,7 +64,7 @@ This refactoring converts a member type to a toplevel type. Implemented in \sour
   \ENDFOR
 \ENDFOR
 \STATE put modifier \code{static} on $M$
-\FORALL{callables $m$ of $M$}
+\FORALL{non-\code{static} callables $m$ of $M$}
   \IF{$m$ has a body}
     \STATE surround body of $m$ by\\
            \code{with(this\$n, ..., this\$1, this) \{...\}}%\\

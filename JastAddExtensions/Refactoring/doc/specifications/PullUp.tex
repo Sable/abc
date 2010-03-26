@@ -1,1 +1,21 @@
 \subsection{\refactoring{Pull Up}}
+This refactoring pulls up a method $m$ from its host class $B$ to the super class $A$. Implemented in \sourcelink{PullUp/PullUpMethod.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Pull Up Method}(m : \type{Method})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert the host type of $m$ $B$ is a non-library class
+\STATE \assert the superclass $A$ of $B$ is also non-library
+\STATE $m' \leftarrow \text{copy of $m$ with locked names}$
+\STATE translate type variables in $m'$ from $B$ to $A$
+\STATE $\util{Insert Method}(A, m')$
+\STATE remove $m$ from $B$
+\end{algorithmic}
+\end{algorithm}
+
+TODO: explain translation of type variables; this is basically a right-inverse of the type variable substitution that happens when inheriting a method
+
+Note that \refactoring{Insert Method} ensures that the inserted method is not called from anywhere.

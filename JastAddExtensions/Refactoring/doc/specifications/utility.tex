@@ -1,3 +1,5 @@
+See Fig.~\ref{fig:utility}.
+
 \begin{figure}
 \begin{center}
 \begin{tabular}{|l|p{5.3cm}|}
@@ -7,6 +9,7 @@ $\util{below}(n)$ & returns the set of all nodes below $n$ in the syntax tree \\
 $\util{calls}(m)$ & returns all calls that may dynamically resolve to method $m$; can be a conservative over-approximation \\
 $\util{hostPkg}(e)$ & returns the package of the compilation unit containing $e$ \\
 $\util{hostType}(e)$ & returns the closest enclosing type declaration around $e$ \\
+$\util{lockMethodCalls}(n)$ & locks all calls to methods named $n$ anywhere in the program \\
 $\util{lockNames}(n)$ & locks all names anywhere in the program that refer to a declaration with name $n$ \\
 $\util{name}(e)$ & returns the name of program entity $e$ \\
 $\util{uses}(m)$ & returns all calls that statically bind to method $m$ \\

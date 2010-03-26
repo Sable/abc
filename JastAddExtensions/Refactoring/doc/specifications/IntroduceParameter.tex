@@ -1,1 +1,23 @@
 \subsection{\refactoring{Introduce Parameter}}
+This refactoring turns an expression into a parameter of the surrounding method. Implemented in \sourcelink{ChangeMethodSignature/IntroduceParameter.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Introduce Parameter}(e : \type{Expr}, n : \type{Name})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $e$ is extractible and constant
+\STATE \assert $e$ appears within a method $m$
+\STATE \assert $m$ is not overridden by and does not override any other methods
+\STATE \assert $m$ has no parameter or local variable $n$
+\STATE $\util{lockMethodCalls}(\util{name}(m))$
+\STATE $t \leftarrow \text{effective type of $e$}$
+\STATE $p \leftarrow \text{new parameter of type $t$ and name $n$}$
+\STATE insert $p$ as the first parameter of $m$
+\STATE replace $e$ with locked access to $p$
+\FORALL{calls $c$ to $m$}
+  \STATE insert a locked copy of $e$ as first argument of $c$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}

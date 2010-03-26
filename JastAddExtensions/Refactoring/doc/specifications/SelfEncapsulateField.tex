@@ -1,1 +1,30 @@
 \subsection{\refactoring{Self-Encapsulate Field}}
+This refactoring makes a field private, rerouting all accesses to it through getter and setter methods. Implemented in \sourcelink{SelfEncapsulateField/SelfEncapsulateField.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Self-Encapsulate Field}(f : \type{Field})$}
+\begin{algorithmic}[1]
+\REQUIRE Java $\setminus$ abbreviated assignments
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE create getter method $g$ for $f$
+\STATE if $f$ is not \code{final}, create setter method $s$ for it
+\FORALL{all uses $u$ of $f$ and its substituted copies}
+  \IF{$u\not\in\util{below}(g)\cup\util{below}(s)$}
+    \IF{$u$ is an rvalue}
+      \STATE replace $u$ with locked access to $g$
+    \ELSE
+      \IF{$f$ is not \code{final}}
+        \STATE $q \leftarrow \text{qualifier of $u$, if any}$
+        \STATE $r \leftarrow \text{RHS of assignment for which $u$ is LHS}$
+        \STATE replace $u$ with locked access to $s$ on argument $r$, qualified with $q$ if applicable
+      \ENDIF
+    \ENDIF
+  \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+By ``abbreviated assignment'' we mean \code{x+=y} and friends, as well as increment and decrement expressions. The language restriction tries to expand these into normal assignments, but may fail if the data flow is too complicated. If it succeeds, every lvalue will appear on the left hand side of a (simple) assignment.
+
+Note that even when $f$ is final there may still be assignments to $f$ from within constructors; we cannot encapsulate these assignments, so we skip them.
