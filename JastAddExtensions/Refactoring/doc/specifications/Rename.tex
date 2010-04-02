@@ -1,1 +1,32 @@
 \subsection{\refactoring{Rename}}
+This family of refactorings is used for renaming named program entities. Implemented in \sourcelink{Renaming/}.
+
+\begin{algorithm}
+\caption{$\refactoring{Rename Field}(f : \type{Field}, n : \type{Name})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $n$ is a valid name
+\STATE \assert host type of $f$ contains no other field of name $n$
+\STATE $\util{lockNames}(\{n, \util{name}(f)\})$
+\STATE set name of $f$ to $n$
+\end{algorithmic}
+\end{algorithm}
+
+Refactoring \refactoring{Rename Field} changes the name of a field $f$ to $n$. It ensures that $n$ is indeed a valid name and that the host type of $f$ contains no other field called $n$. It then globally locks all accesses to variables, types, or packages named either $n$ or $\util{name}(f)$, and changes the name of $f$ to $n$.
+
+\begin{algorithm}
+\caption{$\refactoring{Rename Local}(v : \type{Local}, n : \type{Name})$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $n$ is a valid name
+\STATE \assert enclosing block of $v$ is neither contained in, nor contains the scope of another local named $n$
+\STATE $\util{lockNames}(\util{block}(v), \{n, \util{name}(f)\})$
+\STATE set name of $v$ to $n$
+\end{algorithmic}
+\end{algorithm}
+
+Refactoring \refactoring{Rename Local} changes the name of a local variable or parameter $v$ to $n$. It ensures that $n$ is indeed a valid name and that the renaming $v$ to $n$ will not violate the rule that scopes of local variables of the same name cannot be nested. It then again locks all accesses to variables, types, or packages named either $n$ or $\util{name}(v)$, but only within the enclosing block of $v$, and changes the name of $v$ to $n$.

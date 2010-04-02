@@ -1,1 +1,2 @@
 \subsection{\refactoring{Move Members}}
+In order to move Field, static methods, and member types, we simply lock all references to them, as well as all names contained in them, and (for fields) the flow dependencies of their initialiser, and then move them inside the AST.

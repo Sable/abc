@@ -7,6 +7,7 @@ This refactoring turns an expression into a parameter of the surrounding method.
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
 \medskip
+\STATE \assert $n$ is a valid name
 \STATE \assert $e$ is extractible and constant
 \STATE \assert $e$ appears within a method $m$
 \STATE \assert $m$ is not overridden by and does not override any other methods

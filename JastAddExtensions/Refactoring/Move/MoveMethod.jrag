@@ -32,8 +32,10 @@ aspect MoveMethod {
 		m.getModifiers().removeModifier("synchronized");
 		m.lockAllNames();
 		VariableDeclaration new_b = b.asVariableDeclaration(new ThisAccess("this"));
-		for(VarAccess va : b.allUses())
-			va.lock(new_b);
+		for(VarAccess va : b.allUses()) {
+			if(va.isDescendantTo(m))
+				va.lock(new_b);
+		}
 		int i;
 		if(b.isMethodParameter()) {
 			i = m.getIndexOfParameter(b.name());

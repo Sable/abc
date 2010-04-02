@@ -63,7 +63,9 @@ This refactoring converts a member type to a toplevel type. Implemented in \sour
     \STATE discard qualifier of $u$, if any
   \ENDFOR
 \ENDFOR
-\STATE put modifier \code{static} on $M$
+\IF{$M$ not in inner class}
+  \STATE put modifier \code{static} on $M$
+\ENDIF
 \FORALL{non-\code{static} callables $m$ of $M$}
   \IF{$m$ has a body}
     \STATE surround body of $m$ by\\

@@ -1,2 +1,44 @@
 \subsection{\refactoring{Move Instance Method}}
-See WRT 2009 publication.
+This refactoring moves a method into a variable, which is either a parameter of that method or an accessible field. Implemented in \sourcelink{Move/MoveMethod.jrag}.
+
+\begin{algorithm}
+\caption{$\refactoring{Move Method}(m : \type{InstanceMethod}, v : \type{Variable})$}
+\label{alg:MoveMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names, \code{return void}, fresh variables, demand \code{final}
+\medskip
+\STATE \assert $v$ is either a parameter of $m$ or a field
+\STATE $T\leftarrow\text{type of $v$}$
+\STATE \assert $T$ is a non-library class
+\STATE \assert $m$ has a body and is not from library
+\STATE $m'\leftarrow\text{copy of $m$ with \code{synchronized} removed and all names locked}$
+\STATE $xs\leftarrow\text{list of locked accesses to parameters of $m$}$
+\IF{$v$ is a parameter}
+  \STATE $i\leftarrow\text{position of $v$ in parameter list of $m$}$
+  \STATE remove $i$th parameter from $m'$
+  \STATE remove $i$th element of $xs$
+\ELSE
+  \STATE $i\leftarrow 0$
+\ENDIF
+\STATE $v'\leftarrow\text{\code{final} local variable declaration with same name and type as $v$, initialised to \code{this}}$
+\STATE insert $v'$ as first statement into $m'$
+\STATE lock all uses of $v$ inside $m'$ to $v'$
+\STATE $qs\leftarrow[]$
+\FORALL{enclosing classes $C$ of $m$}
+  \STATE $p_C\leftarrow\text{demand \code{final} parameter with fresh name, of type $C$}$
+  \STATE make $p_C$ the $i$th parameter of $m'$
+  \STATE $e\leftarrow\text{access to $C$\code{.this}}$
+  \STATE insert $e$ as $i$th element into $xs$
+  \STATE $qs\leftarrow \locked{p_C}::qs$
+\ENDFOR
+\STATE wrap body of $m'$ into \code{with(}$qs$\code{) \{}$\ldots$\code{\}}
+\STATE set body of $m$ to \code{return}$\>\>\text{$\locked{v}$\code{.}$\locked{m}$\code{(}$xs$\code{)}}$\code{;}
+\STATE $\refactoring{Insert Method}(T, m')$
+\STATE eliminate \code{with} statement in $m'$
+\STATE $\refactoring{Inline Temp}(v')$
+\FORALL{$p_C$}
+  \STATE $\refactoring{Remove Parameter}(p_C)\orelse\refactoring{Id}()$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
