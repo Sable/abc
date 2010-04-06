@@ -57,11 +57,11 @@ aspect LockedVariableAccess {
 			setID(target.name());
 		if(decl().sameSourceDeclAs(target)) {
 			return qual == null ? this : qual.qualifiesAccess(this);
-		} else if(fromSource() && !(target instanceof LocalVariable)) {
+		} else if(fromSource()) {
 			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
-				throw new RefactoringException("cannot access instance method in static context");
-			VariableAccessInfo acc = accessVariable(target);
-			if(acc == null) {
+				throw new RefactoringException("cannot access instance variable in static context");
+			SymbolicVarAccess acc = accessVariable(target);
+			if(acc.isUnknownVarAccess()) {
 				if((qual == null || qual.isPure()) && target.isStatic()) {
 					TypeDecl host = target.hostType();
 					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
@@ -69,28 +69,26 @@ aspect LockedVariableAccess {
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessVariable(target);
 					if(acc != null)
-						return acc.eliminate(null, enclosingType());
+						return acc.asAccess(null, enclosingType());
 				}
 				throw new RefactoringException("cannot access variable "+target.name());
 			}
-			return acc.eliminate(qual, enclosingType());
+			return acc.asAccess(qual, enclosingType());
 		} else {
 			throw new RefactoringException("cannot access variable "+target.name());
 		}
 	}
 	
 	// eliminating locked variable accesses
-	public Access VariableAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing) {
-		FieldDeclaration target = (FieldDeclaration)getVariable();
+	public Access SymbolicFieldAccess.asAccess(Expr qualifier, TypeDecl enclosing) {
 		if(target.isStatic()) {
 			return target.hostType().createLockedAccess().qualifiesAccess(new VarAccess(target.name()));
 		} else {
-			if(isDirectlyVisible()) {
+			if(directlyVisible) {
 				if(qualifier != null)
 					return qualifier.qualifiesAccess(new VarAccess(target.name()));
 				return new VarAccess(target.name());
 			} else {
-				TypeDecl source = getSource(), bend = getBend();
 				VarAccess va = new VarAccess(target.name());
 				if(qualifier == null) {
 					if(source.sameSourceDeclAs(bend)) {
@@ -126,5 +124,15 @@ aspect LockedVariableAccess {
 				}
 			}
 		}
+	}
+	
+	public Access UnknownVarAccess.asAccess(Expr qualifier, TypeDecl enclosing) {
+		throw new RefactoringException("cannot access variable");
+	}
+	
+	public Access LocalVariable.asAccess(Expr qualifier, TypeDecl enclosing) {
+		if(qualifier != null)
+			throw new RefactoringException("cannot qualify access to local variable");
+		return new VarAccess(name());
 	}
 }

@@ -206,11 +206,22 @@ aspect AnonymousMethods {
 	}
 	
 	eq AnonymousMethod.getBlock().accessVariable(Variable decl) {
-		VariableAccessInfo acc = accessVariable(decl);
-		if(acc != null)
-			acc.becomeInvisible(parameterDeclaration(decl.name()) != SimpleSet.emptySet);
-		return acc;
+		SymbolicVarAccess acc = accessParameter(decl);
+		if(!acc.isUnknownVarAccess()) return acc;
+		return accessVariable(decl).moveInto(this);
 	}
+	eq AnonymousMethod.getParameter().accessVariable(Variable decl) =
+		accessParameter(decl);
+	
+	syn lazy SymbolicVarAccess AnonymousMethod.accessParameter(Variable decl) {
+		for(ParameterDeclaration pd : getParameters())
+			if(pd == decl)
+				return pd;
+		return unknownVarAccess();
+	}
+	
+	AnonymousMethod implements Scope;
+	eq AnonymousMethod.hasVariable(String name) = !parameterDeclaration(name).isEmpty();
 	
 	syn lazy boolean ParameterDeclaration.isIn() = !isOut() && !isRef();
 	syn lazy boolean ParameterDeclaration.isOut() = getModifiers().numModifier("out") != 0;
