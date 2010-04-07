@@ -133,8 +133,11 @@ aspect MethodExt {
 			if(md.isPublic() || md.isProtected())
 				isPkg = false;
 		}
-		if(hasSuperclass() && superclass().rootdef(sig, isPkg) != null)
-			return superclass().rootdef(sig, isPkg);
+		if(hasSuperclass() && (!isPkg || superclass().packageName().equals(this.packageName()))) {
+			MethodDecl md2 = superclass().rootdef(sig, isPkg);
+			if(md2 != null)
+				return md2;
+		}
 		return md;
 	}
 	
@@ -168,12 +171,20 @@ aspect MethodExt {
 	}
 	
 	public void ClassDecl.collectRelatives(String sig, Collection<MethodDecl> res) {
-		for(Iterator<MethodDecl> iter=localMethodsSignature(sig).iterator(); iter.hasNext();)
-			res.add(iter.next());
+		boolean isPackageProtected = false;
+		for(Iterator<MethodDecl> iter=localMethodsSignature(sig).iterator(); iter.hasNext();) {
+			MethodDecl md = iter.next();
+			if(md.isPackageProtected())
+				isPackageProtected = true;
+			res.add(md);
+		}
 		for(Iterator<MethodDecl>iter=interfacesMethodsSignature(sig).iterator(); iter.hasNext();)
 			res.add(iter.next());
-		for(TypeDecl child : childTypes())
+		for(TypeDecl child : childTypes()) {
+			if(isPackageProtected && !child.packageName().equals(this.packageName()))
+				continue;
 			((ClassDecl)child).collectRelatives(sig, res);
+		}
 	}
 
 	// copy of method with locked names, but empty body

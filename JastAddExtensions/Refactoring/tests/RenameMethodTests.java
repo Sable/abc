@@ -589,4 +589,17 @@ public class RenameMethodTests extends TestCase {
     		"  { g((long)23); }" +
     		"}"));
 	}
+    
+    public void test39() {
+       	testSucc(
+       		"A", "m()", "n",
+       		Program.fromClasses(
+			"class Super { void m() { } }",
+			"class A extends Super { void m() { } }",
+       		"class B extends Super { void m() { } }"),
+       		Program.fromClasses(
+			"class Super { void n() { } }",
+			"class A extends Super { void n() { } }",
+       		"class B extends Super { void n() { } }"));       		    		
+    }
 }
