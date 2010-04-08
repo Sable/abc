@@ -19,6 +19,7 @@ aspect Refresh {
 	// TODO: same for ParameterDeclarationSubstituted and VariableArityParameterSubstituted
 	
 	public TypeDecl TypeDecl.refresh() { return refreshType(); }
+	public TypeDecl ParTypeDecl.refresh() { return refreshType(); }
 	
 	syn TypeDecl TypeDecl.refreshType() = this;
 	eq ArrayDecl.refreshType() = componentType().refresh().arrayType();
@@ -37,7 +38,5 @@ aspect Refresh {
 		TypeDecl encl = enclosingType().refreshType();
 		String name = sourceTypeDecl().name();
 		return (ClassDeclSubstituted)encl.localTypeDecls(name).iterator().next();
-	}
-	
-	// TODO: similar for SavedMethods
+	}	
 }

@@ -23,12 +23,23 @@ aspect RenameVariable {
 	}
 
 	public void VariableDeclaration.checkRenamingPreconds(String new_name) {
-		if(!hostBodyDecl().canIntroduceLocal(new_name))
-			throw new RefactoringException("cannot rename variable to "+new_name);
+		SimpleSet res = lookupVariable(new_name);
+		for(Iterator<Variable> iter=res.iterator(); iter.hasNext();)
+			if(!iter.next().isField())
+				throw new RefactoringException("variable of same name is in scope");
+		Stmt area = getArea();
+		if(!area.canIntroduceLocal(new_name))
+			throw new RefactoringException("variable of the same name is nested");
 	}
 
 	public void ParameterDeclaration.checkRenamingPreconds(String new_name) {
 		if(!hostBodyDecl().canIntroduceLocal(new_name))
 			throw new RefactoringException("cannot rename variable to "+new_name);
 	}
+	
+	inh Stmt VariableDeclaration.getArea();
+	eq Block.getStmt().getArea() = this;
+	eq ForStmt.getInitStmt().getArea() = this;
+	eq EnhancedForStmt.getVariableDeclaration().getArea() = this;
+	eq Program.getChild().getArea() = null;
 }

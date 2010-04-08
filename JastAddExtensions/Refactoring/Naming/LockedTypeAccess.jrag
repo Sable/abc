@@ -91,7 +91,7 @@ aspect LockedTypeAccess {
 	
 	public ASTNode ArrayTypeAccess.lockNames(Collection<String> endangered) {
 		setAccess((Access)getAccess().lockNames(endangered));
-		return this;
+		return super.lockNames(endangered);
 	}
 	
 	// absolute type access; can't get shadowed anyway
@@ -119,6 +119,18 @@ aspect LockedTypeAccess {
 			}
 		}
 		return this;
+	}
+	
+	public ASTNode SingleTypeImportDecl.eliminateLockedNames() {
+		if(((LockableName)getAccess().lastAccess()).isLocked()) {
+			// a type of the same name cannot be imported twice, and neither can an imported type
+			// clash with a visible type
+			String targetName = getAccess().type().name();
+			SimpleSet localTypes = compilationUnit().localLookupType(targetName);
+			if(allImportedTypes(targetName).size() > 1 || !localTypes.isEmpty() && !localTypes.isSingleton(getAccess().type()))
+				return null;
+		}
+		return super.eliminateLockedNames();
 	}
 	
 	public ASTNode Access.lock() { return this; }
@@ -150,7 +162,7 @@ aspect LockedTypeAccess {
 			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
 					|| hostType() != null && !target.accessibleFrom(hostType()))
 				throw new RefactoringException("inaccessible type");
-			if(!fromSource()) {
+			if(!fromSource() || hostBodyDecl() instanceof MethodDecl && ((MethodDecl)hostBodyDecl()).isNative()) {
 				if(!decl().equals(target))
 					throw new RefactoringException("cannot fix access in library");
 				return this;

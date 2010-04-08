@@ -7,8 +7,6 @@ aspect RenameType {
 	public void TypeDecl.rename(String new_name) {
 		if(name().equals(new_name))
 			return;
-		if(!isValidName(new_name))
-			throw new RefactoringException("not a valid name: "+new_name);
 		checkRenamingPreconds(new_name);
 		String old_name = name();
 		Collection<String> endangered = new ArrayList<String>(2);
@@ -19,7 +17,11 @@ aspect RenameType {
 		programRoot().eliminate(LOCKED_NAMES);
 	}
 	
-	private void TypeDecl.checkRenamingPreconds(String new_name) {
+	protected void TypeDecl.checkRenamingPreconds(String new_name) {
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
+		if(containsNativeMethod())
+			throw new RefactoringException("contains a native method");
         if(hasNestedType(new_name))
             throw new RefactoringException("nested type of the same name exists");
 		if(isNestedType()) {
@@ -37,16 +39,25 @@ aspect RenameType {
 		}
 	}
 	
+	protected void TypeVariable.checkRenamingPreconds(String new_name) {
+		super.checkRenamingPreconds(new_name);
+		GenericElement owner = owner();
+		for(int i=0;i<owner.getNumTypeParameter();++i)
+			if(owner.getTypeParameter(i)!=this && owner.getTypeParameter(i).name().equals(new_name))
+				throw new RefactoringException("type variable of same name exists");
+	}
+	
+    public boolean ASTNode.hasNestedType(String name) {
+    	for(int i=0;i<getNumChild();++i) {
+    		ASTNode child = getChild(i);
+    		if(child != null && child.hasNestedType(name))
+    			return true;
+    	}
+    	return false;
+    }
+    
     public boolean TypeDecl.hasNestedType(String name) {
-        for(int i=0;i<getNumBodyDecl();++i) {
-            BodyDecl d = getBodyDecl(i);
-            if(d instanceof MemberTypeDecl) {
-                TypeDecl a = ((MemberTypeDecl)d).typeDecl();
-                if(a.name().equals(name) || a.hasNestedType(name))
-                    return true;
-            }
-        }
-        return false;
+    	return name().equals(name) || super.hasNestedType(name);
     }
     
     public boolean TypeDecl.hasEnclosingType(String name) {
@@ -55,4 +66,16 @@ aspect RenameType {
     	return enc.name().equals(name) || enc.hasEnclosingType(name);
     }
 	
+    public boolean ASTNode.containsNativeMethod() {
+    	for(int i=0;i<getNumChild();++i) {
+    		ASTNode child = getChild(i);
+    		if(child != null && child.containsNativeMethod())
+    			return true;
+    	}
+    	return false;
+    }
+    
+    public boolean MethodDecl.containsNativeMethod() {
+    	return isNative() || super.containsNativeMethod();
+    }
 }

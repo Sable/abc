@@ -166,17 +166,6 @@ public class RenameMethodTests extends TestCase {
     	    "}"));
     }
     
-    public void test9() {
-    	testSucc(
-    		"A", "m()", "n",
-    		Program.fromClasses(
-    		"class Z { void n() { } }",
-    		"class A extends Z { void m() { n(); } }"),
-    		Program.fromClasses(
-    		"class Z { void n() { } }",
-    		"class A extends Z { void n() { super.n(); } }"));
-    }
-    
     public void test10() {
     	testFail(
     		"A", "m()", "n",
@@ -270,27 +259,6 @@ public class RenameMethodTests extends TestCase {
     		"}"));
     }
     
-    public void test18() {
-    	testSucc(
-    		"A", "m()", "n",
-    		Program.fromClasses(
-    		"class A { void m() { } }",
-    		"class B extends A {" +
-    		"  void n() { }" +
-    		"  class C {" +
-    		"    void p() { m(); }" +
-    		"  }" +
-    		"}"),
-    		Program.fromClasses(
-    		"class A { void n() { } }",
-    		"class B extends A {" +
-    	    "  void n() { }" +
-    	    "  class C {" +
-    	    "    void p() { B.super.n(); }" +
-    	    "  }" +
-    	    "}"));
-    }
-    
     public void test19() {
     	testSucc(
     		"A", "m()", "n",
@@ -373,19 +341,6 @@ public class RenameMethodTests extends TestCase {
     		Program.fromClasses(
     		"class A { int n() { return 23; } }",
     		"class B { A a; int p() { return a.n(); } }"));
-    }
-    
-    public void test26() {
-    	testSucc(
-    		"A", "m()", "n",
-    		Program.fromClasses(
-    		"class Z { int n() { return 42; } }",
-    		"class A extends Z { A a; int m() { return 23; } }",
-    		"class B { A a; int p() { return a.a.m(); } }"),
-    		Program.fromClasses(
-    	    "class Z { int n() { return 42; } }",
-    	    "class A extends Z { A a; int n() { return 23; } }",
-    	    "class B { A a; int p() { return a.a.n(); } }"));    		
     }
     
     public void test27() {
@@ -601,5 +556,13 @@ public class RenameMethodTests extends TestCase {
 			"class Super { void n() { } }",
 			"class A extends Super { void n() { } }",
        		"class B extends Super { void n() { } }"));       		    		
+    }
+    
+    public void test40() {
+    	testFail(
+    		"A", "m()", "n",
+    		Program.fromClasses(
+    		"class A { void m() { } }",
+    		"class B extends A { void n() { } }"));
     }
 }

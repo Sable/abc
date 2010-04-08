@@ -48,8 +48,28 @@ aspect LockedMethodAccess {
 		}
 	}
 	
+	class SavedMethodDeclSubstituted extends SavedMethodDecl {
+		private TypeDecl host;
+
+		public SavedMethodDeclSubstituted(MethodDeclSubstituted mds) {
+			super(mds.getOriginal());
+			host = mds.hostType();
+		}
+		
+		public MethodDecl getDecl() {
+			TypeDecl host = this.host.refresh();
+			MethodDecl md = super.getDecl();
+			host.localMethodsSignatureMap();
+			for(BodyDecl bd : host.getBodyDecls())
+				if(bd instanceof MethodDeclSubstituted && ((MethodDeclSubstituted)bd).getOriginal() == md)
+					return (MethodDecl)bd;
+			throw new Error("no such method");
+		}
+	}
+	
 	public SavedMethodDecl MethodDecl.save() { return new SavedMethodDecl(this); }
 	public SavedParMethodDecl ParMethodDecl.save() { return new SavedParMethodDecl(this); }
+	public SavedMethodDeclSubstituted MethodDeclSubstituted.save() { return new SavedMethodDeclSubstituted(this); }
 	
 	refine LookupMethod eq MethodAccess.decls() = targetMethod == null ? refined() : targetMethod.getDecl();
 	
@@ -66,9 +86,8 @@ aspect LockedMethodAccess {
 	// introducing locked method accesses
 	public ASTNode MethodAccess.lockMethodNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
-			return lock();
-		else
-			return super.lockMethodNames(endangered);
+			lock();
+		return super.lockMethodNames(endangered);
 	}
 	
 	public ASTNode MethodAccess.lock() {
@@ -224,7 +243,37 @@ aspect LockedMethodAccess {
 			return qualifier.qualifiesAccess(ma);
 		}
 	}
+	
+	/* A special case are element-value pairs in annotations: they also refer to methods, so we have to lock them;
+	 * but they are much easier to adjust. */
+	private MethodDecl ElementValuePair.targetMethod = null;
 
+	public ASTNode ElementValuePair.lockMethodNames(Collection<String> endangered) {
+		if(endangered.contains(getName()))
+			return lock();
+		else
+			return super.lockMethodNames(endangered);		
+	}
+	
+	public ASTNode ElementValuePair.lock() {
+	    Iterator<MethodDecl> iter = enclosingAnnotationDecl().memberMethods(getName()).iterator();
+	    if(iter.hasNext())
+	    	targetMethod = iter.next();
+	    return this;
+	}
+	
+	public ASTNode ElementValuePair.eliminateLockedNames() {
+		if(targetMethod != null) {
+			MethodDecl target = targetMethod;
+			targetMethod = null;
+			setName(target.name());
+		    Iterator<MethodDecl> iter = enclosingAnnotationDecl().memberMethods(getName()).iterator();
+		    if(!iter.hasNext() || iter.next() != target)
+		    	throw new RefactoringException("cannot unlock element-value pair");
+		}
+		return this;
+	}
+	
 	/* NOTE: Locked method accesses only fix the static declaration a method resolves to; they do not consider
 	 *       possible polymorphic dispatch. One could think that it would be safer to actually compute the set
 	 *       of all targets a call could possibly resolve to, and fix that whole set. This would not actually

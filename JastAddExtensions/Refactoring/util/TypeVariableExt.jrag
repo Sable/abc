@@ -15,10 +15,6 @@ aspect TypeVariableExt {
 	GenericConstructorDecl implements GenericElement;
 	GenericTypeDecl implements GenericElement;
 	
-	public TypeVariable.TypeVariable(String name) {
-		
-	}
-	
 	inh GenericElement TypeVariable.owner();
 	eq Program.getChild().owner() { throw new IllegalStateException("owner() on type variable that is not in tree"); }
 	eq GenericElement.getTypeParameter().owner() = this;

@@ -2152,7 +2152,6 @@ public class RenameTypeTests extends TestCase {
             Program.fromCompilationUnits(
             new RawCU("A.java",
                       "package p;"+
-                      "import java.util.Map.Entry;"+
                       "class Entry {"+
                       "}"+
                       "public class A {"+

@@ -10,19 +10,22 @@ aspect RenameMethod {
 		if(!isValidName(new_name))
 			throw new RefactoringException("not a valid name: "+new_name);
 		programRoot().lockMethodNames(name(), new_name);
+		programRoot().lockOverridingDependencies(name(), new_name);
 		for(MethodDecl md : relatives()) {
 			md.checkRenamingPreconds(new_name);
 			md.setID(new_name);
 		}
-		programRoot().eliminate(LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 	
 	private void MethodDecl.checkRenamingPreconds(String new_name) {
+		if(!fromSource() || isNative())
+			throw new RefactoringException("cannot rename");
 		String sig = signature();
 		int idx = sig.indexOf('(');
 		String new_sig = new_name + sig.substring(idx);
 		if(!hostType().canIntroduceMethod(this, new_sig))
-			throw new RefactoringException("cannot rename");
+			throw new RefactoringException("cannot introduce new method");
 	}
 	
 	public boolean TypeDecl.canIntroduceMethod(MethodDecl md) {
@@ -64,4 +67,42 @@ aspect RenameMethod {
 		return true;
 	}
 	
+	public void ASTNode.lockOverridingDependencies(String... names) {
+		lockOverridingDependencies(Arrays.asList(names));
+	}
+	public void ASTNode.lockOverridingDependencies(Collection<String> names) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.lockOverridingDependencies(names);
+		}
+	}
+	
+	private HashSet<SavedMethodDecl> MethodDecl.lockedOverridingDependencies = null;
+	public void MethodDecl.lockOverridingDependencies(Collection<String> names) {
+		if(names.contains(name())) {
+			lockedOverridingDependencies = new HashSet<SavedMethodDecl>();
+			for(MethodDecl md : overrides())
+				lockedOverridingDependencies.add(md.save());
+		}
+	}
+	
+	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
+		public ASTNode eliminateOn(ASTNode n) {
+			n.unlockOverriding();
+			return n;
+		}
+	};
+	
+	public void ASTNode.unlockOverriding() { }
+	public void MethodDecl.unlockOverriding() {
+		if(lockedOverridingDependencies != null) {
+			HashSet<MethodDecl> old_overrides = new HashSet<MethodDecl>();
+			for(SavedMethodDecl md : lockedOverridingDependencies)
+				old_overrides.add(md.getDecl());
+			lockedOverridingDependencies = null;
+			if(!old_overrides.equals(overrides()))
+				throw new RefactoringException("overriding has changed");
+		}
+	}
 }

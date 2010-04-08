@@ -44,6 +44,16 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceFactory.IntroduceFactoryTests.class);
+		suite.addTestSuite(tests.eclipse.RenameMethodInInterface.RenameMethodInInterfaceTests.class);
+		suite.addTestSuite(tests.eclipse.RenameNonPrivateField.RenameNonPrivateFieldTests.class);
+		suite.addTestSuite(tests.eclipse.RenameParameters.RenameParametersTests.class);
+		suite.addTestSuite(tests.eclipse.RenamePrivateField.RenamePrivateFieldTests.class);
+		suite.addTestSuite(tests.eclipse.RenamePrivateMethod.RenamePrivateMethodTests.class);
+		suite.addTestSuite(tests.eclipse.RenameStaticMethod.RenameStaticMethodTests.class);
+		suite.addTestSuite(tests.eclipse.RenameTemp.RenameTempTests.class);
+		suite.addTestSuite(tests.eclipse.RenameType.RenameTypeTests.class);
+		suite.addTestSuite(tests.eclipse.RenameTypeParameter.RenameTypeParameterTests.class);
+		suite.addTestSuite(tests.eclipse.RenameVirtualMethodInClass.RenameVirtualMethodInClassTests.class);
 		//$JUnit-END$
 		return suite;
 	}
