@@ -1,8 +1,9 @@
 \subsection{\refactoring{Inline Temp}}
-This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}.
+This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}; see Algorithms~\ref{alg:InlineTemp}, \ref{alg:SplitDeclaration}, \ref{alg:InlineAssignment}, \ref{alg:RemoveDecl}
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Temp}(d : \type{LocalVar})$}
+\label{alg:InlineTemp}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java
@@ -15,6 +16,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 
 \begin{algorithm}
 \caption{$\refactoring{Split Declaration}(d : \type{LocalVar}) : \option{\type{Assignment}}$}
+\label{alg:SplitDeclaration}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ compound declarations
 \ENSURE Java $\cup$ locked names, first-class array init
@@ -33,6 +35,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
+\label{alg:InlineAssignment}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ implicit assignment conversion
 \ENSURE Java $\cup$ locked dependencies
@@ -54,6 +57,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 
 \begin{algorithm}
 \caption{$\refactoring{Remove Decl}(d : \type{LocalVar})$}
+\label{alg:RemoveDecl}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ compound declarations
 \ENSURE Java

@@ -23,10 +23,55 @@ Refactoring \refactoring{Rename Field} changes the name of a field $f$ to $n$. I
 \ENSURE Java $\cup$ locked names
 \medskip
 \STATE \assert $n$ is a valid name
-\STATE \assert enclosing block of $v$ is neither contained in, nor contains the scope of another local named $n$
+\STATE \assert scope of $v$ does not intersect scope of any other \type{Local} named $n$
 \STATE $\util{lockNames}(\util{block}(v), \{n, \util{name}(f)\})$
 \STATE set name of $v$ to $n$
 \end{algorithmic}
 \end{algorithm}
 
 Refactoring \refactoring{Rename Local} changes the name of a local variable or parameter $v$ to $n$. It ensures that $n$ is indeed a valid name and that the renaming $v$ to $n$ will not violate the rule that scopes of local variables of the same name cannot be nested. It then again locks all accesses to variables, types, or packages named either $n$ or $\util{name}(v)$, but only within the enclosing block of $v$, and changes the name of $v$ to $n$.
+
+\begin{algorithm}
+\caption{$\refactoring{Rename Method}(m : \type{Method}, n : \type{Name}$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names, locked overriding
+\medskip
+\STATE \assert $n$ is a valid name
+\STATE $\util{lockMethodNames}(\{\util{name}(m), n\})$
+\STATE $\util{lockOverriding}(\{\util{name}(m), n\})$
+\FORALL{$m'$ such that $\exists m''.m<:^*m'' \wedge m'<:^*m''$}
+  \STATE \assert $m'$ is not native
+  \STATE $s\leftarrow\text{signature of $m'$ after renaming}$
+  \STATE \assert host type of $m'$ contains no local method of signature $s$
+  \STATE \assert $m'$ can override or hide any ancestor method of signature $s$
+  \STATE \assert $m'$ can be overridden or hidden by any descendant method of signature $s$
+  \STATE set name of $m'$ to $n$
+  \STATE remove any static import of $m'$ if it would become vacuous
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+Refactoring \refactoring{Rename Method} changes the name of a method $m$ to $n$. It ensures that $n$ is a valid name, then locks all calls to methods of name $\util{name}(m)$ or $n$, and their overriding dependencies. Now it changes the names of all methods $m'$ related to $m$ (\emph{i.e.}, such that $m$ and $m'$ both transitively override the same method), checking that the resulting program will be well-formed: in particular, there cannot be another local method with the same signature, and any methods that the renamed $m'$ would override or hide must, in fact, be overridable or hidable by $m'$, and vice versa for methods that would override or hide $m'$. If there is a static import that only imports $m'$ (and not also another static member of the surrounding class), then remove that import. We could, of course, try to adjust it, but changing imports is a tricky business.
+
+\begin{algorithm}
+\caption{$\refactoring{Rename Type}(T : \type{Type}, n : \type{Name}$}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $n$ is a valid name
+\STATE \assert no native method is nested in $T$
+\STATE \assert there is no nesting or enclosing type of name $n$
+\STATE \assert if $T$ is a toplevel type, there is no other toplevel type $n$ in the enclosing package, and it has no subpackage of name $n$
+\STATE \assert if $T$ is a type parameter, there is no type parameter of name $n$ in the parameter list where it occurs
+\STATE $\util{lockNames}(\{\util{name}(T), n\})$
+\STATE set name of $T$ to $n$
+\STATE set names of constructors of $T$ to $n$
+\STATE if $T$ is public, change the name of its compilation unit to match
+\STATE remove any single type import declaration of $T$ that would clash with a visible type or with another import declaration
+\STATE remove any static import of $T$ if it would become vacuous
+\end{algorithmic}
+\end{algorithm}
+
+Refactoring \refactoring{Rename Type} changes the name of a type $T$ to $n$.  It is fairly straightforward, except for the well-formedness checks and the treatment of import declarations.

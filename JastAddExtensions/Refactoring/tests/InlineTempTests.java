@@ -529,4 +529,17 @@ public class InlineTempTests extends TestCase {
     		"  }" +
     		"}"));
     }
+    
+    public void test27() {
+    	testFail(
+    		Program.fromStmts(
+    		"int y, z;",
+    		"do {" +
+    		"  y = 23;" +
+    		"  do {" +
+    		"    int i = y++;" +
+    		"    z = y - i;" +
+    		"  } while(false);" +
+    		"} while(false);"));
+    }
 }

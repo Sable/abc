@@ -1,8 +1,9 @@
 \subsection{\refactoring{Inline Constant}}
-This refactoring inlines a constant field into all its uses. Implemented in \sourcelink{InlineTemp/InlineConstant.jrag}.
+This refactoring inlines a constant field into all its uses. Implemented in \sourcelink{InlineTemp/InlineConstant.jrag}; see Algorithms~\ref{alg:InlineConstant-1}, \ref{alg:InlineConstant-2}, \ref{alg:RemoveField}.
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Constant}(f : \type{Field})$}
+\label{alg:InlineConstant-1}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ implicit assignment conversion
 \ENSURE Java
@@ -16,6 +17,7 @@ This refactoring inlines a constant field into all its uses. Implemented in \sou
 
 \begin{algorithm}
 \caption{$\refactoring{Inline Constant}(u : \type{FieldAccess})$}
+\label{alg:InlineConstant-2}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies
@@ -30,6 +32,7 @@ This refactoring inlines a constant field into all its uses. Implemented in \sou
 
 \begin{algorithm}
 \caption{$\refactoring{Remove Field}(f : \type{Field})$}
+\label{alg:RemoveField}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java

@@ -1,8 +1,8 @@
 \subsection{\refactoring{Extract Constant}}
-This refactoring extracts a constant expression into a field. Implemented in \sourcelink{ExtractTemp/ExtractConstant.jrag}.
+This refactoring extracts a constant expression into a field. Implemented in \sourcelink{ExtractTemp/ExtractConstant.jrag}; see Algorithm~\ref{alg:ExtractConstant}.
 
 \begin{algorithm}
-\caption{$\refactoring{Extract Constant}(e : \type{Expr}, n : \type{Name})$}
+\caption{$\refactoring{Extract Constant}(e : \type{Expr}, n : \type{Name})$}\label{alg:ExtractConstant}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies
@@ -18,6 +18,6 @@ This refactoring extracts a constant expression into a field. Implemented in \so
 \end{algorithmic}
 \end{algorithm}
 
-An expression is extractible if its type is not \code{void}, it is not a reference to a type or package, and it is not the keyword \code{super}; furthermore, it is not on the right-hand side of a dot.
+An expression is extractible if its type is not \code{void}, it is not a reference to a type or package, and it is not the keyword \code{super}; furthermore, it cannot be on the right-hand side of a dot.
 
 The \emph{effective type} of an expression $e$ is the same as the type of $e$, except when the type of $e$ is an anonymous class, in which case the effective type is its superclass, or when the type of $e$ is a captured type variable, in which case the effective type is its upper bound.

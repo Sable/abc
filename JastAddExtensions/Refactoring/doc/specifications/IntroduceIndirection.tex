@@ -1,8 +1,9 @@
 \subsection{\refactoring{Introduce Indirection}}
-This refactoring creates a static method $m'$ in type $B$ that delegates to a method $m$ in type $A$. Implemented in \sourcelink{IntroduceIndirection/IntroduceIndirection.jrag}.
+This refactoring creates a static method $m'$ in type $B$ that delegates to a method $m$ in type $A$. Implemented in \sourcelink{IntroduceIndirection/IntroduceIndirection.jrag}; see Algorithm~\ref{alg:IntroduceIndirection}.
 
 \begin{algorithm}
 \caption{$\refactoring{Introduce Indirection}(m : \type{Method}, B : \type{ClassOrInterface})$}
+\label{alg:IntroduceIndirection}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names, \code{return void}
@@ -18,5 +19,3 @@ This refactoring creates a static method $m'$ in type $B$ that delegates to a me
 \STATE $\refactoring{Move Static Method}(m', B)$
 \end{algorithmic}
 \end{algorithm}
-
-TODO: implementation needs to be cleaned up

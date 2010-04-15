@@ -10,10 +10,6 @@
  *******************************************************************************/
 package tests.eclipse.RenamePackage;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
-
 import junit.framework.TestCase;
 import tests.CompileHelper;
 import AST.PackageDecl;
@@ -412,7 +408,7 @@ public class RenamePackageTests extends TestCase {
 		renamePackageTest("r", "9", false);
 	}
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void testFail1() throws Exception{
 		printTestDisabledMessage("needs revisiting");
 		//helper1(new String[]{"r.p1"}, new String[][]{{"A"}}, "r");
@@ -436,7 +432,7 @@ public class RenamePackageTests extends TestCase {
 		renamePackageTest("r", "p1", false);
 	}*/
 
-	/* disabled by Eclipse
+	/* disabled: by Eclipse
 	public void testFail7() throws Exception{
 		//printTestDisabledMessage("1GK90H4: ITPJCORE:WIN2000 - search: missing package reference");
 		printTestDisabledMessage("corner case - name obscuring");
@@ -471,7 +467,7 @@ public class RenamePackageTests extends TestCase {
 		renamePackageTest("r", "p1", true);
 	}
 
-	/* disabled: differing intrpretations
+	/* disabled: differing interpretations
 	public void test3() throws Exception{
 		renamePackageTest("fred", "r", true);
 	}*/

@@ -1,7 +1,11 @@
 aspect DataFlow {
 	public void ASTNode.lockDataFlow() {
+		lockDataFlow(0);
+	}
+	
+	public void ASTNode.lockDataFlow(int l) {
 		for(int i=0;i<getNumChild();++i)
-			getChild(i).lockDataFlow();
+			getChild(i).lockDataFlow(l);
 	}
 	
 	protected SmallSet<Definition> Access.lockedReachingDefs = null;
@@ -9,18 +13,29 @@ aspect DataFlow {
 	protected SmallSet<Definition> Access.lockedWriteDeps = null;
 	
 	public void Access.lockReachingDefs() {
-		if(lockedReachingDefs == null)
+		lockReachingDefs(0);
+	}
+	public void Access.lockReachingDefs(int l) {
+		if(lockedReachingDefs == null) {
 			lockedReachingDefs = reachingDefinitions();
+			if(l > 0)
+				for(Definition d : lockedReachingDefs)
+					((ASTNode)d).lockDataFlow(l-1);
+		}
 	}
 	
-	public void Access.lockReachedUses() {
-		if(lockedReachedUses == null)
+	public void Access.lockReachedUses(int l) {
+		if(lockedReachedUses == null) {
 			lockedReachedUses = reachedUses();
+			if(l > 0)
+				for(Access a : lockedReachedUses)
+					a.lockDataFlow(l-1);
+		}
 	}
 	
-	public void Access.lockReachingDefsAndUses() {
-		lockReachingDefs();
-		lockReachedUses();
+	public void Access.lockReachingDefsAndUses(int l) {
+		lockReachingDefs(l);
+		lockReachedUses(l);
 	}
 	
 	public void Access.lockWriteDeps() {
@@ -28,35 +43,35 @@ aspect DataFlow {
 			lockedWriteDeps = writeDeps();
 	}
 	
-	public void ArrayAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
+	public void ArrayAccess.lockDataFlow(int l) {
+		lockReachingDefsAndUses(l);
 		lockWriteDeps();
-		super.lockDataFlow();
+		super.lockDataFlow(l);
 	}
 	
-	public void ClassInstanceExpr.lockDataFlow() {
-		lockReachingDefsAndUses();
+	public void ClassInstanceExpr.lockDataFlow(int l) {
+		lockReachingDefsAndUses(l);
 		lockWriteDeps();
-		super.lockDataFlow();
+		super.lockDataFlow(l);
 	}
 	
-	public void ConstructorAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
+	public void ConstructorAccess.lockDataFlow(int l) {
+		lockReachingDefsAndUses(l);
 		lockWriteDeps();
-		super.lockDataFlow();
+		super.lockDataFlow(l);
 	}
 	
-	public void MethodAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
+	public void MethodAccess.lockDataFlow(int l) {
+		lockReachingDefsAndUses(l);
 		lockWriteDeps();
-		super.lockDataFlow();
+		super.lockDataFlow(l);
 	}
 	
-	public void VarAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
+	public void VarAccess.lockDataFlow(int l) {
+		lockReachingDefsAndUses(l);
 		if(decl().isField())
 			lockWriteDeps();
-		super.lockDataFlow();
+		super.lockDataFlow(l);
 	}
 	
 	public void ASTNode.unlockDataFlow() { }

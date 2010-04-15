@@ -1,15 +1,15 @@
 \subsection{\refactoring{Convert Local to Member Class}}
-This refactoring converts a local class to a member class. Implemented in \sourcelink{TypePromotion/LocalClassToMemberClass.jrag}.
+This refactoring converts a local class to a member class. Implemented in \sourcelink{TypePromotion/LocalClassToMemberClass.jrag}; see Algorithms~\ref{alg:ConvertLocalToMemberClass}, \ref{alg:CloseOverTypeVariables}, \ref{alg:CloseOverLocalVariables}.
 
 \begin{algorithm}
-\caption{$\refactoring{Convert Local to Member Class}(L : \type{LocalClass}) : \type{MemberType}$}
+\caption{$\refactoring{Convert Local to Member Class}(L : \type{LocalClass}) : \type{MemberType}$}\label{alg:ConvertLocalToMemberClass}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names, fresh variables
 \medskip
 \STATE $A \leftarrow \text{enclosing type of $L$}$
-\STATE close $L$ over type variables
-\STATE close $L$ over local variables
+\STATE $\util{closeOverTypeVariables}(L)$
+\STATE $\util{closeOverLocalVariables}(L)$
 \IF{$L$ is in static context}
   \STATE make $L$ static
 \ENDIF
@@ -20,4 +20,51 @@ This refactoring converts a local class to a member class. Implemented in \sourc
 \end{algorithmic}
 \end{algorithm}
 
-TODO: provide specification of close over type variables and close over local variables (implemented in TypePromotion/CloseOverVariables.jrag)
+\begin{algorithm}
+\caption{$\util{closeOverTypeVariables}(L : \type{LocalClass})$}\label{alg:CloseOverTypeVariables}
+\begin{algorithmic}[1]
+\medskip
+\STATE $m \leftarrow \text{empty map}$
+\STATE $U \leftarrow \text{accesses to $L$}$
+\FORALL{accesses $V$ to type variables $T$ of the enclosing body declaration}
+  \IF{$m(T)$ undefined}
+    \STATE create new type variable $T'$ with same bounds as $T$
+    \STATE add $T'$ as type parameter to $L$
+    \STATE $m(T) \leftarrow T'$
+    \FORALL{$u\in U$}
+      \STATE add locked access to $T$ as type argument to $u$
+    \ENDFOR
+  \ENDIF
+  \STATE lock $V$ onto $m(T)$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\util{closeOverLocalVariables}(L : \type{LocalClass})$}\label{alg:CloseOverLocalVariables}
+\begin{algorithmic}[1]
+\medskip
+\STATE $m \leftarrow \text{empty map}$
+\FORALL{accesses $v$ to local variables $x$ of enclosing body declaration}
+  \IF{$m(x)$ undefined}
+    \STATE create \code{private final} field $f$ of same type as $x$
+    \STATE add $f$ to $L$
+    \STATE $m(v) \leftarrow f$
+    \FORALL{constructors $c$ of $L$}
+      \STATE create new parameter $p$ of same type and name as $x$
+      \STATE insert $p$ as first parameter of $c$
+      \IF{$c$ is chaining constructor}
+        \STATE add access to $p$ as parameter to chaining invocation
+      \ELSE
+        \STATE insert assignment from $p$ to $f$ as first statement in $c$
+      \ENDIF
+    \ENDFOR
+    \FORALL{instantiations $i$ of $L$}
+      \STATE insert access to $x$ as first argument to $i$
+    \ENDFOR
+  \ENDIF
+  \STATE lock $v$ onto $m(x)$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+

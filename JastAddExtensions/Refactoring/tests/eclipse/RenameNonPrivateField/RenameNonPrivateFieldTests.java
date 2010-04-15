@@ -343,7 +343,7 @@ public class RenameNonPrivateFieldTests extends TestCase {
 		helper2("ZERO", "ZORRO");
 	}
 
-	/* disabled: tests idiosyncratic features
+	/* disabled: tests unimplemented features
 	public void testDelegate01() throws Exception {
 		// a simple delegate
 		helper2("f", "g", true);

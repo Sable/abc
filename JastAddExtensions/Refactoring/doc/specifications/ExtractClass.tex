@@ -1,8 +1,8 @@
 \subsection{\refactoring{Extract Class}}
-This refactoring extracts some fields of a class into a newly created member class. Implemented in \sourcelink{ExtractClass/ExtractClass.jrag}.
+This refactoring extracts some fields of a class into a newly created member class. Implemented in \sourcelink{ExtractClass/ExtractClass.jrag}; see Algorithm~\ref{alg:ExtractClass}.
 
 \begin{algorithm}
-\caption{$\refactoring{Extract Class}(C : \type{Class}, fs : \listtp{\type{Field}}, n : \type{Name}, fn : \type{Name})$}
+\caption{$\refactoring{Extract Class}(C : \type{Class}, fs : \listtp{\type{Field}}, n : \type{Name}, fn : \type{Name})$}\label{alg:ExtractClass}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies, first-class array init
@@ -34,4 +34,4 @@ This refactoring extracts some fields of a class into a newly created member cla
 \end{algorithmic}
 \end{algorithm}
 
-This is only a bare-bones specification. The implementation additionally allows t encapsulate the extracted fields, and to move the wrapper class $W$ to the toplevel.
+This is only a bare-bones specification. The implementation additionally allows to encapsulate the extracted fields, and to move the wrapper class $W$ to the toplevel.

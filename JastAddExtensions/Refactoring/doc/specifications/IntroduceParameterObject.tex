@@ -1,8 +1,9 @@
 \subsection{\refactoring{Introduce Parameter Object}}
-This refactoring wraps a set $P$ of parameters of a method $m$ into a single parameter $n$ of type $w$, where $w$ is a newly created wrapper class containing fields corresponding to all the parameters in $P$. Implemented in \sourcelink{IntroduceParameterObject/IntroduceParameterObject.jrag}.
+This refactoring wraps a set $P$ of parameters of a method $m$ into a single parameter $n$ of type $w$, where $w$ is a newly created wrapper class containing fields corresponding to all the parameters in $P$. Implemented in \sourcelink{IntroduceParameterObject/IntroduceParameterObject.jrag}; see Algorithm \ref{alg:IntroduceParameterObject}.
 
 \begin{algorithm}
 \caption{$\refactoring{Introduce Parameter Object}(m : \type{Method}, P : \settp{\type{Parameter}}, w : \settp{Name}, n : \settp{Name})$}
+\label{alg:IntroduceParameterObject}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ variable arity parameters
 \ENSURE Java $\cup$ locked names

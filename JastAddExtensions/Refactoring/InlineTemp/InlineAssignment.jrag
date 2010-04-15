@@ -19,7 +19,7 @@ aspect InlineAssignment {
 			getSource().lockAllNames();
 			bd.hostType().flushCaches();
 			rhs = getSource();
-			rhs.lockDataFlow();
+			rhs.lockDataFlow(1);
 			bd.lockSyncDependencies();
 			if(w.isDest())
 				throw new RefactoringException("cannot inline into destinations");
