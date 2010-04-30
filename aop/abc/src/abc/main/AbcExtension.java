@@ -22,9 +22,11 @@ package abc.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
@@ -681,13 +683,22 @@ public class AbcExtension
             reweavingPasses = new ArrayList<ReweavingPass>();
             createReweavingPasses(reweavingPasses);
             
+            Set<String> passIDs = new HashSet<String>();
             //filter out disabled passes
             for (Iterator<ReweavingPass> passIter = reweavingPasses.iterator(); passIter.hasNext();) {
 				ReweavingPass pass = passIter.next();
 				if(!pass.isEnabled()) {
 					passIter.remove();					
 				}
+				passIDs.add(pass.getId().toString());
 			}
+            
+            String[] enabledPasses = OptionsParser.v().static_analyses().toLowerCase().split("-");
+            for (String passId : enabledPasses) {
+				if(!passIDs.contains(passId)) {
+					throw new RuntimeException("No such analysis pass: "+passId);
+				}
+			}            
 
             //cross-check dependencies
             for (ReweavingPass pass1 : reweavingPasses) {
