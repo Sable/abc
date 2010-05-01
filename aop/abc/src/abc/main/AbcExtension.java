@@ -695,6 +695,7 @@ public class AbcExtension
             
             String[] enabledPasses = OptionsParser.v().static_analyses().toLowerCase().split("-");
             for (String passId : enabledPasses) {
+            	if(passId.length()==0) continue;
 				if(!passIDs.contains(passId)) {
 					throw new RuntimeException("No such analysis pass: "+passId);
 				}

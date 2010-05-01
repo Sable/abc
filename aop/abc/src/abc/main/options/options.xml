@@ -296,7 +296,7 @@ any of their subdirectories.
     <name>Static whole-program analyses (reweaving analyses)</name>
     <stringopt>
       <alias>static-analyses</alias>
-      <default>quick</default>
+      <default></default>
       <set_arg_label>stage1-stage2</set_arg_label>
       <short_desc>Specifies a hyphen separated list of static-analysis-stages to be executed.</short_desc>
       <long_desc>Specifies a hyphen separated list of static-analysis-stages to be executed.</long_desc>
