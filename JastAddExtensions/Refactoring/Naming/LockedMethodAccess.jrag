@@ -108,8 +108,12 @@ aspect LockedMethodAccess {
 	
 	// eliminating locked method accesses
 	inh TypeDecl MethodAccess.enclosingType();
-	public Access MethodAccess.eliminateLockedNames() {
-		return targetMethod == null ? this : unlock(null);
+	public void MethodAccess.eliminateLockedNames() {
+		if(targetMethod != null) {
+			replace(this).with(unlock(null)).eliminateLockedNames();
+		} else {
+			super.eliminateLockedNames();
+		}
 	}
 	
 	public Access MethodAccess.unlock(Expr qual) {
@@ -161,13 +165,13 @@ aspect LockedMethodAccess {
 			if(target.isStatic())
 				return computeStaticAccess(enclosing, args);
 			if(inStaticCtxt)
-				return null;
+				throw new RefactoringException("cannot access non-static method in static context");
 			if(source == bend) {
 				return computeThisAccess(enclosing, args);
 			} else if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
 				return computeSuperAccess(enclosing, args);
 			} else {
-				return null;
+				throw new RefactoringException("cannot access method");
 			}
 		} else {
 			return constructAccess(args);
@@ -226,17 +230,17 @@ aspect LockedMethodAccess {
 		MethodAccess ma = constructAccess(args);
 		if(!directlyVisible) {
 			if(!target.isStatic())
-				return null;
+				throw new RefactoringException("cannot access method");
 			if(inStaticCtxt)
 				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
 					return qualifier.qualifiesAccess(ma);
 				else
-					return null;
+					throw new RefactoringException("cannot access method");
 			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
 				return qualifier.qualifiesAccess(ma);
 			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
 				return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma);
-			return null;
+			throw new RefactoringException("cannot access method");
 		} else {
 			if(!target.accessibleFrom(enclosing))
 				throw new RefactoringException("method not accessible");
@@ -262,7 +266,7 @@ aspect LockedMethodAccess {
 	    return this;
 	}
 	
-	public ASTNode ElementValuePair.eliminateLockedNames() {
+	public void ElementValuePair.eliminateLockedNames() {
 		if(targetMethod != null) {
 			MethodDecl target = targetMethod;
 			targetMethod = null;
@@ -271,7 +275,7 @@ aspect LockedMethodAccess {
 		    if(!iter.hasNext() || iter.next() != target)
 		    	throw new RefactoringException("cannot unlock element-value pair");
 		}
-		return this;
+		super.eliminateLockedNames();
 	}
 	
 	/* NOTE: Locked method accesses only fix the static declaration a method resolves to; they do not consider

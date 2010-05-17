@@ -88,13 +88,18 @@ aspect RenameMethod {
 	}
 	
 	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
-		public ASTNode eliminateOn(ASTNode n) {
+		public void eliminateOn(ASTNode n) {
 			n.unlockOverriding();
-			return n;
 		}
 	};
 	
-	public void ASTNode.unlockOverriding() { }
+	public void ASTNode.unlockOverriding() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.unlockOverriding();
+		}
+	}
 	public void MethodDecl.unlockOverriding() {
 		if(lockedOverridingDependencies != null) {
 			HashSet<MethodDecl> old_overrides = new HashSet<MethodDecl>();
@@ -104,5 +109,6 @@ aspect RenameMethod {
 			if(!old_overrides.equals(overrides()))
 				throw new RefactoringException("overriding has changed");
 		}
+		super.unlockOverriding();
 	}
 }

@@ -48,7 +48,12 @@ aspect LockedVariableAccess {
 	
 	// eliminating locked variable accesses
 	inh TypeDecl VarAccess.enclosingType();
-	public Access VarAccess.eliminateLockedNames() { return targetVariable == null ? this : unlock(null); }
+	public void VarAccess.eliminateLockedNames() {
+		if(targetVariable != null)
+			replace(this).with(unlock(null)).eliminateLockedNames();
+		else
+			super.eliminateLockedNames();
+	}
 	public Access VarAccess.unlock(Expr qual) {
 		Variable target = targetVariable.refresh();
 		targetVariable = null;

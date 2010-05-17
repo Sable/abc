@@ -27,41 +27,50 @@ aspect FreshVariables {
 	eq FreshVariable.refreshVariable() = this;
 	
 	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables") {
-		public ASTNode eliminateOn(ASTNode n) {
-			return n.eliminateFreshVariables();
+		public void eliminateOn(ASTNode n) {
+			n.eliminateFreshVariables();
 		}
 	};
 	
-	public ASTNode ASTNode.eliminateFreshVariables() { return this; }
+	public void ASTNode.eliminateFreshVariables() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.eliminateFreshVariables();
+		}
+	}
 	
-	public ParameterDeclaration FreshParameter.eliminateFreshVariables() {
+	public void FreshParameter.eliminateFreshVariables() {
 		String new_name = pickFreshName();
 		ParameterDeclaration pd = new ParameterDeclaration(getModifiers(), getTypeAccess(), new_name);
 		for(VarAccess va : uses()) {
 			assert va.isLocked();
 			va.lock(pd);
 		}
-		return pd;
+		replaceWith(pd);
+		pd.eliminateFreshVariables();
 	}
 	
-	public VariableDeclaration FreshLocalVariable.eliminateFreshVariables() {
+	public void FreshLocalVariable.eliminateFreshVariables() {
 		String new_name = pickFreshName();
 		VariableDeclaration vd = new VariableDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
 		for(VarAccess va : uses()) {
 			assert va.isLocked();
 			va.lock(vd);
 		}
-		return vd;
+		replaceWith(vd);
+		vd.eliminateFreshVariables();
 	}
 	
-	public FieldDeclaration FreshField.eliminateFreshVariables() {
+	public void FreshField.eliminateFreshVariables() {
 		String new_name = pickFreshName();
 		FieldDeclaration fd = new FieldDeclaration(getModifiers(), getTypeAccess(), new_name, getInitOpt());
 		for(VarAccess va : uses()) {
 			assert va.isLocked();
 			va.lock(fd);
 		}
-		return fd;
+		replaceWith(fd);
+		fd.eliminateFreshVariables();
 	}
 	
 	public String FreshField.pickFreshName() {

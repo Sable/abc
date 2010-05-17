@@ -86,6 +86,16 @@ aspect AST {
 		int idx = parent.getIndexOfChild(this);
 		parent.setChild(qual.qualifiesAccess(this), idx);
 	}
+	
+	private static int ASTNode.replaceIndex = -1;
+	public static ASTNode ASTNode.replace(ASTNode child) {
+		replaceIndex = child.childIndex;
+		return child.getParent();
+	}
+	public ASTNode ASTNode.with(ASTNode newChild) {
+		setChild((T)newChild, replaceIndex);
+		return newChild;
+	}
 
 	/* JastAddJ stores multiply qualified accesses as right-heavy trees
 	 * for example, [A.this.f] is

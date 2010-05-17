@@ -34,8 +34,8 @@ aspect MoveMembers {
 		lockAllNames();
 		programRoot().lockNames(name());
 		TypeDecl host = hostType();
-		target.insertUnusedMethod(this);
 		host.removeBodyDecl(this);
+		target.insertUnusedMethod(this);
 	}
 	
 	public void MemberTypeDecl.moveTo(TypeDecl target) {

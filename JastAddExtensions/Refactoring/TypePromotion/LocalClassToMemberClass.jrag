@@ -1,10 +1,10 @@
 aspect LocalClassToMemberClass {
 	public MemberTypeDecl LocalClassDeclStmt.promoteToMemberClass(boolean makePublic) {
 		Program root = programRoot();
-		ClassDecl cd = getClassDecl();
 		// close over accesses to local variables
-		cd = closeOverTypeVariables();
+		closeOverTypeVariables();
 		closeOverLocalVariables();
+		ClassDecl cd = getClassDecl();
 		if(!cd.enclosingType().isLocalClass() && !cd.enclosingType().isAnonymous())
 			cd.setVisibility(makePublic ? VIS_PUBLIC : VIS_PRIVATE);
 		if(cd.inStaticContext())
@@ -13,9 +13,9 @@ aspect LocalClassToMemberClass {
 		root.lockNames(cd.name());
 		cd.lockAllNames();
 		// move
-		MemberTypeDecl mtd = cd.enclosingType().insertUnusedType(cd, 0);
+		TypeDecl encl = cd.enclosingType();
 		enclosingBlock().removeStmt(this);
-		return mtd;
+		return encl.insertUnusedType(cd, 0);
 	}
 	
 	public MemberTypeDecl LocalClassDeclStmt.doPromoteToMemberClass(boolean makePublic) {

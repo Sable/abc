@@ -41,17 +41,17 @@ aspect Locking {
 			return res.lockAllNames();
 	}
 	
-	public ASTNode AbstractDot.eliminateLockedNames() {
+	public void AbstractDot.eliminateLockedNames() {
 		if(getRight() instanceof AbstractDot)
 			rotateLeft();
 		if(getRight() instanceof LockableName && ((LockableName)getRight()).isLocked()) {
-			Expr qual = (Expr)getLeft().eliminateLockedNames();
-			setLeft(qual);
+			getLeft().eliminateLockedNames();
+			Expr qual = getLeft();
 			Expr res = ((LockableName)getRight()).unlock(qual);
 			replaceWith(res);
-			return res;
+			res.eliminateLockedNames();
 		} else {
-			return super.eliminateLockedNames();	
+			super.eliminateLockedNames();	
 		}
 	}
 	

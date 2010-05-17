@@ -103,34 +103,45 @@ aspect LockedTypeAccess {
 		return super.lockNames(endangered);
 	}
 	
-	public Access TypeAccess.eliminateLockedNames() {
-		return isLocked() ? unlock(null) : this;
+	public void TypeAccess.eliminateLockedNames() {
+		if(isLocked())
+			replace(this).with(unlock(null)).eliminateLockedNames();
+		else
+			super.eliminateLockedNames();
 	}
 
-	public CompilationUnit CompilationUnit.eliminateLockedNames() {
-		if(locked && fromSource()) {
-			locked = false;
-			// make sure this compilation unit has same name as publicly declared class
-			for(TypeDecl t : getTypeDecls()) {
-				if(t.isPublic()) {
-					setID(t.name());
-					break;
+	public void CompilationUnit.eliminateLockedNames() {
+		if(fromSource()) {
+			if(locked) {
+				locked = false;
+				// make sure this compilation unit has same name as publicly declared class
+				for(TypeDecl t : getTypeDecls()) {
+					if(t.isPublic()) {
+						setID(t.name());
+						break;
+					}
 				}
 			}
+			for(int i=getNumImportDecl()-1;i>=0;--i) {
+				ImportDecl id = getImportDecl(i);
+				if(id.shouldRemove())
+					getImportDeclList().removeChild(i);
+			}
 		}
-		return this;
+		super.eliminateLockedNames();
 	}
 	
-	public ASTNode SingleTypeImportDecl.eliminateLockedNames() {
+	syn boolean ImportDecl.shouldRemove() = false;
+	eq SingleTypeImportDecl.shouldRemove() {
 		if(((LockableName)getAccess().lastAccess()).isLocked()) {
 			// a type of the same name cannot be imported twice, and neither can an imported type
 			// clash with a visible type
 			String targetName = getAccess().type().name();
 			SimpleSet localTypes = compilationUnit().localLookupType(targetName);
 			if(allImportedTypes(targetName).size() > 1 || !localTypes.isEmpty() && !localTypes.isSingleton(getAccess().type()))
-				return null;
+				return true;
 		}
-		return super.eliminateLockedNames();
+		return false;
 	}
 	
 	public ASTNode Access.lock() { return this; }

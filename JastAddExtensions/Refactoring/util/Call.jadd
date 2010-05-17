@@ -14,6 +14,7 @@ aspect Call {
 	interface Callable { 
 		public void setParameter(ParameterDeclaration pd, int i);
 		public List<ParameterDeclaration> getParameterList();
+		public List<Access> getExceptionList();
 		public boolean isStatic();
 		public boolean hasBlock();
 		public Block getBlock();

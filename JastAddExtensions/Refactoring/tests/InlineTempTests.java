@@ -253,6 +253,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
+    /* disabled: currently no support for inlining expressions with side effects
     public void test12() {
         testSucc(
             Program.fromCompilationUnits(
@@ -272,7 +273,7 @@ public class InlineTempTests extends TestCase {
             "    return j++;"+
             "  }"+
             "}")));
-    }
+    }*/
 
     public void test13() {
         testFail(
@@ -289,6 +290,7 @@ public class InlineTempTests extends TestCase {
             "}")));
     }
 
+    /* disabled: cannot inline expressions with side effects
     public void test14() {
         testSucc(
             Program.fromCompilationUnits(
@@ -310,7 +312,7 @@ public class InlineTempTests extends TestCase {
             "    return nop();"+
             "  }"+
             "}")));
-    }
+    }*/
     
     public void test15() {
         testFail(
@@ -378,6 +380,7 @@ public class InlineTempTests extends TestCase {
     	    "}")));
     }
     
+    /* disabled: cannot inline expressions with side effects
     public void test19() {
     	testSucc(
     		Program.fromCompilationUnits(
@@ -444,7 +447,7 @@ public class InlineTempTests extends TestCase {
             "    assert(x==42);" +
             "  }"+
             "}")));
-    }
+    }*/
 
     
     public void test22() {
@@ -541,5 +544,46 @@ public class InlineTempTests extends TestCase {
     		"    z = y - i;" +
     		"  } while(false);" +
     		"} while(false);"));
+    }
+    
+    public void test28() {
+    	testFail(
+    		Program.fromStmts(
+    		"int i = 1/0;" +
+    		"try {" +
+    		"  int j = i;" +
+    		"} catch(ArithmeticException ae) {" +
+    		"  System.out.println(\"gotcha\");" +
+    		"}"));
+    }
+    
+    public void test29() {
+    	testSucc(
+    		Program.fromStmts(
+    		"try {" +
+    		"  int i = 1/0;" +
+    		"  int j = i;" +
+    		"} catch(ArithmeticException ae) {" +
+    		"  System.out.println(\"gotcha\");" +
+    		"}"),
+    		Program.fromStmts(
+       		"try {" +
+       		"  int j = 1/0;" +
+       		"} catch(ArithmeticException ae) {" +
+       		"  System.out.println(\"gotcha\");" +
+       		"}"));
+    }
+    
+    public void test30() {
+    	testFail(
+    		Program.fromStmts(
+			"int x = 23;" +
+    		"try {" +
+    		"  int i = 1/0;" +
+    		"  x = 42;" +
+    		"  int j = i;" +
+    		"} catch(ArithmeticException ae) {" +
+    		"  System.out.println(x);" +
+    		"}"));
     }
 }

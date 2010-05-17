@@ -9,21 +9,21 @@ aspect PushDownMethod {
 	}
 	
 	public void MethodDecl.pushDownMono(boolean leaveAbstract) {
+		Program root = programRoot();
 		MethodDecl md = this;
-		md.unfoldSynchronized();
+		unfoldSynchronized();
+		root.lockMethodNames(md.name());
 		for(TypeDecl child : hostType().childTypes()) {
-			if(!child.localMethodsSignature(md.signature()).isEmpty() || md.isStatic() && child.isInnerClass())
+			if(!child.localMethodsSignature(this.signature()).isEmpty() || this.isStatic() && child.isInnerClass())
 				throw new RefactoringException("cannot insert method here");
+			MethodDecl new_md = md.fullCopy();
 			md.lockAllNames();
-			MethodDecl md2 = md;
-			md = (MethodDecl)md.fullCopy();
-			md2.replaceWith(md);
-			md.programRoot().lockMethodNames(md.name());
-			child.addBodyDecl(md2);
-			md2.foldSynchronized();
-			md.programRoot().flushCaches();
-			md.programRoot().eliminateLockedNames();
+			md.replaceWith(new_md);
+			child.addBodyDecl(md);
+			md.foldSynchronized();
+			md = new_md;
 		}
+		root.flushCaches();
 		md.removeUnused(leaveAbstract);
 	}
 	

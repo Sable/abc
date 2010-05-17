@@ -45,6 +45,10 @@ public class CompileHelper {
 				jars.add(n);
 			else
 				sources.add(n);
+		return process(createArglist(sources, jars));
+	}
+
+	public static Program process(String[] arglist) {
 		Frontend f = new Frontend() { 
 			protected void processWarnings(Collection errors, CompilationUnit unit) { }
 		};
@@ -55,7 +59,7 @@ public class CompileHelper {
 				return new parser.JavaParser().parse(is, fileName);
 			}
 		};
-		if(f.process(createArglist(sources, jars), br, jp))
+		if(f.process(arglist, br, jp))
 			return f.getProgram();
 		return null;
 	}

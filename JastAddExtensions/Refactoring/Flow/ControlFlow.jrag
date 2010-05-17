@@ -9,51 +9,62 @@ aspect ControlFlow {
 			getChild(i).unlockControlFlow();
 	}
 	
-	protected Collection<CFGNode> ASTNode.lockedSucc = null;
-	protected Collection<CFGNode> ASTNode.lockedPred = null;
+	protected SmallSet<CFGNode> ASTNode.lockedSucc = null;
 	
 	public void CFGNode.lockControlFlow() {
 		if(lockedSucc == null)
-			lockedSucc = forward_cdep();
-		if(lockedPred == null)
-			lockedPred = backward_cdep();
+			lockedSucc = succ();
 	}
 	
 	public void CFGNode.unlockControlFlow() {
 		if(lockedSucc != null) {
-			if(!forward_cdep().equals(lockedSucc))
-				throw new RefactoringException("couldn't preserve control flow");
+			if(!lockedSucc.equals(succ()))
+				throw new RefactoringException("control flow successors not preserved");
 			lockedSucc = null;
 		}
-		if(lockedPred != null) {
-			if(!backward_cdep().equals(lockedPred))
-				throw new RefactoringException("couldn't preserve control flow");
-			lockedPred = null;
+	}
+	
+	public static LanguageExtension ASTNode.LOCKED_CONTROLFLOW = new LanguageExtension("locked control flow") {
+		public void eliminateOn(ASTNode n) {
+			n.unlockControlFlow();
 		}
+	};	
+	
+	// sometimes it is useful to just lock exceptional control flow edges
+	
+	public void ASTNode.lockThrowEdges() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).lockThrowEdges();
 	}
 	
-	syn lazy Collection<CFGNode> CFGNode.forward_cdep() {
-		CFGNode p;
-		for(p=this;p.succ().size() == 1;p=p.succ().iterator().next());
-		Collection<CFGNode> dep = new HashSet<CFGNode>();
-		for(CFGNode q : p.succ())
-			dep.add(q);
-		return dep;
+	public void ASTNode.unlockThrowEdges() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).unlockThrowEdges();
 	}
 	
-	syn lazy Collection<CFGNode> CFGNode.backward_cdep() {
-		Collection<CFGNode> dep = new HashSet<CFGNode>();
-		for(CFGNode p : pred())
-			p.backward_cdep(dep);
-		return dep;
-	}
+	protected SmallSet<CFGNode> ASTNode.lockedThrowEdges = null;
 	
-	public void CFGNode.backward_cdep(Collection<CFGNode> dep) {
-		if(succ().size() > 1) {
-			dep.add(this);
-		} else {
-			for(CFGNode p : pred())
-				p.backward_cdep(dep);
+	public void CFGNode.lockThrowEdges() {
+		if(lockedThrowEdges == null) {
+			SmallSet<CFGNode> throwEdges = exceptionalSucc();
+			if(!throwEdges.isEmpty())
+				lockedThrowEdges = throwEdges;
 		}
+		super.lockThrowEdges();
 	}
+	
+	public void CFGNode.unlockThrowEdges() {
+		if(lockedThrowEdges != null) {
+			if(!exceptionalSucc().equals(lockedThrowEdges))
+				throw new RefactoringException("throw edges have changed");
+			lockedThrowEdges = null;
+		}
+		super.unlockThrowEdges();
+	}
+	
+	public static LanguageExtension ASTNode.LOCKED_THROW = new LanguageExtension("locked throw edges") {
+		public void eliminateOn(ASTNode n) {
+			n.unlockThrowEdges();
+		}
+	};
 }

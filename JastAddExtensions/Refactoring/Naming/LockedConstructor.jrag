@@ -7,8 +7,9 @@ aspect LockedConstructor {
 		return super.lockNames(endangered);
 	}
 	
-	public ConstructorDecl ConstructorDecl.eliminateLockedNames() {
-		return unlock(null);
+	public void ConstructorDecl.eliminateLockedNames() {
+		unlock(null);
+		super.eliminateLockedNames();
 	}
 	
 	public ConstructorDecl ConstructorDecl.unlock(Expr qualifier) {

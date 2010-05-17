@@ -9,31 +9,80 @@ aspect InlineAssignment {
 		if(!v.decl().isLocalVariable())
 			throw new RefactoringException("can only inline assignment to local variable");
 		setSource(getSource().makeConversionExplicit(getDest().type()));
-		Expr rhs;
-		SmallSet<Access> dsuccs = v.reachedUses();
+		Expr rhs = getSource();
 		BodyDecl bd = hostBodyDecl();
-		// check that all the data successors have this as their only data predecessor and are not destinations
-		// and replace them by copies of the RHS
-		// fail if any of the data successors are not in the same method (e.g., inside an anonymous class)
-		for(Access w : dsuccs) {
-			getSource().lockAllNames();
-			bd.hostType().flushCaches();
-			rhs = getSource();
-			rhs.lockDataFlow(1);
-			bd.lockSyncDependencies();
-			if(w.isDest())
+		if(!rhs.locationsWritten().isEmpty())
+			throw new RefactoringException("cannot inline expressions with side effects");
+		if(rhs.canCompleteAbruptly() && !isAnticipated((VariableDeclaration)v.decl()))
+			throw new RefactoringException("expression may throw exception, but not inlined along all paths");
+		SmallSet<Access> U = v.reachedUses();
+		for(Access u : U) {
+			if(u.isDest())
 				throw new RefactoringException("cannot inline into destinations");
-			if(w.hostBodyDecl() != stmt.hostBodyDecl())
+			if(u.hostBodyDecl() != stmt.hostBodyDecl())
 				throw new RefactoringException("cannot inline across method boundaries");
-			if(!w.reachingDefinitions().isSingleton())
-				throw new RefactoringException("ambiguous dataflow");
-			w.replaceWith(rhs.precedence() > w.maxPrecedence() ? new ParExpr(rhs) : rhs);
-			compilationUnit().flushCaches();
-			rhs.unlockDataFlow();
-			bd.unlockSyncDependencies();
-			setSource(rhs = (Expr)rhs.fullCopy());
+			for(CFGNode w : u.precedingDefsUpTo(v))
+				((Access)w).lockReachedUses();
+			Expr old_rhs = (Expr)rhs.fullCopy();
+			rhs.lockAllNames();
+			rhs.lockThrowEdges();
+			rhs.replaceWith(old_rhs);
+			u.replaceWith(rhs.precedence() > u.maxPrecedence() ? new ParExpr(rhs) : rhs);
+			rhs = old_rhs;
 		}
 		// delete assignment
 		stmt.delete();
 	}
+	
+	// whether this expression can throw an exception (should be overapproximation)
+	public boolean ASTNode.canCompleteAbruptly() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch.canCompleteAbruptly())
+				return true;
+		}
+		return false;
+	}
+	public boolean AbstractDot.canCompleteAbruptly() 		{ return true; }
+	public boolean ClassInstanceExpr.canCompleteAbruptly() 	{ return true; }
+	public boolean ConstructorAccess.canCompleteAbruptly()	{ return true; }
+	public boolean MethodAccess.canCompleteAbruptly()		{ return true; }
+	public boolean DivExpr.canCompleteAbruptly()			{ return true; }
+	public boolean CastExpr.canCompleteAbruptly()			{ return true; }
+	// TODO: arithmetic operations can throw NPEs if applied to boxed types
+	
+	// all definitions preceding this node on the way back to n
+	syn lazy SmallSet<CFGNode> CFGNode.precedingDefsUpTo(CFGNode n) circular [SmallSet.<CFGNode>empty()] {
+		SmallSet<CFGNode> res = SmallSet.<CFGNode>empty();
+		if(this == n)
+			return res;
+		if(isDef())
+			res = SmallSet.singleton((CFGNode)this);
+		for(CFGNode p : pred())
+			res = res.union(p.precedingDefsUpTo(n));
+		return res;
+	}
+	
+	syn boolean CFGNode.isDef() = false;
+	eq Access.isDef() = isDest();
+	eq MethodAccess.isDef() = true;
+	eq ConstructorAccess.isDef() = true;
+	eq ClassInstanceExpr.isDef() = true;
+	
+	// determines whether v is anticipated at this node
+	syn lazy boolean CFGNode.isAnticipated(VariableDeclaration v) circular [true] {
+		if(makesAnticipated(v))
+			return true;
+		for(CFGNode s : succ())
+			if(!s.isAnticipated(v))
+				return false;
+		return !killsAnticipated(v);
+	}
+	eq ExitStmt.isAnticipated(VariableDeclaration v) = false;
+	
+	syn lazy boolean CFGNode.makesAnticipated(VariableDeclaration v) = false;
+	eq Access.makesAnticipated(VariableDeclaration v) = isSource() && mustReferTo(v);
+	
+	syn lazy boolean CFGNode.killsAnticipated(VariableDeclaration v) = false;
+	eq Access.killsAnticipated(VariableDeclaration v) = isDest() && mustReferTo(v);
 }

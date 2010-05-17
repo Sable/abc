@@ -44,8 +44,9 @@ aspect LockedPackageAccess {
 		return this;
 	}
 	
-	public PackageAccess PackageAccess.eliminateLockedNames() {
-		return unlock(null);
+	public void PackageAccess.eliminateLockedNames() {
+		unlock(null);
+		super.eliminateLockedNames();
 	}
 	
 	public PackageAccess PackageAccess.unlock(Expr qual) {

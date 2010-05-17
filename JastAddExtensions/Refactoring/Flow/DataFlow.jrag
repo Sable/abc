@@ -1,11 +1,7 @@
 aspect DataFlow {
 	public void ASTNode.lockDataFlow() {
-		lockDataFlow(0);
-	}
-	
-	public void ASTNode.lockDataFlow(int l) {
 		for(int i=0;i<getNumChild();++i)
-			getChild(i).lockDataFlow(l);
+			getChild(i).lockDataFlow();
 	}
 	
 	protected SmallSet<Definition> Access.lockedReachingDefs = null;
@@ -13,29 +9,18 @@ aspect DataFlow {
 	protected SmallSet<Definition> Access.lockedWriteDeps = null;
 	
 	public void Access.lockReachingDefs() {
-		lockReachingDefs(0);
-	}
-	public void Access.lockReachingDefs(int l) {
-		if(lockedReachingDefs == null) {
+		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
-			if(l > 0)
-				for(Definition d : lockedReachingDefs)
-					((ASTNode)d).lockDataFlow(l-1);
-		}
 	}
 	
-	public void Access.lockReachedUses(int l) {
-		if(lockedReachedUses == null) {
+	public void Access.lockReachedUses() {
+		if(lockedReachedUses == null)
 			lockedReachedUses = reachedUses();
-			if(l > 0)
-				for(Access a : lockedReachedUses)
-					a.lockDataFlow(l-1);
-		}
 	}
 	
-	public void Access.lockReachingDefsAndUses(int l) {
-		lockReachingDefs(l);
-		lockReachedUses(l);
+	public void Access.lockReachingDefsAndUses() {
+		lockReachingDefs();
+		lockReachedUses();
 	}
 	
 	public void Access.lockWriteDeps() {
@@ -43,38 +28,44 @@ aspect DataFlow {
 			lockedWriteDeps = writeDeps();
 	}
 	
-	public void ArrayAccess.lockDataFlow(int l) {
-		lockReachingDefsAndUses(l);
+	public void ArrayAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
 		lockWriteDeps();
-		super.lockDataFlow(l);
+		super.lockDataFlow();
 	}
 	
-	public void ClassInstanceExpr.lockDataFlow(int l) {
-		lockReachingDefsAndUses(l);
+	public void ClassInstanceExpr.lockDataFlow() {
+		lockReachingDefsAndUses();
 		lockWriteDeps();
-		super.lockDataFlow(l);
+		super.lockDataFlow();
 	}
 	
-	public void ConstructorAccess.lockDataFlow(int l) {
-		lockReachingDefsAndUses(l);
+	public void ConstructorAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
 		lockWriteDeps();
-		super.lockDataFlow(l);
+		super.lockDataFlow();
 	}
 	
-	public void MethodAccess.lockDataFlow(int l) {
-		lockReachingDefsAndUses(l);
+	public void MethodAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
 		lockWriteDeps();
-		super.lockDataFlow(l);
+		super.lockDataFlow();
 	}
 	
-	public void VarAccess.lockDataFlow(int l) {
-		lockReachingDefsAndUses(l);
+	public void VarAccess.lockDataFlow() {
+		lockReachingDefsAndUses();
 		if(decl().isField())
 			lockWriteDeps();
-		super.lockDataFlow(l);
+		super.lockDataFlow();
 	}
 	
-	public void ASTNode.unlockDataFlow() { }
+	public void ASTNode.unlockDataFlow() { 
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.unlockDataFlow();
+		}
+	}
 	
 	public void Access.unlockDataFlow() {
 		if(hostType() != null)
@@ -94,12 +85,12 @@ aspect DataFlow {
 				throw new RefactoringException("couldn't preserve data flow");
 			lockedWriteDeps = null;
 		}
+		super.unlockDataFlow();
 	}
 	
 	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow") {
-		public ASTNode eliminateOn(ASTNode n) {
+		public void eliminateOn(ASTNode n) {
 			n.unlockDataFlow();
-			return n;
 		}
 	};
 	
@@ -115,6 +106,21 @@ aspect DataFlow {
 	
 	public boolean MethodDecl.isHeapLocation() { return true; }
 	public boolean ConstructorDecl.isHeapLocation() { return true; }
+	
+	public Collection<Location> MethodAccess.locationsWritten(Collection<Location> res) {
+		if(!decl().isConstantMethod())
+			res.add(decl());
+		return super.locationsWritten(res);
+	}
+	public Collection<Location> ConstructorAccess.locationsWritten(Collection<Location> res) {
+		res.add(decl());
+		return super.locationsWritten(res);
+	}
+	public Collection<Location> ClassInstanceExpr.locationsWritten(Collection<Location> res) {
+		if(!isPure())
+			res.add(decl());
+		return super.locationsWritten(res);
+	}
 	
 	/* currently very crude: checks whether the method body is 'return c;' for a constant c */
 	syn lazy boolean MethodDecl.isConstantMethod() {

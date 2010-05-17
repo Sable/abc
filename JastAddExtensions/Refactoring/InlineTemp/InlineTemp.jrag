@@ -1,4 +1,8 @@
 aspect InlineTemp {
+	public void Variable.inline() {
+		throw new RefactoringException("can only inline local variables");
+	}
+	
 	public void VariableDeclaration.inline() {
 		AssignSimpleExpr assgn = split();
 		if(assgn != null)
@@ -7,20 +11,16 @@ aspect InlineTemp {
 	}
 	
     public void VarAccess.inline() {
-    	if(!(decl() instanceof VariableDeclaration))
-    		throw new RefactoringException("cannot inline non-local definitions");
-    	SmallSet<Definition> pred = this.reachingDefinitions();
+    	SmallSet<Definition> pred = reachingDefinitions();
     	if(!pred.isSingleton())
-    		throw new RefactoringException("ambiguous dataflow");
+    		throw new RefactoringException("ambiguous data flow");
     	Definition def = pred.iterator().next();
-    	if(def instanceof VariableDeclaration) {
-    		((VariableDeclaration)def).inline();
+    	if(def instanceof Variable) {
+    		((Variable)def).inline();
+    	} else if(def instanceof VarAccess && def.getParent() instanceof AssignSimpleExpr) {
+    		((AssignSimpleExpr)def.getParent()).inline();
     	} else {
-    		VarAccess va = (VarAccess)def;
-    		if(va.getParent() instanceof AssignSimpleExpr)
-    			((AssignSimpleExpr)va.getParent()).inline();
-    		else
-    			throw new RefactoringException("cannot inline this assignment");
+    		throw new RefactoringException("cannot inline this access");
     	}
     }
     
@@ -28,6 +28,6 @@ aspect InlineTemp {
     public void VariableDeclaration.doInline() {
     	Program root = programRoot();
     	inline();
-    	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
+    	root.eliminate(LOCKED_DATAFLOW, LOCKED_THROW, LOCKED_NAMES);
     }
 }

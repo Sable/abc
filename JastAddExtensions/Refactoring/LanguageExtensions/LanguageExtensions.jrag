@@ -10,27 +10,12 @@ aspect LanguageExtensions {
 			return name;
 		}
 		
-		public abstract ASTNode eliminateOn(ASTNode node);
+		public abstract void eliminateOn(ASTNode node);
 	}
 
 	public void ASTNode.eliminate(LanguageExtension... les) {
 		flushCaches();
 		for(LanguageExtension le : les)
-			eliminate(le);
-	}
-	
-	protected void ASTNode.eliminate(LanguageExtension le) {
-		flushCache();
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);			
-			ASTNode new_child = le.eliminateOn(child);
-			if(new_child == null) {
-				removeChild(i);
-				--i;
-			} else {
-				setChild((T)new_child, i);
-				new_child.eliminate(le);
-			}
-		}
+			le.eliminateOn(this);
 	}
 }

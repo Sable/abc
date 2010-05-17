@@ -127,9 +127,10 @@ public class InlineTempTests extends TestCase {
 		helper1(5, 15, 5, 19);
 	}
 
+	/* disabled: unsupported feature (inlining expression with side effect)
 	public void test13() throws Exception{
 		helper1(5, 17, 5, 18);
-	}
+	}*/
 
 	public void test14() throws Exception{
 //		printTestDisabledMessage("regression for bug 11664");
@@ -243,6 +244,7 @@ public class InlineTempTests extends TestCase {
 		helper1(7, 8, 7, 10);
 	}
 	
+	/* disabled: unsupported feature (inlining impure expressions)
 	public void test37() throws Exception{
 		// parameterized method invocation needs class expression: https://bugs.eclipse.org/bugs/show_bug.cgi?id=277968
 		helper1(5, 16, 5, 17);
@@ -261,7 +263,7 @@ public class InlineTempTests extends TestCase {
 	public void test40() throws Exception{
 		// better cast for unboxing: https://bugs.eclipse.org/bugs/show_bug.cgi?id=297868
 		helper1(5, 43, 5, 46);
-	}
+	}*/
 	
 	//------
 

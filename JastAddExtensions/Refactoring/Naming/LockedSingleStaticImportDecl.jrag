@@ -22,13 +22,15 @@ aspect LockedSingleStaticImportDecl {
 		return super.lockAllNames();
 	}
 	
-	public ASTNode SingleStaticImportDecl.eliminateLockedNames() {
+	public void SingleStaticImportDecl.eliminateLockedNames() {
 		if(locked) {
 			locked = false;
 			if(importedFields(name()).isEmpty() && importedMethods(name()).isEmpty() && importedTypes(name()).isEmpty() &&
-					!getAccess().type().isUnknown())
-				return null;
+					!getAccess().type().isUnknown()) {
+				getParent().removeChild(getChildIndex());
+				return;
+			}
 		}
-		return super.eliminateLockedNames();	
+		super.eliminateLockedNames();	
 	}
 }
