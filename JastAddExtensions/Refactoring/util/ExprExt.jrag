@@ -53,7 +53,7 @@ aspect ExprExt {
 	eq TypeAccess.isFlowInvariant() = true;
 	eq ArrayTypeWithSizeAccess.isFlowInvariant() = getExpr().isConstant();
 	eq ClassInstanceExpr.isFlowInvariant() = decl().signature().equals("<init>(java.lang.String p0)") || super.isFlowInvariant();
-	eq MethodAccess.isFlowInvariant() = decl().isConstantMethod() || super.isFlowInvariant();
+	eq MethodAccess.isFlowInvariant() = decl().isPure() || super.isFlowInvariant();
 	
 	syn Expr Access.enclosingInstanceQualifier(TypeDecl td) = hostType().enclosingInstanceQualifier(td, true);
 	eq ClassInstanceExpr.enclosingInstanceQualifier(TypeDecl td) {

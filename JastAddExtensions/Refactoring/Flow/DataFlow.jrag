@@ -94,55 +94,6 @@ aspect DataFlow {
 		}
 	};
 	
-	// conservative approximation of data flow for method accesses
-	Callable extends Location;
-	
-	eq MethodAccess.getLocation() = decl().isConstantMethod() ? null : decl();
-	eq ConstructorAccess.getLocation() = decl();
-	eq ClassInstanceExpr.getLocation() = isPure() ? null : decl();
-	
-	public boolean MethodDecl.isArrayElement() { return false; }
-	public boolean ConstructorDecl.isArrayElement() { return false; }
-	
-	public boolean MethodDecl.isHeapLocation() { return true; }
-	public boolean ConstructorDecl.isHeapLocation() { return true; }
-	
-	public Collection<Location> MethodAccess.locationsWritten(Collection<Location> res) {
-		if(!decl().isConstantMethod())
-			res.add(decl());
-		return super.locationsWritten(res);
-	}
-	public Collection<Location> ConstructorAccess.locationsWritten(Collection<Location> res) {
-		res.add(decl());
-		return super.locationsWritten(res);
-	}
-	public Collection<Location> ClassInstanceExpr.locationsWritten(Collection<Location> res) {
-		if(!isPure())
-			res.add(decl());
-		return super.locationsWritten(res);
-	}
-	
-	/* currently very crude: checks whether the method body is 'return c;' for a constant c */
-	syn lazy boolean MethodDecl.isConstantMethod() {
-		if(!isStatic() && !isPrivate() || !hasBlock())
-			return false;
-		Block body = getBlock();
-		if(body.getNumStmt() != 1)
-			return false;
-		if(!(body.getStmt(0) instanceof ReturnStmt))
-			return false;
-		ReturnStmt ret = (ReturnStmt)body.getStmt(0);
-		return !ret.hasResult() || ret.getResult().isConstant() || ret.getResult() instanceof NullLiteral;
-	}
-	
-	refine Alias public boolean Variable.mayAlias(Location l) {
-		return l instanceof Callable && this.isField() || refined(l);
-	}
-	
-	refine Alias eq ArrayAccess.mayReferTo(Location l) = l instanceof Callable || refined(l);
-	
-	refine Alias eq MethodAccess.mayDefine(Location l) = !decl().isConstantMethod() && refined(l);
-	
 	// more precise analysis for fields of the receiver object (well-defined, since our analysis is always intra-procedural)
 	class FieldInReceiver implements Location {
 		private MethodDecl method;
@@ -161,16 +112,18 @@ aspect DataFlow {
 			return field;
 		}
 		
-		public TypeDecl type() {
-			return field.type();
-		}
-		
 		public boolean isHeapLocation() {
 			return true;
 		}
 		
-		public boolean isArrayElement() {
-			return false;
+		public boolean mayAlias(Location l) {
+			return this.equals(l)
+				|| l == field
+				|| l instanceof AnyHeapLocation;
+		}
+		
+		public boolean mustAlias(Location l) {
+			return this.equals(l);
 		}
 		
 		public boolean equals(Object o) {
@@ -190,24 +143,8 @@ aspect DataFlow {
 		return decl;
 	}
 	
-	refine Alias eq VarAccess.mayReferTo(Location l) {
-		if(l instanceof FieldInReceiver) {
-			FieldInReceiver fir = (FieldInReceiver)l;
-			if(decl() == fir.getField())
-				return true;
-		}
-		return refined(l);
-	}
-	
-	refine Alias eq VarAccess.mustReferTo(Location l) {
-		if(l instanceof FieldInReceiver) {
-			FieldInReceiver fir = (FieldInReceiver)l;
-			if(decl() == fir.getField() && hostBodyDecl() == fir.getMethod() &&
-					(!isQualified() || qualifier().isThisAccess() || qualifier().isSuperAccess()))
-				return true;
-		} else if(l instanceof FieldDeclaration && ((FieldDeclaration)l).isStatic()) {
-			return decl() == l;
-		}
-		return refined(l);
+	refine Alias public boolean FieldDeclaration.mayAlias(Location l) {
+		return l instanceof FieldInReceiver && this == ((FieldInReceiver)l).getField()
+			|| refined(l);
 	}
 }
