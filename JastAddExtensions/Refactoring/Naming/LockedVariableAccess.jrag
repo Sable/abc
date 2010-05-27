@@ -63,7 +63,7 @@ aspect LockedVariableAccess {
 		if(decl().sameSourceDeclAs(target)) {
 			return qual == null ? this : qual.qualifiesAccess(this);
 		} else if(fromSource()) {
-			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
+			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && target.isField() && !target.isStatic())
 				throw new RefactoringException("cannot access instance variable in static context");
 			SymbolicVarAccess acc = accessVariable(target);
 			if(acc.isUnknownVarAccess()) {

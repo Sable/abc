@@ -95,6 +95,7 @@ aspect AST {
 	}
 	public ASTNode ASTNode.with(ASTNode newChild) {
 		setChild((T)newChild, replaceIndex);
+		newChild.flushCaches();
 		return newChild;
 	}
 
