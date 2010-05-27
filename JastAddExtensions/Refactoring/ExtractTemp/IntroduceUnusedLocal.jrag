@@ -5,7 +5,7 @@ aspect InsertUnusedLocal {
 		if(block == null)
 			throw new RefactoringException("local variable cannot be created outside block");
 		// ensure that output compiles
-		if(!block.canIntroduceLocal(decl.name()))
+		if(!canIntroduceLocal(decl.name()))
 			throw new RefactoringException("local variable of same name exists");
 		// ensure that bindings are preserved
 		block.lockNames(Collections.singleton(decl.name()));

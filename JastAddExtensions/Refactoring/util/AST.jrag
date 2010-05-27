@@ -20,7 +20,7 @@ aspect AST {
 	}
 	
 	public int ASTNode.getChildIndex() {
-		return childIndex;
+		return getParent().getIndexOfChild(this);
 	}
 	
 	public Program ASTNode.programRoot() {
@@ -89,8 +89,9 @@ aspect AST {
 	
 	private static int ASTNode.replaceIndex = -1;
 	public static ASTNode ASTNode.replace(ASTNode child) {
-		replaceIndex = child.childIndex;
-		return child.getParent();
+		ASTNode parent = child.getParent();
+		replaceIndex = parent.getIndexOfChild(child);
+		return parent;
 	}
 	public ASTNode ASTNode.with(ASTNode newChild) {
 		setChild((T)newChild, replaceIndex);

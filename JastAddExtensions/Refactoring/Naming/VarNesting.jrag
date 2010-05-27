@@ -1,40 +1,67 @@
 /*
  * When we rename a local variable, it is important to check that the new name does
  * not clash with the name of an already existing local variable. The method
- * canIntroduceLocal(id) checks whether a subtree could legally occur within the scope
- * of a local variable id.
+ * hasNestedLocal(name) checks whether a subtree contains a declaration of a local
+ * variable or parameter of that name. 
  * 
  * The method canIntroduceLabel(id) does the same for labels.
  */
 
 aspect VarNesting {
 	
-	// check whether this subtree contains a conflicting local declaration
-	public boolean ASTNode.canIntroduceLocal(String name) {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null && !child.canIntroduceLocal(name))
+	inh boolean LocalDeclaration.canIntroduceLocal(String name);
+	inh boolean Stmt.canIntroduceLocal(String name);
+	eq Block.getStmt(int i).canIntroduceLocal(String name) {
+		if(getStmt(i).hasNestingLocal(name))
+			return false;
+		while(i < getNumStmt())
+			if(getStmt(i++).hasNestedLocal(name))
 				return false;
-		}
 		return true;
 	}
-	
-	// TODO: this should only be defined once, on LocalDeclaration
-	public boolean ParameterDeclaration.canIntroduceLocal(String name) {
-		if(name.equals(name()))
-			return false;
-		return super.canIntroduceLocal(name);
+	eq ForStmt.getInitStmt().canIntroduceLocal(String name) = !hasNestingLocal(name) && !hasNestedLocal(name);
+	eq EnhancedForStmt.getVariableDeclaration().canIntroduceLocal(String name) = !hasNestingLocal(name) && !hasNestedLocal(name);
+	eq MethodDecl.getParameter().canIntroduceLocal(String name) = !hasNestedLocal(name);
+	eq ConstructorDecl.getParameter().canIntroduceLocal(String name) = !hasNestedLocal(name);
+	eq CatchClause.getParameter().canIntroduceLocal(String name) = !hasNestingLocal(name) && !hasNestedLocal(name);
+	eq Program.getChild().canIntroduceLocal(String name) = true;
+
+	inh BodyDecl CatchClause.enclosingBodyDecl();
+	public boolean VariableScope.hasNestingLocal(String name) {
+		for(Iterator<Variable> iter=lookupVariable(name).iterator(); iter.hasNext();) {
+			Variable v = iter.next();
+			if(v instanceof LocalDeclaration && ((LocalDeclaration)v).enclosingBodyDecl() == enclosingBodyDecl())
+				return true;
+		}
+		return false;
+	}
+
+	public boolean Stmt.hasNestingLocal(String name) {
+		for(Iterator<Variable> iter=lookupVariable(name).iterator(); iter.hasNext();) {
+			Variable v = iter.next();
+			if(v instanceof LocalDeclaration && ((LocalDeclaration)v).enclosingBodyDecl() == enclosingBodyDecl())
+				return true;
+		}
+		return false;
 	}
 	
-	public boolean VariableDeclaration.canIntroduceLocal(String name) {
+	// check whether this subtree contains a conflicting local declaration
+	public boolean ASTNode.hasNestedLocal(String name) {
+		for(int i=0;i<getNumChild();++i)
+			if(getChild(i).hasNestedLocal(name))
+				return true;
+		return false;
+	}
+	
+	public boolean LocalDeclaration.hasNestedLocal(String name) {
 		if(name.equals(name()))
-			return false;
-		return super.canIntroduceLocal(name);
+			return true;
+		return super.hasNestedLocal(name);
 	}
 	
 	// cut-off for local/anonymous classes
-	public boolean TypeDecl.canIntroduceLocal(String name) {
-		return true;
+	public boolean TypeDecl.hasNestedLocal(String name) {
+		return false;
 	}
 	
 	// check whether this subtree contains no conflicting labels

@@ -135,7 +135,7 @@ aspect LockedVariableAccess {
 		throw new RefactoringException("cannot access variable");
 	}
 	
-	public Access LocalVariable.asAccess(Expr qualifier, TypeDecl enclosing) {
+	public Access LocalDeclaration.asAccess(Expr qualifier, TypeDecl enclosing) {
 		if(qualifier != null)
 			throw new RefactoringException("cannot qualify access to local variable");
 		return new VarAccess(name());

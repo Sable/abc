@@ -81,19 +81,19 @@ aspect AccessVariable {
 		public boolean isUnknownVarAccess() { return false; }
 	}
 	
-	LocalVariable extends SymbolicVarAccess;
-	public SymbolicVarAccess LocalVariable.moveInto(Scope s) {
+	LocalDeclaration extends SymbolicVarAccess;
+	public SymbolicVarAccess LocalDeclaration.moveInto(Scope s) {
 		if(s.hasVariable(name()))
 			return unknownVarAccess();
 		return this;
 	}
-	public boolean LocalVariable.isUnknownVarAccess() {
+	public boolean LocalDeclaration.isUnknownVarAccess() {
 		return false;
 	}
-	public SymbolicVarAccess LocalVariable.ensureStatic() {
+	public SymbolicVarAccess LocalDeclaration.ensureStatic() {
 		return unknownVarAccess();
 	}
-	public SymbolicVarAccess LocalVariable.ensureFinal() {
+	public SymbolicVarAccess LocalDeclaration.ensureFinal() {
 		return isFinal() ? this : unknownVarAccess();
 	}
 	
@@ -236,14 +236,14 @@ aspect AccessVariable {
 	syn lazy SymbolicVarAccess Block.accessLocalVariable(Variable decl, int index) {
 		for(int i=0;i<index&&i<getNumStmt();++i)
 			if(getStmt(i) == decl)
-				return (LocalVariable)decl;
+				return (LocalDeclaration)decl;
 		return unknownVarAccess();
 	}
 	
 	syn lazy SymbolicVarAccess ForStmt.accessLocalVariable(Variable decl) {
 		for(Stmt s : getInitStmts())
 			if(s == decl)
-				return (LocalVariable)decl;
+				return (LocalDeclaration)decl;
 		return unknownVarAccess();
 	}
 		

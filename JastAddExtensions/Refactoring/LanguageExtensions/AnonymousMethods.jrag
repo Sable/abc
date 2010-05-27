@@ -48,11 +48,7 @@ aspect AnonymousMethods {
 	}
 	
 	// equations for some attributes defined elsewhere
-	public boolean AnonymousMethod.canIntroduceLocal(String name) {
-		if(!parameterDeclaration(name).isEmpty())
-			return false;
-		return super.canIntroduceLocal(name);
-	}
+	eq AnonymousMethod.getParameter().canIntroduceLocal(String name) = !hasNestedLocal(name);
 
 	// we're not interested in reachability checking for anonymous methods
 	eq AnonymousMethod.getBlock().reachable() = true;

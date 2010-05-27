@@ -1,12 +1,12 @@
 aspect CloseOverVariables {
 	// closing a local class over local variables and type variables
 	public void LocalClassDeclStmt.closeOverLocalVariables() {
-		Map<LocalVariable, FieldDeclaration> fmap = new HashMap<LocalVariable, FieldDeclaration>();
+		Map<LocalDeclaration, FieldDeclaration> fmap = new HashMap<LocalDeclaration, FieldDeclaration>();
 		for(VarAccess va : localVarAccesses())
 			getClassDecl().closeOver(va, fmap);		
 	}
 	
-	public void ClassDecl.closeOver(VarAccess va, Map<LocalVariable, FieldDeclaration> fmap) {
+	public void ClassDecl.closeOver(VarAccess va, Map<LocalDeclaration, FieldDeclaration> fmap) {
 		// only need to close over local variables declared in the enclosing body declaration;
 		// variables further out or further in will still be visible to the new member class
 		ASTNode decl = (ASTNode)va.decl();
@@ -16,7 +16,7 @@ aspect CloseOverVariables {
 		if(fd == null) {
 			fd = new FreshField(new Modifiers("private", "final"), va.type().createLockedAccess(), va.name(), new Opt<Expr>());
 			addBodyDecl(fd);
-			fmap.put((LocalVariable)va.decl(), fd);
+			fmap.put((LocalDeclaration)va.decl(), fd);
 			for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors()) {
 				ParameterDeclaration pd = new FreshParameter(va.type().createLockedAccess(), va.name()); 
 				cd.insertParameter(pd, 0);
