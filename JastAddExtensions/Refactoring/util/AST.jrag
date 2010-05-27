@@ -23,6 +23,10 @@ aspect AST {
 		return getParent().getIndexOfChild(this);
 	}
 	
+	public void ASTNode.removeChild(ASTNode child) {
+		removeChild(getIndexOfChild(child));
+	}
+	
 	public Program ASTNode.programRoot() {
 		ASTNode n=this;
 		while(n!=null && !(n instanceof Program))

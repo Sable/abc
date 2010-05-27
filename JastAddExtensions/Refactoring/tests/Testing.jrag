@@ -224,7 +224,7 @@ aspect Testing {
 				if(v != null) return v;
 			}
 		}
-		return null;		
+		return null;
 	}
 	
 	public VariableDeclaration VariableDeclaration.findLocalVariable(String name) {
@@ -316,5 +316,51 @@ aspect Testing {
 			getParent().replaceWith(this);
 			unparenthesise();
 		}
+	}
+
+	public Stmt CompilationUnit.findStmtFollowingComment(String comment) {
+		FileRange fr = findComment(comment);
+		if(fr == null)
+			return null;
+		return findStmtFollowing(fr.el);
+	}
+	
+	public Stmt CompilationUnit.findStmtPrecedingComment(String comment) {
+		FileRange fr = findComment(comment);
+		if(fr == null)
+			return null;
+		return findStmtPreceding(fr.el);
+	}
+	
+	public Stmt ASTNode.findStmtFollowing(int line) {
+		for(int i=0;i<getNumChild();++i) {
+			Stmt s = getChild(i).findStmtFollowing(line);
+			if(s != null)
+				return s;
+		}
+		return null;
+	}
+	
+	public Stmt Stmt.findStmtFollowing(int line) {
+		int l = ASTNode.getLine(getStart());
+		if(l == line || l == line+1)
+			return this;
+		return super.findStmtFollowing(line);
+	}
+	
+	public Stmt ASTNode.findStmtPreceding(int line) {
+		for(int i=0;i<getNumChild();++i) {
+			Stmt s = getChild(i).findStmtPreceding(line);
+			if(s != null)
+				return s;
+		}
+		return null;
+	}
+	
+	public Stmt Stmt.findStmtPreceding(int line) {
+		int l = ASTNode.getLine(getStart());
+		if(l == line || l == line-1)
+			return this;
+		return super.findStmtPreceding(line);
 	}
 }

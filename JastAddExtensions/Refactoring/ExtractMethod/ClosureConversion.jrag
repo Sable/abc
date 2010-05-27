@@ -1,0 +1,100 @@
+aspect ClosureConversion {
+	public AnonymousMethod AnonymousMethod.convert() {
+		java.util.Set<VarAccess> locals = localVarAccesses();
+		for(VarAccess v : locals)
+			closeOver(v);
+		putVarArgAtEnd();
+		hostType().flushCaches();
+		for(VarAccess v : locals)
+			if(declaredOutside(v))
+				localise(v);
+		return this;
+	}
+	
+	public void AnonymousMethod.closeOver(VarAccess v) {
+		if(hasIncomingDataflowEdge(v))
+			addInParm((LocalDeclaration)v.decl());
+		if(hasOutgoingDataflowEdge(v))
+			addOutParm((LocalDeclaration)v.decl());
+	}
+	
+	private boolean AnonymousMethod.hasIncomingDataflowEdge(VarAccess v) {
+		return v.hasReachingDefinitionBefore(entry());
+	}
+	
+	private boolean AnonymousMethod.hasOutgoingDataflowEdge(VarAccess v) {
+		if(v.hasReachedUseAfter(exit()))
+			return true;
+		for(Access acc : getExceptions())
+			if(v.hasReachedUseAfter(acc))
+				return true;
+		return v.hasReachedUseAfter(uncheckedExceptionExit());
+	}
+	
+	private void AnonymousMethod.localise(VarAccess v) {
+		if(!(v.decl() instanceof LocalDeclaration))
+			return;
+		LocalDeclaration vdecl = (LocalDeclaration)v.decl();
+		VariableDeclaration decl = new VariableDeclaration(vdecl.type().createLockedAccess(), vdecl.name());
+		decl.setModifiers((Modifiers)vdecl.getModifiers().fullCopy());
+		getBlock().insertStmt(0, decl);
+		hostType().flushCaches();
+	}
+	
+	// add an input parameter having the same modifiers, name, and type as decl
+	private void AnonymousMethod.addInParm(LocalDeclaration decl) throws RefactoringException {
+		ParameterDeclaration parm = getParameter(decl.name());
+		if(parm == null) {
+			parm = decl.asLockedParameterDeclaration();
+			addParameter(parm);
+			addArg(new VarAccess(decl.name()));
+		}
+		if(parm.isOut())
+			parm.makeRef();
+	}
+
+	// add an output parameter having the same modifiers, name, and type as decl
+	private void AnonymousMethod.addOutParm(LocalDeclaration decl) throws RefactoringException {
+		ParameterDeclaration parm = getParameter(decl.name());
+		if(parm == null) {
+			parm = decl.asLockedParameterDeclaration();
+			parm.getModifiers().addModifier(new Modifier("out"));
+			addParameter(parm);
+			addArg(new VarAccess(decl.name()));
+		}
+		if(!parm.isWrite())
+			parm.getModifiers().addModifier(new Modifier("ref"));
+	}
+	
+	private ParameterDeclaration AnonymousMethod.getParameter(String name) {
+		for(ParameterDeclaration pd : getParameters())
+			if(pd.name().equals(name))
+				return pd;
+		return null;
+	}
+			
+	// shuffle parameters so that any variable arity parameter comes last 
+	private void AnonymousMethod.putVarArgAtEnd() throws RefactoringException {
+		ParameterDeclaration varparm = null;
+		Expr vararg = null;
+		for(int i=0;i<getNumParameter();++i) {
+			if(getParameter(i).isVariableArity())
+				if(varparm == null) {
+					varparm = getParameter(i);
+					vararg = getArg(i);
+				} else {
+					throw new RefactoringException("there can be only one variable-arity argument");
+				}
+		}
+		if(varparm == null)
+			return;
+		getParameterList().removeChild(varparm);
+		getArgList().removeChild(vararg);
+		addParameter(varparm);
+		addArg(vararg);
+	}
+	
+	private boolean AnonymousMethod.declaredOutside(VarAccess v) {
+		return !((ASTNode)v.decl()).isDescendantTo(this);
+	}
+}

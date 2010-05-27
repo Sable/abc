@@ -1,0 +1,82 @@
+aspect EliminateOutParams {
+	public void AnonymousMethod.eliminateOutParams() throws RefactoringException {
+		if(getNumWriteParameter() == 0)
+			return;
+		if(getNumWriteParameter() > 1)
+			throw new RefactoringException("ambiguous return value: two or more output parameters");
+		if(!getReturnType().type().isVoid())
+			throw new RefactoringException("ambiguous return value: output parameter and return statement");
+		int idx = getFirstWriteParameterPos();
+		ParameterDeclaration pd = getParameter(idx);
+		if(!(getArg(idx) instanceof VarAccess))
+			throw new RefactoringException("cannot eliminate out parameter");
+		if(hasOutgoingDataflowEdgeThroughException(pd))
+			throw new RefactoringException("cannot eliminate out parameter");
+		VarAccess v = (VarAccess)getArg(idx);
+		VarAccess newv = new VarAccess(v.name());
+		getBlock().addStmt(new ReturnStmt(newv));
+		hostType().flushCaches();
+		closeOver(newv);
+		setReturnType(newv.type().createLockedAccess());
+		if(pd.isRef()) {
+			pd.makeIn();
+		} else {
+			// make it a local variable
+			getBlock().insertStmt(0, new VariableDeclaration(v.type().createLockedAccess(), v.name()));
+			removeParameter(idx);
+			removeArg(idx);
+		}
+		AssignExpr assgn = new AssignSimpleExpr(new VarAccess(v.name()), null);
+		replaceWith(assgn);
+		assgn.setSource(this);
+		hostType().flushCaches();
+	}
+		
+	// determine if any use of this variable has an outgoing data flow edge that crosses one of the exception
+	// exits; in that case, we cannot eliminate this output parameter (see test58)
+	private boolean AnonymousMethod.hasOutgoingDataflowEdgeThroughException(Variable v) {
+		for(VarAccess acc : v.allUses()) {
+			for(Access exn : getExceptions())
+				if(acc.hasReachedUseAfter(exn))
+					return true;
+			if(acc.hasReachedUseAfter(uncheckedExceptionExit()))
+				return true;
+		}
+		return false;
+	}
+
+	// get the number of write attributes (either out or ref)
+	syn int AnonymousMethod.getNumWriteParameter() {
+		int res = 0;
+		for(int i = 0; i < getNumParameter(); ++i)
+			if(getParameter(i).isWrite())
+				++res;
+		return res;
+	}
+	
+	syn int AnonymousMethod.getFirstWriteParameterPos() {
+		for(int i=0; i < getNumParameter(); ++i)
+			if(getParameter(i).isWrite())
+				return i;
+		return -1;
+	}
+	
+	public void ParameterDeclaration.makeIn() {
+		List<Modifier> newmods = new List<Modifier>();
+		for(Modifier mod : getModifiers().getModifierList())
+			if(!mod.getID().equals("ref") && !mod.getID().equals("out"))
+				newmods.add(mod);
+		getModifiers().setModifierList(newmods);
+	}
+
+	public void ParameterDeclaration.makeRef() {
+		for(Modifier mod : getModifiers().getModifierList()) {
+			if(mod.getID().equals("out")) {
+				mod.setID("ref");
+				return;
+			}
+		}
+		getModifiers().addModifier(new Modifier("ref"));
+	}
+
+}

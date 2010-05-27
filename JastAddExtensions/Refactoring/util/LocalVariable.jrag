@@ -7,6 +7,14 @@ aspect LocalVariable {
 	VariableDeclaration implements LocalDeclaration;
 	ParameterDeclaration implements LocalDeclaration;
 	
+	public ParameterDeclaration LocalDeclaration.asLockedParameterDeclaration();
+	public ParameterDeclaration ParameterDeclaration.asLockedParameterDeclaration() {
+		return (ParameterDeclaration)lockedCopy();
+	}
+	public ParameterDeclaration VariableDeclaration.asLockedParameterDeclaration() {
+		return new ParameterDeclaration((Modifiers)getModifiers().fullCopy(), type().createLockedAccess(), name());
+	}
+	
 	// determine all references to local declarations in a subtree
 	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
 		java.util.Set<VarAccess> res = new LinkedHashSet<VarAccess>();

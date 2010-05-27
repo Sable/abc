@@ -1,0 +1,58 @@
+/*
+ * The first part of the Extract Method refactoring, Extract Block takes a piece of
+ * code (given by its start and end statements) and turns it into a block.
+ * 
+ * We need to ensure that this is possible (see precondition checks), and possibly
+ * move some declarations for variables that are used outside the selection out of
+ * the generated block.
+ */
+
+aspect ExtractBlock {
+
+	public Block Block.extractBlock(int begin, int end) {
+		if(begin < 0 || end >= getNumStmt() || end < begin)
+			throw new RefactoringException("indices out of range");
+		lockAllNames();
+		Block new_block = new Block(new List());
+		insertStmt(end+1, new_block);
+		
+		// push statements into block
+		while(end >= begin) {
+			Stmt stmt = getStmt(end);
+			if(stmt instanceof Case)
+				throw new RefactoringException("cannot push case into block");
+			if(stmt instanceof VariableDeclaration) {
+				VariableDeclaration decl = (VariableDeclaration)stmt;
+				if(usesAfter(decl, end+1)) {
+					AssignSimpleExpr assgn = decl.split();
+					removeStmt(end);
+					if(assgn != null)
+						++end;
+					insertStmt(begin++, stmt);
+				} else {
+					removeStmt(end--);
+					new_block.insertStmt(0, stmt);
+				}
+			} else {
+				removeStmt(end--);
+				new_block.insertStmt(0, stmt);
+			}
+		}
+		
+		return new_block;
+	}
+	
+	public Block Block.doExtractBlock(int begin, int end) {
+		Program root = programRoot();
+		Block blk = extractBlock(begin, end);
+		programRoot().eliminate(LOCKED_NAMES);
+		return blk;
+	}
+	
+	protected boolean Block.usesAfter(Variable v, int i) {
+		for(int j=i+1;j<getNumStmt();++j)
+			if(getStmt(j).mayRef(v))
+				return true;
+		return false;
+	}
+}

@@ -1,0 +1,73 @@
+/** The "Wrap Block Into Closure" refactoring turns a block
+
+      <pre>
+      { b_1, ..., b_n }
+      </pre>
+
+    into a closure application statement
+
+      <pre>
+      (() : T throws e_1, ..., e_m => { b_1, ..., b_n }) ();
+      </pre>
+
+    Exceptions e_1, ..., e_m are all uncaught exceptions thrown in the block.
+    The refactoring ensures that control flow stays intact. In particular, if the
+    block contains any break, continue, or return statements with target outside
+    the block, the refactoring will be rejected.
+
+    Return type T will normally be void, except if the whole block cannot complete
+    normally, in which case it will be the return type of the enclosing method
+    and the application statement is wrapped into a return statement.
+ */
+
+aspect WrapBlockIntoClosure {
+
+	public AnonymousMethod Block.wrapIntoClosure() {
+		lockControlFlow();
+		
+		// create a closure without parameters returning and throwing all
+		// uncaught checked exceptions of block
+		// if the block cannot complete normally, we need to set the return type
+		List<Access> exns = computeExceptionsToDeclare();
+		Access rettype = canCompleteNormally() ? new PrimitiveTypeAccess("void")
+			                                   : returnType().createLockedAccess();
+		AnonymousMethod cl = new AnonymousMethod(new List(), new List(), rettype, exns, null, new List()); 
+		Stmt stmt;
+		if(canCompleteNormally()) {
+			replaceWith(stmt = new ExprStmt(cl));
+		} else {
+			ReturnStmt ret = new ReturnStmt(cl);
+			replaceWith(stmt = ret);
+		}
+		cl.setBlock(this);
+		return cl;
+	}
+	
+	public AnonymousMethod Block.doWrapIntoClosure() {
+		TypeDecl td = hostType();
+		AnonymousMethod am = wrapIntoClosure();
+		td.eliminate(LOCKED_CONTROLFLOW, LOCKED_NAMES, RETURN_VOID);
+		return am;
+	}
+	
+	// return a list of locked type accesses to all exceptions in a subtree that should be declared
+	public List<Access> ASTNode.computeExceptionsToDeclare() {
+		List<Access> res = new List<Access>();
+		for(TypeDecl exn : uncaughtExceptions())
+			if(exn.shouldDeclareAsThrown())
+				res.add(exn.createLockedAccess());
+		return res;
+	}
+	
+	// this is what the JLS calls a checked exception; the definitions in JastAddJ confuse me...
+	inh lazy TypeDecl TypeDecl.typeThrowable();
+	syn boolean TypeDecl.shouldDeclareAsThrown()
+		= instanceOf(typeThrowable()) &&
+		  !instanceOf(typeRuntimeException()) &&
+		  !instanceOf(typeError());
+
+	inh TypeDecl Block.returnType();
+	inh TypeDecl AnonymousMethod.returnType();
+	inh TypeDecl ReturnStmt.typeVoid();
+	syn TypeDecl ReturnStmt.type() = hasResult() ? getResult().type() : typeVoid();
+}
