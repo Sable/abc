@@ -54,6 +54,8 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.RenameType.RenameTypeTests.class);
 		suite.addTestSuite(tests.eclipse.RenameTypeParameter.RenameTypeParameterTests.class);
 		suite.addTestSuite(tests.eclipse.RenameVirtualMethodInClass.RenameVirtualMethodInClassTests.class);
+		suite.addTestSuite(tests.ExtractBlockTests.class);
+		suite.addTestSuite(tests.ExtractMethodTests.class);
 		//$JUnit-END$
 		return suite;
 	}

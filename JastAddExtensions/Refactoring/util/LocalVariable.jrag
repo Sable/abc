@@ -15,24 +15,33 @@ aspect LocalVariable {
 		return new ParameterDeclaration((Modifiers)getModifiers().fullCopy(), type().createLockedAccess(), name());
 	}
 	
-	// determine all references to local declarations in a subtree
-	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
+	// find all variable accesses in a subtree
+	public java.util.Set<VarAccess> ASTNode.varAccesses() {
 		java.util.Set<VarAccess> res = new LinkedHashSet<VarAccess>();
-		localVarAccesses(res);
+		varAccesses(res);
 		return res;
 	}
 
-	public void ASTNode.localVarAccesses(java.util.Set<VarAccess> res) {
+	public void ASTNode.varAccesses(java.util.Set<VarAccess> res) {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
 			if(child != null)
-				child.localVarAccesses(res);
+				child.varAccesses(res);
 		}
 	}
 	
-	public void VarAccess.localVarAccesses(java.util.Set<VarAccess> res) {
-		if(decl() instanceof LocalDeclaration)
-			res.add(this);
-		super.localVarAccesses(res);
+	public void VarAccess.varAccesses(java.util.Set<VarAccess> res) {
+		res.add(this);
+		super.varAccesses(res);
+	}
+	
+	// find only the local ones
+	public java.util.Set<VarAccess> ASTNode.localVarAccesses() {
+		java.util.Set<VarAccess> res = new LinkedHashSet<VarAccess>();
+		for(VarAccess va : varAccesses()) {
+			if(va.decl() instanceof LocalDeclaration)
+				res.add(va);
+		}
+		return res;
 	}	
 }

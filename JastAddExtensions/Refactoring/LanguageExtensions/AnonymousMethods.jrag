@@ -49,6 +49,13 @@ aspect AnonymousMethods {
 	
 	// equations for some attributes defined elsewhere
 	eq AnonymousMethod.getParameter().canIntroduceLocal(String name) = !hasNestedLocal(name);
+	
+	// name types
+	eq AnonymousMethod.getReturnType().nameType() = NameType.TYPE_NAME;
+	eq AnonymousMethod.getParameter().nameType() = NameType.TYPE_NAME;
+	eq AnonymousMethod.getException().nameType() = NameType.TYPE_NAME;
+    eq AnonymousMethod.getArg().nameType() = NameType.EXPRESSION_NAME;
+    eq AnonymousMethod.getTypeParameter().nameType() = NameType.TYPE_NAME;	
 
 	// we're not interested in reachability checking for anonymous methods
 	eq AnonymousMethod.getBlock().reachable() = true;

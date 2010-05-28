@@ -1,5 +1,5 @@
 aspect InlineAssignment {	
-	public void AssignSimpleExpr.inline() throws RefactoringException {
+	public void AssignSimpleExpr.inline() {
 		if(!(getParent() instanceof ExprStmt))
 			throw new RefactoringException("cannot inline this assignment");
 		Stmt stmt = (Stmt)getParent();
@@ -26,12 +26,19 @@ aspect InlineAssignment {
 			Expr old_rhs = (Expr)rhs.fullCopy();
 			rhs.lockAllNames();
 			rhs.lockThrowEdges();
+			rhs.lockSyncDependencies();
 			rhs.replaceWith(old_rhs);
 			u.replaceWith(rhs.precedence() > u.maxPrecedence() ? new ParExpr(rhs) : rhs);
 			rhs = old_rhs;
 		}
 		// delete assignment
 		stmt.delete();
+	}
+	
+	public void AssignSimpleExpr.doInline() {
+		TypeDecl td = hostType();
+		inline();
+    	td.eliminate(LOCKED_DATAFLOW, LOCKED_THROW, LOCKED_SYNC, LOCKED_NAMES);
 	}
 	
 	// whether this expression can throw an exception (should be overapproximation)

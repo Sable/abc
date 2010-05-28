@@ -169,8 +169,6 @@ aspect LockedTypeAccess {
 		flushCaches();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
-		if(lookupName(name()) == target)
-			return qual == null ? this : qual.qualifiesAccess(this);
 		try {
 			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
 					|| hostType() != null && !target.accessibleFrom(hostType()))

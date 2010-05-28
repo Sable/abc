@@ -1,8 +1,14 @@
 aspect ClosureConversion {
 	public AnonymousMethod AnonymousMethod.convert() {
-		java.util.Set<VarAccess> locals = localVarAccesses();
-		for(VarAccess v : locals)
-			closeOver(v);
+		java.util.Set<VarAccess> locals = new java.util.LinkedHashSet<VarAccess>();
+		for(VarAccess va : varAccesses()) {
+			if(va.decl() instanceof LocalDeclaration) {
+				locals.add(va);
+				closeOver(va);
+			} else if(va.hostBodyDecl() == hostBodyDecl() && va.isDest() && va.decl().isFinal()) {
+				throw new RefactoringException("cannot extract writes to final fields");
+			}
+		}
 		putVarArgAtEnd();
 		hostType().flushCaches();
 		for(VarAccess v : locals)

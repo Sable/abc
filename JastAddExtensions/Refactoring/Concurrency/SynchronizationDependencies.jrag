@@ -72,4 +72,10 @@ aspect SynchronizationDependencies {
 		});
 		unlockDependencies(new PreservationStrategy(ThreadManagementDependency.edge));
 	}
+	
+	public static LanguageExtension ASTNode.LOCKED_SYNC = new LanguageExtension("locked synchronisation") {
+		public void eliminateOn(ASTNode n) {
+			n.unlockSyncDependencies();
+		}
+	};	
 }

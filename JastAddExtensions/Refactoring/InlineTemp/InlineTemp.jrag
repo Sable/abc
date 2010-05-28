@@ -6,7 +6,7 @@ aspect InlineTemp {
 	public void VariableDeclaration.inline() {
 		AssignSimpleExpr assgn = split();
 		if(assgn != null)
-			assgn.inline();
+			assgn.doInline();
 		removeUnused();
 	}
 	
@@ -26,8 +26,6 @@ aspect InlineTemp {
     
     // stand-alone refactoring
     public void VariableDeclaration.doInline() {
-    	Program root = programRoot();
     	inline();
-    	root.eliminate(LOCKED_DATAFLOW, LOCKED_THROW, LOCKED_NAMES);
     }
 }
