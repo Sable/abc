@@ -1,5 +1,5 @@
 aspect ExtractMethod {
-	public MethodDecl Block.extractMethod(String visibility, String name, int begin, int end) {
+	public MethodDecl Block.extractMethod(int visibility, String name, int begin, int end) {
 		Block blk = doExtractBlock(begin, end);
 		AnonymousMethod am = blk.doWrapIntoClosure();
 		am = am.convert();
@@ -7,7 +7,7 @@ aspect ExtractMethod {
 		return md;
 	}
 	
-	public MethodDecl Block.doExtractMethod(String visibility, String name, int begin, int end) {
+	public MethodDecl Block.doExtractMethod(int visibility, String name, int begin, int end) {
 		return extractMethod(visibility, name, begin, end);
 	}
 }

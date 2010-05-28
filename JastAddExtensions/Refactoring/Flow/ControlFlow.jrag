@@ -13,22 +13,41 @@ aspect ControlFlow {
 	
 	public void CFGNode.lockControlFlow() {
 		if(lockedSucc == null)
-			lockedSucc = succ();
+			lockedSucc = weakSucc();
+		super.lockControlFlow();
 	}
 	
 	public void CFGNode.unlockControlFlow() {
 		if(lockedSucc != null) {
-			if(!lockedSucc.equals(succ()))
+			if(!lockedSucc.equals(weakSucc()))
 				throw new RefactoringException("control flow successors not preserved");
 			lockedSucc = null;
 		}
+		super.unlockControlFlow();
 	}
 	
 	public static LanguageExtension ASTNode.LOCKED_CONTROLFLOW = new LanguageExtension("locked control flow") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockControlFlow();
 		}
-	};	
+	};
+	
+	syn boolean CFGNode.isFlowThrough() = false;
+	eq Block.isFlowThrough() = true;
+	eq TypeAccess.isFlowThrough() = true;
+	eq ExprStmt.isFlowThrough() = true;
+	eq ReturnStmt.isFlowThrough() = true;
+	eq LabeledStmt.isFlowThrough() = true;
+	
+	syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {
+		SmallSet<CFGNode> res = SmallSet.<CFGNode>empty();
+		for(CFGNode s : succ())
+			if(s.isFlowThrough())
+				res = res.union(s.weakSucc());
+			else
+				res = res.union(s);
+		return res;
+	}
 	
 	// sometimes it is useful to just lock exceptional control flow edges
 	

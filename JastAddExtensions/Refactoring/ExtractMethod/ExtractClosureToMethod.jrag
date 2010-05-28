@@ -1,13 +1,12 @@
 aspect ExtractClosureToMethod {
-	public MethodDecl AnonymousMethod.extractToMethod(String visibility, String name) {
+	public MethodDecl AnonymousMethod.extractToMethod(int visibility, String name) {
 		TypeDecl typedecl = hostType();
 		eliminateOutParams();
 		lockAllNames();
-		List<Modifier> mods = new List<Modifier>();
-		mods.add(new Modifier(visibility));
+		Modifiers mods = new Modifiers(visibility);
 		if(inStaticContext() || inExplicitConstructorInvocation())
-			mods.add(new Modifier("static"));
-		MethodDecl md = new MethodDecl(new Modifiers(mods), getReturnType(), name, getParameters(), getExceptions(), new Opt(getBlock())); 
+			mods.addModifier("static");
+		MethodDecl md = new MethodDecl(mods, getReturnType(), name, getParameters(), getExceptions(), new Opt(getBlock())); 
 		// it is generally not a good idea to have the same node at two different places in the tree...
 		setBlock(new Block(new List()));
 		int index = typedecl.getBodyDeclList().getIndexOfChild(hostBodyDecl());
@@ -18,7 +17,7 @@ aspect ExtractClosureToMethod {
 
 	inh boolean AnonymousMethod.inExplicitConstructorInvocation();
 	
-	public MethodDecl AnonymousMethod.doExtractToMethod(String visibility, String name) {
+	public MethodDecl AnonymousMethod.doExtractToMethod(int visibility, String name) {
 		TypeDecl td = hostType();
 		MethodDecl md = extractToMethod(visibility, name);
 		td.eliminate(LOCKED_NAMES);

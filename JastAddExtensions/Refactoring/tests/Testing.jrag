@@ -358,7 +358,7 @@ aspect Testing {
 	}
 	
 	public Stmt Stmt.findStmtPreceding(int line) {
-		int l = ASTNode.getLine(getStart());
+		int l = ASTNode.getLine(getEnd());
 		if(l == line || l == line-1)
 			return this;
 		return super.findStmtPreceding(line);

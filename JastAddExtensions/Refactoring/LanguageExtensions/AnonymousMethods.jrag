@@ -219,6 +219,9 @@ aspect AnonymousMethods {
 	AnonymousMethod implements Scope;
 	eq AnonymousMethod.hasVariable(String name) = !parameterDeclaration(name).isEmpty();
 	
+	eq AnonymousMethod.isFlowThrough() = true;
+	eq ExitStmt.isFlowThrough() = getParent() instanceof AnonymousMethod;
+	
 	syn lazy boolean ParameterDeclaration.isIn() = !isOut() && !isRef();
 	syn lazy boolean ParameterDeclaration.isOut() = getModifiers().numModifier("out") != 0;
 	syn lazy boolean ParameterDeclaration.isRef() = getModifiers().numModifier("ref") != 0;
