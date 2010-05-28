@@ -69,8 +69,18 @@ aspect AnonymousMethods {
 	syn CFGNode AnonymousMethod.entry() = getBlock();
 	syn CFGNode AnonymousMethod.exit() = this;
 	
-	eq AnonymousMethod.getArg(int i).following() = i < getNumArg()-1 ? SmallSet.<CFGNode>singleton(getArg(i+1).first()) 
-			  			  											   : SmallSet.<CFGNode>singleton(getBlock());
+	eq AnonymousMethod.getArg(int i).following() {
+		if(i < getNumArg()-1)
+			return SmallSet.<CFGNode>singleton(getArg(i+1).first());
+		if(getNumParameter() > 0)
+			return SmallSet.<CFGNode>singleton(getParameter(0).first());
+		return SmallSet.<CFGNode>singleton(getBlock());
+	}
+	eq AnonymousMethod.getParameter(int i).following() {
+		if(i < getNumParameter()-1)
+			return SmallSet.<CFGNode>singleton(getParameter(i+1).first());
+		return SmallSet.<CFGNode>singleton(getBlock());
+	}
 	eq AnonymousMethod.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
 	eq AnonymousMethod.getReturnType().following() = SmallSet.<CFGNode>singleton(exit());
 	eq AnonymousMethod.getException(int i).following() = throwTarget(getException(i).type());

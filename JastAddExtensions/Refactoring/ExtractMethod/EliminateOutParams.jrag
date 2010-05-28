@@ -10,9 +10,9 @@ aspect EliminateOutParams {
 		ParameterDeclaration pd = getParameter(idx);
 		if(!(getArg(idx) instanceof VarAccess))
 			throw new RefactoringException("cannot eliminate out parameter");
-		if(hasOutgoingDataflowEdgeThroughException(pd))
-			throw new RefactoringException("cannot eliminate out parameter");
 		VarAccess v = (VarAccess)getArg(idx);
+		if(hasOutgoingDataflowEdgeThroughException(pd, v.getLocation()))
+			throw new RefactoringException("cannot eliminate out parameter");
 		VarAccess newv = new VarAccess(v.name());
 		getBlock().addStmt(new ReturnStmt(newv));
 		hostType().flushCaches();
@@ -34,12 +34,12 @@ aspect EliminateOutParams {
 		
 	// determine if any use of this variable has an outgoing data flow edge that crosses one of the exception
 	// exits; in that case, we cannot eliminate this output parameter (see test58)
-	private boolean AnonymousMethod.hasOutgoingDataflowEdgeThroughException(Variable v) {
+	private boolean AnonymousMethod.hasOutgoingDataflowEdgeThroughException(Variable v, Location l) {
 		for(VarAccess acc : v.allUses()) {
 			for(Access exn : getExceptions())
-				if(acc.hasReachedUseAfter(exn))
+				if(acc.hasReachedUseAfter(l, exn))
 					return true;
-			if(acc.hasReachedUseAfter(uncheckedExceptionExit()))
+			if(acc.hasReachedUseAfter(l, uncheckedExceptionExit()))
 				return true;
 		}
 		return false;
