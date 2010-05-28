@@ -622,51 +622,6 @@ public class ExtractMethodTests extends TestCase {
 		"")));
 	}
 
-	public void test15() {
-		testSucc("B", "m", 0, 0, "n", Program.fromCompilationUnits(new RawCU("A.java",
-				"\n" +
-				"class B {\n" +
-				"    void m() {\n" +
-				"	System.out.println(1);\n" +
-				"    }\n" +
-				"}\n" +
-				"\n" +
-				"class C extends B {\n" +
-				"    void n() {\n" +
-				"	System.out.println(2);\n" +
-				"    }\n" +
-				"}\n" +
-				"\n" +
-				"public class Tst2 {\n" +
-				"    public static void main(String[] args) {\n" +
-				"	B b = new C();\n" +
-				"	b.m();\n" +
-				"    }\n" +
-				"}")),
-		Program.fromCompilationUnits(new RawCU("A.java",
-				"class B {\n"+
-				"  void m() {\n"+
-				"    n();\n"+
-				"  }\n"+
-				"  private void n() {\n"+
-				"    System.out.println(1);\n"+
-				"  }\n"+
-				"}\n"+
-				"\n"+
-				"class C extends B {\n"+
-				"  void n() {\n"+
-				"    System.out.println(2);\n"+
-				"  }\n"+
-				"}\n"+
-				"\n"+
-				"public class Tst2 {\n"+
-				"  public static void main(String[] args) {\n"+
-				"    B b = new C();\n"+
-				"    b.m();\n"+
-				"  }\n"+
-				"}")));
-	}
-
 	public void test16() {
 		testFail("B", "m", 0, 0, "n", ASTNode.VIS_PACKAGE, Program.fromCompilationUnits(new RawCU("A.java",
 				"class B {\n" +

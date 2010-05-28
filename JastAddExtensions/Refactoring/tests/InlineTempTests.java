@@ -21,7 +21,7 @@ public class InlineTempTests extends TestCase {
 			((VariableDeclaration)v).doInline();
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
-			fail("Refactoring was supposed to succeed; failed with "+rfe);
+			assertEquals(out.toString(), "<failure>");
 		}
 	}
 
@@ -31,7 +31,7 @@ public class InlineTempTests extends TestCase {
 		assertTrue(v instanceof VariableDeclaration);
 		try {
 			((VariableDeclaration)v).doInline();
-			fail("Refactoring was supposed to fail; succeeded with "+in);
+			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
 	}
 

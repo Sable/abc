@@ -8,6 +8,12 @@ aspect ClosureConversion {
 		for(VarAccess v : locals)
 			if(declaredOutside(v))
 				localise(v);
+		for(TypeAccess ta : typeVarAccesses()) {
+			TypeVariable tv = (TypeVariable)ta.decl();
+			if(tv.owner() == enclosingBodyDecl())
+				addTypeVariable(tv);
+		}
+		hostType().flushCaches();
 		return this;
 	}
 	
@@ -42,7 +48,7 @@ aspect ClosureConversion {
 	}
 	
 	// add an input parameter having the same modifiers, name, and type as decl
-	private void AnonymousMethod.addInParm(LocalDeclaration decl) throws RefactoringException {
+	private void AnonymousMethod.addInParm(LocalDeclaration decl) {
 		ParameterDeclaration parm = getParameter(decl.name());
 		if(parm == null) {
 			parm = decl.asLockedParameterDeclaration();
@@ -54,7 +60,7 @@ aspect ClosureConversion {
 	}
 
 	// add an output parameter having the same modifiers, name, and type as decl
-	private void AnonymousMethod.addOutParm(LocalDeclaration decl) throws RefactoringException {
+	private void AnonymousMethod.addOutParm(LocalDeclaration decl) {
 		ParameterDeclaration parm = getParameter(decl.name());
 		if(parm == null) {
 			parm = decl.asLockedParameterDeclaration();
@@ -71,6 +77,14 @@ aspect ClosureConversion {
 			if(pd.name().equals(name))
 				return pd;
 		return null;
+	}
+	
+	// add a type variable
+	private void AnonymousMethod.addTypeVariable(TypeVariable tv) {
+		for(TypeVariable tv2 : getTypeParameters())
+			if(tv2.name().equals(tv.name()))
+				return;
+		addTypeParameter((TypeVariable)tv.fullCopy());
 	}
 			
 	// shuffle parameters so that any variable arity parameter comes last 

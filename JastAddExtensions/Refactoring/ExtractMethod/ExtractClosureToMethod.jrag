@@ -3,14 +3,21 @@ aspect ExtractClosureToMethod {
 		TypeDecl typedecl = hostType();
 		eliminateOutParams();
 		lockAllNames();
-		Modifiers mods = new Modifiers(visibility);
-		if(inStaticContext() || inExplicitConstructorInvocation())
-			mods.addModifier("static");
-		MethodDecl md = new MethodDecl(mods, getReturnType(), name, getParameters(), getExceptions(), new Opt(getBlock())); 
-		// it is generally not a good idea to have the same node at two different places in the tree...
+		MethodDecl md = asNamedMethod(visibility, name);
 		setBlock(new Block(new List()));
 		int index = typedecl.getBodyDeclList().getIndexOfChild(hostBodyDecl());
-		typedecl.insertUnusedMethod(md, index+1);
+		programRoot().lockMethodNames(name);
+		typedecl.getBodyDeclList().insertChild(md, index+1);
+		typedecl.flushCaches();
+		for(Iterator<MethodDecl> iter=typedecl.localMethodsIterator();iter.hasNext();) {
+			MethodDecl md2 = iter.next();
+			if(md != md2 && md.signature().equals(md2.signature()))
+				throw new RefactoringException("method with same signature exists");
+		}
+		if(!typedecl.ancestorMethods(md.signature()).isEmpty())
+			throw new RefactoringException("extracted method would override or hide other method");
+		if(!typedecl.descendantMethods(md.signature()).isEmpty())
+			throw new RefactoringException("extracte method would be overridden or hidden by other method");
 		replaceWith(md.createLockedAccess(getArgList()));
 		return md;
 	}

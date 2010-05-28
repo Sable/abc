@@ -100,81 +100,6 @@ aspect AnonymousMethods {
 	}
 	eq AnonymousMethod.getChild().uncheckedExnTarget() = SmallSet.<CFGNode>singleton(uncheckedExceptionExit());
 
-	/*
-	// data flow for AnonymousMethod invocations: parameters are aliased
-	public VarAccess AnonymousMethod.unalias(VarAccess var) {
-		for(int i=0;i<getNumParameter();++i)
-			if(getParameter(i) == var.decl() && getArg(i) instanceof VarAccess)
-				return (VarAccess)getArg(i);
-		return var;
-	}
-	public LocalDeclaration AnonymousMethod.unalias(LocalDeclaration decl) {
-		for(int i=0;i<getNumParameter();++i)
-			if(getParameter(i) == decl && getArg(i) instanceof VarAccess &&
-					((VarAccess)getArg(i)).decl() instanceof LocalDeclaration)
-				return (LocalDeclaration)((VarAccess)getArg(i)).decl();
-		return decl;
-	}
-	
-	eq Block.dataPredFor(VarAccess var) {
-		if(getParent() instanceof AnonymousMethod) {
-			AnonymousMethod cl = (AnonymousMethod)getParent();
-			return super.dataPredFor(cl.unalias(var));
-		}
-		return super.dataPredFor(var);
-	}
-	eq AnonymousMethod.dataSuccFor(LocalDeclaration decl) {
-		return super.dataSuccFor(unalias(decl));
-	}
-	eq Access.dataSuccFor(LocalDeclaration decl) {
-		if(isDeclaredClosureException()) {
-			AnonymousMethod cl = (AnonymousMethod)getParent().getParent();
-			return super.dataSuccFor(cl.unalias(decl));
-		}
-		return super.dataSuccFor(decl);
-	}
-	eq ExitStmt.dataSuccFor(LocalDeclaration decl) {
-		if(getParent() instanceof AnonymousMethod) {
-			AnonymousMethod cl = (AnonymousMethod)getParent();
-			return super.dataSuccFor(cl.unalias(decl));
-		}
-		return super.dataSuccFor(decl);
-	}
-	
-	// same for bounded dataflow
-	eq Block.hasDataPredBefore(VarAccess var, ASTNode n) {
-		if(getParent() instanceof AnonymousMethod) {
-			AnonymousMethod cl = (AnonymousMethod)getParent();
-			if(this == n)
-				return !dataPredFor(cl.unalias(var)).isEmpty();
-			return super.hasDataPredBefore(cl.unalias(var), n);
-		}
-		return super.hasDataPredBefore(var, n);
-	}	
-	eq AnonymousMethod.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
-		if(this == n)
-			return !dataSuccFor(unalias(decl)).isEmpty();
-		return super.hasDataSuccAfter(unalias(decl), n);
-	}
-	eq Access.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
-		if(isDeclaredClosureException()) {
-			AnonymousMethod cl = (AnonymousMethod)getParent().getParent();
-			if(this == n)
-				return !dataSuccFor(cl.unalias(decl)).isEmpty();
-			return super.hasDataSuccAfter(cl.unalias(decl), n);
-		}
-		return super.hasDataSuccAfter(decl, n);
-	}
-	eq ExitStmt.hasDataSuccAfter(LocalDeclaration decl, ASTNode n) {
-		if(getParent() instanceof AnonymousMethod) {
-			AnonymousMethod cl = (AnonymousMethod)getParent();
-			if(this == n)
-				return !dataSuccFor(cl.unalias(decl)).isEmpty();
-			return super.hasDataSuccAfter(cl.unalias(decl), n);
-		}
-		return super.hasDataSuccAfter(decl, n);
-	}*/
-
 	// all return statements inside the AnonymousMethod
 	syn lazy SmallSet<Stmt> AnonymousMethod.returns() = getReturnType().predStmt();
 	// all final, non-return statements inside the AnonymousMethod
@@ -225,6 +150,16 @@ aspect AnonymousMethods {
 				return pd;
 		return unknownVarAccess();
 	}
+	
+	syn SimpleSet AnonymousMethod.localLookupType(String name) {
+		for(TypeVariable tv : getTypeParameters())
+			if(tv.name().equals(name))
+				return SimpleSet.emptySet.add(tv);
+		return SimpleSet.emptySet;
+	}
+	
+	eq AnonymousMethod.getChild().lookupType(String name) 
+		= localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
 	
 	AnonymousMethod implements Scope;
 	eq AnonymousMethod.hasVariable(String name) = !parameterDeclaration(name).isEmpty();
@@ -282,7 +217,17 @@ aspect AnonymousMethods {
 								   getExceptions(),
 								   getBlock(),
 								   new List<Expr>());
-	}	
+	}
+	
+	syn MethodDecl AnonymousMethod.asNamedMethod(int visibility, String name) {
+		Modifiers mods = new Modifiers(visibility);
+		if(inStaticContext() || inExplicitConstructorInvocation())
+			mods.addModifier("static");
+		if(getNumTypeParameter() == 0)
+			return new MethodDecl(mods, getReturnType(), name, getParameters(), getExceptions(), new Opt(getBlock()));
+		else
+			return new GenericMethodDecl(mods, getReturnType(), name, getParameters(), getExceptions(), new Opt(getBlock()), getTypeParameterList());
+	}
 	
 	public void AnonymousMethod.eliminateVarargs() {
 		if(!isVariableArity())
