@@ -1,4 +1,10 @@
-aspect MakeConversionExplicit {	
+aspect MakeConversionExplicit {
+	public Expr AssignSimpleExpr.makeConversionExplicit() {
+		Expr rhs = getSource().makeConversionExplicit(getDest().type());
+		setSource(rhs);
+		return rhs;
+	}
+
 	public Expr Expr.makeConversionExplicit(TypeDecl destType) {
 		if(shouldMakeConversionExplicit(destType))
 			return createConversion(destType, this);

@@ -2,34 +2,37 @@ aspect InlineAssignment {
 	public void AssignSimpleExpr.inline() {
 		if(!(getParent() instanceof ExprStmt))
 			throw new RefactoringException("cannot inline this assignment");
-		Stmt stmt = (Stmt)getParent();
-		if(!(getDest() instanceof VarAccess))
-			throw new RefactoringException("LHS is not a simple variable");
-		VarAccess v = (VarAccess)getDest();
-		if(!v.decl().isLocalVariable())
+		if(!(getDest() instanceof VarAccess) || !((VarAccess)getDest()).decl().isLocalVariable())
 			throw new RefactoringException("can only inline assignment to local variable");
-		setSource(getSource().makeConversionExplicit(getDest().type()));
-		Expr rhs = getSource();
-		BodyDecl bd = hostBodyDecl();
+		Stmt stmt = (Stmt)getParent();
+		VarAccess v = (VarAccess)getDest();
+		Expr rhs = makeConversionExplicit();
 		if(!rhs.locationsWritten().isEmpty())
 			throw new RefactoringException("cannot inline expressions with side effects");
-		if(rhs.canCompleteAbruptly() && !isAnticipated((VariableDeclaration)v.decl()))
-			throw new RefactoringException("expression may throw exception, but not inlined along all paths");
 		SmallSet<Access> U = v.reachedUses();
+		SmallSet<CFGNode> C = rhs.collectExceptionalSucc();
+		if(!C.isEmpty() && !isAnticipated((VariableDeclaration)v.decl()))
+			throw new RefactoringException("expression may throw exception, but not inlined along all paths");
 		for(Access u : U) {
 			if(u.isDest())
 				throw new RefactoringException("cannot inline into destinations");
+			if(!u.reachingDefinitions().isSingleton())
+				throw new RefactoringException("ambiguous dataflow");
 			if(u.hostBodyDecl() != stmt.hostBodyDecl())
 				throw new RefactoringException("cannot inline across method boundaries");
-			for(CFGNode w : u.precedingDefsUpTo(v))
-				((Access)w).lockReachedUses();
+			for(CFGNode c : C)
+				for(CFGNode w : u.precedingDefsUpTo(v))
+					if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())
+						throw new RefactoringException("write to live variable may be lost");
 			Expr old_rhs = (Expr)rhs.fullCopy();
 			rhs.lockAllNames();
 			rhs.lockThrowEdges();
 			rhs.lockSyncDependencies();
+			rhs.lockDataFlow();
 			rhs.replaceWith(old_rhs);
 			u.replaceWith(rhs.precedence() > u.maxPrecedence() ? new ParExpr(rhs) : rhs);
 			rhs = old_rhs;
+			hostType().flushCaches();
 		}
 		// delete assignment
 		stmt.delete();
@@ -41,22 +44,15 @@ aspect InlineAssignment {
     	td.eliminate(LOCKED_DATAFLOW, LOCKED_THROW, LOCKED_SYNC, LOCKED_NAMES);
 	}
 	
-	// whether this expression can throw an exception (should be overapproximation)
-	public boolean ASTNode.canCompleteAbruptly() {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode ch = getChild(i);
-			if(ch.canCompleteAbruptly())
-				return true;
-		}
-		return false;
+	public SmallSet<CFGNode> ASTNode.collectExceptionalSucc() {
+		SmallSet<CFGNode> res = SmallSet.<CFGNode>empty();
+		for(int i=0;i<getNumChild();++i)
+			res = res.union(getChild(i).collectExceptionalSucc());
+		return res;
 	}
-	public boolean AbstractDot.canCompleteAbruptly() 		{ return true; }
-	public boolean ClassInstanceExpr.canCompleteAbruptly() 	{ return true; }
-	public boolean ConstructorAccess.canCompleteAbruptly()	{ return true; }
-	public boolean MethodAccess.canCompleteAbruptly()		{ return true; }
-	public boolean DivExpr.canCompleteAbruptly()			{ return true; }
-	public boolean CastExpr.canCompleteAbruptly()			{ return true; }
-	// TODO: arithmetic operations can throw NPEs if applied to boxed types
+	public SmallSet<CFGNode> CFGNode.collectExceptionalSucc() {
+		return exceptionalSucc().union(super.collectExceptionalSucc());
+	}
 	
 	// all definitions preceding this node on the way back to n
 	syn lazy SmallSet<CFGNode> CFGNode.precedingDefsUpTo(CFGNode n) circular [SmallSet.<CFGNode>empty()] {
@@ -69,12 +65,6 @@ aspect InlineAssignment {
 			res = res.union(p.precedingDefsUpTo(n));
 		return res;
 	}
-	
-	syn boolean CFGNode.isDef() = false;
-	eq Access.isDef() = isDest();
-	eq MethodAccess.isDef() = true;
-	eq ConstructorAccess.isDef() = true;
-	eq ClassInstanceExpr.isDef() = true;
 	
 	// determines whether v is anticipated at this node
 	syn lazy boolean CFGNode.isAnticipated(VariableDeclaration v) circular [true] {

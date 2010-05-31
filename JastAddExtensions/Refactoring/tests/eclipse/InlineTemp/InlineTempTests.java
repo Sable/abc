@@ -283,13 +283,14 @@ public class InlineTempTests extends TestCase {
 		helper2();
 	}*/
 
+	/* disabled: we can do this
 	public void testFail3() throws Exception{
 		helper2(5, 14, 5, 19);
 	}
 
 	public void testFail4() throws Exception{
 		helper2(5, 14, 5, 22);
-	}
+	}*/
 
 	public void testFail5() throws Exception{
 		helper2(5, 14, 5, 22);

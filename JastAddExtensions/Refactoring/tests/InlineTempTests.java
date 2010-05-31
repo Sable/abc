@@ -110,16 +110,18 @@ public class InlineTempTests extends TestCase {
     }
 
     public void test5() {
-        testFail(
-            Program.fromCompilationUnits(
-            new RawCU("A.java",
-            "class A {"+
-            "  int m() {"+
-            "    int i = 23;"+
-            "    i = 42;"+
-            "    return i;"+
-            "  }"+
-            "}")));
+        testSucc(Program.fromBodyDecls(
+        		"int m() {" +
+        		"  int i = 23;" +
+        		"  i = 42;" +
+        		"  return i;" +
+        		"}"),
+        		Program.fromBodyDecls(
+        		"int m() {" +
+        		"  int i;" +
+        		"  i = 42;" +
+        		"  return i;" +
+        		"}"));
     }
 
     public void test6() {
@@ -274,6 +276,15 @@ public class InlineTempTests extends TestCase {
             "  }"+
             "}")));
     }*/
+    
+    public void test12() {
+    	testFail(Program.fromStmts(
+    		"boolean b = false;" +
+    		"int i = 23;" +
+    		"if(b)" +
+    		"  i = 42;" +
+    		"int j = i;"));
+    }
 
     public void test13() {
         testFail(
@@ -313,6 +324,21 @@ public class InlineTempTests extends TestCase {
             "  }"+
             "}")));
     }*/
+    
+    public void test14() {
+    	testFail(Program.fromClasses(
+    		"class A {" +
+    		"  int x;" +
+    		"  Runnable m() {" +
+    		"    final int i = x;" +
+    		"    return new Thread() {" +
+    		"      public void run() {" +
+    		"        System.out.println(i);" +
+    		"      }" +
+    		"    };" +
+    		"  }" +
+    		"}"));
+    }
     
     public void test15() {
         testFail(
