@@ -560,6 +560,8 @@ public class Main {
             throw new IllegalArgumentException("Soot usage error");
         }
 
+        soot.Main.v().autoSetOptions();
+        
         InitialResolver.v().setJBBFactory(new AbstractJBBFactory(){
             protected AbstractJimpleBodyBuilder createJimpleBodyBuilder(){
                 JimpleBodyBuilder jbb = new JimpleBodyBuilder();
