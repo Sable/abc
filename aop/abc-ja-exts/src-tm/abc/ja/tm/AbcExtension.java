@@ -300,6 +300,8 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
         addClassSignature("java.lang.ref.WeakReference");
         addClassSignature("java.lang.ThreadLocal");
         addClassSignature("java.util.Set");
+        addClassSignature("java.util.Map");
+        addClassSignature("java.util.Collection");
         addClassSignature(tmRuntime + "MyWeakRef");
         addClassSignature(tmRuntime + "PersistentWeakRef");
         addClassSignature(tmRuntime + "ClashWeakRef");
