@@ -88,7 +88,7 @@ aspect AnonymousMethods {
 			return SmallSet.<CFGNode>singleton(getParameter(i+1).first());
 		return SmallSet.<CFGNode>singleton(getBlock());
 	}
-	eq AnonymousMethod.getBlock().following() = SmallSet.<CFGNode>singleton(exit());
+	eq AnonymousMethod.getBlock().following() = SmallSet.<CFGNode>singleton(getReturnType());
 	eq AnonymousMethod.getReturnType().following() = SmallSet.<CFGNode>singleton(exit());
 	eq AnonymousMethod.getException(int i).following() = throwTarget(getException(i).type());
 	eq AnonymousMethod.uncheckedExceptionExit().following() = uncheckedExnTarget();

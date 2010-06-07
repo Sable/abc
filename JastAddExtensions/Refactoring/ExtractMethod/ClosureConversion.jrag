@@ -1,19 +1,49 @@
 aspect ClosureConversion {
 	public AnonymousMethod AnonymousMethod.convert() {
-		java.util.Set<VarAccess> locals = new java.util.LinkedHashSet<VarAccess>();
+		java.util.Set<Variable> V = new java.util.LinkedHashSet<Variable>(),
+								Val = new java.util.LinkedHashSet<Variable>(),
+								Out = new java.util.LinkedHashSet<Variable>(),
+								Ref = new java.util.LinkedHashSet<Variable>();
 		for(VarAccess va : varAccesses()) {
-			if(va.decl() instanceof LocalDeclaration) {
-				locals.add(va);
-				closeOver(va);
-			} else if(va.hostBodyDecl() == hostBodyDecl() && va.isDest() && va.decl().isFinal()) {
+			if(va.hostBodyDecl() == hostBodyDecl() && va.isDest() && va.decl().isFinal())
 				throw new RefactoringException("cannot extract writes to final fields");
+			Variable v = va.decl();
+			if(v instanceof LocalDeclaration && !((ASTNode)v).isDescendantTo(this)) {
+				V.add(v);
+				if(hasIncomingDataflowEdge(va)) {
+					if(Out.contains(v)) {
+						Out.remove(v);
+						Ref.add(v);
+					} else if(!Ref.contains(v)) {
+						Val.add(v);
+					}
+				}
+				if(hasOutgoingDataflowEdge(va)) {
+					if(Val.contains(v)) {
+						Val.remove(v);
+						Ref.add(v);
+					} else if(!Ref.contains(v)) {
+						Out.add(v);
+					}
+				}
 			}
 		}
-		putVarArgAtEnd();
 		hostType().flushCaches();
-		for(VarAccess v : locals)
-			if(declaredOutside(v))
-				localise(v);
+		for(Variable v : V) {
+			Modifiers mod = (Modifiers)v.getModifiers().fullCopy();
+			Access tp = v.type().createLockedAccess();
+			String n = v.name();
+			if(Val.contains(v) || Out.contains(v) || Ref.contains(v)) {
+				if(Out.contains(v))
+					mod.addModifier("out");
+				else if(Ref.contains(v))
+					mod.addModifier("ref");
+				addParameter(new ParameterDeclaration(mod, tp, n));
+				addArg(new VarAccess(n));
+			} else {
+				getBlock().insertStmt(0, new VariableDeclaration(mod, tp, n, new Opt()));
+			}
+		}
 		for(TypeAccess ta : typeVarAccesses()) {
 			TypeVariable tv = (TypeVariable)ta.decl();
 			if(tv.owner() == enclosingBodyDecl())
@@ -21,13 +51,6 @@ aspect ClosureConversion {
 		}
 		hostType().flushCaches();
 		return this;
-	}
-	
-	public void AnonymousMethod.closeOver(VarAccess v) {
-		if(hasIncomingDataflowEdge(v))
-			addInParm((LocalDeclaration)v.decl());
-		if(hasOutgoingDataflowEdge(v))
-			addOutParm((LocalDeclaration)v.decl());
 	}
 	
 	private boolean AnonymousMethod.hasIncomingDataflowEdge(VarAccess v) {
@@ -43,78 +66,11 @@ aspect ClosureConversion {
 		return v.hasReachedUseAfter(uncheckedExceptionExit());
 	}
 	
-	private void AnonymousMethod.localise(VarAccess v) {
-		if(!(v.decl() instanceof LocalDeclaration))
-			return;
-		LocalDeclaration vdecl = (LocalDeclaration)v.decl();
-		VariableDeclaration decl = new VariableDeclaration(vdecl.type().createLockedAccess(), vdecl.name());
-		decl.setModifiers((Modifiers)vdecl.getModifiers().fullCopy());
-		getBlock().insertStmt(0, decl);
-		hostType().flushCaches();
-	}
-	
-	// add an input parameter having the same modifiers, name, and type as decl
-	private void AnonymousMethod.addInParm(LocalDeclaration decl) {
-		ParameterDeclaration parm = getParameter(decl.name());
-		if(parm == null) {
-			parm = decl.asLockedParameterDeclaration();
-			addParameter(parm);
-			addArg(new VarAccess(decl.name()));
-		}
-		if(parm.isOut())
-			parm.makeRef();
-	}
-
-	// add an output parameter having the same modifiers, name, and type as decl
-	private void AnonymousMethod.addOutParm(LocalDeclaration decl) {
-		ParameterDeclaration parm = getParameter(decl.name());
-		if(parm == null) {
-			parm = decl.asLockedParameterDeclaration();
-			parm.getModifiers().addModifier(new Modifier("out"));
-			addParameter(parm);
-			addArg(new VarAccess(decl.name()));
-		}
-		if(!parm.isWrite())
-			parm.getModifiers().addModifier(new Modifier("ref"));
-	}
-	
-	private ParameterDeclaration AnonymousMethod.getParameter(String name) {
-		for(ParameterDeclaration pd : getParameters())
-			if(pd.name().equals(name))
-				return pd;
-		return null;
-	}
-	
 	// add a type variable
 	private void AnonymousMethod.addTypeVariable(TypeVariable tv) {
 		for(TypeVariable tv2 : getTypeParameters())
 			if(tv2.name().equals(tv.name()))
 				return;
 		addTypeParameter((TypeVariable)tv.fullCopy());
-	}
-			
-	// shuffle parameters so that any variable arity parameter comes last 
-	private void AnonymousMethod.putVarArgAtEnd() throws RefactoringException {
-		ParameterDeclaration varparm = null;
-		Expr vararg = null;
-		for(int i=0;i<getNumParameter();++i) {
-			if(getParameter(i).isVariableArity())
-				if(varparm == null) {
-					varparm = getParameter(i);
-					vararg = getArg(i);
-				} else {
-					throw new RefactoringException("there can be only one variable-arity argument");
-				}
-		}
-		if(varparm == null)
-			return;
-		getParameterList().removeChild(varparm);
-		getArgList().removeChild(vararg);
-		addParameter(varparm);
-		addArg(vararg);
-	}
-	
-	private boolean AnonymousMethod.declaredOutside(VarAccess v) {
-		return !((ASTNode)v.decl()).isDescendantTo(this);
 	}
 }

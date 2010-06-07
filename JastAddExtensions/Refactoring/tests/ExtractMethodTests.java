@@ -1417,7 +1417,7 @@ public class ExtractMethodTests extends TestCase {
 				"  void m(String ... args) {\n"+
 				"    extracted(args);\n"+
 				"  }\n"+
-				"  protected void extracted(String ... args) {\n"+
+				"  protected void extracted(String[] args) {\n"+
 				"    System.out.println(args[0]);\n"+
 				"  }\n"+
 				"}")));

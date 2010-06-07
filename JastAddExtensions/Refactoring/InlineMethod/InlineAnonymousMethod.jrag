@@ -5,6 +5,7 @@ aspect InlineAnonymousMethod {
 		if(getNumParameter() > 0)
 			throw new RefactoringException("cannot inline this closure");
 		if(getParent() instanceof ExprStmt) {
+			this.makeReturnExplicit();
 			String label = getBlock().pickFreshLabel("l");
 			java.util.Set<BreakStmt> breaks = new HashSet<BreakStmt>();
 			for(Stmt node : returns()) {
@@ -23,6 +24,7 @@ aspect InlineAnonymousMethod {
 			root.flushCaches();
 			for(BreakStmt brk : breaks)
 				brk.removeUseless();
+			this.makeReturnImplicit();
 			return body.removeUselessLabel();
 		} else if(isExprClosure()) {
 			Expr expr = getExpr();
