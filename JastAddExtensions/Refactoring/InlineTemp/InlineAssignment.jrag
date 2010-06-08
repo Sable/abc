@@ -20,6 +20,8 @@ aspect InlineAssignment {
 				throw new RefactoringException("ambiguous dataflow");
 			if(u.hostBodyDecl() != stmt.hostBodyDecl())
 				throw new RefactoringException("cannot inline across method boundaries");
+			if(!u.isAvailable(rhs))
+				throw new RefactoringException("expression to inline not available at inline location");
 			for(CFGNode c : C)
 				for(CFGNode w : u.precedingDefsUpTo(v))
 					if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())
@@ -28,7 +30,6 @@ aspect InlineAssignment {
 			rhs.lockAllNames();
 			rhs.lockThrowEdges();
 			rhs.lockSyncDependencies();
-			rhs.lockDataFlow();
 			rhs.replaceWith(old_rhs);
 			u.replaceWith(rhs.precedence() > u.maxPrecedence() ? new ParExpr(rhs) : rhs);
 			rhs = old_rhs;
@@ -41,7 +42,7 @@ aspect InlineAssignment {
 	public void AssignSimpleExpr.doInline() {
 		TypeDecl td = hostType();
 		inline();
-    	td.eliminate(LOCKED_DATAFLOW, LOCKED_THROW, LOCKED_SYNC, LOCKED_NAMES);
+    	td.eliminate(LOCKED_THROW, LOCKED_SYNC, LOCKED_NAMES);
 	}
 	
 	public SmallSet<CFGNode> ASTNode.collectExceptionalSucc() {
@@ -82,4 +83,35 @@ aspect InlineAssignment {
 	
 	syn lazy boolean CFGNode.killsAnticipated(VariableDeclaration v) = false;
 	eq Access.killsAnticipated(VariableDeclaration v) = isDest() && v == getLocation();
+	
+	// determines whether e is available at this node
+	syn lazy boolean CFGNode.isAvailable(ASTNode e) {
+		if(makesAvailable(e))
+			return true;
+		if(makesUnavailable(e))
+			return false;
+		for(CFGNode p : pred())
+			if(!p.isAvailable(e))
+				return false;
+		return true;
+	}
+	
+	public boolean CFGNode.makesAvailable(ASTNode e) {
+		return this == e;
+	}
+	
+	public boolean CFGNode.makesUnavailable(ASTNode e) {
+		for(Location l : (Collection<Location>)e.locationsRead())
+			if(isReachingDefinitionFor(l))
+				return true;
+		return false;
+	}
+	
+	public boolean Access.makesUnavailable(ASTNode e) {
+		if(getLocation() != null)
+			for(Location l : (Collection<Location>)e.locationsWritten())
+				if(getLocation().mayAlias(l))
+					return true;
+		return super.makesUnavailable(e);
+	}
 }

@@ -4,58 +4,35 @@ aspect DataFlow {
 			getChild(i).lockDataFlow();
 	}
 	
-	protected SmallSet<Definition> Access.lockedReachingDefs = null;
-	protected SmallSet<Access> Access.lockedReachedUses = null;
-	protected SmallSet<Definition> Access.lockedWriteDeps = null;
+	protected SmallSet<CFGNode> Access.lockedReachingDefs = null;
 	
 	public void Access.lockReachingDefs() {
 		if(lockedReachingDefs == null)
 			lockedReachingDefs = reachingDefinitions();
 	}
 	
-	public void Access.lockReachedUses() {
-		if(lockedReachedUses == null)
-			lockedReachedUses = reachedUses();
-	}
-	
-	public void Access.lockReachingDefsAndUses() {
-		lockReachingDefs();
-		lockReachedUses();
-	}
-	
-	public void Access.lockWriteDeps() {
-		if(lockedWriteDeps == null)
-			lockedWriteDeps = writeDeps();
-	}
-	
 	public void ArrayAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
-		lockWriteDeps();
+		lockReachingDefs();
 		super.lockDataFlow();
 	}
 	
 	public void ClassInstanceExpr.lockDataFlow() {
-		lockReachingDefsAndUses();
-		lockWriteDeps();
+		lockReachingDefs();
 		super.lockDataFlow();
 	}
 	
 	public void ConstructorAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
-		lockWriteDeps();
+		lockReachingDefs();
 		super.lockDataFlow();
 	}
 	
 	public void MethodAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
-		lockWriteDeps();
+		lockReachingDefs();
 		super.lockDataFlow();
 	}
 	
 	public void VarAccess.lockDataFlow() {
-		lockReachingDefsAndUses();
-		if(decl().isField())
-			lockWriteDeps();
+		lockReachingDefs();
 		super.lockDataFlow();
 	}
 	
@@ -68,22 +45,12 @@ aspect DataFlow {
 	}
 	
 	public void Access.unlockDataFlow() {
-		if(hostType() != null)
-			hostType().flushCollectionCache();
 		if(lockedReachingDefs != null) {
+			if(hostType() != null)
+				hostType().flushCollectionCache();
 			if(!reachingDefinitions().equals(lockedReachingDefs))
 				throw new RefactoringException("couldn't preserve data flow");
 			lockedReachingDefs = null;
-		}
-		if(lockedReachedUses != null) {
-			if(!reachedUses().equals(lockedReachedUses))
-				throw new RefactoringException("couldn't preserve data flow");
-			lockedReachedUses = null;
-		}
-		if(lockedWriteDeps != null) {
-			if(!writeDeps().equals(lockedWriteDeps))
-				throw new RefactoringException("couldn't preserve data flow");
-			lockedWriteDeps = null;
 		}
 		super.unlockDataFlow();
 	}

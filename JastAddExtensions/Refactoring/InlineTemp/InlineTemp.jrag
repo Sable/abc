@@ -1,8 +1,4 @@
 aspect InlineTemp {
-	public void Variable.inline() {
-		throw new RefactoringException("can only inline local variables");
-	}
-	
 	public void VariableDeclaration.inline() {
 		AssignSimpleExpr assgn = split();
 		if(assgn != null)
@@ -10,20 +6,6 @@ aspect InlineTemp {
 		removeUnused();
 	}
 	
-    public void VarAccess.inline() {
-    	SmallSet<Definition> pred = reachingDefinitions();
-    	if(!pred.isSingleton())
-    		throw new RefactoringException("ambiguous data flow");
-    	Definition def = pred.iterator().next();
-    	if(def instanceof Variable) {
-    		((Variable)def).inline();
-    	} else if(def instanceof VarAccess && def.getParent() instanceof AssignSimpleExpr) {
-    		((AssignSimpleExpr)def.getParent()).inline();
-    	} else {
-    		throw new RefactoringException("cannot inline this access");
-    	}
-    }
-    
     // stand-alone refactoring
     public void VariableDeclaration.doInline() {
     	inline();

@@ -10,14 +10,17 @@ aspect ExtractAssignment {
 			Block block = enclosingBlock();
 			if(block == null)
 				throw new RefactoringException("cannot extract assignment here");
+			// TODO: the following is unsound; keep it for Eclipse compliance
+			/*if(!locationsWritten().isEmpty())
+				throw new RefactoringException("cannot extract expression with side effects");*/
 			lockAllNames();
-			lockDataFlow();
 			block.lockSyncDependencies();
 			VarAccess vacc = v.createLockedAccess();
 			replaceWith(vacc);
 			vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), this));
 			block.hostType().flushCaches();
-			unlockDataFlow();
+			if(!vacc.isAvailable(this))
+				throw new RefactoringException("extracted expression is not available");
 			block.unlockSyncDependencies();
 		}
 		return v;

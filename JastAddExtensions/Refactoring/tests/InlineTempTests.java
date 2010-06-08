@@ -474,6 +474,21 @@ public class InlineTempTests extends TestCase {
             "  }"+
             "}")));
     }*/
+    
+    public void test19() {
+    	testFail(
+    		Program.fromBodyDecls(
+    		"void m(boolean b1, boolean b2) {" +
+    		"  int x = 23;" +
+    		"  while(b1) {" +
+    		"    int i = x;" +
+    		"    while(b2) {" +
+    		"      int j = i;" +
+    		"      x = 42;" +
+    		"    }" +
+    		"  }" +
+    		"}"));
+    }
 
     
     public void test22() {
