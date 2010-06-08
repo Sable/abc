@@ -1,2 +1,0 @@
-EntryStmt : Stmt;
-ExitStmt : Stmt;

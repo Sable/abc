@@ -27,6 +27,7 @@ aspect ControlFlowGraph {
 	// the "following" attribute models non-branching control flow, "succ" takes
 	// branches, throws and other control flow into account
 	inh lazy SmallSet<CFGNode> CFGNode.following();
+	syn lazy SmallSet<CFGNode> CFGNode.exceptionalSucc() = SmallSet.<CFGNode>empty();
 	syn lazy SmallSet<CFGNode> CFGNode.succ();
 	
 	// subtrees have "first" nodes from where evaluation starts
@@ -53,7 +54,7 @@ aspect ControlFlowGraph {
 	eq TypeDecl.getChild().following() = SmallSet.empty();
 	
 	// normally, the successor is just the following statement/expression
-	eq CFGNode.succ() = following();
+	eq CFGNode.succ() = following().union(exceptionalSucc());
 	
 	// control flow for constructors: first the parameters, then the constructor invocation;
 	// if the constructor invokes another this constructor, the following node is its block;
@@ -243,11 +244,10 @@ aspect ControlFlowGraph {
 		= SmallSet.<CFGNode>singleton(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
 	// a method may either return normally or throw exceptions
 	inh SmallSet<CFGNode> Expr.throwTarget(TypeDecl exn);
-	eq MethodAccess.succ() {
-		SmallSet<CFGNode> res = following();
+	eq MethodAccess.exceptionalSucc() {
+		SmallSet<CFGNode> res = uncheckedExnTarget();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
-		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 
@@ -255,11 +255,10 @@ aspect ControlFlowGraph {
 	eq ConstructorAccess.first() = getNumArg() == 0 ? this : getArg(0).first();
 	eq ConstructorAccess.getArg(int i).following()
 		= SmallSet.<CFGNode>singleton(i + 1 < getNumArg() ? getArg(i + 1).first() : this);
-	eq ConstructorAccess.succ() {
-		SmallSet<CFGNode> res = following();
+	eq ConstructorAccess.exceptionalSucc() {
+		SmallSet<CFGNode> res = uncheckedExnTarget();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
-		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 
@@ -275,11 +274,10 @@ aspect ControlFlowGraph {
 			return SmallSet.<CFGNode>singleton(getArg(i + 1).first());
 		return SmallSet.<CFGNode>singleton(this);
 	}
-	eq ClassInstanceExpr.succ() {
-		SmallSet<CFGNode> res = following();
+	eq ClassInstanceExpr.exceptionalSucc() {
+		SmallSet<CFGNode> res = uncheckedExnTarget();
 		for(Access exn : decl().getExceptions())
 			res = res.union(throwTarget(exn.type()));
-		res = res.union(uncheckedExnTarget());
 		return res;
 	}
 		
@@ -342,6 +340,8 @@ aspect ControlFlowGraph {
 	eq Unary.getOperand().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
 	eq Unary.getOperand().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
 
+	eq DivExpr.exceptionalSucc() = throwTarget(lookupType("java.lang", "ArithmeticException"));
+	
 	// AssignExpr
 	eq AssignExpr.getSource().followingWhenTrue() = SmallSet.<CFGNode>singleton(this);
 	eq AssignExpr.getSource().followingWhenFalse() = SmallSet.<CFGNode>singleton(this);
