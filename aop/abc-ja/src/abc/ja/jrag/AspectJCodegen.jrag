@@ -374,6 +374,7 @@ aspect AspectJCodegen {
     			Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.NoClassDefFoundError"), singleString),
     			argLocal,
     			null), null));
+    	b.add(b.newThrowStmt(toThrow, null));		
     	b.addLabel(endAll);
     	
     	b.addTrap(Scene.v().getSootClass("java.lang.ClassNotFoundException"), startTrap, endAll, handler);
