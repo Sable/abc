@@ -8,10 +8,10 @@ This refactoring turns a local variable into a field. Implemented in \sourcelink
 \REQUIRE Java
 \ENSURE Java $\cup$ locked dependencies
 \medskip
-\STATE $\lfloor\refactoring{Split Declaration}\rfloor(d)$
+\STATE $\refactoringNoExt{Split Declaration}(d)$
 \STATE $d' \leftarrow \text{new \code{private} field of same type and name as $d$}$
 \STATE make $d'$ \code{static} if $d$ is in static context
-\STATE $\lfloor\refactoring{Insert Field}\rfloor(\util{hostType}(d), d')$
+\STATE $\refactoringNoExt{Insert Field}(\util{hostType}(d), d')$
 \FORALL{uses $u$ of $d$}
   \STATE lock $u$ onto $d'$
   \STATE lock reaching definitions of $u$

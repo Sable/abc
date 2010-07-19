@@ -8,9 +8,9 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \REQUIRE Java
 \ENSURE Java
 \medskip
-\STATE $a \leftarrow \lfloor\refactoring{Split Declaration}\rfloor(d)$
-\STATE $\lfloor\refactoring{Inline Assignment}\rfloor(a)$
-\STATE $\lfloor\refactoring{Remove Decl}\rfloor(v)$
+\STATE $a \leftarrow \refactoringNoExt{Split Declaration}(d)$
+\STATE $\refactoringNoExt{Inline Assignment}(a)$
+\STATE $\refactoringNoExt{Remove Decl}(v)$
 \end{algorithmic}
 \end{algorithm}
 

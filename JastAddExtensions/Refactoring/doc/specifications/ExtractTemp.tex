@@ -6,7 +6,7 @@ This refactoring extracts an expression into a local variable. Implemented in \s
 \label{alg:ExtractTemp}
 \begin{algorithmic}[1]
 \REQUIRE Java
-\ENSURE Java
+\ENSURE Java $\cup$ locked names, locked dataflow
 \medskip
 \STATE $t \leftarrow \text{effective type of $e$}$
 \STATE $v \leftarrow \text{new local variable of type $t$ and name $n$}$
@@ -21,7 +21,7 @@ This refactoring extracts an expression into a local variable. Implemented in \s
 The refactoring inserts a local variable before a given statement. Implemented in \sourcelink{ExtractTemp/IntroduceUnusedLocal.jrag}.
 
 \begin{algorithm}
-\caption{$\refactoring{Insert Local Variable}(s : \type{Stmt}, v : \type{LocalVar}$}
+\caption{$\refactoring{Insert Local Variable}(s : \type{Stmt}, v : \type{LocalVar}$)}
 \label{alg:InsertLocalVariable}
 \begin{algorithmic}[1]
 \REQUIRE Java
@@ -65,7 +65,7 @@ This refactoring merges a variable declaration with the assignment immediately f
 \caption{$\refactoring{Merge Variable Declaration}(v : \type{LocalVar})$}
 \label{alg:MergeVariableDeclaration}
 \begin{algorithmic}[1]
-\REQUIRE Java $\setminus$ multi-declarations
+\REQUIRE Java $\setminus$ multi-declarations -- TODO no checks for this in the implementation and no test for this, refactorings are not stand alone enough imo
 \ENSURE Java
 \medskip
 \IF{$v$ has initialiser}

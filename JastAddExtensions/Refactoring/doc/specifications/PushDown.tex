@@ -82,7 +82,7 @@ This refactoring pushes a method down to all subclasses of its defining class. I
 \ENSURE Java $\cup$ locked names
 \medskip
 \FORALL{types $B<:\util{hostType}(m)$}
-  \STATE $c \leftarrow \lfloor\refactoring{Trivially Override}\rfloor(B, m)$
+  \STATE $c \leftarrow \refactoringNoExt{Trivially Override}(B, m)$
   \IF{$c\neq\util{None}$}
     \STATE $\refactoring{Inline Method}(c)$
   \ENDIF

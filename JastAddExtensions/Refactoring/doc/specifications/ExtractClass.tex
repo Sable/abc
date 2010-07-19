@@ -5,7 +5,7 @@ This refactoring extracts some fields of a class into a newly created member cla
 \caption{$\refactoring{Extract Class}(C : \type{Class}, fs : \listtp{\type{Field}}, n : \type{Name}, fn : \type{Name})$}\label{alg:ExtractClass}
 \begin{algorithmic}[1]
 \REQUIRE Java
-\ENSURE Java $\cup$ locked dependencies, first-class array init
+\ENSURE Java $\cup$ locked names, locked dataflow, first-class array init ??
 \medskip
 \STATE $v \leftarrow \text{maximum visibility of any of the $fs$}$
 \STATE $W \leftarrow \text{new \code{static} class of name $n$ with visibility $v$}$

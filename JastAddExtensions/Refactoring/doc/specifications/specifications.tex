@@ -14,6 +14,7 @@
 \author{Max Sch\"afer}
 
 \newcommand{\refactoring}[1]{\textsc{#1}}
+\newcommand{\refactoringNoExt}[1]{\lfloor\refactoring{#1}\rfloor}
 \newcommand{\type}[1]{\ensuremath{\text{\textsl{#1}}}}
 \newcommand{\util}[1]{\ensuremath{\text{\texttt{#1}}}}
 \newcommand{\orelse}{\,\textbf{or}\,}
@@ -54,7 +55,7 @@ We give our specifications in generic, imperative pseudocode. Parameters and ret
 
 Where convenient, we make use of ML-like lists, with list literals of the form $[1; 2; 3]$ and $|xs|$ indicating the length of list $xs$.
 
-The names of refactorings are written in \refactoring{small caps}, whereas utility functions appear in \util{monospace}. A list of utility functions with brief descriptions is given in Fig.~\ref{fig:utility}. An invocation of a refactoring is written with floor-brackets $\lfloor\refactoring{like this}\rfloor()$ to indicate that any language extensions used in the output program produced by the refactoring should be eliminated before proceeding.
+The names of refactorings are written in \refactoring{small caps}, whereas utility functions appear in \util{monospace}. A list of utility functions with brief descriptions is given in Fig.~\ref{fig:utility}. An invocation of a refactoring is written with floor-brackets $\refactoringNoExt{like this}()$ to indicate that any language extensions used in the output program produced by the refactoring should be eliminated before proceeding.
 
 We write $A<:B$ to mean that type $A$ extends or implements type $B$, and $m<:m'$ to mean that method $m$ overrides method $m'$.
 

@@ -1,13 +1,15 @@
 \subsection{\refactoring{Convert Anonymous to Nested}}
 This refactoring converts an anonymous class to a member class. Implemented in \sourcelink{TypePromotion/AnonymousClassToMemberClass.jrag}; see Algorithm~\ref{alg:ConvertAnonymousToNested}.
 
+% Still missing makeFinal, makePublic
+
 \begin{algorithm}
-\caption{$\refactoring{Convert Anonymous to Nested}(A : \type{AnonymousClass}) : \type{MemberType}$}\label{alg:ConvertAnonymousToNested}.
+\caption{$\refactoring{Convert Anonymous to Nested}(A : \type{AnonymousClass}, n : \type{Name}) : \type{MemberType}$}\label{alg:ConvertAnonymousToNested}.
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java
 \medskip
-\STATE $L \leftarrow \refactoring{Convert Anonymous to Local}(A)$
+\STATE $L \leftarrow \refactoring{Convert Anonymous to Local}(A, n)$
 \RETURN $\refactoring{Convert Local to Member Class}(L)$
 \end{algorithmic}
 \end{algorithm}

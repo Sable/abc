@@ -1,6 +1,9 @@
 \subsection{\refactoring{Convert Anonymous to Local}}
 This refactoring converts an anonymous class to a local class. Implemented in \sourcelink{TypePromotion/AnonymousClassToLocalClass.jrag}; see Algorithm~\ref{alg:ConvertAnonymousToLocal}.
 
+% There is makeFinal parameter in the implementation
+% implementations doesn't use the refactorings mentioned.
+
 \begin{algorithm}
 \caption{$\refactoring{Convert Anonymous to Local}(A : \type{AnonymousClass}, n : \type{Name}) : \type{LocalClass}$}\label{alg:ConvertAnonymousToLocal}
 \begin{algorithmic}[1]
@@ -8,13 +11,13 @@ This refactoring converts an anonymous class to a local class. Implemented in \s
 \ENSURE Java $\cup$ locked names
 \medskip
 \STATE $c \leftarrow \text{class instance expression containing $A$}$
-\STATE $d \leftarrow [\refactoring{Extract Temp}](c, \util{unCapitalise}(n))$
-\STATE $b \leftarrow \text{enclosing body declaration of $s$}$
+\STATE $d \leftarrow \refactoringNoExt{Extract Temp}(c, \util{unCapitalise}(n))$ -- not possible to do!!!
+\STATE $b \leftarrow \text{enclosing body declaration of $d$}$
 \STATE $\util{lockNames}(b, n)$
 \STATE convert $A$ to class named $n$, remove it from $c$
 \STATE $\refactoring{Insert Type}(b, A)$
 \STATE lock type access of $c$ to $A$
-\STATE $\refactoring{Inline Temp}(d)$
+\STATE $\refactoring{Inline Temp}(d)$ -- but without checks (TODO?)
 \RETURN $A$
 \end{algorithmic}
 \end{algorithm}

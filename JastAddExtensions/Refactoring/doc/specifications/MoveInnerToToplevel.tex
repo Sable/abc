@@ -9,7 +9,7 @@ This refactoring converts a member type to a toplevel type. Implemented in \sour
 \ENSURE Java $\cup$ locked names
 \medskip
 \IF{$M$ is not static}
-  \STATE $\lfloor\refactoring{Make Type Static}\rfloor(M)$
+  \STATE $\refactoringNoExt{Make Type Static}(M)$
 \ENDIF
 \STATE $p \leftarrow \util{hostPkg}(M)$
 \STATE lock all names in $M$
