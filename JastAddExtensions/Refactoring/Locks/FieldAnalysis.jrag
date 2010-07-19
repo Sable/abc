@@ -1,0 +1,69 @@
+aspect FieldAnalysis {
+	syn lazy boolean FieldDeclaration.effectivelyFinal() {
+		if(isFinal())
+			return true;
+		if(!hasInit())
+			return false;
+		for(VarAccess va : allUses())
+			if(va.isDest())
+				return false;
+		return true;
+	}
+	
+	syn lazy boolean FieldDeclaration.refEscapes() {
+		if(!hasInit() || !(getInit() instanceof ClassInstanceExpr || getInit() instanceof ArrayCreationExpr))
+			return true;
+		if(isDedicatedLock())
+			return false;
+		for(VarAccess va : allUses())
+			if(va.escapes())
+				return true;
+		return false;
+	}
+	
+	syn lazy boolean FieldDeclaration.isDedicatedLock() {
+		for(VarAccess va : allUses()) {
+			Expr e = va.unqualifiedScope();
+			ASTNode p = e.getParent();
+			if(!(p instanceof SynchronizedStmt) || e != ((SynchronizedStmt)p).getExpr())
+				return false;
+		}
+		return true;
+	}
+	
+	inh boolean Access.escapes();
+	eq BodyDecl.getChild().escapes() = false;
+	eq ReturnStmt.getResult().escapes() = true;
+	eq AssignExpr.getSource().escapes() = true;
+	eq MethodAccess.getArg().escapes() = true;
+	eq ConstructorAccess.getArg().escapes() = true;
+	eq ClassInstanceExpr.getArg().escapes() = true;
+	eq ArrayInit.getInit().escapes() = true;
+	eq AbstractDot.getLeft().escapes() {
+		Access acc = getRight();
+		if(acc instanceof MethodAccess || acc instanceof ConstructorAccess || acc instanceof ClassInstanceExpr)
+			// should use thisEscapes() here, but it's too expensive
+			return true;
+		return false;
+	}
+	eq Program.getChild().escapes() = false;
+
+	syn lazy boolean MethodDecl.thisEscapes() circular [false] {
+		if(isStatic())
+			return false;
+		if(isSynchronized())
+			return true;
+		if(hostType().isObject() && (name().equals("wait") || name().equals("notify")))
+			return false;
+		if(isNative() || !overriders().isEmpty())
+			return true;
+		for(ThisAccess ta : thisAccesses())
+			if(ta.escapes())
+				return true;
+		return false;
+	}
+	
+	coll Collection<ThisAccess> MethodDecl.thisAccesses() [new HashSet<ThisAccess>()] 
+	                        	                           with add root BodyDecl;
+	ThisAccess contributes this when hostBodyDecl() instanceof MethodDecl to MethodDecl.thisAccesses() for (MethodDecl)hostBodyDecl();
+}

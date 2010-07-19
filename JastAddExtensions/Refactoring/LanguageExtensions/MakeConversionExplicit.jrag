@@ -5,6 +5,7 @@ aspect MakeConversionExplicit {
 		return rhs;
 	}
 
+	// TODO: this should be recursive
 	public Expr Expr.makeConversionExplicit(TypeDecl destType) {
 		if(shouldMakeConversionExplicit(destType))
 			return createConversion(destType, this);
@@ -24,7 +25,7 @@ aspect MakeConversionExplicit {
 	}
 	
 	public static Expr ASTNode.createConversion(TypeDecl dest, Expr src) {
-		// check whether src can be boxe into dest (we assume there is an assignment conversion)
+		// check whether src can be boxed into dest (we assume there is an assignment conversion)
 		if(src.type() instanceof PrimitiveType && !dest.unboxed().isUnknown()) {
 			if(!src.type().equals(dest.unboxed()))
 				src = createConversion(dest.unboxed(), src);

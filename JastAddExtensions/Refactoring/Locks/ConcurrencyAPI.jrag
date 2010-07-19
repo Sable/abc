@@ -1,0 +1,25 @@
+// convenience attributes to access standard library types and methods related to concurrency
+aspect ConcurrencyAPI {
+	syn lazy TypeDecl Program.typeReentrantLock() = lookupType("java.util.concurrent.locks", "ReentrantLock");
+	syn lazy TypeDecl Program.typeCondition() = lookupType("java.util.concurrent.locks", "Condition");
+	syn lazy MethodDecl Program.methodNotify() = (MethodDecl)typeObject().localMethodsSignature("notify()").iterator().next();
+	syn lazy MethodDecl Program.methodNotifyAll() = (MethodDecl)typeObject().localMethodsSignature("notifyAll()").iterator().next();
+	syn lazy MethodDecl Program.methodWait() = (MethodDecl)typeObject().localMethodsSignature("wait()").iterator().next();
+	syn lazy MethodDecl Program.methodWaitLong() = (MethodDecl)typeObject().localMethodsSignature("wait(long)").iterator().next();
+	syn lazy MethodDecl Program.methodWaitLongInt() = (MethodDecl)typeObject().localMethodsSignature("wait(long, int)").iterator().next();
+	syn lazy Collection<MethodDecl> Program.waitNotifyMethods() = Arrays.asList(methodNotify(), methodNotifyAll(), methodWait(), methodWaitLong(), methodWaitLongInt());
+	
+	eq Program.getChild().waitNotifyMethods() = waitNotifyMethods();
+	inh Collection<MethodDecl> Access.waitNotifyMethods();
+	
+	eq Program.getChild().methodNotify() = methodNotify();
+	eq Program.getChild().methodNotifyAll() = methodNotifyAll();
+	eq Program.getChild().methodWait() = methodWait();
+	eq Program.getChild().methodWaitLong() = methodWaitLong();
+	eq Program.getChild().methodWaitLongInt() = methodWaitLongInt();
+	inh MethodDecl Access.methodNotify();
+	inh MethodDecl Access.methodNotifyAll();
+	inh MethodDecl Access.methodWait();
+	inh MethodDecl Access.methodWaitLong();
+	inh MethodDecl Access.methodWaitLongInt();	
+}

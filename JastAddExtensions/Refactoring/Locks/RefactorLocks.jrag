@@ -1,0 +1,255 @@
+aspect Locks {
+	interface MonitorAction {
+		void replaceWithReentrantLock(Monitor m);
+	}
+	SynchronizedStmt implements MonitorAction;
+	MethodDecl implements MonitorAction;
+	MethodAccess implements MonitorAction;
+	
+	coll Collection<MonitorAction> Program.monitorActions() [new HashSet<MonitorAction>()] 
+	                           with add root Program;
+	SynchronizedStmt contributes this when fromSource() to Program.monitorActions() for programRoot();
+	MethodDecl contributes this when isSynchronized() to Program.monitorActions() for programRoot();
+	MethodAccess contributes this when waitNotifyMethods().contains(decl()) to Program.monitorActions() for programRoot();
+
+	syn lazy Monitor MonitorAction.getMonitor();
+	eq SynchronizedStmt.getMonitor() = getExpr().getMonitor();
+	eq MethodDecl.getMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
+	eq MethodAccess.getMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
+	
+	public boolean MonitorAction.replaceWithReentrantLock() {
+		if(!fromSource())
+			return false;
+		return getMonitor().replaceWithReentrantLock(programRoot());
+	}
+	
+	public boolean MethodDecl.replaceWithReentrantLock() {
+		return (!hasBlock() || !fromSource()) ? false : getMonitor().replaceWithReentrantLock(programRoot()); 
+	}
+	
+	public TypeDecl Monitor.typeReentrantLock() { return type.programRoot().typeReentrantLock(); }
+	public TypeDecl Monitor.typeCondition()     { return type.programRoot().typeCondition(); }
+	
+	protected FieldDeclaration Monitor.lockField = null;
+	protected FieldDeclaration Monitor.conditionField = null;
+	
+	protected FieldDeclaration Monitor.createLockField(Modifiers mods, String name) {
+		return new FieldDeclaration(mods, typeReentrantLock().createLockedAccess(), name, 
+									new ClassInstanceExpr(typeReentrantLock().createLockedAccess(), new List()));
+	}
+	
+	protected FieldDeclaration Monitor.createConditionField(Modifiers mods, String name) {
+		return new FieldDeclaration(mods, typeCondition().createLockedAccess(), name,
+				  					lockField().createLockedAccess().qualifiesAccess(new MethodAccess("newCondition", new List())));
+	}
+	
+	public boolean Monitor.refactorable() { return type.fromSource() && !type.isArrayDecl(); }
+	public boolean ClassMonitor.refactorable() { return clazz.fromSource() && !clazz.isArrayDecl() && !clazz.isEnumDecl(); }
+	public boolean FieldMonitor.refactorable() { return field.fromSource(); }
+	
+	public FieldDeclaration Monitor.lockField() {
+		if(lockField != null || !refactorable())
+			return lockField;
+		lockField = createLockField(new Modifiers("public"), "lock");
+		type.getBodyDeclList().insertChild(lockField, 0);
+		return lockField;
+	}
+	
+	public FieldDeclaration Monitor.conditionField() {
+		if(conditionField != null || !refactorable())
+			return conditionField;
+		conditionField = createConditionField(new Modifiers("public"), "condition");
+		type.getBodyDeclList().insertChild(conditionField, 1);
+		return conditionField;
+	}
+	
+	public FieldDeclaration ClassMonitor.lockField() {
+		if(lockField != null || !refactorable())
+			return lockField;
+		lockField = createLockField(new Modifiers("public", "static"), "lock");
+		clazz.getBodyDeclList().insertChild(lockField, 0);
+		return lockField;
+	}
+	
+	public FieldDeclaration ClassMonitor.conditionField() {
+		if(conditionField != null || !refactorable())
+			return conditionField;
+		conditionField = createConditionField(new Modifiers("public", "static"), "condition");
+		clazz.getBodyDeclList().insertChild(conditionField, 1);
+		return conditionField;
+	}
+	
+	public FieldDeclaration FieldMonitor.lockField() {
+		if(lockField != null || !refactorable())
+			return lockField;
+		if(field.isDedicatedLock()) {
+			lockField = field;
+			if(field.type() != typeReentrantLock()) {
+				field.setTypeAccess(typeReentrantLock().createLockedAccess());
+				field.setInit(new ClassInstanceExpr(typeReentrantLock().createLockedAccess(), new List()));
+			}
+		} else {
+			lockField = createLockField((Modifiers)field.getModifiers().fullCopy(), field.name()+"_lock");
+			field.hostType().getBodyDeclList().insertChild(lockField, field.getChildIndex()+1);
+		}
+		return lockField;
+	}
+	
+	public FieldDeclaration FieldMonitor.conditionField() {
+		if(conditionField != null || !refactorable())
+			return conditionField;
+		conditionField = createConditionField(new Modifiers("public", "static"), field.name()+"_condition");
+		field.hostType().getBodyDeclList().insertChild(conditionField, lockField().getChildIndex()+1);
+		return conditionField;		
+	}
+	
+	public Access Monitor.createLockAccess(Expr e) {
+		Access fa = lockField().createLockedAccess();
+		return e == null ? fa : e.qualifiesAccess(fa);
+	}
+	
+	public Access Monitor.createConditionAccess(Expr e) {
+		Access fa = conditionField().createLockedAccess();
+		return e == null ? fa : e.qualifiesAccess(fa);
+	}
+	
+	public Access ClassMonitor.createLockAccess(Expr e) {
+		return lockField().createLockedAccess();
+	}
+	
+	public Access ClassMonitor.createConditionAccess(Expr e) {
+		return conditionField().createLockedAccess();
+	}
+	
+	public Access FieldMonitor.createLockAccess(Expr e) {
+		lockField();	// make sure it is created
+		if(field.isDedicatedLock())
+			return (Access)e;
+		if(e == null)
+			return lockField().createLockedAccess();
+		Access acc = (Access)e;
+		if(acc.lastAccess() == acc)
+			return lockField().createLockedAccess();
+		acc.lastAccess().replaceWith(lockField().createLockedAccess());
+		return acc;
+	}
+	
+	public Access FieldMonitor.createConditionAccess(Expr e) {
+		if(e == null)
+			return conditionField().createLockedAccess();
+		Access acc = (Access)e;
+		if(acc.lastAccess() == acc)
+			return conditionField().createLockedAccess();
+		acc.lastAccess().replaceWith(conditionField().createLockedAccess());
+		return acc;
+	}
+	
+	public boolean ClassMonitor.replaceWithReentrantLock(Program root) {
+		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
+		for(MonitorAction ma : root.monitorActions())
+			if(this.equals(ma.getMonitor())) {
+				if(!ma.getMonitor().refactorable())
+					return false;
+				repl.add(ma);
+			} else if(ma.mayEnter(this)) {
+				return false;
+			}
+		for(MonitorAction ma : repl)
+			ma.replaceWithReentrantLock(this);
+		return true;
+	}
+	
+	public boolean FieldMonitor.replaceWithReentrantLock(Program root) {
+		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
+		for(MonitorAction ma : root.monitorActions())
+			if(this.equals(ma.getMonitor())) {
+				if(!ma.getMonitor().refactorable())
+					return false;
+				repl.add(ma);
+			} else if(ma.mayEnter(this)) {
+				return false;
+			}
+		for(MonitorAction ma : repl)
+			ma.replaceWithReentrantLock(this);
+		return true;
+	}
+	
+	public boolean Monitor.replaceWithReentrantLock(Program root) {
+		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
+		for(MonitorAction ma : root.monitorActions())
+			if(ma.getMonitor().type().subtype(type)) {
+				if(!ma.getMonitor().refactorable())
+					return false;
+				repl.add(ma);
+			} else if(ma.mayEnter(this)) {
+				return false;
+			}
+		for(MonitorAction ma : repl)
+			ma.replaceWithReentrantLock(this);
+		return true;
+	}
+	
+	public void SynchronizedStmt.replaceWithReentrantLock(Monitor m) {
+		Block b = (Block)getParent().getParent();
+		Expr e_copy = (Expr)getExpr().fullCopy();
+		b.insertStmt(getChildIndex(), createLockStmt(m));
+		replace(this).with(new TryStmt(getBlock(), new List(), new Opt(new Block(createUnlockStmt(m, e_copy)))));
+	}
+	
+	public Expr SynchronizedStmt.createLockAccess(Monitor m, Expr e) {
+		return m.createLockAccess(e);
+	}
+	
+	public Stmt SynchronizedStmt.createLockStmt(Monitor m) {
+		return new ExprStmt(createLockAccess(m, getExpr()).qualifiesAccess(new MethodAccess("lock", new List())));
+	}
+	
+	public Stmt SynchronizedStmt.createUnlockStmt(Monitor m, Expr e_copy) {
+		return new ExprStmt(createLockAccess(m, e_copy).qualifiesAccess(new MethodAccess("unlock", new List())));
+	}
+	
+	public void MethodDecl.replaceWithReentrantLock(Monitor m) {
+		getModifiers().removeModifier("synchronized");
+		replace(getBlock()).with(new Block(createLockStmt(m),
+										   new TryStmt(getBlock(), new List(), new Opt(new Block(createUnlockStmt(m))))));
+	}
+	
+	public Expr MethodDecl.createLockAccess(Monitor m) {
+		return m.createLockAccess(getLockExpr());
+	}
+	
+	public Stmt MethodDecl.createLockStmt(Monitor m) {
+		return new ExprStmt(createLockAccess(m).qualifiesAccess(new MethodAccess("lock", new List())));
+	}
+	
+	public Stmt MethodDecl.createUnlockStmt(Monitor m) {
+		return new ExprStmt(createLockAccess(m).qualifiesAccess(new MethodAccess("unlock", new List())));
+	}
+	
+	public void MethodAccess.replaceWithReentrantLock(Monitor m) {
+		bundleQualifier();
+		ASTNode p = isQualified() ? parentDot() : this;
+		Expr q = isQualified() ? qualifier() : null;
+		if(decl() == methodNotify()) {
+			p.replaceWith(m.createConditionAccess(q).qualifiesAccess(new MethodAccess("signal", new List())));
+		} else if(decl() == methodNotifyAll()) {
+			p.replaceWith(m.createConditionAccess(q).qualifiesAccess(new MethodAccess("signalAll", new List())));
+		} else if(decl() == methodWait()) {
+			p.replaceWith(m.createConditionAccess(q).qualifiesAccess(new MethodAccess("await", new List())));			
+		} else if(decl() == methodWaitLong()) {
+			p.replaceWith(m.createConditionAccess(q).qualifiesAccess(new MethodAccess("awaitNanos", new List().add(new MulExpr(new ParExpr(getArg(0)), new IntegerLiteral("1000"))))));			
+		} else if(decl() == methodWaitLongInt()) {
+			p.replaceWith(m.createConditionAccess(q).qualifiesAccess(new MethodAccess("awaitNanos", new List().add(new AddExpr(new MulExpr(new ParExpr(getArg(0)), new IntegerLiteral("1000")), new ParExpr(getArg(1)))))));			
+		}
+	}
+	
+	public Expr MethodDecl.getLockExpr() {
+		if(isStatic())
+			return hostType().createLockedAccess().qualifiesAccess(new ClassAccess());
+		return null;
+	}
+	
+	public boolean MonitorAction.mayEnter(Monitor m) {
+		return getMonitor().mayAlias(m);
+	}
+}

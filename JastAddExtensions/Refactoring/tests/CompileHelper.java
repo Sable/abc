@@ -1,6 +1,7 @@
 package tests;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,13 +14,13 @@ import AST.JavaParser;
 import AST.Program;
 
 public class CompileHelper {
-	private static Collection<String> findAllJavaFiles(File f) {
+	public static Collection<String> findAllJavaFiles(File f) {
 		Collection<String> res = new LinkedList<String>();
 		findAllJavaFiles(f, res);
 		return res;
 	}
 	
-	private static void findAllJavaFiles(File f, Collection<String> res) {
+	public static void findAllJavaFiles(File f, Collection<String> res) {
 		if(f.isDirectory()) {
 			for(File ff : f.listFiles())
 				findAllJavaFiles(ff, res);

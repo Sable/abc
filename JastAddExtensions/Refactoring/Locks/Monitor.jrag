@@ -1,0 +1,100 @@
+aspect Monitor {
+	class Monitor {
+		private TypeDecl type;
+
+		public Monitor(TypeDecl type) {
+			this.type = type;
+		}
+
+		public TypeDecl type() {
+			return type;
+		}
+
+		public boolean mayAlias(Monitor that) {
+			if(that instanceof FieldMonitor)
+				return false;
+			return this.type().hasCommonSubtypeWith(that.type());
+		}
+	}
+	
+	syn lazy boolean TypeDecl.hasCommonSubtypeWith(TypeDecl that) {
+		if(this.subtype(that))
+			return true;
+		for(TypeDecl ch : childTypes())
+			if(ch.hasCommonSubtypeWith(that))
+				return true;
+		return false;
+	}
+
+	// monitor associated with a class object
+	class ClassMonitor extends Monitor {
+		private TypeDecl clazz;
+
+		public ClassMonitor(TypeDecl clazz) {
+			super(classObjectFor(clazz));
+			this.clazz = clazz;
+		}
+
+		private static TypeDecl classObjectFor(TypeDecl td) {
+			GenericClassDecl d = (GenericClassDecl)td.lookupType("java.lang", "Class");
+			ArrayList<TypeDecl> list = new ArrayList<TypeDecl>();
+			list.add(td);
+			return d.lookupParTypeDecl(list);
+		}
+
+		public TypeDecl getClazz() {
+			return clazz;
+		}
+
+		public boolean equals(Object that) {
+			return that instanceof ClassMonitor && ((ClassMonitor)that).clazz == this.clazz;
+		}
+
+		public boolean mayAlias(Monitor that) {
+			if(that instanceof FieldMonitor)
+				return false;
+			if(that instanceof ClassMonitor)
+				return this.equals(that);
+			return type().subtype(that.type());
+		}
+	}
+
+	// monitor associated with an object that is stored in a final field and nowhere else
+	class FieldMonitor extends Monitor {
+		private FieldDeclaration field;
+
+		public FieldMonitor(FieldDeclaration field) {
+			super(field.type());
+			this.field = field;
+		}
+
+		public FieldDeclaration getField() {
+			return field;
+		}
+
+		public boolean equals(Object that) {
+			return that instanceof FieldMonitor && ((FieldMonitor)that).field == this.field;
+		}
+
+		public boolean mayAlias(Monitor that) {
+			if(that instanceof FieldMonitor)
+				return this.equals(that);
+			return false;
+		}
+	}
+
+	syn lazy Monitor Expr.getMonitor() = new Monitor(type());
+	eq ParExpr.getMonitor() = getExpr().getMonitor();
+	eq CastExpr.getMonitor() = getExpr().getMonitor();
+	eq AbstractDot.getMonitor() = getRight().getMonitor();
+	eq ClassAccess.getMonitor() = new ClassMonitor(qualifier().type());
+	eq VarAccess.getMonitor() {
+		if(decl() instanceof FieldDeclaration) {
+			FieldDeclaration fd = (FieldDeclaration)decl();
+			if(fd.effectivelyFinal() && !fd.refEscapes())
+				return new FieldMonitor(fd);
+		}
+		return super.getMonitor();
+	}
+
+}

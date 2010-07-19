@@ -1,5 +1,5 @@
 aspect LanguageExtensions {
-	abstract class LanguageExtension {
+	public abstract class LanguageExtension {
 		private String name;
 		
 		public LanguageExtension(String name) { 

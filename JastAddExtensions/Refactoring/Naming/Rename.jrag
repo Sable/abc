@@ -7,9 +7,8 @@ aspect Rename {
 	
 	public void ASTNode.eliminateLockedNames() {
 		for(int i=0;i<getNumChild();++i) {
-			ASTNode ch = getChild(i);
-			if(ch != null)
-				ch.eliminateLockedNames();
+			if(children[i] != null)
+				children[i].eliminateLockedNames();
 		}
 	}
 }
