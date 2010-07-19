@@ -1,5 +1,4 @@
 aspect PermuteParameters {
-	// TODO: ensure we do not pick up any new overriding relationships
 	public void MethodDecl.permuteParameters(int[] perm, boolean createDelegate) {
 		int n = getNumParameter();
 		if(!isPerm(perm, n))
@@ -7,6 +6,7 @@ aspect PermuteParameters {
 		if(isIdentityPerm(perm))
 			return;
 		programRoot().lockMethodNames(name());
+		programRoot().lockOverridingDependencies(name());
 		for(MethodDecl md : relatives()) {
 			Collection<MethodAccess> uses = md.uses();
 			if(md.isNative() || !md.fromSource())
@@ -15,6 +15,7 @@ aspect PermuteParameters {
 				throw new RefactoringException("variable arity parameter has to come last");
 			if(createDelegate) {
 				MethodDecl delegate = (MethodDecl)md.fullCopy();
+				delegate.clearOverridingDependencies();
 				if(!md.hostType().isInterfaceDecl()) {
 					delegate.getModifiers().removeModifiers("abstract", "native");
 					List<Expr> args = new List<Expr>();
@@ -36,7 +37,7 @@ aspect PermuteParameters {
 	
 	public void MethodDecl.doPermuteParameters(int[] perm, boolean createDelegate) {
 		permuteParameters(perm, createDelegate);
-		programRoot().eliminate(RETURN_VOID, LOCKED_DATAFLOW, LOCKED_NAMES);
+		programRoot().eliminate(RETURN_VOID, LOCKED_DATAFLOW, LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 	
 	// check whether perm is a permutation of the integers {0, ..., max-1}

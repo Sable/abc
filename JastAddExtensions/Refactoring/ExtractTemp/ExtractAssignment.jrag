@@ -3,26 +3,66 @@ aspect ExtractAssignment {
 	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v) {
 		if(inextractible())
 			throw new RefactoringException("expression is not extractible");
-		if(getParent() instanceof ExprStmt) {
+		
+		/*if(false && getParent() instanceof ExprStmt) {
 			ExprStmt parent = (ExprStmt)getParent();
 			parent.setExpr(new AssignSimpleExpr(v.createLockedAccess(), this));
-		} else {
-			Block block = enclosingBlock();
-			if(block == null)
-				throw new RefactoringException("cannot extract assignment here");
-			// TODO: the following is unsound; keep it for Eclipse compliance
-			/*if(!locationsWritten().isEmpty())
-				throw new RefactoringException("cannot extract expression with side effects");*/
-			lockAllNames();
-			block.lockSyncDependencies();
-			VarAccess vacc = v.createLockedAccess();
-			replaceWith(vacc);
-			vacc.insertStmtBefore(AssignExpr.asStmt(v.createLockedAccess(), this));
-			block.hostType().flushCaches();
-			if(!vacc.isAvailable(this))
-				throw new RefactoringException("extracted expression is not available");
-			block.unlockSyncDependencies();
-		}
+		} else {*/
+		
+		Block block = enclosingBlock();
+		if(block == null)
+			throw new RefactoringException("cannot extract assignment here");
+		// TODO: the following (if commented out?) is unsound; keep it for Eclipse compliance
+		if(!locationsWritten().isEmpty())
+			throw new RefactoringException("cannot extract expression with side effects");
+		
+		// lock and insert assignment before this stmt
+		lockAllNames();
+		block.lockSyncDependencies();
+		VarAccess vacc = v.createLockedAccess();
+		replaceWith(vacc);
+		VarAccess vaccDef = v.createLockedAccess();
+		vacc.insertStmtBefore(AssignExpr.asStmt(vaccDef, this));
+		
+		block.hostType().flushCaches();
+		
+		// check we could inline back
+		if(!vacc.isAvailable(this))
+			throw new RefactoringException("extracted expression is not available");
+		
+		SmallSet<Access> U = vaccDef.reachedUses();
+		assert(U.size() == 0 || U.size() == 1);
+		if(U.size() != 1)
+			throw new RefactoringException("extracted value is used more than once");
+		Access u = U.iterator().next();
+		
+		SmallSet<CFGNode> C = this.collectExceptionalSucc();
+		if(!C.isEmpty() && !vacc.isAnticipated((VariableDeclaration)vaccDef.decl()))
+			throw new RefactoringException("expression may throw exception, but not inlined along all paths");
+		
+		
+		if(u.isDest())
+			throw new RefactoringException("cannot extract as expr is a destination");
+		if(!u.reachingDefinitions().isSingleton())
+			throw new RefactoringException("ambiguous dataflow");
+//		if(u.hostBodyDecl() != stmt.hostBodyDecl())
+//			throw new RefactoringException("cannot inline across method boundaries");
+//		if(!u.isAvailable(this))
+//			throw new RefactoringException("expression to inline not available at inline location");
+		for(CFGNode c : C)
+			for(CFGNode w : u.precedingDefsUpTo(v))
+				if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())
+					throw new RefactoringException("write to live variable may be lost");
+		
+		// ???? rhs.lockThrowEdges();
+		
+		hostType().flushCaches();
+		
+		block.unlockSyncDependencies();
+		
+		
+		//}
+		
 		return v;
 	}
 	

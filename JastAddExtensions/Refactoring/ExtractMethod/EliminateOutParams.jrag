@@ -89,6 +89,7 @@ aspect EliminateOutParams {
 	}
 
 	public void ParameterDeclaration.makeRef() {
+		assert(!isRef());
 		for(Modifier mod : getModifiers().getModifierList()) {
 			if(mod.getID().equals("out")) {
 				mod.setID("ref");

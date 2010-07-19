@@ -1,0 +1,50 @@
+aspect LockedOverriding {
+	public void ASTNode.lockOverridingDependencies(String... names) {
+		lockOverridingDependencies(Arrays.asList(names));
+	}
+	public void ASTNode.lockOverridingDependencies(Collection<String> names) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.lockOverridingDependencies(names);
+		}
+	}
+	
+	private HashSet<SavedMethodDecl> MethodDecl.lockedOverridingDependencies = null;
+	public void MethodDecl.lockOverridingDependencies(Collection<String> names) {
+		if(names.contains(name())) {
+			lockedOverridingDependencies = new HashSet<SavedMethodDecl>();
+			for(MethodDecl md : overrides())
+				lockedOverridingDependencies.add(md.save());
+		}
+	}
+	
+	public void MethodDecl.clearOverridingDependencies() {
+		lockedOverridingDependencies = null;
+	}
+	
+	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
+		public void eliminateOn(ASTNode n) {
+			n.unlockOverriding();
+		}
+	};
+	
+	public void ASTNode.unlockOverriding() {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode ch = getChild(i);
+			if(ch != null)
+				ch.unlockOverriding();
+		}
+	}
+	public void MethodDecl.unlockOverriding() {
+		if(lockedOverridingDependencies != null) {
+			HashSet<MethodDecl> old_overrides = new HashSet<MethodDecl>();
+			for(SavedMethodDecl md : lockedOverridingDependencies)
+				old_overrides.add(md.getDecl());
+			lockedOverridingDependencies = null;
+			if(!old_overrides.equals(overrides()))
+				throw new RefactoringException("overriding has changed");
+		}
+		super.unlockOverriding();
+	}
+}

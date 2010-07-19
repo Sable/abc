@@ -37,12 +37,12 @@ public class LocalClassToMemberClassTests extends TestCase {
 	
 	public void test1() {
 		testSucc(Program.fromClasses("class B { void m() { class A { } } }"),
-				 Program.fromClasses("class B { class A { } void m() { } }"));
+				 Program.fromClasses("class B { private class A { } void m() { } }"));
 	}
 	
 	public void test2() {
 		testSucc(Program.fromClasses("class B { void m() { class A { } A a; } }"),
-				 Program.fromClasses("class B { class A { } void m() { A a; } }"));
+				 Program.fromClasses("class B { private class A { } void m() { A a; } }"));
 	}
 	
 	public void test3() {

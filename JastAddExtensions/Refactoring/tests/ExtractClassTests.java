@@ -269,5 +269,21 @@ public class ExtractClassTests extends TestCase {
     		"  int y = x + 19;" +
     		"}")));
     }
+    
+
+    
+    public void test6() {
+    	testFail("Data", "data", new String[]{"x", "y"},
+    		Program.fromCompilationUnits(new RawCU("A.java",
+    		"package p;" +
+    		"class Super {" +
+    		"  int f() { return 23; }" +
+    		"}" +
+    		"" +
+    		"class A extends Super {" +
+    		"  int x = 12;" +
+    		"  int y = x + 19;" +
+    		"}")));
+    }
 
 }
