@@ -6,6 +6,10 @@ public class ArrayLengthAccessParameter {
 		///this.test = test;
 		this.setTest(test);
 	}
+	//constructor added
+	  public ArrayLengthAccessParameter() {
+		    super();
+		  }
 	public int getTest() {
 		return test;
 	}

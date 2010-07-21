@@ -7,6 +7,10 @@ public class ArrayInitializerParameter {
 		this.setTest(test); ///this.test = test;
 		this.setVal(val);   ///this.val = val;
 	}
+	//constructor added  
+	public ArrayInitializerParameter() {
+		    super();
+		  }
 	public String[] getTest() {
 		return test;
 	}

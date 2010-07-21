@@ -11,7 +11,7 @@
 package p;
 
 public class ComplexExtract {
-	protected ComplexExtractParameter parameterObject = new ComplexExtractParameter(5, 5);
+	protected ComplexExtractParameter parameterObject = new ComplexExtractParameter(0, 5, 0, 5); //call modified
 
 	public void foo(){
 		parameterObject.test3++;

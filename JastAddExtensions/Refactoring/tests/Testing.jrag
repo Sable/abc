@@ -363,4 +363,14 @@ aspect Testing {
 			return this;
 		return super.findStmtPreceding(line);
 	}
+	
+	public void List.toString(StringBuffer s) {
+    	s.append("[ ");
+    	for (int i = 0; i < getNumChild(); i++) {
+    		s.append(getChild(i).toString());
+    		if (i+1<getNumChild()) s.append(", \n");
+    	}
+    	s.append(" ]");
+	}
+	
 }

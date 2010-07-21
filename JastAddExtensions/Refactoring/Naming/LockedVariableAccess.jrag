@@ -55,7 +55,7 @@ aspect LockedVariableAccess {
 			super.eliminateLockedNames();
 	}
 	public Access VarAccess.unlock(Expr qual) {
-		assert (qual==null || (parentDot() != null && qual == parentDot().getLeft())); //??? Tomas 
+		assert (qual==null || (parentDot() != null && qual == parentDot().getLeft()));
 		Variable target = targetVariable.refresh();
 		targetVariable = null;
 		flushCache();

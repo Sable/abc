@@ -6,6 +6,10 @@ public class VariableDeclarationInitializerParameter {
 		///this.test = test;
 		this.setTest(test);
 	}
+	//constructor added
+	public VariableDeclarationInitializerParameter() {
+	    super();
+	}
 	public int getTest() {
 		return test;
 	}

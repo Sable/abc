@@ -15,7 +15,7 @@ public class ExtractClassTests extends TestCase {
 		super(name);
 	}
 	
-	public void testSucc(String newClassName, String newFieldName, String[] fns, Program in, Program out) {
+	public void testSucc(String newClassName, String newFieldName, String[] fns, Program in, Program out, boolean encapsulate) {
 		assertNotNull(in);
 		assertNotNull(out);
 		TypeDecl td = in.findType("p", "A");
@@ -27,14 +27,14 @@ public class ExtractClassTests extends TestCase {
 			fds.add(fd);
 		}
 		try {
-			((ClassDecl)td).doExtractClass(fds, newClassName, newFieldName, true, false);
+			((ClassDecl)td).doExtractClass(fds, newClassName, newFieldName, encapsulate, false);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
 	
-	public void testFail(String newClassName, String newFieldName, String[] fns, Program in) {
+	public void testFail(String newClassName, String newFieldName, String[] fns, Program in, boolean encapsulate) {
 		assertNotNull(in);
 		TypeDecl td = in.findType("p", "A");
 		assertTrue(td instanceof ClassDecl);
@@ -45,7 +45,7 @@ public class ExtractClassTests extends TestCase {
 			fds.add(fd);
 		}
 		try {
-			((ClassDecl)td).doExtractClass(fds, newClassName, newFieldName, true, false);
+			((ClassDecl)td).doExtractClass(fds, newClassName, newFieldName, encapsulate, false);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
@@ -103,6 +103,9 @@ public class ExtractClassTests extends TestCase {
             "      this.setX(x);" +
             "      this.setY(y);" +
             "    }" +
+            "    Data() {" +
+            "      super();" +
+            "    }" +
             "    int getX() {" +
             "      return x;" +
             "    }" +
@@ -116,7 +119,11 @@ public class ExtractClassTests extends TestCase {
             "      return this.y = y;" +
             "    }" +
             "  }" +
-            "  Data data = new Data(init(), new p.Data());" +
+            "  Data data = new Data();" +
+            "  {" +
+            "    data.setX(init());" +
+            "    data.setY(new p.Data());" +
+            "  }" +
             "  public void f() {" +
             "    int data;" +
             "    this.data.setX(0);" +
@@ -134,7 +141,7 @@ public class ExtractClassTests extends TestCase {
             "" +
             "class Data {" +
             "  int z;" +
-            "}")));
+            "}")), true);
     }
 
     public void test2() {
@@ -170,6 +177,9 @@ public class ExtractClassTests extends TestCase {
             "      super();" +
             "      this.setX(x);" +
             "    }" +
+            "    Data() {" +
+            "      super();" +
+            "    }" +
             "    int getX() {" +
             "      return x;" +
             "    }" +
@@ -182,7 +192,7 @@ public class ExtractClassTests extends TestCase {
             "    return 4 + super.d;" +
             "  }" +
             "  " +
-            "}")));
+            "}")), true);
     }
     
     public void test3() {
@@ -204,6 +214,13 @@ public class ExtractClassTests extends TestCase {
             "  " +
             "  static class Data {" +
             "    private p.Data x;" +
+            "    Data(p.Data x) {" +
+            "      super();" +
+            "      this.setX(x);" +
+            "    }" +
+            "    Data() {" +
+            "      super();" +
+            "    }" +
             "    p.Data getX() {" +
             "      return x;" +
             "    }" +
@@ -215,7 +232,7 @@ public class ExtractClassTests extends TestCase {
             "}" +
             "" +
             "class Data {" +
-            "}")));
+            "}")), true);
     }
 
     public void test4() {
@@ -236,6 +253,14 @@ public class ExtractClassTests extends TestCase {
             "  static class Data {" +
             "    private int x;" +
             "    private int y;" +
+            "    Data(int x, int y) {" +
+            "      super();" +
+            "      this.setX(x);" +
+            "      this.setY(y);" +
+            "    }" +
+            "    Data() {" +
+            "      super();" +
+            "    }" +
             "    int getX() {" +
             "      return x;" +
             "    }" +
@@ -253,10 +278,10 @@ public class ExtractClassTests extends TestCase {
             "  {" +
             "    System.out.println();" +
             "  }" +
-            "}")));
+            "}")), true);
     }
     
-    public void test5() {
+    /*public void test5() {
     	testFail("Data", "data", new String[]{"x", "y"},
     		Program.fromCompilationUnits(new RawCU("A.java",
     		"package p;" +
@@ -267,13 +292,13 @@ public class ExtractClassTests extends TestCase {
     		"class A extends Super {" +
     		"  int x = f();" +
     		"  int y = x + 19;" +
-    		"}")));
-    }
+    		"}")), true);
+    }*/
     
 
     
     public void test6() {
-    	testFail("Data", "data", new String[]{"x", "y"},
+    	testSucc("Data", "data", new String[]{"x", "y"},
     		Program.fromCompilationUnits(new RawCU("A.java",
     		"package p;" +
     		"class Super {" +
@@ -283,7 +308,199 @@ public class ExtractClassTests extends TestCase {
     		"class A extends Super {" +
     		"  int x = 12;" +
     		"  int y = x + 19;" +
-    		"}")));
+    		"}")),
+    		Program.fromCompilationUnits(new RawCU("A.java",
+    				"package p;" +
+    	            "" +
+    	            "class A extends Super  {" +
+    	            "  " +
+    	            "  static class Data  {" +
+    	            "    private int x;" +
+    	            "    private int y;" +
+    	            "    Data(int x, int y) {" +
+    	            "      super();" +
+    	            "      this.setX(x);" +
+    	            "      this.setY(y);" +
+    	            "    }" +
+    	            "    Data() {" +
+    	            "      super();" +
+    	            "    }" +
+    	            "    int getX() {" +
+    	            "      return x;" +
+    	            "    }" +
+    	            "    int setX(int x) {" +
+    	            "      return this.x = x;" +
+    	            "    }" +
+    	            "    int getY() {" +
+    	            "      return y;" +
+    	            "    }" +
+    	            "    int setY(int y) {" +
+    	            "      return this.y = y;" +
+    	            "    }" +
+    	            "  }" +
+    	            "  Data data = new Data();" +
+    	            "  {" +
+    	            "    data.setX(12);" +
+    	            "    data.setY(data.getX() + 19);" +
+    	            "  }" +
+    	            "}" +
+    	            "" +
+    	            "class Super  {" +
+    	            "  int f() {" +
+    	            "    return 23;" +
+    	            "  }" +
+    	            "}")), true);
     }
-
+    
+    public void test7() {
+    	// initializer moving test
+        testSucc("Data", "data", new String[] { "x", "y" },
+            Program.fromCompilationUnits(new RawCU("A.java",
+            "package p;" +
+            "" +
+            "class A {" +
+            "    int x = 10;" +
+            "    int z = 20;" +
+            "    int y = 30;" +
+            "    { java.lang.System.out.println(); }" +
+            "}" +
+            "")),
+            Program.fromCompilationUnits(new RawCU("A.java",
+            "package p;" +
+            "" +
+            "class A {" +
+            "  static class Data {" +
+            "    private int x;" +
+            "    private int y;" +
+            "    Data(int x, int y) {" +
+            "      super();" +
+            "      this.setX(x);" +
+            "      this.setY(y);" +
+            "    }" +
+            "    Data() {" +
+            "      super();" +
+            "    }" +
+            "    int getX() {" +
+            "      return x;" +
+            "    }" +
+            "    int setX(int x) {" +
+            "      return this.x = x;" +
+            "    }" +
+            "    int getY() {" +
+            "      return y;" +
+            "    }" +
+            "    int setY(int y) {" +
+            "      return this.y = y;" +
+            "    }" +
+            "  }" +
+            "  Data data = new Data(10, 30);" +
+            "    int z = 20;" +
+            "  {" +
+            "    java.lang.System.out.println();" +
+            "  }" +
+            "}")), true);
+    }
+    
+    public void test8() {
+    	// initializer moving test
+        testSucc("Data", "data", new String[] { "x", "y" },
+            Program.fromCompilationUnits(new RawCU("A.java",
+            "package p;" +
+            "" +
+            "class A {" +
+            "    int x = 10;" +
+            "    int z = 20;" +
+            "    int y = z;" +
+            "    { java.lang.System.out.println(); }" +
+            "}" +
+            "")),
+            Program.fromCompilationUnits(new RawCU("A.java",
+            "package p;" +
+            "" +
+            "class A {" +
+            "  static class Data {" +
+            "    int x;" +
+            "    int y;" +
+            "  }" +
+            "  Data data = new Data();" +
+            "  {" +
+            "    data.x = 10;" +
+            "  }" +
+            "    int z = 20;" +
+            "  {" +
+            "    data.y = z;" +
+            "  }" +
+            "  {" +
+            "    java.lang.System.out.println();" +
+            "  }" +
+            "}")), false);
+    }
+    
+    public void test9() {
+	    testSucc("Data", "data", new String[] { "x", "w", "ww", "y" },
+	            Program.fromCompilationUnits(new RawCU("A.java",
+	            "package p;" +
+	            "" +
+	            "class A {" +
+	            "    int x = 10;" +
+	            "    int z = 20;" +
+	            "    int w;" +
+	            "    java.util.List<Object> ww;" +
+	            "    double y;" +
+	            "    { java.lang.System.out.println(); }" +
+	            "}" +
+	            "")),
+	            Program.fromCompilationUnits(new RawCU("A.java",
+	            "package p;" +
+	            "" +
+	            "class A {" +
+	            "  static class Data {" +
+	            "    private int x;" +
+	            "    private int w;" +
+	            "    private java.util.List<Object> ww;" +
+	            "    private double y;" +
+	            "    Data(int x, int w, java.util.List<Object> ww, double y) {" +
+	            "      super();" +
+	            "      this.setX(x);" +
+	            "      this.setW(w);" +
+	            "      this.setWw(ww);" +
+	            "      this.setY(y);" +
+	            "    }" +
+	            "    Data() {" +
+	            "      super();" +
+	            "    }" +
+	            "    int getX() {" +
+	            "      return x;" +
+	            "    }" +
+	            "    int setX(int x) {" +
+	            "      return this.x = x;" +
+	            "    }" +
+	            "    int getW() {" +
+	            "      return w;" +
+	            "    }" +
+	            "    int setW(int w) {" +
+	            "      return this.w = w;" +
+	            "    }" +
+	            "    java.util.List<Object> getWw() {" +
+	            "      return ww;" +
+	            "    }" +
+	            "    java.util.List<Object> setWw(java.util.List<Object> ww) {" +
+	            "      return this.ww = ww;" +
+	            "    }" +
+	            "    double getY() {" +
+	            "      return y;" +
+	            "    }" +
+	            "    double setY(double y) {" +
+	            "      return this.y = y;" +
+	            "    }" +
+	            "  }" +
+	            "  Data data = new Data(10, 0, null, 0);" +
+	            "    int z = 20;" +
+	            "  {" +
+	            "    java.lang.System.out.println();" +
+	            "  }" +
+	            "}")), true);
+	    }
+	
+	
 }

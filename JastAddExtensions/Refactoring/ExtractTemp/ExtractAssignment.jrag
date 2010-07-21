@@ -1,6 +1,6 @@
 aspect ExtractAssignment {	
 	// extract an expression as an assignment to a variable
-	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v) {
+	public VariableDeclaration Expr.extractAssignment(VariableDeclaration v, Stmt insertBefore) {
 		if(inextractible())
 			throw new RefactoringException("expression is not extractible");
 		
@@ -18,11 +18,12 @@ aspect ExtractAssignment {
 		
 		// lock and insert assignment before this stmt
 		lockAllNames();
+		lockThrowEdges();
 		block.lockSyncDependencies();
 		VarAccess vacc = v.createLockedAccess();
 		replaceWith(vacc);
 		VarAccess vaccDef = v.createLockedAccess();
-		vacc.insertStmtBefore(AssignExpr.asStmt(vaccDef, this));
+		insertBefore.insertStmtBefore(AssignExpr.asStmt(vaccDef, this));
 		
 		block.hostType().flushCaches();
 		
@@ -39,22 +40,17 @@ aspect ExtractAssignment {
 		SmallSet<CFGNode> C = this.collectExceptionalSucc();
 		if(!C.isEmpty() && !vacc.isAnticipated((VariableDeclaration)vaccDef.decl()))
 			throw new RefactoringException("expression may throw exception, but not inlined along all paths");
-		
-		
-		if(u.isDest())
-			throw new RefactoringException("cannot extract as expr is a destination");
-		if(!u.reachingDefinitions().isSingleton())
-			throw new RefactoringException("ambiguous dataflow");
-//		if(u.hostBodyDecl() != stmt.hostBodyDecl())
-//			throw new RefactoringException("cannot inline across method boundaries");
-//		if(!u.isAvailable(this))
-//			throw new RefactoringException("expression to inline not available at inline location");
 		for(CFGNode c : C)
 			for(CFGNode w : u.precedingDefsUpTo(v))
 				if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())
 					throw new RefactoringException("write to live variable may be lost");
 		
-		// ???? rhs.lockThrowEdges();
+		if(u.isDest())
+			throw new RefactoringException("cannot extract as expr is a destination");
+		if(!u.reachingDefinitions().isSingleton())
+			throw new RefactoringException("ambiguous dataflow");
+		if(u.hostBodyDecl() != insertBefore.hostBodyDecl())
+			throw new RefactoringException("cannot inline across method boundaries");
 		
 		hostType().flushCaches();
 		
@@ -67,7 +63,7 @@ aspect ExtractAssignment {
 	}
 	
 	public VariableDeclaration VariableDeclaration.extractAssignment(Expr expr) {
-		return expr.extractAssignment(this);
+		return expr.extractAssignment(this, expr.enclosingStmt());
 	}
 	
 }

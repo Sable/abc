@@ -6,6 +6,16 @@ public class ControlBodyUpdatesParameter {
 	private ArrayList<Integer> arraylists;
 	private Integer[] ints;
 	private int fNewStart;
+	//constructors added
+	public ControlBodyUpdatesParameter(ArrayList<Integer> arraylists, Integer[] ints, int fNewStart) {
+	    super();
+	    this.setArraylists(arraylists);
+	    this.setInts(ints);
+	    this.setFNewStart(fNewStart);
+	  }
+	  public ControlBodyUpdatesParameter() {
+	    super();
+	  }
 	public ArrayList<Integer> getArraylists() {
 		return arraylists;
 	}

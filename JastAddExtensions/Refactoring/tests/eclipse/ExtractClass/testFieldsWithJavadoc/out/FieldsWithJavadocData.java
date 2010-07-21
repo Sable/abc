@@ -7,6 +7,16 @@ public class FieldsWithJavadocData {
 	private String[] test;
 	/** val field */
 	private int[] val;
+	// constructors added
+	  public FieldsWithJavadocData(String[] test, int[] val) {
+	    super();
+	    this.setTest(test);
+	    this.setVal(val);
+	  }
+	  public FieldsWithJavadocData() {
+	    super();
+	  }
+	  
 	public String[] getTest() {
 		return test;
 	}

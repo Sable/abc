@@ -11,7 +11,7 @@
 package p;
 
 public class ComplexExtractGetterSetter {
-	protected ComplexExtractGetterSetterParameter parameterObject = new ComplexExtractGetterSetterParameter(5, 5);
+	protected ComplexExtractGetterSetterParameter parameterObject = new ComplexExtractGetterSetterParameter(0, 5, 0, 5); //call modified
 
 	public void foo(){
 		parameterObject.setTest3(parameterObject.getTest3() + 1);

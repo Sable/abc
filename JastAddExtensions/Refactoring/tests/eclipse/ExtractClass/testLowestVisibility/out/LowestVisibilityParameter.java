@@ -3,6 +3,16 @@ package p;
 public class LowestVisibilityParameter {
 	private int test2;
 	private int test;
+	//constructors added
+	  public LowestVisibilityParameter(int test2, int test) {
+	    super();
+	    this.setTest2(test2);
+	    this.setTest(test);
+	  }
+	  public LowestVisibilityParameter() {
+	    super();
+	  }
+	  
 	public int getTest2() {
 		return test2;
 	}

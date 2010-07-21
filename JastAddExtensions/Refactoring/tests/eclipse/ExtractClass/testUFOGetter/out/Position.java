@@ -4,6 +4,16 @@ public class Position {
 	private int x;
 	private int y;
 	private int z;
+	//constructors added
+	  public Position(int x, int y, int z) {
+		    super();
+		    this.setX(x);
+		    this.setY(y);
+		    this.setZ(z);
+		  }
+		  public Position() {
+		    super();
+		  }
 	public int getX() {
 		return x;
 	}

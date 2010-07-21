@@ -3,6 +3,15 @@ package p;
 public class UpdateSimpleNameParameter {
 	private int foo;
 	private int foo2;
+	//contructors added
+	public UpdateSimpleNameParameter(int foo, int foo2) {
+	    super();
+	    this.setFoo(foo);
+	    this.setFoo2(foo2);
+	  }
+	  public UpdateSimpleNameParameter() {
+	    super();
+	  }
 	public int getFoo() {
 		return foo;
 	}

@@ -3,6 +3,15 @@ package p;
 public class InheritanceUpdateGetterSetterParameter {
 	private String test;
 	private int test2;
+	// constructors added
+	  public InheritanceUpdateGetterSetterParameter(String test, int test2) {
+		    super();
+		    this.setTest(test);
+		    this.setTest2(test2);
+		  }
+		  public InheritanceUpdateGetterSetterParameter() {
+		    super();
+		  }
 	public String getTest() {
 		return test;
 	}

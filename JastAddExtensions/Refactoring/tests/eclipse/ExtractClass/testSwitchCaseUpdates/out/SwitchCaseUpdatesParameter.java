@@ -2,6 +2,14 @@ package p;
 
 public class SwitchCaseUpdatesParameter {
 	private int test;
+	//constructors added
+	  public SwitchCaseUpdatesParameter(int test) {
+		    super();
+		    this.setTest(test);
+		  }
+		  public SwitchCaseUpdatesParameter() {
+		    super();
+		  }
 	public int getTest() {
 		return test;
 	}

@@ -13,7 +13,7 @@ aspect ExtractTemp {
     public VariableDeclaration Expr.doExtract(String name, boolean makeFinal) {
     	Program root = programRoot();
     	VariableDeclaration decl = extractTemp(name, makeFinal);
-    	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
+    	root.eliminate(LOCKED_DATAFLOW, LOCKED_NAMES, LOCKED_THROW);
     	return decl;
     }
     

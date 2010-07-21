@@ -5,10 +5,21 @@ public class ComplexExtractGetterSetterParameter {
 	private int test2;
 	private int test3;
 	private int test4;
-	public ComplexExtractGetterSetterParameter(int test2, int test4) {
+	/*public ComplexExtractGetterSetterParameter(int test2, int test4) {
 		this.setTest2(test2); ///this.test2 = test2;
 		this.setTest4(test4); ///this.test4 = test4;
-	}
+	}*/
+	// contructors added
+	public ComplexExtractGetterSetterParameter(int test, int test2, int test3, int test4) {
+	    super();
+	    this.setTest(test);
+	    this.setTest2(test2);
+	    this.setTest3(test3);
+	    this.setTest4(test4);
+	  }
+	  public ComplexExtractGetterSetterParameter() {
+	    super();
+	  }
 	public int getTest() {
 		return test;
 	}

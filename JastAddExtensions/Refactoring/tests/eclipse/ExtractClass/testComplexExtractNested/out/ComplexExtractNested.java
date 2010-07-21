@@ -16,13 +16,27 @@ public class ComplexExtractNested {
 		protected/*///public*/ int test2;
 		private/*///public*/ int test3;
 		private/*///public*/ int test4;
-		protected/*///public*/ ComplexExtractNestedParameter(int test2, int test4) {
-			this.test2 = test2;
+		//protected/*///public*/ ComplexExtractNestedParameter(int test2, int test4) {
+		/*	this.test2 = test2;
 			this.test4 = test4;
-		}
-	}
+		}    */
 
-	protected ComplexExtractNestedParameter parameterObject = new ComplexExtractNestedParameter(5, 5);
+		//protected ComplexExtractNestedParameter parameterObject = new ComplexExtractNestedParameter(5, 5);
+		// added begin
+		protected ComplexExtractNestedParameter(int test, int test2, int test3, int test4) {
+		      super();
+		      this.test = test;
+		      this.test2 = test2;
+		      this.test3 = test3;
+		      this.test4 = test4;
+		    }
+		    protected ComplexExtractNestedParameter() {
+		      super();
+		    }
+		  }
+		  protected ComplexExtractNestedParameter parameterObject = new ComplexExtractNestedParameter(0, 5, 0, 5);
+		 // added end
+
 
 	public void foo(){
 		parameterObject.test3++;
