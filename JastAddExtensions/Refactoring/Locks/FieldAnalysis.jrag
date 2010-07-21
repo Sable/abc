@@ -11,13 +11,21 @@ aspect FieldAnalysis {
 	}
 	
 	syn lazy boolean FieldDeclaration.refEscapes() {
-		if(!hasInit() || !(getInit() instanceof ClassInstanceExpr || getInit() instanceof ArrayCreationExpr))
-			return true;
 		if(isDedicatedLock())
 			return false;
-		for(VarAccess va : allUses())
-			if(va.escapes())
+		for(VarAccess va : allUses()) {
+			if(va.isSource() && va.escapes())
 				return true;
+			if(va.isDest()) {
+				// assignments are OK, as long as we either assign null or a fresh object
+				AssignExpr assgn = va.modifyingAssignExpr();
+				if(assgn == null)
+					return true;
+				Expr rhs = assgn.getSource();
+				if(!(rhs instanceof NullLiteral || rhs instanceof ClassInstanceExpr || rhs instanceof ArrayCreationExpr))
+					return true;
+			}
+		}
 		return false;
 	}
 	
@@ -40,30 +48,33 @@ aspect FieldAnalysis {
 	eq ClassInstanceExpr.getArg().escapes() = true;
 	eq ArrayInit.getInit().escapes() = true;
 	eq AbstractDot.getLeft().escapes() {
-		Access acc = getRight();
-		if(acc instanceof MethodAccess || acc instanceof ConstructorAccess || acc instanceof ClassInstanceExpr)
-			// should use thisEscapes() here, but it's too expensive
-			return true;
-		return false;
+		Access acc = rightSide();
+		if(acc instanceof MethodAccess) {
+			return ((MethodAccess)acc).decl().sourceMethodDecl().thisEscapes();
+		} else {
+			return acc instanceof ConstructorAccess || acc instanceof ClassInstanceExpr;
+		}
 	}
 	eq Program.getChild().escapes() = false;
-
-	syn lazy boolean MethodDecl.thisEscapes() circular [false] {
+	
+	// very rough
+	syn lazy boolean MethodDecl.thisEscapes() {
 		if(isStatic())
 			return false;
-		if(isSynchronized())
-			return true;
-		if(hostType().isObject() && (name().equals("wait") || name().equals("notify")))
+		String fullName = hostType().fullName() + "." + signature();
+		String[] nonLeakyMethods = {
+			"java.lang.Object.wait(long)", "java.lang.Object.wait(long, int)", "java.lang.Object.wait()",
+			"java.lang.Object.notify()", "java.lang.Object.notifyAll()",
+			"java.util.List.size()", "java.util.List.get(int)", "java.util.List.set(int, java.lang.Object)", "java.util.List.subList(int, int)", "java.util.List.add(java.lang.Object)",
+			"java.util.HashSet.size()", "java.util.HashSet.isEmpty()", "java.util.HashSet.contains(java.lang.Object)", "java.util.HashSet.add(java.lang.Object)", 
+			"java.util.HashSet.remove(java.lang.Object)", "java.util.HashSet.containsAll(java.util.Collection)", "java.util.AbstractCollection.addAll(java.util.Collection)",
+			"java.util.Map.get(java.lang.Object)", "java.util.Map.put(java.lang.Object, java.lang.Object)", "java.util.Map.keySet()", "java.util.Map.containsKey(java.lang.Object)",
+			"java.util.Map.size()", "java.util.Map.remove(java.lang.Object)", "java.util.Map.entrySet()",
+			"java.util.WeakHashMap.put(java.lang.Object, java.lang.Object)", "java.util.WeakHashMap.get(java.lang.Object)"
+		};
+		boolean contains = Arrays.asList(nonLeakyMethods).contains(fullName);
+		if(contains)
 			return false;
-		if(isNative() || !overriders().isEmpty())
-			return true;
-		for(ThisAccess ta : thisAccesses())
-			if(ta.escapes())
-				return true;
-		return false;
+		return true;
 	}
-	
-	coll Collection<ThisAccess> MethodDecl.thisAccesses() [new HashSet<ThisAccess>()] 
-	                        	                           with add root BodyDecl;
-	ThisAccess contributes this when hostBodyDecl() instanceof MethodDecl to MethodDecl.thisAccesses() for (MethodDecl)hostBodyDecl();
 }

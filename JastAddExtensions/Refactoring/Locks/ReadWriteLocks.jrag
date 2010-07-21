@@ -61,15 +61,26 @@ aspect ReadWriteLocks {
 		return false;
 	}
 	
-	eq MethodDecl.writesSharedState() = isNative() || !hasBlock() || super.writesSharedState();
+	eq MethodDecl.writesSharedState() = isNative() || !fromSource() || super.writesSharedState();
 	eq VarAccess.writesSharedState() = isDest() && decl().isField() || super.writesSharedState();
 	eq ArrayAccess.writesSharedState() = isDest() || super.writesSharedState();
 	
 	// TODO: put in many more methods here
 	public static final String[][] ASTNode.pureMethods = {
+		{"java.lang", "Object", "equals(java.lang.Object)"},
+		{"java.lang", "Object", "hashCode()"},
+		{"java.util", "Collection", "contains(java.lang.Object)"},
+		{"java.util", "Collection", "containsAll(java.util.Collection)"},
+		{"java.util", "Collection", "isEmpty()"},
 		{"java.util", "Collection", "size()"},
-		{"java.util", "AbstractCollection", "size()"},
-		{"java.util", "Vector", "size()"},
+		{"java.util", "Map", "size()"},
+		{"java.util", "Map", "isEmpty()"},
+		{"java.util", "Map", "containsKey(java.lang.Object)"},
+		{"java.util", "Map", "containsValue(java.lang.Object)"},
+		{"java.util", "Map", "get(java.lang.Object)"},
+		{"java.util", "Map", "keySet()"},
+		{"java.util", "Map", "values()"},
+		{"java.util", "Map", "entrySet()"}
 	};
 	syn lazy Collection<MethodDecl> Program.pureMethods() {
 		Collection<MethodDecl> pure = new HashSet<MethodDecl>();
@@ -78,8 +89,17 @@ aspect ReadWriteLocks {
 		return pure;
 	}
 	
+	refine Alias eq MethodDecl.isPure() {
+		if(programRoot().pureMethods().contains(this))
+			return true;
+		for(MethodDecl md : overrides())
+			if(md.isPure())
+				return true;
+		return false;
+	}
+	
 	eq MethodAccess.writesSharedState() {
-		return !programRoot().pureMethods().contains(decl().sourceMethodDecl());
+		return !decl().sourceMethodDecl().isPure();
 	}
 	
 	eq ConstructorAccess.writesSharedState() {

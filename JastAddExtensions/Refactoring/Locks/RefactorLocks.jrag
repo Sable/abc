@@ -1,6 +1,7 @@
 aspect Locks {
 	interface MonitorAction {
 		void replaceWithReentrantLock(Monitor m);
+		boolean fromSource();
 	}
 	SynchronizedStmt implements MonitorAction;
 	MethodDecl implements MonitorAction;
@@ -18,13 +19,19 @@ aspect Locks {
 	eq MethodAccess.getMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
 	
 	public boolean MonitorAction.replaceWithReentrantLock() {
-		if(!fromSource())
+		if(!fromSource()) {
+			//System.out.println("not from source");
 			return false;
+		}
 		return getMonitor().replaceWithReentrantLock(programRoot());
 	}
 	
 	public boolean MethodDecl.replaceWithReentrantLock() {
-		return (!hasBlock() || !fromSource()) ? false : getMonitor().replaceWithReentrantLock(programRoot()); 
+		if(!hasBlock() || !fromSource()) {
+			//System.out.println("not from source");
+			return false;
+		}
+		return getMonitor().replaceWithReentrantLock(programRoot()); 
 	}
 	
 	public TypeDecl Monitor.typeReentrantLock() { return type.programRoot().typeReentrantLock(); }
@@ -66,7 +73,7 @@ aspect Locks {
 	public FieldDeclaration ClassMonitor.lockField() {
 		if(lockField != null || !refactorable())
 			return lockField;
-		lockField = createLockField(new Modifiers("public", "static"), "lock");
+		lockField = createLockField(new Modifiers("public", "static", "final"), "lock");
 		clazz.getBodyDeclList().insertChild(lockField, 0);
 		return lockField;
 	}
@@ -74,7 +81,7 @@ aspect Locks {
 	public FieldDeclaration ClassMonitor.conditionField() {
 		if(conditionField != null || !refactorable())
 			return conditionField;
-		conditionField = createConditionField(new Modifiers("public", "static"), "condition");
+		conditionField = createConditionField(new Modifiers("public", "static", "final"), "condition");
 		clazz.getBodyDeclList().insertChild(conditionField, 1);
 		return conditionField;
 	}
@@ -98,7 +105,7 @@ aspect Locks {
 	public FieldDeclaration FieldMonitor.conditionField() {
 		if(conditionField != null || !refactorable())
 			return conditionField;
-		conditionField = createConditionField(new Modifiers("public", "static"), field.name()+"_condition");
+		conditionField = createConditionField(new Modifiers("public", "final"), field.name()+"_condition");
 		field.hostType().getBodyDeclList().insertChild(conditionField, lockField().getChildIndex()+1);
 		return conditionField;		
 	}
@@ -148,10 +155,13 @@ aspect Locks {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
 			if(this.equals(ma.getMonitor())) {
-				if(!ma.getMonitor().refactorable())
+				if(!ma.getMonitor().refactorable()) {
+					//System.out.println("not refactorable (class monitor)");
 					return false;
+				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
+				System.out.println("ambiguous lock (class monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
@@ -163,10 +173,13 @@ aspect Locks {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
 			if(this.equals(ma.getMonitor())) {
-				if(!ma.getMonitor().refactorable())
+				if(!ma.getMonitor().refactorable()) {
+					//System.out.println("not refactorable (field monitor)");
 					return false;
+				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
+				System.out.println("ambiguous lock (field monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
@@ -178,10 +191,13 @@ aspect Locks {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
 			if(ma.getMonitor().type().subtype(type)) {
-				if(!ma.getMonitor().refactorable())
+				if(!ma.getMonitor().refactorable()) {
+					//System.out.println("not refactorable (general monitor)");
 					return false;
+				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
+				System.out.println("ambiguous lock (general monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
@@ -250,6 +266,14 @@ aspect Locks {
 	}
 	
 	public boolean MonitorAction.mayEnter(Monitor m) {
+		return getMonitor().mayAlias(m);
+	}
+	
+	public boolean MethodDecl.mayEnter(Monitor m) {
+		// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
+		//       we can ignore mostly ignore it
+		if(hostType().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary"))
+			return false;
 		return getMonitor().mayAlias(m);
 	}
 }

@@ -3,6 +3,13 @@ aspect Monitor {
 		private TypeDecl type;
 
 		public Monitor(TypeDecl type) {
+			if(type instanceof ClassDecl) {
+				ClassDecl cd = (ClassDecl)type;
+				while(cd.fromSource()) {
+					type = cd;
+					cd = cd.superclass();
+				}
+			}
 			this.type = type;
 		}
 
@@ -85,7 +92,12 @@ aspect Monitor {
 
 	syn lazy Monitor Expr.getMonitor() = new Monitor(type());
 	eq ParExpr.getMonitor() = getExpr().getMonitor();
-	eq CastExpr.getMonitor() = getExpr().getMonitor();
+	eq CastExpr.getMonitor() {
+		Monitor m = getExpr().getMonitor();
+		if(m instanceof ClassMonitor || m instanceof FieldMonitor)
+			return m;
+		return super.getMonitor();
+	}
 	eq AbstractDot.getMonitor() = getRight().getMonitor();
 	eq ClassAccess.getMonitor() = new ClassMonitor(qualifier().type());
 	eq VarAccess.getMonitor() {
