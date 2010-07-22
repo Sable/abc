@@ -10,13 +10,19 @@ aspect Locks {
 	coll Collection<MonitorAction> Program.monitorActions() [new HashSet<MonitorAction>()] 
 	                           with add root Program;
 	SynchronizedStmt contributes this when fromSource() to Program.monitorActions() for programRoot();
-	MethodDecl contributes this when isSynchronized() to Program.monitorActions() for programRoot();
+	MethodDecl contributes this when isSynchronized() && !isInitAnnotationsIfNecessary() to Program.monitorActions() for programRoot();
 	MethodAccess contributes this when waitNotifyMethods().contains(decl()) to Program.monitorActions() for programRoot();
+	
+	// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
+	//       we can ignore mostly ignore it
+	public boolean MethodDecl.isInitAnnotationsIfNecessary() {
+		return hostType().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary");		
+	}
 
-	syn lazy Monitor MonitorAction.getMonitor();
-	eq SynchronizedStmt.getMonitor() = getExpr().getMonitor();
-	eq MethodDecl.getMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
-	eq MethodAccess.getMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
+	syn lazy Monitor MonitorAction.getAcquiredMonitor();
+	eq SynchronizedStmt.getAcquiredMonitor() = getExpr().getMonitor();
+	eq MethodDecl.getAcquiredMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
+	eq MethodAccess.getAcquiredMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
 	
 	public static void ASTNode.log(String msg) {
 		System.out.println(msg);
@@ -27,7 +33,7 @@ aspect Locks {
 			//ASTNode.log("not from source");
 			return false;
 		}
-		return getMonitor().replaceWithReentrantLock(programRoot());
+		return getAcquiredMonitor().replaceWithReentrantLock(programRoot());
 	}
 	
 	public boolean MethodDecl.replaceWithReentrantLock() {
@@ -35,7 +41,7 @@ aspect Locks {
 			//ASTNode.log("not from source");
 			return false;
 		}
-		return getMonitor().replaceWithReentrantLock(programRoot()); 
+		return getAcquiredMonitor().replaceWithReentrantLock(programRoot()); 
 	}
 	
 	public TypeDecl Monitor.typeReentrantLock() { return type.programRoot().typeReentrantLock(); }
@@ -158,8 +164,8 @@ aspect Locks {
 	public boolean ClassMonitor.replaceWithReentrantLock(Program root) {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
-			if(this.equals(ma.getMonitor())) {
-				if(!ma.getMonitor().refactorable()) {
+			if(this.equals(ma.getAcquiredMonitor())) {
+				if(!ma.getAcquiredMonitor().refactorable()) {
 					ASTNode.log("not refactorable (class monitor)");
 					return false;
 				}
@@ -176,8 +182,8 @@ aspect Locks {
 	public boolean FieldMonitor.replaceWithReentrantLock(Program root) {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
-			if(this.equals(ma.getMonitor())) {
-				if(!ma.getMonitor().refactorable()) {
+			if(this.equals(ma.getAcquiredMonitor())) {
+				if(!ma.getAcquiredMonitor().refactorable()) {
 					ASTNode.log("not refactorable (field monitor)");
 					return false;
 				}
@@ -194,8 +200,8 @@ aspect Locks {
 	public boolean Monitor.replaceWithReentrantLock(Program root) {
 		LinkedList<MonitorAction> repl = new LinkedList<MonitorAction>();
 		for(MonitorAction ma : root.monitorActions())
-			if(ma.getMonitor().type().subtype(type)) {
-				if(!ma.getMonitor().refactorable()) {
+			if(ma.getAcquiredMonitor().type().subtype(type)) {
+				if(!ma.getAcquiredMonitor().refactorable()) {
 					ASTNode.log("not refactorable (general monitor)");
 					return false;
 				}
@@ -270,14 +276,10 @@ aspect Locks {
 	}
 	
 	public boolean MonitorAction.mayEnter(Monitor m) {
-		return getMonitor().mayAlias(m);
+		return getAcquiredMonitor().mayAlias(m);
 	}
 	
 	public boolean MethodDecl.mayEnter(Monitor m) {
-		// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
-		//       we can ignore mostly ignore it
-		if(hostType().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary"))
-			return false;
-		return getMonitor().mayAlias(m);
+		return getAcquiredMonitor().mayAlias(m);
 	}
 }
