@@ -18,9 +18,13 @@ aspect Locks {
 	eq MethodDecl.getMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
 	eq MethodAccess.getMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
 	
+	public static void ASTNode.log(String msg) {
+		System.out.println(msg);
+	}
+	
 	public boolean MonitorAction.replaceWithReentrantLock() {
 		if(!fromSource()) {
-			//System.out.println("not from source");
+			//ASTNode.log("not from source");
 			return false;
 		}
 		return getMonitor().replaceWithReentrantLock(programRoot());
@@ -28,7 +32,7 @@ aspect Locks {
 	
 	public boolean MethodDecl.replaceWithReentrantLock() {
 		if(!hasBlock() || !fromSource()) {
-			//System.out.println("not from source");
+			//ASTNode.log("not from source");
 			return false;
 		}
 		return getMonitor().replaceWithReentrantLock(programRoot()); 
@@ -156,12 +160,12 @@ aspect Locks {
 		for(MonitorAction ma : root.monitorActions())
 			if(this.equals(ma.getMonitor())) {
 				if(!ma.getMonitor().refactorable()) {
-					//System.out.println("not refactorable (class monitor)");
+					ASTNode.log("not refactorable (class monitor)");
 					return false;
 				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
-				System.out.println("ambiguous lock (class monitor)");
+				ASTNode.log("ambiguous lock (class monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
@@ -174,12 +178,12 @@ aspect Locks {
 		for(MonitorAction ma : root.monitorActions())
 			if(this.equals(ma.getMonitor())) {
 				if(!ma.getMonitor().refactorable()) {
-					//System.out.println("not refactorable (field monitor)");
+					ASTNode.log("not refactorable (field monitor)");
 					return false;
 				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
-				System.out.println("ambiguous lock (field monitor)");
+				ASTNode.log("ambiguous lock (field monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
@@ -192,12 +196,12 @@ aspect Locks {
 		for(MonitorAction ma : root.monitorActions())
 			if(ma.getMonitor().type().subtype(type)) {
 				if(!ma.getMonitor().refactorable()) {
-					//System.out.println("not refactorable (general monitor)");
+					ASTNode.log("not refactorable (general monitor)");
 					return false;
 				}
 				repl.add(ma);
 			} else if(ma.mayEnter(this)) {
-				System.out.println("ambiguous lock (general monitor)");
+				ASTNode.log("ambiguous lock (general monitor)");
 				return false;
 			}
 		for(MonitorAction ma : repl)
