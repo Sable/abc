@@ -1,10 +1,29 @@
 package tests;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import AST.BytecodeParser;
 import AST.BytecodeReader;
@@ -32,6 +51,40 @@ public class CompileHelper {
  	
 	public static Program compileAllJavaFilesUnder(String root) {
 		return compileAllJavaFilesUnder(new File(root));
+	}
+	
+	public static Program compileProjectInClassPathFile(File classpath) throws Exception {
+		if (!classpath.exists())
+			throw new Exception("classpath file does not exist");
+		Document doc;
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.parse(classpath);
+		} catch (Exception e) {
+			throw new Exception("classpath file parsing(or so) failed");
+		}
+		doc.getDocumentElement().normalize();
+		
+		NodeList classpathentry_nodes = doc.getElementsByTagName("classpathentry");
+		List<String> files = new ArrayList<String>();
+		for (int i = 0; classpathentry_nodes.item(i) != null; i++) {
+			Node n = classpathentry_nodes.item(i);
+			if (n.getAttributes().getNamedItem("kind") == null)
+				continue;
+			String kind_value = n.getAttributes().getNamedItem("kind").getNodeValue();
+			if (n.getAttributes().getNamedItem("path") == null)
+				continue;
+			String path_value = n.getAttributes().getNamedItem("path").getNodeValue();
+			if (kind_value.equals("src")) {
+				files.addAll(findAllJavaFiles(new File(
+								classpath.getParentFile().getPath() + File.separator + path_value)));
+			} else if (kind_value.equals("lib")) {
+				files.add(classpath.getParentFile().getPath() + File.separator + path_value);
+			}
+		}
+		
+		return compile(files.toArray(new String[0]));
 	}
 	
 	public static Program compileAllJavaFilesUnder(File root) {
