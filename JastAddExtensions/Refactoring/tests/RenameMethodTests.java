@@ -565,4 +565,24 @@ public class RenameMethodTests extends TestCase {
     		"class A { void m() { } }",
     		"class B extends A { void n() { } }"));
     }
+    
+    
+    public void test41Fail() {
+    	testFail(
+    		"B", "m()", "n",
+    		Program.fromClasses(
+    		"class A { void m() { } }",
+    		"abstract class B extends A implements I { void m() { } }",
+    		"interface I { void n(); }"));
+    }
+    
+    public void test42Fail() {
+    	testFail(
+    		"A", "m()", "n",
+    		Program.fromClasses(
+    		"class A { void m() { } }",
+    		"abstract class B extends A implements I { }",
+    		"interface I { void n(); }"));
+    }
+    
 }

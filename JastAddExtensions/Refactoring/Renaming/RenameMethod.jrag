@@ -55,7 +55,8 @@ aspect RenameMethod {
 		}
 		if(found)
 			return false;
-		// if there are any like-named methods in superclasses, we must be able to override them
+		// if there are any like-named methods in superclasses, we must be able to override or hide them
+		// compare TypeDecl.typeCheck()
 		for(Iterator i = ancestorMethods(sig).iterator();i.hasNext();) {
 			MethodDecl md2 = (MethodDecl)i.next();
 			if(!md.canOverrideOrHide(md2))
