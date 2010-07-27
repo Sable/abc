@@ -203,23 +203,26 @@ aspect ControlFlowGraph {
 	
 	// AssignExpr and its subclasses
 	eq AssignExpr.first() = getDest().first();
-	eq AssignExpr.getDest().following() = SmallSet.<CFGNode>singleton(getSource().first());
+	eq AssignExpr.getDest().following() = SmallSet.<CFGNode>singleton(this);
 	eq AssignExpr.getSource().following() {
-		VarAccess destloc = getDest().getDestLocation();
+		Access destloc = getDest().getDestLocation();
 		return SmallSet.<CFGNode>singleton(destloc == null ? this : destloc);
 	}
 
 	// descend through ParExprs and AbstractDots to find a VarAccess
-	public VarAccess ASTNode.getDestLocation() {
+	public Access ASTNode.getDestLocation() {
 		return null;
 	}
-	public VarAccess ParExpr.getDestLocation() {
+	public Access ParExpr.getDestLocation() {
 		return getExpr().getDestLocation();
 	}
-	public VarAccess AbstractDot.getDestLocation() {
+	public Access AbstractDot.getDestLocation() {
 		return getRight().getDestLocation();
 	}
-	public VarAccess VarAccess.getDestLocation() {
+	public Access VarAccess.getDestLocation() {
+		return this;
+	}
+	public Access ArrayAccess.getDestLocation() {
 		return this;
 	}
 
