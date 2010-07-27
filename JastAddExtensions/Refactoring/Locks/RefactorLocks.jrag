@@ -272,7 +272,7 @@ aspect Locks {
 	public Expr MethodDecl.getLockExpr() {
 		if(isStatic())
 			return hostType().createLockedAccess().qualifiesAccess(new ClassAccess());
-		return null;
+		return new ThisAccess("this");
 	}
 	
 	public boolean MonitorAction.mayEnter(Monitor m) {

@@ -90,6 +90,8 @@ aspect ReadWriteLocks {
 	}
 	
 	refine Alias eq MethodDecl.isPure() {
+		if(refined())
+			return true;
 		if(programRoot().pureMethods().contains(this))
 			return true;
 		for(MethodDecl md : overrides())
