@@ -85,7 +85,7 @@ aspect InlineAssignment {
 	eq Access.killsAnticipated(VariableDeclaration v) = isDest() && v == getLocation();
 	
 	// determines whether e is available at this node
-	syn lazy boolean CFGNode.isAvailable(ASTNode e) {
+	syn lazy boolean CFGNode.isAvailable(ASTNode e) circular [false] {
 		if(makesAvailable(e))
 			return true;
 		if(makesUnavailable(e))

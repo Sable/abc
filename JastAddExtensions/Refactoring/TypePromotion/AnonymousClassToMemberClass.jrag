@@ -4,10 +4,9 @@ aspect AnonymousClassToMemberClass {
 		if(bd instanceof FieldDeclaration) {
 			ClassInstanceExpr cie = (ClassInstanceExpr)getParent().getParent();
 			lockAllNames();
-			ClassDecl cd = asNamedClass(className);
+			ClassDecl cd = asNamedClass(className, makePublic ? VIS_PUBLIC : VIS_PRIVATE);
 			if(!makeFinal)
 				cd.getModifiers().removeModifier("final");
-			cd.getModifiers().setVisibility(makePublic ? VIS_PUBLIC : VIS_PRIVATE);
 			if(((FieldDeclaration)bd).isStatic())
 				cd.getModifiers().addModifier("static");
 			cie.setTypeDeclOpt(new Opt<TypeDecl>());

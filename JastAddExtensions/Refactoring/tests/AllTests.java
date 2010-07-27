@@ -1,5 +1,6 @@
 package tests;
 
+import tests.RelativesTests.RelativesTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -28,6 +29,7 @@ public class AllTests {
 		suite.addTestSuite(RenamePackageTests.class);
 		suite.addTestSuite(RenameTypeTests.class);
 		suite.addTestSuite(RenameVariableTests.class);
+		suite.addTestSuite(RelativesTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);

@@ -144,54 +144,160 @@ aspect MethodExt {
 		return md;
 	}
 	
-	// relatives(m) = {m' | exists m''. m'' <: m /\ m'' <: m'}
-	// start at rootdef, then walk down the class hierarchy, at every class collect local methods of the
-	// same signature as well as methods inherited from interfaces
+	// relatives(m, m') = common_desc*(m, m')
+	// common_desc(m, m') = exists type T : T <:* m.hostType() /\ T <:* m'.hostType() 
+	//									/\ m,m'' are inherited/overriden to T
+	// does BFS from the method
 	syn lazy Collection<MethodDecl> MethodDecl.relatives() {
+    	
 		if(isPrivate() || isStatic())
 			return Collections.singleton(this);
-		Collection<MethodDecl> res = new HashSet<MethodDecl>();
-		if(hostType().isInterfaceDecl()) {
-			LinkedList<InterfaceDecl> worklist = new LinkedList<InterfaceDecl>();
-			worklist.add((InterfaceDecl)hostType());
-			while(!worklist.isEmpty()) {
-				InterfaceDecl iface = worklist.pop();
-				for(Iterator<MethodDecl> iter=iface.localMethodsSignature(signature()).iterator();iter.hasNext();)
-					res.add(iter.next());
-				for(TypeDecl child : iface.childTypes()) {
-					if(child.isInterfaceDecl()) {
-						worklist.push((InterfaceDecl)child);
-					} else {
-						ClassDecl cd = (ClassDecl)child;
-						for(MethodDecl md : (Collection<MethodDecl>)cd.memberMethods(name()))
-							if(md.signature().equals(this.signature()))
-								((ClassDecl)md.rootdef().hostType()).collectRelatives(this, res);
+    	
+		java.util.Set<ReferenceType> seen = new HashSet<ReferenceType>();
+		java.util.Stack<ReferenceType> to_process = new Stack<ReferenceType>();
+		java.util.Stack<String> sigs = new Stack<String>();
+		Collection<MethodDecl> res = new LinkedHashSet<MethodDecl>();
+		
+		to_process.push((ReferenceType) this.hostType().sourceTypeDecl());
+		sigs.push(signature());
+		
+		while (!to_process.isEmpty()) {
+			ReferenceType rt = to_process.pop();
+			String sig = sigs.pop();
+			if (seen.contains(rt))
+				continue;
+			else
+				seen.add(rt);
+			
+			if (rt instanceof ClassDecl) {
+				ClassDecl cd = (ClassDecl) rt;
+				
+				SimpleSet m = cd.localMethodsSignature(sig);
+				assert(m.size() <= 1);
+				for (Iterator i = m.iterator(); i.hasNext();) {
+					MethodDecl md = (MethodDecl) i.next();
+					if (md instanceof MethodDeclSubstituted)
+						md = ((MethodDeclSubstituted) md).getOriginal();
+					
+					res.add(md);
+				}
+
+				// superclass
+				String sup_sig = superTypeSignature(sig, cd.superclass().sourceTypeDecl(), cd);
+				if (!cd.superclass().sourceTypeDecl().methodsSignature(sup_sig).isEmpty()
+						&& ((MethodDecl) cd.superclass().sourceTypeDecl().methodsSignature(sup_sig).iterator().next())
+							.accessibleFrom(cd)
+						) {
+					to_process.push((ReferenceType) cd.superclass().sourceTypeDecl());
+					sigs.push(sup_sig);
+				}
+				
+				// interfaces
+				for (Iterator i = cd.interfacesSourceDecls().iterator(); i.hasNext();) {
+					InterfaceDecl id = (InterfaceDecl) i.next();
+					String sup_sigg = superTypeSignature(sig, id, cd);
+					if (!id.methodsSignature(sup_sigg).isEmpty()) {
+						to_process.push(id);
+						sigs.push(sup_sigg);
 					}
 				}
+				
+			} else if (rt instanceof InterfaceDecl) {
+				InterfaceDecl id = (InterfaceDecl) rt;
+				
+				SimpleSet m = id.localMethodsSignature(sig);
+				assert(m.size() <= 1);
+				for (Iterator i = m.iterator(); i.hasNext();) {
+					MethodDecl md = (MethodDecl) i.next();
+					if (md instanceof MethodDeclSubstituted)
+						md = ((MethodDeclSubstituted) md).getOriginal();
+					
+					res.add(md);
+				}
+				
+				// super interfaces
+				for (Iterator<InterfaceDecl> i = id.superInterfacesSourceDecls().iterator(); i.hasNext();) {
+					InterfaceDecl idecl = i.next();
+					String sup_sig = superTypeSignature(sig, id, rt);
+					if (!idecl.methodsSignature(sup_sig).isEmpty()) {
+						to_process.push(idecl);
+						sigs.push(sup_sig);
+					}
+				}
+				
+			} else
+				throw new RefactoringException("unexpected state");
+			
+
+			// child types
+			for (Iterator i = rt.childTypes().iterator(); i.hasNext();) {
+				ReferenceType rtp = (ReferenceType) ((ReferenceType) i.next()).sourceTypeDecl();
+				String sub_sig = subTypeSignature(sig, rt, rtp);
+				if (!rtp.methodsSignature(sub_sig).isEmpty()
+						&& ((MethodDecl) rtp.methodsSignature(sub_sig).iterator().next())
+								// these should be OK even if there are more such methods
+							.accessibleFrom(rt)
+						) {
+					to_process.push(rtp);
+					sigs.push(sub_sig);
+				}
 			}
-		} else {
-			((ClassDecl)rootdef().hostType()).collectRelatives(this, res);
+			
 		}
 		return res;
 	}
 	
-	public void ClassDecl.collectRelatives(MethodDecl md, Collection<MethodDecl> res) {
-		boolean isPackageProtected = false;
-		String sig = md.signature();
-		for(Iterator<MethodDecl> iter=localMethodsSignature(sig).iterator(); iter.hasNext();) {
-			md = iter.next();
-			if(md.isPackageProtected())
-				isPackageProtected = true;
-			res.add(md);
+	private static String MethodDecl.subTypeSignature(String sig, TypeDecl sup, TypeDecl sub) {
+		if (sup instanceof GenericTypeDecl) {
+			GenericTypeDecl gtd = (GenericTypeDecl) sup;
+			ParTypeDecl ptd = linkSupSub(gtd, sub);
+			if (ptd == null)
+				throw new RefactoringException("unexpected state");
+			for (Iterator i = ptd.localMethodsSignatureMap().values().iterator(); i.hasNext();) {
+				MethodDecl mds = (MethodDecl) i.next();
+				if (mds.sourceMethodDecl().signature().equals(sig))
+					return mds.signature();
+			}
 		}
-		for(Iterator<MethodDecl>iter=interfacesMethodsSignature(sig).iterator(); iter.hasNext();)
-			res.add(iter.next());
-		for(TypeDecl child : childTypes()) {
-			if(isPackageProtected && !child.packageName().equals(this.packageName()))
-				continue;
-			md = ((ClassDecl)child).superclass().memberMethod(md);
-			((ClassDecl)child).collectRelatives(md, res);
+		return sig;
+	}
+	
+	private static String MethodDecl.superTypeSignature(String sig, TypeDecl sup, TypeDecl sub) {
+		if (sup instanceof GenericTypeDecl) {
+			GenericTypeDecl gtd = (GenericTypeDecl) sup;
+			ParTypeDecl ptd = linkSupSub(gtd, sub);
+			if (ptd == null)
+				throw new RefactoringException("unexpected state");
+			for (Iterator i = ptd.localMethodsSignatureMap().values().iterator(); i.hasNext();) {
+				MethodDecl mds = (MethodDecl) i.next();
+				if (mds.signature().equals(sig))
+					return mds.sourceMethodDecl().signature();
+			}
 		}
+		return sig;
+	}
+	
+	private static ParTypeDecl MethodDecl.linkSupSub(GenericTypeDecl gtd, TypeDecl sub) {
+		for(int i = 0; i < gtd.getNumParTypeDecl(); i++) {
+			ParTypeDecl ptd = gtd.getParTypeDecl(i);
+			if (sub instanceof ClassDecl) {
+				ClassDecl cd = (ClassDecl) sub;
+				if (cd.superclass() == ptd)
+					return ptd;
+				for (Iterator it = cd.interfacesIterator(); it.hasNext();) {
+					if (it.next() == ptd)
+						return ptd;
+				}
+			}
+			if (sub instanceof InterfaceDecl) {
+				InterfaceDecl id = (InterfaceDecl) sub;
+				for (Iterator it = id.superinterfacesIterator(); it.hasNext();) {
+					if (it.next() == ptd)
+						return ptd;
+				}
+			}
+		}
+		return null;
 	}
 
 	// copy of method with locked names, but empty body

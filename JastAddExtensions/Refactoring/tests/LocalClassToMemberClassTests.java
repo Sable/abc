@@ -48,9 +48,9 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void test3() {
 		testSucc(Program.fromClasses("class B { void m(final int x) { class A { int n() { return x; } } A a; } }"),
 				 Program.fromClasses("class B {" +
-				 		             "	class A {" +
+				 		             "	private class A {" +
 				 		             "	  private final int x;" +
-				 		             "    A(int x) {" +
+				 		             "    private A(int x) {" +
 				 		             "      this.x = x;" +
 				 		             "    }" +
 				 		             "    int n() {" +
@@ -66,9 +66,9 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void test4() {
 		testSucc(Program.fromClasses("class B { void m(final int x) { class A { int n() { return x+x; } } A a; } }"),
 				 Program.fromClasses("class B {" +
-				 		             "	class A {" +
+				 		             "	private class A {" +
 				 		             "	  private final int x;" +
-				 		             "    A(int x) {" +
+				 		             "    private A(int x) {" +
 				 		             "      this.x = x;" +
 				 		             "    }" +
 				 		             "    int n() {" +
@@ -84,10 +84,10 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void test5() {
 		testSucc(Program.fromClasses("class B { void m(final int x) { final int y = 23; class A { int n() { return x+y; } } A a; } }"),
 				 Program.fromClasses("class B {" +
-				 		             "	class A {" +
+				 		             "	private class A {" +
 				 		             "	  private final int x;" +
 				 		             "    private final int y;" +
-				 		             "    A(int y, int x) {" +
+				 		             "    private A(int y, int x) {" +
 				 		             "      this.y = y;" +
 				 		             "      this.x = x;" +
 				 		             "    }" +
@@ -106,7 +106,8 @@ public class LocalClassToMemberClassTests extends TestCase {
 		testSucc(Program.fromClasses("class B { int x; void m() { class A { int n() { return x; } } A a; } }"),
 				 Program.fromClasses("class B {" +
 				 					 "  int x;" +
-				 		             "	class A {" +
+				 		             "	private class A {" +
+				 		             "    private A() { super(); }" +
 				 		             "    int n() {" +
 				 		             "      return x;" +
 				 		             "    }" +
@@ -159,8 +160,8 @@ public class LocalClassToMemberClassTests extends TestCase {
 									 "  }" +
 									 "}"),
 				 Program.fromClasses("class B {" +
-				 					 "  final class A extends B {" +
-				 					 "	  A(int i) { super(i); }" +
+				 					 "  final private class A extends B {" +
+				 					 "	  private A(int i) { super(i); }" +
 				 					 "  }" +
 				 					 "  B(int i) { }" +
 				 					 "  void f() {" +

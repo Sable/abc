@@ -75,13 +75,117 @@ public class ExtractTempTests extends TestCase {
     		"System.out.println(y);"));
     }
     
-    public void test7() {
+//    public void test7() {
+//    	testFail(Program.fromBodyDecls(
+//    		"int f;",
+//    		"volatile boolean ready;",
+//    		"void m() {" +
+//    		"  p(f++, ((ready=true)));" +
+//    		"}",
+//    		"private void p(int i, boolean b) { }"));
+//    }
+    
+    public void test8() {
+    	testSucc(Program.fromStmts("int f = 10;", 
+    					"int h = 13;",
+    					"System.out.println(\" \" + f + ((h=12)));"),
+       		 	Program.fromStmts("int f = 10;",
+       		 			"int h = 13;",
+       		 			"int x = h = 12;", 
+       		 			"System.out.println(\" \" + f + x);"));
+    }
+    
+    public void test9() {
+    	testSucc(Program.fromStmts("int f = 10;", 
+				"int h = 13;",
+				"System.out.println(\" \" + f++ + ((h=12)));"),
+		 	Program.fromStmts("int f = 10;",
+		 			"int h = 13;",
+		 			"int x = h = 12;", 
+		 			"System.out.println(\" \" + f++ + x);"));
+    }
+    
+    public void test10() {
+    	// local write OVER same local read
+    	testFail(Program.fromStmts("int f = 10;",
+    					"int g = 12;",
+    					"System.out.println(\" \" + g + ((g = 14)));"));
+    }
+    
+    public void test10b() {
+    	// local read OVER same local write
+    	testFail(Program.fromStmts("int f = 10;",
+    					"int g = 12;",
+    					"System.out.println(\" \" + (g = 14) + ((g)));"));
+    }
+    
+    public void test11() {
+    	// local write OVER possible side effects
+    	testSucc(Program.fromStmts("int g = 12;",
+    					"System.out.println(\" \" + String.valueOf(47) + ((g = 14)));"),
+    				Program.fromStmts("int g = 12;",
+    					"int x = g = 14;",
+    					"System.out.println(\" \" + String.valueOf(47) + x);"));
+    }
+    
+    public void test11a() {
+    	// possible side effects OVER local write
+    	testFail(Program.fromStmts("int g = 12;",
+    					"System.out.println(\" \" + (g = 14) + ((String.valueOf(47))));")
+//    					,
+//    				Program.fromStmts("int g = 12;",
+//    					"String x = String.valueOf(47);",
+//    					"System.out.println(\" \" + (g = 14) + x);")
+    					);
+    }
+    
+    public void test11b() {
+    	// field write OVER possible side effects
+    	testFail(Program.fromBodyDecls("int g = 12;",
+    					"void m() { System.out.println(\" \" + String.valueOf(47) + ((g))); }"));
+    }
+    
+    public void test11bw() {
+    	// field write OVER possible side effects
+    	testFail(Program.fromBodyDecls("int g = 12;",
+    					"void m() { System.out.println(\" \" + String.valueOf(47) + ((g = 14))); }"));
+    }
+    
+    public void test11c() {
+    	// possible side effects OVER field
+    	testFail(Program.fromBodyDecls("int g = 12;",
+    					"void m() { System.out.println(\" \" + g + ((String.valueOf(47)))); }"));
+    }
+    
+    public void test11cw() {
+    	// possible side effects OVER field write
+    	testFail(Program.fromBodyDecls("int g = 12;",
+    					"void m() { System.out.println(\" \" + (g = 14) + ((String.valueOf(47)))); }"));
+    }
+    
+    public void test11d() {
+    	// possible side effects OVER possible side effects
+    	testFail(Program.fromStmts("int g = 12;",
+    					"System.out.println(\" \" + String.valueOf(47) + ((String.valueOf(42))));"));
+    }
+    
+    public void test12() {
+    	// field write OVER possible side effects and field write
     	testFail(Program.fromBodyDecls(
-    		"int f;",
-    		"volatile boolean ready;",
-    		"void m() {" +
-    		"  p(f++, ((ready=true)));" +
-    		"}",
-    		"private void p(int i, boolean b) { }"));
+    					"int g = 7;",
+    					"interface I { int m(); }",
+    					"class A { public int p = 10; }",
+    					"void m() { final A f = new A(); " +
+    						"I i = new I() { public int m() { f.p = 11; return 6; } };" +
+    						"System.out.println(\" \" + i.m() + f.p + ((g = 12))); }"));
+    }
+    
+    public void test13() {
+    	// field write OVER possible side effects
+    	testFail(Program.fromBodyDecls(
+						"int g = 12;",
+    					"class A { public int m() { return 3; } }",
+    					"A a = new A();",
+    					"void m() { System.out.println(\" \" + a.m() + ((g = 12))); }"));
     }
 }

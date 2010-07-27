@@ -53,6 +53,13 @@ aspect Overriding {
 	coll HashSet<MethodDecl> MethodDecl.coll_overriders() [new HashSet<MethodDecl>()] with add root Program;
 	MethodDecl contributes this to MethodDecl.coll_overriders() for each overrides();
 	
+	/* Problem with generics for overriders/overrides:
+	 * 
+	 * overrides returns MethodDeclSubstituted, so overriders from source class from param superclass don't work
+	 * as expected
+	 * 
+	 */
+	
 	public HashSet<MethodDecl> MethodDecl.overriders() {
 		if(this.isFinal() || this.isPrivate() || this.isStatic())
 			return new HashSet<MethodDecl>();

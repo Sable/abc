@@ -14,7 +14,7 @@ aspect AnonymousClassToLocalClass {
 		BodyDecl bd= stmt.enclosingBodyDecl();
 		bd.lockNames(name);
 		// move
-		ClassDecl cd = asNamedClass(name);
+		ClassDecl cd = asNamedClass(name, getVisibility());
 		if(!makeFinal)
 			cd.getModifiers().removeModifier("final");
 		LocalClassDeclStmt lcd = stmt.insertLocalClass(cd);

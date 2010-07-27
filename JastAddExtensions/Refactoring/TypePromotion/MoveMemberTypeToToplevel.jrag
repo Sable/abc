@@ -20,6 +20,8 @@ aspect MoveMemberTypeToToplevel {
 		} else {
 			cu.insertUnusedType(td);
 		}
+		if (td instanceof ClassDecl)
+			((ClassDecl) td).inheritVisibilityToDefaultConstructor();
 		getParent().removeChild(getChildIndex());
 		root.eliminate(WITH_STMT, FRESH_VARIABLES, LOCKED_NAMES);
 	}
