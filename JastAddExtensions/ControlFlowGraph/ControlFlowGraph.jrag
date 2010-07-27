@@ -179,7 +179,7 @@ aspect ControlFlowGraph {
 	}
 
 	// find the modifying assign expression of a node -- modelled after isDest()
-	inh lazy AssignExpr VarAccess.modifyingAssignExpr();
+	inh lazy AssignExpr Access.modifyingAssignExpr();
 	eq Program.getChild().modifyingAssignExpr() = null;
 	eq TypeDecl.getChild().modifyingAssignExpr() = null;
 	eq AssignExpr.getDest().modifyingAssignExpr() = this;
@@ -289,9 +289,20 @@ aspect ControlFlowGraph {
 	eq AbstractDot.getLeft().following() = SmallSet.<CFGNode>singleton(getRight().first());
 	eq AbstractDot.getRight().following() = SmallSet.<CFGNode>singleton(this);
 
-	// ArrayAccess
+	// ArrayAccess (see corresponding equations for VarAccess for explanation)
 	eq ArrayAccess.first() = getExpr().first();
-	eq ArrayAccess.getExpr().following() = SmallSet.<CFGNode>singleton(this);
+	eq ArrayAccess.getExpr().following() {
+		if(!isDest())
+			return SmallSet.<CFGNode>singleton(this);
+		AssignExpr assgn = modifyingAssignExpr();
+		return SmallSet.<CFGNode>singleton(assgn == null ? getExpr().first() : assgn.getSource().first());
+	}
+	eq ArrayAccess.succ() {
+		if(!isDest())
+			return following();
+		AssignExpr assgn = modifyingAssignExpr();
+		return assgn == null ? following() : SmallSet.<CFGNode>singleton(assgn);
+	}
 
 	// ArrayCreationExpr
 	eq ArrayCreationExpr.first() = getTypeAccess().first();
