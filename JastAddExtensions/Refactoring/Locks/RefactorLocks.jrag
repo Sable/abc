@@ -16,7 +16,7 @@ aspect Locks {
 	// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
 	//       we can ignore mostly ignore it
 	public boolean MethodDecl.isInitAnnotationsIfNecessary() {
-		return hostType().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary");		
+		return hostType().sourceTypeDecl().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary");		
 	}
 
 	syn lazy Monitor MonitorAction.getAcquiredMonitor();
@@ -68,7 +68,7 @@ aspect Locks {
 		if(lockField != null || !refactorable())
 			return lockField;
 		lockField = createLockField(new Modifiers("public"), "lock");
-		type.getBodyDeclList().insertChild(lockField, 0);
+		type.sourceTypeDecl().getBodyDeclList().insertChild(lockField, 0);
 		return lockField;
 	}
 	
@@ -76,7 +76,7 @@ aspect Locks {
 		if(conditionField != null || !refactorable())
 			return conditionField;
 		conditionField = createConditionField(new Modifiers("public"), "condition");
-		type.getBodyDeclList().insertChild(conditionField, 1);
+		type.sourceTypeDecl().getBodyDeclList().insertChild(conditionField, 1);
 		return conditionField;
 	}
 	
@@ -84,7 +84,7 @@ aspect Locks {
 		if(lockField != null || !refactorable())
 			return lockField;
 		lockField = createLockField(new Modifiers("public", "static", "final"), "lock");
-		clazz.getBodyDeclList().insertChild(lockField, 0);
+		clazz.sourceTypeDecl().getBodyDeclList().insertChild(lockField, 0);
 		return lockField;
 	}
 	
@@ -92,7 +92,7 @@ aspect Locks {
 		if(conditionField != null || !refactorable())
 			return conditionField;
 		conditionField = createConditionField(new Modifiers("public", "static", "final"), "condition");
-		clazz.getBodyDeclList().insertChild(conditionField, 1);
+		clazz.sourceTypeDecl().getBodyDeclList().insertChild(conditionField, 1);
 		return conditionField;
 	}
 	
@@ -107,7 +107,7 @@ aspect Locks {
 			}
 		} else {
 			lockField = createLockField((Modifiers)field.getModifiers().fullCopy(), field.name()+"_lock");
-			field.hostType().getBodyDeclList().insertChild(lockField, field.getChildIndex()+1);
+			field.hostType().sourceTypeDecl().getBodyDeclList().insertChild(lockField, field.getChildIndex()+1);
 		}
 		return lockField;
 	}
@@ -116,7 +116,7 @@ aspect Locks {
 		if(conditionField != null || !refactorable())
 			return conditionField;
 		conditionField = createConditionField(new Modifiers("public", "final"), field.name()+"_condition");
-		field.hostType().getBodyDeclList().insertChild(conditionField, lockField().getChildIndex()+1);
+		field.hostType().sourceTypeDecl().getBodyDeclList().insertChild(conditionField, lockField().getChildIndex()+1);
 		return conditionField;		
 	}
 	

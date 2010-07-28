@@ -77,10 +77,19 @@ public class CompileHelper {
 				continue;
 			String path_value = n.getAttributes().getNamedItem("path").getNodeValue();
 			if (kind_value.equals("src")) {
-				files.addAll(findAllJavaFiles(new File(
-								classpath.getParentFile().getPath() + File.separator + path_value)));
+				if(!path_value.startsWith(File.separator))
+					path_value = classpath.getParentFile().getPath() + File.separator + path_value; 
+				File f = new File(path_value);
+				if(!f.exists())
+					throw new Error("File "+f+" does not exist.");
+				files.addAll(findAllJavaFiles(f));
 			} else if (kind_value.equals("lib")) {
-				files.add(classpath.getParentFile().getPath() + File.separator + path_value);
+				if(!path_value.startsWith(File.separator))
+					path_value = classpath.getParentFile().getPath() + File.separator + path_value; 
+				File f = new File(path_value);
+				if(!f.exists())
+					throw new Error("File "+f+" does not exist.");
+				files.add(path_value);
 			}
 		}
 		
