@@ -27,10 +27,10 @@ aspect Refresh {
 		ArrayList<TypeDecl> types = new ArrayList<TypeDecl>();
 		for(int i=0;i<getNumArgument();++i)
 			types.add(getArgument(i).type().refresh());
-		return ((GenericTypeDecl)genericDecl().refresh()).lookupParTypeDecl(types);
+		return ((GenericTypeDecl)((TypeDecl)getParent().getParent()).refresh()).lookupParTypeDecl(types);
 	}
-	eq RawClassDecl.refreshType() = ((GenericTypeDecl)genericDecl().refresh()).rawType();
-	eq RawInterfaceDecl.refreshType() = ((GenericTypeDecl)genericDecl().refresh()).rawType();
+	eq RawClassDecl.refreshType() = ((GenericTypeDecl)((TypeDecl)getParent().getParent()).refresh()).rawType();
+	eq RawInterfaceDecl.refreshType() = ((GenericTypeDecl)((TypeDecl)getParent().getParent()).refresh()).rawType();
 	eq WildcardType.refreshType() = programRoot().wildcards().typeWildcard();
 	eq WildcardExtendsType.refreshType() = programRoot().wildcards().lookupWildcardExtends(getAccess().type().refresh());
 	eq WildcardSuperType.refreshType() = programRoot().wildcards().lookupWildcardSuper(getAccess().type().refresh());

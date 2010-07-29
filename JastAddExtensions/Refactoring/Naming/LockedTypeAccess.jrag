@@ -17,8 +17,8 @@ aspect LockedTypeAccess {
 	public boolean TypeAccess.isLocked() { return targetType != null; }
 	public boolean CompilationUnit.isLocked() { return locked; }
 	
-	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType : refined();
-	refine Generics eq TypeAccess.decl() = isLocked() ? targetType : refined();
+	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType.refresh() : refined();
+	refine Generics eq TypeAccess.decl() = isLocked() ? targetType.refresh() : refined();
 	
 	refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
 		if(!isLocked()) {
