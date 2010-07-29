@@ -1,3 +1,4 @@
+
 aspect Uses {
 	// bind all uses of a variable to its declaration
 	public Collection<VarAccess> Variable.allUses() { return uses(); }
@@ -29,14 +30,43 @@ aspect Uses {
 	ParTypeAccess contributes this to TypeDecl.uses() for type();
 	
 	// bind all method uses to any declaration they may resolve to at runtime
-	coll Collection<MethodAccess> MethodDecl.polyUses() [new HashSet<MethodAccess>()]
+	coll Collection<MethodAccess> MethodDecl.polyUses_() [new HashSet<MethodAccess>()]
 	                              with add root Program;
-	MethodAccess contributes this to MethodDecl.polyUses() for each possibleTargets();
+	MethodAccess contributes this to MethodDecl.polyUses_() for each possibleTargets();
+	// optimization 
+	syn Collection<MethodAccess> MethodDecl.polyUses() {
+		if (((hostType() instanceof ClassDecl &&
+				!((ClassDecl)hostType()).hasSuperClassAccess() &&
+				!((ClassDecl)hostType()).interfacesIterator().hasNext())
+			  ||
+				(hostType() instanceof InterfaceDecl &&
+				!((InterfaceDecl)hostType()).superinterfacesIterator().hasNext()))
+			&&
+				programRoot().typeObject().methodsSignature(signature()).isEmpty())
+				return uses();
+		return polyUses_();
+	}
 	
 	// bind all method uses to the declaration they resolve to
-	coll Collection<MethodAccess> MethodDecl.uses() [new HashSet<MethodAccess>()]
-	                              with add root Program;
-	MethodAccess contributes this to MethodDecl.uses() for decl();
+//	coll Collection<MethodAccess> MethodDecl.uses() [new HashSet<MethodAccess>()]
+//	                              with add root Program;
+//	MethodAccess contributes this to MethodDecl.uses() for decl();
+	syn lazy Collection<MethodAccess> MethodDecl.uses() {
+		Collection<MethodAccess> col = new LinkedList<MethodAccess>();
+		programRoot().collect__MethodDecl_Uses(this, name(), col);
+		return col;
+	}
+	protected void ASTNode.collect__MethodDecl_Uses(MethodDecl decl, String name, Collection<MethodAccess> col) {
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).collect__MethodDecl_Uses(decl, name, col);
+	}
+	protected void MethodAccess.collect__MethodDecl_Uses(MethodDecl decl, String name, Collection<MethodAccess> col) {
+		super.collect__MethodDecl_Uses(decl, name, col);
+		if (name.equals(name()) && decl()==decl)
+			col.add(this);
+	}
+	
+	
 	
 	// bind all class instance expressions and constructor accesses to the constructor they resolve to
 	coll Collection<Access> ConstructorDecl.uses() [new HashSet<Access>()]

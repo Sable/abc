@@ -10,7 +10,16 @@ aspect InsertUnusedMethod {
 	public void ClassDecl.insertUnusedMethod(MethodDecl m, int idx) {
 		programRoot().lockMethodNames(m.name());
 		getBodyDeclList().insertChild(m, idx);
-		programRoot().flushCaches();
+//		programRoot().flushCaches();
+		// we flush only these because we don't want to flush all decl-s,
+		// as uses() heavily depends on them.
+		// I think this should be enough, provided the values in caches
+		// were current before call to this method and
+		// (probably) uses is the only thing that we care about that can change.
+		// helped 10s (27s to 18s on one ExtractClass)
+		for(MethodDecl mm : m.relatives())
+			for(MethodAccess ma : mm.uses())
+				ma.flushCaches();
 		if(!canIntroduceMethod(m))
 			throw new RefactoringException("cannot insert method here");
 		if(m.isDynamicallyCallable())
