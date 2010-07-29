@@ -31,3 +31,5 @@ This refactoring wraps a set $P$ of parameters of a method $m$ into a single par
 \end{algorithm}
 
 Note that we need to perform the transformation for all relatives of $m$, \emph{i.e.} for all methods $r$ such that there exists a method $m'$ with $m<:^*m'$ and $r<:^*m'$. We also lock all calls to methods of the same as $m$ in the whole program; this ensures that if overloading resolution changes due to the transformation, the name binding framework will insert appropriate casts to rectify the situation.
+
+Note: the implementation actually: eliminates variable arity parameter for this method and adjusts all calls; does not require $p_i$ to be contiguous and adds new argument at the beginning. (This can be unsound for parameters with side effects!!!)

@@ -1,11 +1,15 @@
 \subsection{\refactoring{Extract Class}}
 This refactoring extracts some fields of a class into a newly created member class. Implemented in \sourcelink{ExtractClass/ExtractClass.jrag}; see Algorithm~\ref{alg:ExtractClass}.
 
+Initializer evaluation is order independent for example
+if we can invert their order without breaking name and dataflow dependencies.
+
+
 \begin{algorithm}
 \caption{$\refactoring{Extract Class}(C : \type{Class}, fs : \listtp{\type{Field}}, n : \type{Name}, fn : \type{Name})$}\label{alg:ExtractClass}
 \begin{algorithmic}[1]
 \REQUIRE Java
-\ENSURE Java $\cup$ locked names, locked dataflow, first-class array init ??
+\ENSURE Java $\cup$ locked names, locked dataflow, first-class array init
 \medskip
 \STATE $v \leftarrow \text{maximum visibility of any of the $fs$}$
 \STATE $W \leftarrow \text{new \code{static} class of name $n$ with visibility $v$}$
@@ -17,20 +21,49 @@ This refactoring extracts some fields of a class into a newly created member cla
   \FORALL{uses $v$ of $f$}
     \STATE qualify $v$ with a locked access to $w$
   \ENDFOR
+  \IF{$f$ has initialiser}
+    \STATE split field declaration and initializer, leaving initializer in initializer block after
+  \ENDIF
   \STATE remove $f$
   \STATE $\refactoring{Insert Field}(W, f)$
-  \IF{$f$ has initialiser}
-    \STATE lock flow dependencies of $f$
-    \STATE $e \leftarrow \text{initialiser of $f$}$
-    \STATE remove initialiser of $f$
-    \STATE add $e$ as argument to initialisation of $w$
-    \STATE $p \leftarrow \text{new parameter of same name and type as $f$}$
-    \FORALL{constructors $cd$ of $W$}
-      \STATE add copy of $p$ as parameter of $W$
-      \STATE add assignment from parameter to $f$ to body of $cd$
-    \ENDFOR
+\ENDFOR
+\STATE $inits \leftarrow \{\text{initializers of }fs\}$
+\FORALL{$init\in inits$}
+  \STATE lock names and dataflow
+  \STATE move $init$ after already moved initializers (possibly $w$)
+  \STATE \code{try} unlocking names and dataflow
+  \IF{unlocking was successful} 
+    \STATE \code{continue}
+  \ELSE 
+    \STATE move $init$ back and \code{break}
   \ENDIF
 \ENDFOR
+\STATE in $W$ create default constructor and constructor for initializing all fields
+\IF{all $inits$ were moved \AND initializer evaluation is order independent}
+  \STATE change the constructor call for $w$ to initialize the fields and remove $inits$
+\ELSE
+  \STATE merge consecutive $inits$ to common initializer blocks
+\ENDIF
+
+%\FORALL{$f\in fs$}
+%  \STATE \assert $f$ is not static
+%  \FORALL{uses $v$ of $f$}
+%    \STATE qualify $v$ with a locked access to $w$
+%  \ENDFOR
+%  \STATE remove $f$
+%  \STATE $\refactoring{Insert Field}(W, f)$
+%  \IF{$f$ has initialiser}
+%    \STATE lock flow dependencies of $f$
+%    \STATE $e \leftarrow \text{initialiser of $f$}$
+%    \STATE remove initialiser of $f$
+%    \STATE add $e$ as argument to initialisation of $w$
+%    \STATE $p \leftarrow \text{new parameter of same name and type as $f$}$
+%    \FORALL{constructors $cd$ of $W$}
+%      \STATE add copy of $p$ as parameter of $W$
+%      \STATE add assignment from parameter to $f$ to body of $cd$
+%    \ENDFOR
+%  \ENDIF
+%\ENDFOR
 \end{algorithmic}
 \end{algorithm}
 
