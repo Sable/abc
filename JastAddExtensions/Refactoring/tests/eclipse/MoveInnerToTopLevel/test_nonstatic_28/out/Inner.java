@@ -11,6 +11,6 @@ private A a;
  * @param a
  */
 public///
-Inner(A a) {
-	this.a = a;
+Inner(A a0) {
+	this.a = a0;
 }}

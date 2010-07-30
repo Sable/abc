@@ -284,4 +284,12 @@ aspect LockedMethodAccess {
 	 *       be an improvement, however, since this set would be an overapproximation, and we still could not
 	 *       guarantee invariance of run-time dispatch. Instead, we have to guard against changes in dispatch
 	 *       behaviour on a refactoring-specific basis. */
+	
+	refine Uses protected void MethodAccess.collect__MethodDecl_Uses(MethodDecl decl, String name, Collection<MethodAccess> col) {
+		super.collect__MethodDecl_Uses(decl, name, col);
+		if ((targetMethod != null && targetMethod.getDecl() == decl) || 
+				(name.equals(name()) && decl() == decl))
+			col.add(this);
+	}
+	
 }

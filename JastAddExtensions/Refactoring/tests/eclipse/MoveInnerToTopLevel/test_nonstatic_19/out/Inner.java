@@ -5,8 +5,8 @@ class Inner{
 	Inner(A a){
 		this(a, 0);
 	}
-	Inner(A a, int i){
+	Inner(A a0, int i){
 		super();
-		this.a = a;
+		this.a = a0;
 	}
 }

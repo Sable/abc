@@ -11,6 +11,12 @@ aspect LockedVariableAccess {
 	
 	refine VariableScopePropagation eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
 	
+	refine Uses protected void VarAccess.collect__FieldDeclaration_Uses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
+		super.collect__FieldDeclaration_Uses(decl, name, col);
+		if (targetVariable == decl || (name.equals(name()) && decl() == decl))
+			col.add(this);
+	}
+	
 	refine PrettyPrint public void VarAccess.toString(StringBuffer s) {
 		if(targetVariable == null) {
 			refined(s);

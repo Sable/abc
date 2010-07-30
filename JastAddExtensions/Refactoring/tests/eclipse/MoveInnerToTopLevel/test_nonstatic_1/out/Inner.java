@@ -9,7 +9,7 @@ class Inner{
 	/**
 	 * @param a
 	 */
-	Inner(A a) {
-		this.a = a;
+	Inner(A a0) {
+		this.a = a0;
 	}
 }

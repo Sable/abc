@@ -10,7 +10,7 @@ private A a;
 /**
  * @param a
  */
-Inner(A a) {
+Inner(A a0) {
 	a.super();
-	this.a = a;
+	this.a = a0;
 }}

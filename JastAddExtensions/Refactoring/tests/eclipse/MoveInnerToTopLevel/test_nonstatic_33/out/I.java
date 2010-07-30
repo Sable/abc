@@ -8,6 +8,6 @@ class I{
 	 * @param a
 	 */
 	I(A a) {
-		this.a = a
+		this.a = a0
 	}
 }
