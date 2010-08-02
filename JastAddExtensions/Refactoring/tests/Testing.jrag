@@ -61,7 +61,7 @@ aspect Testing {
 			bd.toString(s);
 		
 		Collections.sort(constrs, new Comparator<BodyDecl>() {
-			@Override
+			//@Override
 			public int compare(BodyDecl o1, BodyDecl o2) {
 				return ((ConstructorDecl)o1).signature().compareTo(((ConstructorDecl)o2).signature());
 			}
@@ -70,7 +70,7 @@ aspect Testing {
 			bd.toString(s);
 		
 		Collections.sort(methods, new Comparator<BodyDecl>() {
-			@Override
+			//@Override
 			public int compare(BodyDecl o1, BodyDecl o2) {
 				MethodDecl p1 = (MethodDecl)o1;
 				MethodDecl p2 = (MethodDecl)o2;
@@ -81,7 +81,7 @@ aspect Testing {
 			bd.toString(s);
 		
 		Collections.sort(other, new Comparator<BodyDecl>() {
-			@Override
+			//@Override
 			public int compare(BodyDecl o1, BodyDecl o2) {
 				String name1, name2;
 				if (o1 instanceof MemberClassDecl)
@@ -428,6 +428,33 @@ aspect Testing {
 		return super.findStmtPreceding(line);
 	}
 	
+	
+	
+	public boolean List.contains(Object o) {
+    	for (int i = 0; i < getNumChild(); i++)
+    		if (getChild(i).equals(o))
+    			return true;
+    	return false;
+	}
+	
+	public boolean List.containsAll(List l) {
+		for (int i = 0; i < l.getNumChild(); i++)
+			if (!l.contains(l.getChild(i)))
+				return false;
+		return true;
+	}
+	
+	public class AggregatePrinter {
+		static java.util.Set<String> printed = new HashSet<String>();
+		static void print(String s) {
+			if (!printed.contains(s)) {
+				printed.add(s);
+				System.out.print(s);
+			}
+		}
+	}
+	
+	
 	public void List.toString(StringBuffer s) {
     	s.append("[ ");
     	for (int i = 0; i < getNumChild(); i++) {
@@ -435,6 +462,21 @@ aspect Testing {
     		if (i+1<getNumChild()) s.append(", \n");
     	}
     	s.append(" ]");
+	}
+	
+	
+	public void Program.writeBack() throws IOException {
+		for(Iterator i = compilationUnitIterator(); i.hasNext();) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			if (cu.fromSource())
+				cu.writeBack();
+		}
+	}
+	
+	public void CompilationUnit.writeBack() throws IOException {
+		FileWriter fw = new FileWriter(pathName);
+		fw.write(toString());
+		fw.close();
 	}
 	
 }

@@ -80,6 +80,36 @@ aspect AST {
 		super.flushCaches();
 	}
 	
+//	public void ASTNode.flushOtherCaches() {
+//		this.flushOtherCache();
+//		for(int i=0;i<getNumChild();++i) {
+//			ASTNode child = getChild(i);
+//			if(child != null)
+//				child.flushOtherCaches();
+//		}
+//	}
+//	
+//	public void BodyDecl.flushOtherCaches() {
+//		entry.flushOtherCaches();
+//		exit.flushOtherCaches();
+//		super.flushOtherCaches();
+//	}
+//	
+//	public void ASTNode.flushTypeCaches() {
+//		this.flushTypeCache();
+//		for(int i=0;i<getNumChild();++i) {
+//			ASTNode child = getChild(i);
+//			if(child != null)
+//				child.flushTypeCaches();
+//		}
+//	}
+//	
+//	public void BodyDecl.flushTypeCaches() {
+//		entry.flushTypeCaches();
+//		exit.flushTypeCaches();
+//		super.flushTypeCaches();
+//	}
+//	
 	protected void ASTNode.replaceWith(ASTNode newnode) {
 		ASTNode parent = getParent();
 		parent.setChild(newnode, parent.getIndexOfChild(this));
