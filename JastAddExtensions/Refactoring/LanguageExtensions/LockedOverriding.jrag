@@ -26,6 +26,7 @@ aspect LockedOverriding {
 	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockOverriding();
+			n.flushCaches();
 		}
 	};
 	

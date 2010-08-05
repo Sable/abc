@@ -4,6 +4,7 @@ aspect BareParMethodAccess {
 	public static LanguageExtension ASTNode.BARE_PARMETHODACCESS = new LanguageExtension("bare ParMethodAccess") {
 		public void eliminateOn(ASTNode n) {
 			n.eliminateBareParMethodAccess();
+			n.flushCaches();
 		}
 	};
 	

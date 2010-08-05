@@ -4,6 +4,7 @@ aspect ReturnVoid {
 	public static LanguageExtension ASTNode.RETURN_VOID = new LanguageExtension("return void") {
 		public void eliminateOn(ASTNode n) {
 			n.eliminateReturnVoid();
+			n.flushCaches();
 		}
 	};
 	

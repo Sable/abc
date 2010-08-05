@@ -29,6 +29,7 @@ aspect FreshVariables {
 	public static LanguageExtension ASTNode.FRESH_VARIABLES = new LanguageExtension("fresh variables") {
 		public void eliminateOn(ASTNode n) {
 			n.eliminateFreshVariables();
+			n.flushCaches();
 		}
 	};
 	

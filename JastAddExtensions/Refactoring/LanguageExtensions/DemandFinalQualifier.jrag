@@ -43,6 +43,7 @@ aspect DemandFinalQualifier {
 	public static LanguageExtension ASTNode.DEMAND_FINAL_MODIFIER = new LanguageExtension("demand final modifier") {
 		public void eliminateOn(ASTNode n) {
 			n.eliminateDemandFinal();
+			n.flushCaches();
 		}
 	};
 	

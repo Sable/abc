@@ -76,6 +76,7 @@ aspect With {
 	public static LanguageExtension ASTNode.WITH_STMT = new LanguageExtension("with statement") {
 		public void eliminateOn(ASTNode n) {
 			n.eliminateWith();
+			n.flushCaches();
 		}
 	};
 	
@@ -126,7 +127,7 @@ aspect With {
 				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
 				if(this.type().equals(qual_type)) {
 					if(!qual.isThisAccess())
-						replaceWith(qual.fullCopy());
+						replaceWith(qual.fullCopyAndDetach());
 					return;
 				}
 			}
@@ -143,7 +144,7 @@ aspect With {
 						if(((Access)this).qualifiesMethodAccess())
 							throw new RefactoringException("cannot eliminate with on super method calls");
 						replaceWith(new ParExpr(new CastExpr(cd.superclass().createLockedAccess(),
-								                             (Expr)qual.fullCopy())));
+								                             (Expr)qual.fullCopyAndDetach())));
 					}
 					return;
 				}
@@ -173,7 +174,7 @@ aspect With {
 				if(qual.type().memberMethods(name()).contains(decl())) {
 					if(!decl().accessibleFrom(hostType))
 						throw new RefactoringException("method not accessible");
-					qualifyWith((Expr)qual.fullCopy());
+					qualifyWith((Expr)qual.fullCopyAndDetach());
 					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
@@ -192,7 +193,7 @@ aspect With {
 				if(qual_type.subtype(td.enclosingType())) {
 					if(!getAccess().type().accessibleFrom(hostType))
 						throw new RefactoringException("type not accessible");
-					qualifyWith((Expr)qual.fullCopy());
+					qualifyWith((Expr)qual.fullCopyAndDetach());
 					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
@@ -211,7 +212,7 @@ aspect With {
 				if(qual.type().memberFields(name()).contains(decl())) {
 					if(!((FieldDeclaration)decl()).accessibleFrom(hostType))
 						throw new RefactoringException("field not accessible");
-					qualifyWith((Expr)qual.fullCopy());
+					qualifyWith((Expr)qual.fullCopyAndDetach());
 					flushCaches();
 					super.eliminateWith(qualifiers, hostType);
 					return;
