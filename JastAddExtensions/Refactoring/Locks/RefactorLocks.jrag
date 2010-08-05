@@ -14,7 +14,7 @@ aspect Locks {
 	MethodAccess contributes this when waitNotifyMethods().contains(decl()) to Program.monitorActions() for programRoot();
 	
 	// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
-	//       we can ignore mostly ignore it
+	//       we can ignore it
 	public boolean MethodDecl.isInitAnnotationsIfNecessary() {
 		return hostType().sourceTypeDecl().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary");		
 	}
@@ -23,6 +23,11 @@ aspect Locks {
 	eq SynchronizedStmt.getAcquiredMonitor() = getExpr().getMonitor();
 	eq MethodDecl.getAcquiredMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
 	eq MethodAccess.getAcquiredMonitor() = isQualified() ? qualifier().getMonitor() : new Monitor(hostType());
+	
+	syn lazy Expr MonitorAction.getMonitorExpr();
+	eq SynchronizedStmt.getMonitorExpr() = getExpr();
+	eq MethodDecl.getMonitorExpr() = isSynchronized() ? (isStatic() ? new AbstractDot(hostType().createLockedAccess(), new ClassAccess()) : new ThisAccess("this")) : null;
+	eq MethodAccess.getMonitorExpr() = isQualified() ? qualifier() : new ThisAccess("this");
 	
 	public static void ASTNode.log(String msg) {
 		System.out.println(msg);
@@ -174,8 +179,14 @@ aspect Locks {
 				ASTNode.log("ambiguous lock (class monitor)");
 				return false;
 			}
-		for(MonitorAction ma : repl)
+		for(MonitorAction ma : repl) {
+			Expr e = ma.getMonitorExpr();
+			if(!e.isPure()) {
+				ASTNode.log("impure expression not refactorable (class monitor)");
+				return false;
+			}
 			ma.replaceWithReentrantLock(this);
+		}
 		return true;
 	}
 	

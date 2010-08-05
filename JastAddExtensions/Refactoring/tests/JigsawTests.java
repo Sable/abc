@@ -121,7 +121,7 @@ public class JigsawTests extends TestCase {
 			System.out.print("Compiling... ");
 			long start_time = System.currentTimeMillis();
 			
-			jigsaw = CompileHelper.compileProjectInClassPathFile(new File("/home/etome/comlab/internship2010/eclipse-workspace2/Jigsaw/.classpath"));
+			jigsaw = CompileHelper.buildProjectFromClassPathFile(new File("/home/etome/comlab/internship2010/eclipse-workspace2/Jigsaw/.classpath"));
 			
 			long end_time = System.currentTimeMillis();
 			System.out.println("ok." + " (" + (end_time - start_time) + "ms)");

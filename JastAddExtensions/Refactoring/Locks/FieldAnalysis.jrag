@@ -131,14 +131,36 @@ aspect FieldAnalysis {
 		String[] nonLeakyMethods = {
 			"java.lang.Object.wait(long)", "java.lang.Object.wait(long, int)", "java.lang.Object.wait()",
 			"java.lang.Object.notify()", "java.lang.Object.notifyAll()",
+			
 			"java.util.ArrayList.size()", "java.util.ArrayList.get(int)", "java.util.ArrayList.set(int, java.lang.Object)", "java.util.ArrayList.subList(int, int)", "java.util.ArrayList.add(java.lang.Object)",
 			"java.util.AbstractList.subList(int, int)",
+			
 			"java.util.HashSet.size()", "java.util.HashSet.isEmpty()", "java.util.HashSet.contains(java.lang.Object)", "java.util.HashSet.add(java.lang.Object)", 
-			"java.util.HashSet.remove(java.lang.Object)", "java.util.HashSet.containsAll(java.util.Collection)", "java.util.AbstractCollection.addAll(java.util.Collection)",
+			"java.util.HashSet.remove(java.lang.Object)", "java.util.HashSet.containsAll(java.util.Collection)", "java.util.HashSet.iterator()",
+			
+			"java.util.AbstractCollection.addAll(java.util.Collection)",
+			
 			"java.util.HashMap.get(java.lang.Object)", "java.util.HashMap.put(java.lang.Object, java.lang.Object)", "java.util.HashMap.keySet()", "java.util.HashMap.containsKey(java.lang.Object)",
-			"java.util.HashMap.size()", "java.util.HashMap.remove(java.lang.Object)", "java.util.HashMap.entrySet()",
+			"java.util.HashMap.size()", "java.util.HashMap.remove(java.lang.Object)", "java.util.HashMap.entrySet()", "java.util.HashMap.values()",
+			"java.util.HashMap.isEmpty()", "java.util.HashMap.clear()",
+			
+			"java.util.IdentityHashMap.get(java.lang.Object)", "java.util.IdentityHashMap.put(java.lang.Object, java.lang.Object)", "java.util.IdentityHashMap.keySet()", "java.util.IdentityHashMap.containsKey(java.lang.Object)",
+			"java.util.IdentityHashMap.size()", "java.util.IdentityHashMap.remove(java.lang.Object)", "java.util.IdentityHashMap.entrySet()", "java.util.IdentityHashMap.values()",
+			"java.util.IdentityHashMap.isEmpty()", "java.util.IdentityHashMap.clear()",
+			
 			"java.util.WeakHashMap.get(java.lang.Object)", "java.util.WeakHashMap.put(java.lang.Object, java.lang.Object)", "java.util.WeakHashMap.keySet()", "java.util.WeakHashMap.containsKey(java.lang.Object)",
-			"java.util.WeakHashMap.size()", "java.util.WeakHashMap.remove(java.lang.Object)", "java.util.WeakHashMap.entrySet()"
+			"java.util.WeakHashMap.size()", "java.util.WeakHashMap.remove(java.lang.Object)", "java.util.WeakHashMap.entrySet()", "java.util.WeakHashMap.values()",
+			"java.util.WeakHashMap.isEmpty()", "java.util.WeakHashMap.clear()",
+			
+			"java.util.TreeMap.get(java.lang.Object)", "java.util.TreeMap.put(java.lang.Object, java.lang.Object)", "java.util.TreeMap.keySet()", "java.util.TreeMap.containsKey(java.lang.Object)",
+			"java.util.TreeMap.size()", "java.util.TreeMap.remove(java.lang.Object)", "java.util.TreeMap.entrySet()", "java.util.TreeMap.values()",
+			"java.util.TreeMap.isEmpty()", "java.util.TreeMap.clear()",
+			
+			"java.util.Hashtable.get(java.lang.Object)", "java.util.Hashtable.put(java.lang.Object, java.lang.Object)", "java.util.Hashtable.keySet()", "java.util.Hashtable.containsKey(java.lang.Object)",
+			"java.util.Hashtable.size()", "java.util.Hashtable.remove(java.lang.Object)", "java.util.Hashtable.entrySet()", "java.util.Hashtable.values()",
+			"java.util.Hashtable.isEmpty()", "java.util.Hashtable.clear()",
+			
+			"java.text.SimpleDateFormat.parse(java.lang.String, java.text.ParsePosition)", "java.text.SimpleDateFormat.format(java.util.Date, java.lang.StringBuffer, java.text.FieldPosition)"
 		};
 		boolean contains = Arrays.asList(nonLeakyMethods).contains(fullName);
 		if(contains)

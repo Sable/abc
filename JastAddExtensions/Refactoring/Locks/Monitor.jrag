@@ -90,7 +90,20 @@ aspect Monitor {
 		}
 	}
 
-	syn lazy Monitor Expr.getMonitor() = new Monitor(type());
+	syn lazy Monitor Expr.getMonitor() {
+		TypeDecl tp = type();
+		// if expression is of type Class<A> for a type access A, return class monitor for A
+		if(tp.isParameterizedType()) {
+			ParTypeDecl ptd = (ParTypeDecl)tp;
+			if(ptd.genericDecl().fullName().equals("java.lang.Class")) {
+				TypeDecl argtp = ptd.getArgument(0).type();
+				if(argtp.isClassDecl() || argtp.isInterfaceDecl())
+					return new ClassMonitor(argtp);
+			}
+		}
+		// otherwise just use general monitor
+		return new Monitor(tp);
+	}
 	eq ParExpr.getMonitor() = getExpr().getMonitor();
 	eq CastExpr.getMonitor() {
 		Monitor m = getExpr().getMonitor();

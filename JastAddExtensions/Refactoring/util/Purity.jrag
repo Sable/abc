@@ -15,7 +15,7 @@ aspect Purity {
 		return true;
 	}
 	eq ConstructorAccess.isPure() = false;
-	eq MethodAccess.isPure() = false;
+	eq MethodAccess.isPure() = decl().isPure();
 	eq ArrayTypeWithSizeAccess.isPure() = getExpr().isPure();
 	
 	eq ArrayInit.isPure() = false;

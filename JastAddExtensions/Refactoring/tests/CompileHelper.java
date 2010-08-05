@@ -53,7 +53,8 @@ public class CompileHelper {
 		return compileAllJavaFilesUnder(new File(root));
 	}
 	
-	public static Program compileProjectInClassPathFile(File classpath) throws Exception {
+	public static Program buildProjectFromClassPathFile(File classpath) throws Exception {
+		List<String> sources = new LinkedList<String>(), jars = new LinkedList<String>(), srcdirs = new LinkedList<String>();
 		if (!classpath.exists())
 			throw new Exception("classpath file does not exist");
 		Document doc;
@@ -67,7 +68,6 @@ public class CompileHelper {
 		doc.getDocumentElement().normalize();
 		
 		NodeList classpathentry_nodes = doc.getElementsByTagName("classpathentry");
-		List<String> files = new ArrayList<String>();
 		for (int i = 0; classpathentry_nodes.item(i) != null; i++) {
 			Node n = classpathentry_nodes.item(i);
 			if (n.getAttributes().getNamedItem("kind") == null)
@@ -82,18 +82,19 @@ public class CompileHelper {
 				File f = new File(path_value);
 				if(!f.exists())
 					throw new Error("File "+f+" does not exist.");
-				files.addAll(findAllJavaFiles(f));
+				sources.addAll(findAllJavaFiles(f));
+				srcdirs.add(path_value);
 			} else if (kind_value.equals("lib")) {
 				if(!path_value.startsWith(File.separator))
 					path_value = classpath.getParentFile().getPath() + File.separator + path_value; 
 				File f = new File(path_value);
 				if(!f.exists())
 					throw new Error("File "+f+" does not exist.");
-				files.add(path_value);
+				jars.add(path_value);
 			}
 		}
 		
-		return compile(files.toArray(new String[0]));
+		return process(createArglist(sources, jars, srcdirs));
 	}
 	
 	public static Program compileAllJavaFilesUnder(File root) {
@@ -108,7 +109,7 @@ public class CompileHelper {
 				jars.add(n);
 			else
 				sources.add(n);
-		return process(createArglist(sources, jars));
+		return process(createArglist(sources, jars, null));
 	}
 
 	public static Program process(String[] arglist) {
@@ -127,17 +128,28 @@ public class CompileHelper {
 		return null;
 	}
 
-	static String[] createArglist(List<String> sources, List<String> jars) {
+	static String[] createArglist(List<String> sources, List<String> jars, List<String> srcdirs) {
+		LinkedList<String> args = new LinkedList<String>(sources);
 		if(jars.size() == 0)
-			return sources.toArray(new String[]{});
+			return args.toArray(new String[]{});
 		StringBuffer classpath = new StringBuffer();
 		for(String j : jars) {
 			classpath.append(j);
 			classpath.append(':');
 		}
 		classpath.append(".");
-		sources.add(0, "-classpath");
-		sources.add(1, classpath.toString());
-		return sources.toArray(new String[]{});
+		args.add(0, "-classpath");
+		args.add(1, classpath.toString());
+		if(srcdirs != null) {
+			StringBuffer srcpath = new StringBuffer();
+			for(String s : srcdirs) {
+				srcpath.append(s);
+				srcpath.append(':');
+			}
+			srcpath.append(".");
+			args.add(2, "-sourcepath");
+			args.add(3, srcpath.toString());
+		}
+		return args.toArray(new String[]{});
 	}
 }
