@@ -15,6 +15,8 @@ public class RenameMethodTests extends TestCase {
 	
 	public void testSucc(String tp_name, String sig, String new_name, Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
@@ -27,10 +29,14 @@ public class RenameMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String tp_name, String sig, String new_name, Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);
@@ -39,7 +45,10 @@ public class RenameMethodTests extends TestCase {
 		try {
 			md.rename(new_name);
 			assertEquals("<failure>", in.toString());
-		} catch(RefactoringException rfe) {	}
+		} catch(RefactoringException rfe) {
+		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
     public void test1() {

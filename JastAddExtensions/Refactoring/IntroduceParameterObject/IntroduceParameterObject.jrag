@@ -2,7 +2,7 @@ aspect IntroduceParameterObject {
 	public MemberTypeDecl MethodDecl.introduceParameterObject(Collection<String> parms_to_wrap, String className, String parmName) {
 		ArrayList<ParameterDeclaration> parms = new ArrayList<ParameterDeclaration>();
 		java.util.BitSet positions_to_wrap = new java.util.BitSet(this.getNumParameter());
-		List<ParameterDeclaration> old_parms = (List<ParameterDeclaration>)getParameters().fullCopy();
+		List<ParameterDeclaration> old_parms = (List<ParameterDeclaration>)getParameters().fullCopyAndDetach();
 		for(int i=0;i<getNumParameter();++i) {
 			if(parms_to_wrap == null || parms_to_wrap.contains(getParameter(i).name())) {
 				parms.add(getParameter(i));

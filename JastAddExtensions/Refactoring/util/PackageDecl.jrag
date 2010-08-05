@@ -13,9 +13,12 @@ aspect PackageDecl {
 			if(pd.getName().equals(name))
 				return pd;
 		PackageDecl pd = new PackageDecl(name);
-		packageDecls.add(pd);
+		addPackageDecl(pd);
 		pd.setParent(this);
 		return pd;
+	}
+	private void Program.addPackageDecl(PackageDecl pd) {
+		packageDecls.add(pd);
 	}
 	
 	syn lazy Collection<PackageDecl> Program.getSubPackageDecls(String name) {

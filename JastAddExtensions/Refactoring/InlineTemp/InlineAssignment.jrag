@@ -26,7 +26,7 @@ aspect InlineAssignment {
 				for(CFGNode w : u.precedingDefsUpTo(v))
 					if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())
 						throw new RefactoringException("write to live variable may be lost");
-			Expr old_rhs = (Expr)rhs.fullCopy();
+			Expr old_rhs = (Expr)rhs.fullCopyAndDetach();
 			rhs.lockAllNames();
 			rhs.lockThrowEdges();
 			rhs.lockSyncDependencies();

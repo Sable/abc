@@ -51,7 +51,7 @@ aspect CloseOverVariables {
 					if(!cd.isGenericType())
 						setClassDecl(cd = new GenericClassDecl(cd.getModifiers(), cd.getID(), cd.getSuperClassAccessOpt(), cd.getImplementsList(), cd.getBodyDeclList(), new List<TypeVariable>()));
 					GenericClassDecl gcd = (GenericClassDecl)cd;
-					gcd.addTypeParameter(tv2 = (TypeVariable)tv.fullCopy());
+					gcd.addTypeParameter(tv2 = (TypeVariable)tv.fullCopyAndDetach());
 					tvmap.put(tv, tv2);
 					tvs.add(tv);
 				}

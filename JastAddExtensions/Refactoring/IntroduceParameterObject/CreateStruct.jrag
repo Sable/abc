@@ -15,7 +15,7 @@ aspect CreateStruct {
 		for(Variable v : vars) {
 			if(map.containsKey(v.name()))
 				throw new RefactoringException("duplicate field name");
-			Modifiers field_mods = v.getModifiers().fullCopy();
+			Modifiers field_mods = (Modifiers) v.getModifiers().fullCopyAndDetach();
 			field_mods.setVisibility(v.isField() ? ((FieldDeclaration)v).getVisibility() : VIS_PUBLIC);
 			FieldDeclaration fd = new FieldDeclaration(field_mods, v.type().createLockedAccess(), v.name(), new Opt<Expr>());
 			bds.add(fd);
@@ -27,7 +27,7 @@ aspect CreateStruct {
 			}
 		}
 		bds.add(ctor);
-		Modifiers class_mods = (Modifiers)ctor_mods.fullCopy();
+		Modifiers class_mods = (Modifiers)ctor_mods.fullCopyAndDetach();
 		class_mods.addModifier("static");
 		return new Pair(new ClassDecl(class_mods, name, new Opt<Access>(), new List<Access>(), bds), map);
 	}

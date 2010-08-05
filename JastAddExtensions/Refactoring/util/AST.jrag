@@ -1,4 +1,6 @@
 aspect AST {
+	public static boolean ASTNode.DEBUG = false;
+	
 	public static String ASTNode.unCapitalise(String s) {
 		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
@@ -25,6 +27,28 @@ aspect AST {
 	
 	public void ASTNode.removeChild(ASTNode child) {
 		removeChild(getIndexOfChild(child));
+	}
+	
+	private static void ASTNode.addingChildParentCheck(ASTNode newParent, ASTNode node) {
+		if (DEBUG && node != null &&
+				node.is$Final() && 
+				//programRootParentFromField() != null && programRootParentFromField().isRecordingUndo() && 
+				node.parent != null && node.parent != newParent //&& node.parent.getIndexOfChild(node) != -1
+				)
+			throw new RuntimeException("inserting node with parent already set");
+	}
+	refine ASTNode public void ASTNode.setChild(T node, int i) {
+		addingChildParentCheck(this, node);
+		refined(node, i);
+	}
+	refine ASTNode public void ASTNode.insertChild(T node, int i) {
+		addingChildParentCheck(this, node);
+		refined(node, i);
+	}
+	public ASTNode<T> ASTNode.fullCopyAndDetach() {
+		ASTNode<T> node = fullCopy();
+		//node.parent = null;
+		return node;
 	}
 	
 	public Program ASTNode.programRoot() {
@@ -95,21 +119,21 @@ aspect AST {
 //		super.flushOtherCaches();
 //	}
 //	
-//	public void ASTNode.flushTypeCaches() {
-//		this.flushTypeCache();
+//	public void ASTNode.flushPossibleNTAReferencesCaches() {
+//		this.flushPossibleNTAReferencesCache();
 //		for(int i=0;i<getNumChild();++i) {
 //			ASTNode child = getChild(i);
 //			if(child != null)
-//				child.flushTypeCaches();
+//				child.flushPossibleNTAReferencesCaches();
 //		}
 //	}
 //	
-//	public void BodyDecl.flushTypeCaches() {
-//		entry.flushTypeCaches();
-//		exit.flushTypeCaches();
-//		super.flushTypeCaches();
+//	public void BodyDecl.flushPossibleNTAReferencesCaches() {
+//		entry.flushPossibleNTAReferencesCaches();
+//		exit.flushPossibleNTAReferencesCaches();
+//		super.flushPossibleNTAReferencesCache();
 //	}
-//	
+	
 	protected void ASTNode.replaceWith(ASTNode newnode) {
 		ASTNode parent = getParent();
 		parent.setChild(newnode, parent.getIndexOfChild(this));
@@ -155,12 +179,13 @@ aspect AST {
 	 *   A this
 	 */
 	public void AbstractDot.rotateLeft() {
-		Expr l = getLeft();
-		Access r = getRight();
+		Expr l = getLeft(); setLeft(null);
+		Access r = getRight(); setRight(null);
 		while(r instanceof AbstractDot) {
 			AbstractDot rdot = (AbstractDot)r;
-			l = new AbstractDot(l, (Access)rdot.getLeft());
-			r = rdot.getRight();
+			Access rdot_left = (Access) rdot.getLeft(); rdot.setLeft(null);
+			l = new AbstractDot(l, rdot_left);
+			r = rdot.getRight(); rdot.setRight(null);
 		}
 		setLeft(l);
 		setRight(r);

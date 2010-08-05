@@ -19,6 +19,8 @@ public class ExtractMethodTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         assertNotNull(out);
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
@@ -38,9 +40,13 @@ public class ExtractMethodTests extends TestCase {
 		} catch (RefactoringException e) {
 			assertEquals(out.toString(), "<failure>");
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	public void testSucc(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in, Program out) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         assertNotNull(out);
         TypeDecl A = in.findType(className);
         Block b;
@@ -56,6 +62,8 @@ public class ExtractMethodTests extends TestCase {
 		} catch (RefactoringException e) {
 			assertEquals(out.toString(), "<failure>");
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	public void testSucc(String className, String methodName, int begin, int end, String newMethodName, Program in, Program out) {
 		testSucc(className, methodName, begin, end, newMethodName, ASTNode.VIS_PRIVATE, in, out);
@@ -63,6 +71,8 @@ public class ExtractMethodTests extends TestCase {
 	
 	public void testFail(Program in) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
         Stmt from = cu.findStmtFollowingComment("// from\n");
@@ -80,9 +90,13 @@ public class ExtractMethodTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch (RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	public void testFail(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         TypeDecl A = in.findType(className);
         Block b;
         MethodDecl m = A.findMethod(methodName);
@@ -96,6 +110,8 @@ public class ExtractMethodTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch (RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	public void testFail(String className, String methodName, int begin, int end, String newMethodName, Program in) {
 		testFail(className, methodName, begin, end, newMethodName, ASTNode.VIS_PRIVATE, in);

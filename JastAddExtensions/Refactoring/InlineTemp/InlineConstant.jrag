@@ -24,7 +24,7 @@ aspect InlineConstant {
 		Expr init = cnst.getInit();
 		init.lockAllNames();
 		init.lockDataFlow();
-		cnst.setInit((Expr)init.fullCopy());
+		cnst.setInit((Expr)init.fullCopyAndDetach());
 		p.replaceWith(init.precedence() > p.maxPrecedence() ? new ParExpr(init) : init);
 	}
 	

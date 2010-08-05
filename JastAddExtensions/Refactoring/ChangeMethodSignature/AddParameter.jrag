@@ -15,18 +15,18 @@ aspect AddParameter {
 			// TODO: use locked copy
 			Collection<MethodAccess> uses = md.uses();
 			if(createDelegate) {
-				MethodDecl delegate = (MethodDecl)md.fullCopy();
+				MethodDecl delegate = (MethodDecl)md.fullCopyAndDetach();
 				if(!md.hostType().isInterfaceDecl()) {
 					delegate.getModifiers().removeModifiers("abstract", "native");
 					List<Expr> args = new List<Expr>();
 					for(ParameterDeclaration mdpd : md.getParameters())
 						args.add(new VarAccess(mdpd.name()));
-					args.insertChild((Expr)value.fullCopy(), idx);
+					args.insertChild((Expr)value.fullCopyAndDetach(), idx);
 					delegate.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(md.createLockedAccess(args)))));
 				}
 				md.hostType().getBodyDeclList().insertChild(delegate, md.getChildIndex());
 			}
-			md.getParameterList().insertChild(pd.fullCopy(), idx);
+			md.getParameterList().insertChild((ParameterDeclaration) pd.fullCopyAndDetach(), idx);
 			md.flushCaches();
 			if(!md.hostType().canIntroduceMethod(md))
 				throw new RefactoringException("signature conflict");
@@ -34,7 +34,7 @@ aspect AddParameter {
 				if(relatives.contains(ma.hostBodyDecl()))
 					ma.getArgList().insertChild(new VarAccess(pd.name()), idx);
 				else
-					ma.getArgList().insertChild((Expr)value.fullCopy(), idx);
+					ma.getArgList().insertChild((Expr)value.fullCopyAndDetach(), idx);
 			}
 		}
 	}

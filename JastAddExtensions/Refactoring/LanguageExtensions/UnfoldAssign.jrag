@@ -8,11 +8,11 @@ aspect UnfoldAssign {
 		Access unqual = isQualified() ? (Access)getParent() : this;
 		ASTNode p = unqual.getParent();
 		if(p instanceof PreIncExpr || p instanceof PostIncExpr && p.getParent() instanceof ExprStmt) {
-			Access unqual_copy = (Access)unqual.fullCopy();
+			Access unqual_copy = (Access)unqual.fullCopyAndDetach();
 			p.replaceWith(new AssignSimpleExpr(unqual, new AddExpr(unqual_copy, new IntegerLiteral("1"))));
 			uses.add((VarAccess)unqual_copy.lastAccess());
 		} else if(p instanceof PreDecExpr || p instanceof PostDecExpr && p.getParent() instanceof ExprStmt) {
-			Access unqual_copy = (Access)unqual.fullCopy();
+			Access unqual_copy = (Access)unqual.fullCopyAndDetach();
 			p.replaceWith(new AssignSimpleExpr(unqual, new SubExpr(unqual_copy, new IntegerLiteral("1"))));
 			uses.add((VarAccess)unqual_copy.lastAccess());
 		} else if(p instanceof AssignExpr && !(p instanceof AssignSimpleExpr)) {

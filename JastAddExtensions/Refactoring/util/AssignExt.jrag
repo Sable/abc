@@ -5,7 +5,7 @@ aspect AssignExt {
 		Binary b = implicitOperator();
 		if(b == null)
 			return null;
-		Expr dest_copy = (Expr)getDest().fullCopy();
+		Expr dest_copy = (Expr)getDest().fullCopyAndDetach();
 		Expr src = getSource();
 		b.setLeftOperand(dest_copy);
 		b.setRightOperand(src.precedence() > b.precedence()-1 ? new ParExpr(src) : src);

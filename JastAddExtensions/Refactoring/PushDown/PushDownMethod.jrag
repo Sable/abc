@@ -16,7 +16,7 @@ aspect PushDownMethod {
 		for(TypeDecl child : hostType().childTypes()) {
 			if(!child.localMethodsSignature(this.signature()).isEmpty() || this.isStatic() && child.isInnerClass())
 				throw new RefactoringException("cannot insert method here");
-			MethodDecl new_md = md.fullCopy();
+			MethodDecl new_md = (MethodDecl) md.fullCopyAndDetach();
 			md.lockAllNames();
 			md.replaceWith(new_md);
 			child.addBodyDecl(md);

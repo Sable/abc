@@ -16,6 +16,8 @@ public class RenameVariableTests extends TestCase {
 	
 	public void testSucc(String pkg, String tp_name, String old_name, String new_name, Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		TypeDecl tp = in.findType(pkg, tp_name);
 		assertNotNull(tp);
@@ -28,10 +30,14 @@ public class RenameVariableTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		Variable v = in.findVariable(old_name);
 		assertNotNull(v);
@@ -41,10 +47,14 @@ public class RenameVariableTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String pkg, String tp_name, String old_name, String new_name, Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		TypeDecl tp = in.findType(pkg, tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localFields(old_name);
@@ -55,10 +65,14 @@ public class RenameVariableTests extends TestCase {
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		Variable v = in.findVariable(old_name);
 		assertNotNull(v);
 		try {
@@ -66,6 +80,8 @@ public class RenameVariableTests extends TestCase {
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
     public void test1() {

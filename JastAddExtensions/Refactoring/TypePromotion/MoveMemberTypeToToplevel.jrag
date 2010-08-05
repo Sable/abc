@@ -16,7 +16,7 @@ aspect MoveMemberTypeToToplevel {
 		if(ownCU) {
 			String path = cu.pathName();
 			root.insertUnusedType(path.substring(0, path.lastIndexOf(File.separatorChar)+1),
-								  cu.getPackageDecl(), (List<ImportDecl>)cu.getImportDecls().fullCopy(), td);
+								  cu.getPackageDecl(), (List<ImportDecl>)cu.getImportDecls().fullCopyAndDetach(), td);
 		} else {
 			cu.insertUnusedType(td);
 		}

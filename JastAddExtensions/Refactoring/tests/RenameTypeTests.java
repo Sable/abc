@@ -13,6 +13,8 @@ public class RenameTypeTests extends TestCase {
 	
 	public void testSucc(String pkg, String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		TypeDecl tp = in.findType(pkg, old_name);
 		assertNotNull(tp);
@@ -22,11 +24,15 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		assertEquals(out.toString(), in.toString());
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
+//		assertEquals(out.toString(), in.toString());
 	}
 	
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		TypeDecl tp = in.findType(old_name);
 		assertNotNull(tp);
@@ -36,11 +42,15 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		assertEquals(out.toString(), in.toString());
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
+//		assertEquals(out.toString(), in.toString());
 	}
 	
 	public void testFail(String pkg, String old_name, String new_name, Program in) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		TypeDecl tp = in.findType(pkg, old_name);
 		assertNotNull(tp);
 		try {
@@ -48,10 +58,14 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		TypeDecl tp = in.findType(old_name);
 		assertNotNull(tp);
 		try {
@@ -59,6 +73,8 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test0() {

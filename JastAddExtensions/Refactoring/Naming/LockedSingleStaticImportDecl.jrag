@@ -4,27 +4,30 @@ aspect LockedSingleStaticImportDecl {
 	 * we don't try to adjust it to import a member whose name has changed (instead,
 	 * the renaming framework will compute a qualified name) */
 	private boolean SingleStaticImportDecl.locked = false;
+	private void SingleStaticImportDecl.setLocked(boolean value) {
+		locked = value;
+	}
 	
 	public ASTNode SingleStaticImportDecl.lockNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
-			locked = true;
+			setLocked(true);
 		return super.lockNames(endangered);
 	}
 	
 	public ASTNode SingleStaticImportDecl.lockMethodNames(Collection<String> endangered) {
 		if(endangered.contains(name()))
-			locked = true;
+			setLocked(true);
 		return super.lockMethodNames(endangered);
 	}
 	
 	public ASTNode SingleStaticImportDecl.lockAllNames() {
-		locked = true;
+		setLocked(true);
 		return super.lockAllNames();
 	}
 	
 	public void SingleStaticImportDecl.eliminateLockedNames() {
 		if(locked) {
-			locked = false;
+			setLocked(false);
 			if(importedFields(name()).isEmpty() && importedMethods(name()).isEmpty() && importedTypes(name()).isEmpty() &&
 					!getAccess().type().isUnknown()) {
 				getParent().removeChild(getChildIndex());

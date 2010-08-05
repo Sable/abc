@@ -14,6 +14,8 @@ public class ExtractBlockTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         assertNotNull(out);
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
@@ -33,10 +35,15 @@ public class ExtractBlockTests extends TestCase {
 		} catch (RefactoringException e) {
 			assertEquals(out, "<failure>");
 		}
+
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {
         assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
         Stmt from = cu.findStmtFollowingComment("// from\n");
@@ -54,6 +61,8 @@ public class ExtractBlockTests extends TestCase {
 			assertEquals("<failure>", in);
 		} catch (RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void test1() {

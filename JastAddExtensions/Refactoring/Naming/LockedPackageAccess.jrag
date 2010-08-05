@@ -2,6 +2,10 @@ aspect LockedPackageAccess {
 	private PackageDecl PackageAccess.targetPackage = null;
 	private PackageDecl TypeAccess.targetPackage = null;
 	
+	private void PackageAccess.setTargetPackage(PackageDecl pd) {
+		targetPackage = pd;
+	}
+	
 	public ASTNode ASTNode.lockAllPackageAccesses() {
 		for(int i=0;i<getNumChild();++i) {
 			ASTNode child = getChild(i);
@@ -40,7 +44,7 @@ aspect LockedPackageAccess {
 	}
 	
 	public ASTNode PackageAccess.lock(PackageDecl target) { 
-		targetPackage = target;
+		setTargetPackage(target);
 		return this;
 	}
 	
@@ -56,7 +60,7 @@ aspect LockedPackageAccess {
 				setPackage(targetPackage.getName());
 			if(!lookupName(getTopLevelPackage()).isSingleton(lookupPackage(getTopLevelPackage())))
 				throw new RefactoringException("cannot access obscured package");
-			targetPackage = null;
+			setTargetPackage(null);
 		}
 		return this;
 	}

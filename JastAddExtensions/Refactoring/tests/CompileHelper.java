@@ -112,6 +112,7 @@ public class CompileHelper {
 		return process(createArglist(sources, jars, null));
 	}
 
+	public static boolean ignoreCompilationErrors = false;
 	public static Program process(String[] arglist) {
 		Frontend f = new Frontend() { 
 			protected void processWarnings(Collection errors, CompilationUnit unit) { }
@@ -123,7 +124,7 @@ public class CompileHelper {
 				return new parser.JavaParser().parse(is, fileName);
 			}
 		};
-		if(f.process(arglist, br, jp))
+		if(f.process(arglist, br, jp) || ignoreCompilationErrors)
 			return f.getProgram();
 		return null;
 	}

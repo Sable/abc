@@ -2,10 +2,12 @@ aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */
 	private SavedMethodDecl MethodAccess.targetMethod = null;
+	private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd) { return targetMethod = smd; }
+	
 	
 	public MethodAccess.MethodAccess(MethodDecl target, List<Expr> args) {
 		this(target.name(), args);
-		targetMethod = target.save();
+		setTargetMethod(target.save());
 	}
 	
 	public MethodAccess MethodDecl.createLockedAccess(List<Expr> args) {
@@ -97,7 +99,7 @@ aspect LockedMethodAccess {
 	public ASTNode MethodAccess.lock(MethodDecl md) {
 		assert md != null && !md.isUnknown();
 		MethodDecl target = md.isSubstituted() ? md.sourceMethodDecl() : md;
-		targetMethod = target.save();
+		setTargetMethod(target.save());
 		return this;
 	}
 	
@@ -118,7 +120,7 @@ aspect LockedMethodAccess {
 	
 	public Access MethodAccess.unlock(Expr qual) {
 		MethodDecl target = targetMethod.getDecl();
-		targetMethod = null;
+		setTargetMethod(null);
 		flushCache();
 		if(fromSource())
 			setID(target.name());
@@ -139,11 +141,11 @@ aspect LockedMethodAccess {
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessMethod(target);
 					if(acc != null)
-						return acc.eliminate(null, enclosingType(), inStaticContext(), getArgs());
+						return acc.eliminate(null, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
 				}
 				throw new RefactoringException("cannot access method "+target.name());
 			}
-			Access res = acc.eliminate(qual, enclosingType(), inStaticContext(), getArgs());
+			Access res = acc.eliminate(qual, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());
 			return res;
@@ -251,6 +253,7 @@ aspect LockedMethodAccess {
 	/* A special case are element-value pairs in annotations: they also refer to methods, so we have to lock them;
 	 * but they are much easier to adjust. */
 	private MethodDecl ElementValuePair.targetMethod = null;
+	private MethodDecl ElementValuePair.setTargetMethod(MethodDecl smd) { return targetMethod = smd; }
 
 	public ASTNode ElementValuePair.lockMethodNames(Collection<String> endangered) {
 		if(endangered.contains(getName()))
@@ -262,14 +265,14 @@ aspect LockedMethodAccess {
 	public ASTNode ElementValuePair.lock() {
 	    Iterator<MethodDecl> iter = enclosingAnnotationDecl().memberMethods(getName()).iterator();
 	    if(iter.hasNext())
-	    	targetMethod = iter.next();
+	    	setTargetMethod(iter.next());
 	    return this;
 	}
 	
 	public void ElementValuePair.eliminateLockedNames() {
 		if(targetMethod != null) {
 			MethodDecl target = targetMethod;
-			targetMethod = null;
+			setTargetMethod(null);
 			setName(target.name());
 		    Iterator<MethodDecl> iter = enclosingAnnotationDecl().memberMethods(getName()).iterator();
 		    if(!iter.hasNext() || iter.next() != target)

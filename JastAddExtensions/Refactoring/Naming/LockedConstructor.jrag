@@ -1,9 +1,12 @@
 aspect LockedConstructor {
 	private boolean ConstructorDecl.locked = false;
+	private void ConstructorDecl.setLocked(boolean value) {
+		locked = value;
+	}
 	
 	public ASTNode ConstructorDecl.lockNames(Collection<String> endangered) {
 		if(!locked && endangered.contains(name()))
-			locked = true;
+			setLocked(true);
 		return super.lockNames(endangered);
 	}
 	
@@ -20,6 +23,7 @@ aspect LockedConstructor {
 			else
 				throw new RefactoringException("cannot adjust constructor in bytecode");
 		}
+		setLocked(false);
 		return this;
 	}
 

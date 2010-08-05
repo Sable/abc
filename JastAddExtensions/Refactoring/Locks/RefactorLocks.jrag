@@ -111,7 +111,7 @@ aspect Locks {
 				field.setInit(new ClassInstanceExpr(typeReentrantLock().createLockedAccess(), new List()));
 			}
 		} else {
-			lockField = createLockField((Modifiers)field.getModifiers().fullCopy(), field.name()+"_lock");
+			lockField = createLockField((Modifiers)field.getModifiers().fullCopyAndDetach(), field.name()+"_lock");
 			field.hostType().sourceTypeDecl().getBodyDeclList().insertChild(lockField, field.getChildIndex()+1);
 		}
 		return lockField;
@@ -228,7 +228,7 @@ aspect Locks {
 	
 	public void SynchronizedStmt.replaceWithReentrantLock(Monitor m) {
 		Block b = (Block)getParent().getParent();
-		Expr e_copy = (Expr)getExpr().fullCopy();
+		Expr e_copy = (Expr)getExpr().fullCopyAndDetach();
 		b.insertStmt(getChildIndex(), createLockStmt(m));
 		replace(this).with(new TryStmt(getBlock(), new List(), new Opt(new Block(createUnlockStmt(m, e_copy)))));
 	}

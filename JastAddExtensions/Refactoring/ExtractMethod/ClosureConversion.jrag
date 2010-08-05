@@ -30,7 +30,7 @@ aspect ClosureConversion {
 		}
 		hostType().flushCaches();
 		for(Variable v : V) {
-			Modifiers mod = (Modifiers)v.getModifiers().fullCopy();
+			Modifiers mod = (Modifiers)v.getModifiers().fullCopyAndDetach();
 			Access tp = v.type().createLockedAccess();
 			String n = v.name();
 			if(Val.contains(v) || Out.contains(v) || Ref.contains(v)) {
@@ -71,6 +71,6 @@ aspect ClosureConversion {
 		for(TypeVariable tv2 : getTypeParameters())
 			if(tv2.name().equals(tv.name()))
 				return;
-		addTypeParameter((TypeVariable)tv.fullCopy());
+		addTypeParameter((TypeVariable)tv.fullCopyAndDetach());
 	}
 }

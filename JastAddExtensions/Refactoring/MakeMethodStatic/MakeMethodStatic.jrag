@@ -6,7 +6,7 @@ aspect MakeMethodStatic {
 			throw new RefactoringException("cannot make static");
 		programRoot().lockMethodNames(Collections.singleton(name()));
 		MethodDecl newMethod = this;
-		MethodDecl delegator = (MethodDecl)this.fullCopy();
+		MethodDecl delegator = (MethodDecl)this.fullCopyAndDetach();
 		TypeDecl hostType = hostType();
 		// make new method static
 		newMethod.getModifiers().addModifier(new Modifier("static"));
@@ -43,7 +43,7 @@ aspect MakeMethodStatic {
 			newMethod = newMethod.makeGeneric();
 			for(TypeVariable tv : newMethod.usedTypeVars()) {
 				if(!tv.isDescendantTo(newMethod)) {
-					TypeVariable new_tv = (TypeVariable)tv.fullCopy();
+					TypeVariable new_tv = (TypeVariable)tv.fullCopyAndDetach();
 					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
 					for(Access tvu : tv.uses())
 						if(tvu.isDescendantTo(newMethod))

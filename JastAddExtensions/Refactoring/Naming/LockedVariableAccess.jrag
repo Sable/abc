@@ -2,6 +2,9 @@ aspect LockedVariableAccess {
 	/* A locked variable access is a variable access that does not obey the normal variable lookup
 	 * rules, but instead immediately binds to its target. */
 	private Variable VarAccess.targetVariable = null;
+	private void VarAccess.setTargetVariable(Variable var) {
+		targetVariable = var;
+	}
 	
 	public VarAccess Variable.createLockedAccess() {
 		VarAccess va = new VarAccess(this.name());
@@ -41,7 +44,7 @@ aspect LockedVariableAccess {
 	
 	public ASTNode VarAccess.lock(Variable target) {
 		assert target != null;
-		targetVariable = target;
+		setTargetVariable(target);
 		return this;
 	}
 	
@@ -63,7 +66,7 @@ aspect LockedVariableAccess {
 	public Access VarAccess.unlock(Expr qual) {
 		assert (qual==null || (parentDot() != null && qual == parentDot().getLeft()));
 		Variable target = targetVariable.refresh();
-		targetVariable = null;
+		setTargetVariable(null);
 		flushCache();
 		if(fromSource())
 			setID(target.name());

@@ -1,0 +1,39 @@
+aspect Undo {
+	public boolean Program.RECORDING_CHANGES = false;
+	
+	interface ASTModification {
+		void undo();
+	}
+	
+	private Stack<ASTModification> Program.undoStack = new Stack();
+	
+	public void Program.addUndoAction(ASTModification action) {
+		undoStack.push(action);
+	}
+	
+	public boolean Program.isRecordingUndo() {
+		return RECORDING_CHANGES;
+	}
+	
+	public void Program.undoAll() {
+		flushCaches();
+		parentChildCheck();
+		while (!undoStack.isEmpty()) {
+			undoStack.pop().undo();
+		}
+		flushCaches();
+		parentChildCheck();
+		flushCaches();
+	}
+	
+	public Program ASTNode.programRootParentFromField() {
+		ASTNode n = this;
+		while (n.parent != null)
+			n = n.parent;
+		if (n instanceof Program)
+			return (Program) n;
+		return null;
+	}
+	
+	
+}

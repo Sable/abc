@@ -21,7 +21,7 @@ aspect MoveMethod {
 	public MethodDecl MethodDecl.moveTo(Variable b, boolean removeSpuriousParameters) {
 		MethodDecl m = this;
 		checkMoveMethodPreconditions(m, b);
-		MethodDecl m_copy = (MethodDecl)m.fullCopy();
+		MethodDecl m_copy = (MethodDecl)m.fullCopyAndDetach();
 		for(MethodAccess ma : m.uses())
 			ma.lock(m_copy);
 		Variable b_copy = b.isMethodParameter() ? m_copy.getParameter(b.name()) : b;

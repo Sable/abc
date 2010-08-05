@@ -12,6 +12,8 @@ public class ExtractConstantTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		assertNotNull(out);
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
@@ -22,10 +24,14 @@ public class ExtractConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		in.RECORDING_CHANGES = true;
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
 		e.unparenthesise();
@@ -33,6 +39,8 @@ public class ExtractConstantTests extends TestCase {
 			e.doExtractConstant("C");
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

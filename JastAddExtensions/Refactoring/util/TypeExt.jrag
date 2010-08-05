@@ -32,7 +32,7 @@ aspect TypeExt {
 					if(ctor.isChained())
 						continue;
 					Expr init = fd.getInit();
-					Expr init_copy = (Expr)init.fullCopy();
+					Expr init_copy = (Expr)init.fullCopyAndDetach();
 					init.lockAllNames();
 					fd.setInit(init_copy);
 					ctor.getBlock().insertStmt(0, AssignExpr.asStmt(fd.createLockedAccess(), init));

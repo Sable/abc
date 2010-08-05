@@ -29,6 +29,7 @@ aspect ControlFlow {
 	public static LanguageExtension ASTNode.LOCKED_CONTROLFLOW = new LanguageExtension("locked control flow") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockControlFlow();
+			n.flushCaches();
 		}
 	};
 	
@@ -84,6 +85,7 @@ aspect ControlFlow {
 	public static LanguageExtension ASTNode.LOCKED_THROW = new LanguageExtension("locked throw edges") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockThrowEdges();
+			n.flushCaches();
 		}
 	};
 }

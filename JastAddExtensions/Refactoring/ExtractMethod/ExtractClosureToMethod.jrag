@@ -1,12 +1,14 @@
 aspect ExtractClosureToMethod {
 	public MethodDecl AnonymousMethod.extractToMethod(int visibility, String name) {
+		Program root = programRoot();
 		TypeDecl typedecl = hostType();
 		eliminateOutParams();
 		lockAllNames();
 		MethodDecl md = asNamedMethod(visibility, name);
-		setBlock(new Block(new List()));
+		Literal placeHolder = new NullLiteral("null");
+		replaceWith(placeHolder);
 		int index = typedecl.getBodyDeclList().getIndexOfChild(hostBodyDecl());
-		programRoot().lockMethodNames(name);
+		root.lockMethodNames(name);
 		typedecl.getBodyDeclList().insertChild(md, index+1);
 		typedecl.flushCaches();
 		for(Iterator<MethodDecl> iter=typedecl.localMethodsIterator();iter.hasNext();) {
@@ -17,8 +19,8 @@ aspect ExtractClosureToMethod {
 		if(!typedecl.ancestorMethods(md.signature()).isEmpty())
 			throw new RefactoringException("extracted method would override or hide other method");
 		if(!typedecl.descendantMethods(md.signature()).isEmpty())
-			throw new RefactoringException("extracte method would be overridden or hidden by other method");
-		replaceWith(md.createLockedAccess(getArgList()));
+			throw new RefactoringException("extracted method would be overridden or hidden by other method");
+		placeHolder.replaceWith(md.createLockedAccess((List<Expr>) getArgList().fullCopyAndDetach()));
 		return md;
 	}
 

@@ -58,6 +58,7 @@ aspect DataFlow {
 	public static LanguageExtension ASTNode.LOCKED_DATAFLOW = new LanguageExtension("locked data flow") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockDataFlow();
+			n.flushCaches();
 		}
 	};
 	

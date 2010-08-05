@@ -1,13 +1,13 @@
 aspect VariableExt {
 	public VariableDeclaration Variable.asVariableDeclaration(Expr init) {
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Modifiers mods = (Modifiers)getModifiers().fullCopyAndDetach();
 		mods.removeModifiers("public", "protected", "private", "static");
 		return new VariableDeclaration(mods, type().createLockedAccess(), name(), new Opt(init));
 	}
 	
 	public MethodDecl FieldDeclaration.createGetter() {
 		String getter_name = type().isBoolean() ? "is"+capitalisedName() : "get"+capitalisedName();
-		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopyAndDetach();
 		old_mods.removeModifier("final");
 		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
 										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
@@ -17,7 +17,7 @@ aspect VariableExt {
 	
 	public MethodDecl FieldDeclaration.createSetter() {
 		String setter_name = "set"+capitalisedName();
-		Modifiers old_mods = (Modifiers)getModifiers().fullCopy();
+		Modifiers old_mods = (Modifiers)getModifiers().fullCopyAndDetach();
 		old_mods.removeModifier("final");
 		ParameterDeclaration parm = new ParameterDeclaration(type().createLockedAccess(), name());
 		MethodDecl setter = new MethodDecl(old_mods, type().createLockedAccess(), setter_name, 

@@ -7,7 +7,7 @@ aspect PullUpMethod {
 		MethodDecl md = this;
 		lockAllNames();
 		translateTypeVars(host, sup);
-		MethodDecl md_copy = (MethodDecl)fullCopy();
+		MethodDecl md_copy = (MethodDecl)fullCopyAndDetach();
 		md.replaceWith(md_copy);
 		if(onlyAbstract)
 			md.makeAbstract();

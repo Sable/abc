@@ -1,0 +1,29 @@
+aspect UndoRefines {
+	
+	// package names and package decls
+	refine java public void CompilationUnit.setPackageDecl(java.lang.String value) {
+		Program root = (Program) programRootParentFromField();
+		if (root != null && root.isRecordingUndo()) {
+			final String v = tokenjava_lang_String_PackageDecl;
+			root.addUndoAction(new ASTModification() {
+				public void undo() {
+					refined(v);
+				}
+			});
+		}
+		refined(value);
+	}
+	refine PackageDecl private void Program.addPackageDecl(PackageDecl pd) {
+		Program root = (Program) programRootParentFromField();
+		if (root != null && root.isRecordingUndo()) {
+			final PackageDecl fpd = pd;
+			root.addUndoAction(new ASTModification() {
+				public void undo() {
+					packageDecls.remove(fpd);
+				}
+			});
+		}
+		refined(pd);
+	}
+	
+}

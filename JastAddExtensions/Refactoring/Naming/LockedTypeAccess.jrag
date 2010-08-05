@@ -12,7 +12,13 @@ aspect LockedTypeAccess {
 	/* A locked type access is a type access that does not obey the normal type lookup
 	 * rules, but instead immediately binds to its target. */
 	private TypeDecl TypeAccess.targetType = null;
+	private void TypeAccess.setTargetType(TypeDecl td) {
+		targetType = td;
+	}
 	private boolean CompilationUnit.locked = false;
+	private void CompilationUnit.setLocked(boolean value) {
+		locked = value;
+	}
 	
 	public boolean TypeAccess.isLocked() { return targetType != null; }
 	public boolean CompilationUnit.isLocked() { return locked; }
@@ -99,7 +105,7 @@ aspect LockedTypeAccess {
 	
 	public ASTNode CompilationUnit.lockNames(Collection<String> endangered) {
 		if(fromSource() && !locked && endangered.contains(getID()))
-			locked = true;
+			setLocked(true);
 		return super.lockNames(endangered);
 	}
 	
@@ -113,7 +119,7 @@ aspect LockedTypeAccess {
 	public void CompilationUnit.eliminateLockedNames() {
 		if(fromSource()) {
 			if(locked) {
-				locked = false;
+				setLocked(false);
 				// make sure this compilation unit has same name as publicly declared class
 				for(TypeDecl t : getTypeDecls()) {
 					if(t.isPublic()) {
@@ -149,7 +155,7 @@ aspect LockedTypeAccess {
 	public ASTNode AbstractWildcard.lock() { return this; }
 	public ASTNode TypeAccess.lock(TypeDecl decl) {
 		assert decl != null && !decl.isUnknown();
-		targetType = decl;
+		setTargetType(decl);
 		return this;
 	}
 	
@@ -165,7 +171,7 @@ aspect LockedTypeAccess {
 	public Access TypeAccess.unlock(Expr qual) {
 		assert qual == null || qual.isPure();
 		TypeDecl target = targetType.refresh();
-		targetType = null;
+		setTargetType(null);
 		flushCaches();
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
@@ -196,7 +202,7 @@ aspect LockedTypeAccess {
 				return unlockTopLevelTypeAccess(target, qual);
 			throw new Error("cannot fix access to this kind of type");
 		} finally {
-			targetType = null;
+			setTargetType(null);
 		}
 	}
 	

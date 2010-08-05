@@ -14,7 +14,7 @@ aspect PermuteParameters {
 			if(md.isVariableArity() && perm[n-1] != n-1)
 				throw new RefactoringException("variable arity parameter has to come last");
 			if(createDelegate) {
-				MethodDecl delegate = (MethodDecl)md.fullCopy();
+				MethodDecl delegate = (MethodDecl)md.fullCopyAndDetach();
 				delegate.clearOverridingDependencies();
 				if(!md.hostType().isInterfaceDecl()) {
 					delegate.getModifiers().removeModifiers("abstract", "native");

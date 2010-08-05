@@ -12,7 +12,7 @@ aspect ExtractClass {
 		// fds_coll Collection -> List, we need order
 		java.util.List<FieldDeclaration> fds = new ArrayList<FieldDeclaration>(fds_coll);
 		Collections.sort(fds, new Comparator<FieldDeclaration>() {
-			@Override
+			//@Override
 			public int compare(FieldDeclaration o1, FieldDeclaration o2) {
 				return o1.getChildIndex() - o2.getChildIndex();
 			}
@@ -150,9 +150,9 @@ aspect ExtractClass {
 	private void ClassDecl.createInitContructor() {
 		Modifiers m = new Modifiers();
 		m.setVisibility(getVisibility());
-		ConstructorDecl cd = new ConstructorDecl(m.fullCopy(), name(), new List<ParameterDeclaration>(), new List<Access>(), new Opt<Stmt>(), new Block());
+		ConstructorDecl cd = new ConstructorDecl((Modifiers) m.fullCopyAndDetach(), name(), new List<ParameterDeclaration>(), new List<Access>(), new Opt<Stmt>(), new Block());
 		this.addBodyDecl(cd);
-//		ConstructorDecl cd_def = new ConstructorDecl(m.fullCopy(), name(), new List<ParameterDeclaration>(), new List<Access>(), new Opt<Stmt>(), new Block());
+//		ConstructorDecl cd_def = new ConstructorDecl(m.fullCopyAndDetach(), name(), new List<ParameterDeclaration>(), new List<Access>(), new Opt<Stmt>(), new Block());
 //		this.addBodyDecl(cd_def);
 		for (BodyDecl bd : this.getBodyDecls()) {
 			if (bd instanceof FieldDeclaration && !((FieldDeclaration)bd).isStatic()) {
@@ -255,7 +255,7 @@ aspect ExtractClass {
 		// replace all uses to proxy uses
 		for(VarAccess va : toMove.uses()) {
 			VarAccess q = wrapperField.createLockedAccess();
-			va.replaceWith(q.qualifiesAccess(va.fullCopy()));
+			va.replaceWith(q.qualifiesAccess((VarAccess) va.fullCopyAndDetach()));
 		}
 		
 		InstanceInitializer init = null;

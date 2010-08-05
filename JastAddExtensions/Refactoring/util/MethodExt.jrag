@@ -302,7 +302,7 @@ aspect MethodExt {
 
 	// copy of method with locked names, but empty body
 	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Modifiers mods = (Modifiers)getModifiers().fullCopyAndDetach();
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -315,7 +315,7 @@ aspect MethodExt {
 	}
 	
 	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		Modifiers mods = (Modifiers)getModifiers().fullCopyAndDetach();
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -327,7 +327,7 @@ aspect MethodExt {
 		Map<TypeVariable, TypeVariable> tvdict = new HashMap<TypeVariable, TypeVariable>();
 		getTypeParameters().lockAllNames();
 		List<TypeVariable> typeparms = getTypeParameters();
-		setTypeParameterList((List<TypeVariable>)typeparms.fullCopy());
+		setTypeParameterList((List<TypeVariable>)typeparms.fullCopyAndDetach());
 		for(int i=0;i<getNumTypeParameter();++i)
 			tvdict.put(typeparms.getChild(i), getTypeParameter(i));
 		translateTypeVars(tvdict);

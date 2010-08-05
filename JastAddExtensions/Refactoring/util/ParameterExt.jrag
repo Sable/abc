@@ -1,16 +1,16 @@
 aspect ParameterExt {
 	public ParameterDeclaration VariableArityParameterDeclaration.asFixedArityParameter() {
-		Modifiers mod = (Modifiers)this.getModifiers().fullCopy();
+		Modifiers mod = (Modifiers)this.getModifiers().fullCopyAndDetach();
 		Access acc = type().createLockedAccess();
 		return new ParameterDeclaration(mod, acc, getID());
 	}
 	
 	public ParameterDeclaration ParameterDeclaration.lockedCopy() {
-		return new ParameterDeclaration((Modifiers)getModifiers().fullCopy(), type().createLockedAccess(), name());
+		return new ParameterDeclaration((Modifiers)getModifiers().fullCopyAndDetach(), type().createLockedAccess(), name());
 	}
 	
 	public ParameterDeclaration VariableArityParameterDeclaration.lockedCopy() {
-		return new VariableArityParameterDeclaration((Modifiers)getModifiers().fullCopy(), getTypeAccess().type().createLockedAccess(), name());
+		return new VariableArityParameterDeclaration((Modifiers)getModifiers().fullCopyAndDetach(), getTypeAccess().type().createLockedAccess(), name());
 	}
 	
 	interface Parameterisable {
