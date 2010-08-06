@@ -2,8 +2,7 @@ aspect UndoASTNodeChildren {
 	
 
 	refine AST public void ASTNode.setChild(T node, int i) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final ASTNode newChild = node;
 			final int index = i;
 			final boolean children_null = children == null;
@@ -13,8 +12,10 @@ aspect UndoASTNodeChildren {
 			final int newChild_oldChildIndex = node == null ? -1 : node.childIndex;
 			
 			final ASTNode oldChild = index < oldNumChildren ? children[index] : null;
+//			final ASTNode oldChild_parent = oldChild != null ? oldChild.parent : null;
+//			final int oldChild_childIndex = oldChild != null ? oldChild.childIndex : -1;
 			
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -27,6 +28,13 @@ aspect UndoASTNodeChildren {
 					}
 					if (!children_null && index < oldNumChildren)
 						children[index] = oldChild;
+					
+					// restore parent and child index of old node on this place
+					// this shouldn't be necessary, but...
+//					if (oldChild != null) {
+//						oldChild.parent = oldChild_parent;
+//						oldChild.childIndex = oldChild_childIndex;
+//					}
 					if (newChild != null) {
 						newChild.parent = newChild_oldParent;
 						newChild.childIndex = newChild_oldChildIndex;
@@ -39,8 +47,7 @@ aspect UndoASTNodeChildren {
 	}
 	
 	refine ASTNode public void ASTNode.removeChild(int i) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final int index = i;
 			final boolean children_null = children == null;
 			final int children_length = children == null ? -1 : children.length;
@@ -48,7 +55,7 @@ aspect UndoASTNodeChildren {
 			final ASTNode child_parent = child == null ? null : child.parent;
 			final int child_childIndex = child == null ? -1 : child.childIndex;
 			final int oldNumChildren = numChildren;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				@Override
 				public void undo() {
 					if (!children_null) {
@@ -72,8 +79,7 @@ aspect UndoASTNodeChildren {
 	}
 	
 	refine AST public void ASTNode.insertChild(T node, int i) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final ASTNode newChild = node;
 			final int index = i;
 			final boolean children_null = children == null;
@@ -81,7 +87,7 @@ aspect UndoASTNodeChildren {
 			final int oldNumChildren = numChildren;
 			final ASTNode newChild_oldParent = node == null ? null : node.parent;
 			final int newChild_oldChildIndex = node == null ? -1 : node.childIndex;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {

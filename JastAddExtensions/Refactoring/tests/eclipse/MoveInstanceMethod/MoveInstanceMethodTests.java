@@ -64,6 +64,8 @@ public class MoveInstanceMethodTests extends TestCase {
 	private void failHelper1(String[] cuQNames, int selectionCuIndex, int startLine, int startColumn, int endLine, int endColumn, int newReceiverType, String newReceiverName, String newMethodName, String newTargetName, boolean inlineDelegator, boolean removeDelegator) throws Exception {
 		Program in = createProgram(false, true, cuQNames);
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -78,6 +80,8 @@ public class MoveInstanceMethodTests extends TestCase {
 				m.doMoveToField(newReceiverName, inlineDelegator, removeDelegator, true);
 			assertEquals("<failed>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper1(String[] cuQNames, String selectionCuQName, int startLine, int startColumn, int endLine, int endColumn, int newReceiverType, String newReceiverName, boolean inlineDelegator, boolean removeDelegator) throws Exception {
@@ -111,6 +115,8 @@ public class MoveInstanceMethodTests extends TestCase {
 	private void helper1(String[] cuQNames, int selectionCuIndex, int startLine, int startColumn, int endLine, int endColumn, int newTargetType, String newTargetName, String newMethodName, boolean inlineDelegator, boolean removeDelegator) throws Exception {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -129,11 +135,15 @@ public class MoveInstanceMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { 
 			fail(rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String[] cuQNames, int selectionCuIndex, int startLine, int startColumn, int endLine, int endColumn, int newTargetType, String newTargetName, String newMethodName, boolean inlineDelegator, boolean removeDelegator, boolean deprecate) throws Exception {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -152,6 +162,8 @@ public class MoveInstanceMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { 
 			fail(rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String[] cuQNames, String selectionCuQName, int startLine, int startColumn, int endLine, int endColumn, int newReceiverType, String newReceiverName, boolean inlineDelegator, boolean removeDelegator) throws Exception {

@@ -1,15 +1,12 @@
 package tests;
 
-import AST.Program;
-import tests.RelativesTests.RelativesTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class AllTests {
+public class AllTestsWithUndo {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Refactoring tests");
-		Program.DISABLE_UNDO_GLOBALY = true;
+		TestSuite suite = new TestSuite("Refactoring Tests with Undo");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(ExtractBlockTests.class);
 		suite.addTestSuite(ExtractClassTests.class);
@@ -31,7 +28,7 @@ public class AllTests {
 		suite.addTestSuite(RenamePackageTests.class);
 		suite.addTestSuite(RenameTypeTests.class);
 		suite.addTestSuite(RenameVariableTests.class);
-		suite.addTestSuite(RelativesTests.class);
+//		suite.addTestSuite(RelativesTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
@@ -50,7 +47,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);
-		suite.addTestSuite(tests.eclipse.IntroduceFactory.IntroduceFactoryTests.class);
+//		suite.addTestSuite(tests.eclipse.IntroduceFactory.IntroduceFactoryTests.class);
 		suite.addTestSuite(tests.eclipse.RenameMethodInInterface.RenameMethodInInterfaceTests.class);
 		suite.addTestSuite(tests.eclipse.RenameNonPrivateField.RenameNonPrivateFieldTests.class);
 		suite.addTestSuite(tests.eclipse.RenameParameters.RenameParametersTests.class);

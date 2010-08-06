@@ -27,6 +27,8 @@ public class RenameMethodInInterfaceTests extends TestCase {
 	private void helper1_0(String methodName, String newMethodName, String[] signatures) {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameMethodInInterface/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl I = in.findSimpleType("I");
 		assertNotNull(I);
@@ -38,6 +40,8 @@ public class RenameMethodInInterfaceTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1() throws Exception{
@@ -48,6 +52,8 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameMethodInInterface/"+getName()+"/in");
 		Program out = shouldPass ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameMethodInInterface/"+getName()+"/out") : null;
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(!shouldPass || out!=null);
 		
 		TypeDecl I = in.findSimpleType("I");
@@ -62,6 +68,8 @@ public class RenameMethodInInterfaceTests extends TestCase {
 			if(shouldPass)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(boolean updateReferences) throws Exception{

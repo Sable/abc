@@ -24,6 +24,8 @@ public class RenameTypeTests extends TestCase {
 	private void helper1_0(String className, String newName) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameType/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findSimpleType(className);
 		assertNotNull(td);
@@ -31,6 +33,8 @@ public class RenameTypeTests extends TestCase {
 			td.rename(newName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1() throws Exception{
@@ -41,6 +45,8 @@ public class RenameTypeTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameType/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameType/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = oldName.contains(".") ? in.findType(oldName) : in.findSimpleType(oldName);
@@ -51,6 +57,8 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(String oldName, String newName) throws Exception{

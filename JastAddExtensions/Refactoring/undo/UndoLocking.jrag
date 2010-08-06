@@ -3,10 +3,9 @@ aspect UndoLocking {
 	// Locked Method Access
 	
 	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final SavedMethodDecl saved = targetMethod;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -18,10 +17,9 @@ aspect UndoLocking {
 	}
 
 	refine LockedMethodAccess private MethodDecl ElementValuePair.setTargetMethod(MethodDecl md) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final MethodDecl saved = targetMethod;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -36,10 +34,9 @@ aspect UndoLocking {
 	// Locked Package Access
 	
 	refine LockedPackageAccess private void PackageAccess.setTargetPackage(PackageDecl pd) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final PackageDecl saved = targetPackage;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -53,10 +50,9 @@ aspect UndoLocking {
 	
 	// LockedVariableAccess
 	refine LockedVariableAccess private void VarAccess.setTargetVariable(Variable var) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final Variable saved = targetVariable;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -70,10 +66,9 @@ aspect UndoLocking {
 	
 	// LockedTypeAccess
 	refine LockedTypeAccess private void CompilationUnit.setLocked(boolean value) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final boolean saved = locked;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -84,10 +79,9 @@ aspect UndoLocking {
 		refined(value);
 	}
 	refine LockedTypeAccess private void TypeAccess.setTargetType(TypeDecl td) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final TypeDecl saved = targetType;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -100,10 +94,9 @@ aspect UndoLocking {
 	
 	// LockedConstructor
 	refine LockedConstructor private void ConstructorDecl.setLocked(boolean value) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final boolean saved = locked;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
@@ -116,10 +109,9 @@ aspect UndoLocking {
 	
 	// LockedSingleStaticImportDecl
 	refine LockedSingleStaticImportDecl private void SingleStaticImportDecl.setLocked(boolean value) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final boolean saved = locked;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {

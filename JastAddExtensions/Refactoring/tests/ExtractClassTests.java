@@ -18,7 +18,7 @@ public class ExtractClassTests extends TestCase {
 	public void testSucc(String newClassName, String newFieldName, String[] fns, Program in, Program out, boolean encapsulate) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl td = in.findType("p", "A");
 		assertTrue(td instanceof ClassDecl);
@@ -41,7 +41,7 @@ public class ExtractClassTests extends TestCase {
 	public void testFail(String newClassName, String newFieldName, String[] fns, Program in, boolean encapsulate) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findType("p", "A");
 		assertTrue(td instanceof ClassDecl);
 		ArrayList<FieldDeclaration> fds = new ArrayList<FieldDeclaration>();

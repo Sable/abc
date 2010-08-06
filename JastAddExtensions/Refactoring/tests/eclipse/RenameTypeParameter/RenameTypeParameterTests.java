@@ -28,6 +28,8 @@ public class RenameTypeParameterTests extends TestCase {
 	private void helper1(String parameterName, String newParameterName, String typeName, boolean references) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertTrue(td instanceof GenericTypeDecl);
@@ -43,11 +45,15 @@ public class RenameTypeParameterTests extends TestCase {
 			tv.rename(newParameterName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String parameterName, String newParameterName, String typeName, String methodName, String[] methodSignature, boolean references) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
@@ -65,12 +71,16 @@ public class RenameTypeParameterTests extends TestCase {
 			tv.rename(newParameterName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(String parameterName, String newParameterName, String typeName, boolean references) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -89,12 +99,16 @@ public class RenameTypeParameterTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(String parameterName, String newParameterName, String typeName, String methodName, String[] methodSignature, boolean references) throws Exception {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -115,6 +129,8 @@ public class RenameTypeParameterTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void test0() throws Exception {

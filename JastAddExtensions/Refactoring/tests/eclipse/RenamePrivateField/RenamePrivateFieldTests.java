@@ -25,6 +25,8 @@ public class RenamePrivateFieldTests extends TestCase {
 	private void helper1_0(String fieldName, String newFieldName, String typeName, boolean renameGetter, boolean renameSetter) throws Exception{
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateField/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);
 		FieldDeclaration fd = td.findField(fieldName);
@@ -33,6 +35,8 @@ public class RenamePrivateFieldTests extends TestCase {
 			fd.rename(newFieldName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1_0(String fieldName, String newFieldName) throws Exception{
@@ -49,6 +53,8 @@ public class RenamePrivateFieldTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateField/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateField/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
@@ -60,6 +66,8 @@ public class RenamePrivateFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(boolean updateReferences) throws Exception{

@@ -42,6 +42,8 @@ public class MoveInnerToTopLevelTests extends TestCase {
 	public void validatePassingTest(String outer, String inner, String instanceName, boolean makeFinal) {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/out");
 		assertNotNull(out);
 		
@@ -51,17 +53,23 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void validateFailingTest(String outer, String inner, Object o3, Object o2, String instanceName) {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		try {
 			findMemberType(in, outer, inner).moveToToplevel(true, instanceName, false);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void validatePassingTest(String outer, String inner, Object o1, Object o2, String instanceName, boolean b1, boolean b2, boolean b3, boolean b4) {

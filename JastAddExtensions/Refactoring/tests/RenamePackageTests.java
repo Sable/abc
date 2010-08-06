@@ -13,7 +13,7 @@ public class RenamePackageTests extends TestCase {
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		try {
 			in.getPackageDecl(old_name).rename(new_name);
@@ -28,7 +28,7 @@ public class RenamePackageTests extends TestCase {
 	public void testFail(String old_name, String new_name, Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		try {
 			in.getPackageDecl(old_name).rename(new_name);
 			assertEquals("<failure>", in.toString());

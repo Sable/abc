@@ -13,7 +13,7 @@ public class ExtractConstantTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
@@ -31,7 +31,7 @@ public class ExtractConstantTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
 		e.unparenthesise();

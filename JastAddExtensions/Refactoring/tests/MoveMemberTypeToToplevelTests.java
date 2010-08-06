@@ -25,6 +25,8 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		try {
 			findMemberType(in).moveToToplevel();
@@ -32,15 +34,21 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 		} catch(RefactoringException e) {
 			assertEquals(out.toString(), e.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		try {
 			findMemberType(in).moveToToplevel();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException e) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test1() {

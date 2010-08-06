@@ -44,6 +44,8 @@ public class ExtractConstantTests extends TestCase {
 	private void helper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean allowLoadtime, boolean qualifyReferencesWithConstantName, String constantName, String guessedConstantName) throws Exception{
 		//assertFalse(replaceAll);
 		Program in = getProgram(true, true);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		Program out = getProgram(true, false);
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
@@ -55,11 +57,15 @@ public class ExtractConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean allowLoadtime, String constantName, int errorCode, boolean checkCode) throws Exception{
 		//assertFalse(replaceAll);
 		Program in = getProgram(false, true);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(e);
@@ -69,6 +75,8 @@ public class ExtractConstantTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean allowLoadtime, String constantName, String guessedConstantName) throws Exception{

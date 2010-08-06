@@ -40,6 +40,8 @@ public class RenameParametersTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl A = in.findSimpleType("A");
@@ -54,11 +56,15 @@ public class RenameParametersTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(String[] newNames, String[] signature) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl A = in.findSimpleType("A");
 		assertNotNull(A);
@@ -71,6 +77,8 @@ public class RenameParametersTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void test0() throws Exception{

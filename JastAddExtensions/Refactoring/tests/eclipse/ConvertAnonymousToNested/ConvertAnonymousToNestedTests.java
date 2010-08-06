@@ -63,6 +63,8 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
@@ -72,12 +74,16 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(int startLine, int startColumn, int endLine, int endColumn, boolean makeFinal, boolean makeStatic, String className, boolean makePublic) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
@@ -87,11 +93,15 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean makeFinal, String className, boolean makePublic) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
@@ -99,11 +109,15 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void failActivationHelper(int startLine, int startColumn, int endLine, int endColumn) throws Exception {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
@@ -111,6 +125,8 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

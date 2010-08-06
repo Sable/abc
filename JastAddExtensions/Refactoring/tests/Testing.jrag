@@ -564,13 +564,23 @@ aspect Testing {
 		fw.close();
 	}
 	
+	public void ASTNode.parentChildCheckNoTransform() {
+		for (int i = 0; i < getNumChildNoTransform(); i++) {
+			if (children[i] == null) {
+				System.out.println("Warning: child is null during parentChildCheck");
+				continue;
+			}
+			if (this != getChildNoTransform(i).parent)
+				throw new RuntimeException("inconsistent tree! (child's parent == null : " + (getChildNoTransform(i).parent == null) + ")");
+			getChildNoTransform(i).parentChildCheck();
+		}
+	}
 	public void ASTNode.parentChildCheck() {
-//		for (int i = 0; i < getNumChildNoTransform(); i++) {
-//			if (this != getChildNoTransform(i).getParent())
-//				throw new RefactoringException("inconsistent tree (no transform");
-//			getChildNoTransform(i).parentChildCheck();
-//		}
 		for (int i = 0; i < getNumChild(); i++) {
+			if (children[i] == null) {
+				System.out.println("Warning: child is null during parentChildCheck");
+				continue;
+			}
 			if (this != getChild(i).getParent())
 				throw new RuntimeException("inconsistent tree! (child's parent == null : " + (getChild(i).getParent() == null) + ")");
 			getChild(i).parentChildCheck();

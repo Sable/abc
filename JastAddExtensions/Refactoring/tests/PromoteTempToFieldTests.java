@@ -12,6 +12,8 @@ public class PromoteTempToFieldTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		VariableDeclaration e = in.findLocalVariable("x");
 		assertNotNull(e);
@@ -21,16 +23,22 @@ public class PromoteTempToFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		VariableDeclaration e = in.findLocalVariable("x");
 		assertNotNull(e);
 		try {
 			e.doPromoteToField();
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

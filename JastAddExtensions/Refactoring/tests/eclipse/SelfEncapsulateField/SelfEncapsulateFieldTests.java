@@ -39,6 +39,8 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getResourceLocation() + "/" + folder + "_in/" + adaptName(id));
 		Program out = CompileHelper.compile(getResourceLocation() + "/" + folder + "_out/" + adaptName(id));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		try {
 			FieldDeclaration fd = in.findField(fieldName);
@@ -48,11 +50,15 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	protected void performInvalidTest(String id, String folder, String fieldName) throws Exception {
 		Program in = CompileHelper.compile(getResourceLocation() + "/" + folder + "/" + adaptName(id));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		try {
 			FieldDeclaration fd = in.findField(fieldName);
 			assertNotNull(fd);
@@ -60,6 +66,8 @@ public class SelfEncapsulateFieldTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void objectTest(String fieldName) throws Exception {
@@ -216,6 +224,8 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getResourceLocation() + "/static_in/" + name + ".java", getResourceLocation() + "/static_ref_in/" + referenceName + ".java");
 		Program out = CompileHelper.compile(getResourceLocation() + "/static_out/" + name + ".java", getResourceLocation() + "/static_ref_out/" + referenceName + ".java");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		try {
 			FieldDeclaration fd = in.findField("x");
@@ -225,6 +235,8 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testStaticImportRead() throws Exception {

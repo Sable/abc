@@ -20,7 +20,7 @@ public class ExtractMethodTests extends TestCase {
 	public void testSucc(Program in, Program out) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
         assertNotNull(out);
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
@@ -46,7 +46,7 @@ public class ExtractMethodTests extends TestCase {
 	public void testSucc(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in, Program out) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
         assertNotNull(out);
         TypeDecl A = in.findType(className);
         Block b;
@@ -72,7 +72,7 @@ public class ExtractMethodTests extends TestCase {
 	public void testFail(Program in) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
         Stmt from = cu.findStmtFollowingComment("// from\n");
@@ -96,7 +96,7 @@ public class ExtractMethodTests extends TestCase {
 	public void testFail(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
         TypeDecl A = in.findType(className);
         Block b;
         MethodDecl m = A.findMethod(methodName);

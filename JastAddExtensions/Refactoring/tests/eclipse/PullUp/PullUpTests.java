@@ -45,6 +45,8 @@ public class PullUpTests extends TestCase {
 		else
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);
@@ -98,6 +100,8 @@ public class PullUpTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void declareAbstractFailHelper(String[] selectedMethodNames, String[][] selectedMethodSignatures,
@@ -166,6 +170,8 @@ public class PullUpTests extends TestCase {
 		else
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);
@@ -201,6 +207,8 @@ public class PullUpTests extends TestCase {
 					continue m_outer;
 			fail(emn+" not added");
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	//------------------ tests -------------

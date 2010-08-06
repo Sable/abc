@@ -14,6 +14,8 @@ public class InlineTempTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
@@ -23,16 +25,22 @@ public class InlineTempTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), "<failure>");
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
 		try {
 			((VariableDeclaration)v).doInline();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

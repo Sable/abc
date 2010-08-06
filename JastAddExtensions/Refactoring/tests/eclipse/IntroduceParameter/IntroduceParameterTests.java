@@ -73,6 +73,8 @@ public class IntroduceParameterTests extends TestCase {
 		Program in = CompileHelper.compile(in_name);
 		Program out = succeed ? CompileHelper.compile("tests/eclipse/IntroduceParameter/simple/out/" + getName().substring(11) + ".java") : null;
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(!succeed || out != null);
 		IntroduceParameterData data = getData(in_name);
 		Expr e = ExtractTempTests.findExpr(in, data.startLine, data.startColumn, data.endLine, data.endColumn);
@@ -86,6 +88,8 @@ public class IntroduceParameterTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 // ---

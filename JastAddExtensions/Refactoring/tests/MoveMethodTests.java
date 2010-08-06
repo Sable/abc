@@ -14,6 +14,8 @@ public class MoveMethodTests extends TestCase {
 	
 	public void testSucc(String tp_name, String sig, Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
@@ -26,10 +28,14 @@ public class MoveMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(String tp_name, String sig, Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);
@@ -39,6 +45,8 @@ public class MoveMethodTests extends TestCase {
 			md.moveToFirstParameter();
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test0() {

@@ -51,6 +51,8 @@ public class IntroduceIndirectionTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceIndirection/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceIndirection/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		ASTNode sel = findNode(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(sel);
@@ -65,6 +67,8 @@ public class IntroduceIndirectionTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helperWarn(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) {
@@ -74,6 +78,8 @@ public class IntroduceIndirectionTests extends TestCase {
 	private void helperFail(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) { 
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceIndirection/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		ASTNode sel = findNode(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(sel);
 		int index = targetTypeName.indexOf('.');
@@ -86,6 +92,8 @@ public class IntroduceIndirectionTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	private void helperErr(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) { 

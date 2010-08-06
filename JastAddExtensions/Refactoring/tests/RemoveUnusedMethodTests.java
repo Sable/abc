@@ -14,6 +14,8 @@ public class RemoveUnusedMethodTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -25,10 +27,14 @@ public class RemoveUnusedMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod("m");
@@ -37,6 +43,8 @@ public class RemoveUnusedMethodTests extends TestCase {
 			md.removeUnused(false);
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

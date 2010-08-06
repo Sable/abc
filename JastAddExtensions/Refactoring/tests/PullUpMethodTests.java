@@ -14,6 +14,8 @@ public class PullUpMethodTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -25,10 +27,14 @@ public class PullUpMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod("m");
@@ -37,6 +43,8 @@ public class PullUpMethodTests extends TestCase {
 			md.doPullUp();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

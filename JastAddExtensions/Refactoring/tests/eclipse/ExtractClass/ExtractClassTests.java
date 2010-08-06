@@ -45,6 +45,8 @@ public class ExtractClassTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/ExtractClass/"+getName()+"/in");
 		Program out = expectError ? null : CompileHelper.compileAllJavaFilesUnder("tests/eclipse/ExtractClass/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(expectError || out != null);
 		TypeDecl td = in.findSimpleType(className);
 		assertTrue(td instanceof ClassDecl);
@@ -63,6 +65,8 @@ public class ExtractClassTests extends TestCase {
 			if(!expectError)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testComplexExtract() throws Exception {

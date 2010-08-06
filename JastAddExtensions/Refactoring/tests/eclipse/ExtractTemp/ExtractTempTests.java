@@ -131,6 +131,8 @@ public class ExtractTempTests extends TestCase {
 
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		assertNotNull("invalid program", in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull("expression not found", e);
@@ -145,6 +147,9 @@ public class ExtractTempTests extends TestCase {
 		assertNotNull(out);
 
 		assertEquals(out.toString(), in.toString());
+		
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void warningHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean makeFinal, String tempName, String guessedTempName) {
@@ -154,6 +159,8 @@ public class ExtractTempTests extends TestCase {
 	private void failHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean makeFinal, String tempName) {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull("invalid program", in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		if(e == null)
@@ -163,6 +170,8 @@ public class ExtractTempTests extends TestCase {
 			e.doExtract(tempName, makeFinal);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

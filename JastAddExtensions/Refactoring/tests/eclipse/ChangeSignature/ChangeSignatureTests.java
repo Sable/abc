@@ -66,6 +66,8 @@ public class ChangeSignatureTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -85,11 +87,15 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helperPermuteFail(int[] perm) {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
@@ -101,6 +107,8 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	/*
@@ -110,6 +118,8 @@ public class ChangeSignatureTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -123,6 +133,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String[] newOrder, String[] signature) throws Exception{
@@ -141,6 +153,8 @@ public class ChangeSignatureTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -171,6 +185,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	private void helperDoAll(String typeName, String methodName, String[] newNames, String[] newTypes, Literal[] newDefaultValues,
@@ -178,6 +194,8 @@ public class ChangeSignatureTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType(typeName);
@@ -200,6 +218,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	//------- tests

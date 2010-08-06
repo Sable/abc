@@ -78,6 +78,8 @@ public class PromoteTempToFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
@@ -92,6 +94,8 @@ public class PromoteTempToFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper(int startLine, int startColumn, int endLine, int endColumn,
@@ -102,6 +106,8 @@ public class PromoteTempToFieldTests extends TestCase {
 						  int accessModifier) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
 		if(decl == null)
@@ -115,6 +121,8 @@ public class PromoteTempToFieldTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	///---------------------- tests -------------------------//

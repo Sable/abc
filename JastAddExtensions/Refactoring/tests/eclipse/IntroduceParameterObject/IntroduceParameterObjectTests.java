@@ -46,6 +46,8 @@ public class IntroduceParameterObjectTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceParameterObject/"+getName()+"/in");
 		Program out = expectError ? null : CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceParameterObject/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(expectError || out != null);
 		try {
 			MethodDecl foo = in.findMethod("foo");
@@ -55,6 +57,8 @@ public class IntroduceParameterObjectTests extends TestCase {
 			if(!expectError)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testBodyUpdate() throws Exception {

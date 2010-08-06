@@ -25,6 +25,8 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 	private void helper1_0(String methodName, String newMethodName, String[] signatures) throws Exception{
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameVirtualMethodInClass/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod(methodName);
@@ -33,6 +35,8 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 			md.rename(newMethodName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1() throws Exception{
@@ -43,6 +47,8 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameVirtualMethodInClass/"+getName()+"/in");
 		Program out = shouldPass ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameVirtualMethodInClass/"+getName()+"/out") : null;
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(!shouldPass || out!=null);
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);
@@ -55,6 +61,8 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 			if(shouldPass)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2_0(String methodName, String newMethodName, String[] signatures, boolean shouldPass, String typeName) throws Exception{

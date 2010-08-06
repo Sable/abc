@@ -34,6 +34,8 @@ public class MoveMembersTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/in");
 		Program out = succeed ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/out") : null;
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertTrue(!succeed || out != null);
 		TypeDecl A = in.findSimpleType(AName);
 		TypeDecl B = in.findSimpleType(BName);
@@ -66,6 +68,8 @@ public class MoveMembersTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void fieldMethodTypeHelper_passing(String[] fieldNames, String[] methodNames, String[][] signatures, String[] typeNames, boolean addDelegates) throws Exception{

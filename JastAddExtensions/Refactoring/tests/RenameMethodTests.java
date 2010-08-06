@@ -16,7 +16,7 @@ public class RenameMethodTests extends TestCase {
 	public void testSucc(String tp_name, String sig, String new_name, Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
@@ -36,7 +36,7 @@ public class RenameMethodTests extends TestCase {
 	public void testFail(String tp_name, String sig, String new_name, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		in.RECORDING_CHANGES = true;
+		Program.startRecordingASTChanges();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);

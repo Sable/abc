@@ -13,6 +13,8 @@ public class InlineConstantTests extends TestCase {
 	
 	public void testSucc(Program in, Program out, boolean remove) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
@@ -22,6 +24,8 @@ public class InlineConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testSucc(Program in, Program out) {
@@ -30,12 +34,16 @@ public class InlineConstantTests extends TestCase {
 
 	public void testFail(Program in, boolean remove) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
 		try {
 			fd.doInlineConstant(remove);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {

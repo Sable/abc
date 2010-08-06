@@ -27,6 +27,8 @@ public class PushDownTests extends TestCase {
 	private void pushDownMethod(String name, boolean leaveAbstract, boolean succeed) {
 		Program in = CompileHelper.compile("tests/eclipse/PushDown/"+getName()+"/in/A.java");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -48,11 +50,15 @@ public class PushDownTests extends TestCase {
 			if(succeed)
 				fail(rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void pushDownField(String name, boolean succeed) {
 		Program in = CompileHelper.compile("tests/eclipse/PushDown/"+getName()+"/in/A.java");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -74,6 +80,8 @@ public class PushDownTests extends TestCase {
 			if(succeed)
 				fail(rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper(String[] selectedMethodNames,

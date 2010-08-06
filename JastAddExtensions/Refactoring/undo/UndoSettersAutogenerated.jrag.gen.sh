@@ -33,10 +33,9 @@ function IDrecursion {
 
 		echo "
 	refine $ASPECT public void $TYPE.set$NAME($TP value) {
-		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (Program.isRecordingUndo()) {
 			final $TP v = $VAR;
-			root.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModification() {
 				public void undo() {
 					refined(v);
 				}

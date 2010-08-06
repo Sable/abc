@@ -67,11 +67,15 @@ public class InlineConstantTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/InlineConstant/canInline/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/InlineConstant/canInline/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		int idx = className.lastIndexOf('.');
 		TypeDecl td = in.findType(className.substring(0, idx), className.substring(idx+1));
 		assertNotNull(td);
 		helper1(in, out, td.compilationUnit(), startLine, startColumn, endLine, endColumn, replaceAll, removeDeclaration);
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void helper1(Object o, String className, int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean removeDeclaration) {
@@ -81,6 +85,8 @@ public class InlineConstantTests extends TestCase {
 	public void failHelper1(String className, int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean removeDeclaration) {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/InlineConstant/cannotInline/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		int idx = className.lastIndexOf('.');
 		TypeDecl td = in.findType(className.substring(0, idx), className.substring(idx+1));
 		assertNotNull(td);
@@ -94,6 +100,8 @@ public class InlineConstantTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}		
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

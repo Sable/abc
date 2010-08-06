@@ -1,39 +1,50 @@
 aspect Undo {
-	public boolean Program.RECORDING_CHANGES = false;
+	private static boolean Program.RECORDING_CHANGES = false;
+	public static boolean Program.DISABLE_UNDO_GLOBALY = false;
+	public static void Program.startRecordingASTChanges() {
+		RECORDING_CHANGES = true && ! DISABLE_UNDO_GLOBALY;
+		if (RECORDING_CHANGES)
+			undoStack = new Stack<ASTModification>();
+	}
 	
 	interface ASTModification {
 		void undo();
 	}
 	
-	private Stack<ASTModification> Program.undoStack = new Stack();
+	// problem with non-static stack: creating new subtrees that are not attached to the
+	// main tree with a Program root node -> no undo in the new subtree
+	private static Stack<ASTModification> Program.undoStack = new Stack();
 	
-	public void Program.addUndoAction(ASTModification action) {
+	public static void Program.addUndoAction(ASTModification action) {
 		undoStack.push(action);
 	}
 	
-	public boolean Program.isRecordingUndo() {
+	public static boolean Program.isRecordingUndo() {
 		return RECORDING_CHANGES;
 	}
 	
 	public void Program.undoAll() {
 		flushCaches();
 		parentChildCheck();
+		System.out.print("Undoing " + undoStack.size() + " actions... ");
 		while (!undoStack.isEmpty()) {
-			undoStack.pop().undo();
+			ASTModification m = undoStack.pop();
+			m.undo();
 		}
+		System.out.println("done.");
 		flushCaches();
 		parentChildCheck();
 		flushCaches();
 	}
 	
-	public Program ASTNode.programRootParentFromField() {
-		ASTNode n = this;
-		while (n.parent != null)
-			n = n.parent;
-		if (n instanceof Program)
-			return (Program) n;
-		return null;
-	}
+//	public Program ASTNode.programRootParentFromField() {
+//		ASTNode n = this;
+//		while (n.parent != null)
+//			n = n.parent;
+//		if (n instanceof Program)
+//			return (Program) n;
+//		return null;
+//	}
 	
 	
 }

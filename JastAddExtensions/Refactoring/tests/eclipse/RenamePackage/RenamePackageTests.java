@@ -27,6 +27,8 @@ public class RenamePackageTests extends TestCase {
 		String name = this.getName();
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePackage/"+name+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		PackageDecl pd = in.getPackageDecl(old_name);
 		assertNotNull(pd);
 		Program out = null;
@@ -44,6 +46,8 @@ public class RenamePackageTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), e.toString());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	// ---------- tests -------------

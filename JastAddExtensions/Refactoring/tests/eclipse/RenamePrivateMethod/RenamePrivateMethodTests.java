@@ -25,6 +25,8 @@ public class RenamePrivateMethodTests extends TestCase {
 	private void helper1_0(String methodName, String newMethodName, String[] signatures) throws Exception{
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateMethod/"+getName()+"/in");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod(methodName);
@@ -33,6 +35,8 @@ public class RenamePrivateMethodTests extends TestCase {
 			md.rename(newMethodName);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1() throws Exception{
@@ -43,6 +47,8 @@ public class RenamePrivateMethodTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateMethod/"+getName()+"/in");
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateMethod/"+getName()+"/out");
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);
@@ -54,6 +60,8 @@ public class RenamePrivateMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2_0(String methodName, String newMethodName, String[] signatures, String typeName) throws Exception{

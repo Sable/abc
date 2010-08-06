@@ -58,6 +58,8 @@ public class RenameTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 	
 		CompilationUnit cu = null;
@@ -82,12 +84,16 @@ public class RenameTempTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String newName, boolean updateReferences, int startLine, int startColumn, int endLine, int endColumn) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 	
 		Variable v = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn-1);
@@ -101,6 +107,8 @@ public class RenameTempTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String newName) throws Exception{
@@ -110,6 +118,8 @@ public class RenameTempTests extends TestCase {
 	private void helper2(String newName, boolean updateReferences) throws Exception{
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 	
 		CompilationUnit cu = null;
 		for(Iterator<CompilationUnit> iter=in.compilationUnitIterator();iter.hasNext();) {
@@ -130,6 +140,8 @@ public class RenameTempTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(String newName) throws Exception{

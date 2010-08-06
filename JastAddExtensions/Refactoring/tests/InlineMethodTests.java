@@ -31,6 +31,8 @@ public class InlineMethodTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		assertNotNull(out);
 		MethodAccess m = findAccess(in);
 		try {
@@ -39,15 +41,21 @@ public class InlineMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail(rfe.getMessage());
 		}
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
+		String originalProgram = in.toString();
+		Program.startRecordingASTChanges();
 		MethodAccess m = findAccess(in);
 		try {
 			m.doInline();
 			assertEquals("<failed>", in.toString());
 		} catch(RefactoringException rfe) { }
+		in.undoAll();
+		assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {
