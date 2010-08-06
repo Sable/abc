@@ -65,7 +65,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(false, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -116,7 +116,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -143,7 +143,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);

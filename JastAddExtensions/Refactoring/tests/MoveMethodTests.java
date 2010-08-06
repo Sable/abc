@@ -15,7 +15,7 @@ public class MoveMethodTests extends TestCase {
 	public void testSucc(String tp_name, String sig, Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
@@ -35,7 +35,7 @@ public class MoveMethodTests extends TestCase {
 	public void testFail(String tp_name, String sig, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);

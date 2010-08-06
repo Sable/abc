@@ -25,7 +25,7 @@ public class RenameTypeTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameType/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findSimpleType(className);
 		assertNotNull(td);
@@ -46,7 +46,7 @@ public class RenameTypeTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameType/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = oldName.contains(".") ? in.findType(oldName) : in.findSimpleType(oldName);

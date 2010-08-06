@@ -26,7 +26,7 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameVirtualMethodInClass/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod(methodName);
@@ -48,7 +48,7 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		Program out = shouldPass ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameVirtualMethodInClass/"+getName()+"/out") : null;
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertTrue(!shouldPass || out!=null);
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);

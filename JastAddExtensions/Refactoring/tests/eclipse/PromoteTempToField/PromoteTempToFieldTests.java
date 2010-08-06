@@ -79,7 +79,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
@@ -107,7 +107,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
 		if(decl == null)

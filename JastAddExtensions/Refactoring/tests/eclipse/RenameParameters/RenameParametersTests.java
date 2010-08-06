@@ -41,7 +41,7 @@ public class RenameParametersTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl A = in.findSimpleType("A");
@@ -64,7 +64,7 @@ public class RenameParametersTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl A = in.findSimpleType("A");
 		assertNotNull(A);

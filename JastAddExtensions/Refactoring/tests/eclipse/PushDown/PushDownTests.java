@@ -28,7 +28,7 @@ public class PushDownTests extends TestCase {
 		Program in = CompileHelper.compile("tests/eclipse/PushDown/"+getName()+"/in/A.java");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -58,7 +58,7 @@ public class PushDownTests extends TestCase {
 		Program in = CompileHelper.compile("tests/eclipse/PushDown/"+getName()+"/in/A.java");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);

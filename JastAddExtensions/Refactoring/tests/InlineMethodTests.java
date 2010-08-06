@@ -32,7 +32,7 @@ public class InlineMethodTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		MethodAccess m = findAccess(in);
 		try {
@@ -48,7 +48,7 @@ public class InlineMethodTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		MethodAccess m = findAccess(in);
 		try {
 			m.doInline();

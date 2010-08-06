@@ -1,11 +1,33 @@
 aspect Undo {
 	private static boolean Program.RECORDING_CHANGES = false;
 	public static boolean Program.DISABLE_UNDO_GLOBALY = false;
-	public static void Program.startRecordingASTChanges() {
+	
+	public static void Program.startRecordingASTChangesAndFlush() {
 		RECORDING_CHANGES = true && ! DISABLE_UNDO_GLOBALY;
-		if (RECORDING_CHANGES)
-			undoStack = new Stack<ASTModification>();
+		undoStack = new Stack<ASTModification>();
 	}
+	public static void Program.stopRecordingASTChangesAndFlush() {
+		RECORDING_CHANGES = false;
+		undoStack = new Stack<ASTModification>();
+	}
+	
+	private static ASTUndoCheckPoint Program.lastCheckPoint = null;
+	public static ASTUndoCheckPoint Program.createASTUndoCheckPoint() {
+		if (!isRecordingASTChanges())
+			startRecordingASTChangesAndFlush();
+		ASTUndoCheckPoint cp = new ASTUndoCheckPoint();
+		lastCheckPoint = cp;
+		undoStack.push(cp);
+		return cp;
+	}
+	
+	class ASTUndoCheckPoint implements ASTModification {
+		@Override
+		public void undo() {
+		}
+	}
+	
+	public static
 	
 	interface ASTModification {
 		void undo();
@@ -15,23 +37,37 @@ aspect Undo {
 	// main tree with a Program root node -> no undo in the new subtree
 	private static Stack<ASTModification> Program.undoStack = new Stack();
 	
+	private static long Program.undoActionCount = 0;
+	
 	public static void Program.addUndoAction(ASTModification action) {
 		undoStack.push(action);
+		undoActionCount++;
 	}
 	
-	public static boolean Program.isRecordingUndo() {
+	public static boolean Program.isRecordingASTChanges() {
 		return RECORDING_CHANGES;
 	}
 	
 	public void Program.undoAll() {
+		undoUntil(null);
+	}
+	
+	public void Program.undoUntilLastCheckPoint() {
+		undoUntil(lastCheckPoint);
+	}
+	
+	public void Program.undoUntil(ASTUndoCheckPoint cp) {
 		flushCaches();
 		parentChildCheck();
 		System.out.print("Undoing " + undoStack.size() + " actions... ");
 		while (!undoStack.isEmpty()) {
-			ASTModification m = undoStack.pop();
-			m.undo();
+			ASTModification mod = undoStack.pop();
+			mod.undo();
+			if (cp != null && cp.equals(mod))
+				break;
 		}
 		System.out.println("done.");
+		System.out.println("Total undo actions: " + undoActionCount);
 		flushCaches();
 		parentChildCheck();
 		flushCaches();

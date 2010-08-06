@@ -40,7 +40,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		Program out = CompileHelper.compile(getResourceLocation() + "/" + folder + "_out/" + adaptName(id));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		try {
 			FieldDeclaration fd = in.findField(fieldName);
@@ -58,7 +58,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getResourceLocation() + "/" + folder + "/" + adaptName(id));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		try {
 			FieldDeclaration fd = in.findField(fieldName);
 			assertNotNull(fd);
@@ -225,7 +225,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		Program out = CompileHelper.compile(getResourceLocation() + "/static_out/" + name + ".java", getResourceLocation() + "/static_ref_out/" + referenceName + ".java");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		try {
 			FieldDeclaration fd = in.findField("x");

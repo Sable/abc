@@ -45,7 +45,7 @@ public class ExtractConstantTests extends TestCase {
 		//assertFalse(replaceAll);
 		Program in = getProgram(true, true);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		Program out = getProgram(true, false);
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
@@ -65,7 +65,7 @@ public class ExtractConstantTests extends TestCase {
 		//assertFalse(replaceAll);
 		Program in = getProgram(false, true);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(e);

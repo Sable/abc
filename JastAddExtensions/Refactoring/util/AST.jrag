@@ -32,7 +32,7 @@ aspect AST {
 	private static void ASTNode.addingChildParentCheck(ASTNode newParent, ASTNode node) {
 		if (DEBUG && node != null &&
 				node.is$Final() && 
-				//programRootParentFromField() != null && programRootParentFromField().isRecordingUndo() && 
+				//programRootParentFromField() != null && programRootParentFromField().isRecordingASTChanges() && 
 				node.parent != null && node.parent != newParent //&& node.parent.getIndexOfChild(node) != -1
 				)
 			throw new RuntimeException("inserting node with parent already set");

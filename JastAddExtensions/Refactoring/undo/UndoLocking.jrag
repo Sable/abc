@@ -3,7 +3,7 @@ aspect UndoLocking {
 	// Locked Method Access
 	
 	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final SavedMethodDecl saved = targetMethod;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -17,7 +17,7 @@ aspect UndoLocking {
 	}
 
 	refine LockedMethodAccess private MethodDecl ElementValuePair.setTargetMethod(MethodDecl md) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final MethodDecl saved = targetMethod;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -34,7 +34,7 @@ aspect UndoLocking {
 	// Locked Package Access
 	
 	refine LockedPackageAccess private void PackageAccess.setTargetPackage(PackageDecl pd) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final PackageDecl saved = targetPackage;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -50,7 +50,7 @@ aspect UndoLocking {
 	
 	// LockedVariableAccess
 	refine LockedVariableAccess private void VarAccess.setTargetVariable(Variable var) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final Variable saved = targetVariable;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -66,7 +66,7 @@ aspect UndoLocking {
 	
 	// LockedTypeAccess
 	refine LockedTypeAccess private void CompilationUnit.setLocked(boolean value) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final boolean saved = locked;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -79,7 +79,7 @@ aspect UndoLocking {
 		refined(value);
 	}
 	refine LockedTypeAccess private void TypeAccess.setTargetType(TypeDecl td) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final TypeDecl saved = targetType;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -94,7 +94,7 @@ aspect UndoLocking {
 	
 	// LockedConstructor
 	refine LockedConstructor private void ConstructorDecl.setLocked(boolean value) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final boolean saved = locked;
 			Program.addUndoAction(new ASTModification() {
 				
@@ -109,7 +109,7 @@ aspect UndoLocking {
 	
 	// LockedSingleStaticImportDecl
 	refine LockedSingleStaticImportDecl private void SingleStaticImportDecl.setLocked(boolean value) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final boolean saved = locked;
 			Program.addUndoAction(new ASTModification() {
 				

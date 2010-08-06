@@ -13,7 +13,7 @@ public class PromoteTempToFieldTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		VariableDeclaration e = in.findLocalVariable("x");
 		assertNotNull(e);
@@ -30,7 +30,7 @@ public class PromoteTempToFieldTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		VariableDeclaration e = in.findLocalVariable("x");
 		assertNotNull(e);
 		try {

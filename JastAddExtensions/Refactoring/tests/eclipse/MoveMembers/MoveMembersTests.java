@@ -35,7 +35,7 @@ public class MoveMembersTests extends TestCase {
 		Program out = succeed ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/out") : null;
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertTrue(!succeed || out != null);
 		TypeDecl A = in.findSimpleType(AName);
 		TypeDecl B = in.findSimpleType(BName);

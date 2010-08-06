@@ -17,7 +17,7 @@ public class RenameVariableTests extends TestCase {
 	public void testSucc(String pkg, String tp_name, String old_name, String new_name, Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(pkg, tp_name);
 		assertNotNull(tp);
@@ -37,7 +37,7 @@ public class RenameVariableTests extends TestCase {
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		Variable v = in.findVariable(old_name);
 		assertNotNull(v);
@@ -54,7 +54,7 @@ public class RenameVariableTests extends TestCase {
 	public void testFail(String pkg, String tp_name, String old_name, String new_name, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(pkg, tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localFields(old_name);
@@ -72,7 +72,7 @@ public class RenameVariableTests extends TestCase {
 	public void testFail(String old_name, String new_name, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		Variable v = in.findVariable(old_name);
 		assertNotNull(v);
 		try {

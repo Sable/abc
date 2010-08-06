@@ -74,7 +74,7 @@ public class IntroduceParameterTests extends TestCase {
 		Program out = succeed ? CompileHelper.compile("tests/eclipse/IntroduceParameter/simple/out/" + getName().substring(11) + ".java") : null;
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertTrue(!succeed || out != null);
 		IntroduceParameterData data = getData(in_name);
 		Expr e = ExtractTempTests.findExpr(in, data.startLine, data.startColumn, data.endLine, data.endColumn);

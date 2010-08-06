@@ -2,7 +2,7 @@ aspect UndoRefines {
 	
 	// package names and package decls
 	refine java public void CompilationUnit.setPackageDecl(java.lang.String value) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final String v = tokenjava_lang_String_PackageDecl;
 			Program.addUndoAction(new ASTModification() {
 				public void undo() {
@@ -13,7 +13,7 @@ aspect UndoRefines {
 		refined(value);
 	}
 	refine PackageDecl private void Program.addPackageDecl(PackageDecl pd) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final PackageDecl fpd = pd;
 			Program.addUndoAction(new ASTModification() {
 				public void undo() {

@@ -28,7 +28,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameMethodInInterface/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl I = in.findSimpleType("I");
 		assertNotNull(I);
@@ -53,7 +53,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		Program out = shouldPass ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameMethodInInterface/"+getName()+"/out") : null;
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertTrue(!shouldPass || out!=null);
 		
 		TypeDecl I = in.findSimpleType("I");

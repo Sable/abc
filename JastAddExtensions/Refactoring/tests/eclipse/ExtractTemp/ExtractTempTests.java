@@ -132,7 +132,7 @@ public class ExtractTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		assertNotNull("invalid program", in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull("expression not found", e);
@@ -160,7 +160,7 @@ public class ExtractTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull("invalid program", in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		if(e == null)

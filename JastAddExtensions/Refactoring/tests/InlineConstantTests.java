@@ -14,7 +14,7 @@ public class InlineConstantTests extends TestCase {
 	public void testSucc(Program in, Program out, boolean remove) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
@@ -35,7 +35,7 @@ public class InlineConstantTests extends TestCase {
 	public void testFail(Program in, boolean remove) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
 		try {

@@ -67,7 +67,7 @@ public class ChangeSignatureTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -95,7 +95,7 @@ public class ChangeSignatureTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
@@ -119,7 +119,7 @@ public class ChangeSignatureTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -154,7 +154,7 @@ public class ChangeSignatureTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -195,7 +195,7 @@ public class ChangeSignatureTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType(typeName);

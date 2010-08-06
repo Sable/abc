@@ -26,7 +26,7 @@ public class RenamePrivateMethodTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateMethod/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod(methodName);
@@ -48,7 +48,7 @@ public class RenamePrivateMethodTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateMethod/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);

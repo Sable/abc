@@ -41,7 +41,7 @@ public class InlineTempTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		VariableDeclaration decl = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
@@ -61,7 +61,7 @@ public class InlineTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		VariableDeclaration decl = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
 		assertNotNull(decl);

@@ -50,6 +50,7 @@ aspect ExtractClass {
 		i = 0;
 		for (InstanceInitializer init : inits.values()) {
 			int old_idx = init.getChildIndex();
+			ASTUndoCheckPoint cp = Program.createASTUndoCheckPoint();
 			try {
 				init.lockDataFlow();
 				init.lockAllNames();
@@ -61,11 +62,12 @@ aspect ExtractClass {
 			} catch (RefactoringException re) {
 				// no luck
 				// move init back and break
-				this.removeBodyDecl(init);
-				this.getBodyDeclList().insertChild(init, old_idx);
-				flushCaches();
-				init.unlockDataFlow();
-				init.eliminateLockedNames();
+//				this.removeBodyDecl(init);
+//				this.getBodyDeclList().insertChild(init, old_idx);
+//				flushCaches();
+//				init.unlockDataFlow();
+//				init.eliminateLockedNames();
+				programRoot().undoUntil(cp);
 				break;
 			}
 			i++;

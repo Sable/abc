@@ -46,7 +46,7 @@ public class PullUpTests extends TestCase {
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);
@@ -171,7 +171,7 @@ public class PullUpTests extends TestCase {
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);

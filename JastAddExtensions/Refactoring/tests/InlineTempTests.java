@@ -15,7 +15,7 @@ public class InlineTempTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
@@ -32,7 +32,7 @@ public class InlineTempTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
 		try {

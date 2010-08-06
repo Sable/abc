@@ -15,7 +15,7 @@ public class RemoveUnusedMethodTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -34,7 +34,7 @@ public class RemoveUnusedMethodTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod("m");

@@ -43,7 +43,7 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/out");
 		assertNotNull(out);
 		
@@ -61,7 +61,7 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveInnerToTopLevel/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		
 		try {
 			findMemberType(in, outer, inner).moveToToplevel(true, instanceName, false);

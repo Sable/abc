@@ -14,7 +14,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void testSucc(Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		LocalClassDeclStmt lcd = in.findLocalClass("A");
 		assertNotNull(lcd);
@@ -31,7 +31,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void testFail(Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		LocalClassDeclStmt lcd = in.findLocalClass("A");
 		assertNotNull(lcd);
 		try {

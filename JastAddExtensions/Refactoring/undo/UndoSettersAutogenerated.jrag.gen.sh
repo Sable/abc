@@ -33,7 +33,7 @@ function IDrecursion {
 
 		echo "
 	refine $ASPECT public void $TYPE.set$NAME($TP value) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final $TP v = $VAR;
 			Program.addUndoAction(new ASTModification() {
 				public void undo() {

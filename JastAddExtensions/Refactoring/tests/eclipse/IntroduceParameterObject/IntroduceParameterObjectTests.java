@@ -47,7 +47,7 @@ public class IntroduceParameterObjectTests extends TestCase {
 		Program out = expectError ? null : CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceParameterObject/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChanges();
+		Program.startRecordingASTChangesAndFlush();
 		assertTrue(expectError || out != null);
 		try {
 			MethodDecl foo = in.findMethod("foo");

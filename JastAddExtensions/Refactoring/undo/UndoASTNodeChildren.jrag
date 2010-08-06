@@ -2,7 +2,7 @@ aspect UndoASTNodeChildren {
 	
 
 	refine AST public void ASTNode.setChild(T node, int i) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final ASTNode newChild = node;
 			final int index = i;
 			final boolean children_null = children == null;
@@ -47,7 +47,7 @@ aspect UndoASTNodeChildren {
 	}
 	
 	refine ASTNode public void ASTNode.removeChild(int i) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final int index = i;
 			final boolean children_null = children == null;
 			final int children_length = children == null ? -1 : children.length;
@@ -79,7 +79,7 @@ aspect UndoASTNodeChildren {
 	}
 	
 	refine AST public void ASTNode.insertChild(T node, int i) {
-		if (Program.isRecordingUndo()) {
+		if (Program.isRecordingASTChanges()) {
 			final ASTNode newChild = node;
 			final int index = i;
 			final boolean children_null = children == null;
@@ -114,7 +114,7 @@ aspect UndoASTNodeChildren {
 	
 	/*refine PermuteParameters public void ASTNode.permute(int[] perm) {
 		Program root = (Program) programRootParentFromField();
-		if (root != null && root.isRecordingUndo()) {
+		if (root != null && root.isRecordingASTChanges()) {
 			System.out.println("NOT! Recording permute action");
 		}
 		refined(perm);
