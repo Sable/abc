@@ -14,7 +14,7 @@ function IDrecursion {
 
 	if [ ! -z "$7" ]; then
 		# we have an agrument, looking for inherited
-		II=`find ../../Java* ../../Refactoring -name "*.ast" | xargs grep -E "\\ :\\ $7\\ " | grep -vE "$PATTERN" | sed 's/abstract //' | cut -f1 -d' ' | sed -r 's/^[^:]*\///'`
+		II=`find ../../Java* ../../Refactoring -name "*.ast" | xargs grep -E "\\ ?:\\ ?$7(\\ ?[^;]::=|;)" | grep -vE "$PATTERN" | sed 's/abstract //' | cut -f1 -d' ' | sed -r 's/^[^:]*\///'`
 	else
 		II=`find ../../Java* ../../Refactoring -name "*.ast" | xargs grep -E "$PATTERN" | sed 's/abstract //' | cut -f1 -d' ' | sed -r 's/^[^:]*\///'`
 	fi;

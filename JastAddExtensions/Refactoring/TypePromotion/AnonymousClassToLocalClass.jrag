@@ -15,11 +15,11 @@ aspect AnonymousClassToLocalClass {
 		bd.lockNames(name);
 		// move
 		ClassDecl cd = asNamedClass(name, getVisibility());
+		cie.setTypeDeclOpt(new Opt<TypeDecl>());
+		cie.setAccess(cd.createLockedAccess());
 		if(!makeFinal)
 			cd.getModifiers().removeModifier("final");
 		LocalClassDeclStmt lcd = stmt.insertLocalClass(cd);
-		cie.setTypeDeclOpt(new Opt<TypeDecl>());
-		cie.setAccess(cd.createLockedAccess());
 		bd.hostType().flushCaches();
 		return lcd;
 	}
