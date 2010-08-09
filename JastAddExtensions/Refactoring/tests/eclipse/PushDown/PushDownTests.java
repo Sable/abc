@@ -53,6 +53,7 @@ public class PushDownTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void pushDownField(String name, boolean succeed) {
@@ -83,6 +84,7 @@ public class PushDownTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper(String[] selectedMethodNames,

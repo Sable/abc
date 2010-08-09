@@ -38,6 +38,7 @@ public class RenameStaticMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper1() throws Exception{
@@ -63,6 +64,7 @@ public class RenameStaticMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	private void helper2_0(String methodName, String newMethodName, String[] signatures, String typeName) throws Exception{
 		helper2_0(methodName, newMethodName, signatures, true, false, typeName);

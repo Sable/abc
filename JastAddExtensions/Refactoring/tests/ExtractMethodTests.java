@@ -43,6 +43,7 @@ public class ExtractMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	public void testSucc(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in, Program out) {
         assertNotNull(in);
@@ -65,6 +66,7 @@ public class ExtractMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	public void testSucc(String className, String methodName, int begin, int end, String newMethodName, Program in, Program out) {
 		testSucc(className, methodName, begin, end, newMethodName, ASTNode.VIS_PRIVATE, in, out);
@@ -93,6 +95,7 @@ public class ExtractMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	public void testFail(String className, String methodName, int begin, int end, String newMethodName, int visibility, Program in) {
         assertNotNull(in);
@@ -113,6 +116,7 @@ public class ExtractMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	public void testFail(String className, String methodName, int begin, int end, String newMethodName, Program in) {
 		testFail(className, methodName, begin, end, newMethodName, ASTNode.VIS_PRIVATE, in);

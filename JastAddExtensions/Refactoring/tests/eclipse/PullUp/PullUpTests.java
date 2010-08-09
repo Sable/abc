@@ -103,6 +103,7 @@ public class PullUpTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void declareAbstractFailHelper(String[] selectedMethodNames, String[][] selectedMethodSignatures,
@@ -210,6 +211,7 @@ public class PullUpTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	//------------------ tests -------------

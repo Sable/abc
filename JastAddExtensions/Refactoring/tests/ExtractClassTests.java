@@ -37,6 +37,7 @@ public class ExtractClassTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void testFail(String newClassName, String newFieldName, String[] fns, Program in, boolean encapsulate) {
@@ -58,6 +59,7 @@ public class ExtractClassTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 		
 	}
 	

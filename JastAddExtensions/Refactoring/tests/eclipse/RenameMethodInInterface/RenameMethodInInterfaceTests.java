@@ -43,6 +43,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper1() throws Exception{
@@ -71,6 +72,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper2(boolean updateReferences) throws Exception{

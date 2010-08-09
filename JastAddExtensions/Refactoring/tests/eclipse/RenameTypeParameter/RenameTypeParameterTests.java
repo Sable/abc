@@ -48,6 +48,7 @@ public class RenameTypeParameterTests extends TestCase {
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper1(String parameterName, String newParameterName, String typeName, String methodName, String[] methodSignature, boolean references) throws Exception {
@@ -74,6 +75,7 @@ public class RenameTypeParameterTests extends TestCase {
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper2(String parameterName, String newParameterName, String typeName, boolean references) throws Exception {
@@ -102,6 +104,7 @@ public class RenameTypeParameterTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper2(String parameterName, String newParameterName, String typeName, String methodName, String[] methodSignature, boolean references) throws Exception {
@@ -132,6 +135,7 @@ public class RenameTypeParameterTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void test0() throws Exception {

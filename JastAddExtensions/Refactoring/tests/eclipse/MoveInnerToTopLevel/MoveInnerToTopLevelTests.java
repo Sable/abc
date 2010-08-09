@@ -56,6 +56,7 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void validateFailingTest(String outer, String inner, Object o3, Object o2, String instanceName) {
@@ -71,6 +72,7 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void validatePassingTest(String outer, String inner, Object o1, Object o2, String instanceName, boolean b1, boolean b2, boolean b3, boolean b4) {

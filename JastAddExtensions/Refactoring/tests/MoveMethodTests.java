@@ -31,6 +31,7 @@ public class MoveMethodTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void testFail(String tp_name, String sig, Program in) {		
@@ -48,6 +49,7 @@ public class MoveMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void test0() {

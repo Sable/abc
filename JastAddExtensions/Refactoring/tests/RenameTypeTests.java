@@ -27,6 +27,7 @@ public class RenameTypeTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -45,6 +46,7 @@ public class RenameTypeTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -61,6 +63,7 @@ public class RenameTypeTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {
@@ -76,6 +79,7 @@ public class RenameTypeTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void test0() {

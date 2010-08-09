@@ -38,6 +38,7 @@ public class RenamePrivateFieldTests extends TestCase {
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper1_0(String fieldName, String newFieldName) throws Exception{
@@ -69,6 +70,7 @@ public class RenamePrivateFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helper2(boolean updateReferences) throws Exception{

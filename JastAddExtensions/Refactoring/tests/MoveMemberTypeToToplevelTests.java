@@ -37,6 +37,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void testFail(Program in) {
@@ -50,6 +51,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	public void test1() {

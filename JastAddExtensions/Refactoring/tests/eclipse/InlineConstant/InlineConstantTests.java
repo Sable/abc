@@ -77,6 +77,7 @@ public class InlineConstantTests extends TestCase {
 		helper1(in, out, td.compilationUnit(), startLine, startColumn, endLine, endColumn, replaceAll, removeDeclaration);
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void helper1(Object o, String className, int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean removeDeclaration) {
@@ -103,6 +104,7 @@ public class InlineConstantTests extends TestCase {
 		}		
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	//--- TESTS

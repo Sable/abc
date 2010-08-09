@@ -70,6 +70,7 @@ public class IntroduceIndirectionTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void helperWarn(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) {
@@ -95,6 +96,7 @@ public class IntroduceIndirectionTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 	
 	private void helperErr(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) { 

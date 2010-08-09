@@ -53,6 +53,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	protected void performInvalidTest(String id, String folder, String fieldName) throws Exception {
@@ -69,6 +70,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void objectTest(String fieldName) throws Exception {
@@ -238,6 +240,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	public void testStaticImportRead() throws Exception {

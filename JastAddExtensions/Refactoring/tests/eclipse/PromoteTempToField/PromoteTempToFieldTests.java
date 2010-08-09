@@ -97,6 +97,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	private void failHelper(int startLine, int startColumn, int endLine, int endColumn,
@@ -124,6 +125,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		}
 		if (AllTests.TEST_UNDO) in.undoAll();
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
 	}
 
 	///---------------------- tests -------------------------//
