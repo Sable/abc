@@ -31,8 +31,8 @@ public class RenameVariableTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
@@ -48,8 +48,8 @@ public class RenameVariableTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String pkg, String tp_name, String old_name, String new_name, Program in) {		
@@ -66,8 +66,8 @@ public class RenameVariableTests extends TestCase {
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {		
@@ -81,8 +81,8 @@ public class RenameVariableTests extends TestCase {
 			fail("Refactoring was supposed to fail; succeeded with "+in);
 		} catch(RefactoringException rfe) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
     public void test1() {

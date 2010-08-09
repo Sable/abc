@@ -26,8 +26,8 @@ public class InlineTempTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), "<failure>");
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
@@ -40,8 +40,8 @@ public class InlineTempTests extends TestCase {
 			((VariableDeclaration)v).doInline();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

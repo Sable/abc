@@ -149,8 +149,8 @@ public class ExtractTempTests extends TestCase {
 
 		assertEquals(out.toString(), in.toString());
 		
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	private void warningHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean makeFinal, String tempName, String guessedTempName) {
@@ -171,8 +171,8 @@ public class ExtractTempTests extends TestCase {
 			e.doExtract(tempName, makeFinal);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

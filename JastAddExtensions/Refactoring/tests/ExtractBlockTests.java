@@ -36,8 +36,8 @@ public class ExtractBlockTests extends TestCase {
 		} catch (RefactoringException e) {
 			assertEquals(out, "<failure>");
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {
@@ -61,8 +61,8 @@ public class ExtractBlockTests extends TestCase {
 			assertEquals("<failure>", in);
 		} catch (RefactoringException e) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	public void test1() {

@@ -88,8 +88,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helperPermuteFail(int[] perm) {
@@ -108,8 +108,8 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	/*
@@ -134,8 +134,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String[] newOrder, String[] signature) throws Exception{
@@ -186,8 +186,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	private void helperDoAll(String typeName, String methodName, String[] newNames, String[] newTypes, Literal[] newDefaultValues,
@@ -219,8 +219,8 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	//------- tests

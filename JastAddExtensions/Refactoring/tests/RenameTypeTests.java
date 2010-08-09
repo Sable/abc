@@ -25,8 +25,8 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -43,8 +43,8 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -59,8 +59,8 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {
@@ -74,8 +74,8 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test0() {

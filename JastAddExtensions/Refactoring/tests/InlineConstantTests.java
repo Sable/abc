@@ -25,8 +25,8 @@ public class InlineConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testSucc(Program in, Program out) {
@@ -43,8 +43,8 @@ public class InlineConstantTests extends TestCase {
 			fd.doInlineConstant(remove);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {

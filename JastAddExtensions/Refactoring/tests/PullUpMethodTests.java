@@ -28,8 +28,8 @@ public class PullUpMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
@@ -44,8 +44,8 @@ public class PullUpMethodTests extends TestCase {
 			md.doPullUp();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

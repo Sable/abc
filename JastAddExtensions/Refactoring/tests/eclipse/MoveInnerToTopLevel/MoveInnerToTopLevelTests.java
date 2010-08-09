@@ -54,8 +54,8 @@ public class MoveInnerToTopLevelTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	public void validateFailingTest(String outer, String inner, Object o3, Object o2, String instanceName) {
@@ -69,8 +69,8 @@ public class MoveInnerToTopLevelTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	public void validatePassingTest(String outer, String inner, Object o1, Object o2, String instanceName, boolean b1, boolean b2, boolean b3, boolean b4) {

@@ -47,8 +47,8 @@ public class RenamePackageTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), e.toString());
 		}
-		in.undoAll();
-		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
+		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 	}
 
 	// ---------- tests -------------
