@@ -13,6 +13,7 @@ package tests.eclipse.PromoteTempToField;
 import static AST.ASTNode.VIS_PRIVATE;
 import static AST.ASTNode.VIS_PUBLIC;
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.Program;
@@ -79,7 +80,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
@@ -107,7 +108,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		VariableDeclaration decl = findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
 		if(decl == null)

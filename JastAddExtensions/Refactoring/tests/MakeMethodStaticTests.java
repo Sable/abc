@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RawCU;
@@ -17,7 +18,7 @@ public class MakeMethodStaticTests extends TestCase {
 		assertNotNull(in);
 		assertNotNull(out);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);
@@ -36,7 +37,7 @@ public class MakeMethodStaticTests extends TestCase {
 	public void testFail(String tp_name, String sig, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);

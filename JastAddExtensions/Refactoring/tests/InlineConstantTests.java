@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.FieldDeclaration;
 import AST.Program;
 import AST.RawCU;
@@ -14,7 +15,7 @@ public class InlineConstantTests extends TestCase {
 	public void testSucc(Program in, Program out, boolean remove) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
@@ -35,7 +36,7 @@ public class InlineConstantTests extends TestCase {
 	public void testFail(Program in, boolean remove) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		FieldDeclaration fd = in.findField("C");
 		assertNotNull(fd);
 		try {

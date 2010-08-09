@@ -11,6 +11,7 @@
 package tests.eclipse.RenamePrivateField;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.FieldDeclaration;
 import AST.Program;
@@ -26,7 +27,7 @@ public class RenamePrivateFieldTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateField/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findSimpleType(typeName);
 		assertNotNull(td);
 		FieldDeclaration fd = td.findField(fieldName);
@@ -54,7 +55,7 @@ public class RenamePrivateFieldTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePrivateField/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);

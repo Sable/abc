@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 public class AllTestsWithUndo {
 
 	public static Test suite() {
+		AllTests.TEST_UNDO = true;
 		TestSuite suite = new TestSuite("Refactoring Tests with Undo");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(ExtractBlockTests.class);

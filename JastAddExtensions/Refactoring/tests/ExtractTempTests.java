@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.Expr;
 import AST.Program;
 import AST.RefactoringException;
@@ -13,7 +14,7 @@ public class ExtractTempTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
@@ -31,7 +32,7 @@ public class ExtractTempTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		Expr e = in.findDoublyParenthesised();
 		assertNotNull(e);
 		e.unparenthesise();

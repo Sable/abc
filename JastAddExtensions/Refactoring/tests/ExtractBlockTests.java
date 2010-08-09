@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.Block;
 import AST.CompilationUnit;
 import AST.Program;
@@ -15,7 +16,7 @@ public class ExtractBlockTests extends TestCase {
 	public void testSucc(Program in, Program out) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
         assertNotNull(out);
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
@@ -42,7 +43,7 @@ public class ExtractBlockTests extends TestCase {
 	public void testFail(Program in) {
         assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
         CompilationUnit cu = in.lookupType("", "A").compilationUnit();
         assertNotNull(cu);
         Stmt from = cu.findStmtFollowingComment("// from\n");

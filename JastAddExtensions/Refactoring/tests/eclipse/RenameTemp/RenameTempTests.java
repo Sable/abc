@@ -13,6 +13,7 @@ package tests.eclipse.RenameTemp;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import tests.eclipse.PromoteTempToField.PromoteTempToFieldTests;
 import AST.CompilationUnit;
@@ -59,7 +60,7 @@ public class RenameTempTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 	
 		CompilationUnit cu = null;
@@ -93,7 +94,7 @@ public class RenameTempTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 	
 		Variable v = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn-1);
@@ -119,7 +120,7 @@ public class RenameTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 	
 		CompilationUnit cu = null;
 		for(Iterator<CompilationUnit> iter=in.compilationUnitIterator();iter.hasNext();) {

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import tests.eclipse.PromoteTempToField.PromoteTempToFieldTests;
 import AST.ClassInstanceExpr;

@@ -11,6 +11,7 @@
 package tests.eclipse.RenameTypeParameter;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.GenericMethodDecl;
 import AST.GenericTypeDecl;
@@ -29,7 +30,7 @@ public class RenameTypeParameterTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertTrue(td instanceof GenericTypeDecl);
@@ -53,7 +54,7 @@ public class RenameTypeParameterTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findSimpleType("A");
 		assertNotNull(td);
@@ -80,7 +81,7 @@ public class RenameTypeParameterTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");
@@ -108,7 +109,7 @@ public class RenameTypeParameterTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameTypeParameter/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl td = in.findSimpleType("A");

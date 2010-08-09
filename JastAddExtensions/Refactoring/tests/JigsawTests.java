@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.AndLogicalExpr;
 import AST.AssignSimpleExpr;
 import AST.Block;

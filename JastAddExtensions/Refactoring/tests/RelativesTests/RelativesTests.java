@@ -15,6 +15,7 @@ import AST.TypeDecl;
 import AST.ClassDecl;
 import AST.InterfaceDecl;
 import junit.framework.TestCase;
+import tests.AllTests;
 
 
 

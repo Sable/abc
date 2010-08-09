@@ -11,6 +11,7 @@
 package tests.eclipse.RenamePackage;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.PackageDecl;
 import AST.Program;
@@ -28,7 +29,7 @@ public class RenamePackageTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenamePackage/"+name+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		PackageDecl pd = in.getPackageDecl(old_name);
 		assertNotNull(pd);
 		Program out = null;

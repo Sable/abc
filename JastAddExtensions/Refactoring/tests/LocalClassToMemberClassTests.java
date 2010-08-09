@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.LocalClassDeclStmt;
 import AST.Program;
 import AST.RefactoringException;
@@ -14,7 +15,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void testSucc(Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		LocalClassDeclStmt lcd = in.findLocalClass("A");
 		assertNotNull(lcd);
@@ -31,7 +32,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 	public void testFail(Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		LocalClassDeclStmt lcd = in.findLocalClass("A");
 		assertNotNull(lcd);
 		try {

@@ -11,6 +11,7 @@
 package tests.eclipse.RenameNonPrivateField;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.FieldDeclaration;
 import AST.Program;
@@ -26,7 +27,7 @@ public class RenameNonPrivateFieldTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameNonPrivateField/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl A = in.findSimpleType("A");
 		assertNotNull(A);
@@ -54,7 +55,7 @@ public class RenameNonPrivateFieldTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/RenameNonPrivateField/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl A = in.findSimpleType("A");

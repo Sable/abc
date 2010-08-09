@@ -1,9 +1,8 @@
 aspect Undo {
 	private static boolean Program.RECORDING_CHANGES = false;
-	public static boolean Program.DISABLE_UNDO_GLOBALY = false;
 	
 	public static void Program.startRecordingASTChangesAndFlush() {
-		RECORDING_CHANGES = true && ! DISABLE_UNDO_GLOBALY;
+		RECORDING_CHANGES = true;
 		undoStack = new Stack<ASTModification>();
 	}
 	public static void Program.stopRecordingASTChangesAndFlush() {
@@ -37,7 +36,7 @@ aspect Undo {
 	// main tree with a Program root node -> no undo in the new subtree
 	private static Stack<ASTModification> Program.undoStack = new Stack();
 	
-	private static long Program.undoActionCount = 0;
+	public static long Program.undoActionCount = 0;
 	
 	public static void Program.addUndoAction(ASTModification action) {
 		undoStack.push(action);

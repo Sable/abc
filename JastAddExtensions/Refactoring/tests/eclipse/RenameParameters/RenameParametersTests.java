@@ -11,6 +11,7 @@
 package tests.eclipse.RenameParameters;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.MethodDecl;
 import AST.Program;
@@ -41,7 +42,7 @@ public class RenameParametersTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		TypeDecl A = in.findSimpleType("A");
@@ -64,7 +65,7 @@ public class RenameParametersTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl A = in.findSimpleType("A");
 		assertNotNull(A);

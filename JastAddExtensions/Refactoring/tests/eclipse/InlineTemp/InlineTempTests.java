@@ -11,6 +11,7 @@
 package tests.eclipse.InlineTemp;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import tests.eclipse.PromoteTempToField.PromoteTempToFieldTests;
 import AST.Program;
@@ -41,7 +42,7 @@ public class InlineTempTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		
 		VariableDeclaration decl = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
@@ -61,7 +62,7 @@ public class InlineTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		VariableDeclaration decl = PromoteTempToFieldTests.findNode(in, VariableDeclaration.class, startLine, startColumn, endLine, endColumn);
 		assertNotNull(decl);

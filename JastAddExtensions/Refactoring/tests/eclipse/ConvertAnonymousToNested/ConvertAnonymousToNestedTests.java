@@ -14,6 +14,7 @@
 package tests.eclipse.ConvertAnonymousToNested;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.AnonymousDecl;
@@ -64,7 +65,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
@@ -83,7 +84,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		Program out = CompileHelper.compile(getTestFileName(true, false));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
@@ -101,7 +102,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {
@@ -117,7 +118,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		AnonymousDecl anon = findAnonymous(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(anon);
 		try {

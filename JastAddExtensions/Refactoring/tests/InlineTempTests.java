@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.Program;
 import AST.RawCU;
 import AST.RefactoringException;
@@ -15,7 +16,7 @@ public class InlineTempTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
@@ -32,7 +33,7 @@ public class InlineTempTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		Variable v = in.findVariable("i");
 		assertTrue(v instanceof VariableDeclaration);
 		try {

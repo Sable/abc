@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RawCU;
@@ -15,7 +16,7 @@ public class RemoveUnusedMethodTests extends TestCase {
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -34,7 +35,7 @@ public class RemoveUnusedMethodTests extends TestCase {
 	public void testFail(Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod("m");

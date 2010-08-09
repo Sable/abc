@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.FieldDeclaration;
 import AST.MemberDecl;
@@ -35,7 +36,7 @@ public class MoveMembersTests extends TestCase {
 		Program out = succeed ? CompileHelper.compileAllJavaFilesUnder("tests/eclipse/MoveMembers/"+getName()+"/out") : null;
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertTrue(!succeed || out != null);
 		TypeDecl A = in.findSimpleType(AName);
 		TypeDecl B = in.findSimpleType(BName);

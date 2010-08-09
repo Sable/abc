@@ -14,6 +14,7 @@ package tests.eclipse.IntroduceParameterObject;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.MethodDecl;
 import AST.Program;
@@ -47,7 +48,7 @@ public class IntroduceParameterObjectTests extends TestCase {
 		Program out = expectError ? null : CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceParameterObject/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertTrue(expectError || out != null);
 		try {
 			MethodDecl foo = in.findMethod("foo");

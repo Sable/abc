@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.BodyDecl;
 import AST.ClassDecl;
@@ -46,7 +47,7 @@ public class ExtractClassTests extends TestCase {
 		Program out = expectError ? null : CompileHelper.compileAllJavaFilesUnder("tests/eclipse/ExtractClass/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertTrue(expectError || out != null);
 		TypeDecl td = in.findSimpleType(className);
 		assertTrue(td instanceof ClassDecl);

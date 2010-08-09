@@ -3,6 +3,7 @@ package tests;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.ClassDecl;
 import AST.FieldDeclaration;
 import AST.Program;
@@ -18,7 +19,7 @@ public class ExtractClassTests extends TestCase {
 	public void testSucc(String newClassName, String newFieldName, String[] fns, Program in, Program out, boolean encapsulate) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findType("p", "A");
 		assertTrue(td instanceof ClassDecl);
@@ -41,7 +42,7 @@ public class ExtractClassTests extends TestCase {
 	public void testFail(String newClassName, String newFieldName, String[] fns, Program in, boolean encapsulate) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findType("p", "A");
 		assertTrue(td instanceof ClassDecl);
 		ArrayList<FieldDeclaration> fds = new ArrayList<FieldDeclaration>();

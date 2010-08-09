@@ -11,6 +11,7 @@
 package tests.eclipse.ExtractConstant;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import tests.eclipse.ExtractTemp.ExtractTempTests;
 import AST.Expr;
@@ -45,7 +46,7 @@ public class ExtractConstantTests extends TestCase {
 		//assertFalse(replaceAll);
 		Program in = getProgram(true, true);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		Program out = getProgram(true, false);
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
@@ -65,7 +66,7 @@ public class ExtractConstantTests extends TestCase {
 		//assertFalse(replaceAll);
 		Program in = getProgram(false, true);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		Expr e = ExtractTempTests.findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(e);

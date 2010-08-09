@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.HashSet;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ClassDecl;
 import AST.FieldDeclaration;
@@ -46,7 +47,7 @@ public class PullUpTests extends TestCase {
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);
@@ -171,7 +172,7 @@ public class PullUpTests extends TestCase {
 			in = CompileHelper.compile(getInFileName("A"));
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl td = in.findType("B");
 		assertNotNull(td);

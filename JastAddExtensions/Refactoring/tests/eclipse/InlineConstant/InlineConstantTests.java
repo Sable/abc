@@ -11,6 +11,7 @@
 package tests.eclipse.InlineConstant;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -68,7 +69,7 @@ public class InlineConstantTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/InlineConstant/canInline/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		int idx = className.lastIndexOf('.');
 		TypeDecl td = in.findType(className.substring(0, idx), className.substring(idx+1));
@@ -86,7 +87,7 @@ public class InlineConstantTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/InlineConstant/cannotInline/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		int idx = className.lastIndexOf('.');
 		TypeDecl td = in.findType(className.substring(0, idx), className.substring(idx+1));
 		assertNotNull(td);

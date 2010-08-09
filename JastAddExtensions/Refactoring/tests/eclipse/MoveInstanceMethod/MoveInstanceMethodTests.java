@@ -12,6 +12,7 @@
 package tests.eclipse.MoveInstanceMethod;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.MethodDecl;
@@ -65,7 +66,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(false, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -116,7 +117,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);
@@ -143,7 +144,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		Program in = createProgram(true, true, cuQNames);
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		
 		TypeDecl t = in.lookupType(getQualifier(cuQNames[selectionCuIndex]), getSimpleName(cuQNames[selectionCuIndex]));
 		assertNotNull(t);

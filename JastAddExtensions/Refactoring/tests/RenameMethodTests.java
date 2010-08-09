@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RawCU;
@@ -16,7 +17,7 @@ public class RenameMethodTests extends TestCase {
 	public void testSucc(String tp_name, String sig, String new_name, Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
@@ -36,7 +37,7 @@ public class RenameMethodTests extends TestCase {
 	public void testFail(String tp_name, String sig, String new_name, Program in) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(tp_name);
 		assertNotNull(tp);
 		SimpleSet s = tp.localMethodsSignature(sig);

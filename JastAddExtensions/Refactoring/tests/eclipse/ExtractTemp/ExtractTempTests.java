@@ -12,6 +12,7 @@
 package tests.eclipse.ExtractTemp;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.AbstractDot;
@@ -132,7 +133,7 @@ public class ExtractTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(true, true));
 		assertNotNull("invalid program", in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull("expression not found", e);
@@ -160,7 +161,7 @@ public class ExtractTempTests extends TestCase {
 		Program in = CompileHelper.compile(getTestFileName(false, true));
 		assertNotNull("invalid program", in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 
 		Expr e = findExpr(in, startLine, startColumn, endLine, endColumn);
 		if(e == null)

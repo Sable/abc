@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.Program;
 import AST.RawCU;
 import AST.RefactoringException;
@@ -14,7 +15,7 @@ public class RenameTypeTests extends TestCase {
 	public void testSucc(String pkg, String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(pkg, old_name);
 		assertNotNull(tp);
@@ -32,7 +33,7 @@ public class RenameTypeTests extends TestCase {
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl tp = in.findType(old_name);
 		assertNotNull(tp);
@@ -50,7 +51,7 @@ public class RenameTypeTests extends TestCase {
 	public void testFail(String pkg, String old_name, String new_name, Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(pkg, old_name);
 		assertNotNull(tp);
 		try {
@@ -65,7 +66,7 @@ public class RenameTypeTests extends TestCase {
 	public void testFail(String old_name, String new_name, Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl tp = in.findType(old_name);
 		assertNotNull(tp);
 		try {

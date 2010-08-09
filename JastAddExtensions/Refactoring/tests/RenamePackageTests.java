@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.Program;
 import AST.RawCU;
 import AST.RefactoringException;
@@ -13,7 +14,7 @@ public class RenamePackageTests extends TestCase {
 	public void testSucc(String old_name, String new_name, Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		try {
 			in.getPackageDecl(old_name).rename(new_name);
@@ -28,7 +29,7 @@ public class RenamePackageTests extends TestCase {
 	public void testFail(String old_name, String new_name, Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		try {
 			in.getPackageDecl(old_name).rename(new_name);
 			assertEquals("<failure>", in.toString());

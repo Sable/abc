@@ -12,6 +12,7 @@
 package tests.eclipse.IntroduceIndirection;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import tests.CompileHelper;
 import AST.ASTNode;
 import AST.MethodAccess;
@@ -52,7 +53,7 @@ public class IntroduceIndirectionTests extends TestCase {
 		Program out = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceIndirection/"+getName()+"/out");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		ASTNode sel = findNode(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(sel);
@@ -79,7 +80,7 @@ public class IntroduceIndirectionTests extends TestCase {
 		Program in = CompileHelper.compileAllJavaFilesUnder("tests/eclipse/IntroduceIndirection/"+getName()+"/in");
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		ASTNode sel = findNode(in, startLine, startColumn, endLine, endColumn);
 		assertNotNull(sel);
 		int index = targetTypeName.indexOf('.');

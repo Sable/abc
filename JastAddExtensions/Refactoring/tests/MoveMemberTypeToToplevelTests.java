@@ -1,6 +1,7 @@
 package tests;
 
 import junit.framework.TestCase;
+import tests.AllTests;
 import AST.BodyDecl;
 import AST.MemberTypeDecl;
 import AST.Program;
@@ -26,7 +27,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 	public void testSucc(Program in, Program out) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		try {
 			findMemberType(in).moveToToplevel();
@@ -41,7 +42,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 	public void testFail(Program in) {
 		assertNotNull(in);
 		String originalProgram = in.toString();
-		Program.startRecordingASTChangesAndFlush();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		try {
 			findMemberType(in).moveToToplevel();
 			assertEquals("<failure>", in.toString());
