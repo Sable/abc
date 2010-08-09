@@ -75,7 +75,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 			assertEquals(out.toString(), rfe.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(int startLine, int startColumn, int endLine, int endColumn, boolean makeFinal, boolean makeStatic, String className, boolean makePublic) throws Exception{
@@ -94,7 +94,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 			assertEquals(out.toString(), rfe.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean makeFinal, String className, boolean makePublic) throws Exception{
@@ -110,7 +110,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void failActivationHelper(int startLine, int startColumn, int endLine, int endColumn) throws Exception {
@@ -126,7 +126,7 @@ public class ConvertAnonymousToNestedTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

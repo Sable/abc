@@ -22,7 +22,7 @@ public class RenamePackageTests extends TestCase {
 			assertEquals(out.toString(), e.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {
@@ -35,7 +35,7 @@ public class RenamePackageTests extends TestCase {
 		} catch(RefactoringException e) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void test1() {

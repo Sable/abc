@@ -88,7 +88,7 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helperPermuteFail(int[] perm) {
@@ -108,7 +108,7 @@ public class ChangeSignatureTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	/*
@@ -134,7 +134,7 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(String[] newOrder, String[] signature) throws Exception{
@@ -186,7 +186,7 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	private void helperDoAll(String typeName, String methodName, String[] newNames, String[] newTypes, Literal[] newDefaultValues,
@@ -219,7 +219,7 @@ public class ChangeSignatureTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	//------- tests

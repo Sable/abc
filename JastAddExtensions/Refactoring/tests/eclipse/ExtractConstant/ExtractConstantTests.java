@@ -58,7 +58,7 @@ public class ExtractConstantTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean allowLoadtime, String constantName, int errorCode, boolean checkCode) throws Exception{
@@ -76,7 +76,7 @@ public class ExtractConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1(int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean allowLoadtime, String constantName, String guessedConstantName) throws Exception{

@@ -68,7 +68,7 @@ public class IntroduceIndirectionTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helperWarn(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) {
@@ -93,7 +93,7 @@ public class IntroduceIndirectionTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	private void helperErr(Object o1, String indname, String targetTypeName, int startLine, int startColumn, int endLine, int endColumn) { 

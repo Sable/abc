@@ -41,7 +41,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper1() throws Exception{
@@ -69,7 +69,7 @@ public class RenameMethodInInterfaceTests extends TestCase {
 				assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper2(boolean updateReferences) throws Exception{

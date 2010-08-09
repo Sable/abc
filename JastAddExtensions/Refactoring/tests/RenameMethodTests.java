@@ -30,7 +30,7 @@ public class RenameMethodTests extends TestCase {
 			fail("Refactoring was supposed to succeed; failed with "+rfe);
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String tp_name, String sig, String new_name, Program in) {		
@@ -48,7 +48,7 @@ public class RenameMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
     public void test1() {

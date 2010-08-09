@@ -75,7 +75,7 @@ public class InlineConstantTests extends TestCase {
 		assertNotNull(td);
 		helper1(in, out, td.compilationUnit(), startLine, startColumn, endLine, endColumn, replaceAll, removeDeclaration);
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void helper1(Object o, String className, int startLine, int startColumn, int endLine, int endColumn, boolean replaceAll, boolean removeDeclaration) {
@@ -101,7 +101,7 @@ public class InlineConstantTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}		
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	//--- TESTS

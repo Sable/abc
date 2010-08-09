@@ -35,7 +35,7 @@ public class ExtractClassTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String newClassName, String newFieldName, String[] fns, Program in, boolean encapsulate) {
@@ -56,7 +56,7 @@ public class ExtractClassTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 		
 	}
 	

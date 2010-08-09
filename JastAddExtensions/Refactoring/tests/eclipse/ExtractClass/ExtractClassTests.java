@@ -66,7 +66,7 @@ public class ExtractClassTests extends TestCase {
 				assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testComplexExtract() throws Exception {

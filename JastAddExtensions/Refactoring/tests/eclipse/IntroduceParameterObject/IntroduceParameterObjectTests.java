@@ -58,7 +58,7 @@ public class IntroduceParameterObjectTests extends TestCase {
 				assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testBodyUpdate() throws Exception {

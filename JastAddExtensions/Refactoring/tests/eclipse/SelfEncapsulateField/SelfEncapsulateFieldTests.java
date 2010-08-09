@@ -51,7 +51,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	protected void performInvalidTest(String id, String folder, String fieldName) throws Exception {
@@ -67,7 +67,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void objectTest(String fieldName) throws Exception {
@@ -236,7 +236,7 @@ public class SelfEncapsulateFieldTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testStaticImportRead() throws Exception {

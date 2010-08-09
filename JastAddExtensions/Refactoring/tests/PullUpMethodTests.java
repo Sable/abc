@@ -28,7 +28,7 @@ public class PullUpMethodTests extends TestCase {
 			assertEquals(out.toString(), rfe.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	public void testFail(Program in) {		
@@ -44,7 +44,7 @@ public class PullUpMethodTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
     public void test1() {

@@ -101,7 +101,7 @@ public class PullUpTests extends TestCase {
 				assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void declareAbstractFailHelper(String[] selectedMethodNames, String[][] selectedMethodSignatures,
@@ -208,7 +208,7 @@ public class PullUpTests extends TestCase {
 			fail(emn+" not added");
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	//------------------ tests -------------

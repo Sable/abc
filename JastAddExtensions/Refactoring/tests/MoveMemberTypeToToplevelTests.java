@@ -35,7 +35,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 			assertEquals(out.toString(), e.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(Program in) {
@@ -48,7 +48,7 @@ public class MoveMemberTypeToToplevelTests extends TestCase {
 		} catch(RefactoringException e) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test1() {

@@ -51,7 +51,7 @@ public class PushDownTests extends TestCase {
 				fail(rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void pushDownField(String name, boolean succeed) {
@@ -81,7 +81,7 @@ public class PushDownTests extends TestCase {
 				fail(rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void helper(String[] selectedMethodNames,

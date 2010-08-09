@@ -95,7 +95,7 @@ public class PromoteTempToFieldTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	private void failHelper(int startLine, int startColumn, int endLine, int endColumn,
@@ -122,7 +122,7 @@ public class PromoteTempToFieldTests extends TestCase {
 		} catch(RefactoringException rfe) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 	///---------------------- tests -------------------------//

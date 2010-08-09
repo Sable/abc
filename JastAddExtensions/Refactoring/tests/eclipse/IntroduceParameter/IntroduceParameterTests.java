@@ -89,7 +89,7 @@ public class IntroduceParameterTests extends TestCase {
 				assertEquals(out.toString(), rfe.toString());
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 
 // ---

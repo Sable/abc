@@ -25,7 +25,7 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -43,7 +43,7 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 //		assertEquals(out.toString(), in.toString());
 	}
 	
@@ -59,7 +59,7 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void testFail(String old_name, String new_name, Program in) {
@@ -74,7 +74,7 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 		}
 		in.undoAll();
-		assertEquals(originalProgram, in.toString());
+		if (Program.isRecordingASTChanges()) assertEquals(originalProgram, in.toString());
 	}
 	
 	public void test0() {
