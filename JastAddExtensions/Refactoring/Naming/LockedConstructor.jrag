@@ -11,13 +11,12 @@ aspect LockedConstructor {
 	}
 	
 	public void ConstructorDecl.eliminateLockedNames() {
-		unlock(null);
+		unlock();
 		super.eliminateLockedNames();
 	}
 	
-	public ConstructorDecl ConstructorDecl.unlock(Expr qualifier) {
-		assert qualifier == null;
-		if(locked && !getID().equals(hostType().name())) {
+	public ConstructorDecl ConstructorDecl.unlock() {
+		if(locked) {
 			if(fromSource())
 				setID(hostType().name());
 			else

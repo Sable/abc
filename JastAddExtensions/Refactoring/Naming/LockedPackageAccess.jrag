@@ -49,12 +49,11 @@ aspect LockedPackageAccess {
 	}
 	
 	public void PackageAccess.eliminateLockedNames() {
-		unlock(null);
+		unlock();
 		super.eliminateLockedNames();
 	}
 	
-	public PackageAccess PackageAccess.unlock(Expr qual) {
-		assert qual == null;
+	public PackageAccess PackageAccess.unlock() {
 		if(isLocked()) {
 			if(fromSource())
 				setPackage(targetPackage.getName());

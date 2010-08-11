@@ -112,20 +112,21 @@ aspect LockedMethodAccess {
 	inh TypeDecl MethodAccess.enclosingType();
 	public void MethodAccess.eliminateLockedNames() {
 		if(targetMethod != null) {
-			replace(this).with(unlock(null)).eliminateLockedNames();
+			unlock().eliminateLockedNames();
 		} else {
 			super.eliminateLockedNames();
 		}
 	}
 	
-	public Access MethodAccess.unlock(Expr qual) {
+	public Access MethodAccess.unlock() {
+		Expr qual = getQualifier();
 		MethodDecl target = targetMethod.getDecl();
 		setTargetMethod(null);
 		flushCache();
 		if(fromSource())
 			setID(target.name());
 		if(decl().sameSourceDeclAs(target)) {
-			return qual == null ? this : qual.qualifiesAccess(this);
+			return this;
 		} else if(fromSource()) {
 			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
 				throw new RefactoringException("cannot access instance method in static context");
@@ -137,15 +138,18 @@ aspect LockedMethodAccess {
 					if(host.isGenericType())
 						host = ((GenericTypeDecl)host).rawType();
 					if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
-						return host.createLockedAccess().qualifiesAccess(this);
+						if (qual == null || (qual!=null && qual.type() != host))
+							return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this));
+						else
+							return qual!=null ? parentDot() : this;
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessMethod(target);
 					if(acc != null)
-						return acc.eliminate(null, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
+						return (Access) replace(parentDot()).with(acc.eliminate(this, qual=null/*!!*/, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
 				}
 				throw new RefactoringException("cannot access method "+target.name());
 			}
-			Access res = acc.eliminate(qual, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
+			Access res = acc.eliminate(this, qual, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());
 			return res;
@@ -155,58 +159,61 @@ aspect LockedMethodAccess {
 	}
 	
 	// eliminating locked method accesses
-	public Access MethodAccessInfo.eliminate(Expr qualifier, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
+	public Access MethodAccessInfo.eliminate(MethodAccess original, Expr qualifier, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
 		if(qualifier == null)
-			return eliminate(enclosing, inStaticCtxt, args);
+			return eliminate(original, enclosing, inStaticCtxt, args);
 		else
-			return eliminateQualified(qualifier, enclosing, inStaticCtxt, args);
+			return eliminateQualified(original, qualifier, enclosing, inStaticCtxt, args);
 	}
 	
-	public Access MethodAccessInfo.eliminate(TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
+	public Access MethodAccessInfo.eliminate(MethodAccess original, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
 		if(!directlyVisible) {
 			if(target.isStatic())
-				return computeStaticAccess(enclosing, args);
+				return (Access) ASTNode.replace(original).with(
+						computeStaticAccess(original, enclosing, args));
 			if(inStaticCtxt)
 				throw new RefactoringException("cannot access non-static method in static context");
 			if(source == bend) {
-				return computeThisAccess(enclosing, args);
+				return (Access) ASTNode.replace(original).with(
+						computeThisAccess(original, enclosing, args));
 			} else if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
-				return computeSuperAccess(enclosing, args);
+				return (Access) ASTNode.replace(original).with(
+						computeSuperAccess(original, enclosing, args));
 			} else {
 				throw new RefactoringException("cannot access method");
 			}
 		} else {
-			return constructAccess(args);
+			return constructAccess(original, args);
 		}
 	}
 	
-	public Access MethodAccessInfo.computeStaticAccess(TypeDecl enclosing, List<Expr> args) {
-		return source.createLockedAccess().qualifiesAccess(constructAccess(args));
+	public Access MethodAccessInfo.computeStaticAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
+		return source.createLockedAccess().qualifiesAccess(constructAccess(original, args));
 	}
 	
-	public Access MethodAccessInfo.computeThisAccess(TypeDecl enclosing, List<Expr> args) {
-		MethodAccess ma = constructAccess(args);
+	public Access MethodAccessInfo.computeThisAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
+		MethodAccess ma = constructAccess(original, args);
 		if(source == enclosing)
 			return ma;
 		else
 			return bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
 	}
 	
-	public Access MethodAccessInfo.computeSuperAccess(TypeDecl enclosing, List<Expr> args) {
-		MethodAccess ma = constructAccess(args);
+	public Access MethodAccessInfo.computeSuperAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
+		MethodAccess ma = constructAccess(original, args);
 		if(bend == enclosing)
 			return new SuperAccess("super").qualifiesAccess(ma);
 		else
 			return bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
 	}
 
-	protected MethodAccess MethodAccessInfo.constructAccess(List<Expr> args) {
+	protected MethodAccess MethodAccessInfo.constructAccess(MethodAccess original, List<Expr> args) {
 		// check if any of the competitors is more specific than the target for
 		// this argument list; then we need casts
 		for(MethodDecl cand : competitors)
 			if(cand.applicableTo(args) && cand.moreSpecificThan(target))
-				return new MethodAccess(target.name(), insertCasts(args));
-		return new MethodAccess(target.name(), args);
+				return (MethodAccess) ASTNode.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
+		return original;
 	}
 	
 	protected List<Expr> MethodAccessInfo.insertCasts(List<Expr> args) {
@@ -227,26 +234,27 @@ aspect LockedMethodAccess {
 		return new_args;
 	}
 
-	public Access MethodAccessInfo.eliminateQualified(Expr qualifier, TypeDecl enclosing,
+	public Access MethodAccessInfo.eliminateQualified(MethodAccess original, Expr qualifier, TypeDecl enclosing,
 			boolean inStaticCtxt, List<Expr> args) {
-		MethodAccess ma = constructAccess(args);
+		MethodAccess ma = constructAccess(original, args);
 		if(!directlyVisible) {
 			if(!target.isStatic())
 				throw new RefactoringException("cannot access method");
 			if(inStaticCtxt)
 				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
-					return qualifier.qualifiesAccess(ma);
+					return ma.parentDot();
 				else
 					throw new RefactoringException("cannot access method");
 			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
-				return qualifier.qualifiesAccess(ma);
+				return ma.parentDot();
 			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
-				return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma);
+				return (Access) ASTNode.replace(ma.parentDot()).with(
+						new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma));
 			throw new RefactoringException("cannot access method");
 		} else {
 			if(!target.accessibleFrom(enclosing))
 				throw new RefactoringException("method not accessible");
-			return qualifier.qualifiesAccess(ma);
+			return ma.parentDot();
 		}
 	}
 	

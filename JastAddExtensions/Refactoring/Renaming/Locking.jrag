@@ -25,7 +25,7 @@ aspect Locking {
 	
 	interface LockableName {
 		public ASTNode lock();
-		public Expr unlock(Expr qualifier);
+		public Expr unlock();
 		public boolean isLocked();
 	}
 	PackageAccess implements LockableName;
@@ -46,10 +46,7 @@ aspect Locking {
 			rotateLeft();
 		if(getRight() instanceof LockableName && ((LockableName)getRight()).isLocked()) {
 			getLeft().eliminateLockedNames();
-			Expr qual = getLeft();
-			Expr res = ((LockableName)getRight()).unlock(qual);
-			replaceWith(res);
-			res.eliminateLockedNames();
+			((LockableName)getRight()).unlock().eliminateLockedNames();
 		} else {
 			super.eliminateLockedNames();	
 		}

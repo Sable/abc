@@ -59,11 +59,12 @@ aspect LockedVariableAccess {
 	inh TypeDecl VarAccess.enclosingType();
 	public void VarAccess.eliminateLockedNames() {
 		if(targetVariable != null)
-			replace(this).with(unlock(null)).eliminateLockedNames();
+			unlock().eliminateLockedNames();
 		else
 			super.eliminateLockedNames();
 	}
-	public Access VarAccess.unlock(Expr qual) {
+	public Access VarAccess.unlock() {
+		Expr qual = getQualifier();
 		assert (qual==null || (parentDot() != null && qual == parentDot().getLeft()));
 		Variable target = targetVariable.refresh();
 		setTargetVariable(null);
@@ -71,7 +72,7 @@ aspect LockedVariableAccess {
 		if(fromSource())
 			setID(target.name());
 		if(decl().sameSourceDeclAs(target)) {
-			return qual == null ? this : qual.qualifiesAccess(this);
+			return this;
 		} else if(fromSource()) {
 			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && target.isField() && !target.isStatic())
 				throw new RefactoringException("cannot access instance variable in static context");
@@ -80,52 +81,61 @@ aspect LockedVariableAccess {
 				if((qual == null || qual.isPure()) && target.isStatic()) {
 					TypeDecl host = target.hostType();
 					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
-						return host.createLockedAccess().qualifiesAccess(this);
+						return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this)); //??
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessVariable(target);
 					if(acc != null && !acc.isUnknownVarAccess())
-						return acc.asAccess(null, enclosingType());
+						return acc.accessByModifyingAccess(this);
 				}
 				throw new RefactoringException("cannot access variable "+target.name());
 			}
-			return acc.asAccess(qual, enclosingType());
+			return acc.accessByModifyingAccess(this);
 		} else {
 			throw new RefactoringException("cannot access variable "+target.name());
 		}
 	}
 	
 	// eliminating locked variable accesses
-	public Access SymbolicFieldAccess.asAccess(Expr qualifier, TypeDecl enclosing) {
+	public Access SymbolicFieldAccess.accessByModifyingAccess(VarAccess originalAccess) {
+		assert originalAccess != null;
+		Expr qualifier = originalAccess.getQualifier();
+		TypeDecl enclosing = originalAccess.hostType();
+		VarAccess va = originalAccess;
+		
+		Expr to_replace = qualifier == null ? originalAccess : originalAccess.parentDot(); 
+		Access access = null;
+		ASTNode parent = ASTNode.replace(to_replace);
+		
 		if(target.isStatic()) {
-			return target.hostType().createLockedAccess().qualifiesAccess(new VarAccess(target.name()));
+			if (qualifier == null || qualifier.type() != target.hostType())
+				access = target.hostType().createLockedAccess().qualifiesAccess(va);
+			else
+				access = va;
 		} else {
 			if(directlyVisible) {
-				if(qualifier != null)
-					return qualifier.qualifiesAccess(new VarAccess(target.name()));
-				return new VarAccess(target.name());
+				access = va;
 			} else {
-				VarAccess va = new VarAccess(target.name());
 				if(qualifier == null) {
 					if(source.sameSourceDeclAs(bend)) {
 						if(bend.equals(enclosing)) {                                             // this.f
-							return new ThisAccess("this").qualifiesAccess(va);
+							access = new ThisAccess("this").qualifiesAccess(va);
 						} else {                                                                       // B.this.f
-							return bend.createLockedAccess().qualifiesAccess(
+							access = bend.createLockedAccess().qualifiesAccess(
 									new ThisAccess("this").qualifiesAccess(va));
 						}
 					} else if(bend.isClassDecl() && source.equals(((ClassDecl)bend).superclass())) {
 						if(bend.equals(enclosing)) {                                             // super.f
-							return new SuperAccess("super").qualifiesAccess(va);
+							access = new SuperAccess("super").qualifiesAccess(va);
 						} else {
-							return bend.createLockedAccess().qualifiesAccess(                               // B.super.f
+							access = bend.createLockedAccess().qualifiesAccess(                               // B.super.f
 									new SuperAccess("super").qualifiesAccess(va));
 						}
 					} else {
 						if(bend.equals(enclosing)) {
-							return new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)this).f 
+							access = new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)this).f 
 									new ThisAccess("this"))).qualifiesAccess(va);
 						} else {
-							return new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)B.this).f
+							access = new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)B.this).f
 									bend.createLockedAccess().qualifiesAccess(
 											new ThisAccess("this")))).qualifiesAccess(va);
 						}
@@ -134,20 +144,23 @@ aspect LockedVariableAccess {
 					if(!bend.equals(qualifier.type()))
 						throw new RefactoringException("cannot access variable");
 					if(source.equals(qualifier.type()))
-						return qualifier.qualifiesAccess(va);
-					return new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(va);
+						access = va;
+					access = new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(va);
 				}
 			}
 		}
+		if (to_replace.equals(access))
+			return access;
+		return (Access) parent.with(access);
 	}
 	
-	public Access UnknownVarAccess.asAccess(Expr qualifier, TypeDecl enclosing) {
+	public Access UnknownVarAccess.accessByModifyingAccess(VarAccess originalAccess) {
 		throw new RefactoringException("cannot access variable");
 	}
 	
-	public Access LocalDeclaration.asAccess(Expr qualifier, TypeDecl enclosing) {
-		if(qualifier != null)
+	public Access LocalDeclaration.accessByModifyingAccess(VarAccess originalAccess) {
+		if(originalAccess.getQualifier() != null)
 			throw new RefactoringException("cannot qualify access to local variable");
-		return new VarAccess(name());
+		return originalAccess;
 	}
 }

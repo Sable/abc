@@ -43,7 +43,7 @@ aspect TypeVariableExt {
 	
 	// collect all type variables used in a subtree
 	syn lazy Collection<TypeVariable> ASTNode.usedTypeVars() {
-		Collection<TypeVariable> res = new HashSet<TypeVariable>();
+		Collection<TypeVariable> res = new LinkedHashSet<TypeVariable>();
 		collectUsedTypeVars(res);
 		return res;
 	}
@@ -60,6 +60,14 @@ aspect TypeVariableExt {
 		if(decl().isTypeVariable())
 			tvars.add((TypeVariable)decl());
 		super.collectUsedTypeVars(tvars);
+	}
+	
+	syn lazy Collection<TypeVariable> ASTNode.usedForeignTypeVars() {
+		Collection<TypeVariable> res = new LinkedHashSet<TypeVariable>();
+		for(TypeVariable tv : usedTypeVars())
+			if (!tv.isDescendantTo(this))
+				res.add(tv);
+		return res;
 	}
 
 	// does this subtree use type variables declared outside it?

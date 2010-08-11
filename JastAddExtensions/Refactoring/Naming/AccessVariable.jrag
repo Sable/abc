@@ -33,7 +33,7 @@ aspect AccessVariable {
 		boolean isUnknownVarAccess();
 		public SymbolicVarAccess ensureFinal();
 		public SymbolicVarAccess ensureStatic();
-		Access asAccess(Expr qualifier, TypeDecl enclosing);
+		public Access accessByModifyingAccess(VarAccess originalAccess);
 	}
 	
 	class SymbolicFieldAccess implements SymbolicVarAccess {

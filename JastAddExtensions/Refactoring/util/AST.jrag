@@ -230,4 +230,12 @@ aspect AST {
 			p.rotateLeft();
 		}
 	}
+	
+	public Expr Access.getQualifier() {
+		assert !hasParentDot() || 
+			(isLeftChildOfDot() && (!parentDot().hasParentDot() || parentDot().isLeftChildOfDot())) ||
+			isRightChildOfDot(); // i.e., is rotated to left
+		return isRightChildOfDot() ? parentDot().getLeft() : null;
+	}
+	
 }
