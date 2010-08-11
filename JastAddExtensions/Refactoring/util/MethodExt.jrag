@@ -2,10 +2,27 @@ aspect MethodExt {
 	syn boolean MethodDecl.isUnknown() = hostType().isUnknown();
 	
 	public void MethodDecl.makeAbstract() {
-		if(isNative() || isFinal() || isStatic())
+		if(!canBeAbstract())
 			throw new RefactoringException("cannot make this method abstract");
 		getModifiers().addModifier("abstract");
 		setBlockOpt(new Opt());
+		hostType().makeAbstract();
+		for(TypeDecl td : typesToMakeAbstract())
+			td.makeAbstract();
+		this.flushCaches();
+	}
+	
+	syn boolean MethodDecl.canBeAbstract() = 
+		!(isNative() || isFinal() || isStatic() || !monoUses().isEmpty() || isPrivate());
+	
+	public void MethodDecl.removeMethod() {
+		if(isCallableFromOutside() || isReferencedFromOutside())
+			throw new RefactoringException("method is still used");
+		if(!overrides().isEmpty() && allAbstract(overrides())) {
+			for(TypeDecl td : typesToMakeAbstract())
+				td.makeAbstract();
+		}
+		hostType().removeBodyDecl(this);
 	}
 	
 	// whether this method could by called either dynamically or statically
@@ -28,14 +45,15 @@ aspect MethodExt {
 		if(polyUses().isEmpty())
 			return false;
 		// not if no object of a type that inherits this method is ever constructed
-		for(TypeDecl td : inheritingTypes())
+		for(TypeDecl td : typesToMakeAbstract())
 			if(td.instancesAreConstructed())
 				return true;
 		return false;
 	}
 	
 	// all types that inherit a certain method and do not provide an overriding definition
-	syn lazy Collection<TypeDecl> MethodDecl.inheritingTypes() {
+	// including search through subclasses in different package that can't override the method (if package access)
+	syn lazy Collection<TypeDecl> MethodDecl.typesToMakeAbstract() {
 		if(isStatic() || isPrivate())
 			return Collections.singleton(hostType());
 		Collection<TypeDecl> result = new HashSet<TypeDecl>();
@@ -57,8 +75,6 @@ aspect MethodExt {
 				return true;
 		return false;
 	}
-	
-	syn boolean MethodDecl.canBeAbstract() = !(isStatic() || isPrivate() || isFinal());
 	
 	// uses of a method, including its substituted and parameterised copies
 	public Collection<MethodAccess> MethodDecl.usesOfAllCopies() {

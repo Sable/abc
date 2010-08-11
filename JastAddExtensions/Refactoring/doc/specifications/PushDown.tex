@@ -1,6 +1,8 @@
 \subsection{\refactoring{Push Down}}
 This refactoring pushes a method down to all subclasses of its defining class. Implemented in \sourcelink{PushDown/PushDownMethod.jrag}.
 
+Types that inherit a method $m$ include the host type of $m$.
+
 \begin{algorithm}
 \caption{$\refactoring{Trivially Override}(B : \type{Type}, m : \type{VirtualMethod}) : \option{\type{MethodCall}}$}
 \label{alg:TriviallyOverride}
@@ -51,7 +53,8 @@ This refactoring pushes a method down to all subclasses of its defining class. I
 \REQUIRE Java
 \ENSURE Java
 \medskip
-\STATE \assert $\util{calls}(m)\setminus\util{below}(m)=\emptyset$
+\STATE \assert $m$ is not \code{native}, \code{static}, \code{private}, nor \code{final}
+\STATE \assert there are no static calls to $m$ (e.g., \code{super}-call)
 \FORALL{types $B$ that inherit $m$}
   \STATE $\refactoring{Make Type Abstract}(B)$
 \ENDFOR

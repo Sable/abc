@@ -32,6 +32,7 @@ public class AllTests {
 		suite.addTestSuite(RenameTypeTests.class);
 		suite.addTestSuite(RenameVariableTests.class);
 		suite.addTestSuite(RelativesTests.class);
+		suite.addTestSuite(MakeMethodAbstract.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);

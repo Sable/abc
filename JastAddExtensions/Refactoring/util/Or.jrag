@@ -1,0 +1,32 @@
+aspect Or {
+	
+	class Or {
+		public static void or(Refactoring... refactorings) {
+			for (int i = 0; i < refactorings.length; i++) {
+				ASTUndoCheckPoint checkPoint = Program.createASTUndoCheckPoint();
+				try {
+					refactorings[i].refactor();
+				} catch (RefactoringException re) {
+					Program.undoUntil(checkPoint);
+					continue;
+				}
+				return;
+			}
+			throw new RefactoringException("Or of refactorings: no refactoring succeeded");
+		}
+		
+
+		interface Refactoring {
+			void refactor() throws RefactoringException;
+		}
+		
+		public final static Refactoring ID = new Refactoring() {
+			
+			@Override
+			public void refactor() throws RefactoringException {
+				// ID();
+			}
+		};
+	}
+	
+}

@@ -64,10 +64,16 @@ aspect MoveMethod {
 		new_b.inline();
 		// remove spurious parameters
 		if(removeSpuriousParameters) {
-			for(int k=i+quals.getNumChild()-1;k>=i;--k)
-				try {
-					m.removeUnusedParameter(k);
-				} catch(RefactoringException rfe) { }
+			for(int k=i+quals.getNumChild()-1;k>=i;--k) {
+				final MethodDecl md_ = m;
+				final int k_ = k;
+				Or.or(new Or.Refactoring() {
+					@Override
+					public void refactor() {
+						md_.removeUnusedParameter(k_);
+					}
+				}, Or.ID);
+			}
 		}
 		return m_copy;
 	}

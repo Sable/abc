@@ -9,9 +9,9 @@ aspect PullUpMethod {
 		translateTypeVars(host, sup);
 		MethodDecl md_copy = (MethodDecl)fullCopyAndDetach();
 		md.replaceWith(md_copy);
+		sup.insertUnusedMethod(md);
 		if(onlyAbstract)
 			md.makeAbstract();
-		sup.insertUnusedMethod(md);
 		if(!md.isAbstract() || md_copy.isAbstract())
 			host.removeBodyDecl(md_copy);
 		programRoot().flushCaches();

@@ -3,21 +3,22 @@
  * can actually never be invoked. */
 aspect RemoveUnusedMethod {
 	public void MethodDecl.removeUnused(boolean leaveAbstract) {
-		if(isCallableFromOutside())
-			throw new RefactoringException("method is still used");
-		if(leaveAbstract || isReferencedFromOutside()) {
-			if(isAbstract())
-				return;
-			if(!canBeAbstract())
-				throw new RefactoringException("cannot make method abstract");
-			for(TypeDecl td : inheritingTypes())
-				td.makeAbstract();
-			setBlockOpt(new Opt());
-			getModifiers().addModifier("abstract");
-		} else {
-			if(!overrides().isEmpty() && allAbstract(overrides()))
-				hostType().makeAbstract();
-			hostType().removeBodyDecl(this);
-		}
+		final MethodDecl md_ = this;
+		if (leaveAbstract)
+			Or.or(new Or.Refactoring() {
+				public void refactor() throws RefactoringException {
+					md_.makeAbstract();
+				}
+			}/*, Or.ID*/);
+		else
+			Or.or(new Or.Refactoring() {
+				public void refactor() throws RefactoringException {
+					md_.removeMethod();
+				}
+			}, new Or.Refactoring() {
+				public void refactor() throws RefactoringException {
+					md_.makeAbstract();
+				}
+			}/*, Or.ID*/);
 	}
 }

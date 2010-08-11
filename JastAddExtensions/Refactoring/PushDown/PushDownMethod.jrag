@@ -41,6 +41,7 @@ aspect PushDownMethod {
 			md = (MethodDecl)parent.getChild(idx);
 			child.eliminate(WITH_STMT, FRESH_VARIABLES);
 		}
+		final MethodDecl md_ = md;
 		md.removeUnused(leaveAbstract);
 	}
 	

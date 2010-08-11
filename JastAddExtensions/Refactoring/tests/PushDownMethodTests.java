@@ -418,6 +418,15 @@ public class PushDownMethodTests extends TestCase {
     		  new RawCU("C.java",     "package p; class C { int f() { A a = new q.B(); return a.m(); } }"),
     		  new RawCU("B.java",     "package q; public class B extends p.A { }"))); 
     }
+    public void test31b() {
+    	// push down should fail, since the pushed method cannot override the same method as before
+    	testFail(Program.fromCompilationUnits(
+    		  new RawCU("Super.java", "package p; class Super { int m() { return 23; } }"),
+    		  new RawCU("A.java",     "package p; public class A extends Super { int m() { return 42; } }"),
+    		  new RawCU("D.java",     "package p; public class D extends A { }"),
+    		  new RawCU("C.java",     "package p; class C { int f() { A a = new q.B(); return a.m(); } }"),
+    		  new RawCU("B.java",     "package q; public class B extends p.A { }"))); 
+    }
 
     public void test32() {
     	testSucc(

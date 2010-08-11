@@ -47,17 +47,17 @@ aspect Undo {
 		return RECORDING_CHANGES;
 	}
 	
-	public void Program.undoAll() {
+	public static void Program.undoAll() {
 		undoUntil(null);
 	}
 	
-	public void Program.undoUntilLastCheckPoint() {
+	public static void Program.undoUntilLastCheckPoint() {
 		undoUntil(lastCheckPoint);
 	}
 	
-	public void Program.undoUntil(ASTUndoCheckPoint cp) {
-		flushCaches();
-		parentChildCheck();
+	public static void Program.undoUntil(ASTUndoCheckPoint cp) {
+//		flushCaches();
+//		parentChildCheck();
 		System.out.print("Undoing " + undoStack.size() + " actions... ");
 		while (!undoStack.isEmpty()) {
 			ASTModification mod = undoStack.pop();
@@ -67,9 +67,9 @@ aspect Undo {
 		}
 		System.out.println("done.");
 		System.out.println("Total undo actions: " + undoActionCount);
-		flushCaches();
-		parentChildCheck();
-		flushCaches();
+//		flushCaches();
+//		parentChildCheck();
+//		flushCaches();
 	}
 	
 //	public Program ASTNode.programRootParentFromField() {
