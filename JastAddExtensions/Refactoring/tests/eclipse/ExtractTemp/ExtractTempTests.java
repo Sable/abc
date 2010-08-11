@@ -149,7 +149,7 @@ public class ExtractTempTests extends TestCase {
 
 		assertEquals(out.toString(), in.toString());
 		
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -172,7 +172,7 @@ public class ExtractTempTests extends TestCase {
 			e.doExtract(tempName, makeFinal);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

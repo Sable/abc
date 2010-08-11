@@ -25,7 +25,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 		} catch(RefactoringException e) {
 			assertEquals(out.toString(), e.toString());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -41,7 +41,7 @@ public class LocalClassToMemberClassTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException e) {
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

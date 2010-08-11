@@ -75,7 +75,7 @@ public class InlineConstantTests extends TestCase {
 		TypeDecl td = in.findType(className.substring(0, idx), className.substring(idx+1));
 		assertNotNull(td);
 		helper1(in, out, td.compilationUnit(), startLine, startColumn, endLine, endColumn, replaceAll, removeDeclaration);
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -102,7 +102,7 @@ public class InlineConstantTests extends TestCase {
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}		
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

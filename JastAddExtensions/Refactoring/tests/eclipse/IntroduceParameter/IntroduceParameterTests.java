@@ -89,7 +89,7 @@ public class IntroduceParameterTests extends TestCase {
 			if(succeed)
 				assertEquals(out.toString(), rfe.toString());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

@@ -42,7 +42,7 @@ public class InlineMethodTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			fail(rfe.getMessage());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -56,7 +56,7 @@ public class InlineMethodTests extends TestCase {
 			m.doInline();
 			assertEquals("<failed>", in.toString());
 		} catch(RefactoringException rfe) { }
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

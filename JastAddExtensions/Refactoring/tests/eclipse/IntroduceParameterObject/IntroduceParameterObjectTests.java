@@ -58,7 +58,7 @@ public class IntroduceParameterObjectTests extends TestCase {
 			if(!expectError)
 				assertEquals(out.toString(), rfe.getMessage());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

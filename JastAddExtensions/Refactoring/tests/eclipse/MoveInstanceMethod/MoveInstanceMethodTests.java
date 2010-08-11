@@ -81,7 +81,7 @@ public class MoveInstanceMethodTests extends TestCase {
 				m.doMoveToField(newReceiverName, inlineDelegator, removeDelegator, true);
 			assertEquals("<failed>", in.toString());
 		} catch(RefactoringException rfe) { }
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -137,7 +137,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { 
 			fail(rfe.getMessage());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -165,7 +165,7 @@ public class MoveInstanceMethodTests extends TestCase {
 		} catch(RefactoringException rfe) { 
 			fail(rfe.getMessage());
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}

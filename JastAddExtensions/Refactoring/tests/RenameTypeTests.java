@@ -25,7 +25,7 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 //		assertEquals(out.toString(), in.toString());
@@ -44,7 +44,7 @@ public class RenameTypeTests extends TestCase {
 		} catch(RefactoringException e) {
 			fail("Refactoring was supposed to succeed, failed with "+e);
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 //		assertEquals(out.toString(), in.toString());
@@ -61,7 +61,7 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
@@ -77,7 +77,7 @@ public class RenameTypeTests extends TestCase {
 			fail("Refactoring was supposed to fail, succeeded with "+in);
 		} catch(RefactoringException e) {
 		}
-		if (AllTests.TEST_UNDO) in.undoAll();
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
