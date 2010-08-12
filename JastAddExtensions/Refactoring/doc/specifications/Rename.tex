@@ -1,8 +1,8 @@
 \subsection{\refactoring{Rename}}
 This family of refactorings is used for renaming named program entities. Implemented in \sourcelink{Renaming/}.
 
-\begin{algorithm}
-\caption{$\refactoring{Rename Field}(f : \type{Field}, n : \type{Name})$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Rename Field}(f : \type{Field}, n : \type{Name})$}\label{alg:RenameField}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
@@ -14,10 +14,10 @@ This family of refactorings is used for renaming named program entities. Impleme
 \end{algorithmic}
 \end{algorithm}
 
-Refactoring \refactoring{Rename Field} changes the name of a field $f$ to $n$. It ensures that $n$ is indeed a valid name and that the host type of $f$ contains no other field called $n$. It then globally locks all accesses to variables, types, or packages named either $n$ or $\util{name}(f)$, and changes the name of $f$ to $n$.
+Refactoring \refactoring{Rename Field} (Algorithm \ref{alg:RenameField}) changes the name of a field $f$ to $n$. It ensures that $n$ is indeed a valid name and that the host type of $f$ contains no other field called $n$. It then globally locks all accesses to variables, types, or packages named either $n$ or $\util{name}(f)$, and changes the name of $f$ to $n$.
 
-\begin{algorithm}
-\caption{$\refactoring{Rename Local}(v : \type{Local}, n : \type{Name})$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Rename Local}(v : \type{Local}, n : \type{Name})$}\label{alg:RenameLocal}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
@@ -29,10 +29,10 @@ Refactoring \refactoring{Rename Field} changes the name of a field $f$ to $n$. I
 \end{algorithmic}
 \end{algorithm}
 
-Refactoring \refactoring{Rename Local} changes the name of a local variable or parameter $v$ to $n$. It ensures that $n$ is indeed a valid name and that the renaming $v$ to $n$ will not violate the rule that scopes of local variables of the same name cannot be nested. It then again locks all accesses to variables, types, or packages named either $n$ or $\util{name}(v)$, but only within the enclosing block of $v$, and changes the name of $v$ to $n$.
+Refactoring \refactoring{Rename Local} (Algorithm \ref{alg:RenameLocal}) changes the name of a local variable or parameter $v$ to $n$. It ensures that $n$ is indeed a valid name and that the renaming $v$ to $n$ will not violate the rule that scopes of local variables of the same name cannot be nested. It then again locks all accesses to variables, types, or packages named either $n$ or $\util{name}(v)$, but only within the enclosing block of $v$, and changes the name of $v$ to $n$.
 
-\begin{algorithm}
-\caption{$\refactoring{Rename Method}(m : \type{Method}, n : \type{Name}$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Rename Method}(m : \type{Method}, n : \type{Name})$}\label{alg:RenameMethod}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names, locked overriding
@@ -52,10 +52,10 @@ Refactoring \refactoring{Rename Local} changes the name of a local variable or p
 \end{algorithmic}
 \end{algorithm}
 
-Refactoring \refactoring{Rename Method} changes the name of a method $m$ to $n$. It ensures that $n$ is a valid name, then locks all calls to methods of name $\util{name}(m)$ or $n$, and their overriding dependencies. Now it changes the names of all methods $m'$ related to $m$ (\emph{i.e.}, such that $m$ and $m'$ both transitively override the same method), checking that the resulting program will be well-formed: in particular, there cannot be another local method with the same signature, and any methods that the renamed $m'$ would override or hide must, in fact, be overridable or hidable by $m'$, and vice versa for methods that would override or hide $m'$. If there is a static import that only imports $m'$ (and not also another static member of the surrounding class), then remove that import. We could, of course, try to adjust it, but changing imports is a tricky business.
+Refactoring \refactoring{Rename Method} (Algorithm \ref{alg:RenameMethod}) changes the name of a method $m$ to $n$. It ensures that $n$ is a valid name, then locks all calls to methods of name $\util{name}(m)$ or $n$, and their overriding dependencies. Now it changes the names of all methods $m'$ related to $m$ (\emph{i.e.}, such that $m$ and $m'$ both transitively override the same method), checking that the resulting program will be well-formed: in particular, there cannot be another local method with the same signature, and any methods that the renamed $m'$ would override or hide must, in fact, be overridable or hidable by $m'$, and vice versa for methods that would override or hide $m'$. If there is a static import that only imports $m'$ (and not also another static member of the surrounding class), then remove that import. We could, of course, try to adjust it, but changing imports is a tricky business.
 
-\begin{algorithm}
-\caption{$\refactoring{Rename Type}(T : \type{Type}, n : \type{Name}$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Rename Type}(T : \type{Type}, n : \type{Name})$}\label{alg:RenameType}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
@@ -74,4 +74,26 @@ Refactoring \refactoring{Rename Method} changes the name of a method $m$ to $n$.
 \end{algorithmic}
 \end{algorithm}
 
-Refactoring \refactoring{Rename Type} changes the name of a type $T$ to $n$.  It is fairly straightforward, except for the well-formedness checks and the treatment of import declarations.
+Refactoring \refactoring{Rename Type} (Algorithm \ref{alg:RenameType}) changes the name of a type $T$ to $n$.  It is fairly straightforward, except for the well-formedness checks and the treatment of import declarations.
+
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Rename Package}(P : \type{Package}, n : \type{Name})$}\label{alg:RenamePackage}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+\STATE \assert $n$ is a valid name
+\STATE \assert there is no package with name $n$
+\STATE $\util{lockAllPackageAccesses}()$
+\FORALL{$package$ in \{packages with name starting with $\util{name}(P)\}$}
+  \STATE $\refactoring{Rename Package}(package, \util{name}(package).\util{replaceFirst}(\util{name}(P), n))$
+\ENDFOR
+\STATE set name of $P$ to $n$
+\end{algorithmic}
+\end{algorithm}
+
+Refactoring \refactoring{Rename Package} (Algorithm \ref{alg:RenamePackage}) changes the name of a package $P$ to $n$ and renames also all subpackages.
+
+

@@ -1,7 +1,8 @@
 \subsection{\refactoring{Promote Temp to Field}}
-This refactoring turns a local variable into a field. Implemented in \sourcelink{PromoteTempToField/PromoteTempToField.jrag}.
+This refactoring turns a local variable into a field. Implemented in \sourcelink{PromoteTempToField/PromoteTempToField.jrag};
+see Algorithms~\ref{alg:PromoteTemp},~\ref{alg:InsertField}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Promote Temp to Field}(d : \type{LocalVar})$}
 \label{alg:PromoteTemp}
 \begin{algorithmic}[1]
@@ -20,7 +21,7 @@ This refactoring turns a local variable into a field. Implemented in \sourcelink
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Insert Field}(T : \type{ClassOrInterface}, d : \type{Field})$}
 \label{alg:InsertField}
 \begin{algorithmic}[1]

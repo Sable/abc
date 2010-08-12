@@ -1,2 +1,112 @@
 \subsection{\refactoring{Inline Method}}
-See ECOOP 2009 publication. (TODO)
+% TODO:
+This refactoring is inverse of $\refactoring{Extract Method}$. Implemented in \sourcelink{InlineMethod/}; 
+see Algorithms~\ref{alg:InlineMethod}, \ref{alg:InlineMethodAccess}, \ref{alg:InlineToAnonymousMethod}, %
+\ref{alg:IntroduceOutParameter}, %
+\ref{alg:OpenVariables}, \ref{alg:InlineAnonymousMethod}, \ref{alg:InlineBlock}.
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Inline Method}(m \colon \type{Method})$}
+\label{alg:InlineMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ fresh variables, \code{with} statement, locked names
+\medskip
+  \FORALL{$methosAccess$ in $\util{polyUses}(m)$} % TODO: polyUses
+    \STATE $\refactoring{Inline Method Access}(methodAccess)$
+  \ENDFOR
+  \STATE $\refactoring{Remove Method}(m)$ \orelse\ $\refactoring{Id}()$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Inline Method Access}(ma \colon \type{MethodAccess})$}
+\label{alg:InlineMethodAccess}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ fresh variables, \code{with} statement, locked names
+\medskip
+  \STATE $am \leftarrow \refactoring{Inline To Anonymous Method}(ma)$
+  \STATE $\refactoring{Introduce Out Parameter}(am)$
+  \STATE $\refactoring{Open Variables}(am)$
+  \STATE $node \leftarrow \refactoring{Inline Anonymous Method}(am)$
+  \IF{$node$ is a $\type{Block}$}
+    \STATE $\refactoring{Inline Block}(node)$
+  \ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Inline To Anonymous Method}(am \colon \type{MethodAccess}) : \type{AnonymousMethod}$}
+\label{alg:InlineToAnonymousMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ \code{with} statement, locked names
+\medskip
+  \STATE \assert $\util{target}(ma)$ is unambiguous
+  \STATE $target \leftarrow \util{target}(ma)$
+  \STATE \assert $target$ has a body
+  \STATE $am \leftarrow$ copy target as anonymous method, with locked names, 
+  			unfolded synchronize and arguments from $ma$
+  \IF{$ma$ is right child of $\type{Dot}$}
+    \STATE add \code{with} statement around the body of $am$ \\ mapping \code{this} to qualifier of $ma$
+    \STATE replace qualifier and the access with $am$
+  \ELSE
+    \STATE replace $ma$ with $am$
+  \ENDIF
+  \RETURN $am$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Introduce Out Parameter}(am \colon \type{AnonymousMethod})$}
+\label{alg:IntroduceOutParameter}
+\begin{algorithmic}[1]
+\REQUIRE
+\ENSURE adds fresh variables
+\medskip
+  \STATE $\util{eliminateVarargs}()$
+  \STATE \dots
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Open Variables}(am \colon \type{AnonymousMethod})$}
+\label{alg:OpenVariables}
+\begin{algorithmic}[1]
+\REQUIRE ??? Java
+\ENSURE ??? Java $\cup$ fresh variables, \code{with} statement, locked names
+\medskip
+  \STATE
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Inline Anonymous Method}(am \colon \type{AnonymousMethod}) : ASTNode$}
+\label{alg:InlineAnonymousMethod}
+\begin{algorithmic}[1]
+\REQUIRE ??? Java
+\ENSURE ??? Java $\cup$ fresh variables, \code{with} statement, locked names
+\medskip
+  \STATE
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Inline Block}(b \colon \type{Block})$}
+\label{alg:InlineBlock}
+\begin{algorithmic}[1]
+\REQUIRE ??? Java
+\ENSURE ??? Java $\cup$ fresh variables, \code{with} statement, locked names
+\medskip
+  \STATE
+\end{algorithmic}
+\end{algorithm}
+
+

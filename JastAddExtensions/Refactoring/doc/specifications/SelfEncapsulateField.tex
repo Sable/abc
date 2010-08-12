@@ -1,8 +1,8 @@
 \subsection{\refactoring{Self-Encapsulate Field}}
-This refactoring makes a field private, rerouting all accesses to it through getter and setter methods. Implemented in \sourcelink{SelfEncapsulateField/SelfEncapsulateField.jrag}.
+This refactoring makes a field private, rerouting all accesses to it through getter and setter methods. Implemented in \sourcelink{SelfEncapsulateField/SelfEncapsulateField.jrag}; see Algorithm~\ref{alg:Self-EncapsulateField}.
 
-\begin{algorithm}
-\caption{$\refactoring{Self-Encapsulate Field}(f : \type{Field})$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Self-Encapsulate Field}(f : \type{Field})$}\label{alg:Self-EncapsulateField}
 \begin{algorithmic}[1]
 \REQUIRE Java $\setminus$ abbreviated assignments
 \ENSURE Java $\cup$ locked names

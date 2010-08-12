@@ -1,7 +1,7 @@
 \subsection{\refactoring{Extract Temp}}
 This refactoring extracts an expression into a local variable. Implemented in \sourcelink{ExtractTemp/ExtractTemp.jrag}; see Algorithms~\ref{alg:ExtractTemp}, \ref{alg:InsertLocalVariable}, \ref{alg:ExtractAssignment}, \ref{alg:MergeVariableDeclaration}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Extract Temp}(e : \type{Expr}, n : \type{Name}) : LocalVar$}
 \label{alg:ExtractTemp}
 \begin{algorithmic}[1]
@@ -21,7 +21,7 @@ This refactoring extracts an expression into a local variable. Implemented in \s
 \subsubsection{\refactoring{Insert Local Variable}}
 The refactoring inserts a local variable before a given statement. Implemented in \sourcelink{ExtractTemp/IntroduceUnusedLocal.jrag}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Insert Local Variable}(s : \type{Stmt}, v : \type{LocalVar}$)}
 \label{alg:InsertLocalVariable}
 \begin{algorithmic}[1]
@@ -38,7 +38,7 @@ The refactoring inserts a local variable before a given statement. Implemented i
 \subsubsection{\refactoring{Extract Assignment}}
 This refactoring extracts an expression into an assignment to a local variable. Implemented in \sourcelink{ExtractTemp/ExtractAssignment.jrag}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Extract Assignment}(v : \type{LocalVar}, e : \type{Expr}) : \type{Assignment}$}
 \label{alg:ExtractAssignment}
 \begin{algorithmic}[1]
@@ -62,7 +62,7 @@ This refactoring extracts an expression into an assignment to a local variable. 
 \subsubsection{\refactoring{Merge Variable Declaration}}
 This refactoring merges a variable declaration with the assignment immediately following it, if that assignment is an assignment to the same variable. Implemented in \sourcelink{ExtractTemp/MergeVarDecl.jrag}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Merge Variable Declaration}(v : \type{LocalVar})$}
 \label{alg:MergeVariableDeclaration}
 \begin{algorithmic}[1]

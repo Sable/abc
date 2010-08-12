@@ -1,7 +1,7 @@
 \subsection{\refactoring{Move Inner To Toplevel}}
 This refactoring converts a member type to a toplevel type. Implemented in \sourcelink{TypePromotion/MoveMemberTypeToToplevel.jrag}; see Algorithms~\ref{alg:MoveMemberTypeToToplevel}, \ref{alg:InsertType}, \ref{alg:MakeTypeStatic}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Move Member Type to Toplevel}(M : \type{MemberType})$}
 \label{alg:MoveMemberTypeToToplevel}
 \begin{algorithmic}[1]
@@ -18,7 +18,7 @@ This refactoring converts a member type to a toplevel type. Implemented in \sour
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Insert Type}(p : \type{Package}, T : \type{ClassOrInterface})$}
 \label{alg:InsertType}
 \begin{algorithmic}[1]
@@ -32,7 +32,7 @@ This refactoring converts a member type to a toplevel type. Implemented in \sour
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Make Type Static}(M : \type{MemberType})$}
 \label{alg:MakeTypeStatic}
 \begin{algorithmic}[1]

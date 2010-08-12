@@ -1,11 +1,10 @@
 \subsection{\refactoring{Extract Class}}
-This refactoring extracts some fields of a class into a newly created member class. Implemented in \sourcelink{ExtractClass/ExtractClass.jrag}; see Algorithm~\ref{alg:ExtractClass}.
+This refactoring extracts some fields of a class into a newly created member class. Implemented in \sourcelink{ExtractClass/ExtractClass.jrag}; 
+see Algorithms~\ref{alg:ExtractClass},~\ref{alg:MoveInitsTogether},~\ref{alg:PassInitsToConstructor}.
 
-Initializer evaluation is order independent for example
-if we can invert their order without breaking name and dataflow dependencies.
+We can pass initializers to a constructor if they do not depend on values of previous initializers.
 
-
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Extract Class}(C : \type{Class}, fs : \listtp{\type{Field}}, n : \type{Name}, fn : \type{Name})$}\label{alg:ExtractClass}
 \begin{algorithmic}[1]
 \REQUIRE Java
@@ -35,7 +34,7 @@ if we can invert their order without breaking name and dataflow dependencies.
 \end{algorithm}
 
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Move Inits Together}(inits : \listtp{InitializerBlock}, after : \type{Field})$}\label{alg:MoveInitsTogether}
 \begin{algorithmic}[1]
 \REQUIRE Java
@@ -49,7 +48,7 @@ if we can invert their order without breaking name and dataflow dependencies.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{PassInitsToConstructor}(inits : \listtp{InitializerBlock}, w : Field)$}\label{alg:PassInitsToConstructor}
 \begin{algorithmic}[1]
 \STATE \assert all $inits$ are in one initializer block

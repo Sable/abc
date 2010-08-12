@@ -1,2 +1,180 @@
 \subsection{\refactoring{Extract Method}}
-See ECOOP 2009 publication. (TODO)
+%See ECOOP 2009 publication. and the thesis
+Implemented in \sourcelink{ExtractMethod/ExtractMethod.jrag}; 
+see Algorithms~\ref{alg:ExtractMethod},~\ref{alg:ExtractBlock},~\ref{alg:IntroduceAnonymousMethod},~%
+\ref{alg:CloseOverVariables},~%
+\ref{alg:EliminateReferenceParameters},~\ref{alg:LiftAnonymousMethod}.
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Extract Method}(b \colon \type{Block}, i \colon \type{nat}, j \colon \type{nat}, n \colon \type{ident}) \colon \type{Method}$}
+\label{alg:ExtractMethod}
+\begin{algorithmic}[1]
+\REQUIRE
+\ENSURE
+\medskip
+\STATE $b' \leftarrow \lfloor\refactoring{Extract Block}\rfloor(b, i, j)$
+\STATE $a \leftarrow \refactoring{Introduce Anonymous Method}(b')$
+\STATE $\refactoring{Close over Variables}(a)$
+\STATE $\refactoring{Eliminate Reference Parameters}(a)$
+\RETURN $\lfloor\refactoring{Lift Anonymous Method}\rfloor(n, a)$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Extract Block}(b \colon \type{Block}, i \colon \type{nat}, j \colon \type{nat}) \colon \type{Block}$}
+\label{alg:ExtractBlock}
+\begin{algorithmic}[1]
+\REQUIRE no compound declarations
+\ENSURE locked names
+\medskip
+\STATE $[s_0;\ldots;s_{n-1}] \leftarrow \text{statements in $b$}$
+\STATE \assert $0\leq i\leq j<n$
+\STATE lock all variable and type names in $b$
+\FORALL{$i\leq k\leq j$}
+  \STATE \assert $s_k$ is not a \code{case} or \code{default}
+  \IF{$s_k$ declares a variable referenced after $s_j$}
+    \STATE $\refactoring{Split Declaration}(s_k)$
+    \STATE move $s_k$ before $s_i$
+  \ENDIF
+\ENDFOR
+\STATE $b' \leftarrow \text{new block with statements $s_i,\ldots,s_j$}$
+\STATE set statements of $b$ to $s_0,\ldots,s_{i-1},b',s_{j+1},\ldots,s_{n-1}$
+\RETURN $b'$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Introduce Anonymous Method}(b \colon \type{Block}) \colon \type{AnonymousMethod}$}
+\label{alg:IntroduceAnonymousMethod}
+\begin{algorithmic}[1]
+\REQUIRE
+\ENSURE locked control flow, locked names, \code{return void}, anonymous methods
+\medskip
+\STATE lock control flow successors in $b$
+\STATE $[e_1;\ldots;e_n] \leftarrow \text{locked accesses to all uncaught checked exceptions thrown in $b$}$
+\IF{$b$ can complete normally}
+  \STATE $c \leftarrow \mathtt{(()} \colon \text{\code{void throws}} \>\>e_1,\ldots,e_n \Rightarrow b \mathtt{)()}$
+  \STATE replace $b$ with $c$\code{;}
+\ELSE
+  \IF{$b$ is in a method $m$}
+    \STATE $T \leftarrow \text{locked access to return type of $m$}$
+  \ELSE
+    \STATE $T \leftarrow \text{\code{void}}$
+  \ENDIF
+  \STATE $c \leftarrow \mathtt{(()} \colon T \>\> \text{\code{throws}} \>\>e_1,\ldots,e_n \Rightarrow b \mathtt{)()}$
+  \STATE replace $b$ with \code{return}\xspace$c$\code{;}
+\ENDIF
+\RETURN $c$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Close over Variables}(a \colon \type{AnonymousMethod})$}
+\label{alg:CloseOverVariables}
+\begin{algorithmic}[1]
+\REQUIRE
+\ENSURE anonymous methods, \code{out} and \code{ref} parameters,
+locked names
+\medskip
+\STATE $m \leftarrow \text{body declaration enclosing $a$}$
+\STATE $V \leftarrow \emptyset; \mathit{Val} \leftarrow \emptyset;
+\mathit{Out} \leftarrow \emptyset; \mathit{Ref} \leftarrow \emptyset$
+\FORALL{variable accesses $va$ in $a$}
+  \STATE $v \leftarrow \text{variable $va$ binds to}$
+  \STATE \assert if $va$ is a write, then $v$ is not \code{final}
+  \IF{$v$ is a local variable or parameter of $m$}
+    \STATE $V \leftarrow V\cup\{v\}$
+    \IF{$va$ has an incoming data flow edge}
+      \IF{$v\in \mathit{Out}$}
+        \STATE $\mathit{Out} \leftarrow \mathit{Out}\setminus\{v\}$
+        \STATE $\mathit{Ref} \leftarrow \mathit{Ref}\cup\{v\}$
+      \ELSIF{$v\not\in \mathit{Ref}$}
+        \STATE $\mathit{Val} \leftarrow \mathit{Val}\cup\{v\}$
+      \ENDIF
+    \ENDIF
+    \IF{$va$ has an outgoing data flow edge}
+      \IF{$v\in \mathit{Val}$}
+        \STATE $\mathit{Val} \leftarrow \mathit{Val}\setminus\{v\}$
+        \STATE $\mathit{Ref} \leftarrow \mathit{Ref}\cup\{v\}$
+      \ELSIF{$v\not\in \mathit{Ref}$}
+        \STATE $\mathit{Out} \leftarrow \mathit{Out}\cup\{v\}$
+      \ENDIF
+    \ENDIF
+  \ENDIF
+\ENDFOR
+\FORALL{$v\in V$}
+  \IF{$v\in \mathit{Val}\cup \mathit{Out}\cup \mathit{Ref}$}
+    \STATE $p \leftarrow \text{new parameter with same name and type as $v$}$
+    \STATE make $p$ \code{ref} if $v\in \mathit{Ref}$, \code{out} if $v\in \mathit{Out}$
+    \STATE add $p$ as parameter to $a$
+    \STATE add access to $v$ as argument to $a$
+  \ELSE
+    \STATE $v' \leftarrow \text{new local variable with same name and type as $v$}$
+    \STATE add $v'$ as local variable to $a$
+  \ENDIF
+\ENDFOR
+\FORALL{type parameters $V$ of $m$ used in $a$}
+  \STATE add type parameter $V'$ with same name and bounds as $V$ to $a$
+  \STATE add type argument $V$ to $a$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Eliminate Reference Parameters}(a \colon \type{AnonymousMethod}) \colon \type{AnonymousMethod}$}
+\label{alg:EliminateReferenceParameters}
+\begin{algorithmic}[1]
+\REQUIRE no implicit \code{return}
+\ENSURE anonymous methods
+\medskip
+\IF{$a$ has \code{ref} or \code{out} parameters}
+  \STATE \assert $a$ has a single \code{ref} or \code{out} parameter
+  \STATE \assert return type of $a$ is \code{void}
+  \STATE $x \leftarrow \text{the \code{ref} or \code{out} parameter of $a$}$
+  \STATE $v \leftarrow \text{the variable access passed as argument into $x$}$
+  \STATE replace $a$ by $v\,$\code{=}$\,a$
+  \STATE set return type of $a$ to type of $x$
+  \STATE replace every \code{return;} statement with \code{return}$\,\,x$\code{;}
+  \IF{$x$ is a \code{ref} parameter or it is live at the entry of $a$}
+    \STATE make $x$ a value parameter
+  \ELSE
+    \STATE make $x$ a local variable
+    \STATE remove argument $v$
+  \ENDIF
+\ENDIF
+\RETURN $a$
+% TODO: need to check that there is no outgoing data flow through exception;
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Lift Anonymous Method}(n \colon \type{ident}, a \colon \type{AnonymousMethod}) \colon \type{Method}$}
+\label{alg:LiftAnonymousMethod}
+\begin{algorithmic}[1]
+\REQUIRE
+\ENSURE locked names
+\medskip
+\STATE \assert $a$ does not reference any local variables from surrounding body declaration
+\STATE \assert $a$ has no \code{ref} or \code{out} parameters
+\STATE lock all names in $a$
+\STATE $\overline{e} \leftarrow \text{argument list of $a$}$
+\STATE $m \leftarrow \text{turn $a$ into method named $n$}$
+\STATE make $m$ \code{static} if $a$ occurs in static context
+\STATE $T \leftarrow \text{innermost type surrounding $a$}$
+\STATE \assert $T$ has no member method with same signature as $m$
+\STATE \assert no subtype of $T$ declares a method that would override
+or hide $m$
+\STATE lock all calls to methods named $n$
+\STATE insert $m$ into $T$
+\STATE $c \leftarrow \text{locked call of $m$ on arguments $\overline{e}$}$
+\STATE replace $a$ with $c$
+\RETURN $m$
+\end{algorithmic}
+\end{algorithm}
+
+
+

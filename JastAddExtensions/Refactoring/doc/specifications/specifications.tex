@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{supertabular}
 \usepackage{multiletter}
+\usepackage{morefloats}
 
 \title{Specifications of Implemented Refactorings}
 \author{Max Sch\"afer, Tom\'a\v{s} Ko\v{c}isk\'y}
@@ -71,10 +72,12 @@ We write $A<:B$ to mean that type $A$ extends or implements type $B$, and $m<:m'
 \input{InlineConstant.tex}
 \input{InlineMethod.tex}
 \input{InlineTemp.tex}
+\input{InsertMethod.tex}
 \input{IntroduceFactory.tex}
 \input{IntroduceIndirection.tex}
 \input{IntroduceParameter.tex}
 \input{IntroduceParameterObject.tex}
+\input{MakeMethodStatic.tex}
 \input{MoveInnerToToplevel.tex}
 \input{MoveInstanceMethod.tex}
 \input{MoveMembers.tex}
@@ -84,11 +87,15 @@ We write $A<:B$ to mean that type $A$ extends or implements type $B$, and $m<:m'
 \input{Rename.tex}
 \input{SelfEncapsulateField.tex}
 
+\clearpage
+
 \section{Node Types}
 \input{nodetypes.tex}
 
 \section{Utility Functions}
 \input{utility.tex}
+
+\clearpage
 
 \listofalgorithms
 \end{document}

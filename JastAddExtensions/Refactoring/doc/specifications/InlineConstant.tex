@@ -1,7 +1,7 @@
 \subsection{\refactoring{Inline Constant}}
 This refactoring inlines a constant field into all its uses. Implemented in \sourcelink{InlineTemp/InlineConstant.jrag}; see Algorithms~\ref{alg:InlineConstant-1}, \ref{alg:InlineConstant-2}, \ref{alg:RemoveField}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Inline Constant}(f : \type{Field})$}
 \label{alg:InlineConstant-1}
 \begin{algorithmic}[1]
@@ -15,7 +15,7 @@ This refactoring inlines a constant field into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Inline Constant}(u : \type{FieldAccess})$}
 \label{alg:InlineConstant-2}
 \begin{algorithmic}[1]
@@ -30,7 +30,7 @@ This refactoring inlines a constant field into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Remove Field}(f : \type{Field})$}
 \label{alg:RemoveField}
 \begin{algorithmic}[1]

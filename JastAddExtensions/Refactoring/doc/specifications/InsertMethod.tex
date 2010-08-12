@@ -1,0 +1,45 @@
+\subsection{\refactoring{Insert Method}}
+This refactoring inserts a method into a type declaration. Implemented in \sourcelink{Move/InsertUnusedMethod.jrag}; see Algorithms~\ref{alg:InsertMethod},~\ref{alg:canIntroduceMethod},~\ref{alg:typesToMakeAbstract}.
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Insert Method}(m : \type{Method}, T : \type{Type})$}\label{alg:InsertMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked method names
+\medskip
+  \STATE $\util{lockMethodNames}(\util{name}(m))$
+  \STATE \assert $\util{canIntroduceMethod}(m, T)$
+  \STATE \assert \NOT $\util{isDynamicallyCallable}(m)$ % TODO
+  \STATE \assert $\{\util{name}(td) | \type{TypeDecl}\ td\in\util{below}(m)\} 
+  		$\\$\qquad\qquad\cap\  
+		\{\util{name}(t) | t\text{ is enclosing type of }T \vee t = T\} = \emptyset$
+  \STATE insert method $m$ into the type $T$
+  \IF{$m$ is \code{abstract}}
+     \FORALL{$type$ in $\util{typesToMakeAbstract}(m)$}
+       \STATE $\refactoring{Make Type Abstract}(type)$
+     \ENDFOR
+  \ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[p]
+\caption{$\util{canIntroduceMethod}(m : \type{Method}, T : \type{Type})$}\label{alg:canIntroduceMethod}
+\begin{algorithmic}[1]
+  \STATE \assert $m$ is not \code{static} \OR $T$ is not inner
+  \STATE \assert there is no local method in $T$ with same signature errasure as $m$
+  \STATE \assert if there are any like-named methods in superclasses, we must be able to override or hide them, and
+  			similarly for subclasses
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[p]
+\caption{$\util{typesToMakeAbstract}(m : \type{Method}) : \settp{Type}$}\label{alg:typesToMakeAbstract}
+\begin{algorithmic}[1]
+  \STATE do DFS from $\util{hostType}(m)$ through child types \\
+    but do not visit a type that declares a method that \emph{overrides} $m$ \\
+    (in particular, visit a type in a different package, even if it can't override $m$)
+  \RETURN set of all visited types
+\end{algorithmic}
+\end{algorithm}
+

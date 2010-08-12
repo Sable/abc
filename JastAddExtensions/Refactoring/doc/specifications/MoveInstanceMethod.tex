@@ -1,7 +1,7 @@
 \subsection{\refactoring{Move Instance Method}}
-This refactoring moves a method into a variable, which is either a parameter of that method or an accessible field. Implemented in \sourcelink{Move/MoveMethod.jrag}.
+This refactoring moves a method into a variable, which is either a parameter of that method or an accessible field. Implemented in \sourcelink{Move/MoveMethod.jrag}; see Algorithm~\ref{alg:MoveMethod}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Move Method}(m : \type{InstanceMethod}, v : \type{Variable})$}
 \label{alg:MoveMethod}
 \begin{algorithmic}[1]

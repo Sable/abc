@@ -1,7 +1,7 @@
 \subsection{\refactoring{Inline Temp}}
-This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}; see Algorithms~\ref{alg:InlineTemp}, \ref{alg:SplitDeclaration}, \ref{alg:InlineAssignment}, \ref{alg:RemoveDecl}
+This refactoring inlines a local variable into all its uses. Implemented in \sourcelink{InlineTemp/InlineTemp.jrag}; see Algorithms~\ref{alg:InlineTemp}, \ref{alg:SplitDeclaration}, \ref{alg:InlineAssignment}, \ref{alg:RemoveDecl}.
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Inline Temp}(d : \type{LocalVar})$}
 \label{alg:InlineTemp}
 \begin{algorithmic}[1]
@@ -14,7 +14,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Split Declaration}(d : \type{LocalVar}) : \option{\type{Assignment}}$}
 \label{alg:SplitDeclaration}
 \begin{algorithmic}[1]
@@ -33,7 +33,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Inline Assignment}(a : \type{Assignment})$}
 \label{alg:InlineAssignment}
 \begin{algorithmic}[1]
@@ -55,7 +55,7 @@ This refactoring inlines a local variable into all its uses. Implemented in \sou
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[p]
 \caption{$\refactoring{Remove Decl}(d : \type{LocalVar})$}
 \label{alg:RemoveDecl}
 \begin{algorithmic}[1]

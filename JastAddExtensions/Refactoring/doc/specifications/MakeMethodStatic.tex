@@ -1,0 +1,24 @@
+\subsection{\refactoring{Make Method Static}}
+This refactoring makes a method static. Implemented in \sourcelink{MakeMethodStatic/MakeMethodStatic.jrag}; see Algorithms~\ref{alg:MakeMethodStatic},~\ref{alg:},~\ref{alg:}.
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Make Method Static}(m : \type{Method})$}\label{alg:MakeMethodStatic}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ return \code{void}, fresh variables, \code{with} statement, locked names, demand \code{final} modifier
+\medskip
+  \STATE \assert $m$ has a body
+  \STATE $newMethod\leftarrow \util{copy}(m)$
+  \STATE $delegator\leftarrow m$
+  \STATE $\util{lockMethodNames}(\util{name}(delegator))$
+  \STATE add \code{static} modifier to $newMethod$
+  \STATE add new parameter to $newMethod$ with fresh name, type locked to $\util{hostType}(m)$, and demand final
+  \STATE put a \code{with} statement around the body of $newMethod$ mapping \code{this} to the new parameter
+  \STATE $\refactoring{Close Over Variables}(newMethod)$
+  \STATE change the block of $delegator$ method to a call to $newMethod$ \\
+  	with \code{this} and parameters of $delegator$ as arguments
+  \STATE $\refactoring{Insert Method}(\util{hostType}(delegator), newMethod)$
+\end{algorithmic}
+\end{algorithm}
+
+

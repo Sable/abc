@@ -1,8 +1,8 @@
 \subsection{\refactoring{Pull Up}}
-This refactoring pulls up a method $m$ from its host class $B$ to the super class $A$. Implemented in \sourcelink{PullUp/PullUpMethod.jrag}.
+This refactoring pulls up a method $m$ from its host class $B$ to the super class $A$. Implemented in \sourcelink{PullUp/PullUpMethod.jrag}; see Algorithm~\ref{alg:PullUpMethod}.
 
-\begin{algorithm}
-\caption{$\refactoring{Pull Up Method}(m : \type{Method})$}
+\begin{algorithm}[p]
+\caption{$\refactoring{Pull Up Method}(m : \type{Method})$}\label{alg:PullUpMethod}
 \begin{algorithmic}[1]
 \REQUIRE Java
 \ENSURE Java $\cup$ locked names
@@ -11,7 +11,7 @@ This refactoring pulls up a method $m$ from its host class $B$ to the super clas
 \STATE \assert the superclass $A$ of $B$ is also non-library
 \STATE $m' \leftarrow \text{copy of $m$ with locked names}$
 \STATE translate type variables in $m'$ from $B$ to $A$
-\STATE $\util{Insert Method}(A, m')$
+\STATE $\refactoring{Insert Method}(A, m')$
 \STATE remove $m$ from $B$
 \end{algorithmic}
 \end{algorithm}
