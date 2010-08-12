@@ -2,7 +2,7 @@
 This refactoring extracts an expression into a local variable. Implemented in \sourcelink{ExtractTemp/ExtractTemp.jrag}; see Algorithms~\ref{alg:ExtractTemp}, \ref{alg:InsertLocalVariable}, \ref{alg:ExtractAssignment}, \ref{alg:MergeVariableDeclaration}.
 
 \begin{algorithm}
-\caption{$\refactoring{Extract Temp}(e : \type{Expr}, n : \type{Name})$}
+\caption{$\refactoring{Extract Temp}(e : \type{Expr}, n : \type{Name}) : LocalVar$}
 \label{alg:ExtractTemp}
 \begin{algorithmic}[1]
 \REQUIRE Java
@@ -14,6 +14,7 @@ This refactoring extracts an expression into a local variable. Implemented in \s
 \STATE $\refactoring{Insert Local Variable}(s, v)$
 \STATE $\refactoring{Extract Assignment}(v, e)$
 \STATE $\refactoring{Merge Declaration}(v)$
+\RETURN $v$
 \end{algorithmic}
 \end{algorithm}
 

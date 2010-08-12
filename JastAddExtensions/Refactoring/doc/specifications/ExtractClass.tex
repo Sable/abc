@@ -28,42 +28,43 @@ if we can invert their order without breaking name and dataflow dependencies.
   \STATE $\refactoring{Insert Field}(W, f)$
 \ENDFOR
 \STATE $inits \leftarrow \{\text{initializers of }fs\}$
-\FORALL{$init\in inits$}
-  \STATE lock names and dataflow
-  \STATE move $init$ after already moved initializers (possibly $w$)
-  \STATE \code{try} unlocking names and dataflow
-  \IF{unlocking was successful} 
-    \STATE \code{continue}
-  \ELSE 
-    \STATE move $init$ back and \code{break}
-  \ENDIF
-\ENDFOR
-\STATE in $W$ create default constructor and constructor for initializing all fields
-\IF{all $inits$ were moved \AND initializer evaluation is order independent}
-  \STATE change the constructor call for $w$ to initialize the fields and remove $inits$
-\ELSE
-  \STATE merge consecutive $inits$ to common initializer blocks
-\ENDIF
+\STATE $\refactoring{Move Inits Together}(inits, w)$ \orelse{} $\refactoring{Id}()$
+\STATE merge consecutive $inits$ to common initializer blocks
+\STATE $\refactoring{PassInitsToConstructor}(inits, w)$ \orelse{} $\refactoring{Id}()$
+\end{algorithmic}
+\end{algorithm}
 
-%\FORALL{$f\in fs$}
-%  \STATE \assert $f$ is not static
-%  \FORALL{uses $v$ of $f$}
-%    \STATE qualify $v$ with a locked access to $w$
-%  \ENDFOR
-%  \STATE remove $f$
-%  \STATE $\refactoring{Insert Field}(W, f)$
-%  \IF{$f$ has initialiser}
-%    \STATE lock flow dependencies of $f$
-%    \STATE $e \leftarrow \text{initialiser of $f$}$
-%    \STATE remove initialiser of $f$
-%    \STATE add $e$ as argument to initialisation of $w$
-%    \STATE $p \leftarrow \text{new parameter of same name and type as $f$}$
-%    \FORALL{constructors $cd$ of $W$}
-%      \STATE add copy of $p$ as parameter of $W$
-%      \STATE add assignment from parameter to $f$ to body of $cd$
-%    \ENDFOR
-%  \ENDIF
-%\ENDFOR
+
+\begin{algorithm}
+\caption{$\refactoring{Move Inits Together}(inits : \listtp{InitializerBlock}, after : \type{Field})$}\label{alg:MoveInitsTogether}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java
+\medskip
+\FORALL{$init\in inits$}
+  \STATE lock names and dataflow in $init$
+  \STATE remove $init$ and insert it after already moved initializers (possibly $after$)
+  \STATE unlock names and dataflow in $init$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\refactoring{PassInitsToConstructor}(inits : \listtp{InitializerBlock}, w : Field)$}\label{alg:PassInitsToConstructor}
+\begin{algorithmic}[1]
+\STATE \assert all $inits$ are in one initializer block
+\STATE $index\leftarrow$ possition of $w$
+\STATE $vars\leftarrow$ [ ]
+\FORALL{$init$ in $inits$}
+  \STATE $v\leftarrow\refactoringNoExt{Extract Temp}(\text{left side of $init$}, \text{fresh name}, index)$ 
+  \STATE $vars\leftarrow v : vars$
+  \STATE $index\leftarrow index + 1$
+\ENDFOR
+\FORALL{$var$ in $vars$}
+  \STATE $\refactoring{Inline Temp}(var)$
+\ENDFOR
+\STATE in $W$ create a constructor for initializing all fields
+\STATE change the constructor call for $w$ to initialize the fields and remove $inits$
 \end{algorithmic}
 \end{algorithm}
 
