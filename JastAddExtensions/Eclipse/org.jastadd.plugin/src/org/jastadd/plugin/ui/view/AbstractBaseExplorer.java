@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.internal.views.markers.MarkerSupportInternalUtilities;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IShowInTarget;
 import org.eclipse.ui.part.ShowInContext;
@@ -423,8 +424,9 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 			} catch (CoreException e) {
 				return image;
 			}
-
-			return decorateImage(image, severity);
+			
+			//return image; // FIXME : 
+			return decorateImage(image, severity); ///MarkerSupportInternalUtilities.getSeverityImage(1)
 		}
 
 		

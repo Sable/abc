@@ -22,333 +22,333 @@ import org.jastadd.plugin.jastaddj.util.FileUtil;
 
 aspect CreateTextEdit {
 	
-	// this doesn't really belong here...
-	public Stack Program.cloneUndoStack() { return (Stack)undoStack.clone(); }
-	
-	/* a change accumulator keeps track of changes happening to multiple files;
-	 * it creates one TextFileChange for every file affected and adds incoming
-	 * ReplaceEdits to them
-	 */
-	class ChangeAccumulator {
-		private String name;
-		private CompositeChange changes;
-		private Map<IFile, TextFileChange> changemap;
-		
-		public ChangeAccumulator(String name) {
-			this.name = name;
-			changes = new CompositeChange(name);
-			changemap = new HashMap<IFile, TextFileChange>();
-		}
-
-		// retrieve the text file change object for file
-		private TextFileChange changeForFile(IFile file) {
-			TextFileChange tfc;
-			if(!changemap.containsKey(file)) {
-				// create a new one
-				tfc = new TextFileChange(name, file);
-				tfc.setEdit(new MultiTextEdit());
-				changes.add(tfc);
-				changemap.put(file, tfc);
-			}
-			else {
-				tfc = changemap.get(file);
-			}
-			return tfc;
-		}
-		
-		public void addEdit(IFile file, TextEdit te) {
-			TextFileChange tfc = changeForFile(file);
-			/* when inserting the new edit into tfc, we must be careful to avoid
-			 * overlapping edits; our solution here is very simple: walk through
-			 * all changes already in tfc, if one of them covers the new change
-			 * we don't need to add it, if some of them are covered by the new
-			 * change, remove them 
-			 * 
-			 * a subtlety arises with replace edits nested inside move source edits;
-			 * we want those to be allowed, but they have to be handled specially */
-			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
-			java.util.Set covered = new java.util.HashSet();
-			for(int i=0; i<mte.getChildren().length; ++i) {
-				TextEdit te2 = mte.getChildren()[i];
-				if(te2.covers(te)) {
-					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
-						MoveSourceEdit cse = (MoveSourceEdit)te2;
-						ReplaceEdit re = (ReplaceEdit)te;
-						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-					}
-					return;
-				} else if(te.covers(te2))
-					covered.add(te2);
-			}
-			for(Iterator iter=covered.iterator();iter.hasNext();) {
-				TextEdit te2 = (TextEdit)iter.next();
-				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
-					MoveSourceEdit cse = (MoveSourceEdit)te;
-					ReplaceEdit re = (ReplaceEdit)te2;
-					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-				}
-				mte.removeChild(te2);
-			}
-			tfc.addEdit(te);
-		}
-
-		public void addEdit(IFile file, int offset, int length, String contents) {
-			addEdit(file, new ReplaceEdit(offset, length, contents));
-		}
-
-		// creates the TextChanges corresponding to the ASTChanges in some iterator
-		// and adds them to the accumulator
-		public void addAllEdits(Iterator/*<ASTChange>*/ iter) {
-			while(iter.hasNext())
-				((ASTChange)iter.next()).createTextEdit(this);
-		}
-		
-		// directly add a non-TextChange
-		public void addChange(Change ch) {
-			changes.add(ch);
-		}
-		
-		public Change getChange() {
-			return changes;
-		}
-	}
-	
-	// every ASTChange should be able to create a text edit that corresponds to
-	// its action; however, this method is as yet unimplemented for some changes...
-	public void ASTChange.createTextEdit(ChangeAccumulator accu) {
-		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
-	}
-	
-	// we need to store a copy of the new node's pretty printed representation
-	private String ReplaceNode.afterText;
-	refine Changes ReplaceNode.ReplaceNode(ASTNode before, ASTNode after) {
-		Changes.ReplaceNode.ReplaceNode(before, after);
-		this.afterText = after.toString();
-	}
-	public void ReplaceNode.createTextEdit(ChangeAccumulator accu) {
-		int offset = before.getBeginOffset();
-		int length = before.getEndOffset() - offset + 1;
-		accu.addEdit(FileUtil.getFile(after), offset, length, afterText);
-	}
-
-	public void Rename.createTextEdit(ChangeAccumulator accu) {
-		entity.createRenameTextEdit(accu, old_name, new_name);
-	}
-	
-	// creates a TextEdit corresponding to a rename of this entity
-	public void Named.createRenameTextEdit(ChangeAccumulator accu, 
-			String old_name, String new_name);
-
-	public void VariableDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void ParameterDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void FieldDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void MethodDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void ConstructorDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void TypeDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
-		int offset = createOffset(IDstart);
-		int offsetEnd = createOffset(IDend);
-		int length = offsetEnd - offset + 1;
-		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
-	}
-
-	public void CompilationUnit.createRenameTextEdit(ChangeAccumulator accu, 
-			String old_name, String new_name) {
-		IFile file = FileUtil.getFile(this);
-		accu.addChange(new RenameCompilationUnitChange(file, old_name, new_name));
-	}
-	
-	class RenameCompilationUnitChange extends ResourceChange {
-		private final IFile file;
-		private final String old_name;
-		private final String new_name;
-		private final long stamp_to_restore;
-		
-		public RenameCompilationUnitChange(IFile file, String old_name, String new_name) {
-			this(file, old_name, new_name, IResource.NULL_STAMP);
-		}
-		
-		public RenameCompilationUnitChange(IFile file, String old_name, String new_name, long stamp_to_restore) {
-			this.file = file;
-			this.old_name = old_name;
-			this.new_name = new_name;
-			this.stamp_to_restore = stamp_to_restore;
-		}
-
-		protected final IResource getResource() {
-			return ResourcesPlugin.getWorkspace().getRoot().findMember(file.getFullPath());
-		}
-
-		public Object getModifiedElement() {
-			return JavaCore.create(getResource());
-		}
-
-		public String getNewName() {
-			return new_name;
-		}
-
-		public String getOldName() {
-			return old_name;
-		}
-
-		public final Change perform(IProgressMonitor pm) throws CoreException {
-			try {
-				pm.beginTask("Renaming Compilation Unit", 1);
-				IResource resource = getResource();
-				IPath newPath = createNewPath();
-				Change result = createUndoChange(resource.getModificationStamp());
-				doRename(new SubProgressMonitor(pm, 1));
-				if (stamp_to_restore != IResource.NULL_STAMP) {
-					IResource newResource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
-					newResource.revertModificationStamp(stamp_to_restore);
-				}
-				return result;
-			} finally {
-				pm.done();
-			}
-		}
-		
-		protected IPath createNewPath() {
-			final IPath path = file.getFullPath();
-			if (path.getFileExtension() != null) {
-        String extension = path.getFileExtension();
-				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
-			} else
-				return path.removeLastSegments(1).append(getNewName());
-		}
-
-		protected Change createUndoChange(long stampToRestore) throws JavaModelException {
-			//return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
-			return null;
-		}
-
-		protected void doRename(IProgressMonitor pm) throws CoreException {
-			file.move(createNewPath(), false, pm);
-		}
-		
-		public String getName() {
-			return "Rename Compilation Unit";
-		}
-
-		protected IResource getModifiedResource() {	
-			return getResource();
-		}
-	}
-	
-	class MoveMethodSourceModifier implements ISourceModifier {
-		private final MoveSourceEdit parent;
-		private final ArrayList<ReplaceEdit> edits;
-		
-		public MoveMethodSourceModifier(MoveSourceEdit parent) {
-			this.parent = parent;
-			this.edits = new ArrayList<ReplaceEdit>();
-		}
-		
-		private MoveMethodSourceModifier(MoveSourceEdit parent, ArrayList<ReplaceEdit> edits) {
-			this.parent = parent;
-			this.edits = edits;
-		}
-
-		public ISourceModifier copy() {
-			ArrayList<ReplaceEdit> newlist = new ArrayList<ReplaceEdit>();
-			for(ReplaceEdit re : edits)
-				newlist.add((ReplaceEdit)re.copy());
-			return new MoveMethodSourceModifier(parent, newlist);
-		}
-
-		public ReplaceEdit[] getModifications(String arg0) {
-			return edits.toArray(new ReplaceEdit[]{});
-		}
-		
-		public void addReplaceEdit(ReplaceEdit re) {
-			ReplaceEdit nre = new ReplaceEdit(re.getOffset()-parent.getOffset(), re.getLength(), re.getText());
-			edits.add(nre);
-		}
-		
-	}
-	
-	public void MoveMethod.createTextEdit(ChangeAccumulator accu) {
-		IFile origfile = FileUtil.getFile(origin);
-		IFile destfile = FileUtil.getFile(destination);
-		int origoffset = method.getBeginOffset();
-		int origlength = method.getEndOffset() - origoffset + 1;
-		int destoffset = destination.possibleInsertOffset();
-		MoveSourceEdit cse = new MoveSourceEdit(origoffset, origlength);
-		MoveTargetEdit cte = new MoveTargetEdit(destoffset, cse);
-		cse.setTargetEdit(cte);
-		cse.setSourceModifier(new MoveMethodSourceModifier(cse));
-		accu.addEdit(origfile, cse);
-		accu.addEdit(destfile, cte);
-	}
-
-	public void ChangeFieldModifiers.createTextEdit(ChangeAccumulator accu) {
-    	IFile file = FileUtil.getFile(field);
-    	int offset = old_modifiers.getBeginOffset();
-    	if(offset == -1)
-    		offset = field.getBeginOffset();
-    	assert(offset >= 0);
-    	int length = old_modifiers.getEndOffset() == -1 ? 0 : old_modifiers.getEndOffset() - offset + 1;
-    	accu.addEdit(file, offset, length, new_modifiers.toString()+" ");
-	}
-	
-	// we need to store a copy of the body decl's pretty printed representation
-	private String InsertBodyDecl.bdText;
-	refine Changes InsertBodyDecl.InsertBodyDecl(TypeDecl td, BodyDecl bd) {
-		Changes.InsertBodyDecl.InsertBodyDecl(td, bd);
-		this.bdText = bd.toString();
-	}
-	public void InsertBodyDecl.createTextEdit(ChangeAccumulator accu) {
-		IFile file = FileUtil.getFile(td);
-		int destoffset = td.possibleInsertOffset();
-		accu.addEdit(file, destoffset, 0, bdText);
-	}
-	public void InsertBodyDecl.updateText() {
-		this.bdText = bd.toString();
-	}
-	
-	public void RemoveBodyDecl.createTextEdit(ChangeAccumulator accu) {
-    	IFile file = FileUtil.getFile(td);
-    	int offset = bd.getBeginOffset();
-    	int length = bd.getEndOffset() - offset + 1;
-    	accu.addEdit(file, offset, length, "");
-	}
-	
-	// try to guess a good place to insert a new member
-	public int TypeDecl.possibleInsertOffset() {
-		for(int i=0;i<getNumBodyDecl();++i) {
-			BodyDecl bd = getBodyDecl(i);
-			if(bd.getEndOffset() > 0)
-				return bd.getBeginOffset()-1; 
-		}
-		return getEndOffset() == -1 ? -1 : getEndOffset() - 1;
-	}
+//	// this doesn't really belong here...
+//	public Stack Program.cloneUndoStack() { return (Stack)undoStack.clone(); }
+//	
+//	/* a change accumulator keeps track of changes happening to multiple files;
+//	 * it creates one TextFileChange for every file affected and adds incoming
+//	 * ReplaceEdits to them
+//	 */
+//	class ChangeAccumulator {
+//		private String name;
+//		private CompositeChange changes;
+//		private Map<IFile, TextFileChange> changemap;
+//		
+//		public ChangeAccumulator(String name) {
+//			this.name = name;
+//			changes = new CompositeChange(name);
+//			changemap = new HashMap<IFile, TextFileChange>();
+//		}
+//
+//		// retrieve the text file change object for file
+//		private TextFileChange changeForFile(IFile file) {
+//			TextFileChange tfc;
+//			if(!changemap.containsKey(file)) {
+//				// create a new one
+//				tfc = new TextFileChange(name, file);
+//				tfc.setEdit(new MultiTextEdit());
+//				changes.add(tfc);
+//				changemap.put(file, tfc);
+//			}
+//			else {
+//				tfc = changemap.get(file);
+//			}
+//			return tfc;
+//		}
+//		
+//		public void addEdit(IFile file, TextEdit te) {
+//			TextFileChange tfc = changeForFile(file);
+//			/* when inserting the new edit into tfc, we must be careful to avoid
+//			 * overlapping edits; our solution here is very simple: walk through
+//			 * all changes already in tfc, if one of them covers the new change
+//			 * we don't need to add it, if some of them are covered by the new
+//			 * change, remove them 
+//			 * 
+//			 * a subtlety arises with replace edits nested inside move source edits;
+//			 * we want those to be allowed, but they have to be handled specially */
+//			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
+//			java.util.Set covered = new java.util.HashSet();
+//			for(int i=0; i<mte.getChildren().length; ++i) {
+//				TextEdit te2 = mte.getChildren()[i];
+//				if(te2.covers(te)) {
+//					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
+//						MoveSourceEdit cse = (MoveSourceEdit)te2;
+//						ReplaceEdit re = (ReplaceEdit)te;
+//						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+//					}
+//					return;
+//				} else if(te.covers(te2))
+//					covered.add(te2);
+//			}
+//			for(Iterator iter=covered.iterator();iter.hasNext();) {
+//				TextEdit te2 = (TextEdit)iter.next();
+//				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
+//					MoveSourceEdit cse = (MoveSourceEdit)te;
+//					ReplaceEdit re = (ReplaceEdit)te2;
+//					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+//				}
+//				mte.removeChild(te2);
+//			}
+//			tfc.addEdit(te);
+//		}
+//
+//		public void addEdit(IFile file, int offset, int length, String contents) {
+//			addEdit(file, new ReplaceEdit(offset, length, contents));
+//		}
+//
+//		// creates the TextChanges corresponding to the ASTChanges in some iterator
+//		// and adds them to the accumulator
+//		public void addAllEdits(Iterator/*<ASTChange>*/ iter) {
+//			while(iter.hasNext())
+//				((ASTChange)iter.next()).createTextEdit(this);
+//		}
+//		
+//		// directly add a non-TextChange
+//		public void addChange(Change ch) {
+//			changes.add(ch);
+//		}
+//		
+//		public Change getChange() {
+//			return changes;
+//		}
+//	}
+//	
+//	// every ASTChange should be able to create a text edit that corresponds to
+//	// its action; however, this method is as yet unimplemented for some changes...
+//	public void ASTChange.createTextEdit(ChangeAccumulator accu) {
+//		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
+//	}
+//	
+//	// we need to store a copy of the new node's pretty printed representation
+//	private String ReplaceNode.afterText;
+//	refine Changes ReplaceNode.ReplaceNode(ASTNode before, ASTNode after) {
+//		Changes.ReplaceNode.ReplaceNode(before, after);
+//		this.afterText = after.toString();
+//	}
+//	public void ReplaceNode.createTextEdit(ChangeAccumulator accu) {
+//		int offset = before.getBeginOffset();
+//		int length = before.getEndOffset() - offset + 1;
+//		accu.addEdit(FileUtil.getFile(after), offset, length, afterText);
+//	}
+//
+//	public void Rename.createTextEdit(ChangeAccumulator accu) {
+//		entity.createRenameTextEdit(accu, old_name, new_name);
+//	}
+//	
+//	// creates a TextEdit corresponding to a rename of this entity
+//	public void Named.createRenameTextEdit(ChangeAccumulator accu, 
+//			String old_name, String new_name);
+//
+//	public void VariableDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void ParameterDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void FieldDeclaration.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void MethodDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void ConstructorDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void TypeDecl.createRenameTextEdit(ChangeAccumulator accu, String old_name, String new_name) {
+//		int offset = createOffset(IDstart);
+//		int offsetEnd = createOffset(IDend);
+//		int length = offsetEnd - offset + 1;
+//		accu.addEdit(FileUtil.getFile(this), offset, length, new_name);
+//	}
+//
+//	public void CompilationUnit.createRenameTextEdit(ChangeAccumulator accu, 
+//			String old_name, String new_name) {
+//		IFile file = FileUtil.getFile(this);
+//		accu.addChange(new RenameCompilationUnitChange(file, old_name, new_name));
+//	}
+//	
+//	class RenameCompilationUnitChange extends ResourceChange {
+//		private final IFile file;
+//		private final String old_name;
+//		private final String new_name;
+//		private final long stamp_to_restore;
+//		
+//		public RenameCompilationUnitChange(IFile file, String old_name, String new_name) {
+//			this(file, old_name, new_name, IResource.NULL_STAMP);
+//		}
+//		
+//		public RenameCompilationUnitChange(IFile file, String old_name, String new_name, long stamp_to_restore) {
+//			this.file = file;
+//			this.old_name = old_name;
+//			this.new_name = new_name;
+//			this.stamp_to_restore = stamp_to_restore;
+//		}
+//
+//		protected final IResource getResource() {
+//			return ResourcesPlugin.getWorkspace().getRoot().findMember(file.getFullPath());
+//		}
+//
+//		public Object getModifiedElement() {
+//			return JavaCore.create(getResource());
+//		}
+//
+//		public String getNewName() {
+//			return new_name;
+//		}
+//
+//		public String getOldName() {
+//			return old_name;
+//		}
+//
+//		public final Change perform(IProgressMonitor pm) throws CoreException {
+//			try {
+//				pm.beginTask("Renaming Compilation Unit", 1);
+//				IResource resource = getResource();
+//				IPath newPath = createNewPath();
+//				Change result = createUndoChange(resource.getModificationStamp());
+//				doRename(new SubProgressMonitor(pm, 1));
+//				if (stamp_to_restore != IResource.NULL_STAMP) {
+//					IResource newResource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+//					newResource.revertModificationStamp(stamp_to_restore);
+//				}
+//				return result;
+//			} finally {
+//				pm.done();
+//			}
+//		}
+//		
+//		protected IPath createNewPath() {
+//			final IPath path = file.getFullPath();
+//			if (path.getFileExtension() != null) {
+//        String extension = path.getFileExtension();
+//				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
+//			} else
+//				return path.removeLastSegments(1).append(getNewName());
+//		}
+//
+//		protected Change createUndoChange(long stampToRestore) throws JavaModelException {
+//			//return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
+//			return null;
+//		}
+//
+//		protected void doRename(IProgressMonitor pm) throws CoreException {
+//			file.move(createNewPath(), false, pm);
+//		}
+//		
+//		public String getName() {
+//			return "Rename Compilation Unit";
+//		}
+//
+//		protected IResource getModifiedResource() {	
+//			return getResource();
+//		}
+//	}
+//	
+//	class MoveMethodSourceModifier implements ISourceModifier {
+//		private final MoveSourceEdit parent;
+//		private final ArrayList<ReplaceEdit> edits;
+//		
+//		public MoveMethodSourceModifier(MoveSourceEdit parent) {
+//			this.parent = parent;
+//			this.edits = new ArrayList<ReplaceEdit>();
+//		}
+//		
+//		private MoveMethodSourceModifier(MoveSourceEdit parent, ArrayList<ReplaceEdit> edits) {
+//			this.parent = parent;
+//			this.edits = edits;
+//		}
+//
+//		public ISourceModifier copy() {
+//			ArrayList<ReplaceEdit> newlist = new ArrayList<ReplaceEdit>();
+//			for(ReplaceEdit re : edits)
+//				newlist.add((ReplaceEdit)re.copy());
+//			return new MoveMethodSourceModifier(parent, newlist);
+//		}
+//
+//		public ReplaceEdit[] getModifications(String arg0) {
+//			return edits.toArray(new ReplaceEdit[]{});
+//		}
+//		
+//		public void addReplaceEdit(ReplaceEdit re) {
+//			ReplaceEdit nre = new ReplaceEdit(re.getOffset()-parent.getOffset(), re.getLength(), re.getText());
+//			edits.add(nre);
+//		}
+//		
+//	}
+//	
+//	public void MoveMethod.createTextEdit(ChangeAccumulator accu) {
+//		IFile origfile = FileUtil.getFile(origin);
+//		IFile destfile = FileUtil.getFile(destination);
+//		int origoffset = method.getBeginOffset();
+//		int origlength = method.getEndOffset() - origoffset + 1;
+//		int destoffset = destination.possibleInsertOffset();
+//		MoveSourceEdit cse = new MoveSourceEdit(origoffset, origlength);
+//		MoveTargetEdit cte = new MoveTargetEdit(destoffset, cse);
+//		cse.setTargetEdit(cte);
+//		cse.setSourceModifier(new MoveMethodSourceModifier(cse));
+//		accu.addEdit(origfile, cse);
+//		accu.addEdit(destfile, cte);
+//	}
+//
+//	public void ChangeFieldModifiers.createTextEdit(ChangeAccumulator accu) {
+//    	IFile file = FileUtil.getFile(field);
+//    	int offset = old_modifiers.getBeginOffset();
+//    	if(offset == -1)
+//    		offset = field.getBeginOffset();
+//    	assert(offset >= 0);
+//    	int length = old_modifiers.getEndOffset() == -1 ? 0 : old_modifiers.getEndOffset() - offset + 1;
+//    	accu.addEdit(file, offset, length, new_modifiers.toString()+" ");
+//	}
+//	
+//	// we need to store a copy of the body decl's pretty printed representation
+//	private String InsertBodyDecl.bdText;
+//	refine Changes InsertBodyDecl.InsertBodyDecl(TypeDecl td, BodyDecl bd) {
+//		Changes.InsertBodyDecl.InsertBodyDecl(td, bd);
+//		this.bdText = bd.toString();
+//	}
+//	public void InsertBodyDecl.createTextEdit(ChangeAccumulator accu) {
+//		IFile file = FileUtil.getFile(td);
+//		int destoffset = td.possibleInsertOffset();
+//		accu.addEdit(file, destoffset, 0, bdText);
+//	}
+//	public void InsertBodyDecl.updateText() {
+//		this.bdText = bd.toString();
+//	}
+//	
+//	public void RemoveBodyDecl.createTextEdit(ChangeAccumulator accu) {
+//    	IFile file = FileUtil.getFile(td);
+//    	int offset = bd.getBeginOffset();
+//    	int length = bd.getEndOffset() - offset + 1;
+//    	accu.addEdit(file, offset, length, "");
+//	}
+//	
+//	// try to guess a good place to insert a new member
+//	public int TypeDecl.possibleInsertOffset() {
+//		for(int i=0;i<getNumBodyDecl();++i) {
+//			BodyDecl bd = getBodyDecl(i);
+//			if(bd.getEndOffset() > 0)
+//				return bd.getBeginOffset()-1; 
+//		}
+//		return getEndOffset() == -1 ? -1 : getEndOffset() - 1;
+//	}
 }

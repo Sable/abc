@@ -73,7 +73,7 @@
 			<include name="Sets.jrag"/>
 			<include name="Exceptions.jrag"/>
 		</fileset>
-		<fileset file="${Refactoring}/util/Callable.jadd"/>
+<!--		<fileset file="${Refactoring}/util/Callable.jadd"/>
 		<fileset file="${Refactoring}/Naming/AccessInfo.jrag"/>
 		<fileset file="${Refactoring}/Naming/VarAccessInfo.jrag"/>
 		<fileset file="${Refactoring}/Naming/MethodAccessInfo.jrag"/>
@@ -96,7 +96,7 @@
 			<exclude name="util/LocalDeclaration.jrag"/>
 			<exclude name="Naming/AdjustAccess.jrag"/>
 			<exclude name="IntertypeDeclarations/**/*"/>
-		</fileset>
+		</fileset> -->
 		<fileset dir=".">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>

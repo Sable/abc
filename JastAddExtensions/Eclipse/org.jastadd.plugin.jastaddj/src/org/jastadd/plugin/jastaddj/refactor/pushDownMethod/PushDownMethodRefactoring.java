@@ -1,7 +1,5 @@
 package org.jastadd.plugin.jastaddj.refactor.pushDownMethod;
 
-import java.util.Stack;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,10 +11,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
-import AST.ASTChange;
-import AST.ChangeAccumulator;
 import AST.MethodDecl;
-import AST.RefactoringException;
 
 public class PushDownMethodRefactoring extends Refactoring {
 
@@ -50,18 +45,18 @@ public class PushDownMethodRefactoring extends Refactoring {
 			return status;
 		status = new RefactoringStatus();
 		MethodDecl m = (MethodDecl)selectedNode;
-		try {
-			m.pushDown();
-			Stack<ASTChange> ch = m.programRoot().cloneUndoStack();
-			m.programRoot().undo();
-			ChangeAccumulator accu = new ChangeAccumulator("PushDownMethod");
-			accu.addAllEdits(ch.iterator());
-			changes = accu.getChange();
-		} catch (RefactoringException rfe) {
-			status.addFatalError(rfe.getMessage());
-			m.programRoot().undo();
-			changes = null;
-		}
+//		try {
+//			m.pushDown();
+//			Stack<ASTChange> ch = m.programRoot().cloneUndoStack();
+//			m.programRoot().undo();
+//			ChangeAccumulator accu = new ChangeAccumulator("PushDownMethod");
+//			accu.addAllEdits(ch.iterator());
+//			changes = accu.getChange();
+//		} catch (RefactoringException rfe) {
+//			status.addFatalError(rfe.getMessage());
+//			m.programRoot().undo();
+//			changes = null;
+//		}
 		return status;
 	}
 

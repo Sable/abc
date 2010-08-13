@@ -80,7 +80,7 @@
 		extensions = "jrag,jadd"
 		icon = "icons/obj16/jrag.gif"
 		id = "org.jastadd.plugin.jastadd.AspectEditor"
-		contributorClass="org.jastadd.plugin.jastadd.AspectContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.editor.aspects.AspectEditorContributor"  
 		name = "JastAdd Aspect Editor">
 	</editor>
 	

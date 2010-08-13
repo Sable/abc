@@ -1,7 +1,5 @@
 package org.jastadd.plugin.jastaddj.refactor.encapsulateField;
 
-import java.util.Stack;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,10 +11,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 
-import AST.ASTChange;
-import AST.ChangeAccumulator;
 import AST.FieldDeclaration;
-import AST.RefactoringException;
 
 public class EncapsulateFieldRefactoring extends Refactoring {
 
@@ -50,18 +45,18 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			return status;
 		status = new RefactoringStatus();
 		FieldDeclaration fd = (FieldDeclaration)selectedNode;
-		try {
-			fd.encapsulate();
-			Stack<ASTChange> ch = fd.programRoot().cloneUndoStack();
-			fd.programRoot().undo();
-			ChangeAccumulator accu = new ChangeAccumulator("EncapsulateField");
-			accu.addAllEdits(ch.iterator());
-			changes = accu.getChange();
-		} catch (RefactoringException rfe) {
-			status.addFatalError(rfe.getMessage());
-			fd.programRoot().undo();
-			changes = null;
-		}
+//		try {
+//			fd.encapsulate();
+//			Stack<ASTChange> ch = fd.programRoot().cloneUndoStack();
+//			fd.programRoot().undo();
+//			ChangeAccumulator accu = new ChangeAccumulator("EncapsulateField");
+//			accu.addAllEdits(ch.iterator());
+//			changes = accu.getChange();
+//		} catch (RefactoringException rfe) {
+//			status.addFatalError(rfe.getMessage());
+//			fd.programRoot().undo();
+//			changes = null;
+//		}
 		return status;
 	}
 

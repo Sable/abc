@@ -1,29 +1,29 @@
 aspect NodeRename {
 	
-	// for the IDE code, it is more convenient to have a default implementation
-	// of rename on every ASTNode
-	public void ASTNode.rename(String new_name) throws RefactoringException {
-		throw new RefactoringException("cannot rename");
-	}
-	
-	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
-	
-	public Change ASTNode.checkRenameConditions(String name, RefactoringStatus status) {
-		ASTNode n = this;
-		if(n != null) {
-			try {
-				n.rename(name);
-				Stack ch = n.programRoot().cloneUndoStack();
-				n.programRoot().undo();
-				ChangeAccumulator accu = new ChangeAccumulator("Rename");
-				accu.addAllEdits(ch.iterator());
-				return accu.getChange();
-			} catch (RefactoringException rfe) {
-				status.addFatalError(rfe.getMessage());
-				n.programRoot().undo();
-			}
-		}
-		return null;
-	}
+//	// for the IDE code, it is more convenient to have a default implementation
+//	// of rename on every ASTNode
+//	public void ASTNode.rename(String new_name) throws RefactoringException {
+//		throw new RefactoringException("cannot rename");
+//	}
+//	
+//	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
+//	
+//	public Change ASTNode.checkRenameConditions(String name, RefactoringStatus status) {
+//		ASTNode n = this;
+//		if(n != null) {
+//			try {
+//				n.rename(name);
+//				Stack ch = n.programRoot().cloneUndoStack();
+//				n.programRoot().undo();
+//				ChangeAccumulator accu = new ChangeAccumulator("Rename");
+//				accu.addAllEdits(ch.iterator());
+//				return accu.getChange();
+//			} catch (RefactoringException rfe) {
+//				status.addFatalError(rfe.getMessage());
+//				n.programRoot().undo();
+//			}
+//		}
+//		return null;
+//	}
 	
 }

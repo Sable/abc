@@ -186,6 +186,13 @@ public class JastAddJExplorer extends AbstractBaseExplorer implements IShowInTar
 	}
 
 	private class MyProblemLabelDecorator extends BaseProblemLabelDecorator {
+		@Override
+		public Image decorateImage(Image image, Object element) {
+			if (element instanceof Integer)
+				return decorateImage(image, (int)(Integer) element);
+			return super.decorateImage(image, element);
+		}
+
 		protected Image decorateImage(Image image, int severity) {
 			int adornmentFlags;
 			if (severity == IMarker.SEVERITY_ERROR)
