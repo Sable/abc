@@ -10,7 +10,7 @@ This refactoring wraps a set $P$ of parameters of a method $m$ into a single par
 \medskip
 \STATE \assert $m$ has a body
 \STATE \assert the parameters in $P$ are in contiguous positions $i, \ldots, i+k$
-\STATE $W \leftarrow \text{new class containing fields for all the $P$ and a standard constructor to initialise them}$
+\STATE $W \leftarrow$ new class containing fields for all the $P$ and a standard constructor to initialise them
 \STATE $\refactoring{Insert Type}(\util{hostType}(m), W)$
 \STATE $\util{lockMethodCalls}(\util{name}(m))$
 \FORALL{relatives $r$ of $m$}

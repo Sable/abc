@@ -1,2 +1,21 @@
 \subsection{\refactoring{Move Members}}
 In order to move Field, static methods, and member types, we simply lock all references to them, as well as all names contained in them, and (for fields) the flow dependencies of their initialiser, and then move them inside the AST.
+
+We include specification only for \refactoring{Move Static Method}; see Algorithm~\ref{alg:MoveStaticMethod}. 
+They are all implemented in \sourcelink{Move/MoveMembers.jrag}.
+
+
+\begin{algorithm}[p]
+\caption{$\refactoring{Move Static Method}(m : \type{StaticMethod}, target : \type{Type})$}\label{alg:MoveStaticMethod}
+\begin{algorithmic}[1]
+\REQUIRE Java
+\ENSURE Java $\cup$ locked names
+\medskip
+  \STATE $\util{lockAllNames}()$ in $m$
+  \STATE $\util{lockNames}(\util{name}(m))$
+  \STATE remove $m$ from $\util{hostType}(m)$ and insert it into the $target$
+\end{algorithmic}
+\end{algorithm}
+
+
+

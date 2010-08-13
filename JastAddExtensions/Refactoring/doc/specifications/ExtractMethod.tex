@@ -1,9 +1,9 @@
 \subsection{\refactoring{Extract Method}}
 %See ECOOP 2009 publication. and the thesis
 Implemented in \sourcelink{ExtractMethod/ExtractMethod.jrag}; 
-see Algorithms~\ref{alg:ExtractMethod},~\ref{alg:ExtractBlock},~\ref{alg:IntroduceAnonymousMethod},~%
-\ref{alg:CloseOverVariables},~%
-\ref{alg:EliminateReferenceParameters},~\ref{alg:LiftAnonymousMethod}.
+see Algorithms \ref{alg:ExtractMethod},~\ref{alg:ExtractBlock}, \ref{alg:IntroduceAnonymousMethod}, %
+\ref{alg:CloseOverVariables}, %
+\ref{alg:EliminateReferenceParameters}, \ref{alg:LiftAnonymousMethod}.
 
 \begin{algorithm}[p]
 \caption{$\refactoring{Extract Method}(b \colon \type{Block}, i \colon \type{nat}, j \colon \type{nat}, n \colon \type{ident}) \colon \type{Method}$}
@@ -52,7 +52,7 @@ see Algorithms~\ref{alg:ExtractMethod},~\ref{alg:ExtractBlock},~\ref{alg:Introdu
 \ENSURE locked control flow, locked names, \code{return void}, anonymous methods
 \medskip
 \STATE lock control flow successors in $b$
-\STATE $[e_1;\ldots;e_n] \leftarrow \text{locked accesses to all uncaught checked exceptions thrown in $b$}$
+\STATE $[e_1;\ldots;e_n] \leftarrow$ locked accesses to all uncaught checked exceptions thrown in $b$
 \IF{$b$ can complete normally}
   \STATE $c \leftarrow \mathtt{(()} \colon \text{\code{void throws}} \>\>e_1,\ldots,e_n \Rightarrow b \mathtt{)()}$
   \STATE replace $b$ with $c$\code{;}

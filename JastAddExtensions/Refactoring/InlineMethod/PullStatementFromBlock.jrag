@@ -1,9 +1,10 @@
 aspect PullStatementFromBlock {
 	public void Stmt.pullFromBlock() {
+		if (!(getParent().getParent() instanceof Block))
+			throw new RefactoringException("block is not inside a block");
 		Block block = (Block)getParent().getParent();
 		Block outer_block = (Block)block.getParent().getParent();
 		int idx = outer_block.getIndexOfStmt(block);
-		lockControlFlow();
 		block.removeStmt(this);
 		outer_block.insertStmt(idx, this);
 		hostType().flushCaches();

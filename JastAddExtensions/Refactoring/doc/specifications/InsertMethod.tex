@@ -9,7 +9,7 @@ This refactoring inserts a method into a type declaration. Implemented in \sourc
 \medskip
   \STATE $\util{lockMethodNames}(\util{name}(m))$
   \STATE \assert $\util{canIntroduceMethod}(m, T)$
-  \STATE \assert \NOT $\util{isDynamicallyCallable}(m)$ % TODO
+  \STATE \assert \NOT $\util{isDynamicallyCallable}(m)$ 
   \STATE \assert $\{\util{name}(td) | \type{TypeDecl}\ td\in\util{below}(m)\} 
   		$\\$\qquad\qquad\cap\  
 		\{\util{name}(t) | t\text{ is enclosing type of }T \vee t = T\} = \emptyset$

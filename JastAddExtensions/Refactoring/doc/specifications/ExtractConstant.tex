@@ -10,7 +10,7 @@ This refactoring extracts a constant expression into a field. Implemented in \so
 \STATE \assert $e$ is extractible
 \STATE $A \leftarrow \text{enclosing type of $e$}$
 \STATE $t \leftarrow \text{effective type of $e$}$
-\STATE $f \leftarrow \text{new \code{private} (\code{public} if $A$ is an interface) \code{static final} field of type $t$ and name $n$}$
+\STATE $f \leftarrow$ new \code{private} (\code{public} if $A$ is an interface) \code{static final} field of type $t$ and name $n$
 \STATE $\refactoring{Insert Field}(A, f)$
 \STATE lock names, flow, and synchronisation of $e$
 \STATE set initialiser of $f$ to $e$

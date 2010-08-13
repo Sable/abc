@@ -8,7 +8,6 @@ aspect IntroduceOutParameter {
 		if(!(parent.getDest() instanceof VarAccess))
 			throw new RefactoringException("cannot introduce non-variable out parameter");
 		VarAccess v = (VarAccess)parent.getDest();
-		getBlock().lockDataFlow();
 		setReturnType(new PrimitiveTypeAccess("void"));
 		ParameterDeclaration pd = new FreshParameter(new Modifiers("out"), v.type().createLockedAccess(), "res");
 		addParameter(pd);

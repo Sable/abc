@@ -11,13 +11,13 @@ This refactoring converts an anonymous class to a local class. Implemented in \s
 \ENSURE Java $\cup$ locked names
 \medskip
 \STATE $c \leftarrow \text{class instance expression containing $A$}$
-\STATE $d \leftarrow \refactoringNoExt{Extract Temp}(c, \util{unCapitalise}(n))$ -- not possible to do!!!
+\STATE $d \leftarrow \refactoringNoExt{Extract Temp}(c, \util{unCapitalise}(n))$
 \STATE $b \leftarrow \text{enclosing body declaration of $d$}$
 \STATE $\util{lockNames}(b, n)$
 \STATE convert $A$ to class named $n$, remove it from $c$
 \STATE $\refactoring{Insert Type}(b, A)$
 \STATE lock type access of $c$ to $A$
-\STATE $\refactoring{Inline Temp}(d)$ -- but without checks (TODO?)
+\STATE $\refactoring{Inline Temp}(d)$
 \RETURN $A$
 \end{algorithmic}
 \end{algorithm}

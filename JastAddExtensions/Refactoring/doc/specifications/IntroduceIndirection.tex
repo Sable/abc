@@ -16,6 +16,6 @@ This refactoring creates a static method $m'$ in type $B$ that delegates to a me
 \STATE set body of $m'$ to \code{return}\xspace$m$\code{(}$xs$\code{);}
 \STATE $\refactoring{Insert Method}(\util{hostType}(m), m')$
 \STATE $\refactoring{Make Method Static}(m')$
-\STATE $\refactoring{Move Method}(m', B)$ % TODO: Move Method can move also a static method, ??
+\STATE $\refactoring{Move Static Method}(m', B)$
 \end{algorithmic}
 \end{algorithm}
