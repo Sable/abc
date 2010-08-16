@@ -1,0 +1,96 @@
+aspect TypeAnalysis {
+	syn lazy boolean TypeDecl.hasCommonSubtypeWith(TypeDecl that) {
+		if(this.subtype(that))
+			return true;
+		for(TypeDecl ch : childTypes())
+			if(ch.hasCommonSubtypeWith(that))
+				return true;
+		return false;
+	}
+	
+	// for type A, return type Class<A>
+	syn lazy TypeDecl TypeDecl.classType() {
+		GenericClassDecl d = (GenericClassDecl)lookupType("java.lang", "Class");
+		ArrayList<TypeDecl> list = new ArrayList<TypeDecl>();
+		list.add(this);
+		return d.lookupParTypeDecl(list);		
+	}
+
+	syn lazy TypeDecl Expr.computeType(int i) = type();
+	eq AbstractDot.computeType(int i) = getRight().computeType(i);
+	eq VarAccess.computeType(int i) {
+		if(i > 0 && decl() instanceof FieldDeclaration) {
+			FieldDeclaration fd = (FieldDeclaration)decl();
+			Collection<Expr> exprs = fd.assignedExprs();
+			if(exprs == null) {
+				return fd.type();
+			} else {
+				TypeDecl res = null;
+				for(Expr e : exprs) {
+					TypeDecl td = e.computeType(i-1);
+					if(td.isAnonymous())
+						continue;
+					if(res == null) {
+						res = td;
+					} else if(res.subtype(td)) {
+						res = td;
+					} else {
+						res = fd.type();
+						break;
+					}
+				}
+				return res == null ? fd.type() : res;
+			}
+		} else {
+			return super.computeType(i);
+		}
+	}
+	
+	private Collection<TypeDecl> FieldDeclaration.possibleTypes = new HashSet<TypeDecl>();
+	public Collection<TypeDecl> FieldDeclaration.possibleTypes() {
+		return possibleTypes;
+	}
+	public void FieldDeclaration.computePossibleTypes() {
+		possibleTypes.clear();
+		Collection<Expr> exprs = assignedExprs();
+		if(exprs == null)
+			return;
+		for(Expr e : exprs) {
+			if(e instanceof NullLiteral)
+				continue;
+			if(e instanceof ClassInstanceExpr || e instanceof ArrayCreationExpr) {
+				possibleTypes.add(e.type());
+			} else {
+				possibleTypes.clear();
+				return;
+			}
+		}
+	}
+	
+	syn lazy Collection<Expr> FieldDeclaration.assignedExprs() {
+		LinkedList<Expr> res = new LinkedList<Expr>();
+		if(hasInit())
+			res.add(getInit());
+		for(VarAccess va : allUses()) {
+			if(va.isDest()) {
+				AssignExpr assgn = va.modifyingAssignExpr();
+				if(assgn == null)
+					return null;
+				else
+					res.add(assgn.getSource());
+			}
+		}
+		return res;
+	}
+	
+	syn lazy Collection<TypeDecl> Expr.possibleTypes() = null;
+	eq AbstractDot.possibleTypes() = getRight().possibleTypes();
+	eq VarAccess.possibleTypes() {
+		if(decl() instanceof FieldDeclaration) {
+			Collection<TypeDecl> types = ((FieldDeclaration)decl()).possibleTypes();
+			return types.isEmpty() ? super.possibleTypes() : types;
+		} else {
+			return super.possibleTypes();
+		}
+	}
+}

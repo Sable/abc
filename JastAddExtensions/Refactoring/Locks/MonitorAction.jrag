@@ -1,0 +1,83 @@
+aspect MonitorAction {
+	interface MonitorAction {
+		void replaceWithReentrantLock(Monitor m);
+		boolean fromSource();
+		Monitor getAcquiredMonitor();
+		Expr getMonitorExpr();
+	}
+	SynchronizedStmt implements MonitorAction;
+	MethodDecl implements MonitorAction;
+	
+	class WaitNotifyMethodCall implements MonitorAction {
+		private MethodAccess acc;
+		
+		public WaitNotifyMethodCall(MethodAccess acc) {
+			this.acc = acc;
+		}
+		
+		public boolean fromSource() {
+			return acc.fromSource();
+		}
+		
+		public String toString() {
+			return acc.toString();
+		}
+		
+		public ASTNode getParent(int i) {
+			return acc.getParent(i);
+		}
+		
+		public boolean equals(Object that) {
+			return that instanceof WaitNotifyMethodCall && this.acc.equals(((WaitNotifyMethodCall)that).acc);
+		}
+	}
+	
+	syn lazy Collection<MonitorAction> Program.monitorActions() {
+		Collection<MonitorAction> res = new HashSet<MonitorAction>();
+		collectMonitorActions(res);
+		return res;
+	}
+	protected void ASTNode.collectMonitorActions(Collection<MonitorAction> res) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null)
+				child.collectMonitorActions(res);
+		}
+	}
+	protected void SynchronizedStmt.collectMonitorActions(Collection<MonitorAction> res) {
+		res.add(this);
+		super.collectMonitorActions(res);
+	}
+	protected void MethodDecl.collectMonitorActions(Collection<MonitorAction> res) {
+		if(isSynchronized() && !isInitAnnotationsIfNecessary())
+			res.add(this);
+		super.collectMonitorActions(res);
+	}
+	protected void MethodAccess.collectMonitorActions(Collection<MonitorAction> res) {
+		if(waitNotifyMethods().contains(decl()))
+			res.add(new WaitNotifyMethodCall(this));
+		super.collectMonitorActions(res);
+	}
+	
+	// hack: Class.initAnnotationsIfNecessary only touches private data of type Class, so
+	//       we can ignore it
+	public boolean MethodDecl.isInitAnnotationsIfNecessary() {
+		return hostType().sourceTypeDecl().fullName().equals("java.lang.Class") && name().equals("initAnnotationsIfNecessary");		
+	}
+
+	syn lazy Monitor SynchronizedStmt.getAcquiredMonitor() = getExpr().getMonitor();
+	syn lazy Monitor MethodDecl.getAcquiredMonitor() = isSynchronized() ? (isStatic() ? new ClassMonitor(hostType()) : new Monitor(hostType())) : null;
+	public Monitor WaitNotifyMethodCall.getAcquiredMonitor() {
+		return acc.isQualified() ? acc.qualifier().getMonitor() : new Monitor(acc.hostType());
+	}
+	
+	syn Expr SynchronizedStmt.getMonitorExpr() = getExpr();
+	syn lazy Expr MethodDecl.getMonitorExpr() = isSynchronized() ? (isStatic() ? new AbstractDot(hostType().createLockedAccess(), new ClassAccess()) : new ThisAccess("this")) : null;
+	public Expr WaitNotifyMethodCall.getMonitorExpr() {
+		acc.bundleQualifier();
+		return acc.isQualified() ? acc.qualifier() : new ThisAccess("this");
+	}
+	
+	public boolean MonitorAction.mayEnter(Monitor m) { return getAcquiredMonitor().mayAlias(m); }
+	public boolean WaitNotifyMethodCall.mayEnter(Monitor m) { return getAcquiredMonitor().mayAlias(m); }
+}

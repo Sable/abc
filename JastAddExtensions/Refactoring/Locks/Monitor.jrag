@@ -22,15 +22,10 @@ aspect Monitor {
 				return false;
 			return this.type().hasCommonSubtypeWith(that.type());
 		}
-	}
-	
-	syn lazy boolean TypeDecl.hasCommonSubtypeWith(TypeDecl that) {
-		if(this.subtype(that))
-			return true;
-		for(TypeDecl ch : childTypes())
-			if(ch.hasCommonSubtypeWith(that))
-				return true;
-		return false;
+		
+		public boolean equals(Object that) {
+			return that.getClass().equals(this.getClass()) && ((Monitor)that).type == this.type;
+		}
 	}
 
 	// monitor associated with a class object
@@ -38,15 +33,8 @@ aspect Monitor {
 		private TypeDecl clazz;
 
 		public ClassMonitor(TypeDecl clazz) {
-			super(classObjectFor(clazz));
+			super(clazz.classType());
 			this.clazz = clazz;
-		}
-
-		private static TypeDecl classObjectFor(TypeDecl td) {
-			GenericClassDecl d = (GenericClassDecl)td.lookupType("java.lang", "Class");
-			ArrayList<TypeDecl> list = new ArrayList<TypeDecl>();
-			list.add(td);
-			return d.lookupParTypeDecl(list);
 		}
 
 		public TypeDecl getClazz() {
@@ -92,6 +80,8 @@ aspect Monitor {
 
 	syn lazy Monitor Expr.getMonitor() {
 		TypeDecl tp = type();
+		if(tp.isObject())
+			tp = computeType(1);
 		// if expression is of type Class<A> for a type access A, return class monitor for A
 		if(tp.isParameterizedType()) {
 			ParTypeDecl ptd = (ParTypeDecl)tp;
@@ -116,10 +106,9 @@ aspect Monitor {
 	eq VarAccess.getMonitor() {
 		if(decl() instanceof FieldDeclaration) {
 			FieldDeclaration fd = (FieldDeclaration)decl();
-			if(fd.effectivelyFinal() && !fd.refEscapes())
+			if(/*for performance improvement: fd.type().isObject() &&*/ !fd.refEscapes())
 				return new FieldMonitor(fd);
 		}
 		return super.getMonitor();
 	}
-
 }

@@ -32,50 +32,6 @@ aspect FieldAnalysis {
 		return false;
 	}
 	
-	private Collection<TypeDecl> FieldDeclaration.possibleTypes = new HashSet<TypeDecl>();
-	public Collection<TypeDecl> FieldDeclaration.possibleTypes() {
-		return possibleTypes;
-	}
-	public void FieldDeclaration.computePossibleTypes() {
-		possibleTypes.clear();
-		if(hasInit()) {
-			if(getInit() instanceof ClassInstanceExpr || getInit() instanceof ArrayCreationExpr)
-				possibleTypes.add(getInit().type());
-			else if(!(getInit() instanceof NullLiteral))
-				return;
-		}
-		for(VarAccess va : allUses()) {
-			if(va.isDest()) {
-				AssignExpr assgn = va.modifyingAssignExpr();
-				if(assgn == null) {
-					possibleTypes.clear();
-					return;
-				} else {
-					Expr rhs = assgn.getSource();
-					if(rhs instanceof NullLiteral)
-						continue;
-					if(rhs instanceof ClassInstanceExpr || rhs instanceof ArrayCreationExpr) {
-						possibleTypes.add(rhs.type());
-					} else {
-						possibleTypes.clear();
-						return;
-					}
-				}
-			}
-		}
-	}
-	
-	syn lazy Collection<TypeDecl> Expr.possibleTypes() = null;
-	eq AbstractDot.possibleTypes() = getRight().possibleTypes();
-	eq VarAccess.possibleTypes() {
-		if(decl() instanceof FieldDeclaration) {
-			Collection<TypeDecl> types = ((FieldDeclaration)decl()).possibleTypes();
-			return types.isEmpty() ? super.possibleTypes() : types;
-		} else {
-			return super.possibleTypes();
-		}
-	}
-	
 	syn lazy boolean FieldDeclaration.isDedicatedLock() {
 		for(VarAccess va : allUses()) {
 			Expr e = va.unqualifiedScope();
@@ -156,11 +112,9 @@ aspect FieldAnalysis {
 			"java.util.TreeMap.size()", "java.util.TreeMap.remove(java.lang.Object)", "java.util.TreeMap.entrySet()", "java.util.TreeMap.values()",
 			"java.util.TreeMap.isEmpty()", "java.util.TreeMap.clear()",
 			
-			"java.util.Hashtable.get(java.lang.Object)", "java.util.Hashtable.put(java.lang.Object, java.lang.Object)", "java.util.Hashtable.keySet()", "java.util.Hashtable.containsKey(java.lang.Object)",
-			"java.util.Hashtable.size()", "java.util.Hashtable.remove(java.lang.Object)", "java.util.Hashtable.entrySet()", "java.util.Hashtable.values()",
-			"java.util.Hashtable.isEmpty()", "java.util.Hashtable.clear()",
-			
-			"java.text.SimpleDateFormat.parse(java.lang.String, java.text.ParsePosition)", "java.text.SimpleDateFormat.format(java.util.Date, java.lang.StringBuffer, java.text.FieldPosition)"
+			"java.util.TreeSet.add(java.lang.Object)", "java.util.TreeSet.iterator()"
+
+//			"java.text.SimpleDateFormat.parse(java.lang.String, java.text.ParsePosition)", "java.text.SimpleDateFormat.format(java.util.Date, java.lang.StringBuffer, java.text.FieldPosition)"
 		};
 		boolean contains = Arrays.asList(nonLeakyMethods).contains(fullName);
 		if(contains)

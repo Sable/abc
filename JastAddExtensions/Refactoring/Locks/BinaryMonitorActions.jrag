@@ -1,0 +1,95 @@
+aspect BinaryMonitorActions {
+	/*MonitorAction protected void MethodAccess.collectMonitorActions(Collection<MonitorAction> res) {
+		refined(res);
+		MethodDecl md = decl();
+		if(!md.hostType().isObject() && !md.hostType().fullName().equals("java.lang.Class") && !md.fromSource()) {
+			if(isNonSynchronizing(md))
+				return;
+			if(!md.isStatic())
+				res.add(new BinaryMethodCall(this, -1, isQualified() ? qualifier().type() : md.hostType()));
+			for(int i=0;i<md.getNumParameter();++i) {
+				if(getArg(i).type().isNull())
+					continue;
+				ParameterDeclaration pd = md.getParameter(i);
+				if(!pd.type().isReferenceType())
+					continue;
+				if(pd.isVariableArity())
+					res.add(new BinaryMethodCall(this, i, pd.type()));
+				else
+					res.add(new BinaryMethodCall(this, i, getArg(i).type()));
+			}
+		}
+	}
+	
+	class BinaryMethodCall implements MonitorAction {
+		private MethodAccess ma;
+		private int idx;
+		private TypeDecl type;
+		private Monitor monitor;
+		
+		public BinaryMethodCall(MethodAccess ma, int idx, TypeDecl type) {
+			this.ma = ma;
+			this.idx = idx;
+			this.type = type;
+		}
+		
+		public void replaceWithReentrantLock(Monitor m) {
+			throw new RefactoringException("cannot refactor binary monitor");
+		}
+		
+		public boolean fromSource() {
+			return false;
+		}
+		
+		public Monitor getAcquiredMonitor() {
+			if(monitor == null)
+				monitor = new Monitor(type);
+			return monitor;
+		}
+		
+		public Expr getMonitorExpr() {
+			throw new UnsupportedOperationException("BinaryMethodCall.getMonitorExpr()");
+		}
+		
+		public boolean mayEnter(Monitor m) {
+			return getAcquiredMonitor().mayAlias(m);
+		}
+		
+		public boolean replaceWithReentrantLock() {
+			return false;
+		}
+	}
+	
+	private static Collection<String> ASTNode.nonSynchronizingMethods;
+	public Collection<String> ASTNode.nonSynchronizingMethods() {
+		if(nonSynchronizingMethods == null)
+			nonSynchronizingMethods = Arrays.asList(
+					"java.util.ArrayList.set(int, java.lang.Object)", "java.util.ArrayList.add(java.lang.Object)",
+					"java.util.HashSet.contains(java.lang.Object)", "java.util.HashSet.add(java.lang.Object)", 
+					"java.util.HashSet.remove(java.lang.Object)", "java.util.HashSet.containsAll(java.util.Collection)",
+					"java.util.AbstractCollection.addAll(java.util.Collection)", "java.util.HashMap.get(java.lang.Object)",
+					"java.util.Map.put(java.lang.Object, java.lang.Object)", "java.util.Map.containsKey(java.lang.Object)",
+					"java.util.Map.remove(java.lang.Object)", "java.util.Map.get(java.lang.Object)", "java.util.Map.containsValue(java.lang.Object)",
+					"java.util.HashMap.put(java.lang.Object, java.lang.Object)", "java.util.HashMap.containsKey(java.lang.Object)",
+					"java.util.HashMap.remove(java.lang.Object)", "java.util.HashMap.get(java.lang.Object)", "java.util.HashMap.containsValue(java.lang.Object)",
+					"java.util.IdentityHashMap.get(java.lang.Object)",  "java.util.IdentityHashMap.containsValue(java.lang.Object)",
+					"java.util.IdentityHashMap.put(java.lang.Object, java.lang.Object)", "java.util.IdentityHashMap.containsKey(java.lang.Object)",
+					"java.util.IdentityHashMap.remove(java.lang.Object)", "java.util.WeakHashMap.get(java.lang.Object)", 
+					"java.util.WeakHashMap.put(java.lang.Object, java.lang.Object)", "java.util.WeakHashMap.containsKey(java.lang.Object)",
+					"java.util.WeakHashMap.remove(java.lang.Object)", "java.util.TreeMap.get(java.lang.Object)", 
+					"java.util.TreeMap.put(java.lang.Object, java.lang.Object)", "java.util.TreeMap.containsKey(java.lang.Object)",
+					"java.util.TreeMap.remove(java.lang.Object)", "java.util.Hashtable.get(java.lang.Object)", 
+					"java.util.Hashtable.put(java.lang.Object, java.lang.Object)", "java.util.Hashtable.containsKey(java.lang.Object)",
+					"java.util.Hashtable.remove(java.lang.Object)"
+					
+					//"javax.servlet.http.HttpSession.setAttribute(java.lang.String, java.lang.Object)"
+			);
+		return nonSynchronizingMethods;
+	}
+	public boolean ASTNode.isNonSynchronizing(MethodDecl md) {
+		if(md.name().equals("equals") || md.name().equals("hashCode") || md.name().equals("toString"))
+			return true;
+		String fullName = md.hostType().sourceTypeDecl().fullName() + "." + md.signature();
+		return nonSynchronizingMethods().contains(fullName);
+	}*/
+}
