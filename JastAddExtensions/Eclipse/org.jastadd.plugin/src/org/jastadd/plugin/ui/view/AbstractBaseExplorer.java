@@ -425,8 +425,7 @@ public abstract class AbstractBaseExplorer extends ResourceNavigator implements
 				return image;
 			}
 			
-			//return image; // FIXME : 
-			return decorateImage(image, severity); ///MarkerSupportInternalUtilities.getSeverityImage(1)
+			return decorateImage(image, severity);
 		}
 
 		
