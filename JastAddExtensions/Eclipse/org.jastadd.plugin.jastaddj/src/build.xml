@@ -40,6 +40,10 @@
   <!-- create AST node types and weave aspect modules -->
 	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true"
            outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false" noStatic="true">
+	   	<!-- dependencies:
+			can depend on Frontends, Backends, Refactoring, ControlFlow, plugin
+			prefer Refactoring to Backends as we dont't want Refactoring to depend on Backends
+		-->
 		<fileset dir="../../Java1.4Frontend">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -68,35 +72,31 @@
 			<include name="**/*.jadd"/>
 		</fileset>
 		<fileset dir="${ControlFlowGraph}">
-		        <include name="Nodes.ast"/>
+			<include name="Alias.jrag"/>
 			<include name="ControlFlowGraph.jrag"/>
-			<include name="Sets.jrag"/>
+			<include name="DotGeneration.jrag"/>
 			<include name="Exceptions.jrag"/>
+			<include name="Nodes.ast"/>
+			<include name="ReachingDefinitions.jrag"/>
+			<include name="Sets.jrag"/>
 		</fileset>
-<!--		<fileset file="${Refactoring}/util/Callable.jadd"/>
-		<fileset file="${Refactoring}/Naming/AccessInfo.jrag"/>
-		<fileset file="${Refactoring}/Naming/VarAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/Naming/MethodAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/Naming/TypeAccessInfo.jrag"/>
-		<fileset file="${Refactoring}/util/LocalDeclaration.jrag"/>
-		<fileset file="${Refactoring}/Naming/AdjustAccess.jrag"/>
+		<!-- Refactoring project -->
+		<fileset dir="${Refactoring}/util">
+		        <include name="**/*.ast"/>
+		        <include name="**/*.jrag"/>
+		        <include name="**/*.jadd"/>
+			<exclude name="ASTReplace.jrag"/>
+		</fileset>
 		<fileset dir="${Refactoring}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jadd"/>
+		        <include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
-			<exclude name="util/Callable.jadd"/>
-			<exclude name="util/Uses.jrag"/>
-			<exclude name="util/JastAddJComments.jrag"/>
-			<exclude name="util/JastAddJOffsets.jrag"/>
-			<exclude name="util/FlushCaches.jrag"/>
-			<exclude name="Naming/VarAccessInfo.jrag"/>
-			<exclude name="Naming/MethodAccessInfo.jrag"/>
-			<exclude name="Naming/TypeAccessInfo.jrag"/>
-			<exclude name="XML/**/*"/>
-			<exclude name="util/LocalDeclaration.jrag"/>
-			<exclude name="Naming/AdjustAccess.jrag"/>
-			<exclude name="IntertypeDeclarations/**/*"/>
-		</fileset> -->
+			<include name="**/*.jadd"/>
+			<exclude name="util/**"/>
+			<exclude name="tests/**"/>
+			<exclude name="parser/**"/>
+			<exclude name="scanner/**"/>
+			<exclude name="JRRT.java"/>
+		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>

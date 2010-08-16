@@ -10,10 +10,6 @@ aspect Comments {
     return null;
   }
 
-  public void CompilationUnit.setComments(HashMap map) {
-    comments = map;
-  }
-  private HashMap CompilationUnit.comments;
   public String CompilationUnit.comment(int line) {
     if(comments != null) {
       Integer key = new Integer(line);
