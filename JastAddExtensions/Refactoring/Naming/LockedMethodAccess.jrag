@@ -169,15 +169,15 @@ aspect LockedMethodAccess {
 	public Access MethodAccessInfo.eliminate(MethodAccess original, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
 		if(!directlyVisible) {
 			if(target.isStatic())
-				return (Access) ASTNode.replace(original).with(
+				return (Access) original.replace(original).with(
 						computeStaticAccess(original, enclosing, args));
 			if(inStaticCtxt)
 				throw new RefactoringException("cannot access non-static method in static context");
 			if(source == bend) {
-				return (Access) ASTNode.replace(original).with(
+				return (Access) original.replace(original).with(
 						computeThisAccess(original, enclosing, args));
 			} else if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
-				return (Access) ASTNode.replace(original).with(
+				return (Access) original.replace(original).with(
 						computeSuperAccess(original, enclosing, args));
 			} else {
 				throw new RefactoringException("cannot access method");
@@ -212,7 +212,7 @@ aspect LockedMethodAccess {
 		// this argument list; then we need casts
 		for(MethodDecl cand : competitors)
 			if(cand.applicableTo(args) && cand.moreSpecificThan(target))
-				return (MethodAccess) ASTNode.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
+				return (MethodAccess) original.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
 		return original;
 	}
 	
@@ -248,7 +248,7 @@ aspect LockedMethodAccess {
 			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
 				return ma.parentDot();
 			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
-				return (Access) ASTNode.replace(ma.parentDot()).with(
+				return (Access) ma.parentDot().replace(ma.parentDot()).with(
 						new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma));
 			throw new RefactoringException("cannot access method");
 		} else {

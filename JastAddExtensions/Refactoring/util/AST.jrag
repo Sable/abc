@@ -135,26 +135,15 @@ aspect AST {
 //	}
 	
 	protected void ASTNode.replaceWith(ASTNode newnode) {
-		ASTNode parent = getParent();
-		parent.setChild(newnode, parent.getIndexOfChild(this));
+		replace(this).with(newnode);
+//		ASTNode parent = getParent();
+//		parent.setChild(newnode, parent.getIndexOfChild(this));
 	}
 	
 	protected void Access.qualifyWith(Expr qual) {
 		ASTNode parent = getParent();
 		int idx = parent.getIndexOfChild(this);
 		parent.setChild(qual.qualifiesAccess(this), idx);
-	}
-	
-	private static int ASTNode.replaceIndex = -1;
-	public static ASTNode ASTNode.replace(ASTNode child) {
-		ASTNode parent = child.getParent();
-		replaceIndex = parent.getIndexOfChild(child);
-		return parent;
-	}
-	public ASTNode ASTNode.with(ASTNode newChild) {
-		setChild((T)newChild, replaceIndex);
-		newChild.flushCaches();
-		return newChild;
 	}
 
 	/* JastAddJ stores multiply qualified accesses as right-heavy trees

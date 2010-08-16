@@ -104,7 +104,7 @@ aspect LockedVariableAccess {
 		
 		Expr to_replace = qualifier == null ? originalAccess : originalAccess.parentDot(); 
 		Access access = null;
-		ASTNode parent = ASTNode.replace(to_replace);
+		ASTNode parent = to_replace.replace(to_replace);
 		
 		if(target.isStatic()) {
 			if (qualifier == null || qualifier.type() != target.hostType())

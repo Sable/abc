@@ -1,0 +1,18 @@
+aspect ASTReplace {
+	// copied from the Java1.4Backend Transformations.jrag
+	
+	// imperative transformation of the AST
+	  // syntax ASTNode.replace(sourcenode).with(destnode)
+	  // this syntax is used to allow for building the destnode using the sourcenode
+	  protected ASTNode ASTNode.replace(ASTNode node) {
+	    state().replacePos = node.getParent().getIndexOfChild(node);
+	    node.getParent().in$Circle(true);
+	    return node.getParent();
+	  }
+	  protected ASTNode ASTNode.with(ASTNode node) {
+	   ((ASTNode)this).setChild(node, state().replacePos);
+	   in$Circle(false);
+	   return node;
+	  }
+	  public int ASTNode$State.replacePos = 0;
+}
