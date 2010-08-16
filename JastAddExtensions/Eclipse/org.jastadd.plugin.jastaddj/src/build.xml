@@ -96,6 +96,7 @@
 			<exclude name="parser/**"/>
 			<exclude name="scanner/**"/>
 			<exclude name="JRRT.java"/>
+			<exclude name="Locks/*"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>

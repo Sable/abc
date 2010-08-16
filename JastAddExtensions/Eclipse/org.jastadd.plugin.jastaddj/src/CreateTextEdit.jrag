@@ -22,100 +22,112 @@ import org.jastadd.plugin.jastaddj.util.FileUtil;
 
 aspect CreateTextEdit {
 	
-//	// this doesn't really belong here...
-//	public Stack Program.cloneUndoStack() { return (Stack)undoStack.clone(); }
-//	
-//	/* a change accumulator keeps track of changes happening to multiple files;
-//	 * it creates one TextFileChange for every file affected and adds incoming
-//	 * ReplaceEdits to them
-//	 */
-//	class ChangeAccumulator {
-//		private String name;
-//		private CompositeChange changes;
-//		private Map<IFile, TextFileChange> changemap;
-//		
-//		public ChangeAccumulator(String name) {
-//			this.name = name;
-//			changes = new CompositeChange(name);
-//			changemap = new HashMap<IFile, TextFileChange>();
-//		}
-//
-//		// retrieve the text file change object for file
-//		private TextFileChange changeForFile(IFile file) {
-//			TextFileChange tfc;
-//			if(!changemap.containsKey(file)) {
-//				// create a new one
-//				tfc = new TextFileChange(name, file);
-//				tfc.setEdit(new MultiTextEdit());
-//				changes.add(tfc);
-//				changemap.put(file, tfc);
-//			}
-//			else {
-//				tfc = changemap.get(file);
-//			}
-//			return tfc;
-//		}
-//		
-//		public void addEdit(IFile file, TextEdit te) {
-//			TextFileChange tfc = changeForFile(file);
-//			/* when inserting the new edit into tfc, we must be careful to avoid
-//			 * overlapping edits; our solution here is very simple: walk through
-//			 * all changes already in tfc, if one of them covers the new change
-//			 * we don't need to add it, if some of them are covered by the new
-//			 * change, remove them 
-//			 * 
-//			 * a subtlety arises with replace edits nested inside move source edits;
-//			 * we want those to be allowed, but they have to be handled specially */
-//			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
-//			java.util.Set covered = new java.util.HashSet();
-//			for(int i=0; i<mte.getChildren().length; ++i) {
-//				TextEdit te2 = mte.getChildren()[i];
-//				if(te2.covers(te)) {
-//					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
-//						MoveSourceEdit cse = (MoveSourceEdit)te2;
-//						ReplaceEdit re = (ReplaceEdit)te;
-//						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-//					}
-//					return;
-//				} else if(te.covers(te2))
-//					covered.add(te2);
-//			}
-//			for(Iterator iter=covered.iterator();iter.hasNext();) {
-//				TextEdit te2 = (TextEdit)iter.next();
-//				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
-//					MoveSourceEdit cse = (MoveSourceEdit)te;
-//					ReplaceEdit re = (ReplaceEdit)te2;
-//					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-//				}
-//				mte.removeChild(te2);
-//			}
-//			tfc.addEdit(te);
-//		}
-//
-//		public void addEdit(IFile file, int offset, int length, String contents) {
-//			addEdit(file, new ReplaceEdit(offset, length, contents));
-//		}
-//
-//		// creates the TextChanges corresponding to the ASTChanges in some iterator
-//		// and adds them to the accumulator
-//		public void addAllEdits(Iterator/*<ASTChange>*/ iter) {
-//			while(iter.hasNext())
-//				((ASTChange)iter.next()).createTextEdit(this);
-//		}
-//		
-//		// directly add a non-TextChange
-//		public void addChange(Change ch) {
-//			changes.add(ch);
-//		}
-//		
-//		public Change getChange() {
-//			return changes;
-//		}
-//	}
+	
+	/* a change accumulator keeps track of changes happening to multiple files;
+	 * it creates one TextFileChange for every file affected and adds incoming
+	 * ReplaceEdits to them
+	 */
+	class ChangeAccumulator {
+		private String name;
+		private CompositeChange changes;
+		private Map<IFile, TextFileChange> changemap;
+		
+		public ChangeAccumulator(String name) {
+			this.name = name;
+			changes = new CompositeChange(name);
+			changemap = new HashMap<IFile, TextFileChange>();
+		}
+
+		// retrieve the text file change object for file
+		private TextFileChange changeForFile(IFile file) {
+			TextFileChange tfc;
+			if(!changemap.containsKey(file)) {
+				// create a new one
+				tfc = new TextFileChange(name, file);
+				tfc.setEdit(new MultiTextEdit());
+				changes.add(tfc);
+				changemap.put(file, tfc);
+			}
+			else {
+				tfc = changemap.get(file);
+			}
+			return tfc;
+		}
+		
+		public void addEdit(IFile file, TextEdit te) {
+			TextFileChange tfc = changeForFile(file);
+			/* when inserting the new edit into tfc, we must be careful to avoid
+			 * overlapping edits; our solution here is very simple: walk through
+			 * all changes already in tfc, if one of them covers the new change
+			 * we don't need to add it, if some of them are covered by the new
+			 * change, remove them 
+			 * 
+			 * a subtlety arises with replace edits nested inside move source edits;
+			 * we want those to be allowed, but they have to be handled specially */
+			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
+			java.util.Set covered = new java.util.HashSet();
+			for(int i=0; i<mte.getChildren().length; ++i) {
+				TextEdit te2 = mte.getChildren()[i];
+				if(te2.covers(te)) {
+					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
+						MoveSourceEdit cse = (MoveSourceEdit)te2;
+						ReplaceEdit re = (ReplaceEdit)te;
+						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+					}
+					return;
+				} else if(te.covers(te2))
+					covered.add(te2);
+			}
+			for(Iterator iter=covered.iterator();iter.hasNext();) {
+				TextEdit te2 = (TextEdit)iter.next();
+				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
+					MoveSourceEdit cse = (MoveSourceEdit)te;
+					ReplaceEdit re = (ReplaceEdit)te2;
+					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+				}
+				mte.removeChild(te2);
+			}
+			tfc.addEdit(te);
+		}
+
+		public void addEdit(IFile file, int offset, int length, String contents) {
+			addEdit(file, new ReplaceEdit(offset, length, contents));
+		}
+
+		// creates the TextChanges corresponding to the ASTModification in some iterator
+		// and adds them to the accumulator
+		public void addAllEdits(Iterator<ASTModification> iter) {
+			while(iter.hasNext())
+				iter.next().createTextEdit(this);
+		}
+		
+		// directly add a non-TextChange
+		public void addChange(Change ch) {
+			changes.add(ch);
+		}
+		
+		public Change getChanges() {
+			return changes;
+		}
+	}
+	
+	public void ASTModification.createTextEdit(ChangeAccumulator ca) {
+		//throw new UnsupportedOperationException("ASTModification.createTextEdit()");
+	}
+	
+	public void ASTModificationReplaceEdit.createTextEdit(ChangeAccumulator accu) {
+		int offset = node.createOffset(start);
+		int length = node.createOffset(end) - offset + 1;
+		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource() || offset < 0 || length <= 0)
+			return;
+		IFile file = FileUtil.getFile(node);
+		accu.addEdit(file, offset, length, newValue);
+	}
+	
 //	
 //	// every ASTChange should be able to create a text edit that corresponds to
 //	// its action; however, this method is as yet unimplemented for some changes...
-//	public void ASTChange.createTextEdit(ChangeAccumulator accu) {
+//	public void ASTChange.eclipseASTEdit(ChangeAccumulator accu) {
 //		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
 //	}
 //	
@@ -264,37 +276,37 @@ aspect CreateTextEdit {
 //		}
 //	}
 //	
-//	class MoveMethodSourceModifier implements ISourceModifier {
-//		private final MoveSourceEdit parent;
-//		private final ArrayList<ReplaceEdit> edits;
-//		
-//		public MoveMethodSourceModifier(MoveSourceEdit parent) {
-//			this.parent = parent;
-//			this.edits = new ArrayList<ReplaceEdit>();
-//		}
-//		
-//		private MoveMethodSourceModifier(MoveSourceEdit parent, ArrayList<ReplaceEdit> edits) {
-//			this.parent = parent;
-//			this.edits = edits;
-//		}
-//
-//		public ISourceModifier copy() {
-//			ArrayList<ReplaceEdit> newlist = new ArrayList<ReplaceEdit>();
-//			for(ReplaceEdit re : edits)
-//				newlist.add((ReplaceEdit)re.copy());
-//			return new MoveMethodSourceModifier(parent, newlist);
-//		}
-//
-//		public ReplaceEdit[] getModifications(String arg0) {
-//			return edits.toArray(new ReplaceEdit[]{});
-//		}
-//		
-//		public void addReplaceEdit(ReplaceEdit re) {
-//			ReplaceEdit nre = new ReplaceEdit(re.getOffset()-parent.getOffset(), re.getLength(), re.getText());
-//			edits.add(nre);
-//		}
-//		
-//	}
+	class MoveMethodSourceModifier implements ISourceModifier {
+		private final MoveSourceEdit parent;
+		private final ArrayList<ReplaceEdit> edits;
+		
+		public MoveMethodSourceModifier(MoveSourceEdit parent) {
+			this.parent = parent;
+			this.edits = new ArrayList<ReplaceEdit>();
+		}
+		
+		private MoveMethodSourceModifier(MoveSourceEdit parent, ArrayList<ReplaceEdit> edits) {
+			this.parent = parent;
+			this.edits = edits;
+		}
+
+		public ISourceModifier copy() {
+			ArrayList<ReplaceEdit> newlist = new ArrayList<ReplaceEdit>();
+			for(ReplaceEdit re : edits)
+				newlist.add((ReplaceEdit)re.copy());
+			return new MoveMethodSourceModifier(parent, newlist);
+		}
+
+		public ReplaceEdit[] getModifications(String arg0) {
+			return edits.toArray(new ReplaceEdit[]{});
+		}
+		
+		public void addReplaceEdit(ReplaceEdit re) {
+			ReplaceEdit nre = new ReplaceEdit(re.getOffset()-parent.getOffset(), re.getLength(), re.getText());
+			edits.add(nre);
+		}
+		
+	}
 //	
 //	public void MoveMethod.createTextEdit(ChangeAccumulator accu) {
 //		IFile origfile = FileUtil.getFile(origin);

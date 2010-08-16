@@ -92,12 +92,13 @@ public class RenameInputPage extends UserInputWizardPage {
 			restoreMessage();
 			return;
 		}
-		if(initialSuggestion.equals(text)) {
-			setPageComplete(false);
-			setErrorMessage(null);
-			restoreMessage();
-			return;
-		}
+//		if(initialSuggestion.equals(text)) {
+//			setPageComplete(false);
+//			setErrorMessage(null);
+//			restoreMessage();
+//			return;
+//		}
+		// TODO: check text is a valid name
 
 		((RenameRefactoring)getRefactoring()).setName(text);
 		setPageComplete(new RefactoringStatus());

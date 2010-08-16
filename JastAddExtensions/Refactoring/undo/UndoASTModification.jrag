@@ -1,0 +1,16 @@
+aspect UndoASTModification {
+	public abstract class ASTModificationReplaceEdit extends ASTModification {
+		ASTNode node;
+		int start;
+		int end;
+		ASTModificationReplaceEdit(ASTNode node, int start, int end, String oldValue, String newValue) {
+			this.node = node;
+			this.start = start;
+			this.end = end;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+		}
+		public String newValue;
+		public String oldValue;
+	}
+}

@@ -20,21 +20,23 @@ aspect Undo {
 		return cp;
 	}
 	
-	class ASTUndoCheckPoint implements ASTModification {
+	class ASTUndoCheckPoint extends ASTModification {
 		@Override
 		public void undo() {
 		}
 	}
 	
-	public static
-	
-	interface ASTModification {
-		void undo();
+	public abstract class ASTModification {
+		public abstract void undo();
 	}
 	
 	// problem with non-static stack: creating new subtrees that are not attached to the
 	// main tree with a Program root node -> no undo in the new subtree
 	private static Stack<ASTModification> Program.undoStack = new Stack();
+	
+	public static Stack<ASTModification> Program.cloneUndoStack() {
+		return (Stack<ASTModification>) (undoStack != null ? undoStack.clone() : null);
+	}
 	
 	public static long Program.undoActionCount = 0;
 	

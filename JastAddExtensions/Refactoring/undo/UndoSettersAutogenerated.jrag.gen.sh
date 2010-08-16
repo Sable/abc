@@ -34,10 +34,9 @@ function IDrecursion {
 		echo "
 	refine $ASPECT public void $TYPE.set$NAME($TP value) {
 		if (Program.isRecordingASTChanges()) {
-			final $TP v = $VAR;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this, ${NAME}start, ${NAME}end, $VAR, value) {
 				public void undo() {
-					refined(v);
+					refined(oldValue);
 				}
 			});
 		}
@@ -47,29 +46,11 @@ function IDrecursion {
 		IDrecursion "$PATTERN" "$NAME" "$VAR" "$TP" "$SOFAR\n$TYPE" "$ASPECT" "$TYPE"
 	done;
 }
+# all need to be strings
 IDrecursion "(<ID:(java\\.lang\\.)?String>|<ID>)" "ID" "tokenString_ID" "String" "" ""
 IDrecursion "(<Name:(java\\.lang\\.)?String>|<Name>)" "Name" "tokenString_Name" "String" "" ""
 IDrecursion "(<Package:(java\\.lang\\.)?String>|<Package>)" "Package" "tokenString_Package" "String" "" ""
 
-#for i in `find ../../Java* ../../Refactoring -name "*.ast" | xargs grep -E "<Name:String>|<Name>" | sed 's/abstract //' | cut -f1 -d' ' | sed -r 's/^[^:]*\///'`; do
-#
-#	ASPECT=`echo -n $i | sed -r 's/\.ast:.*//'`
-#	TYPE=`echo -n $i | sed -r 's/[^.]*\.ast://'`
-#	echo "
-#	refine $ASPECT public void $TYPE.setName(String value) {
-#		Program root = (Program) programRootParentFromField();
-#		if (root != null && root.isRecordingUndo()) {
-#			final String v = tokenString_Name;
-#			root.addUndoAction(new ASTModification() {
-#				public void undo() {
-#					refined(v);
-#				}
-#			});
-#		}
-#		refined(value);
-#	}
-#	"
-#done;
 
 echo "}"
 

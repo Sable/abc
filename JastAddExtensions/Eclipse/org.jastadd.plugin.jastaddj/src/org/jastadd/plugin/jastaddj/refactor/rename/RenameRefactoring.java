@@ -1,5 +1,7 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
+import java.util.Stack;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,7 +14,10 @@ import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
 
+import AST.ASTModification;
+import AST.ChangeAccumulator;
 import AST.MethodDecl;
+import AST.Program;
 import AST.TypeDecl;
 import AST.Variable;
 
@@ -47,6 +52,7 @@ public class RenameRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
+		
 		if(status != null)
 			return status;
 		status = new RefactoringStatus();
@@ -63,6 +69,24 @@ public class RenameRefactoring extends Refactoring {
 
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		return changes;
+		try {
+			pm.beginTask("Creating change...", 1);
+			
+			Program.startRecordingASTChangesAndFlush();
+			
+			if (selectedNode instanceof Variable) {
+				((Variable) selectedNode).rename(name);
+			}
+			
+			Stack<ASTModification> undoStack = Program.cloneUndoStack();
+			ChangeAccumulator changeAccumulator = new ChangeAccumulator("Rename");
+			changeAccumulator.addAllEdits(undoStack.iterator());
+			changes = changeAccumulator.getChanges();
+			
+			return changes;
+		} finally {
+			Program.undoAll();
+			pm.done();
+		}
 	}
 }
