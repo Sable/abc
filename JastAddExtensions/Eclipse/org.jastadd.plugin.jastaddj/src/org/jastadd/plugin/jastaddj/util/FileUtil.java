@@ -62,6 +62,16 @@ public class FileUtil {
 		}
 	}
 	
+	public static IFile getFile(String pathName) {
+		IPath path = Path.fromOSString(pathName);
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+		.findFilesForLocation(path);
+		if (files.length == 1)
+			return files[0];
+		else
+			return null;
+	}
+	
 	public static void openFile(IJastAddNode node) {
 		if (node instanceof IJastAddJFindDeclarationNode) {
 			IJastAddJFindDeclarationNode n = (IJastAddJFindDeclarationNode) node;

@@ -23,5 +23,20 @@ aspect UndoRefines {
 		}
 		refined(pd);
 	}
+
+	// compilation unit ID
+	refine CompilationUnitExt public void CompilationUnit.setID(String value) {
+		String oldPathName = pathName();
+		String oldValue = getID();
+		refined(value);
+		if (Program.isRecordingASTChanges()) {
+			Program.addUndoAction(new ASTModificationCompilationUnitSetId(this, oldValue, value, oldPathName, pathName()) {
+				public void undo() {
+					refined(oldValue);
+				}
+			});
+		}
+	}
+	
 	
 }

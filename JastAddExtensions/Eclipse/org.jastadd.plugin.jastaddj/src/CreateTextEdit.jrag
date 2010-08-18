@@ -96,7 +96,16 @@ aspect CreateTextEdit {
 
 		// creates the TextChanges corresponding to the ASTModification in some iterator
 		// and adds them to the accumulator
-		public void addAllEdits(Iterator<ASTModification> iter) {
+		public void addAllEdits(Collection<ASTModification> col) {
+			Iterator<ASTModification> iter = col.iterator();
+			while(iter.hasNext()) {
+				ASTModification m = iter.next();
+				if (m instanceof ASTModificationCompilationUnitSetId) {
+					ASTModificationCompilationUnitSetId mm = (ASTModificationCompilationUnitSetId) m;
+					compilationUnitOriginalPath.put((CompilationUnit) mm.node, mm.oldPathName);
+				}
+			}
+			iter = col.iterator();
 			while(iter.hasNext())
 				iter.next().createTextEdit(this);
 		}
@@ -109,6 +118,16 @@ aspect CreateTextEdit {
 		public Change getChanges() {
 			return changes;
 		}
+		
+		public Map<CompilationUnit, String> compilationUnitOriginalPath = new HashMap<CompilationUnit, String>();
+
+		public String getPathName(IJastAddNode node) {
+			CompilationUnit cu = ((ASTNode) node).compilationUnit();
+			if (this.compilationUnitOriginalPath.containsKey(cu))
+				return this.compilationUnitOriginalPath.get(cu);
+			else
+				return cu.pathName();
+		}
 	}
 	
 	public void ASTModification.createTextEdit(ChangeAccumulator ca) {
@@ -120,8 +139,17 @@ aspect CreateTextEdit {
 		int length = node.createOffset(end) - offset + 1;
 		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource() || offset < 0 || length <= 0)
 			return;
-		IFile file = FileUtil.getFile(node);
+		IFile file = FileUtil.getFile(accu.getPathName(node));
+		System.out.println(node.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " " + oldValue + " " + newValue);
 		accu.addEdit(file, offset, length, newValue);
+	}
+	
+	public void ASTModificationCompilationUnitSetId.createTextEdit(ChangeAccumulator accu) {
+		System.out.println(node.getClass().getName() + " " + accu.getPathName(node) + " " + oldValue + " " + newValue);
+		accu.addChange(new RenameCompilationUnitChange(org.jastadd.plugin.jastaddj.util.FileUtil.getFile(accu.getPathName(node)).getFullPath(), oldValue, newValue));
+
+//		//new FileUtil.getFile(accu.getPathName(node)).getFullPath()
+//		accu.addChange(new RenameCompilationUnitChange(new org.eclipse.core.runtime.Path(oldPathName.replaceFirst(".*(?=test2)", "")), oldValue, newValue));
 	}
 	
 //	
@@ -199,83 +227,82 @@ aspect CreateTextEdit {
 //		accu.addChange(new RenameCompilationUnitChange(file, old_name, new_name));
 //	}
 //	
-//	class RenameCompilationUnitChange extends ResourceChange {
-//		private final IFile file;
-//		private final String old_name;
-//		private final String new_name;
-//		private final long stamp_to_restore;
-//		
-//		public RenameCompilationUnitChange(IFile file, String old_name, String new_name) {
-//			this(file, old_name, new_name, IResource.NULL_STAMP);
-//		}
-//		
-//		public RenameCompilationUnitChange(IFile file, String old_name, String new_name, long stamp_to_restore) {
-//			this.file = file;
-//			this.old_name = old_name;
-//			this.new_name = new_name;
-//			this.stamp_to_restore = stamp_to_restore;
-//		}
-//
-//		protected final IResource getResource() {
-//			return ResourcesPlugin.getWorkspace().getRoot().findMember(file.getFullPath());
-//		}
-//
-//		public Object getModifiedElement() {
-//			return JavaCore.create(getResource());
-//		}
-//
-//		public String getNewName() {
-//			return new_name;
-//		}
-//
-//		public String getOldName() {
-//			return old_name;
-//		}
-//
-//		public final Change perform(IProgressMonitor pm) throws CoreException {
-//			try {
-//				pm.beginTask("Renaming Compilation Unit", 1);
-//				IResource resource = getResource();
-//				IPath newPath = createNewPath();
-//				Change result = createUndoChange(resource.getModificationStamp());
-//				doRename(new SubProgressMonitor(pm, 1));
-//				if (stamp_to_restore != IResource.NULL_STAMP) {
-//					IResource newResource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
-//					newResource.revertModificationStamp(stamp_to_restore);
-//				}
-//				return result;
-//			} finally {
-//				pm.done();
-//			}
-//		}
-//		
-//		protected IPath createNewPath() {
-//			final IPath path = file.getFullPath();
-//			if (path.getFileExtension() != null) {
-//        String extension = path.getFileExtension();
-//				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
-//			} else
-//				return path.removeLastSegments(1).append(getNewName());
-//		}
-//
-//		protected Change createUndoChange(long stampToRestore) throws JavaModelException {
-//			//return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
-//			return null;
-//		}
-//
-//		protected void doRename(IProgressMonitor pm) throws CoreException {
-//			file.move(createNewPath(), false, pm);
-//		}
-//		
-//		public String getName() {
-//			return "Rename Compilation Unit";
-//		}
-//
-//		protected IResource getModifiedResource() {	
-//			return getResource();
-//		}
-//	}
-//	
+	class RenameCompilationUnitChange extends ResourceChange {
+		private final IPath path;
+		private final String old_name;
+		private final String new_name;
+		private final long stamp_to_restore;
+		
+		public RenameCompilationUnitChange(IPath path, String old_name, String new_name) {
+			this(path, old_name, new_name, IResource.NULL_STAMP);
+		}
+		
+		public RenameCompilationUnitChange(IPath path, String old_name, String new_name, long stamp_to_restore) {
+			this.path = path;
+			this.old_name = old_name;
+			this.new_name = new_name;
+			this.stamp_to_restore = stamp_to_restore;
+		}
+
+		protected final IResource getResource() {
+			return ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+		}
+
+		public Object getModifiedElement() {
+			return JavaCore.create(getResource());
+		}
+
+		public String getNewName() {
+			return new_name;
+		}
+
+		public String getOldName() {
+			return old_name;
+		}
+
+		public final Change perform(IProgressMonitor pm) throws CoreException {
+			try {
+				pm.beginTask("Renaming Compilation Unit", 1);
+				IResource resource = getResource();
+				IPath newPath = createNewPath();
+				Change result = createUndoChange(resource.getModificationStamp());
+				doRename(new SubProgressMonitor(pm, 1));
+				if (stamp_to_restore != IResource.NULL_STAMP) {
+					IResource newResource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+					newResource.revertModificationStamp(stamp_to_restore);
+				}
+				return result;
+			} finally {
+				pm.done();
+			}
+		}
+		
+		protected IPath createNewPath() {
+			//final IPath path = FileUtil.getFile(pathName).getFullPath();
+			if (path.getFileExtension() != null) {
+        String extension = path.getFileExtension();
+				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
+			} else
+				return path.removeLastSegments(1).append(getNewName());
+		}
+
+		protected Change createUndoChange(long stampToRestore) throws JavaModelException {
+			return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
+		}
+
+		protected void doRename(IProgressMonitor pm) throws CoreException {
+			getResource().move(createNewPath(), false, pm);
+		}
+		
+		public String getName() {
+			return "Rename Compilation Unit " + old_name + " to " + new_name;
+		}
+
+		protected IResource getModifiedResource() {	
+			return getResource();
+		}
+	}
+	
 	class MoveMethodSourceModifier implements ISourceModifier {
 		private final MoveSourceEdit parent;
 		private final ArrayList<ReplaceEdit> edits;

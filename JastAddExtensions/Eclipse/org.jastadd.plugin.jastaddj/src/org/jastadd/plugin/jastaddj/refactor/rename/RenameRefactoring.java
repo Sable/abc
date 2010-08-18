@@ -1,5 +1,6 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
@@ -11,11 +12,16 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
+import org.jastadd.plugin.Activator;
+import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
+import org.jastadd.plugin.jastaddj.util.FileUtil;
 
 import AST.ASTModification;
+import AST.ASTNode;
 import AST.ChangeAccumulator;
+import AST.CompilationUnit;
 import AST.MethodDecl;
 import AST.Program;
 import AST.TypeDecl;
@@ -67,25 +73,51 @@ public class RenameRefactoring extends Refactoring {
 		changes = null;
 	}
 
+	private void recompileSourceCompilationUnits(Program root, java.util.List<CompilationUnit> except) {
+		Iterator cui = root.compilationUnitIterator();
+		// assume the compilation unit of selected node doesn't need refreshing
+		while (cui.hasNext()) {
+			CompilationUnit cu = (CompilationUnit) cui.next();
+			if (cu.fromSource() && !except.contains(cu)) {
+				for (ICompiler compiler : Activator.getRegisteredCompilers()) {
+					if (compiler.canCompile(FileUtil.getFile(cu.pathName()))) {
+						compiler.compile(null, null, null, FileUtil.getFile(cu.pathName()));
+					}
+				}
+			}
+		}
+	}
+	
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		try {
 			pm.beginTask("Creating change...", 1);
 			
+			
+			java.util.LinkedList<CompilationUnit> except = new java.util.LinkedList<CompilationUnit>();
+			except.add(((ASTNode) selectedNode).compilationUnit());
+			recompileSourceCompilationUnits(((ASTNode) selectedNode).programRoot(), except);
+			//((ASTNode) selectedNode).programRoot().flushCaches();
+			
 			Program.startRecordingASTChangesAndFlush();
 			
 			if (selectedNode instanceof Variable) {
 				((Variable) selectedNode).rename(name);
+			} else if (selectedNode instanceof MethodDecl) {
+				((MethodDecl) selectedNode).rename(name);
+			} else if (selectedNode instanceof TypeDecl) {
+				((TypeDecl) selectedNode).rename(name);
 			}
 			
 			Stack<ASTModification> undoStack = Program.cloneUndoStack();
 			ChangeAccumulator changeAccumulator = new ChangeAccumulator("Rename");
-			changeAccumulator.addAllEdits(undoStack.iterator());
+			changeAccumulator.addAllEdits(undoStack);
 			changes = changeAccumulator.getChanges();
 			
 			return changes;
 		} finally {
 			Program.undoAll();
+			((ASTNode) selectedNode).programRoot().flushCaches();
 			pm.done();
 		}
 	}

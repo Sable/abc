@@ -13,4 +13,19 @@ aspect UndoASTModification {
 		public String newValue;
 		public String oldValue;
 	}
+
+	public abstract class ASTModificationCompilationUnitSetId extends ASTModification {
+		ASTNode node;
+		ASTModificationCompilationUnitSetId(ASTNode node, String oldValue, String newValue, String oldPathName, String newPathName) {
+			this.node = node;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+			this.newPathName = newPathName;
+			this.oldPathName = oldPathName;
+		}
+		public String newValue;
+		public String oldValue;
+		public String newPathName;
+		public String oldPathName;
+	}
 }
