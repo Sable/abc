@@ -12,6 +12,7 @@ aspect VariableExt {
 		MethodDecl getter = new MethodDecl(old_mods, type().createLockedAccess(), getter_name, new List<ParameterDeclaration>(),
 										   new List<Access>(), new Opt<Block>(new Block(new ReturnStmt(new VarAccess(name())))));
 		hostType().insertUnusedMethod(getter);
+		hostType().flushCaches();
 		return getter;
 	}
 	
@@ -25,6 +26,7 @@ aspect VariableExt {
 				  					      new Opt<Block>(new Block(new ReturnStmt(new AssignSimpleExpr(this.createLockedAccess(), 
 				  					    		  													   parm.createLockedAccess())))));
 		hostType().insertUnusedMethod(setter);
+		hostType().flushCaches();
 		return setter;
 	}
 

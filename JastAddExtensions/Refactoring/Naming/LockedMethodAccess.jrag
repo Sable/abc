@@ -138,17 +138,21 @@ aspect LockedMethodAccess {
 					if(host.isGenericType())
 						host = ((GenericTypeDecl)host).rawType();
 					if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
-						if (qual == null || (qual!=null && qual.type() != host))
+						if (qual == null || (qual!=null && qual.type() != host)) {
+							this.flushCaches();
 							return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this));
-						else
+						} else
 							return qual!=null ? parentDot() : this;
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessMethod(target);
-					if(acc != null)
+					if(acc != null) {
+						this.flushCaches();
 						return (Access) replace(parentDot()).with(acc.eliminate(this, qual=null/*!!*/, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
+					}
 				}
 				throw new RefactoringException("cannot access method "+target.name());
 			}
+			this.flushCaches();
 			Access res = acc.eliminate(this, qual, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());
@@ -195,16 +199,20 @@ aspect LockedMethodAccess {
 		MethodAccess ma = constructAccess(original, args);
 		if(source == enclosing)
 			return ma;
-		else
+		else {
+			ma.flushCaches();
 			return bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
+		}
 	}
 	
 	public Access MethodAccessInfo.computeSuperAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
 		MethodAccess ma = constructAccess(original, args);
 		if(bend == enclosing)
 			return new SuperAccess("super").qualifiesAccess(ma);
-		else
+		else {
+			ma.flushCaches();
 			return bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
+		}
 	}
 
 	protected MethodAccess MethodAccessInfo.constructAccess(MethodAccess original, List<Expr> args) {
@@ -247,9 +255,11 @@ aspect LockedMethodAccess {
 					throw new RefactoringException("cannot access method");
 			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
 				return ma.parentDot();
-			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend))
+			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend)) {
+				ma.parentDot().flushCaches();
 				return (Access) ma.parentDot().replace(ma.parentDot()).with(
 						new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma));
+			}
 			throw new RefactoringException("cannot access method");
 		} else {
 			if(!target.accessibleFrom(enclosing))

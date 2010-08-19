@@ -44,6 +44,7 @@ aspect ExtractClass {
 				inits.put(fd, init);
 		}
 		
+		programRoot().flushCaches();
 		programRoot().eliminate(LOCKED_NAMES);
 
 		// try to move initializers one by one after wrapper field

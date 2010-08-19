@@ -20,7 +20,26 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.jastadd.plugin.jastaddj.util.FileUtil;
 
+import AST.ASTNode;
+
 aspect CreateTextEdit {
+	/**
+	 * one state for all AST nodes in the program, aj there were
+	 * rewrites happening on nodes that were not attached to the tree yet
+	 */
+	protected static ASTNode$State ASTNode.state2 = null;
+	refine ASTNode public final ASTNode$State ASTNode.state() {
+        if(state2 == null) {
+            if(parent == null) {
+                 state2 = new ASTNode$State();
+            }
+            else {
+                state2 = parent.state();
+            }
+        }
+        state = state2;
+        return state2;
+    }
 	
 	
 	/* a change accumulator keeps track of changes happening to multiple files;
@@ -68,15 +87,16 @@ aspect CreateTextEdit {
 			java.util.Set covered = new java.util.HashSet();
 			for(int i=0; i<mte.getChildren().length; ++i) {
 				TextEdit te2 = mte.getChildren()[i];
-				if(te2.covers(te)) {
-					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
-						MoveSourceEdit cse = (MoveSourceEdit)te2;
-						ReplaceEdit re = (ReplaceEdit)te;
-						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-					}
-					return;
-				} else if(te.covers(te2))
-					covered.add(te2);
+				if(te.covers(te2))
+						covered.add(te2);
+//				else if(te2.covers(te)) {
+//					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
+//						MoveSourceEdit cse = (MoveSourceEdit)te2;
+//						ReplaceEdit re = (ReplaceEdit)te;
+//						((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+//					}
+//					return;
+//				}
 			}
 			for(Iterator iter=covered.iterator();iter.hasNext();) {
 				TextEdit te2 = (TextEdit)iter.next();
@@ -128,19 +148,67 @@ aspect CreateTextEdit {
 			else
 				return cu.pathName();
 		}
+		
+		private java.util.Set<ASTNode> printed = new HashSet<ASTNode>();
+		public void addPrinted(ASTNode node) {
+			printed.add(node);
+		}
+		// returns topmost parent that was already printed or the node
+		public ASTNode printedParent(ASTNode node) {
+			ASTNode ret = node;
+			while (!(node instanceof Program) && node != null) {
+				if (printed.contains(node))
+					ret = node;
+				node = node.getParent();
+			}
+			return ret;
+		}
 	}
+	
+	
+//	refine PrettyPrint eq ASTNode.extractIndent() {
+//		if(getParent() == null)
+//			return "";
+//		String indent = getParent().extractIndent();
+//		if(getParent().addsIndentationLevel())
+//			indent += "\t";//"  ";
+//		return indent;
+//	}
+	
+	refine PrettyPrint public void ConstructorDecl.toString(StringBuffer s) {
+		boolean hasConstructorsWithParameters = false;
+		for (ConstructorDecl cd : (Collection<ConstructorDecl>) hostType().constructors())
+			if (cd.getNumParameter() > 0) {
+				hasConstructorsWithParameters = true;
+				break;
+			}
+				
+		if (this.getVisibility() == hostType().getVisibility() && 
+				getConstructorAccess() instanceof SuperConstructorAccess &&
+				this.getBlock().getNumStmt() == 0 &&
+				!hasConstructorsWithParameters)
+			/*don't print*/;
+		else
+			refined(s);
+	}
+	
 	
 	public void ASTModification.createTextEdit(ChangeAccumulator ca) {
 		//throw new UnsupportedOperationException("ASTModification.createTextEdit()");
 	}
 	
 	public void ASTModificationReplaceEdit.createTextEdit(ChangeAccumulator accu) {
+		ASTNode printedParent = accu.printedParent(node);
+		if (node != null && !printedParent.equals(node)) {
+			node = printedParent;
+		}
 		int offset = node.createOffset(start);
 		int length = node.createOffset(end) - offset + 1;
 		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource() || offset < 0 || length <= 0)
 			return;
 		IFile file = FileUtil.getFile(accu.getPathName(node));
 		System.out.println(node.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " " + oldValue + " " + newValue);
+		accu.addPrinted(node);
 		accu.addEdit(file, offset, length, newValue);
 	}
 	
@@ -151,6 +219,117 @@ aspect CreateTextEdit {
 //		//new FileUtil.getFile(accu.getPathName(node)).getFullPath()
 //		accu.addChange(new RenameCompilationUnitChange(new org.eclipse.core.runtime.Path(oldPathName.replaceFirst(".*(?=test2)", "")), oldValue, newValue));
 	}
+	
+	public void ASTModificationSetChild.createTextEdit(ChangeAccumulator accu) {
+
+		if (parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource())
+			return;
+		
+		ASTNode replace = oldChild;
+		ASTNode<ASTNode> with = newChild;
+		
+
+		ASTNode printedParent = accu.printedParent(replace);
+		if (replace != null && !printedParent.equals(replace)) {
+			replace = with = printedParent;
+		}
+		
+
+		if (replace == null && with == null)
+			return;
+		if (replace == null || with == null) {
+			replace = parent;
+			with = replace;
+		}
+		
+//		if (replace instanceof Opt && replace.getChild(0) != null && with.getChild(0) != null) {
+//			replace = replace.getChild(0);
+//			with = with.getChild(0);
+//		}
+		if (replace instanceof List || replace instanceof Opt/* || with instanceof AST.AmbiguousAccess*/)
+			replace = with;
+		while (replace instanceof List || replace instanceof Opt/* || with instanceof AST.AmbiguousAccess*/) {
+			replace = replace.getParent();
+			with = replace;
+		}
+		
+		
+		int offset = replace.createOffset(replace.getStart());
+		int length = replace.createOffset(replace.getEnd()) - offset + 1;
+		if (replace instanceof CompilationUnit) {
+			offset = 0;
+			length = Integer.MAX_VALUE;
+		}
+	
+		if (offset < 0 || length <= 0) {
+			return;
+		}
+		IFile file = FileUtil.getFile(accu.getPathName(replace));
+		System.out.println(replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " setting child");
+		String with_ = "!!!ERROR!!!";
+		try {
+			with_ = with.toString();
+		} catch (Exception e) {
+			
+		}
+		accu.addPrinted(replace);
+		accu.addEdit(file, offset, length, with_);
+	}
+	
+	protected void ASTModification.reprintNode(ChangeAccumulator accu, ASTNode node) {
+
+		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource())
+			return;
+		
+		ASTNode replace = node;
+		ASTNode<ASTNode> with = node;
+
+		if (replace == null && with == null)
+			return;
+		
+		ASTNode printedParent = accu.printedParent(replace);
+		if (replace != null && !printedParent.equals(replace)) {
+			replace = with = printedParent;
+		}
+		
+		if (replace instanceof List || replace instanceof Opt /*|| with instanceof AST.AmbiguousAccess*/)
+			replace = with;
+		while (replace instanceof List || replace instanceof Opt /*|| with instanceof AST.AmbiguousAccess*/) {
+			replace = replace.getParent();
+			with = replace;
+		}
+		
+		int offset = replace.createOffset(replace.getStart());
+		int length = replace.createOffset(replace.getEnd()) - offset + 1;
+		if (offset < 0 || length <= 0) {
+			return;
+		}
+		IFile file = FileUtil.getFile(accu.getPathName(replace));
+		System.out.println(replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " setting child");
+		String with_ = "!!!ERROR!!!";
+		try {
+			with_ = with.toString();
+		} catch (Exception e) {
+			
+		}
+		accu.addPrinted(replace);
+		accu.addEdit(file, offset, length, with_);
+	}
+	
+	public void ASTModificationInsertChild.createTextEdit(ChangeAccumulator accu) {
+		// TODO: if we have concrete syntax of the child use it
+		reprintNode(accu, parent);
+	}
+	
+	public void ASTModificationRemoveChild.createTextEdit(ChangeAccumulator accu) {
+		reprintNode(accu, parent);
+	}
+	
+	
+	
+	// TODO: supress unnecessary constructor printing and reordering
+	
+	
 	
 //	
 //	// every ASTChange should be able to create a text edit that corresponds to

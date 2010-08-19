@@ -13,9 +13,12 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
+import org.jastadd.plugin.jastaddj.refactor.RefactoringUtil;
 
 import AST.ClassDecl;
 import AST.FieldDeclaration;
+import AST.Program;
+import AST.RefactoringException;
 
 public class ExtractClassRefactoring extends Refactoring {
 
@@ -25,6 +28,8 @@ public class ExtractClassRefactoring extends Refactoring {
 	private ArrayList<FieldDeclaration> fds;
 	private String newClassName = "newClassName";
 	private String newFieldName = "newFieldName";
+	private boolean encapsulate = true;
+	private boolean topLevel = false;
 
 	public ExtractClassRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
@@ -58,9 +63,25 @@ public class ExtractClassRefactoring extends Refactoring {
 		if(status != null)
 			return status;
 		status = new RefactoringStatus();
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+
 		ClassDecl cd = (ClassDecl)selectedNode;
-//		try {
-//			cd.extractClass(getFields(), newClassName, newFieldName);
+		Program root = cd.programRoot();
+		try {
+			pm.beginTask("Creating change...", 1);
+			
+			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
+			
+			Program.startRecordingASTChangesAndFlush();
+		
+			cd.doExtractClass(getFields(), newClassName, newFieldName, encapsulate, topLevel);
+
+			changes = RefactoringUtil.createChanges("ExtractClass", Program.cloneUndoStack());
+			
 //			Stack<ASTChange> ch = cd.programRoot().cloneUndoStack();
 //			// need to do some pre-processing here; UGLY!!!
 //			Iterator<ASTChange> chiter = ch.iterator();
@@ -99,13 +120,14 @@ public class ExtractClassRefactoring extends Refactoring {
 //			status.addFatalError(rfe.getMessage());
 //			cd.programRoot().undo();
 //			changes = null;
-//		}
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		return changes;
+			return changes;
+		} catch (RefactoringException re) {
+			throw re;
+		} finally {
+			Program.undoAll();
+			root.flushCaches();
+			pm.done();
+		}
 	}
 
 	public void setClassName(String name) {
@@ -120,11 +142,35 @@ public class ExtractClassRefactoring extends Refactoring {
 		fds.remove(fd);
 	}
 
-	public FieldDeclaration[] getFields() {
-		return fds.toArray(new FieldDeclaration[]{});
+	public Collection<FieldDeclaration> getFields() {
+		return fds;
 	}
 
 	public void setFieldName(String name) {
 		newFieldName = name;
+	}
+
+	public void setEncapsulate(boolean encapsulate) {
+		this.encapsulate = encapsulate;
+	}
+
+	public void setTopLevel(boolean topLevel) {
+		this.topLevel = topLevel;
+	}
+
+	public String getClassName() {
+		return newClassName;
+	}
+
+	public String getFieldName() {
+		return newFieldName;
+	}
+
+	public boolean getEncapsulate() {
+		return encapsulate;
+	}
+
+	public boolean getTopLevel() {
+		return topLevel;
 	}
 }

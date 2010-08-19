@@ -80,8 +80,10 @@ aspect LockedVariableAccess {
 			if(acc.isUnknownVarAccess()) {
 				if((qual == null || qual.isPure()) && target.isStatic()) {
 					TypeDecl host = target.hostType();
-					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target))
+					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target)) {
+						this.flushCache();
 						return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this)); //??
+					}
 				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 					acc = parentDot().accessVariable(target);
 					if(acc != null && !acc.isUnknownVarAccess())
@@ -101,6 +103,7 @@ aspect LockedVariableAccess {
 		Expr qualifier = originalAccess.getQualifier();
 		TypeDecl enclosing = originalAccess.hostType();
 		VarAccess va = originalAccess;
+		va.flushCache();
 		
 		Expr to_replace = qualifier == null ? originalAccess : originalAccess.parentDot(); 
 		Access access = null;
@@ -148,6 +151,10 @@ aspect LockedVariableAccess {
 					access = new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(va);
 				}
 			}
+		}
+		access.flushCache();
+		if (qualifier != null) {
+			qualifier.flushCaches();
 		}
 		if (to_replace.equals(access))
 			return access;

@@ -17,6 +17,10 @@ aspect InsertUnusedMethod {
 		// were current before call to this method and
 		// (probably) uses is the only thing that we care about that can change.
 		// helped 10s (27s to 18s on one ExtractClass)
+		
+		// FIXME: pint for the person who finds a proper fix (Tomas)
+		try { this.toString(); } catch (Exception e) { }
+		
 		for(MethodDecl mm : m.relatives())
 			for(MethodAccess ma : mm.uses())
 				ma.flushCaches();

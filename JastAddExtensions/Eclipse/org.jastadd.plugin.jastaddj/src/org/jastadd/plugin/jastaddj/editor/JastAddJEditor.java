@@ -511,13 +511,13 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
 				new RenameRefactoringHandler());
 		
-		addContextMenuItem(refactorMenu, "Push &Down Method",
+		/*addContextMenuItem(refactorMenu, "Push &Down Method",
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				new PushDownMethodHandler());
 
 		addContextMenuItem(refactorMenu, "Encapsulate Field",
 				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
-				new EncapsulateFieldHandler());
+				new EncapsulateFieldHandler());*/
 
 		addContextMenuItem(refactorMenu, "Extract Class",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",

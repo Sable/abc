@@ -1,21 +1,22 @@
 aspect UndoASTNodeChildren {
 	
-
-	refine AST public void ASTNode.setChild(T node, int i) {
+	refine AST public void ASTNode.setChild(final T node, final int i) {
 		if (Program.isRecordingASTChanges()) {
-			final ASTNode newChild = node;
-			final int index = i;
-			final boolean children_null = children == null;
-			final int children_length = children == null ? -1 : children.length;
-			final int oldNumChildren = numChildren;
-			final ASTNode newChild_oldParent = node == null ? null : node.parent;
-			final int newChild_oldChildIndex = node == null ? -1 : node.childIndex;
-			
-			final ASTNode oldChild = index < oldNumChildren ? children[index] : null;
-//			final ASTNode oldChild_parent = oldChild != null ? oldChild.parent : null;
-//			final int oldChild_childIndex = oldChild != null ? oldChild.childIndex : -1;
-			
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationSetChild() {
+				{
+					parent = ASTNode.this;
+					newChild = node;
+					index = i;
+					children_null = children == null;
+					children_length = children == null ? -1 : children.length;
+					oldNumChildren = numChildren;
+					newChild_oldParent = node == null ? null : node.parent;
+					newChild_oldChildIndex = node == null ? -1 : node.childIndex;
+					
+					oldChild = index < oldNumChildren ? children[index] : null;
+//					ASTNode oldChild_parent = oldChild != null ? oldChild.parent : null;
+//					int oldChild_childIndex = oldChild != null ? oldChild.childIndex : -1;
+				}
 				
 				@Override
 				public void undo() {
@@ -45,17 +46,35 @@ aspect UndoASTNodeChildren {
 		}
 		refined(node, i);
 	}
-	
-	refine ASTNode public void ASTNode.removeChild(int i) {
+	abstract class ASTModificationSetChild extends ASTModification {
+		ASTNode parent;
+		ASTNode newChild;
+		int index;
+		boolean children_null;
+		int children_length;
+		int oldNumChildren;
+		ASTNode newChild_oldParent;
+		int newChild_oldChildIndex;
+		
+		ASTNode oldChild;
+//		ASTNode oldChild_parent;
+//		int oldChild_childIndex;
+	}
+
+	refine ASTNode public void ASTNode.removeChild(final int i) {
 		if (Program.isRecordingASTChanges()) {
-			final int index = i;
-			final boolean children_null = children == null;
-			final int children_length = children == null ? -1 : children.length;
-			final ASTNode child = children == null ? null : children[index];
-			final ASTNode child_parent = child == null ? null : child.parent;
-			final int child_childIndex = child == null ? -1 : child.childIndex;
-			final int oldNumChildren = numChildren;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationRemoveChild() {
+				{
+					parent = ASTNode.this;
+					index = i;
+					children_null = children == null;
+					children_length = children == null ? -1 : children.length;
+					child = children == null ? null : children[index];
+					child_parent = child == null ? null : child.parent;
+					child_childIndex = child == null ? -1 : child.childIndex;
+					oldNumChildren = numChildren;
+				}
+				
 				@Override
 				public void undo() {
 					if (!children_null) {
@@ -77,17 +96,30 @@ aspect UndoASTNodeChildren {
 		}
 		refined(i);
 	}
+	abstract class ASTModificationRemoveChild extends ASTModification {
+		ASTNode parent;
+		int index;
+		boolean children_null;
+		int children_length;
+		ASTNode child;
+		ASTNode child_parent;
+		int child_childIndex;
+		int oldNumChildren;
+	}
 	
-	refine AST public void ASTNode.insertChild(T node, int i) {
+	refine AST public void ASTNode.insertChild(final T node, final int i) {
 		if (Program.isRecordingASTChanges()) {
-			final ASTNode newChild = node;
-			final int index = i;
-			final boolean children_null = children == null;
-			final int children_length = children == null ? -1 : children.length;
-			final int oldNumChildren = numChildren;
-			final ASTNode newChild_oldParent = node == null ? null : node.parent;
-			final int newChild_oldChildIndex = node == null ? -1 : node.childIndex;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationInsertChild() {
+				{
+					parent = ASTNode.this;
+					newChild = node;
+					index = i;
+					children_null = children == null;
+					children_length = children == null ? -1 : children.length;
+					oldNumChildren = numChildren;
+					newChild_oldParent = node == null ? null : node.parent;
+					newChild_oldChildIndex = node == null ? -1 : node.childIndex;
+				}
 				
 				@Override
 				public void undo() {
@@ -109,6 +141,16 @@ aspect UndoASTNodeChildren {
 			});
 		}
 		refined(node, i);
+	}
+	abstract class ASTModificationInsertChild extends ASTModification {
+		ASTNode parent;
+		ASTNode newChild;
+		int index;
+		boolean children_null;
+		int children_length;
+		int oldNumChildren;
+		ASTNode newChild_oldParent;
+		int newChild_oldChildIndex;
 	}
 	
 	

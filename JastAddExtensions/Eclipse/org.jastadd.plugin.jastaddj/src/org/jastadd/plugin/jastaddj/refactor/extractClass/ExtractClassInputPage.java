@@ -1,5 +1,9 @@
 package org.jastadd.plugin.jastaddj.refactor.extractClass;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Collections;
+
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -21,8 +25,11 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -45,25 +52,64 @@ public class ExtractClassInputPage extends UserInputWizardPage {
 		createClassNameInput(result);
 		createTable(result);
 		createFieldNameInput(result);
+		createEncapsulateInput(result);
+		createTopLevelInput(result);
 		setControl(result);
 	}
 	
 	private void createFieldNameInput(Composite group) {
+		final ExtractClassRefactoring refactoring = (ExtractClassRefactoring)getRefactoring();
 		Label l= new Label(group, SWT.NONE);
 		l.setText("Field name:");
 
 		final Text text= new Text(group, SWT.BORDER);
 		ControlDecoration fParameterNameDecoration = new ControlDecoration(text, SWT.TOP | SWT.LEAD);
-		text.setText("newFieldName");
+		text.setText(refactoring.getFieldName());
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				((ExtractClassRefactoring)getRefactoring()).setFieldName(text.getText());
+				refactoring.setFieldName(text.getText());
 			}
 
 		});
 		GridData gridData= new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalIndent= FieldDecorationRegistry.getDefault().getMaximumDecorationWidth();
 		text.setLayoutData(gridData);
+	}
+	
+	private void createEncapsulateInput(Composite group) {
+		final ExtractClassRefactoring refactoring = (ExtractClassRefactoring)getRefactoring();
+		Label l= new Label(group, SWT.NONE);
+		l.setText("Encapsulate:");
+
+		final Button box = new Button(group, SWT.CHECK);
+		box.setSelection(refactoring.getEncapsulate());
+		box.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				refactoring.setEncapsulate(box.getSelection());
+			}
+		});
+		GridData gridData= new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalIndent= FieldDecorationRegistry.getDefault().getMaximumDecorationWidth();
+		box.setLayoutData(gridData);
+	}
+	
+	private void createTopLevelInput(Composite group) {
+		final ExtractClassRefactoring refactoring = (ExtractClassRefactoring)getRefactoring();
+		Label l= new Label(group, SWT.NONE);
+		l.setText("Top level:");
+
+		final Button box = new Button(group, SWT.CHECK);
+		box.setSelection(refactoring.getTopLevel());
+		box.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				refactoring.setTopLevel(box.getSelection());
+			}
+		});
+		GridData gridData= new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalIndent= FieldDecorationRegistry.getDefault().getMaximumDecorationWidth();
+		box.setLayoutData(gridData);
 	}
 	
 	private void createClassNameInput(Composite result) {
@@ -116,9 +162,7 @@ public class ExtractClassInputPage extends UserInputWizardPage {
 		table.setLayoutData(gridData);
 		ExtractClassRefactoring ecf = (ExtractClassRefactoring)getRefactoring();
 		tv.setInput(ecf);
-		final FieldDeclaration[] fields= ecf.getFields();
-		for (int i= 0; i < fields.length; i++) {
-			FieldDeclaration field= fields[i];
+		for (FieldDeclaration field : ecf.getFields()) {
 			tv.setChecked(field, !field.isStatic() && !field.isEnumConstant());
 		}
 		tv.refresh(true);
@@ -189,7 +233,7 @@ public class ExtractClassInputPage extends UserInputWizardPage {
 
 		public Object[] getElements(Object inputElement) {
 			if (inputElement instanceof ExtractClassRefactoring) {
-				return ((ExtractClassRefactoring)inputElement).getFields();
+				return ((ExtractClassRefactoring)inputElement).getFields().toArray();
 			}
 			return null;
 		}

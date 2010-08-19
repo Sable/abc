@@ -218,8 +218,10 @@ aspect LockedTypeAccess {
 			throw new RefactoringException("cannot access shadowed/obscured type variable");
 		setPackage("");
 		setID(target.name());
-		if (qual!=null)
+		if (qual!=null) {
+			this.flushCache();
 			replace(parentDot()).with(this);
+		}
 		return this;
 	}
 	
@@ -228,8 +230,10 @@ aspect LockedTypeAccess {
 			throw new RefactoringException("cannot access shadowed/obscured local class");
 		setPackage("");
 		setID(target.name());
-		if (qual!=null)
+		if (qual!=null) {
+			this.flushCache();
 			replace(parentDot()).with(this);
+		}
 		return this;
 	}
 
@@ -252,8 +256,10 @@ aspect LockedTypeAccess {
 		if(lookupName(target.name()).isSingleton(target)) {
 			setPackage("");
 			setID(target.name());
-			if (qual!=null)
+			if (qual!=null) {
+				this.flushCache();
 				replace(parentDot()).with(this);
+			}
 			return this;
 		} else {
 			TypeDecl outer = target.enclosingType();
@@ -268,8 +274,10 @@ aspect LockedTypeAccess {
 			// trying to build an access to its raw type)
 			if(target.isGenericType() && outer.isGenericType())
 				outer = ((GenericTypeDecl)outer).rawType();
-			if (qual!=null && qual.type()!=outer || qual==null)
+			if (qual!=null && qual.type()!=outer || qual==null) {
+				this.flushCache();
 				return (Access) replace(qual!=null?parentDot():this).with(outer.createLockedAccess().qualifiesAccess(this));
+			}
 			return parentDot();
 		}
 	}
@@ -281,8 +289,10 @@ aspect LockedTypeAccess {
 		if(lookupName(target.name()).isSingleton(target)) {
 			setPackage("");
 			setID(target.name());
-			if (qual!=null)
+			if (qual!=null) {
+				this.flushCache();
 				replace(parentDot()).with(this);
+			}
 			return this;
 		}
 		setPackage(target.packageName());
@@ -292,8 +302,10 @@ aspect LockedTypeAccess {
 		if(!s.isEmpty() && !s.isSingleton(lookupPackage(pkg))
 				|| !lookupType(target.packageName(), target.name()).equals(target))
 			throw new RefactoringException("cannot access toplevel type");
-		if (qual!=null)
+		if (qual!=null) {
+			this.flushCache();
 			return (Access) replace(parentDot()).with(this);
+		}
 		return this;
 	}
 	

@@ -1,8 +1,5 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
-import java.util.Iterator;
-import java.util.Stack;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,18 +9,14 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
-import org.jastadd.plugin.Activator;
-import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
-import org.jastadd.plugin.jastaddj.util.FileUtil;
+import org.jastadd.plugin.jastaddj.refactor.RefactoringUtil;
 
-import AST.ASTModification;
 import AST.ASTNode;
-import AST.ChangeAccumulator;
-import AST.CompilationUnit;
 import AST.MethodDecl;
 import AST.Program;
+import AST.RefactoringException;
 import AST.TypeDecl;
 import AST.Variable;
 
@@ -72,32 +65,14 @@ public class RenameRefactoring extends Refactoring {
 		status = null;
 		changes = null;
 	}
-
-	private void recompileSourceCompilationUnits(Program root, java.util.List<CompilationUnit> except) {
-		Iterator cui = root.compilationUnitIterator();
-		// assume the compilation unit of selected node doesn't need refreshing
-		while (cui.hasNext()) {
-			CompilationUnit cu = (CompilationUnit) cui.next();
-			if (cu.fromSource() && !except.contains(cu)) {
-				for (ICompiler compiler : Activator.getRegisteredCompilers()) {
-					if (compiler.canCompile(FileUtil.getFile(cu.pathName()))) {
-						compiler.compile(null, null, null, FileUtil.getFile(cu.pathName()));
-					}
-				}
-			}
-		}
-	}
 	
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
+		Program root = ((ASTNode) selectedNode).programRoot();
 		try {
 			pm.beginTask("Creating change...", 1);
 			
-			
-			java.util.LinkedList<CompilationUnit> except = new java.util.LinkedList<CompilationUnit>();
-			except.add(((ASTNode) selectedNode).compilationUnit());
-			recompileSourceCompilationUnits(((ASTNode) selectedNode).programRoot(), except);
-			//((ASTNode) selectedNode).programRoot().flushCaches();
+			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
 			Program.startRecordingASTChangesAndFlush();
 			
@@ -109,15 +84,13 @@ public class RenameRefactoring extends Refactoring {
 				((TypeDecl) selectedNode).rename(name);
 			}
 			
-			Stack<ASTModification> undoStack = Program.cloneUndoStack();
-			ChangeAccumulator changeAccumulator = new ChangeAccumulator("Rename");
-			changeAccumulator.addAllEdits(undoStack);
-			changes = changeAccumulator.getChanges();
-			
+			changes = RefactoringUtil.createChanges("Rename", Program.cloneUndoStack());
 			return changes;
+		} catch (RefactoringException re) {
+			throw re;
 		} finally {
 			Program.undoAll();
-			((ASTNode) selectedNode).programRoot().flushCaches();
+			root.flushCaches();
 			pm.done();
 		}
 	}

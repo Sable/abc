@@ -401,6 +401,12 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
 				new RenameRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.ExtractClassTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"E&xtract Class",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
+				new ExtractClassRefactoringHandler());
 	}
 
 	
