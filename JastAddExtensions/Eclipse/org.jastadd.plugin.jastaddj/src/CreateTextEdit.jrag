@@ -19,27 +19,14 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.jastadd.plugin.jastaddj.util.FileUtil;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.internal.corext.refactoring.nls.changes.CreateFileChange;
+import org.eclipse.ltk.core.refactoring.resource.DeleteResourceChange;
 
+import AST.ASTModification;
 import AST.ASTNode;
 
 aspect CreateTextEdit {
-	/**
-	 * one state for all AST nodes in the program, aj there were
-	 * rewrites happening on nodes that were not attached to the tree yet
-	 */
-	protected static ASTNode$State ASTNode.state2 = null;
-	refine ASTNode public final ASTNode$State ASTNode.state() {
-        if(state2 == null) {
-            if(parent == null) {
-                 state2 = new ASTNode$State();
-            }
-            else {
-                state2 = parent.state();
-            }
-        }
-        state = state2;
-        return state2;
-    }
 	
 	
 	/* a change accumulator keeps track of changes happening to multiple files;
@@ -47,6 +34,8 @@ aspect CreateTextEdit {
 	 * ReplaceEdits to them
 	 */
 	class ChangeAccumulator {
+		public static final boolean DEBUG = true;
+		
 		private String name;
 		private CompositeChange changes;
 		private Map<IFile, TextFileChange> changemap;
@@ -73,21 +62,25 @@ aspect CreateTextEdit {
 			return tfc;
 		}
 		
+		/**
+		 * copied from TextEdit as ReplaceEdit is final and we want to be able to replace zero length edits
+		 */
+		public boolean covers(TextEdit thiss, TextEdit other) {
+			int thisOffset= thiss.getOffset();
+			int otherOffset= other.getOffset();
+			return thisOffset <= otherOffset && otherOffset + other.getLength() <= thisOffset + thiss.getLength();
+		}
+		
 		public void addEdit(IFile file, TextEdit te) {
 			TextFileChange tfc = changeForFile(file);
-			/* when inserting the new edit into tfc, we must be careful to avoid
-			 * overlapping edits; our solution here is very simple: walk through
-			 * all changes already in tfc, if one of them covers the new change
-			 * we don't need to add it, if some of them are covered by the new
-			 * change, remove them 
-			 * 
-			 * a subtlety arises with replace edits nested inside move source edits;
-			 * we want those to be allowed, but they have to be handled specially */
+			/* we need to avoid overlaping changes
+			 * new changes added here should cover the old ones or not conflict
+			 */
 			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
 			java.util.Set covered = new java.util.HashSet();
 			for(int i=0; i<mte.getChildren().length; ++i) {
 				TextEdit te2 = mte.getChildren()[i];
-				if(te.covers(te2))
+				if(covers(te, te2))
 						covered.add(te2);
 //				else if(te2.covers(te)) {
 //					if(te2 instanceof MoveSourceEdit && te instanceof ReplaceEdit) {
@@ -100,11 +93,11 @@ aspect CreateTextEdit {
 			}
 			for(Iterator iter=covered.iterator();iter.hasNext();) {
 				TextEdit te2 = (TextEdit)iter.next();
-				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
-					MoveSourceEdit cse = (MoveSourceEdit)te;
-					ReplaceEdit re = (ReplaceEdit)te2;
-					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
-				}
+//				if(te instanceof MoveSourceEdit && te2 instanceof ReplaceEdit) {
+//					MoveSourceEdit cse = (MoveSourceEdit)te;
+//					ReplaceEdit re = (ReplaceEdit)te2;
+//					((MoveMethodSourceModifier)cse.getSourceModifier()).addReplaceEdit(re);
+//				}
 				mte.removeChild(te2);
 			}
 			tfc.addEdit(te);
@@ -126,8 +119,12 @@ aspect CreateTextEdit {
 				}
 			}
 			iter = col.iterator();
-			while(iter.hasNext())
-				iter.next().createTextEdit(this);
+			while(iter.hasNext()) {
+				ASTModification m = iter.next();
+				if (DEBUG) System.out.print(m.toString() + " :: ");
+				m.redo();
+				m.createTextEdit(this);
+			}
 		}
 		
 		// directly add a non-TextChange
@@ -165,16 +162,6 @@ aspect CreateTextEdit {
 		}
 	}
 	
-	
-//	refine PrettyPrint eq ASTNode.extractIndent() {
-//		if(getParent() == null)
-//			return "";
-//		String indent = getParent().extractIndent();
-//		if(getParent().addsIndentationLevel())
-//			indent += "\t";//"  ";
-//		return indent;
-//	}
-	
 	refine PrettyPrint public void ConstructorDecl.toString(StringBuffer s) {
 		boolean hasConstructorsWithParameters = false;
 		for (ConstructorDecl cd : (Collection<ConstructorDecl>) hostType().constructors())
@@ -193,47 +180,89 @@ aspect CreateTextEdit {
 	}
 	
 	
-	public void ASTModification.createTextEdit(ChangeAccumulator ca) {
+	public void ASTModification.createTextEdit(ChangeAccumulator accu) {
 		//throw new UnsupportedOperationException("ASTModification.createTextEdit()");
+		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " undefined");
 	}
 	
 	public void ASTModificationReplaceEdit.createTextEdit(ChangeAccumulator accu) {
+		if (!isInTree)
+			return;
 		ASTNode printedParent = accu.printedParent(node);
 		if (node != null && !printedParent.equals(node)) {
-			node = printedParent;
+			reprintNode(accu, printedParent);
+			return;
 		}
+		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource())
+			return;
 		int offset = node.createOffset(start);
 		int length = node.createOffset(end) - offset + 1;
-		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource() || offset < 0 || length <= 0)
+		if (offset < 0 || length < 0) {
+			reprintNode(accu, node.getParent());
 			return;
+		}
 		IFile file = FileUtil.getFile(accu.getPathName(node));
-		System.out.println(node.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " " + oldValue + " " + newValue);
+		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + node.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " " + oldValue + " " + newValue);
 		accu.addPrinted(node);
 		accu.addEdit(file, offset, length, newValue);
 	}
 	
 	public void ASTModificationCompilationUnitSetId.createTextEdit(ChangeAccumulator accu) {
-		System.out.println(node.getClass().getName() + " " + accu.getPathName(node) + " " + oldValue + " " + newValue);
+		if (!isInTree)
+			System.out.println("!!!!!");
+		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + node.getClass().getName() + " " + accu.getPathName(node) + " " + oldValue + " " + newValue);
 		accu.addChange(new RenameCompilationUnitChange(org.jastadd.plugin.jastaddj.util.FileUtil.getFile(accu.getPathName(node)).getFullPath(), oldValue, newValue));
-
-//		//new FileUtil.getFile(accu.getPathName(node)).getFullPath()
-//		accu.addChange(new RenameCompilationUnitChange(new org.eclipse.core.runtime.Path(oldPathName.replaceFirst(".*(?=test2)", "")), oldValue, newValue));
 	}
 	
 	public void ASTModificationSetChild.createTextEdit(ChangeAccumulator accu) {
 
-		if (parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource())
+		if (!isInTree)
+			return;
+
+		if (!(newChild instanceof CompilationUnit && ((CompilationUnit) newChild).fromSource()) &&
+				(parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource()))
 			return;
 		
 		ASTNode replace = oldChild;
 		ASTNode<ASTNode> with = newChild;
 		
+		if (newChild instanceof CompilationUnit) { // we are adding/removing/replace a compilation unit
+			System.out.print("");
+			if (replace == null)
+				replace = with;
+			try {
+				final Path path = new Path(((CompilationUnit) newChild).destinationPath());
+				String defaultCharset = ResourcesPlugin.getWorkspace().getRoot().getDefaultCharset();
+				Change ch = new CreateFileChange(path, "", defaultCharset) {
 
-		ASTNode printedParent = accu.printedParent(replace);
-		if (replace != null && !printedParent.equals(replace)) {
-			replace = with = printedParent;
+					@Override
+					public RefactoringStatus isValid(IProgressMonitor pm) throws CoreException {
+						return new RefactoringStatus();
+					}
+
+					@Override
+					public Change perform(IProgressMonitor pm) throws CoreException, OperationCanceledException {
+						// the action does not create the file, so create it here, it however provides an undo action
+
+//						boolean fileCreated = false;
+//						try {
+//							fileCreated = path.toFile().createNewFile();
+//						} catch (IOException e) {
+//						}
+//						ResourcesPlugin.getWorkspace().getRoot().getFile(path.removeLastSegments(1)).refreshLocal(1, new SubProgressMonitor(pm, 1));
+//						if (fileCreated)
+							return new DeleteResourceChange(path, true); // FIXME: false??
+//						else
+//							return new NullChange();
+					}
+
+				};
+				accu.addChange(ch);
+			} catch (CoreException e) {
+				throw new RuntimeException(e);
+			}
+			// TODO: handle remove/replace of CU
 		}
-		
 
 		if (replace == null && with == null)
 			return;
@@ -241,14 +270,16 @@ aspect CreateTextEdit {
 			replace = parent;
 			with = replace;
 		}
-		
-//		if (replace instanceof Opt && replace.getChild(0) != null && with.getChild(0) != null) {
-//			replace = replace.getChild(0);
-//			with = with.getChild(0);
-//		}
-		if (replace instanceof List || replace instanceof Opt/* || with instanceof AST.AmbiguousAccess*/)
+
+		ASTNode printedParent = accu.printedParent(replace);
+		if (replace != null && !printedParent.equals(replace)) {
+			replace = with = printedParent;
+		}
+
+		// reprint parent if 
+		if (replace instanceof List || replace instanceof Opt)
 			replace = with;
-		while (replace instanceof List || replace instanceof Opt/* || with instanceof AST.AmbiguousAccess*/) {
+		while (replace instanceof List /*equiv to: replace instanceof Opt*/) {
 			replace = replace.getParent();
 			with = replace;
 		}
@@ -256,20 +287,29 @@ aspect CreateTextEdit {
 		
 		int offset = replace.createOffset(replace.getStart());
 		int length = replace.createOffset(replace.getEnd()) - offset + 1;
+		
+		// special offset and length for CompilationUnit
 		if (replace instanceof CompilationUnit) {
 			offset = 0;
-			length = Integer.MAX_VALUE;
+			length = 0; // used if file !exists, e.g. when adding new compilation unit
+			try {
+				length = FileUtil.readTextFile(accu.getPathName(replace)).length();
+			} catch (IOException e) {
+			}
 		}
 	
-		if (offset < 0 || length <= 0) {
+		if (offset < 0 || length < 0) {
+			reprintNode(accu, replace.getParent());
 			return;
 		}
+		
 		IFile file = FileUtil.getFile(accu.getPathName(replace));
-		System.out.println(replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " setting child");
-		String with_ = "!!!ERROR!!!";
+		System.out.println("Changes : " + this.toString() + " " + replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length);
+		
+		String with_ = "!!!ERROR!!!"; // useful when some child*() is null
 		try {
 			with_ = with.toString();
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			
 		}
 		accu.addPrinted(replace);
@@ -278,56 +318,64 @@ aspect CreateTextEdit {
 	
 	protected void ASTModification.reprintNode(ChangeAccumulator accu, ASTNode node) {
 
+		if (node == null)
+			return;
 		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource())
 			return;
 		
-		ASTNode replace = node;
-		ASTNode<ASTNode> with = node;
+		
+		// if we would overlap previous edit of parent*() node, reprint the parent insted
+		ASTNode printedParent = accu.printedParent(node);
+		if (node != null && !printedParent.equals(node)) {
+			node = printedParent;
+		}
+		
+		while (node instanceof List || node instanceof Opt)
+			node = node.getParent();
+		
+		int offset = node.createOffset(node.getStart());
+		int length = node.createOffset(node.getEnd()) - offset + 1;
+		
+		// special handling for CompilationUnit (when we are reprinting it
+		if (node instanceof CompilationUnit) {
+			offset = 0;
+			length = 0; // used when the file !exists, e.g. when we added new CompilationUnit
+			try {
+				length = FileUtil.readTextFile(accu.getPathName(node)).length();
+			} catch (IOException e) {
+			}
+		}
+		
 
-		if (replace == null && with == null)
-			return;
-		
-		ASTNode printedParent = accu.printedParent(replace);
-		if (replace != null && !printedParent.equals(replace)) {
-			replace = with = printedParent;
-		}
-		
-		if (replace instanceof List || replace instanceof Opt /*|| with instanceof AST.AmbiguousAccess*/)
-			replace = with;
-		while (replace instanceof List || replace instanceof Opt /*|| with instanceof AST.AmbiguousAccess*/) {
-			replace = replace.getParent();
-			with = replace;
-		}
-		
-		int offset = replace.createOffset(replace.getStart());
-		int length = replace.createOffset(replace.getEnd()) - offset + 1;
-		if (offset < 0 || length <= 0) {
+		if (offset < 0 || length < 0) {
+			reprintNode(accu, node.getParent());
 			return;
 		}
-		IFile file = FileUtil.getFile(accu.getPathName(replace));
-		System.out.println(replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " setting child");
-		String with_ = "!!!ERROR!!!";
+		
+		IFile file = FileUtil.getFile(accu.getPathName(node));
+		System.out.println("Changes : reprintNode : " + node.getClass().getName() + " " + file.getName() + " " + offset + " " + length);
+		
+		String node_ = "!!!ERROR!!!"; // useful when some child*() is null
 		try {
-			with_ = with.toString();
-		} catch (Exception e) {
-			
-		}
-		accu.addPrinted(replace);
-		accu.addEdit(file, offset, length, with_);
+			node_ = node.toString();
+		} catch (Exception e) { }
+		
+		accu.addPrinted(node);
+		accu.addEdit(file, offset, length, node_);
 	}
 	
 	public void ASTModificationInsertChild.createTextEdit(ChangeAccumulator accu) {
+		if (!isInTree)
+			return;
 		// TODO: if we have concrete syntax of the child use it
 		reprintNode(accu, parent);
 	}
 	
 	public void ASTModificationRemoveChild.createTextEdit(ChangeAccumulator accu) {
+		if (!isInTree)
+			return;
 		reprintNode(accu, parent);
 	}
-	
-	
-	
-	// TODO: supress unnecessary constructor printing and reordering
 	
 	
 	

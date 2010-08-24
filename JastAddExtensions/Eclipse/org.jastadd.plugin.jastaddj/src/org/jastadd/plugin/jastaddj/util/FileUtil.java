@@ -87,8 +87,9 @@ public class FileUtil {
 		StringBuffer sb = new StringBuffer(1024);
 		BufferedReader reader = new BufferedReader(new FileReader(fullPathFilename));				
 		char[] chars = new char[1024];
-		while(reader.read(chars) > -1){
-			sb.append(String.valueOf(chars));	
+		int num = 0;
+		while((num = reader.read(chars)) > -1){
+			sb.append(String.valueOf(chars, 0, num));	
 		}
 		reader.close();
 		return sb.toString();

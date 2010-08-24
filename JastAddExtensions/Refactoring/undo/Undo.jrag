@@ -24,10 +24,18 @@ aspect Undo {
 		@Override
 		public void undo() {
 		}
+		@Override
+		public void redo() {
+		}
+		@Override
+		public String toString() {
+			return "ASTUndoCheckPoint";
+		}
 	}
 	
 	public abstract class ASTModification {
 		public abstract void undo();
+		public abstract void redo();
 	}
 	
 	// problem with non-static stack: creating new subtrees that are not attached to the
@@ -58,8 +66,6 @@ aspect Undo {
 	}
 	
 	public static void Program.undoUntil(ASTUndoCheckPoint cp) {
-//		flushCaches();
-//		parentChildCheck();
 		System.out.print("Undoing " + undoStack.size() + " actions... ");
 		while (!undoStack.isEmpty()) {
 			ASTModification mod = undoStack.pop();
@@ -69,19 +75,14 @@ aspect Undo {
 		}
 		System.out.println("done.");
 		System.out.println("Total undo actions: " + undoActionCount);
-//		flushCaches();
-//		parentChildCheck();
-//		flushCaches();
 	}
-	
-//	public Program ASTNode.programRootParentFromField() {
-//		ASTNode n = this;
-//		while (n.parent != null)
-//			n = n.parent;
-//		if (n instanceof Program)
-//			return (Program) n;
-//		return null;
-//	}
+
+	public boolean ASTNode.isInTree() {
+		ASTNode node = this;
+		while (node.getParent() != null && node.getChildIndex() != -1)
+			node = node.getParent();
+		return node instanceof Program;
+	}
 	
 	
 }

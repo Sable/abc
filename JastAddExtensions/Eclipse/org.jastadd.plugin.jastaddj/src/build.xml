@@ -39,7 +39,9 @@
 <target name="gen" depends="scanner,parser">
   <!-- create AST node types and weave aspect modules -->
 	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true"
-           outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false" noStatic="true">
+		outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false" noStatic="false">
+		<!-- noStatic was turned off, as the refactorings did not work, e.g. for extract class with encapsulate
+			on for our test case test1 -->
 	   	<!-- dependencies:
 			can depend on Frontends, Backends, Refactoring, ControlFlow, plugin
 			prefer Refactoring to Backends as we dont't want Refactoring to depend on Backends

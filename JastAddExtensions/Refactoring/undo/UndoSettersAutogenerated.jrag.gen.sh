@@ -32,11 +32,21 @@ function IDrecursion {
 		fi;
 
 		echo "
-	refine $ASPECT public void $TYPE.set$NAME($TP value) {
+	refine $ASPECT public void $TYPE.set$NAME(final $TP value) {
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this, ${NAME}start, ${NAME}end, $VAR, value) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, ${NAME}start, ${NAME}end, $VAR, value) {
+				@Override
 				public void undo() {
 					refined(oldValue);
+				}
+				@Override
+				public String toString() {
+					return \"$TYPE.set$NAME (ReplaceEdit)\";
+				}
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(value);
 				}
 			});
 		}

@@ -40,6 +40,7 @@ public class RefactoringUtil {
 	
 	public static Change createChanges(String name, Stack<ASTModification> undoStack) {
 		ChangeAccumulator changeAccumulator = new ChangeAccumulator(name);
+		Program.undoAll();
 		changeAccumulator.addAllEdits(undoStack);
 		return changeAccumulator.getChanges();
 	}

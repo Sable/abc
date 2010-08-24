@@ -2,124 +2,224 @@ aspect UndoLocking {
 
 	// Locked Method Access
 	
-	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd) {
+	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(final SavedMethodDecl smd) {
+		final SavedMethodDecl saved = targetMethod;
+		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
+		SavedMethodDecl res = refined(smd);
+		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			final SavedMethodDecl saved = targetMethod;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
 				
 				@Override
 				public void undo() {
 					targetMethod = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(smd);
+				}
+				
+				@Override
+				public String toString() {
+					return "MethodAccess.setTargetMethod";
+				}
 			});
 		}
-		return refined(smd);
+		return res;
 	}
 
-	refine LockedMethodAccess private MethodDecl ElementValuePair.setTargetMethod(MethodDecl md) {
+	refine LockedMethodAccess private MethodDecl ElementValuePair.setTargetMethod(final MethodDecl md) {
+		final MethodDecl saved = targetMethod;
+		MethodDecl res = refined(md);
 		if (Program.isRecordingASTChanges()) {
-			final MethodDecl saved = targetMethod;
 			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
 					targetMethod = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(md);
+				}
+				
+				@Override
+				public String toString() {
+					return "ElementValuePair.setTargetMethod";
+				}
 			});
 		}
-		return refined(md);
+		return res;
 	}
 	
 	
 	// Locked Package Access
 	
-	refine LockedPackageAccess private void PackageAccess.setTargetPackage(PackageDecl pd) {
+	refine LockedPackageAccess private void PackageAccess.setTargetPackage(final PackageDecl pd) {
+		final PackageDecl saved = targetPackage;
+		refined(pd);
 		if (Program.isRecordingASTChanges()) {
-			final PackageDecl saved = targetPackage;
 			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
 					targetPackage = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(pd);
+				}
+				
+				@Override
+				public String toString() {
+					return "PackageAccess.setTargetPackage";
+				}
 			});
 		}
-		refined(pd);
 	}
 	
 	
 	// LockedVariableAccess
-	refine LockedVariableAccess private void VarAccess.setTargetVariable(Variable var) {
+	refine LockedVariableAccess private void VarAccess.setTargetVariable(final Variable var) {
+		final Variable saved = targetVariable;
+		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
+		refined(var);
+		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			final Variable saved = targetVariable;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
 				
 				@Override
 				public void undo() {
 					targetVariable = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(var);
+				}
+				
+				@Override
+				public String toString() {
+					return "VarAccess.setTargetVariable";
+				}
 			});
 		}
-		refined(var);
 	}
 	
 	
 	// LockedTypeAccess
-	refine LockedTypeAccess private void CompilationUnit.setLocked(boolean value) {
+	refine LockedTypeAccess private void CompilationUnit.setLocked(final boolean value) {
+		final boolean saved = locked;
+		refined(value);
 		if (Program.isRecordingASTChanges()) {
-			final boolean saved = locked;
 			Program.addUndoAction(new ASTModification() {
 				
 				@Override
 				public void undo() {
 					locked = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(value);
+				}
+				
+				@Override
+				public String toString() {
+					return "CompilationUnit.setLocked";
+				}
 			});
 		}
-		refined(value);
 	}
-	refine LockedTypeAccess private void TypeAccess.setTargetType(TypeDecl td) {
+	refine LockedTypeAccess private void TypeAccess.setTargetType(final TypeDecl td) {
+		final TypeDecl saved = targetType;
+		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
+		refined(td);
+		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			final TypeDecl saved = targetType;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
 				
 				@Override
 				public void undo() {
 					targetType = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(td);
+				}
+				
+				@Override
+				public String toString() {
+					return "TypeAccess.setTargetType";
+				}
 			});
 		}
-		refined(td);
 	}
 	
 	// LockedConstructor
-	refine LockedConstructor private void ConstructorDecl.setLocked(boolean value) {
+	refine LockedConstructor private void ConstructorDecl.setLocked(final boolean value) {
+		final boolean saved = locked;
+		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
+		refined(value);
+		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			final boolean saved = locked;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
 				
 				@Override
 				public void undo() {
 					locked = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(value);
+				}
+				
+				@Override
+				public String toString() {
+					return "ConstructorDecl.setLocked";
+				}
 			});
 		}
-		refined(value);
 	}
 	
 	// LockedSingleStaticImportDecl
-	refine LockedSingleStaticImportDecl private void SingleStaticImportDecl.setLocked(boolean value) {
+	refine LockedSingleStaticImportDecl private void SingleStaticImportDecl.setLocked(final boolean value) {
+		final boolean saved = locked;
+		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
+		refined(value);
+		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			final boolean saved = locked;
-			Program.addUndoAction(new ASTModification() {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
 				
 				@Override
 				public void undo() {
 					locked = saved;
 				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(value);
+				}
+				
+				@Override
+				public String toString() {
+					return "SingleStaticImportDecl.setLocked";
+				}
 			});
 		}
-		refined(value);
 	}
 	
 	

@@ -1,9 +1,11 @@
 aspect UndoASTModification {
 	public abstract class ASTModificationReplaceEdit extends ASTModification {
+		boolean isInTree;
 		ASTNode node;
 		int start;
 		int end;
-		ASTModificationReplaceEdit(ASTNode node, int start, int end, String oldValue, String newValue) {
+		ASTModificationReplaceEdit(boolean isInTree, ASTNode node, int start, int end, String oldValue, String newValue) {
+			this.isInTree = isInTree;
 			this.node = node;
 			this.start = start;
 			this.end = end;
@@ -15,8 +17,10 @@ aspect UndoASTModification {
 	}
 
 	public abstract class ASTModificationCompilationUnitSetId extends ASTModification {
+		boolean isInTree;
 		ASTNode node;
-		ASTModificationCompilationUnitSetId(ASTNode node, String oldValue, String newValue, String oldPathName, String newPathName) {
+		ASTModificationCompilationUnitSetId(boolean isInTree, ASTNode node, String oldValue, String newValue, String oldPathName, String newPathName) {
+			this.isInTree = isInTree;
 			this.node = node;
 			this.oldValue = oldValue;
 			this.newValue = newValue;

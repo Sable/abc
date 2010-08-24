@@ -5,6 +5,7 @@ aspect UndoASTNodeChildren {
 			Program.addUndoAction(new ASTModificationSetChild() {
 				{
 					parent = ASTNode.this;
+					isInTree = parent!=null && parent.isInTree();
 					newChild = node;
 					index = i;
 					children_null = children == null;
@@ -42,11 +43,21 @@ aspect UndoASTNodeChildren {
 					}
 					numChildren = oldNumChildren;
 				}
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(node, i);
+				}
+				@Override
+				public String toString() {
+					return "ASTNode.setChild";
+				}
 			});
 		}
 		refined(node, i);
 	}
 	abstract class ASTModificationSetChild extends ASTModification {
+		boolean isInTree;
 		ASTNode parent;
 		ASTNode newChild;
 		int index;
@@ -66,6 +77,7 @@ aspect UndoASTNodeChildren {
 			Program.addUndoAction(new ASTModificationRemoveChild() {
 				{
 					parent = ASTNode.this;
+					isInTree = parent!=null && parent.isInTree();
 					index = i;
 					children_null = children == null;
 					children_length = children == null ? -1 : children.length;
@@ -92,11 +104,21 @@ aspect UndoASTNodeChildren {
 						}
 					}
 				}
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(i);
+				}
+				@Override
+				public String toString() {
+					return "ASTNode.removeChild";
+				}
 			});
 		}
 		refined(i);
 	}
 	abstract class ASTModificationRemoveChild extends ASTModification {
+		boolean isInTree;
 		ASTNode parent;
 		int index;
 		boolean children_null;
@@ -112,6 +134,7 @@ aspect UndoASTNodeChildren {
 			Program.addUndoAction(new ASTModificationInsertChild() {
 				{
 					parent = ASTNode.this;
+					isInTree = parent!=null && parent.isInTree();
 					newChild = node;
 					index = i;
 					children_null = children == null;
@@ -138,11 +161,21 @@ aspect UndoASTNodeChildren {
 					}
 					numChildren = oldNumChildren;
 				}
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(node, i);
+				}
+				@Override
+				public String toString() {
+					return "ASTNode.insertChild";
+				}
 			});
 		}
 		refined(node, i);
 	}
 	abstract class ASTModificationInsertChild extends ASTModification {
+		boolean isInTree;
 		ASTNode parent;
 		ASTNode newChild;
 		int index;
