@@ -31,12 +31,15 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.jastadd.plugin.jastaddj.Activator;
-import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.InlineMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.InlineTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -137,21 +140,38 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		
 		// NEW REFACTORING HOOK
 		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
-				"Rename", "JastAddJ Rename", "Shift+Alt+R",
-				new RenameRefactoringHandler());
 		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
+		/*installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				"Push Down Method", "JastAddJ Push Down Method", "Shift+Alt+D",
-				new PushDownMethodHandler());
+				new PushDownMethodHandler());*/
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
 				"Encapsulate Field", "JastAddJ Encapsulate Field", null,
-				new EncapsulateFieldHandler());
+				new EncapsulateFieldRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				"Extract Class", "JastAddJ Extract Class", null,
 				new ExtractClassRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
+				"Extract Temp", "JastAddJ Extract Temp", null,
+				new ExtractTempRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineTemp",
+				"Inline Temp", "JastAddJ Inline Temp", null,
+				new InlineTempRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
+				"Extract Method", "JastAddJ Extract Method", null,
+				new ExtractMethodRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineMethod",
+				"Inline Method", "JastAddJ Inline Method", null,
+				new InlineMethodRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
+				"Rename", "JastAddJ Rename", "Shift+Alt+R",
+				new RenameRefactoringHandler());
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
@@ -397,16 +417,46 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		// NEW REFACTORING HOOK (opt)
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
-				"Re&name",
-				"org.jastadd.plugin.jastaddj.refactor.Rename",
-				new RenameRefactoringHandler());
+				"org.jastadd.plugin.jastaddj.refactor.EncapsulateFieldTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"En&capsulate Field",
+				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
+				new EncapsulateFieldRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClassTopMenuItem", // nonexistent classes ??? (just edited from above)
 				"E&xtract Class",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				new ExtractClassRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.ExtractTempTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Extract Temp",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
+				new ExtractTempRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.InlineTempTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Inline Temp",
+				"org.jastadd.plugin.jastaddj.refactor.InlineTemp",
+				new ExtractTempRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.ExtractMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Extract Method",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
+				new ExtractMethodRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.InlineMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Inline Method",
+				"org.jastadd.plugin.jastaddj.refactor.InlineMethod",
+				new InlineMethodRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
+				"Re&name",
+				"org.jastadd.plugin.jastaddj.refactor.Rename",
+				new RenameRefactoringHandler());
 	}
 
 	

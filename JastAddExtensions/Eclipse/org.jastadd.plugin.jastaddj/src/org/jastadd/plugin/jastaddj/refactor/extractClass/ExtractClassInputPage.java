@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.jastadd.plugin.jastaddj.refactor.extractTemp.ExtractTempRefactoring;
 
 import AST.FieldDeclaration;
 
@@ -117,7 +118,7 @@ public class ExtractClassInputPage extends UserInputWizardPage {
 		label.setText("Class name:");
 		final Text text= new Text(result, SWT.SINGLE | SWT.BORDER);
 		fClassNameDecoration = new ControlDecoration(text, SWT.TOP | SWT.LEAD);
-		text.setText("newClassName");
+		text.setText(((ExtractClassRefactoring)getRefactoring()).getClassName());
 		text.selectAll();
 		text.setFocus();
 		text.addModifyListener(new ModifyListener() {

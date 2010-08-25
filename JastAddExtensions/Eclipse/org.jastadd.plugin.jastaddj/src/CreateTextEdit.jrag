@@ -160,6 +160,20 @@ aspect CreateTextEdit {
 			}
 			return ret;
 		}
+		
+		/**
+		 * nodes that changed parent during the refactoring, i.e. their location info is bad
+		 */
+		public java.util.Set<ASTNode> moved = new HashSet<ASTNode>();
+		public ASTNode getMovedAncestor(ASTNode node) {
+			ASTNode ret = null;
+			while (!(node instanceof Program) && node != null) {
+				if (moved.contains(node))
+					ret = node;
+				node = node.getParent();
+			}
+			return ret;
+		}
 	}
 	
 	refine PrettyPrint public void ConstructorDecl.toString(StringBuffer s) {
@@ -222,6 +236,9 @@ aspect CreateTextEdit {
 		if (!(newChild instanceof CompilationUnit && ((CompilationUnit) newChild).fromSource()) &&
 				(parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource()))
 			return;
+		
+		if (parent != newChild_oldParent && !(newChild instanceof CompilationUnit))
+				accu.moved.add(newChild);
 		
 		ASTNode replace = oldChild;
 		ASTNode<ASTNode> with = newChild;
@@ -298,7 +315,7 @@ aspect CreateTextEdit {
 			}
 		}
 	
-		if (offset < 0 || length < 0) {
+		if (offset < 0 || length < 0 || accu.getMovedAncestor(replace) != null) {
 			reprintNode(accu, replace.getParent());
 			return;
 		}
@@ -347,7 +364,7 @@ aspect CreateTextEdit {
 		}
 		
 
-		if (offset < 0 || length < 0) {
+		if (offset < 0 || length < 0 || accu.getMovedAncestor(node) != null) {
 			reprintNode(accu, node.getParent());
 			return;
 		}
@@ -367,6 +384,7 @@ aspect CreateTextEdit {
 	public void ASTModificationInsertChild.createTextEdit(ChangeAccumulator accu) {
 		if (!isInTree)
 			return;
+		accu.moved.add(newChild);
 		// TODO: if we have concrete syntax of the child use it
 		reprintNode(accu, parent);
 	}
@@ -374,6 +392,7 @@ aspect CreateTextEdit {
 	public void ASTModificationRemoveChild.createTextEdit(ChangeAccumulator accu) {
 		if (!isInTree)
 			return;
+		accu.moved.add(child);
 		reprintNode(accu, parent);
 	}
 	

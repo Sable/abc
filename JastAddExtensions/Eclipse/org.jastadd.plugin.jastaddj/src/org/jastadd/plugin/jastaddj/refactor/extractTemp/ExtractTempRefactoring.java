@@ -1,6 +1,5 @@
-package org.jastadd.plugin.jastaddj.refactor.extractClass;
+package org.jastadd.plugin.jastaddj.refactor.extractTemp;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -16,45 +15,36 @@ import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.refactor.RefactoringUtil;
 
 import AST.ClassDecl;
+import AST.Expr;
 import AST.FieldDeclaration;
 import AST.Program;
 import AST.RefactoringException;
 
-public class ExtractClassRefactoring extends Refactoring {
+public class ExtractTempRefactoring extends Refactoring {
 
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
-	private ArrayList<FieldDeclaration> fds;
-	private String newClassName = "newClassName";
-	private String newFieldName = "newFieldName";
-	private boolean encapsulate = true;
-	private boolean topLevel = false;
+	private String varName = "temp";
+	private boolean makeFinal = false;
 
-	public ExtractClassRefactoring(IEditorPart editorPart,
+	public ExtractTempRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
 		this.selectedNode = selectedNode;
-		this.fds = new ArrayList<FieldDeclaration>();
-		if(selectedNode instanceof ClassDecl) {
-			ClassDecl cd = (ClassDecl)selectedNode;
-			for(FieldDeclaration fd : 
-				(Collection<FieldDeclaration>)cd.localFieldsMap().values())
-				fds.add(fd);
-		}
 	}
 
 	public String getName() {
-		return "ExtractClass";
+		return "ExtractTemp";
 	}
 
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		if(selectedNode instanceof ClassDecl)
+		if(selectedNode instanceof Expr)
 			/*OK*/;
 		else
-			status.addFatalError("Can only extract from classes.");
+			status.addFatalError("Can only extract expressions.");
 		return status;
 	}
 
@@ -69,8 +59,8 @@ public class ExtractClassRefactoring extends Refactoring {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 
-		ClassDecl cd = (ClassDecl)selectedNode;
-		Program root = cd.programRoot();
+		Expr expr = (Expr)selectedNode;
+		Program root = expr.programRoot();
 		try {
 			pm.beginTask("Creating change...", 1);
 			
@@ -78,9 +68,9 @@ public class ExtractClassRefactoring extends Refactoring {
 			
 			Program.startRecordingASTChangesAndFlush();
 		
-			cd.doExtractClass(getFields(), newClassName, newFieldName, encapsulate, topLevel);
+			expr.doExtract(varName, makeFinal);
 
-			changes = RefactoringUtil.createChanges("ExtractClass", Program.cloneUndoStack());
+			changes = RefactoringUtil.createChanges("ExtractTemp", Program.cloneUndoStack());
 			
 			return changes;
 		} catch (RefactoringException re) {
@@ -92,47 +82,19 @@ public class ExtractClassRefactoring extends Refactoring {
 		}
 	}
 
-	public void setClassName(String name) {
-		newClassName = name;
+	public String getVarName() {
+		return varName;
 	}
 
-	public void addField(FieldDeclaration fd) {
-		fds.add(fd);
+	public void setVarName(String varName) {
+		this.varName = varName;
 	}
 
-	public void removeField(FieldDeclaration fd) {
-		fds.remove(fd);
+	public boolean isMakeFinal() {
+		return makeFinal;
 	}
 
-	public Collection<FieldDeclaration> getFields() {
-		return fds;
-	}
-
-	public void setFieldName(String name) {
-		newFieldName = name;
-	}
-
-	public void setEncapsulate(boolean encapsulate) {
-		this.encapsulate = encapsulate;
-	}
-
-	public void setTopLevel(boolean topLevel) {
-		this.topLevel = topLevel;
-	}
-
-	public String getClassName() {
-		return newClassName;
-	}
-
-	public String getFieldName() {
-		return newFieldName;
-	}
-
-	public boolean getEncapsulate() {
-		return encapsulate;
-	}
-
-	public boolean getTopLevel() {
-		return topLevel;
+	public void setMakeFinal(boolean makeFinal) {
+		this.makeFinal = makeFinal;
 	}
 }

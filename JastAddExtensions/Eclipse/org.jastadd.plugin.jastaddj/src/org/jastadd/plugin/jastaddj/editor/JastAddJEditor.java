@@ -45,12 +45,15 @@ import org.jastadd.plugin.ReconcilingStrategy;
 import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IFoldingNode;
-import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.InlineMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.InlineTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -506,6 +509,30 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 
 	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu) {
 		// NEW REFACTORING HOOK
+
+		addContextMenuItem(refactorMenu, "En&capsulate Field",
+				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
+				new EncapsulateFieldRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "E&xtract Class",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
+				new ExtractClassRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Extract Temp",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
+				new ExtractTempRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Inline Temp",
+				"org.jastadd.plugin.jastaddj.refactor.InlineTemp",
+				new InlineTempRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Extract Method",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
+				new ExtractMethodRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Inline Method",
+				"org.jastadd.plugin.jastaddj.refactor.InlineMethod",
+				new InlineMethodRefactoringHandler());
 		
 		addContextMenuItem(refactorMenu, "Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
@@ -513,15 +540,7 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		
 		/*addContextMenuItem(refactorMenu, "Push &Down Method",
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				new PushDownMethodHandler());
-
-		addContextMenuItem(refactorMenu, "Encapsulate Field",
-				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
-				new EncapsulateFieldHandler());*/
-
-		addContextMenuItem(refactorMenu, "Extract Class",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
-				new ExtractClassRefactoringHandler());
+				new PushDownMethodHandler());*/
 	}
 		
 	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {

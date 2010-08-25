@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastaddj.refactor.encapsulateField;
+package org.jastadd.plugin.jastaddj.refactor.inlineTemp;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -15,30 +15,31 @@ import org.jastadd.plugin.jastaddj.refactor.RefactoringUtil;
 import AST.FieldDeclaration;
 import AST.Program;
 import AST.RefactoringException;
+import AST.VariableDeclaration;
 
-public class EncapsulateFieldRefactoring extends Refactoring {
+public class InlineTempRefactoring extends Refactoring {
 
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
 
-	public EncapsulateFieldRefactoring(IEditorPart editorPart,
+	public InlineTempRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
 		this.selectedNode = selectedNode;
 	}
 
 	public String getName() {
-		return "Encapsulate Field";
+		return "Inline Temp";
 	}
 
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		if(selectedNode instanceof FieldDeclaration)
+		if(selectedNode instanceof VariableDeclaration)
 			/*OK*/;
 		else
-			status.addFatalError("Not a field.");
+			status.addFatalError("Not a variable declaration.");
 		return status;
 	}
 
@@ -53,9 +54,9 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 
-		FieldDeclaration fd = (FieldDeclaration)selectedNode;
+		VariableDeclaration vd = (VariableDeclaration)selectedNode;
 
-		Program root = fd.programRoot();
+		Program root = vd.programRoot();
 		try {
 			pm.beginTask("Creating change...", 1);
 			
@@ -63,9 +64,9 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			
 			Program.startRecordingASTChangesAndFlush();
 		
-			fd.doSelfEncapsulate();
+			vd.doInline();
 
-			changes = RefactoringUtil.createChanges("EncapsulateField", Program.cloneUndoStack());
+			changes = RefactoringUtil.createChanges("InlineTemp", Program.cloneUndoStack());
 			
 			return changes;
 		} catch (RefactoringException re) {

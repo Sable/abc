@@ -2,12 +2,13 @@ package org.jastadd.plugin.jastaddj.editor.actions;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
-import org.jastadd.plugin.jastaddj.refactor.encapsulateField.EncapsulateFieldRefactoring;
-import org.jastadd.plugin.jastaddj.refactor.encapsulateField.EncapsulateFieldWizard;
+import org.jastadd.plugin.jastaddj.refactor.inlineTemp.InlineTempRefactoring;
+import org.jastadd.plugin.jastaddj.refactor.inlineTemp.InlineTempWizard;
 import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 import org.jastadd.plugin.util.RefactoringSaveHelper;
 
-public class EncapsulateFieldHandler extends AbstractBaseActionDelegate {
+public class InlineTempRefactoringHandler extends AbstractBaseActionDelegate {
+
 	@Override
 	public void run(IAction action) {
 		try {
@@ -15,18 +16,19 @@ public class EncapsulateFieldHandler extends AbstractBaseActionDelegate {
 					this.activeEditorPart().getSite().getShell()))
 				return;
 
-			EncapsulateFieldRefactoring refactoring = new 
-				EncapsulateFieldRefactoring(this.activeEditorPart(), 
+			InlineTempRefactoring refactoring = new 
+				InlineTempRefactoring(this.activeEditorPart(), 
 						this.activeEditorFile(), 
 						this.activeSelection(), 
 						this.selectedNode());
-			EncapsulateFieldWizard wizard = 
-				new EncapsulateFieldWizard(refactoring, "EncapsulateField");
+			InlineTempWizard wizard = 
+				new InlineTempWizard(refactoring, "InlineTemp");
 			RefactoringWizardOpenOperation op = 
 				new RefactoringWizardOpenOperation(wizard);
 			op.run(this.activeEditorPart().getSite().getShell(),
-					"EncapsulateField");
+					"InlineTemp");
 		} catch (InterruptedException e) {
 		}
 	}
+
 }

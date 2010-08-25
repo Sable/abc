@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastaddj.refactor.encapsulateField;
+package org.jastadd.plugin.jastaddj.refactor.extractMethod;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -12,33 +12,37 @@ import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.compiler.ast.IJastAddNode;
 import org.jastadd.plugin.jastaddj.refactor.RefactoringUtil;
 
-import AST.FieldDeclaration;
+import AST.Block;
 import AST.Program;
 import AST.RefactoringException;
 
-public class EncapsulateFieldRefactoring extends Refactoring {
+public class ExtractMethodRefactoring extends Refactoring {
 
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
+	private String methodName = "ExtractedMethod";
+	private int visibility = 0;
+	private int begin = 0;
+	private int end = 0;
 
-	public EncapsulateFieldRefactoring(IEditorPart editorPart,
+	public ExtractMethodRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
 		this.selectedNode = selectedNode;
 	}
 
 	public String getName() {
-		return "Encapsulate Field";
+		return "ExtractMethod";
 	}
 
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		if(selectedNode instanceof FieldDeclaration)
+		if(selectedNode instanceof Block && ((Block) selectedNode).getNumStmt() > 0)
 			/*OK*/;
 		else
-			status.addFatalError("Not a field.");
+			status.addFatalError("Can only extract from a block with at least one statement.");
 		return status;
 	}
 
@@ -53,9 +57,8 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 
-		FieldDeclaration fd = (FieldDeclaration)selectedNode;
-
-		Program root = fd.programRoot();
+		Block block = (Block)selectedNode;
+		Program root = block.programRoot();
 		try {
 			pm.beginTask("Creating change...", 1);
 			
@@ -63,9 +66,9 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			
 			Program.startRecordingASTChangesAndFlush();
 		
-			fd.doSelfEncapsulate();
+			block.doExtractMethod(visibility, methodName, begin, end);
 
-			changes = RefactoringUtil.createChanges("EncapsulateField", Program.cloneUndoStack());
+			changes = RefactoringUtil.createChanges("ExtractMethod", Program.cloneUndoStack());
 			
 			return changes;
 		} catch (RefactoringException re) {
@@ -76,4 +79,45 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			pm.done();
 		}
 	}
+
+	public IJastAddNode getSelectedNode() {
+		return selectedNode;
+	}
+
+	public void setSelectedNode(IJastAddNode selectedNode) {
+		this.selectedNode = selectedNode;
+	}
+
+	public String getMethodName() {
+		return methodName;
+	}
+
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
+
+	public int getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(int visibility) {
+		this.visibility = visibility;
+	}
+
+	public int getBegin() {
+		return begin;
+	}
+
+	public void setBegin(int begin) {
+		this.begin = begin;
+	}
+
+	public int getEnd() {
+		return end;
+	}
+
+	public void setEnd(int end) {
+		this.end = end;
+	}
+
 }
