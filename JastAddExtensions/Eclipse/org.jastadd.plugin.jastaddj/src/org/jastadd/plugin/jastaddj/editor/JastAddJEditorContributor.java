@@ -40,6 +40,8 @@ import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.InlineMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.InlineTempRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PullUpMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -172,6 +174,14 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
 				new RenameRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
+				"Pull Up Method", "JastAddJ Pull Up Method", null,
+				new PullUpMethodRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
+				"Push Down Method", "JastAddJ Push Down Method", null,
+				new PushDownMethodRefactoringHandler());
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
@@ -457,6 +467,18 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
 				new RenameRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.PullUpMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Pull Up Method",
+				"org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
+				new PullUpMethodRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.PushDownMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"Push Down Method",
+				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
+				new PushDownMethodRefactoringHandler());
 	}
 
 	

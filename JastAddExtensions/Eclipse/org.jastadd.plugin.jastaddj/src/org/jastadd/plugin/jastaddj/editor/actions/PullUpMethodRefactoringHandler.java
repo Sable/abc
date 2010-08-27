@@ -2,12 +2,13 @@ package org.jastadd.plugin.jastaddj.editor.actions;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
-import org.jastadd.plugin.jastaddj.refactor.pushDownMethod.PushDownMethodRefactoring;
-import org.jastadd.plugin.jastaddj.refactor.pushDownMethod.PushDownMethodWizard;
+import org.jastadd.plugin.jastaddj.refactor.pullUpMethod.PullUpMethodRefactoring;
+import org.jastadd.plugin.jastaddj.refactor.pullUpMethod.PullUpMethodWizard;
 import org.jastadd.plugin.ui.AbstractBaseActionDelegate;
 import org.jastadd.plugin.util.RefactoringSaveHelper;
 
-public class PushDownMethodHandler extends AbstractBaseActionDelegate {
+public class PullUpMethodRefactoringHandler extends AbstractBaseActionDelegate {
+
 	@Override
 	public void run(IAction action) {
 		try {
@@ -15,18 +16,19 @@ public class PushDownMethodHandler extends AbstractBaseActionDelegate {
 					this.activeEditorPart().getSite().getShell()))
 				return;
 
-			PushDownMethodRefactoring refactoring = new 
-				PushDownMethodRefactoring(this.activeEditorPart(), 
-										  this.activeEditorFile(), 
-										  this.activeSelection(), 
-										  this.selectedNode());
-			PushDownMethodWizard wizard = 
-				new PushDownMethodWizard(refactoring, "PushDownMethod");
+			PullUpMethodRefactoring refactoring = new 
+				PullUpMethodRefactoring(this.activeEditorPart(), 
+						this.activeEditorFile(), 
+						this.activeSelection(), 
+						this.selectedNode());
+			PullUpMethodWizard wizard = 
+				new PullUpMethodWizard(refactoring, "PullUpMethod");
 			RefactoringWizardOpenOperation op = 
 				new RefactoringWizardOpenOperation(wizard);
 			op.run(this.activeEditorPart().getSite().getShell(),
-					"PushDownMethod");
+					"PullUpMethod");
 		} catch (InterruptedException e) {
 		}
 	}
+
 }

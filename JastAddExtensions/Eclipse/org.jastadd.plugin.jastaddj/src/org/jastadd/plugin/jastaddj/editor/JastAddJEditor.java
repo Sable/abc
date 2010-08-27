@@ -54,6 +54,8 @@ import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.InlineMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.InlineTempRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PullUpMethodRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.PushDownMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
@@ -537,10 +539,14 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		addContextMenuItem(refactorMenu, "Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",
 				new RenameRefactoringHandler());
-		
-		/*addContextMenuItem(refactorMenu, "Push &Down Method",
+
+		addContextMenuItem(refactorMenu, "Pull Up Method",
+				"org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
+				new PullUpMethodRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Push Down Method",
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				new PushDownMethodHandler());*/
+				new PushDownMethodRefactoringHandler());
 	}
 		
 	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {

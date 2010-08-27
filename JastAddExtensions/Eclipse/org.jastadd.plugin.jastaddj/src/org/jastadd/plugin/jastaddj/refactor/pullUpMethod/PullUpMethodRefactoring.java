@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastaddj.refactor.pushDownMethod;
+package org.jastadd.plugin.jastaddj.refactor.pullUpMethod;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -18,30 +18,30 @@ import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
 
-public class PushDownMethodRefactoring extends Refactoring {
+public class PullUpMethodRefactoring extends Refactoring {
 
 	private IJastAddNode selectedNode;
 	private RefactoringStatus status;
 	private Change changes;
-	private boolean leaveAbstract = true;
+	private boolean onlyAbstract = false;
 
-	public PushDownMethodRefactoring(IEditorPart editorPart,
+	public PullUpMethodRefactoring(IEditorPart editorPart,
 			IFile editorFile, ISelection selection, IJastAddNode selectedNode) {
 		super();
 		this.selectedNode = selectedNode;
 	}
 
 	public String getName() {
-		return "PushDownMethod";
+		return "PullUpMethod";
 	}
 
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		if(selectedNode instanceof MethodAccess || selectedNode instanceof MethodDecl)
+		if(selectedNode instanceof MethodDecl)
 			/*OK*/;
 		else
-			status.addFatalError("Can only push down a method declaration.");
+			status.addFatalError("Can only pull up a method declaration.");
 		return status;
 	}
 
@@ -65,9 +65,9 @@ public class PushDownMethodRefactoring extends Refactoring {
 			
 			Program.startRecordingASTChangesAndFlush();
 		
-			md.doPushDown(leaveAbstract);
+			md.doPullUp(onlyAbstract);
 
-			changes = RefactoringUtil.createChanges("PushDownMethod", Program.cloneUndoStack());
+			changes = RefactoringUtil.createChanges("PullUpMethod", Program.cloneUndoStack());
 			
 			return changes;
 		} catch (RefactoringException re) {
@@ -79,11 +79,11 @@ public class PushDownMethodRefactoring extends Refactoring {
 		}
 	}
 
-	public boolean isLeaveAbstract() {
-		return leaveAbstract;
+	public boolean isOnlyAbstract() {
+		return onlyAbstract;
 	}
 
-	public void setLeaveAbstract(boolean leaveAbstract) {
-		this.leaveAbstract = leaveAbstract;
+	public void setOnlyAbstract(boolean onlyAbstract) {
+		this.onlyAbstract = onlyAbstract;
 	}
 }

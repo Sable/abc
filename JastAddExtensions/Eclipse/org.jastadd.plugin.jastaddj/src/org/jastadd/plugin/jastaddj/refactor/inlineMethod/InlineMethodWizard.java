@@ -14,7 +14,7 @@ public class InlineMethodWizard extends RefactoringWizard {
 
 	protected void addUserInputPages() {
 		if (refactoring.getSelectedNode() instanceof MethodDecl) {
-			InlineMethodDeclInputPage page= new InlineMethodDeclInputPage("ExtractTemp");
+			InlineMethodDeclInputPage page= new InlineMethodDeclInputPage("InlineMethod");
 			addPage(page);
 		}
 	}
