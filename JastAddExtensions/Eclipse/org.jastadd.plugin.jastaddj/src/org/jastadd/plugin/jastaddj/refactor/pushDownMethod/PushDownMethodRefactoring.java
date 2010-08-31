@@ -63,7 +63,7 @@ public class PushDownMethodRefactoring extends Refactoring {
 			changes = RefactoringUtil.createChanges("PushDownMethod", Program.cloneUndoStack());
 			
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();

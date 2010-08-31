@@ -62,7 +62,7 @@ public class InlineTempRefactoring extends Refactoring {
 			changes = RefactoringUtil.createChanges("InlineTemp", Program.cloneUndoStack());
 			
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();

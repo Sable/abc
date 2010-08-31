@@ -63,7 +63,7 @@ public class InlineMethodRefactoring extends Refactoring {
 
 				changes = RefactoringUtil.createChanges("InlineMethod", Program.cloneUndoStack());
 			} catch (RefactoringException re) {
-				throw re;
+				status.addFatalError(re.getMessage());
 			} finally {
 				Program.undoAll();
 				root.flushCaches();
@@ -83,7 +83,7 @@ public class InlineMethodRefactoring extends Refactoring {
 	
 				changes = RefactoringUtil.createChanges("InlineMethod", Program.cloneUndoStack());
 			} catch (RefactoringException re) {
-				throw re;
+				status.addFatalError(re.getMessage());
 			} finally {
 				Program.undoAll();
 				root.flushCaches();

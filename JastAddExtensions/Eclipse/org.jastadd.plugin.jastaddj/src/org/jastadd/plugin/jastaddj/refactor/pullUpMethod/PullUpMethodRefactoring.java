@@ -63,7 +63,7 @@ public class PullUpMethodRefactoring extends Refactoring {
 			changes = RefactoringUtil.createChanges("PullUpMethod", Program.cloneUndoStack());
 			
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();

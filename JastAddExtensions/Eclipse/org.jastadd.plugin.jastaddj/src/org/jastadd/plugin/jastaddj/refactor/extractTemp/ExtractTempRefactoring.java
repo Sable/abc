@@ -65,7 +65,7 @@ public class ExtractTempRefactoring extends Refactoring {
 
 			changes = RefactoringUtil.createChanges("ExtractTemp", Program.cloneUndoStack());
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();

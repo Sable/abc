@@ -60,7 +60,7 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 
 			changes = RefactoringUtil.createChanges("EncapsulateField", Program.cloneUndoStack());
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();

@@ -75,7 +75,7 @@ public class ExtractClassRefactoring extends Refactoring {
 
 			changes = RefactoringUtil.createChanges("ExtractClass", Program.cloneUndoStack());
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();
