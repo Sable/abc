@@ -142,11 +142,6 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		
 		// NEW REFACTORING HOOK
 		
-		
-		/*installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				"Push Down Method", "JastAddJ Push Down Method", "Shift+Alt+D",
-				new PushDownMethodHandler());*/
-		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
 				"Encapsulate Field", "JastAddJ Encapsulate Field", null,
 				new EncapsulateFieldRefactoringHandler());
@@ -156,15 +151,15 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				new ExtractClassRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
-				"Extract Temp", "JastAddJ Extract Temp", null,
+				"Extract Temp", "JastAddJ Extract Temp", "Shift+Alt+L",
 				new ExtractTempRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineTemp",
-				"Inline Temp", "JastAddJ Inline Temp", null,
+				"Inline Temp", "JastAddJ Inline Temp", "Shift+Alt+I",
 				new InlineTempRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
-				"Extract Method", "JastAddJ Extract Method", null,
+				"Extract Method", "JastAddJ Extract Method", "Shift+Alt+M",
 				new ExtractMethodRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineMethod",
@@ -427,37 +422,37 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		// NEW REFACTORING HOOK (opt)
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.EncapsulateFieldTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.EncapsulateFieldTopMenuItem",
 				"En&capsulate Field",
 				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
 				new EncapsulateFieldRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractClassTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.ExtractClassTopMenuItem",
 				"E&xtract Class",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				new ExtractClassRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractTempTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.ExtractTempTopMenuItem",
 				"Extract Temp",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
 				new ExtractTempRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.InlineTempTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.InlineTempTopMenuItem",
 				"Inline Temp",
 				"org.jastadd.plugin.jastaddj.refactor.InlineTemp",
 				new ExtractTempRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.ExtractMethodTopMenuItem",
 				"Extract Method",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
 				new ExtractMethodRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.InlineMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.InlineMethodTopMenuItem",
 				"Inline Method",
 				"org.jastadd.plugin.jastaddj.refactor.InlineMethod",
 				new InlineMethodRefactoringHandler());
@@ -469,13 +464,13 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				new RenameRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.PullUpMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.PullUpMethodTopMenuItem",
 				"Pull Up Method",
 				"org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
 				new PullUpMethodRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.PushDownMethodTopMenuItem", // nonexistent classes ??? (just edited from above)
+				"org.jastadd.plugin.jastaddj.refactor.PushDownMethodTopMenuItem",
 				"Push Down Method",
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				new PushDownMethodRefactoringHandler());
