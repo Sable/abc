@@ -16,6 +16,7 @@ public class ExtractTempRefactoringHandler extends AbstractBaseActionDelegate {
 					this.activeEditorPart().getSite().getShell()))
 				return;
 
+			this.selectedNode();
 			ExtractTempRefactoring refactoring = new 
 				ExtractTempRefactoring(this.activeEditorPart(), 
 						this.activeEditorFile(), 

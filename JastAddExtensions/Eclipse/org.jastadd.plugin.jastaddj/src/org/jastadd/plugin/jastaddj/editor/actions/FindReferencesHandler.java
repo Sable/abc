@@ -37,6 +37,10 @@ public class FindReferencesHandler extends AbstractBaseActionDelegate {
 			int offset = selection.getOffset();
 			int line = document.getLineOfOffset(offset);
 			int column = offset - document.getLineOffset(line);
+			
+			offset = selection.getOffset() + selection.getLength();
+			int endLine = document.getLineOfOffset(offset);
+			int endColumn = offset - document.getLineOffset(line);
 
 			
 			String key = file.getRawLocation().toString();
@@ -47,7 +51,7 @@ public class FindReferencesHandler extends AbstractBaseActionDelegate {
 				s.append("References of ");
 				
 				//synchronized (fileAST.treeLockObject()) {
-					IJastAddNode node = NodeLocator.findLocation((IJastAddNode)fileAST, line + 1, column + 1);
+					IJastAddNode node = NodeLocator.findLocation((IJastAddNode)fileAST, line + 1, column + 1, endLine + 1, endColumn + 1);
 					if(node instanceof IJastAddJFindDeclarationNode) {
 						IJastAddNode declNode = ((IJastAddJFindDeclarationNode)node).declaration();
 						if(declNode instanceof IJastAddJFindReferencesNode) {

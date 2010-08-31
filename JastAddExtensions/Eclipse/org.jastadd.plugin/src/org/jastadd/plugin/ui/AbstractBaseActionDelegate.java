@@ -75,14 +75,16 @@ public abstract class AbstractBaseActionDelegate extends AbstractHandler impleme
 				IFile file = fileInput.getFile();
 				ISelection selection = activeSelection();
 				if(selection instanceof ITextSelection && file != null) {
-					return NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(input), ((ITextSelection)selection).getOffset());
+					return NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(input), ((ITextSelection)selection).getOffset(),
+							((ITextSelection)selection).getLength());
 				}
 			}
 			else if (input instanceof JastAddStorageEditorInput) {
 				//JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
 				ISelection selection = activeSelection();
 				if(selection instanceof ITextSelection) {
-					return NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(input), ((ITextSelection)selection).getOffset());
+					return NodeLocator.findNodeInDocument(FileInfoMap.buildFileInfo(input), ((ITextSelection)selection).getOffset(),
+							((ITextSelection)selection).getLength());
 				}
 			}
 

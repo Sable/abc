@@ -32,7 +32,7 @@ public abstract class AbstractBaseInformationProvider implements
 			return null;
 		*/
 		IDocument document = textViewer.getDocument();
-		IJastAddNode node = NodeLocator.findNodeInDocument(document, subject.getOffset());
+		IJastAddNode node = NodeLocator.findNodeInDocument(document, subject.getOffset(), subject.getLength());
 		if (node == null)
 			return null;
 		return filterNode(node);
