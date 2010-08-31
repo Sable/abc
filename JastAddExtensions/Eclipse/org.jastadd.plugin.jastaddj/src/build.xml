@@ -63,6 +63,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+			<exclude name="FlushCaches.jrag"/>
 		</fileset>
 		<fileset dir="../../Java1.5Backend">
 			<include name="**/*.ast"/>
