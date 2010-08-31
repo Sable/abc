@@ -47,20 +47,13 @@ public class InlineMethodRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
 
 		if (selectedNode instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)selectedNode;
 			Program root = md.programRoot();
 			try {
-				pm.beginTask("Creating change...", 1);
+				pm.beginTask("Performing refactoring...", 1);
 				
 				RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 				
@@ -69,8 +62,6 @@ public class InlineMethodRefactoring extends Refactoring {
 				md.doInline(delete);
 
 				changes = RefactoringUtil.createChanges("InlineMethod", Program.cloneUndoStack());
-				
-				return changes;
 			} catch (RefactoringException re) {
 				throw re;
 			} finally {
@@ -78,11 +69,11 @@ public class InlineMethodRefactoring extends Refactoring {
 				root.flushCaches();
 				pm.done();
 			}
-		} else { // selectedNode instaceof MethodAccess
+		} else { // selectedNode instanceof MethodAccess
 			MethodAccess ma = (MethodAccess)selectedNode;
 			Program root = ma.programRoot();
 			try {
-				pm.beginTask("Creating change...", 1);
+				pm.beginTask("Performing refactoring...", 1);
 				
 				RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 				
@@ -91,8 +82,6 @@ public class InlineMethodRefactoring extends Refactoring {
 				ma.doInline();
 	
 				changes = RefactoringUtil.createChanges("InlineMethod", Program.cloneUndoStack());
-				
-				return changes;
 			} catch (RefactoringException re) {
 				throw re;
 			} finally {
@@ -101,6 +90,13 @@ public class InlineMethodRefactoring extends Refactoring {
 				pm.done();
 			}
 		}
+		
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 
 	public IJastAddNode getSelectedNode() {

@@ -60,19 +60,12 @@ public class ExtractClassRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
 
 		ClassDecl cd = (ClassDecl)selectedNode;
 		Program root = cd.programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -81,8 +74,6 @@ public class ExtractClassRefactoring extends Refactoring {
 			cd.doExtractClass(getFields(), newClassName, newFieldName, encapsulate, topLevel);
 
 			changes = RefactoringUtil.createChanges("ExtractClass", Program.cloneUndoStack());
-			
-			return changes;
 		} catch (RefactoringException re) {
 			throw re;
 		} finally {
@@ -90,6 +81,13 @@ public class ExtractClassRefactoring extends Refactoring {
 			root.flushCaches();
 			pm.done();
 		}
+		
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 
 	public void setClassName(String name) {

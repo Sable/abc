@@ -47,19 +47,12 @@ public class PullUpMethodRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
 
 		MethodDecl md = (MethodDecl)selectedNode;
 		Program root = md.programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -69,7 +62,6 @@ public class PullUpMethodRefactoring extends Refactoring {
 
 			changes = RefactoringUtil.createChanges("PullUpMethod", Program.cloneUndoStack());
 			
-			return changes;
 		} catch (RefactoringException re) {
 			throw re;
 		} finally {
@@ -77,6 +69,12 @@ public class PullUpMethodRefactoring extends Refactoring {
 			root.flushCaches();
 			pm.done();
 		}
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 
 	public boolean isOnlyAbstract() {

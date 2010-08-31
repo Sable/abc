@@ -50,19 +50,12 @@ public class ExtractTempRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
 
 		Expr expr = (Expr)selectedNode;
 		Program root = expr.programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -71,8 +64,6 @@ public class ExtractTempRefactoring extends Refactoring {
 			expr.doExtract(varName, makeFinal);
 
 			changes = RefactoringUtil.createChanges("ExtractTemp", Program.cloneUndoStack());
-			
-			return changes;
 		} catch (RefactoringException re) {
 			throw re;
 		} finally {
@@ -80,6 +71,13 @@ public class ExtractTempRefactoring extends Refactoring {
 			root.flushCaches();
 			pm.done();
 		}
+		
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 
 	public String getVarName() {

@@ -52,25 +52,13 @@ public class RenameRefactoring extends Refactoring {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
 		if(selectedNode instanceof IJastAddJRenameConditionNode)
 			changes = ((IJastAddJRenameConditionNode)selectedNode).checkRenameConditions(name, status);
-		return status;
-	}
-
-	public void setName(String text) {
-		name = text;
-		status = null;
-		changes = null;
-	}
-	
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
+		
 		Program root = ((ASTNode) selectedNode).programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -85,7 +73,6 @@ public class RenameRefactoring extends Refactoring {
 			}
 			
 			changes = RefactoringUtil.createChanges("Rename", Program.cloneUndoStack());
-			return changes;
 		} catch (RefactoringException re) {
 			throw re;
 		} finally {
@@ -93,5 +80,18 @@ public class RenameRefactoring extends Refactoring {
 			root.flushCaches();
 			pm.done();
 		}
+		
+		return status;
+	}
+
+	public void setName(String text) {
+		name = text;
+		status = null;
+		changes = null;
+	}
+	
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 }

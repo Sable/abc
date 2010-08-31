@@ -44,20 +44,13 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
 
 		FieldDeclaration fd = (FieldDeclaration)selectedNode;
 
 		Program root = fd.programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -66,8 +59,6 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			fd.doSelfEncapsulate();
 
 			changes = RefactoringUtil.createChanges("EncapsulateField", Program.cloneUndoStack());
-			
-			return changes;
 		} catch (RefactoringException re) {
 			throw re;
 		} finally {
@@ -75,5 +66,11 @@ public class EncapsulateFieldRefactoring extends Refactoring {
 			root.flushCaches();
 			pm.done();
 		}
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return changes;
 	}
 }
