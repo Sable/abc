@@ -57,10 +57,15 @@ aspect Alias {
 	eq ConstructorAccess.getLocation() = decl().isPure() ? null : AnyHeapLocation.instance;
 	eq ClassInstanceExpr.getLocation() = isPure() ? null : AnyHeapLocation.instance;
 	
-	/* currently very crude: checks whether the method body is 'return c;' for a constant c */
+	/* crude approximation of when a method is pure */
 	syn lazy boolean MethodDecl.isPure() {
+		// Object.getClass() is pure
+		if(name().equals("getClass") && getNumParameter() == 0)
+			return true;
+		// if the method could be overridden or we don't have access to its body, assume the worst
 		if(!isStatic() && !isPrivate() || !hasBlock())
 			return false;
+		// if the body is 'return c;' for a constant c, the method is pure
 		Block body = getBlock();
 		if(body.getNumStmt() != 1)
 			return false;
