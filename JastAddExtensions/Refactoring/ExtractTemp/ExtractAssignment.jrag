@@ -39,7 +39,7 @@ aspect ExtractAssignment {
 			
 			SmallSet<CFGNode> C = this.collectExceptionalSucc();
 			if(!C.isEmpty() && !vacc.isAnticipated((VariableDeclaration)vaccDef.decl()))
-				throw new RefactoringException("expression may throw exception, but not inlined along all paths");
+				throw new RefactoringException("expression may throw exception, but is not inlined along all paths");
 			for(CFGNode c : C)
 				for(CFGNode w : u.precedingDefsUpTo(v))
 					if(!c.reachedUsesFor(((Access)w).getLocation()).isEmpty())

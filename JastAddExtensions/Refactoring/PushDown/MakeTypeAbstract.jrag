@@ -1,8 +1,8 @@
 aspect MakeTypeAbstract {
 	public void TypeDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
-	public void AnonymousDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
-	public void ArrayDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
-	public void EnumDecl.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
+	public void AnonymousDecl.makeAbstract() { throw new RefactoringException("anonymous type cannot be made abstract"); }
+	public void ArrayDecl.makeAbstract() { throw new RefactoringException("array type cannot be made abstract"); }
+	public void EnumDecl.makeAbstract() { throw new RefactoringException("enum type cannot be made abstract"); }
 	public void UnknownType.makeAbstract() { throw new RefactoringException("type cannot be made abstract"); }
 	
 	public void InterfaceDecl.makeAbstract() { }

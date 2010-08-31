@@ -20,7 +20,7 @@ aspect RenameMethod {
 	
 	private void MethodDecl.checkRenamingPreconds(String new_name) {
 		if(!fromSource() || isNative())
-			throw new RefactoringException("cannot rename");
+			throw new RefactoringException("cannot rename binary/native method");
 		String sig = signature();
 		int idx = sig.indexOf('(');
 		String new_sig = new_name + sig.substring(idx);

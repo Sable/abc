@@ -38,7 +38,7 @@ aspect ExtractClass {
 		java.util.Map<FieldDeclaration, InstanceInitializer> inits = new LinkedHashMap<FieldDeclaration, InstanceInitializer>();
 		for (FieldDeclaration fd : fds) {
 			if (fd.getModifiers().isStatic())
-				throw new RefactoringException("cannot extract this field");
+				throw new RefactoringException("cannot extract field "+fd.name());
 			InstanceInitializer init = wrapField(fd, wrapperField, struct, i++); 
 			if (init != null)
 				inits.put(fd, init);

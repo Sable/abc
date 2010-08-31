@@ -9,7 +9,7 @@ aspect InsertUnusedType {
 	
 	public MemberTypeDecl ClassDecl.insertUnusedType(TypeDecl td, int idx) { 
 		if(this instanceof ArrayDecl)
-			throw new RefactoringException("cannot insert type into this kind of type declaration");
+			throw new RefactoringException("cannot insert type into array declaration");
 		return insertUnusedType(this, td.asMemberTypeDecl(), idx);
 	}
 	public MemberTypeDecl InterfaceDecl.insertUnusedType(TypeDecl td, int idx) { return insertUnusedType(this, td.asMemberTypeDecl(), idx); }
