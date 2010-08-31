@@ -48,19 +48,11 @@ public class ExtractMethodRefactoring extends Refactoring {
 
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		if(status != null)
-			return status;
 		status = new RefactoringStatus();
-		return status;
-	}
-
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-
 		Block block = (Block)selectedNode;
 		Program root = block.programRoot();
 		try {
-			pm.beginTask("Creating change...", 1);
+			pm.beginTask("Performing refactoring...", 1);
 			
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			
@@ -69,15 +61,20 @@ public class ExtractMethodRefactoring extends Refactoring {
 			block.doExtractMethod(visibility, methodName, begin, end);
 
 			changes = RefactoringUtil.createChanges("ExtractMethod", Program.cloneUndoStack());
-			
-			return changes;
 		} catch (RefactoringException re) {
-			throw re;
+			status.addFatalError(re.getMessage());
 		} finally {
 			Program.undoAll();
 			root.flushCaches();
 			pm.done();
 		}
+		return status;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
+		if(changes == null)
+			throw new Error("changes should have been created");
+		return changes;
 	}
 
 	public IJastAddNode getSelectedNode() {
