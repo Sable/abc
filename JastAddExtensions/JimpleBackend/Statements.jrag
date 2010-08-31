@@ -321,7 +321,7 @@ aspect Statements {
   public void TryStmt.emitFinallyCode(Body b) {
     if(hasFinally()) {
       // Clear cached attributes to force re-evaluation of local variables
-      getFinally().flushCaches();
+//    getFinally().flushCaches();
       getFinally().jimplify2(b);
     }
   }
