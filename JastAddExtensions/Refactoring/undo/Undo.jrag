@@ -1,5 +1,12 @@
 aspect Undo {
+	public static boolean Program.DEBUG_UNDO = false;
 	private static boolean Program.RECORDING_CHANGES = false;
+	public static long Program.undoActionCount = 0;
+	
+	public static boolean Program.isRecordingASTChanges() {
+		return RECORDING_CHANGES;
+	}
+	
 	
 	public static void Program.startRecordingASTChangesAndFlush() {
 		RECORDING_CHANGES = true;
@@ -9,6 +16,8 @@ aspect Undo {
 		RECORDING_CHANGES = false;
 		undoStack = new Stack<ASTModification>();
 	}
+	
+	// CheckPoints
 	
 	private static ASTUndoCheckPoint Program.lastCheckPoint = null;
 	public static ASTUndoCheckPoint Program.createASTUndoCheckPoint() {
@@ -33,28 +42,30 @@ aspect Undo {
 		}
 	}
 	
+	// General ASTModification
+	
 	public abstract class ASTModification {
 		public abstract void undo();
 		public abstract void redo();
 	}
 	
-	// problem with non-static stack: creating new subtrees that are not attached to the
-	// main tree with a Program root node -> no undo in the new subtree
+	/*
+	 * Undo Stack
+	 * 
+	 * problem with non-static stack: creating new subtrees that are not attached to the
+	 * main tree with a Program root node -> no undo in the new subtree
+	 */
 	private static Stack<ASTModification> Program.undoStack = new Stack();
 	
 	public static Stack<ASTModification> Program.cloneUndoStack() {
 		return (Stack<ASTModification>) (undoStack != null ? undoStack.clone() : null);
 	}
 	
-	public static long Program.undoActionCount = 0;
+	// Undo-ing
 	
 	public static void Program.addUndoAction(ASTModification action) {
 		undoStack.push(action);
 		undoActionCount++;
-	}
-	
-	public static boolean Program.isRecordingASTChanges() {
-		return RECORDING_CHANGES;
 	}
 	
 	public static void Program.undoAll() {
@@ -66,22 +77,15 @@ aspect Undo {
 	}
 	
 	public static void Program.undoUntil(ASTUndoCheckPoint cp) {
-		System.out.print("Undoing " + undoStack.size() + " actions... ");
+		if (DEBUG_UNDO) System.out.print("Undoing " + undoStack.size() + " actions... ");
 		while (!undoStack.isEmpty()) {
 			ASTModification mod = undoStack.pop();
 			mod.undo();
 			if (cp != null && cp.equals(mod))
 				break;
 		}
-		System.out.println("done.");
-		System.out.println("Total undo actions: " + undoActionCount);
-	}
-
-	public boolean ASTNode.isInTree() {
-		ASTNode node = this;
-		while (node.getParent() != null && node.getChildIndex() != -1)
-			node = node.getParent();
-		return node instanceof Program;
+		if (DEBUG_UNDO) System.out.println("done.");
+		if (DEBUG_UNDO) System.out.println("Total undo actions: " + undoActionCount);
 	}
 	
 	

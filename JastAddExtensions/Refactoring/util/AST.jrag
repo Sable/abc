@@ -227,4 +227,12 @@ aspect AST {
 		return isRightChildOfDot() ? parentDot().getLeft() : null;
 	}
 	
+
+	public boolean ASTNode.isInTree() {
+		ASTNode node = this;
+		while (node.getParent() != null && node.getChildIndex() != -1)
+			node = node.getParent();
+		return node instanceof Program;
+	}
+	
 }

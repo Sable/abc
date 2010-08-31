@@ -567,7 +567,7 @@ aspect Testing {
 	public void ASTNode.parentChildCheckNoTransform() {
 		for (int i = 0; i < getNumChildNoTransform(); i++) {
 			if (children[i] == null) {
-				System.out.println("Warning: child is null during parentChildCheck");
+				System.err.println("Warning: child is null during parentChildCheck");
 				continue;
 			}
 			if (this != getChildNoTransform(i).parent)
@@ -578,7 +578,7 @@ aspect Testing {
 	public void ASTNode.parentChildCheck() {
 		for (int i = 0; i < getNumChild(); i++) {
 			if (children[i] == null) {
-				System.out.println("Warning: child is null during parentChildCheck");
+				System.err.println("Warning: child is null during parentChildCheck");
 				continue;
 			}
 			if (this != getChild(i).getParent())

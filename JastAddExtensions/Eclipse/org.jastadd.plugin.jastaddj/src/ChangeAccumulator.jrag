@@ -1,0 +1,143 @@
+aspect ChangeAccumulator {
+	
+
+	/* a change accumulator keeps track of changes happening to multiple files;
+	 * it creates one TextFileChange for every file affected and adds incoming
+	 * ReplaceEdits to them
+	 */
+	class ChangeAccumulator {
+		public static final boolean DEBUG = false;
+		
+		private String name;
+		private CompositeChange changes;
+		private Map<IFile, TextFileChange> changemap;
+		
+		public ChangeAccumulator(String name) {
+			this.name = name;
+			changes = new CompositeChange(name);
+			changemap = new HashMap<IFile, TextFileChange>();
+		}
+
+		// retrieve the text file change object for file
+		private TextFileChange changeForFile(IFile file) {
+			TextFileChange tfc;
+			if(!changemap.containsKey(file)) {
+				// create a new one
+				tfc = new TextFileChange(name, file);
+				tfc.setEdit(new MultiTextEdit());
+				changes.add(tfc);
+				changemap.put(file, tfc);
+			}
+			else {
+				tfc = changemap.get(file);
+			}
+			return tfc;
+		}
+		
+		/**
+		 * copied from TextEdit as ReplaceEdit is final and we want to be able to replace zero length edits,
+		 * e.g. for new CompilationUnits
+		 */
+		private boolean covers(TextEdit thiss, TextEdit other) {
+			int thisOffset= thiss.getOffset();
+			int otherOffset= other.getOffset();
+			return thisOffset <= otherOffset && otherOffset + other.getLength() <= thisOffset + thiss.getLength();
+		}
+		
+		public void addEdit(IFile file, TextEdit te) {
+			TextFileChange tfc = changeForFile(file);
+			/* we need to avoid overlaping changes
+			 * new changes added here should cover the old ones or not conflict
+			 */
+			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
+			java.util.Set covered = new java.util.HashSet();
+			for(int i=0; i<mte.getChildren().length; ++i) {
+				TextEdit te2 = mte.getChildren()[i];
+				if(covers(te, te2))
+						covered.add(te2);
+			}
+			for(Iterator iter=covered.iterator();iter.hasNext();) {
+				TextEdit te2 = (TextEdit)iter.next();
+				mte.removeChild(te2);
+			}
+			tfc.addEdit(te);
+		}
+
+		public void addEdit(IFile file, int offset, int length, String contents) {
+			addEdit(file, new ReplaceEdit(offset, length, contents));
+		}
+
+		// creates the TextChanges corresponding to the ASTModification
+		// and adds them to the accumulator
+		public void addAllEdits(Collection<ASTModification> col) {
+			
+			// we need original paths for changes
+			Iterator<ASTModification> iter = col.iterator();
+			while(iter.hasNext()) {
+				ASTModification m = iter.next();
+				if (m instanceof ASTModificationCompilationUnitSetId) {
+					ASTModificationCompilationUnitSetId mm = (ASTModificationCompilationUnitSetId) m;
+					compilationUnitOriginalPath.put((CompilationUnit) mm.node, mm.oldPathName);
+				}
+			}
+			
+			iter = col.iterator();
+			while(iter.hasNext()) {
+				ASTModification m = iter.next();
+				if (DEBUG) System.out.print(m.toString() + " :: ");
+				m.redo();
+				m.createTextEdit(this);
+			}
+		}
+		
+		// directly add a non-TextChange
+		public void addChange(Change ch) {
+			changes.add(ch);
+		}
+		
+		public Change getChanges() {
+			return changes;
+		}
+		
+		// original paths
+		public Map<CompilationUnit, String> compilationUnitOriginalPath = new HashMap<CompilationUnit, String>();
+		public String getPathName(IJastAddNode node) {
+			CompilationUnit cu = ((ASTNode) node).compilationUnit();
+			if (this.compilationUnitOriginalPath.containsKey(cu))
+				return this.compilationUnitOriginalPath.get(cu);
+			else
+				return cu.pathName();
+		}
+		
+		
+		private java.util.Set<ASTNode> printed = new HashSet<ASTNode>();
+		public void addPrinted(ASTNode node) {
+			printed.add(node);
+		}
+		// returns topmost parent that was already printed or the node
+		public ASTNode printedParent(ASTNode node) {
+			ASTNode ret = node;
+			while (!(node instanceof Program) && node != null) {
+				if (printed.contains(node))
+					ret = node;
+				node = node.getParent();
+			}
+			return ret;
+		}
+		
+		/**
+		 * nodes that changed parent during the refactoring, i.e. their location info is bad
+		 */
+		public java.util.Set<ASTNode> moved = new HashSet<ASTNode>();
+		public ASTNode getMovedAncestor(ASTNode node) {
+			ASTNode ret = null;
+			while (!(node instanceof Program) && node != null) {
+				if (moved.contains(node))
+					ret = node;
+				node = node.getParent();
+			}
+			return ret;
+		}
+	}
+	
+}
