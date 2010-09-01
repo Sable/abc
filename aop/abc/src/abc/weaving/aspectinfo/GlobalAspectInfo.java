@@ -267,7 +267,7 @@ public class GlobalAspectInfo {
 
     public void addWeavableClass(AbcClass cl) {
         if(classes.contains(cl)) {
-            throw new InternalCompilerError("Attempted to add duplicate anonymous weavable class");
+            throw new InternalCompilerError("Attempted to add duplicate class of name "+cl.getJvmName());
         }
         classes.add(cl);
     }
