@@ -1,0 +1,53 @@
+aspect Alpha {
+	// computes minimal access modifier that "this" needs to have in order to be accessible at "acc"
+	syn lazy int TypeDecl.minAccess(Access acc) {
+		if(isTopLevelType()) {
+			if(this.hostPackage().equals(acc.hostPackage()))
+				return ASTNode.VIS_PACKAGE;
+		} else if(isMemberType()) {
+			BodyDecl bd = (BodyDecl)getParent();
+			return bd.minAccess(acc);
+		} else {
+			// local or anonymous class
+			return ASTNode.VIS_PACKAGE;
+		}
+		return ASTNode.VIS_PUBLIC;
+	}
+	eq ArrayDecl.minAccess(Access acc) = elementType().minAccess(acc);
+	
+	// see TypeDecl.minAccess(Access)
+	syn lazy int BodyDecl.minAccess(Access acc) {
+		if(this.hostType().topLevelType() == acc.hostType().topLevelType())
+			return ASTNode.VIS_PRIVATE;
+		if(acc.hostPackage().equals(this.hostType().hostPackage()))
+			return ASTNode.VIS_PACKAGE;
+		if(canAccessAsProtected(acc))
+			return ASTNode.VIS_PROTECTED;
+		return ASTNode.VIS_PUBLIC;
+	}
+	eq InstanceInitializer.minAccess(Access acc) = -1;
+	eq StaticInitializer.minAccess(Access acc) = -1;
+	
+	// determines whether this body declaration can be accessed from "acc" if it is protected
+	syn boolean BodyDecl.canAccessAsProtected(Access acc) = acc.hostType().withinBodyThatSubclasses(hostType()) != null; 
+	
+	eq FieldDeclaration.canAccessAsProtected(Access acc) {
+		return super.canAccessAsProtected(acc) &&
+			   (isStatic() || !acc.isQualified() || acc.qualifier().type().instanceOf(acc.hostType()));
+	}
+	
+	eq MethodDecl.canAccessAsProtected(Access acc) {
+		return super.canAccessAsProtected(acc) &&
+		   (isStatic() || !acc.isQualified() || acc.qualifier().type().instanceOf(acc.hostType()));
+	}
+
+	eq ConstructorDecl.canAccessAsProtected(Access acc) {
+		if(acc instanceof SuperConstructorAccess) {
+			return true;
+		} else if(acc instanceof ClassInstanceExpr) {
+			ClassInstanceExpr cie = (ClassInstanceExpr)acc;
+			return cie.hasTypeDecl();
+		}
+		return false;
+	}
+}

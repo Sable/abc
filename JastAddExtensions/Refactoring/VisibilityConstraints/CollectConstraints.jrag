@@ -1,0 +1,71 @@
+aspect CollectConstraints {
+	coll Collection<AccessibilityConstraint> Program.accessibilityConstraints() [new HashSet<AccessibilityConstraint>()]
+	                                         with add root Program;
+	
+	// constraints from bindings
+	TypeAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	           to Program.accessibilityConstraints()
+	           for programRoot();
+	
+	VarAccess  contributes new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(this), (FieldDeclaration)decl())
+	           when decl() instanceof FieldDeclaration
+	           to Program.accessibilityConstraints()
+	           for programRoot();
+	
+	MethodAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+    	       to Program.accessibilityConstraints()
+    	       for programRoot();
+	
+	ConstructorAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+    		   to Program.accessibilityConstraints()
+    		   for programRoot();
+	
+	ClassInstanceExpr contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	   		   to Program.accessibilityConstraints()
+	   		   for programRoot();
+	
+	// constraints for top-level types
+	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PRIVATE)
+	         when fromSource() && isTopLevelType()
+			 to Program.accessibilityConstraints()
+			 for programRoot();
+	
+	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PROTECTED)
+    		 when fromSource() && isTopLevelType()
+	 		 to Program.accessibilityConstraints()
+	 		 for programRoot();
+	
+	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PUBLIC)
+	         when fromSource() && isTopLevelType() && !compilationUnit().getID().equals(name())
+	 		 to Program.accessibilityConstraints()
+	 		 for programRoot();
+	
+	// constraints for local classes
+	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PACKAGE)
+    		 when isLocalClass()
+	 		 to Program.accessibilityConstraints()
+	 		 for programRoot();
+	
+	// fields and methods in interfaces have to be public
+	FieldDeclaration contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	                 when hostType().isInterfaceDecl()
+	                 to Program.accessibilityConstraints() for programRoot();
+	
+	MethodDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	           when hostType().isInterfaceDecl()
+               to Program.accessibilityConstraints() for programRoot();
+	
+	// constructors in enums have to be private
+	ConstructorDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PRIVATE)
+	           when hostType().isEnumDecl()
+	           to Program.accessibilityConstraints() for programRoot();
+	
+	// main has to be public
+	syn lazy boolean MethodDecl.isMainMethod() =
+		name().equals("main") && isStatic() && isPublic() && getNumParameter() == 1 && getParameter(0).type().isArrayDecl() &&
+		    ((ArrayDecl)getParameter(0).type()).elementType().isString();
+	
+	MethodDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	           when isMainMethod()
+	           to Program.accessibilityConstraints() for programRoot();
+}

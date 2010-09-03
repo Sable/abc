@@ -1,0 +1,158 @@
+aspect AccessibilityConstraints {
+	class AccessibilityConstraint {
+		private ASTNode node;
+		private WithAccessModifier left, right;
+		private Operator op;
+		
+		public AccessibilityConstraint(ASTNode node, WithAccessModifier left, Operator op, WithAccessModifier right) {
+			this.node = node;
+			this.left = left;
+			this.op = op;
+			this.right = right;
+		}
+		
+		public AccessibilityConstraint(ASTNode node, int left, Visible right) {
+			this(node, AccessModifierConstant.fromVisibility(left), Operator.LE, AccessModifierVariable.forVisible(right));
+		}
+		
+		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, int right) {
+			this(node, AccessModifierVariable.forVisible(left), op, AccessModifierConstant.fromVisibility(right));
+		}
+		
+		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, WithAccessModifier right) {
+			this(node, AccessModifierVariable.forVisible(left), op, right);
+		}
+		
+		public boolean fromSource() {
+			return node.fromSource();
+		}
+		
+		public ASTNode getNode() {
+			return node;
+		}
+		
+		public WithAccessModifier getLeft() {
+			return left;
+		}
+		
+		public WithAccessModifier getRight() {
+			return right;
+		}
+		
+		public boolean isSolved() {
+			return op.eval(left.getAccessModifier(), right.getAccessModifier());
+		}
+		
+		public String toString() {
+			return node + ": " + left + " " + op + " " + right;
+		}
+	}
+	
+	abstract class Operator {
+		String sym;
+		
+		protected Operator(String sym) {
+			this.sym = sym;
+		}
+		
+		public abstract boolean eval(int left, int right);
+		
+		public String toString() {
+			return sym;
+		}
+	}
+	
+	class LTOperator extends Operator {
+		public LTOperator() { super("<"); }
+		public boolean eval(int left, int right) { return left < right; }
+	}
+	
+	class LEOperator extends Operator {
+		public LEOperator() { super("<="); }
+		public boolean eval(int left, int right) { return left <= right; }
+	}
+	
+	class EQOperator extends Operator {
+		public EQOperator() { super("="); }
+		public boolean eval(int left, int right) { return left == right; }
+	}
+	
+	class NEOperator extends Operator {
+		public NEOperator() { super("!="); }
+		public boolean eval(int left, int right) { return left != right; }
+	}
+	
+	class GEOperator extends Operator {
+		public GEOperator() { super(">="); }
+		public boolean eval(int left, int right) { return left >= right; }
+	}
+	
+	class GTOperator extends Operator {
+		public GTOperator() { super(">"); }
+		public boolean eval(int left, int right) { return left > right; }
+	}
+	
+	public static final Operator Operator.LT = new LTOperator();
+	public static final Operator Operator.LE = new LEOperator();
+	public static final Operator Operator.EQ = new EQOperator();
+	public static final Operator Operator.NE = new NEOperator();
+	public static final Operator Operator.GE = new GEOperator();
+	public static final Operator Operator.GT = new GTOperator();
+	
+	abstract class WithAccessModifier {
+		public abstract int getAccessModifier();
+		
+		public static WithAccessModifier forVisible(Visible vis) {
+			if(vis.fromSource())
+				return new AccessModifierVariable(vis);
+			return AccessModifierConstant.fromVisibility(vis.getVisibility());
+		}
+	}
+	
+	class AccessModifierConstant extends WithAccessModifier {
+		private int vis;
+		
+		private AccessModifierConstant(int vis) {
+			this.vis = vis;
+		}
+		
+		public int getAccessModifier() {
+			return vis;
+		}
+		
+		public static final AccessModifierConstant PRIVATE = new AccessModifierConstant(ASTNode.VIS_PRIVATE);
+		public static final AccessModifierConstant PACKAGE = new AccessModifierConstant(ASTNode.VIS_PACKAGE);
+		public static final AccessModifierConstant PROTECTED = new AccessModifierConstant(ASTNode.VIS_PROTECTED);
+		public static final AccessModifierConstant PUBLIC = new AccessModifierConstant(ASTNode.VIS_PUBLIC);
+		
+		public static AccessModifierConstant fromVisibility(int vis) {
+			switch(vis) {
+			case ASTNode.VIS_PRIVATE: return PRIVATE;
+			case ASTNode.VIS_PACKAGE: return PACKAGE;
+			case ASTNode.VIS_PROTECTED: return PROTECTED;
+			case ASTNode.VIS_PUBLIC: return PUBLIC;
+			}
+			return null;
+		}
+		
+		public String toString() {
+			return ASTNode.visibilityToString(vis);
+		}
+	}
+	
+	class AccessModifierVariable extends WithAccessModifier {
+		private Visible element;
+		
+		public AccessModifierVariable(Visible element) {
+			this.element = element;
+		}
+		
+		public int getAccessModifier() {
+			return element.getVisibility();
+		}
+		
+		public String toString() {
+			return "visibility(" + element + ")";
+		}
+	}
+}

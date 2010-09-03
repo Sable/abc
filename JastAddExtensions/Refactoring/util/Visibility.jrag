@@ -5,11 +5,22 @@ aspect Visibility {
 	public static final int ASTNode.VIS_PROTECTED = 2;
 	public static final int ASTNode.VIS_PUBLIC = 3;
 	
+	public static String ASTNode.visibilityToString(int vis) {
+		switch(vis) {
+		case VIS_PRIVATE: return "private";
+		case VIS_PACKAGE: return "package";
+		case VIS_PROTECTED: return "protected";
+		case VIS_PUBLIC: return "public";
+		}
+		return null;
+	}
+	
 	interface Visible {
 		public boolean isPrivate();
 		public boolean isProtected();
 		public boolean isPublic();
 		public Modifiers getModifiers();
+		public boolean fromSource();
 	}
 	TypeDecl implements Visible;
 	MethodDecl implements Visible;

@@ -1,0 +1,87 @@
+import jp.ac.kobe_u.cs.cream.Network;
+import jp.ac.kobe_u.cs.cream.IntVariable;
+import jp.ac.kobe_u.cs.cream.Constraint;
+import jp.ac.kobe_u.cs.cream.Equals;
+import jp.ac.kobe_u.cs.cream.NotEquals;
+import jp.ac.kobe_u.cs.cream.IntComparison;
+import jp.ac.kobe_u.cs.cream.DefaultSolver;
+import jp.ac.kobe_u.cs.cream.Solution;
+
+aspect Cream {
+	syn lazy IntVariable Visible.creamVariable(Network network) = new IntVariable(network, VIS_PRIVATE, VIS_PUBLIC, name());
+	
+	public Constraint AccessibilityConstraint.generateCreamConstraint(Network network) {
+		return op.generateCreamConstraint(left.creamVariable(network), right.creamVariable(network));
+	}
+	
+	public Constraint Operator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		return new IntComparison(left.getNetwork(), getComparisonOperator(), left, right);
+	}
+	
+	public Constraint EQOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		return new Equals(left.getNetwork(), left, right);
+	}
+	
+	public Constraint NEOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		return new NotEquals(left.getNetwork(), left, right);
+	}
+	
+	protected int Operator.getComparisonOperator() { return -1; }
+	protected int LEOperator.getComparisonOperator() { return IntComparison.LE; }
+	protected int LTOperator.getComparisonOperator() { return IntComparison.LT; }
+	protected int GEOperator.getComparisonOperator() { return IntComparison.GE; }
+	protected int GTOperator.getComparisonOperator() { return IntComparison.GT; }
+	
+	public abstract IntVariable WithAccessModifier.creamVariable(Network network);
+	public IntVariable AccessModifierConstant.creamVariable(Network network) {
+		return new IntVariable(network, vis);
+	}
+	
+	public IntVariable AccessModifierVariable.creamVariable(Network network) {
+		return element.creamVariable(network);
+	}
+	
+	public Network Program.generateNetwork() {
+		Network network = new Network();
+		for(AccessibilityConstraint constr : accessibilityConstraints())
+			constr.generateCreamConstraint(network);
+		return network;
+	}
+	
+	public void Program.solve(Network network) {
+		DefaultSolver solver = new DefaultSolver(network);
+		for(solver.start(); solver.waitNext(); solver.resume())
+			printSolution(network, solver.getSolution());
+		solver.stop();
+	}
+	
+	public void Program.solve() {
+		Network network = generateNetwork();
+		solve(network);
+	}
+	
+	// collect all visibles that constraints were generated for
+	syn lazy Collection<Visible> Program.getConstrainedVisibles() {
+		HashSet<Visible> visibles = new HashSet<Visible>();
+		for(AccessibilityConstraint constr : accessibilityConstraints()) {
+			constr.getLeft().addVisible(visibles);
+			constr.getRight().addVisible(visibles);
+		}
+		return visibles;
+	}
+	
+    private void Program.printSolution(Network network, Solution solution) {
+    	System.out.println("Solution:");
+		// print changed visibilities
+		for(Visible element : getConstrainedVisibles()) {
+			IntVariable var = element.creamVariable(network);
+			int val = solution.getIntValue(var);
+			if(val != element.getVisibility())
+				System.out.println("visibility changed to " + visibilityToString(val) + " for " + element);
+		}
+	}
+	
+	public abstract void WithAccessModifier.addVisible(Collection<Visible> visibles);
+	public void AccessModifierConstant.addVisible(Collection<Visible> visibles) { }
+	public void AccessModifierVariable.addVisible(Collection<Visible> visibles) { visibles.add(element); }
+}
