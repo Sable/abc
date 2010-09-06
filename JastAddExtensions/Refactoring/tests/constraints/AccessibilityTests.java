@@ -1,0 +1,122 @@
+package tests.constraints;
+
+import java.util.Map;
+
+import junit.framework.TestCase;
+import AST.ASTNode;
+import AST.Program;
+import AST.RawCU;
+import AST.RefactoringException;
+import AST.TypeDecl;
+import AST.Visible;
+
+public class AccessibilityTests extends TestCase {
+	private void testPossibleVisibilities(Visible element, String should) {
+		assertNotNull(element);
+		Program prog = ((ASTNode)element).programRoot();
+		char[] is = { '-', '-', '-', '-' };
+		int orig = element.getVisibility();
+		for(Map<Visible, Integer> vismap : prog.allPossibleSolutions()) {
+			Integer vis = vismap.get(element);
+			is[vis == null ? orig : vis] = '+';
+		}
+		assertEquals(should, new String(is));
+	}
+	
+	public void testSucc(String tp, int vis, Program in, Program out) {
+		assertTrue(ASTNode.VIS_PRIVATE <= vis && vis <= ASTNode.VIS_PUBLIC);
+		assertNotNull(in);
+		assertNotNull(out);
+		TypeDecl td = in.findType(tp);
+		assertNotNull(tp);
+		try {
+			td.changeAccessibility(vis);
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException e) {
+			assertEquals(out.toString(), e.getMessage());
+		}		
+	}
+	
+	public void testFail(String tp, int vis, Program in) {
+		assertTrue(ASTNode.VIS_PRIVATE <= vis && vis <= ASTNode.VIS_PUBLIC);
+		assertNotNull(in);
+		TypeDecl td = in.findType(tp);
+		assertNotNull(tp);
+		try {
+			td.changeAccessibility(vis);
+			assertEquals("<FAILURE>", in.toString());
+		} catch(RefactoringException e) {
+		}		
+		
+	}
+	
+	public void test1() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { }"),
+				new RawCU("B.java", "package q; public class B extends p.A { }"));
+		testPossibleVisibilities(prog.findType("p.A"), "---+");
+	}
+	
+	public void test2() {
+		Program prog = Program.fromBodyDecls(
+				"private void m() { }",
+				"void n() { m(); }");
+		testPossibleVisibilities(prog.findMethod("m"), "++++");
+	}
+	
+	public void test3() {
+		Program prog = Program.fromClasses(
+				"class A { void m() { } }",
+				"class B { { new A().m(); } }");
+		testPossibleVisibilities(prog.findMethod("m"), "-+++");
+	}
+	
+	public void test4() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { void m() { } }"),
+				new RawCU("B.java", "package p; class B extends A { { m(); } }"));
+		testPossibleVisibilities(prog.findMethod("m"), "-+++");
+	}
+	
+	public void test5() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public void m() { } }"),
+				new RawCU("B.java", "package q; class B extends p.A { { m(); } }"));
+		testPossibleVisibilities(prog.findMethod("m"), "--++");
+	}
+	
+	public void test6() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public void m() { } }"),
+				new RawCU("B.java", "package q; import p.A; class B extends A { { new A().m(); } }"));
+		testPossibleVisibilities(prog.findMethod("m"), "---+");
+	}
+	
+	public void test7() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public A() { } }"),
+				new RawCU("B.java", "package p; public class B extends A { }"));
+		testPossibleVisibilities(prog.findConstructor("A"), "-+++");
+	}
+	
+	public void test8() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public A(int i) { } }"),
+				new RawCU("B.java", "package q; public class B extends p.A { public B() { super(1); } }"));
+		testPossibleVisibilities(prog.findConstructor("A"), "--++");
+	}
+	
+	public void test9() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public A(int i) { } }"),
+				new RawCU("B.java", "package q; public class B { p.A a = new p.A(1) { }; }"));
+		testPossibleVisibilities(prog.findConstructor("A"), "--++");
+	}
+	
+	public void test10() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public A(int i) { } }"),
+				new RawCU("B.java", "package q; public class B { p.A a = new p.A(1); }"));
+		testPossibleVisibilities(prog.findConstructor("A"), "---+");
+	}
+}

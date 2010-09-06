@@ -34,6 +34,10 @@ aspect Visibility {
 		return VIS_PACKAGE;
 	}
 	
+	public void Visible.setVisibility(int vis) {
+		getModifiers().setVisibility(vis);
+	}
+	
 	public Modifiers.Modifiers(int vis) {
 		this();
 		switch(vis) {

@@ -41,26 +41,54 @@ aspect Cream {
 		return element.creamVariable(network);
 	}
 	
-	public Network Program.generateNetwork() {
+	public Network Program.generateNetwork(Collection<AccessibilityConstraint> accessibilityConstraints) {
 		Network network = new Network();
-		for(AccessibilityConstraint constr : accessibilityConstraints())
+		for(AccessibilityConstraint constr : accessibilityConstraints)
 			constr.generateCreamConstraint(network);
 		return network;
 	}
 	
-	public void Program.solve(Network network) {
+	public Map<Visible, Integer> Program.solve(Network network) {
 		DefaultSolver solver = new DefaultSolver(network);
-		for(solver.start(); solver.waitNext(); solver.resume())
-			printSolution(network, solver.getSolution());
-		solver.stop();
+		try {
+			for(solver.start(); solver.waitNext(); solver.resume()) {
+				return generateAccessibilityMap(network, solver.getSolution());
+				//printSolution(network, solver.getSolution());
+			}
+			return null;
+		} finally {
+			solver.stop();
+		}
 	}
 	
-	public void Program.solve() {
-		Network network = generateNetwork();
-		solve(network);
+	// result may contain the same solution twice
+	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions(Network network) {
+		Collection<Map<Visible, Integer>> res = new LinkedList<Map<Visible, Integer>>();
+		DefaultSolver solver = new DefaultSolver(network);
+		for(solver.start(); solver.waitNext(); solver.resume())
+			res.add(generateAccessibilityMap(network, solver.getSolution()));
+		solver.stop();
+		return res;
+	}
+	
+	public Map<Visible, Integer> Program.solve(Collection<AccessibilityConstraint> accessibilityConstraints) {
+		return solve(generateNetwork(accessibilityConstraints));
+	}
+	
+	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions(Collection<AccessibilityConstraint> accessibilityConstraints) {
+		return allPossibleSolutions(generateNetwork(accessibilityConstraints));
+	}
+	
+	public Map<Visible, Integer> Program.solve() {
+		return solve(generateNetwork(accessibilityConstraints()));
+	}
+	
+	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions() {
+		return allPossibleSolutions(generateNetwork(accessibilityConstraints()));
 	}
 	
 	// collect all visibles that constraints were generated for
+	// TODO: do this once, when the constraints are generated
 	syn lazy Collection<Visible> Program.getConstrainedVisibles() {
 		HashSet<Visible> visibles = new HashSet<Visible>();
 		for(AccessibilityConstraint constr : accessibilityConstraints()) {
@@ -68,6 +96,21 @@ aspect Cream {
 			constr.getRight().addVisible(visibles);
 		}
 		return visibles;
+	}
+	
+	public abstract void WithAccessModifier.addVisible(Collection<Visible> visibles);
+	public void AccessModifierConstant.addVisible(Collection<Visible> visibles) { }
+	public void AccessModifierVariable.addVisible(Collection<Visible> visibles) { visibles.add(element); }
+	
+	private Map<Visible, Integer> Program.generateAccessibilityMap(Network network, Solution solution) {
+		Map<Visible, Integer> map = new HashMap<Visible, Integer>();
+		for(Visible element : getConstrainedVisibles()) {
+			IntVariable var = element.creamVariable(network);
+			int val = solution.getIntValue(var);
+			if(val != element.getVisibility())
+				map.put(element, val);
+		}
+		return map;
 	}
 	
     private void Program.printSolution(Network network, Solution solution) {
@@ -79,9 +122,5 @@ aspect Cream {
 			if(val != element.getVisibility())
 				System.out.println("visibility changed to " + visibilityToString(val) + " for " + element);
 		}
-	}
-	
-	public abstract void WithAccessModifier.addVisible(Collection<Visible> visibles);
-	public void AccessModifierConstant.addVisible(Collection<Visible> visibles) { }
-	public void AccessModifierVariable.addVisible(Collection<Visible> visibles) { visibles.add(element); }
+	}	
 }
