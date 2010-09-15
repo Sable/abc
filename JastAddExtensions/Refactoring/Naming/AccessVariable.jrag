@@ -51,7 +51,7 @@ aspect AccessVariable {
 		
 		public SymbolicFieldAccess moveDownTo(TypeDecl td) {
 			bend = td;
-			if(!td.localFields(target.name()).isEmpty())
+			if(!td.localFields(target.name()).isEmpty() || td.ambiguousFieldName(target.name()))
 				directlyVisible = false;
 			else
 				source = td;
@@ -127,6 +127,10 @@ aspect AccessVariable {
 		= sourceMethodDecl().equals(decl.sourceMethodDecl());
 	syn boolean Variable.sameSourceDeclAs(Variable decl) 
 		= sourceVariableDecl().equals(decl.sourceVariableDecl());
+	
+	// a field name is ambiguous in a type if it is inherited from more than one ancestor (e.g., both from a superclass and
+	// a superinterface)
+	syn boolean TypeDecl.ambiguousFieldName(String name) = memberFields(name).size() > 1;
 	
 	// cf. lookupVariable(String)
 	inh SymbolicVarAccess TypeDecl.accessVariable(Variable decl);

@@ -1,62 +1,116 @@
 aspect CollectConstraints {
-	coll Collection<AccessibilityConstraint> Program.accessibilityConstraints() [new HashSet<AccessibilityConstraint>()]
-	                                         with add root Program;
+	coll Collection<AccessibilityConstraint> Program.accessibilityConstraints() [new LinkedHashSet<AccessibilityConstraint>()]
+	                                         with addAll root Program;
 	
-	// constraints from bindings
-	TypeAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	// Acc-1
+	TypeAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
 	           to Program.accessibilityConstraints()
 	           for programRoot();
 	
-	VarAccess  contributes new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(this), (FieldDeclaration)decl())
+	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(this), (FieldDeclaration)decl()))
 	           when decl() instanceof FieldDeclaration
 	           to Program.accessibilityConstraints()
 	           for programRoot();
 	
-	MethodAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
     	       to Program.accessibilityConstraints()
     	       for programRoot();
 	
-	ConstructorAccess contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	ConstructorAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
     		   to Program.accessibilityConstraints()
     		   for programRoot();
 	
-	ClassInstanceExpr contributes new AccessibilityConstraint(this, decl().minAccess(this), decl())
+	ClassInstanceExpr contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
 	   		   to Program.accessibilityConstraints()
 	   		   for programRoot();
 	
+	// Acc-2
+	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.EQ, AccessModifierConstant.PUBLIC))
+	           when isQualified() &&
+	                decl() instanceof FieldDeclaration && 
+	                !decl().isStatic() &&
+	                ((FieldDeclaration)decl()).minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
+	                !qualifier().type().instanceOf(hostType())
+	           to Program.accessibilityConstraints()
+	           for programRoot();
+	
+	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC))
+			   when isQualified() &&
+			   		!decl().isStatic() &&
+			   		decl().minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
+			   		!qualifier().type().instanceOf(hostType())
+			   to Program.accessibilityConstraints()
+			   for programRoot();
+	
+	ClassInstanceExpr contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC))
+	           when !hasTypeDecl() &&
+	                !hostType().hostPackage().equals(decl().hostType().hostPackage())
+	           to Program.accessibilityConstraints()
+	           for programRoot();
+	
+	// Inh-1
+	VarAccess contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.GE, 
+																			((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type())))
+              when isQualified() && decl() instanceof FieldDeclaration
+	          to Program.accessibilityConstraints()
+	          for programRoot();
+	
+	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.GE,
+																			   decl().minAccess(qualifier().hostPackage(), qualifier().hostType())))
+              when isQualified()
+    		  to Program.accessibilityConstraints()
+    		  for programRoot();
+	
+	// TODO: constructors?
+	
+	// constraints from method overriding
+	MethodDecl contributes accessibilityConstraintsFromOverriding()
+			   to Program.accessibilityConstraints()
+			   for programRoot();
+	
+	syn lazy Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverriding() {
+		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
+		for(MethodDecl that : overrides()) {
+			constrs.add(new AccessibilityConstraint(this, this, Operator.GE, that));
+			// TODO: extend alpha to compute accessibility from non-accesses (needed for Dyn-1 and Dyn-2)
+		}
+		// TODO: handle hidden methods
+		return constrs;
+	}
+	
 	// constraints for top-level types
-	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PRIVATE)
+	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PRIVATE))
 	         when fromSource() && isTopLevelType()
 			 to Program.accessibilityConstraints()
 			 for programRoot();
 	
-	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PROTECTED)
+	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PROTECTED))
     		 when fromSource() && isTopLevelType()
 	 		 to Program.accessibilityConstraints()
 	 		 for programRoot();
 	
-	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PUBLIC)
+	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PUBLIC))
 	         when fromSource() && isTopLevelType() && !compilationUnit().getID().equals(name())
 	 		 to Program.accessibilityConstraints()
 	 		 for programRoot();
 	
 	// constraints for local classes
-	TypeDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PACKAGE)
+	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PACKAGE))
     		 when isLocalClass()
 	 		 to Program.accessibilityConstraints()
 	 		 for programRoot();
 	
 	// fields and methods in interfaces have to be public
-	FieldDeclaration contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	FieldDeclaration contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC))
 	                 when hostType().isInterfaceDecl()
 	                 to Program.accessibilityConstraints() for programRoot();
 	
-	MethodDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	MethodDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC))
 	           when hostType().isInterfaceDecl()
                to Program.accessibilityConstraints() for programRoot();
 	
 	// constructors in enums have to be private
-	ConstructorDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PRIVATE)
+	ConstructorDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PRIVATE))
 	           when hostType().isEnumDecl()
 	           to Program.accessibilityConstraints() for programRoot();
 	
@@ -65,7 +119,7 @@ aspect CollectConstraints {
 		name().equals("main") && isStatic() && isPublic() && getNumParameter() == 1 && getParameter(0).type().isArrayDecl() &&
 		    ((ArrayDecl)getParameter(0).type()).elementType().isString();
 	
-	MethodDecl contributes new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC)
+	MethodDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC))
 	           when isMainMethod()
 	           to Program.accessibilityConstraints() for programRoot();
 }

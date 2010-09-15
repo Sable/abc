@@ -36,6 +36,8 @@ public class LockRefactoringTests extends TestCase {
 				total++;
 				Monitor m = ma.getAcquiredMonitor();
 				if(m instanceof FieldMonitor) {
+					FieldMonitor foo = (FieldMonitor)m;
+					System.out.println("field monitor for " + foo.getField().hostType().fullName() + "." + foo.getField().name());
 					++fm;
 				} else if(m instanceof ClassMonitor) {
 					++cm;

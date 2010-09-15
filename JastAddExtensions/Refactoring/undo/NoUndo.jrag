@@ -1,0 +1,11 @@
+// the Undo implementation is not quite ready for prime time; this aspect provides stubs for its API methods
+aspect NoUndo {
+	class ASTModification { }
+	class ASTUndoCheckPoint extends ASTModification { }
+	
+	public static void Program.startRecordingASTChangesAndFlush() { }
+	public static void Program.stopRecordingASTChangesAndFlush() { }
+	public static void Program.undoAll() { }
+	public static ASTUndoCheckPoint Program.createASTUndoCheckPoint() {	return null; }
+	public static void Program.undoUntil(ASTUndoCheckPoint cp) { } 
+}

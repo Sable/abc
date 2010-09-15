@@ -23,6 +23,10 @@ aspect AccessibilityConstraints {
 			this(node, AccessModifierVariable.forVisible(left), op, right);
 		}
 		
+		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, Visible right) {
+			this(node, AccessModifierVariable.forVisible(left), op, AccessModifierVariable.forVisible(right));
+		}
+		
 		public boolean fromSource() {
 			return node.fromSource();
 		}

@@ -119,4 +119,11 @@ public class AccessibilityTests extends TestCase {
 				new RawCU("B.java", "package q; public class B { p.A a = new p.A(1); }"));
 		testPossibleVisibilities(prog.findConstructor("A"), "---+");
 	}
+	
+	public void test11() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { protected int i; { new q.B().i = 1; } }"),
+				new RawCU("B.java", "package q; public class B extends p.A { }"));
+		testPossibleVisibilities(prog.findField("i"), "--++");
+	}
 }

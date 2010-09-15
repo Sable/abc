@@ -1407,4 +1407,32 @@ public class RenameVariableTests extends TestCase {
         );
     }
 
+    public void test42() {
+    	testSucc(
+    		"p", "A", "i", "j",
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    				  "package p;" +
+    				  "class A {" +
+    				  "  static int i;" +
+    				  "}" +
+    				  "interface I {" +
+    				  "  static int j = 42;" +
+    				  "}" +
+    				  "class B extends A implements I {" +
+    				  "  int x = i;" +
+    				  "}")),
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    				  "package p;" +
+    				  "class A {" +
+    		    	  "  static int j;" +
+    		    	  "}" +
+    		    	  "interface I {" +
+    		    	  "  static int j = 42;" +
+    		    	  "}" +
+    		    	  "class B extends A implements I {" +
+    		    	  "  int x = A.j;" +
+    		    	  "}")));
+    }
 }

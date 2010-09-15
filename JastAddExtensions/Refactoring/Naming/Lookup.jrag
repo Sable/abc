@@ -1,6 +1,8 @@
 aspect Lookup {
 	// simulates the effect of plugging in name as a ParseName, disambiguating and then taking decl()
 	public SimpleSet Expr.lookupName(String name) {
+		if(!isValidName(name))
+			return SimpleSet.emptySet;
 		NameType nt = this.nameType();
 		if(nt == NameType.PACKAGE_NAME) {
 			return lookupPackage(name);

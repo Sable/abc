@@ -71,7 +71,7 @@ aspect Overriding {
 		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
 		if(this.isPrivate() || this.isStatic())
 			return ret;
-		for(Iterator<MethodDecl> iter=hostType().possiblyOverridenAncestors(signature()).iterator(); //***ancestorMethods
+		for(Iterator<MethodDecl> iter=hostType().possiblyOverriddenAncestors(signature()).iterator();
 			iter.hasNext();) {
 			MethodDecl md = iter.next();
 			if(overrides(md))
@@ -80,22 +80,22 @@ aspect Overriding {
 		return ret;
 	}
 	
-	syn HashSet<MethodDecl> TypeDecl.possiblyOverridenAncestors(String signature) {
+	syn HashSet<MethodDecl> TypeDecl.possiblyOverriddenAncestors(String signature) {
 		HashSet<MethodDecl> s = new HashSet<MethodDecl>();
-		possiblyOverridenAncestors(s, signature);
+		possiblyOverriddenAncestors(s, signature);
 		return s;
 	}
 	
-	protected void TypeDecl.possiblyOverridenAncestors(HashSet<MethodDecl> s, String signature) { }
+	protected void TypeDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) { }
 	
-	protected void ClassDecl.possiblyOverridenAncestors(HashSet<MethodDecl> s, String signature) {
+	protected void ClassDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) {
 		if (superclass() != null) {
 			SimpleSet ss = superclass().localMethodsSignature(signature);
 			for (Iterator<MethodDecl> it = ss.iterator(); it.hasNext();) {
 				s.add(it.next());
 			}
 			if (ss.isEmpty()) {
-				superclass().possiblyOverridenAncestors(s, signature);
+				superclass().possiblyOverriddenAncestors(s, signature);
 			}
 		}
 		
@@ -110,12 +110,12 @@ aspect Overriding {
 		}
 		if (cnt == 0) {
 			for (Iterator<InterfaceDecl> it = interfacesIterator(); it.hasNext();) {
-				it.next().possiblyOverridenAncestors(s, signature);
+				it.next().possiblyOverriddenAncestors(s, signature);
 			}
 		}
 	}
 	
-	protected void InterfaceDecl.possiblyOverridenAncestors(HashSet<MethodDecl> s, String signature) {
+	protected void InterfaceDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) {
 		int cnt = 0;
 		for (Iterator<InterfaceDecl> it = superinterfacesIterator(); it.hasNext();) {
 			InterfaceDecl intf = it.next();
@@ -126,7 +126,7 @@ aspect Overriding {
 		}
 		if (cnt == 0) {
 			for (Iterator<InterfaceDecl> it = superinterfacesIterator(); it.hasNext();) {
-				it.next().possiblyOverridenAncestors(s, signature);
+				it.next().possiblyOverriddenAncestors(s, signature);
 			}
 		}
 	}
