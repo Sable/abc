@@ -17,6 +17,9 @@ aspect ChangeAccessibility {
 				} else if(vis instanceof MethodDecl) {
 					MethodDecl md = (MethodDecl)vis;
 					programRoot().lockMethodNames(md.name());
+				} else if(vis instanceof TypeDecl) {
+					TypeDecl td = (TypeDecl)vis;
+					programRoot().lockNames(td.name());
 				}
 				vis.setVisibility(e.getValue());
 			}

@@ -61,8 +61,6 @@ aspect CollectConstraints {
     		  to Program.accessibilityConstraints()
     		  for programRoot();
 	
-	// TODO: constructors?
-	
 	// constraints from method overriding
 	MethodDecl contributes accessibilityConstraintsFromOverridingAndHiding()
 			   to Program.accessibilityConstraints()

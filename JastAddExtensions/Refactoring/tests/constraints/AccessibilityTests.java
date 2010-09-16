@@ -159,4 +159,19 @@ public class AccessibilityTests extends TestCase {
 		testPossibleVisibilities(prog.findType("A").findMethod("m"), "++--");
 	}
 	
+	public void test16() {
+		Program prog = Program.fromClasses(
+				"interface I { void m(); }" +
+				"abstract class A implements I { }" +
+				"class B extends A { public void m() { } }");
+		testPossibleVisibilities(prog.findType("B").findMethod("m"), "---+");
+	}
+	
+	public void test17() {
+		Program prog = Program.fromClasses(
+				"class A { private class Inner { } }",
+				"interface I { class Inner { } }",
+				"class B extends A implements I { Inner x; }");
+		testPossibleVisibilities(prog.findType("A").findSimpleType("Inner"), "++++");
+	}
 }

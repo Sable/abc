@@ -55,4 +55,15 @@ public class OtherTests extends TestCase {
 		md.changeAccessibility(ASTNode.VIS_PACKAGE);
 		assertEquals(orig, in.toString());
 	}
+	
+	public void test3() {
+		Program in = Program.fromClasses(
+				"class A { private class Inner { } }",
+				"interface I { class Inner { } }",
+				"class B extends A implements I { Inner x; }");
+		assertNotNull(in);
+		String orig = in.toString();
+		in.findType("A").findSimpleType("Inner").changeAccessibility(ASTNode.VIS_PUBLIC);
+		assertEquals(orig, in.toString());
+	}
 }
