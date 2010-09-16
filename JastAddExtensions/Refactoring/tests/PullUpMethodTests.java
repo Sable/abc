@@ -140,4 +140,11 @@ public class PullUpMethodTests extends TestCase {
     		  "}",
     		  "class A extends Super { int x; }"));
     }
+    
+    public void test10() {
+    	testFail(
+    		Program.fromCompilationUnits(
+    		new RawCU("Super.java", "package p; public class Super { }"),
+    		new RawCU("A.java", "package q; class A extends p.Super { int m() { return 23; } int x = m(); }")));
+    }
 }

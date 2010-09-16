@@ -299,7 +299,8 @@ aspect LockedTypeAccess {
 		setID(target.name());
 		String pkg = getTopLevelPackage();
 		SimpleSet s = lookupName(pkg);
-		if(!s.isSingleton(lookupPackage(pkg)) || !lookupType(target.packageName(), target.name()).equals(target))
+		if(!s.isEmpty() && !s.isSingleton(lookupPackage(pkg)) || 
+				!lookupType(target.packageName(), target.name()).equals(target))
 			throw new RefactoringException("cannot access toplevel type");
 		if (qual!=null) {
 			this.flushCache();

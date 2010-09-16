@@ -2,6 +2,8 @@ aspect Alpha {
 	// computes minimal access modifier that "this" needs to have in order to be accessible from inside type "type" in package "pkg"
 	// "type" may be null, but "pkg" may not
 	syn lazy int TypeDecl.minAccess(String pkg, TypeDecl type) {
+		if(sourceTypeDecl() != this)
+			return sourceTypeDecl().minAccess(pkg, type);
 		if(isTopLevelType()) {
 			if(this.hostPackage().equals(pkg))
 				return ASTNode.VIS_PACKAGE;

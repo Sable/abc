@@ -11,6 +11,7 @@ aspect ChangeAccessibility {
 		} else {
 			for(Map.Entry<Visible, Integer> e : acc_map.entrySet()) {
 				Visible vis = e.getKey();
+				// TODO: hide this behind an interface
 				if(vis instanceof FieldDeclaration) {
 					FieldDeclaration fd = (FieldDeclaration)vis;
 					programRoot().lockNames(fd.name());
@@ -26,4 +27,32 @@ aspect ChangeAccessibility {
 			programRoot().eliminate(LOCKED_NAMES);
 		}
 	}
+	
+	/* code for integrating Change Accessibility with name unlocking to make it more powerful (makes it really slow as well)
+	public void Program.eliminateLockedNames() {
+		adjustAccessibility();
+		flushCaches();
+		super.eliminateLockedNames();
+	}
+	
+	private void Program.adjustAccessibility() {
+		Map<Visible, Integer> acc_map = solve(accessibilityConstraints());
+		if(acc_map != null) {
+			for(Map.Entry<Visible, Integer> e : acc_map.entrySet()) {
+				Visible vis = e.getKey();
+				// TODO: hide this behind an interface
+				if(vis instanceof FieldDeclaration) {
+					FieldDeclaration fd = (FieldDeclaration)vis;
+					programRoot().lockNames(fd.name());
+				} else if(vis instanceof MethodDecl) {
+					MethodDecl md = (MethodDecl)vis;
+					programRoot().lockMethodNames(md.name());
+				} else if(vis instanceof TypeDecl) {
+					TypeDecl td = (TypeDecl)vis;
+					programRoot().lockNames(td.name());
+				}
+				vis.setVisibility(e.getValue());
+			}
+		}
+	}*/
 }

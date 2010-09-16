@@ -155,6 +155,10 @@ aspect AccessibilityConstraints {
 			return element.getVisibility();
 		}
 		
+		public Visible getElement() {
+			return element;
+		}
+		
 		public String toString() {
 			return "visibility(" + element + ")";
 		}

@@ -6,6 +6,7 @@ import jp.ac.kobe_u.cs.cream.NotEquals;
 import jp.ac.kobe_u.cs.cream.IntComparison;
 import jp.ac.kobe_u.cs.cream.DefaultSolver;
 import jp.ac.kobe_u.cs.cream.Solution;
+import jp.ac.kobe_u.cs.cream.IntArith;
 
 aspect Cream {
 	syn lazy IntVariable Visible.creamVariable(Network network) = new IntVariable(network, VIS_PRIVATE, VIS_PUBLIC, name());
@@ -33,34 +34,66 @@ aspect Cream {
 	protected int GTOperator.getComparisonOperator() { return IntComparison.GT; }
 	
 	public abstract IntVariable WithAccessModifier.creamVariable(Network network);
+	
+	// cache IntVariables for the visibilities
+	private static Network AccessModifierConstant.network_cached = null;
+	private static IntVariable[] AccessModifierConstant.constants_cached = null;
+	private static IntVariable AccessModifierConstant.getConstant(Network network, int val) {
+		if(val < ASTNode.VIS_PRIVATE || val > ASTNode.VIS_PUBLIC)
+			return null;
+		if(network == network_cached && constants_cached != null)
+			return constants_cached[val];
+		network_cached = network;
+		constants_cached = new IntVariable[ASTNode.VIS_PUBLIC-ASTNode.VIS_PRIVATE+1];
+		for(int i=ASTNode.VIS_PRIVATE;i<=ASTNode.VIS_PUBLIC;++i)
+			constants_cached[i] = new IntVariable(network, i);
+		return constants_cached[val];
+	}
+	
 	public IntVariable AccessModifierConstant.creamVariable(Network network) {
-		return new IntVariable(network, vis);
+		return getConstant(network, vis);
 	}
 	
 	public IntVariable AccessModifierVariable.creamVariable(Network network) {
 		return element.creamVariable(network);
 	}
 	
-	public Network Program.generateNetwork(Collection<AccessibilityConstraint> accessibilityConstraints) {
+	public Network Program.generateNetwork(Collection<AccessibilityConstraint> accessibilityConstraints, boolean setObjective) {
 		Network network = new Network();
+		IntVariable w = setObjective ? new IntVariable(network, 0) : null;
+		int i = 0;
 		// make sure we have variables for all visible elements that come from source
-		for(Visible sourceVis : sourceVisibles())
-			sourceVis.creamVariable(network);
+		for(Visible sourceVis : sourceVisibles()) {
+			IntVariable var = sourceVis.creamVariable(network);
+			if(setObjective) {
+				IntVariable x = new IntVariable(network, 0, 4*i);
+				// x = w + v
+				new IntArith(network, IntArith.ADD, x, w, var.subtract(sourceVis.getVisibility()).abs());
+				w = x;
+				++i;
+			}
+		}
 		for(AccessibilityConstraint constr : accessibilityConstraints)
 			constr.generateCreamConstraint(network);
+		if(setObjective)
+			network.setObjective(w);
 		return network;
 	}
 	
 	public Map<Visible, Integer> Program.solve(Network network, Collection<AccessibilityConstraint> constraints) {
 		DefaultSolver solver = new DefaultSolver(network);
-		try {
+		Solution sol = solver.findBest();
+		if(sol == null)
+			return null;
+		return generateAccessibilityMap(network, sol, constraints);
+		/*try {
 			for(solver.start(); solver.waitNext(); solver.resume()) {
 				return generateAccessibilityMap(network, solver.getSolution(), constraints);
 			}
 			return null;
 		} finally {
 			solver.stop();
-		}
+		}*/
 	}
 	
 	// result may contain the same solution twice
@@ -74,15 +107,15 @@ aspect Cream {
 	}
 	
 	public Map<Visible, Integer> Program.solve(Collection<AccessibilityConstraint> accessibilityConstraints) {
-		return solve(generateNetwork(accessibilityConstraints), accessibilityConstraints);
+		return solve(generateNetwork(accessibilityConstraints, true), accessibilityConstraints);
 	}
 	
 	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions(Collection<AccessibilityConstraint> accessibilityConstraints) {
-		return allPossibleSolutions(generateNetwork(accessibilityConstraints), accessibilityConstraints);
+		return allPossibleSolutions(generateNetwork(accessibilityConstraints, false), accessibilityConstraints);
 	}
 	
 	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions() {
-		return allPossibleSolutions(generateNetwork(accessibilityConstraints()), accessibilityConstraints());
+		return allPossibleSolutions(generateNetwork(accessibilityConstraints(), false), accessibilityConstraints());
 	}
 	
 	private Map<Visible, Integer> Program.generateAccessibilityMap(Network network, Solution solution, Collection<AccessibilityConstraint> constraints) {

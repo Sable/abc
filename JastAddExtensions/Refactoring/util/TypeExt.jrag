@@ -51,13 +51,13 @@ aspect TypeExt {
 		}
 	}
 	
-	public void ClassDecl.inheritVisibilityToAllConstructors() { setVisibilityOfAllConstructors(getVisibility()); }
+	/*public void ClassDecl.inheritVisibilityToAllConstructors() { setVisibilityOfAllConstructors(getVisibility()); }
 	public void ClassDecl.setVisibilityOfAllConstructors(int visibility) {
 		for (Iterator i = constructors().iterator(); i.hasNext();) {
 			ConstructorDecl c = (ConstructorDecl) i.next();
 			c.getModifiers().setVisibility(getVisibility());
 		}
-	}
+	}*/
 	
 	// the effective type of an expression is a best-effort approximation to the type of an expression
 	syn TypeDecl Expr.effectiveType() {
