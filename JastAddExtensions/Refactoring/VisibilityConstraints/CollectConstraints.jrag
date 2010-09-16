@@ -64,17 +64,26 @@ aspect CollectConstraints {
 	// TODO: constructors?
 	
 	// constraints from method overriding
-	MethodDecl contributes accessibilityConstraintsFromOverriding()
+	MethodDecl contributes accessibilityConstraintsFromOverridingAndHiding()
 			   to Program.accessibilityConstraints()
 			   for programRoot();
 	
-	syn lazy Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverriding() {
+	syn lazy Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverridingAndHiding() {
 		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
+		// (Sub-1), (Sub-2), (Dyn-1)
 		for(MethodDecl that : overrides()) {
 			constrs.add(new AccessibilityConstraint(this, this, Operator.GE, that));
-			// TODO: extend alpha to compute accessibility from non-accesses (needed for Dyn-1 and Dyn-2)
+			constrs.add(new AccessibilityConstraint(this, that, Operator.GE, that.minAccess(hostType().hostPackage(), hostType())));
 		}
-		// TODO: handle hidden methods
+		// (Sub-1)
+		for(MethodDecl that : hiddenMethods()) {
+			constrs.add(new AccessibilityConstraint(this, this, Operator.GE, that));
+		}
+		// (Dyn-2)
+		for(MethodDecl that : possiblyOverriddenAncestors()) {
+			if(!this.overrides(that))
+				constrs.add(new AccessibilityConstraint(this, that, Operator.LT, that.minAccess(hostType().hostPackage(), hostType())));
+		}
 		return constrs;
 	}
 	

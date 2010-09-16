@@ -14,6 +14,9 @@ aspect ChangeAccessibility {
 				if(vis instanceof FieldDeclaration) {
 					FieldDeclaration fd = (FieldDeclaration)vis;
 					programRoot().lockNames(fd.name());
+				} else if(vis instanceof MethodDecl) {
+					MethodDecl md = (MethodDecl)vis;
+					programRoot().lockMethodNames(md.name());
 				}
 				vis.setVisibility(e.getValue());
 			}

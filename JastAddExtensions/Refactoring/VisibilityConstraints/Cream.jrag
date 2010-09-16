@@ -43,6 +43,9 @@ aspect Cream {
 	
 	public Network Program.generateNetwork(Collection<AccessibilityConstraint> accessibilityConstraints) {
 		Network network = new Network();
+		// make sure we have variables for all visible elements that come from source
+		for(Visible sourceVis : sourceVisibles())
+			sourceVis.creamVariable(network);
 		for(AccessibilityConstraint constr : accessibilityConstraints)
 			constr.generateCreamConstraint(network);
 		return network;
@@ -53,7 +56,6 @@ aspect Cream {
 		try {
 			for(solver.start(); solver.waitNext(); solver.resume()) {
 				return generateAccessibilityMap(network, solver.getSolution(), constraints);
-				//printSolution(network, solver.getSolution(), constraints);
 			}
 			return null;
 		} finally {
@@ -83,23 +85,9 @@ aspect Cream {
 		return allPossibleSolutions(generateNetwork(accessibilityConstraints()), accessibilityConstraints());
 	}
 	
-	// collect all visibles that constraints were generated for
-	static Collection<Visible> ASTNode.getConstrainedVisibles(Collection<AccessibilityConstraint> constraints) {
-		HashSet<Visible> visibles = new HashSet<Visible>();
-		for(AccessibilityConstraint constr : constraints) {
-			constr.getLeft().addVisible(visibles);
-			constr.getRight().addVisible(visibles);
-		}
-		return visibles;
-	}
-	
-	public abstract void WithAccessModifier.addVisible(Collection<Visible> visibles);
-	public void AccessModifierConstant.addVisible(Collection<Visible> visibles) { }
-	public void AccessModifierVariable.addVisible(Collection<Visible> visibles) { visibles.add(element); }
-	
 	private Map<Visible, Integer> Program.generateAccessibilityMap(Network network, Solution solution, Collection<AccessibilityConstraint> constraints) {
 		Map<Visible, Integer> map = new HashMap<Visible, Integer>();
-		for(Visible element : getConstrainedVisibles(constraints)) {
+		for(Visible element : sourceVisibles()) {
 			IntVariable var = element.creamVariable(network);
 			int val = solution.getIntValue(var);
 			if(val != element.getVisibility())
@@ -108,14 +96,26 @@ aspect Cream {
 		return map;
 	}
 	
-    private void Program.printSolution(Network network, Solution solution, Collection<AccessibilityConstraint> constraints) {
-    	System.out.println("Solution:");
-		// print changed visibilities
-		for(Visible element : getConstrainedVisibles(constraints)) {
-			IntVariable var = element.creamVariable(network);
-			int val = solution.getIntValue(var);
-			if(val != element.getVisibility())
-				System.out.println("visibility changed to " + visibilityToString(val) + " for " + element);
-		}
-	}	
+	// collect all visible elements that are from source
+	public Collection<Visible> Program.sourceVisibles() {
+		Collection<Visible> visibles = new HashSet<Visible>();
+		collectSourceVisibles(visibles);
+		return visibles;
+	}
+	
+	public void ASTNode.collectSourceVisibles(Collection<Visible> visibles) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectSourceVisibles(visibles);
+	}
+	
+	public void CompilationUnit.collectSourceVisibles(Collection<Visible> visibles) {
+		if(!fromSource())
+			return;
+		super.collectSourceVisibles(visibles);
+	}
+	
+	public void Visible.collectSourceVisibles(Collection<Visible> visibles) {
+		visibles.add(this);
+		super.collectSourceVisibles(visibles);
+	}
 }

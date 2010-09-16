@@ -126,4 +126,37 @@ public class AccessibilityTests extends TestCase {
 				new RawCU("B.java", "package q; public class B extends p.A { }"));
 		testPossibleVisibilities(prog.findField("i"), "--++");
 	}
+	
+	public void test12() {
+		Program prog = Program.fromClasses(
+				"class A { void m() { } }" +
+				"class B extends A { void m() { } }");
+		testPossibleVisibilities(prog.findType("B").findMethod("m"), "-+++");
+		testPossibleVisibilities(prog.findType("A").findMethod("m"), "-+++");
+	}
+	
+	public void test13() {
+		Program prog = Program.fromClasses(
+				"class A { private void m() { } }" +
+				"class B extends A { private void m() { } }");
+		testPossibleVisibilities(prog.findType("B").findMethod("m"), "++++");
+		testPossibleVisibilities(prog.findType("A").findMethod("m"), "+---");
+	}
+	
+	public void test14() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { protected void m() { } }"),
+				new RawCU("B.java", "package q; public class B extends p.A { protected void m() { } }"));
+		testPossibleVisibilities(prog.findType("B").findMethod("m"), "--++");
+		testPossibleVisibilities(prog.findType("A").findMethod("m"), "--++");
+	}
+	
+	public void test15() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { void m() { } }"),
+				new RawCU("B.java", "package q; public class B extends p.A { protected void m() { } }"));
+		testPossibleVisibilities(prog.findType("B").findMethod("m"), "++++");
+		testPossibleVisibilities(prog.findType("A").findMethod("m"), "++--");
+	}
+	
 }
