@@ -67,9 +67,9 @@ aspect TypeConstraints {
 		
 		public boolean solved() {
 			for(TypeConstraint tc : constraints)
-				if(!tc.solved())
-					return false;
-			return true;
+				if(tc.solved())
+					return true;
+			return false;
 		}
 		
 		public String describe() {
@@ -108,7 +108,7 @@ aspect TypeConstraints {
 	
 	BodyDecl implements TypeConstraintVariable;
 	public TypeDecl BodyDecl.getConstrainedType() { return hostType(); }
-	public String BodyDecl.describeConstraintVariable() { throw new Error("not implemented"); }
+	public String BodyDecl.describeConstraintVariable() { return "Decl(" + toString() + ")"; }
 	public String MethodDecl.describeConstraintVariable() { return "Decl(" + hostType().fullName() + "." + signature() + ")"; }
 	public String ConstructorDecl.describeConstraintVariable() { return "Decl(" + signature() + ")"; }
 	public String FieldDeclaration.describeConstraintVariable() { return "Decl(" + name() + ")"; }
@@ -116,4 +116,20 @@ aspect TypeConstraints {
 	Expr implements TypeConstraintVariable;
 	public TypeDecl Expr.getConstrainedType() { return type(); }
 	public String Expr.describeConstraintVariable() { return "[" + this + "]"; }
+	
+	TypeDecl implements TypeConstraintVariable;
+	public TypeDecl TypeDecl.getConstrainedType() { return this; }
+	public String TypeDecl.describeConstraintVariable() { return fullName(); }
+	
+	public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
+	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
+		if(left == oldNode)
+			left = newNode;
+		if(right == oldNode)
+			right = newNode;
+	}
+	public void DisjunctiveTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
+		for(TypeConstraint tc : constraints)
+			tc.subst(oldNode, newNode);
+	}
 }

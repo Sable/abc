@@ -1,0 +1,149 @@
+aspect Navigation {
+	// find a type given its package and name (both may contains dots)
+	public TypeDecl Program.findType(String pkg, String name) {
+		String path[] = name.split("\\.");
+		TypeDecl tp = lookupType(pkg, path[0]);
+		if(tp == null) return null;
+		for(int i=1;i<path.length;++i) {
+			Iterator<TypeDecl> iter = tp.memberTypes(path[i]).iterator();
+			if(!iter.hasNext()) return null;
+			tp = iter.next();
+		}
+		return tp;
+	}
+	
+	// find a type given its name (may contain dots)
+	public TypeDecl Program.findType(String name) {
+		String path[] = name.split("\\.");
+		String pkg = "";
+		int i;
+		for(i=0;i<path.length;++i) {
+			String new_pkg = pkg + (i == 0 ? "" : ".") + path[i];
+			if(!hasPackage(new_pkg))
+				break;
+			pkg = new_pkg;
+		}
+		TypeDecl tp = pkg.isEmpty() ? findSimpleType(path[(i=1)-1]) : findType(pkg, path[i++]);
+		if(tp == null)
+			return null;
+		for(;i<path.length;++i) {
+			Iterator<TypeDecl> iter = tp.memberTypes(path[i]).iterator();
+			if(!iter.hasNext()) return null;
+			tp = iter.next();
+		}
+		return tp;		
+	}
+	
+	public ConstructorDecl Program.findConstructor(String name) {
+		TypeDecl td = findType(name);
+		if(td != null)
+			return (ConstructorDecl)td.constructors().iterator().next();
+		return null;
+	}
+	
+	public TypeDecl ASTNode.findSimpleType(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				TypeDecl td = child.findSimpleType(name);
+				if(td != null) return td;
+			}
+		}
+		return null;
+	}
+	
+	public TypeDecl TypeDecl.findSimpleType(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findSimpleType(name);
+	}
+	
+	public LocalClassDeclStmt ASTNode.findLocalClass(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				LocalClassDeclStmt lcd = child.findLocalClass(name);
+				if(lcd!=null) return lcd;
+			}
+		}
+		return null;
+	}
+	
+	public LocalClassDeclStmt LocalClassDeclStmt.findLocalClass(String name) {
+		if(getClassDecl().name().equals(name))
+			return this;
+		return super.findLocalClass(name);
+	}
+	
+	// find a variable given its simple name
+	public Variable ASTNode.findVariable(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				Variable v = child.findVariable(name);
+				if(v != null) return v;
+			}
+		}
+		return null;		
+	}
+	
+	public Variable Variable.findVariable(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findVariable(name);
+	}
+	
+	// find a local variable given its simple name
+	public VariableDeclaration ASTNode.findLocalVariable(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				VariableDeclaration v = child.findLocalVariable(name);
+				if(v != null) return v;
+			}
+		}
+		return null;
+	}
+	
+	public VariableDeclaration VariableDeclaration.findLocalVariable(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findLocalVariable(name);
+	}
+	
+	// find a method given its name
+	public MethodDecl ASTNode.findMethod(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				MethodDecl md = child.findMethod(name);
+				if(md != null) return md;
+			}
+		}
+		return null;		
+	}
+	
+	public MethodDecl MethodDecl.findMethod(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findMethod(name);
+	}
+	
+	// find a field given its name
+	public FieldDeclaration ASTNode.findField(String name) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				FieldDeclaration md = child.findField(name);
+				if(md != null) return md;
+			}
+		}
+		return null;		
+	}
+	
+	public FieldDeclaration FieldDeclaration.findField(String name) {
+		if(name().equals(name))
+			return this;
+		return super.findField(name);
+	}	
+}

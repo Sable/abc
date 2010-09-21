@@ -174,4 +174,9 @@ public class ChangeParameterTypeTests extends TestCase {
 				"	}" +
 				"}"));		
 	}
+	
+	public void test9() {
+		testFail("A", "m", 0, "A",
+				Program.fromClasses("class A { void m(Object o) { } { m(new Object()); } }"));
+	}
 }

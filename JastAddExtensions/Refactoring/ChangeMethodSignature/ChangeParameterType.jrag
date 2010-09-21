@@ -5,8 +5,13 @@ aspect ChangeParameterType {
 		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
 		programRoot().lockMethodNames(name());
 		programRoot().lockOverridingDependencies(name());
-		for(MethodDecl md : relatives())
-			md.getParameter(idx).setTypeAccess(newType.createLockedAccess());
+		for(MethodDecl md : relatives()) {
+			ParameterDeclaration pd = md.getParameter(idx);
+			Access newAccess = newType.createLockedAccess(); 
+			for(TypeConstraint constraint : constraints)
+				constraint.subst(pd.getTypeAccess(), newAccess);
+			pd.setTypeAccess(newAccess);
+		}
 		programRoot().flushCaches();
 		for(TypeConstraint constraint : constraints)
 			if(!constraint.solved())

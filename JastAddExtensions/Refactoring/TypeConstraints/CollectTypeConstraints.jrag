@@ -41,6 +41,18 @@ aspect CollectTypeConstraints {
 	         to Program.typeConstraints()
 	         for programRoot();
 	
+	ArrayTypeWithSizeAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "sized array type",
+				getExpr(), Operator.LE, typeInt().boxed(),
+				getExpr(), Operator.LE, typeInt()))
+	         to Program.typeConstraints()
+	         for programRoot();
+	
+	ArrayAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "array access",
+				getExpr(), Operator.LE, typeInt().boxed(),
+				getExpr(), Operator.LE, typeInt()))
+			 to Program.typeConstraints()
+			 for programRoot();
+	
 	public Collection<TypeConstraint> MethodAccess.typeConstraints() {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
 		MethodDecl md = decl();
