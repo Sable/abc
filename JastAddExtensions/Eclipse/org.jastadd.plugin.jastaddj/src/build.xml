@@ -94,12 +94,13 @@
 		        <include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-			<exclude name="util/**"/>
 			<exclude name="tests/**"/>
+			<exclude name="util/**"/>
 			<exclude name="parser/**"/>
 			<exclude name="scanner/**"/>
 			<exclude name="JRRT.java"/>
 			<exclude name="Locks/*"/>
+			<exclude name="undo/NoUndo.jrag"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>

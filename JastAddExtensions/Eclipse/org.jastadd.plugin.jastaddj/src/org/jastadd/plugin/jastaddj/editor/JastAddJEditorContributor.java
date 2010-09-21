@@ -31,6 +31,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.jastadd.plugin.jastaddj.Activator;
+import org.jastadd.plugin.jastaddj.editor.actions.ChangeParameterTypeRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractMethodRefactoringHandler;
@@ -177,6 +178,11 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				"Push Down Method", "JastAddJ Push Down Method", null,
 				new PushDownMethodRefactoringHandler());
+
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ChangeParameterType",
+				"Change Parameter Type", "JastAddJ Change Parameter Type", "Shift+Alt+C",
+				new ChangeParameterTypeRefactoringHandler());
+		
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
@@ -474,6 +480,12 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"Push Down Method",
 				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
 				new PushDownMethodRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder, 
+				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterTypeTopMenuItem", 
+				"Change Parameter Type", 
+				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterType", 
+				new ChangeParameterTypeRefactoringHandler());
 	}
 
 	

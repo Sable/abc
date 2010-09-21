@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastaddj.refactor.rename;
+package org.jastadd.plugin.jastaddj.refactor.changeParameterType;
 
 import org.eclipse.jdt.internal.ui.dialogs.TextFieldNavigationHandler;
 import org.eclipse.jdt.internal.ui.util.RowLayouter;
@@ -8,22 +8,29 @@ import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.jastadd.plugin.jastaddj.refactor.rename.RenameRefactoring;
 
-public class RenameInputPage extends UserInputWizardPage {
+import AST.ASTNode;
+
+public class ChangeParameterTypeInputPage extends UserInputWizardPage {
 	private String initialSuggestion;
 	private Text text;
 	
-	public RenameInputPage(String name) {
+	public ChangeParameterTypeInputPage(String name) {
 		super(name);
-		initialSuggestion = "newName";
+		initialSuggestion = "";
 	}
 	
-	// much of this code closely mirrors code from the JDT to preserve look and feel
+	// see RenameInputPage
 	public void createControl(Composite parent) {
 		Composite ctrl= new Composite(parent, SWT.NONE);
 		setControl(ctrl);
@@ -41,7 +48,7 @@ public class RenameInputPage extends UserInputWizardPage {
 		RowLayouter layouter= new RowLayouter(2);
 		
 		Label label= new Label(composite, SWT.NONE);
-		label.setText("New name:");
+		label.setText("New type:");
 		
 		Text text= createTextInputField(composite);
 		text.selectAll();
@@ -91,15 +98,7 @@ public class RenameInputPage extends UserInputWizardPage {
 			restoreMessage();
 			return;
 		}
-//		if(initialSuggestion.equals(text)) {
-//			setPageComplete(false);
-//			setErrorMessage(null);
-//			restoreMessage();
-//			return;
-//		}
-		// TODO: check text is a valid name
-
-		((RenameRefactoring)getRefactoring()).setName(text);
+		((ChangeParameterTypeRefactoring)getRefactoring()).setType(text);
 		setPageComplete(new RefactoringStatus());
 	}
 

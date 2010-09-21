@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JastAddJ Plug-in
 Bundle-SymbolicName: org.jastadd.plugin.jastaddj;singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: org.jastadd.plugin.jastaddj.Activator
 Bundle-Localization: plugin
-Bundle-ClassPath: bin/
+Bundle-ClassPath: bin/;lib/cream106.jar
 Require-Bundle: org.jastadd.plugin;visibility:=reexport,
  org.eclipse.ui;visibility:=reexport,
  org.eclipse.core.runtime;visibility:=reexport,
