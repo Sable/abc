@@ -1,0 +1,16 @@
+aspect ChangeParameterType {
+	public void MethodDecl.changeParameterType(int idx, TypeDecl newType) {
+		if(idx < 0 || idx >= getNumParameter())
+			throw new RefactoringException("invalid parameter index");
+		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
+		programRoot().lockMethodNames(name());
+		programRoot().lockOverridingDependencies(name());
+		for(MethodDecl md : relatives())
+			md.getParameter(idx).setTypeAccess(newType.createLockedAccess());
+		programRoot().flushCaches();
+		for(TypeConstraint constraint : constraints)
+			if(!constraint.solved())
+				throw new RefactoringException("type constraint " + constraint.describe() + " is violated");
+		programRoot().eliminate(LOCKED_OVERRIDING, LOCKED_NAMES);
+	}
+}

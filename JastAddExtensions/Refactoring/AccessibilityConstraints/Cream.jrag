@@ -30,8 +30,6 @@ aspect Cream {
 	protected int Operator.getComparisonOperator() { return -1; }
 	protected int LEOperator.getComparisonOperator() { return IntComparison.LE; }
 	protected int LTOperator.getComparisonOperator() { return IntComparison.LT; }
-	protected int GEOperator.getComparisonOperator() { return IntComparison.GE; }
-	protected int GTOperator.getComparisonOperator() { return IntComparison.GT; }
 	
 	public abstract IntVariable WithAccessModifier.creamVariable(Network network);
 	

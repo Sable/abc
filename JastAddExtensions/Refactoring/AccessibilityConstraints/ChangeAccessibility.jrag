@@ -28,7 +28,7 @@ aspect ChangeAccessibility {
 		}
 	}
 	
-	/* code for integrating Change Accessibility with name unlocking to make it more powerful (makes it really slow as well)
+	/* code for integrating Change Accessibility with name unlocking to make it more powerful (makes it really slow as well) */
 	public void Program.eliminateLockedNames() {
 		adjustAccessibility();
 		flushCaches();
@@ -54,5 +54,5 @@ aspect ChangeAccessibility {
 				vis.setVisibility(e.getValue());
 			}
 		}
-	}*/
+	}
 }

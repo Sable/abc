@@ -1,3 +1,6 @@
+import java.util.Collection;
+import java.util.Map;
+
 aspect Locking {
 	public ASTNode ASTNode.lockNames(String... endangered) {
 		return lockNames(Arrays.asList(endangered));
@@ -39,6 +42,40 @@ aspect Locking {
 			return super.lockAllNames();
 		else
 			return res.lockAllNames();
+	}
+	
+	public void TypeDecl.eliminateLockedNames() {
+		super.eliminateLockedNames();
+		if(fromSource() && !this.isEnumDecl() && this.sourceTypeDecl()==this) {
+			// check whether there are conflicting body declarations
+			Collection<String> constructorSigs = new HashSet<String>(),
+			                   methodSigs = new HashSet<String>(),
+			                   fieldNames = new HashSet<String>(),
+			                   typeNames = new HashSet<String>();
+			for(BodyDecl bd : getBodyDecls()) {
+				if(bd instanceof ConstructorDecl) {
+					ConstructorDecl cd = (ConstructorDecl)bd;
+					if(constructorSigs.contains(cd.signature()))
+						throw new RefactoringException("two or more constructors with same signature");
+					constructorSigs.add(cd.signature());
+				} else if(bd instanceof MethodDecl) {
+					MethodDecl md = (MethodDecl)bd;
+					if(methodSigs.contains(md.signature()))
+						throw new RefactoringException("two or more methods with same signature");
+					methodSigs.add(md.signature());
+				} else if(bd instanceof FieldDeclaration) {
+					FieldDeclaration fd = (FieldDeclaration)bd;
+					if(fieldNames.contains(fd.name()))
+							throw new RefactoringException("two or more fields with same name");
+					fieldNames.add(fd.name());
+				} if(bd instanceof MemberTypeDecl) {
+					TypeDecl td = ((MemberTypeDecl)bd).typeDecl();
+					if(typeNames.contains(td.name()))
+						throw new RefactoringException("two or more member types with the same name");
+					typeNames.add(td.name());
+				}
+			}
+		}
 	}
 	
 	public void AbstractDot.eliminateLockedNames() {

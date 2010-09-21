@@ -21,24 +21,6 @@ public class JRRT {
 			td.rename(n);
 			end = System.currentTimeMillis();
 			System.out.println(end-start);
-		} else if(args[0].equals("FindLocks")) {
-			Program p = compile(args, 1);
-			Collection<MonitorAction> mes;
-			while(true) {
-				mes = p.monitorActions();
-				System.out.println("number of monitor enters: "+mes.size());
-				if(mes.isEmpty())
-					break;
-				Iterator<MonitorAction> iter = mes.iterator();
-				while(iter.hasNext()) {
-					MonitorAction me = iter.next();
-					if(me.replaceWithReentrantLock())
-						break;
-				}
-				if(!iter.hasNext())
-					break;
-				p.flushCaches();
-			}
 		} else {
 			System.out.println("unknown refactoring");
 			return;

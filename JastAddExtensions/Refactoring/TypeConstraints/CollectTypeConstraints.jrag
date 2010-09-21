@@ -1,0 +1,125 @@
+aspect CollectTypeConstraints {
+	coll Collection<TypeConstraint> Program.typeConstraints() [new LinkedHashSet<TypeConstraint>()]
+	                                	                      with addAll root Program;
+	
+	AssignSimpleExpr contributes Collections.singleton(new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()))
+	                 to Program.typeConstraints()
+	                 for programRoot();
+	
+	MethodAccess contributes typeConstraints()
+	             to Program.typeConstraints()
+	             for programRoot();
+	
+	VarAccess contributes Collections.singleton(new SimpleTypeConstraint(this, "field access", qualifyingTypeConstraintVariable(), Operator.LE, (FieldDeclaration)decl()))
+	          when decl() instanceof FieldDeclaration
+	          to Program.typeConstraints()
+	          for programRoot();
+	
+	ReturnStmt contributes Collections.singleton(new SimpleTypeConstraint(this, "return", getResult(), Operator.LE, ((MethodDecl)hostBodyDecl()).getTypeAccess()))
+	           when hasResult()
+	           to Program.typeConstraints()
+	           for programRoot();
+	
+	MethodDecl contributes sourceMethodDecl().overridingTypeConstraints()
+	           to Program.typeConstraints()
+	           for programRoot();
+	
+	FieldDeclaration contributes ((FieldDeclaration)sourceVariableDecl()).hidingTypeConstraints()
+	           to Program.typeConstraints()
+	           for programRoot();
+	
+	ClassInstanceExpr contributes argumentTypeConstraints()
+	           to Program.typeConstraints()
+	           for programRoot();
+	
+	ConstructorAccess contributes argumentTypeConstraints()
+    		   to Program.typeConstraints()
+    		   for programRoot();
+
+	CastExpr contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "cast", getTypeAccess(), Operator.LE, getExpr(),
+			                                                                               getExpr(), Operator.LE, getTypeAccess()))
+	         to Program.typeConstraints()
+	         for programRoot();
+	
+	public Collection<TypeConstraint> MethodAccess.typeConstraints() {
+		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		MethodDecl md = decl();
+		for(int i=0;i<md.getNumParameter();++i) {
+			Expr arg = getArg(i);
+			ParameterDeclaration parm = md.getParameter(i);
+			if(parm.isVariableArity()) {
+				// TODO: handle this
+				continue;
+			} else {
+				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
+			}
+		}
+		constraints.add(new DisjunctiveTypeConstraint(this, "method invocation", qualifyingTypeConstraintVariable(), Operator.LE, md.rootDefs()));
+		return constraints;
+	}
+	
+	public Collection<TypeConstraint> ClassInstanceExpr.argumentTypeConstraints() {
+		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		ConstructorDecl cd = decl();
+		for(int i=0;i<cd.getNumParameter();++i) {
+			Expr arg = getArg(i);
+			ParameterDeclaration parm = cd.getParameter(i);
+			if(parm.isVariableArity()) {
+				// TODO: handle this
+				continue;
+			} else {
+				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
+			}
+		}
+		return constraints;
+	}
+	
+	public Collection<TypeConstraint> ConstructorAccess.argumentTypeConstraints() {
+		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		ConstructorDecl cd = decl();
+		for(int i=0;i<cd.getNumParameter();++i) {
+			Expr arg = getArg(i);
+			ParameterDeclaration parm = cd.getParameter(i);
+			if(parm.isVariableArity()) {
+				// TODO: handle this
+				continue;
+			} else {
+				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
+			}
+		}
+		return constraints;
+	}
+	
+	syn lazy TypeConstraintVariable MethodAccess.qualifyingTypeConstraintVariable() {
+		if(isQualified())
+			return qualifier();
+		// TODO: this is not quite right, is it?
+		return hostBodyDecl();
+	}
+	
+	syn lazy TypeConstraintVariable VarAccess.qualifyingTypeConstraintVariable() {
+		// TODO: see corresponding attribute for MethodAccess
+		return isQualified() ? qualifier() : hostBodyDecl();
+	}
+	
+	public Collection<TypeConstraint> MethodDecl.overridingTypeConstraints() {
+		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		for(MethodDecl that : overrides()) {
+			for(int i=0;i<getNumParameter();++i) {
+				ParameterDeclaration thisParm = this.getParameter(i),
+									 thatParm = that.getParameter(i);
+				constraints.add(new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
+			}
+			constraints.add(new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+			constraints.add(new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
+		}
+		return constraints;
+	}
+	
+	public Collection<TypeConstraint> FieldDeclaration.hidingTypeConstraints() {
+		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		for(FieldDeclaration that : hiddenFields())
+			constraints.add(new SimpleTypeConstraint(this, "field hiding", this, Operator.LT, that));
+		return constraints;
+	}
+}

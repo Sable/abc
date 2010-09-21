@@ -1,0 +1,119 @@
+aspect TypeConstraints {
+	public abstract class TypeConstraint {
+		private ASTNode node;
+		private String cause;
+		
+		public TypeConstraint(ASTNode node, String cause) {
+			this.node = node;
+			this.cause = cause;
+		}
+		
+		public abstract boolean solved();
+		public abstract String describe();
+		
+		public boolean fromSource() {
+			return node.fromSource();
+		}
+		
+		public String toString() {
+			return cause + " at node " + node.toString() + ": " + describe(); 
+		}
+	}
+	
+	class SimpleTypeConstraint extends TypeConstraint {
+		private TypeConstraintVariable left, right;
+		private Operator op;
+		
+		public SimpleTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left, Operator op, TypeConstraintVariable right) {
+			super(node, cause);
+			this.left = left;
+			this.op = op;
+			this.right = right;
+		}
+		
+		public boolean solved() {
+			return op.eval(left.getConstrainedType().erasure(), right.getConstrainedType().erasure());
+		}
+		
+		public String describe() {
+			return left.describeConstraintVariable() + " " + op + " " + right.describeConstraintVariable();
+		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof SimpleTypeConstraint))
+				return false;
+			SimpleTypeConstraint that = (SimpleTypeConstraint)o;
+			return this.left.equals(that.left) && this.op == that.op && this.right.equals(that.right);
+		}
+	}
+	
+	class DisjunctiveTypeConstraint extends TypeConstraint {
+		private Collection<TypeConstraint> constraints;
+		
+		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left, Operator op, Collection<? extends TypeConstraintVariable> rights) {
+			super(node, cause);
+			this.constraints = new LinkedList<TypeConstraint>();
+			for(TypeConstraintVariable right : rights)
+				this.constraints.add(new SimpleTypeConstraint(node, cause, left, op, right));
+		}
+		
+		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left1, Operator op1, TypeConstraintVariable right1,
+																	 TypeConstraintVariable left2, Operator op2, TypeConstraintVariable right2) {
+			super(node, cause);
+			this.constraints = new ArrayList<TypeConstraint>(2);
+			this.constraints.add(new SimpleTypeConstraint(node, cause, left1, op1, right1));
+			this.constraints.add(new SimpleTypeConstraint(node, cause, left2, op2, right2));
+		}
+		
+		public boolean solved() {
+			for(TypeConstraint tc : constraints)
+				if(!tc.solved())
+					return false;
+			return true;
+		}
+		
+		public String describe() {
+			StringBuffer res = new StringBuffer();
+			boolean first = true;
+			for(TypeConstraint tc : constraints) {
+				if(first) {
+					first = false;
+				} else {
+					res.append(" or ");
+				}
+				res.append(tc.describe());
+			}
+			return res.toString();
+		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof DisjunctiveTypeConstraint))
+				return false;
+			DisjunctiveTypeConstraint that = (DisjunctiveTypeConstraint)o;
+			return this.constraints.equals(that.constraints);
+		}
+	}
+	
+	TypeDecl implements IAmPartiallyOrdered<TypeDecl>;
+	public boolean TypeDecl.leq(TypeDecl that) {
+		return this.subtype(that);
+	}
+	
+	// a type constraint variable constrains either the type of a program element,
+	// or the host type in which it is declared
+	interface TypeConstraintVariable { 
+		public TypeDecl getConstrainedType();
+		public String describeConstraintVariable();
+	}
+	
+	BodyDecl implements TypeConstraintVariable;
+	public TypeDecl BodyDecl.getConstrainedType() { return hostType(); }
+	public String BodyDecl.describeConstraintVariable() { throw new Error("not implemented"); }
+	public String MethodDecl.describeConstraintVariable() { return "Decl(" + hostType().fullName() + "." + signature() + ")"; }
+	public String ConstructorDecl.describeConstraintVariable() { return "Decl(" + signature() + ")"; }
+	public String FieldDeclaration.describeConstraintVariable() { return "Decl(" + name() + ")"; }
+	
+	Expr implements TypeConstraintVariable;
+	public TypeDecl Expr.getConstrainedType() { return type(); }
+	public String Expr.describeConstraintVariable() { return "[" + this + "]"; }
+}

@@ -49,14 +49,14 @@ aspect CollectConstraints {
 	           for programRoot();
 	
 	// Inh-1
-	VarAccess contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.GE, 
-																			((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type())))
+	VarAccess contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type()),
+																			Operator.LE, ((FieldDeclaration)decl())))
               when isQualified() && decl() instanceof FieldDeclaration
 	          to Program.accessibilityConstraints()
 	          for programRoot();
 	
-	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.GE,
-																			   decl().minAccess(qualifier().hostPackage(), qualifier().hostType())))
+	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(qualifier().hostPackage(), qualifier().hostType()),
+			                                                                   Operator.LE, decl()))
               when isQualified()
     		  to Program.accessibilityConstraints()
     		  for programRoot();
@@ -70,12 +70,12 @@ aspect CollectConstraints {
 		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
 		// (Sub-1), (Sub-2), (Dyn-1)
 		for(MethodDecl that : overrides()) {
-			constrs.add(new AccessibilityConstraint(this, this, Operator.GE, that));
-			constrs.add(new AccessibilityConstraint(this, that, Operator.GE, that.minAccess(hostType().hostPackage(), hostType())));
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+			constrs.add(new AccessibilityConstraint(this, that.minAccess(hostType().hostPackage(), hostType()), Operator.LE, that));
 		}
 		// (Sub-1)
 		for(MethodDecl that : hiddenMethods()) {
-			constrs.add(new AccessibilityConstraint(this, this, Operator.GE, that));
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
 		}
 		// (Dyn-2)
 		for(MethodDecl that : possiblyOverriddenAncestors()) {

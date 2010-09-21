@@ -1,6 +1,5 @@
 aspect MonitorAction {
 	interface MonitorAction {
-		void replaceWithReentrantLock(Monitor m);
 		boolean fromSource();
 		Monitor getAcquiredMonitor();
 		Expr getMonitorExpr();

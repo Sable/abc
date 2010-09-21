@@ -19,6 +19,10 @@ aspect AccessibilityConstraints {
 			this(node, AccessModifierVariable.forVisible(left), op, AccessModifierConstant.fromVisibility(right));
 		}
 		
+		public AccessibilityConstraint(ASTNode node, int left, Operator op, Visible right) {
+			this(node, AccessModifierConstant.fromVisibility(left), op, AccessModifierVariable.forVisible(right));
+		}
+		
 		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, WithAccessModifier right) {
 			this(node, AccessModifierVariable.forVisible(left), op, right);
 		}
@@ -52,6 +56,10 @@ aspect AccessibilityConstraints {
 		}
 	}
 	
+	interface IAmPartiallyOrdered<T> {
+		public boolean leq(T that);
+	}
+	
 	abstract class Operator {
 		String sym;
 		
@@ -59,7 +67,11 @@ aspect AccessibilityConstraints {
 			this.sym = sym;
 		}
 		
-		public abstract boolean eval(int left, int right);
+		public abstract <T> boolean eval(IAmPartiallyOrdered<T> left, T right);
+		
+		public boolean eval(final int left, final int right) {
+			return eval(new IAmPartiallyOrdered<Integer>() { public boolean leq(Integer right) { return left <= right; } }, right);
+		}
 		
 		public String toString() {
 			return sym;
@@ -68,40 +80,28 @@ aspect AccessibilityConstraints {
 	
 	class LTOperator extends Operator {
 		public LTOperator() { super("<"); }
-		public boolean eval(int left, int right) { return left < right; }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right) && !left.equals(right); }
 	}
 	
 	class LEOperator extends Operator {
 		public LEOperator() { super("<="); }
-		public boolean eval(int left, int right) { return left <= right; }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right); }
 	}
 	
 	class EQOperator extends Operator {
 		public EQOperator() { super("="); }
-		public boolean eval(int left, int right) { return left == right; }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.equals(right); }
 	}
 	
 	class NEOperator extends Operator {
 		public NEOperator() { super("!="); }
-		public boolean eval(int left, int right) { return left != right; }
-	}
-	
-	class GEOperator extends Operator {
-		public GEOperator() { super(">="); }
-		public boolean eval(int left, int right) { return left >= right; }
-	}
-	
-	class GTOperator extends Operator {
-		public GTOperator() { super(">"); }
-		public boolean eval(int left, int right) { return left > right; }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return !left.equals(right); }
 	}
 	
 	public static final Operator Operator.LT = new LTOperator();
 	public static final Operator Operator.LE = new LEOperator();
 	public static final Operator Operator.EQ = new EQOperator();
 	public static final Operator Operator.NE = new NEOperator();
-	public static final Operator Operator.GE = new GEOperator();
-	public static final Operator Operator.GT = new GTOperator();
 	
 	abstract class WithAccessModifier {
 		public abstract int getAccessModifier();

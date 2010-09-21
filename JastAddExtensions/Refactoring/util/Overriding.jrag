@@ -149,7 +149,48 @@ aspect Overriding {
 		}
 	}
 	
+	syn lazy Collection<MethodDecl> MethodDecl.rootDefs() {
+		if(isPrivate() || isStatic())
+			return Collections.singleton(this);
+		Collection<MethodDecl> res = new LinkedHashSet<MethodDecl>();
+		LinkedList<MethodDecl> worklist = new LinkedList<MethodDecl>();
+		worklist.push(this);
+		while(!worklist.isEmpty()) {
+			MethodDecl md = worklist.pop();
+			if(res.contains(md))
+				continue;
+			if(md.overrides().isEmpty())
+				res.add(md);
+			worklist.addAll(md.overrides());
+		}
+		return res;
+	}
 	
+	syn lazy Collection<TypeDecl> TypeDecl.supertypes() = Collections.emptySet();
+	eq ClassDecl.supertypes() {
+		Collection<TypeDecl> res = new LinkedList<TypeDecl>();
+		if(superclass() != null)
+			res.add(superclass());
+		for(Iterator<InterfaceDecl> iter = interfacesIterator(); iter.hasNext();)
+			res.add(iter.next());
+		return res;
+	}
+	eq InterfaceDecl.supertypes() {
+		Collection<TypeDecl> res = new LinkedList<TypeDecl>();
+		for(Iterator<InterfaceDecl> iter = superinterfacesIterator(); iter.hasNext();)
+			res.add(iter.next());
+		return res;		
+	}
 	
-	
+	syn lazy Collection<FieldDeclaration> FieldDeclaration.hiddenFields() {
+		Collection<FieldDeclaration> res = new LinkedHashSet<FieldDeclaration>();
+		for(TypeDecl std : hostType().supertypes()) {
+			for(Iterator<FieldDeclaration> iter=std.memberFields(name()).iterator();iter.hasNext();) {
+				FieldDeclaration that = iter.next();
+				if(that.accessibleFrom(hostType()))
+					res.add(that);
+			}
+		}
+		return res;
+	}
 }
