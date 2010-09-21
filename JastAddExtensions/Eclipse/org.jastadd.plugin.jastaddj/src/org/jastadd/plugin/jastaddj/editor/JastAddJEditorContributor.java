@@ -31,6 +31,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.jastadd.plugin.jastaddj.Activator;
+import org.jastadd.plugin.jastaddj.editor.actions.AddParameterRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ChangeParameterTypeRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
@@ -182,6 +183,10 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ChangeParameterType",
 				"Change Parameter Type", "JastAddJ Change Parameter Type", "Shift+Alt+C",
 				new ChangeParameterTypeRefactoringHandler());
+
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.AddParameter",
+				"Add Parameter", "JastAddJ Add Parameter", "Shift+Alt+A",
+				new AddParameterRefactoringHandler());
 		
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
@@ -486,6 +491,12 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"Change Parameter Type", 
 				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterType", 
 				new ChangeParameterTypeRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder, 
+				"org.jastadd.plugin.jastaddj.refactor.AddParameterTopMenuItem", 
+				"Add Parameter", 
+				"org.jastadd.plugin.jastaddj.refactor.AddParameter", 
+				new AddParameterRefactoringHandler());
 	}
 
 	

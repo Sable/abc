@@ -45,6 +45,7 @@ import org.jastadd.plugin.ReconcilingStrategy;
 import org.jastadd.plugin.compiler.ICompiler;
 import org.jastadd.plugin.compiler.ast.IASTNode;
 import org.jastadd.plugin.compiler.ast.IFoldingNode;
+import org.jastadd.plugin.jastaddj.editor.actions.AddParameterRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ChangeParameterTypeRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
@@ -552,6 +553,10 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		addContextMenuItem(refactorMenu, "Change Parameter Type",
 				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterType",
 				new ChangeParameterTypeRefactoringHandler());
+		
+		addContextMenuItem(refactorMenu, "Add Parameter",
+				"org.jastadd.plugin.jastaddj.refactor.AddParameter",
+				new AddParameterRefactoringHandler());
 	}
 		
 	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {

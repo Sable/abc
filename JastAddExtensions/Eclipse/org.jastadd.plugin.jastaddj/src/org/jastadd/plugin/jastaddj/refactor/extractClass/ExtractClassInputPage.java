@@ -1,9 +1,5 @@
 package org.jastadd.plugin.jastaddj.refactor.extractClass;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Collections;
-
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -33,7 +29,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.jastadd.plugin.jastaddj.refactor.extractTemp.ExtractTempRefactoring;
 
 import AST.FieldDeclaration;
 
