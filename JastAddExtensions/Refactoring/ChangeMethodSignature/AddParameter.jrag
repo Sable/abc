@@ -1,9 +1,9 @@
 aspect AddParameter {
-	// TODO: check that we don't pick up new overriding relationships
 	public void MethodDecl.addParameter(ParameterDeclaration pd, int idx, Literal value, boolean createDelegate) {
 		if(idx < 0 || idx > getNumParameter())
 			throw new RefactoringException("invalid index for new parameter");
 		programRoot().lockMethodNames(name());
+		programRoot().lockOverridingDependencies(name());
 		Collection<MethodDecl> relatives = relatives();
 		for(MethodDecl md : relatives()) {
 			if(!md.parameterDeclaration(pd.name()).isEmpty())
@@ -26,21 +26,23 @@ aspect AddParameter {
 				}
 				md.hostType().getBodyDeclList().insertChild(delegate, md.getChildIndex());
 			}
-			md.getParameterList().insertChild((ParameterDeclaration) pd.fullCopyAndDetach(), idx);
-			md.flushCaches();
-			if(!md.hostType().canIntroduceMethod(md))
-				throw new RefactoringException("signature conflict");
+			ParameterDeclaration pd_copy = (ParameterDeclaration) pd.fullCopyAndDetach();
+			md.getParameterList().insertChild(pd_copy, idx);
 			for(MethodAccess ma : uses) {
-				if(relatives.contains(ma.hostBodyDecl()))
+				if(relatives.contains(ma.hostBodyDecl())) {
 					ma.getArgList().insertChild(new VarAccess(pd.name()), idx);
-				else
-					ma.getArgList().insertChild((Expr)value.fullCopyAndDetach(), idx);
+				} else {
+					Expr arg = (Expr)value.fullCopyAndDetach();
+					ma.getArgList().insertChild(arg, idx);
+					if(!arg.type().methodInvocationConversionTo(pd_copy.type()))
+						throw new RefactoringException("Default value does not have right type.");
+				}
 			}
 		}
 	}
 	
 	public void MethodDecl.doAddParameter(ParameterDeclaration pd, int idx, Literal value, boolean createDelegate) {
 		addParameter(pd, idx, value, createDelegate);
-		programRoot().eliminate(RETURN_VOID, LOCKED_NAMES);
+		programRoot().eliminate(RETURN_VOID, LOCKED_OVERRIDING, LOCKED_NAMES);
 	}
 }
