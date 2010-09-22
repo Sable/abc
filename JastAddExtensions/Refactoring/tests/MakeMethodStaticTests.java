@@ -57,11 +57,11 @@ public class MakeMethodStaticTests extends TestCase {
     public void test1() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public void m() { }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public void m() { m(this); }"+
             "    public static void m(A a) { }"+
             "}"));
@@ -70,12 +70,12 @@ public class MakeMethodStaticTests extends TestCase {
     public void test2() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    static int i;"+
             "    public int m() { return i; }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    static int i;"+
             "    public int m() { return m(this); }"+
             "    public static int m(A a) {	return i; }"+
@@ -85,12 +85,12 @@ public class MakeMethodStaticTests extends TestCase {
     public void test3() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    int i;"+
             "    public int m() { return i; }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    int i;"+
             "    public int m() { return m(this); }"+
             "    public static int m(A a) { return a.i; }"+
@@ -100,12 +100,12 @@ public class MakeMethodStaticTests extends TestCase {
     public void test4() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int i;"+
             "    public int m() { return this.i; }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int i;"+
             "    public int m() { return m(this); }"+
             "    public static int m(A a) { return a.i; }"+
@@ -116,13 +116,13 @@ public class MakeMethodStaticTests extends TestCase {
         testSucc("A", "m()",
             Program.fromClasses(
             "class Super { public int i; }",
-            "public class A extends Super {"+
+            "class A extends Super {"+
             "    public int i;"+
             "    public int m() { return super.i; }"+
             "}"),
             Program.fromClasses(
             "class Super { public int i; }",
-            "public class A extends Super {"+
+            "class A extends Super {"+
             "    public int i;"+
             "    public int m() { return m(this); }"+
             "    public static int m(A a) { return ((Super)a).i; }"+
@@ -132,12 +132,12 @@ public class MakeMethodStaticTests extends TestCase {
     public void test7() {
         testSucc("A", "m(int)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int f(int i) { return 0; }"+
             "    public int m(int i) { return f(i); }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int f(int i) { return 0; }"+
             "    public int m(int i) { return m(this, i); }"+
             "    public static int m(A a, int i) { return a.f(i); }"+
@@ -147,7 +147,7 @@ public class MakeMethodStaticTests extends TestCase {
     public void test8() {
         testSucc("A", "m(int)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) {"+
             "        new Runnable () {"+
@@ -160,7 +160,7 @@ public class MakeMethodStaticTests extends TestCase {
             "    }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
             "    static int m(final A a, int i) {"+
@@ -178,21 +178,21 @@ public class MakeMethodStaticTests extends TestCase {
     public void test9() {
         testSucc("A", "m(int)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return myData + i; }"+
             "}",
-            "public class B extends A {"+
+            "class B extends A {"+
             "    int a(int b) { return m(b*2); }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
             "    static int m(A a, int i) { return a.myData + i; }"+
             "}"+
             ""+
-            "public class B extends A {"+
+            "class B extends A {"+
             "    int a(int b) { return m(b*2); }"+
             "}"));
     }
@@ -200,7 +200,7 @@ public class MakeMethodStaticTests extends TestCase {
     public void test10() {
         testSucc("A", "m(int)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return myData+i; }"+
             "}",
@@ -209,7 +209,7 @@ public class MakeMethodStaticTests extends TestCase {
             "    int a(int b) { return myA.m(b*2); }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
             "    static int m(A a, int i) { return a.myData+i; }"+
@@ -223,22 +223,22 @@ public class MakeMethodStaticTests extends TestCase {
     public void test11() {
         testSucc("A", "m(int)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return myData+i; }"+
             "}",
-            "public class B extends A {"+
+            "class B extends A {"+
             "    int m(int b) {"+
             "        return super.m(b*2);"+
             "    }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    public int myData;"+
             "    int m(int i) { return m(this, i); }"+
             "    static int m(A a, int i) { return a.myData+i; }"+
             "}",
-            "public class B extends A {"+
+            "class B extends A {"+
             "    int m(int b) {"+
             "        return super.m(b*2);"+
             "    }"+
@@ -270,7 +270,7 @@ public class MakeMethodStaticTests extends TestCase {
     public void test14() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "   A m() {"+
             "     final A[] result = new A[1];"+
             "     new Runnable() {"+
@@ -282,7 +282,7 @@ public class MakeMethodStaticTests extends TestCase {
             "   }"+
             "}"),
             Program.fromClasses(
-            "public class A {" +
+            "class A {" +
             "   A m() { return m(this); }"+
             "   static A m(final A a) {"+
             "     final A[] result = new A[1];"+
@@ -299,14 +299,14 @@ public class MakeMethodStaticTests extends TestCase {
     public void test15() {
         testSucc("A", "m(boolean)",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "  A f() { return this; }"+
             "  void m(boolean b) {"+
             "    if(b) f().m(!b);"+
             "  }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "  A f() { return this; }"+
             "  void m(boolean b) { m(this, b); }"+
             "  static void m(A a, boolean b) {"+
@@ -318,7 +318,7 @@ public class MakeMethodStaticTests extends TestCase {
     public void test16() {
         testSucc("A", "m()",
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    void f(String s) {}"+
             "    String field;"+
             "    void m() {"+
@@ -326,7 +326,7 @@ public class MakeMethodStaticTests extends TestCase {
             "    }"+
             "}"),
             Program.fromClasses(
-            "public class A {"+
+            "class A {"+
             "    void f(String s) {}"+
             "    String field;" +
             "    void m() { m(this); }"+

@@ -5,8 +5,13 @@ aspect LocalClassToMemberClass {
 		closeOverTypeVariables();
 		closeOverLocalVariables();
 		ClassDecl cd = getClassDecl();
-		if(!cd.enclosingType().isLocalClass() && !cd.enclosingType().isAnonymous())
-			cd.setVisibility(makePublic ? VIS_PUBLIC : VIS_PRIVATE);
+		if(!cd.enclosingType().isLocalClass() && !cd.enclosingType().isAnonymous()) {
+			int vis = makePublic ? VIS_PUBLIC : VIS_PRIVATE;
+			cd.setVisibility(vis);
+			// for Eclipse compatibility
+			for(ConstructorDecl ctor : (Collection<ConstructorDecl>)cd.constructors())
+				ctor.setVisibility(vis);
+		}
 		if(cd.inStaticContext())
 			cd.getModifiers().addModifier("static");
 		// lock names

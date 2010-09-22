@@ -1,5 +1,5 @@
 package p;
-public class A {
+class A {
 
 	class Inner1 {
 		public Inner1(int param) {			

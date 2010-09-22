@@ -2,7 +2,7 @@ package p;
 
 import java.util.List;
 
-public class A {
+class A {
     public List<?> foo() {
         return null;
     }

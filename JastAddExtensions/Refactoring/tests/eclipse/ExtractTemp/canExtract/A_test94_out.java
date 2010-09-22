@@ -1,6 +1,6 @@
 package p;
 
-public class A {
+class A {
 
     protected void primExecute() {
         String temp= this.toString();

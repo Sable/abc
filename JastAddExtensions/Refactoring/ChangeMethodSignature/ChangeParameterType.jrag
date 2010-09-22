@@ -5,7 +5,8 @@ aspect ChangeParameterType {
 		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
 		programRoot().lockMethodNames(name());
 		programRoot().lockOverridingDependencies(name());
-		for(MethodDecl md : relatives()) {
+		Collection<MethodDecl> relatives = relatives();
+		for(MethodDecl md : relatives) {
 			ParameterDeclaration pd = md.getParameter(idx);
 			Access newAccess = newType.createLockedAccess(); 
 			for(TypeConstraint constraint : constraints)
@@ -16,6 +17,6 @@ aspect ChangeParameterType {
 		for(TypeConstraint constraint : constraints)
 			if(!constraint.solved())
 				throw new RefactoringException("type constraint " + constraint.describe() + " is violated");
-		programRoot().eliminate(LOCKED_OVERRIDING, LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 }

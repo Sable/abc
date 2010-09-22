@@ -100,7 +100,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 			<exclude name="util/**"/>
-			<exclude name="undo/Undo*.jrag"/>
+			<exclude name="undo/NoUndo.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

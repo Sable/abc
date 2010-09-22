@@ -436,5 +436,4 @@ aspect Testing {
 			getChild(i).parentChildCheck();
 		}
 	}
-	
 }

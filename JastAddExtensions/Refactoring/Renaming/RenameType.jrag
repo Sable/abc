@@ -14,6 +14,8 @@ aspect RenameType {
 		endangered.add(new_name);
 		programRoot().lockNames(endangered);
 		setID(new_name);
+		if(isTopLevelType() && isPublic())
+			compilationUnit().setID(new_name);
 		programRoot().eliminate(LOCKED_NAMES);
 	}
 	

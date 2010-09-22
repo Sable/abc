@@ -9,7 +9,7 @@ public class TestClass {
 	}
 }
 
-public class UseTestClass {
+class UseTestClass {
 	public void foo() {
 		/*[*/TestClass.createTestClass();
 	}

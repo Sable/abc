@@ -32,7 +32,9 @@ aspect TypeConstraints {
 		}
 		
 		public boolean solved() {
-			return op.eval(left.getConstrainedType().erasure(), right.getConstrainedType().erasure());
+			TypeDecl lefttp = left.getConstrainedType().erasure().refresh(),
+			         righttp = right.getConstrainedType().erasure().refresh();
+			return !lefttp.isReferenceType() || !righttp.isReferenceType() || op.eval(lefttp, righttp);
 		}
 		
 		public String describe() {
@@ -47,8 +49,40 @@ aspect TypeConstraints {
 		}
 	}
 	
+	class WithinTypeThatSubclassesConstraint extends TypeConstraint {
+		private TypeConstraintVariable left, right;
+		
+		public WithinTypeThatSubclassesConstraint(ASTNode node, String cause, TypeConstraintVariable left, TypeConstraintVariable right) {
+			super(node, cause);
+			this.left = left;
+			this.right = right;
+		}
+		
+		public boolean solved() {
+			TypeDecl lefttp = left.getConstrainedType().erasure(),
+	         		 righttp = right.getConstrainedType().erasure();
+			return !lefttp.isReferenceType() || !righttp.isReferenceType() || lefttp.withinBodyThatSubclasses(righttp) != null;
+		}
+		
+		public String describe() {
+			return left.describeConstraintVariable() + " within type that subclasses " + right.describeConstraintVariable();
+		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof WithinTypeThatSubclassesConstraint))
+				return false;
+			WithinTypeThatSubclassesConstraint that = (WithinTypeThatSubclassesConstraint)o;
+			return this.left.equals(that.left) && this.right.equals(that.right);
+		}
+	}
+	
 	class DisjunctiveTypeConstraint extends TypeConstraint {
 		private Collection<TypeConstraint> constraints;
+		
+		public DisjunctiveTypeConstraint(ASTNode node, String cause, Collection<TypeConstraint> constraints) {
+			super(node, cause);
+			this.constraints = constraints;
+		}
 		
 		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left, Operator op, Collection<? extends TypeConstraintVariable> rights) {
 			super(node, cause);
@@ -123,6 +157,12 @@ aspect TypeConstraints {
 	
 	public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
 	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
+		if(left == oldNode)
+			left = newNode;
+		if(right == oldNode)
+			right = newNode;
+	}
+	public void WithinTypeThatSubclassesConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
 		if(left == oldNode)
 			left = newNode;
 		if(right == oldNode)

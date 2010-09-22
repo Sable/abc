@@ -1,5 +1,5 @@
 package p;
-public class A {
+class A {
 
 	private final class Inner1Extension extends Inner1 {
 		private final String param;

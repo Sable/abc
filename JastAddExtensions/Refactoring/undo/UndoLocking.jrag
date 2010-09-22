@@ -4,11 +4,9 @@ aspect UndoLocking {
 	
 	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(final SavedMethodDecl smd) {
 		final SavedMethodDecl saved = targetMethod;
-		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
 		SavedMethodDecl res = refined(smd);
-		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {
@@ -88,11 +86,9 @@ aspect UndoLocking {
 	// LockedVariableAccess
 	refine LockedVariableAccess private void VarAccess.setTargetVariable(final Variable var) {
 		final Variable saved = targetVariable;
-		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
 		refined(var);
-		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {
@@ -115,37 +111,11 @@ aspect UndoLocking {
 	
 	
 	// LockedTypeAccess
-	refine LockedTypeAccess private void CompilationUnit.setLocked(final boolean value) {
-		final boolean saved = locked;
-		refined(value);
-		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModification() {
-				
-				@Override
-				public void undo() {
-					locked = saved;
-				}
-
-				@Override
-				public void redo() {
-					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
-					refined(value);
-				}
-				
-				@Override
-				public String toString() {
-					return "CompilationUnit.setLocked";
-				}
-			});
-		}
-	}
 	refine LockedTypeAccess private void TypeAccess.setTargetType(final TypeDecl td) {
 		final TypeDecl saved = targetType;
-		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
 		refined(td);
-		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {
@@ -169,11 +139,9 @@ aspect UndoLocking {
 	// LockedConstructor
 	refine LockedConstructor private void ConstructorDecl.setLocked(final boolean value) {
 		final boolean saved = locked;
-		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
 		refined(value);
-		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {
@@ -197,11 +165,9 @@ aspect UndoLocking {
 	// LockedSingleStaticImportDecl
 	refine LockedSingleStaticImportDecl private void SingleStaticImportDecl.setLocked(final boolean value) {
 		final boolean saved = locked;
-		String oldToString = "[[[locking]]]"; try { oldToString = toString(); } catch (Exception e) { }
 		refined(value);
-		String newToString = "[[[locking]]]"; try { newToString = toString(); } catch (Exception e) { }
 		if (Program.isRecordingASTChanges()) {
-			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, oldToString, newToString) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {

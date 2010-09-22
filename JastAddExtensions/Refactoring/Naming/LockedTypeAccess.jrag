@@ -15,13 +15,8 @@ aspect LockedTypeAccess {
 	private void TypeAccess.setTargetType(TypeDecl td) {
 		targetType = td;
 	}
-	private boolean CompilationUnit.locked = false;
-	private void CompilationUnit.setLocked(boolean value) {
-		locked = value;
-	}
 	
 	public boolean TypeAccess.isLocked() { return targetType != null; }
-	public boolean CompilationUnit.isLocked() { return locked; }
 	
 	refine LookupType eq TypeAccess.decls() = isLocked() ? targetType.refresh() : refined();
 	refine Generics eq TypeAccess.decl() = isLocked() ? targetType.refresh() : refined();
@@ -103,12 +98,6 @@ aspect LockedTypeAccess {
 	// absolute type access; can't get shadowed anyway
 	public ASTNode BytecodeTypeAccess.lockNames(Collection<String> endangered) { return this; }
 	
-	public ASTNode CompilationUnit.lockNames(Collection<String> endangered) {
-		if(fromSource() && !locked && endangered.contains(getID()))
-			setLocked(true);
-		return super.lockNames(endangered);
-	}
-	
 	public void TypeAccess.eliminateLockedNames() {
 		if(isLocked())
 			unlock().eliminateLockedNames();
@@ -118,16 +107,6 @@ aspect LockedTypeAccess {
 
 	public void CompilationUnit.eliminateLockedNames() {
 		if(fromSource()) {
-			if(locked) {
-				setLocked(false);
-				// make sure this compilation unit has same name as publicly declared class
-				for(TypeDecl t : getTypeDecls()) {
-					if(t.isPublic()) {
-						setID(t.name());
-						break;
-					}
-				}
-			}
 			for(int i=getNumImportDecl()-1;i>=0;--i) {
 				ImportDecl id = getImportDecl(i);
 				if(id.shouldRemove())

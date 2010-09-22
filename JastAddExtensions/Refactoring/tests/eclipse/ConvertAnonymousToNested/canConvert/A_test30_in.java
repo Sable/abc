@@ -1,5 +1,5 @@
 package p;
-public class A {
+class A {
     void m() {
         Runnable greeter= new Runnable() {
             public void run() {

@@ -5,12 +5,14 @@ aspect MakeMethodStatic {
 		if(!fromSource() || !hasBlock())
 			throw new RefactoringException("cannot make static");
 		programRoot().lockMethodNames(Collections.singleton(name()));
-		MethodDecl newMethod = this;
-		MethodDecl delegator = (MethodDecl)this.fullCopyAndDetach();
+		MethodDecl delegator = this;
+		MethodDecl newMethod = (MethodDecl)this.fullCopyAndDetach();
 		TypeDecl hostType = hostType();
 		// make new method static
 		newMethod.getModifiers().addModifier(new Modifier("static"));
-		// fix value arguments
+		// insert new method
+		hostType.addBodyDecl(newMethod);
+		// insert extra parameter
 		String newParmName = hostType.name().toLowerCase();
 		ParameterDeclaration newParm = new FreshParameter(hostType.createLockedAccess(), newParmName);
 		newParm.setDemandFinal();
@@ -22,7 +24,6 @@ aspect MakeMethodStatic {
 		WithStmt withStmt = new WithStmt(new List<Access>().add(newParmAcc), newMethod.getBlock());
 		newMethod.setBlock(new Block(new List<Stmt>().add(withStmt)));
 		newMethod.flushCaches();
-		newMethod.signature();
 		// prepare delegating method
 		List<Expr> delegationArgs = new List<Expr>().add(new ThisAccess("this"));
 		for(int i=1;i<newMethod.getNumParameter();++i)
@@ -30,11 +31,7 @@ aspect MakeMethodStatic {
 		Expr delegationCall = new MethodAccess(newMethod.name(), delegationArgs);
 		delegator.setBlock(new Block(new List<Stmt>().add(new ReturnStmt(delegationCall))));
 		// plug in delegating method
-		newMethod.replaceWith(delegator);
 		delegator.programRoot().flushCaches();
-		if(!hostType.canIntroduceMethod(newMethod))
-			throw new RefactoringException("cannot introduce method");
-		hostType.addBodyDecl(newMethod);
 		newMethod.programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
 	}
 	
@@ -47,7 +44,7 @@ aspect MakeMethodStatic {
 					((GenericMethodDecl)newMethod).addTypeParameter(new_tv);
 					for(Access tvu : tv.uses())
 						if(tvu.isDescendantTo(newMethod))
-							((TypeAccess)tvu).lock(new_tv);
+							((TypeAccess)tvu).lock(new_tv);				
 				}
 			}
 		}

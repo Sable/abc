@@ -387,7 +387,7 @@ public class MoveMethodTests extends TestCase {
 		testSucc("A", "foo(B, A.Inner)",
 			Program.fromClasses(
 			"class B { class Inner { } }",
-			"public abstract class A {" +
+			"abstract class A {" +
 			"  void foo(B f, Inner i) {" +
 			"    new Inner();" +
 			"  }" +
@@ -403,7 +403,7 @@ public class MoveMethodTests extends TestCase {
 			"    a.new Inner();" +
 			"  }" +
 			"}" +
-			"public abstract class A {" +
+			"abstract class A {" +
 			"  void foo(B f, Inner i) {" +
 			"    f.foo(this, i);" +
 			"  }" +

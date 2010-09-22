@@ -10,7 +10,7 @@ aspect CollectTypeConstraints {
 	             to Program.typeConstraints()
 	             for programRoot();
 	
-	VarAccess contributes Collections.singleton(new SimpleTypeConstraint(this, "field access", qualifyingTypeConstraintVariable(), Operator.LE, (FieldDeclaration)decl()))
+	VarAccess contributes Collections.singleton(fieldAccessConstraint())
 	          when decl() instanceof FieldDeclaration
 	          to Program.typeConstraints()
 	          for programRoot();
@@ -36,11 +36,16 @@ aspect CollectTypeConstraints {
     		   to Program.typeConstraints()
     		   for programRoot();
 
-	CastExpr contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "cast", getTypeAccess(), Operator.LE, getExpr(),
-			                                                                               getExpr(), Operator.LE, getTypeAccess()))
+	CastExpr contributes Collections.singleton(new SimpleTypeConstraint(this, "downcast", getTypeAccess(), Operator.LE, getExpr()))
+	         when isDownCast()
 	         to Program.typeConstraints()
 	         for programRoot();
-	
+
+	CastExpr contributes Collections.singleton(new SimpleTypeConstraint(this, "upcast", getExpr(), Operator.LE, getTypeAccess()))
+    	     when isUpCast()
+			 to Program.typeConstraints()
+			 for programRoot();
+
 	ArrayTypeWithSizeAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "sized array type",
 				getExpr(), Operator.LE, typeInt().boxed(),
 				getExpr(), Operator.LE, typeInt()))
@@ -66,7 +71,7 @@ aspect CollectTypeConstraints {
 				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
-		constraints.add(new DisjunctiveTypeConstraint(this, "method invocation", qualifyingTypeConstraintVariable(), Operator.LE, md.rootDefs()));
+		constraints.add(methodAccessConstraint());
 		return constraints;
 	}
 	
@@ -102,16 +107,22 @@ aspect CollectTypeConstraints {
 		return constraints;
 	}
 	
-	syn lazy TypeConstraintVariable MethodAccess.qualifyingTypeConstraintVariable() {
-		if(isQualified())
-			return qualifier();
-		// TODO: this is not quite right, is it?
-		return hostBodyDecl();
+	syn lazy TypeConstraint MethodAccess.methodAccessConstraint() {
+		Collection<MethodDecl> rootDefs = decl().rootDefs();
+		if(isQualified()) {
+			return new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, rootDefs);
+		} else {
+			Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+			for(MethodDecl rootDef : rootDefs)
+				constraints.add(new WithinTypeThatSubclassesConstraint(this, "method invocation", hostBodyDecl(), rootDef));
+			return new DisjunctiveTypeConstraint(this, "method invocation", constraints);
+		}
 	}
 	
-	syn lazy TypeConstraintVariable VarAccess.qualifyingTypeConstraintVariable() {
-		// TODO: see corresponding attribute for MethodAccess
-		return isQualified() ? qualifier() : hostBodyDecl();
+	syn lazy TypeConstraint VarAccess.fieldAccessConstraint() {
+		if(isQualified())
+			return new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl());
+		return new WithinTypeThatSubclassesConstraint(this, "field access", hostBodyDecl(), (FieldDeclaration)decl());
 	}
 	
 	public Collection<TypeConstraint> MethodDecl.overridingTypeConstraints() {
@@ -133,5 +144,15 @@ aspect CollectTypeConstraints {
 		for(FieldDeclaration that : hiddenFields())
 			constraints.add(new SimpleTypeConstraint(this, "field hiding", this, Operator.LT, that));
 		return constraints;
+	}
+	
+	syn lazy boolean CastExpr.isDownCast() {
+		TypeDecl exprtp = getExpr().type(),
+		         restp = getTypeAccess().type();
+		return !exprtp.equals(restp) && restp.subtype(exprtp);
+	}
+	
+	syn lazy boolean CastExpr.isUpCast() {
+		return getExpr().type().subtype(getTypeAccess().type());
 	}
 }

@@ -1,5 +1,5 @@
 package p;
-public class A {
+class A {
     private static final class Greeter implements Runnable {
 		public void run() {
 		    System.out.println("Hello World")

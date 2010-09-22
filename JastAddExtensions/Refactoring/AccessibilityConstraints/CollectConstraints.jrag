@@ -30,7 +30,8 @@ aspect CollectConstraints {
 	                decl() instanceof FieldDeclaration && 
 	                !decl().isStatic() &&
 	                ((FieldDeclaration)decl()).minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-	                !qualifier().type().instanceOf(hostType())
+	                !qualifier().type().instanceOf(hostType()) &&
+	                !qualifier().isSuperAccess()
 	           to Program.accessibilityConstraints()
 	           for programRoot();
 	

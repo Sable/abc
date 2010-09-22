@@ -1,6 +1,6 @@
 package p;
 class B<T> { }
-public class A<T> {
+class A<T> {
     enum TEST {
         FIRST, SECOND
     }

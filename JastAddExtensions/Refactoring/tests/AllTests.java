@@ -1,12 +1,11 @@
 package tests;
 
-import AST.Program;
-import tests.RelativesTests.RelativesTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import tests.RelativesTests.RelativesTests;
 
 public class AllTests {
-	public static boolean TEST_UNDO = false;
+	public static boolean TEST_UNDO = true;
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Refactoring tests");

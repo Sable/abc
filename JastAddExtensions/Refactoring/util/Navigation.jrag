@@ -145,5 +145,27 @@ aspect Navigation {
 		if(name().equals(name))
 			return this;
 		return super.findField(name);
-	}	
+	}
+	
+	// find all source methods in a program
+	syn lazy Collection<MethodDecl> Program.sourceMethods() {
+		Collection<MethodDecl> res = new LinkedList<MethodDecl>();
+		collectSourceMethods(res);
+		return res;
+	}
+	
+	protected void ASTNode.collectSourceMethods(Collection<MethodDecl> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectSourceMethods(res);
+	}
+	
+	protected void CompilationUnit.collectSourceMethods(Collection<MethodDecl> res) {
+		if(fromSource())
+			super.collectSourceMethods(res);
+	}
+	
+	protected void MethodDecl.collectSourceMethods(Collection<MethodDecl> res) {
+		res.add(this);
+		super.collectSourceMethods(res);
+	}
 }
