@@ -579,7 +579,7 @@ public class RenameMethodTests extends TestCase {
     }
     
     
-    public void test41Fail() {
+    public void test41() {
     	testFail(
     		"B", "m()", "n",
     		Program.fromClasses(
@@ -588,7 +588,7 @@ public class RenameMethodTests extends TestCase {
     		"interface I { void n(); }"));
     }
     
-    public void test42Fail() {
+    public void test42() {
     	testFail(
     		"A", "m()", "n",
     		Program.fromClasses(
@@ -596,5 +596,15 @@ public class RenameMethodTests extends TestCase {
     		"abstract class B extends A implements I { }",
     		"interface I { void n(); }"));
     }
-    
+ 
+    public void test43() {
+    	testFail(
+    		"A", "m(java.lang.Object, java.lang.String)", "n",
+    		Program.fromClasses(
+    		"class A {" +
+    		"  void m(java.lang.Object x, java.lang.String y) { }" +
+    		"  void n(java.lang.String x, java.lang.Object y) { }" +
+    		"  { n(\"\", \"\"); }" +
+    		"}"));
+    }
 }

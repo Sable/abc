@@ -219,8 +219,11 @@ aspect LockedMethodAccess {
 		// check if any of the competitors is more specific than the target for
 		// this argument list; then we need casts
 		for(MethodDecl cand : competitors)
-			if(cand.applicableTo(args) && cand.moreSpecificThan(target))
-				return (MethodAccess) original.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
+			if(cand.applicableTo(args))
+				if(cand.moreSpecificThan(target))
+					return (MethodAccess) original.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
+				else if(!target.moreSpecificThan(cand))
+					throw new RefactoringException("ambiguous method overloading which cannot be fixed by casts");
 		return original;
 	}
 	
