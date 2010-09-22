@@ -598,13 +598,19 @@ public class RenameMethodTests extends TestCase {
     }
  
     public void test43() {
-    	testFail(
+    	testSucc(
     		"A", "m(java.lang.Object, java.lang.String)", "n",
     		Program.fromClasses(
     		"class A {" +
-    		"  void m(java.lang.Object x, java.lang.String y) { }" +
-    		"  void n(java.lang.String x, java.lang.Object y) { }" +
+    		"  void m(Object x, String y) { }" +
+    		"  void n(String x, Object y) { }" +
     		"  { n(\"\", \"\"); }" +
+    		"}"),
+    		Program.fromClasses(
+    		"class A {" +
+    		"  void n(Object x, String y) { }" +
+    		"  void n(String x, Object y) { }" +
+    		"  { n((String)\"\", (Object)\"\"); }" +
     		"}"));
     }
 }
