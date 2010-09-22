@@ -25,19 +25,23 @@ import beaver.Parser.Exception;
 
 public class AddParameterRefactoring extends Refactoring {
 
-	private IJastAddNode selectedNode;
+	private MethodDecl selectedNode;
 	private String name;
 	private String type;
 	private String value;
+	private boolean createDelegate;
+	private int pos;
 	private RefactoringStatus status;
 	private Change changes;
 
 	public AddParameterRefactoring(IJastAddNode selectedNode) {
 		super();
 		if(selectedNode instanceof MethodDecl) {
-			this.selectedNode = selectedNode;
+			this.selectedNode = (MethodDecl)selectedNode;
+			this.pos = this.selectedNode.getNumParameter();
 		} else {
 			this.selectedNode = null;
+			this.pos = 0;
 		}
 	}
 
@@ -57,7 +61,7 @@ public class AddParameterRefactoring extends Refactoring {
 			throws CoreException, OperationCanceledException {
 		status = new RefactoringStatus();
 
-		MethodDecl md = (MethodDecl)selectedNode;
+		MethodDecl md = selectedNode;
 		Program root = md.programRoot();
 		
 		TypeDecl td = root.findType(type);
@@ -95,7 +99,7 @@ public class AddParameterRefactoring extends Refactoring {
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			Program.startRecordingASTChangesAndFlush();
 
-			md.doAddParameter(new ParameterDeclaration(td.createLockedAccess(), name), md.getNumParameter(), defaultValue, false);	
+			md.doAddParameter(new ParameterDeclaration(td.createLockedAccess(), name), pos, defaultValue, createDelegate);	
 
 			changes = RefactoringUtil.createChanges("AddParameter", Program.cloneUndoStack());
 		} catch (RefactoringException re) {
@@ -113,16 +117,44 @@ public class AddParameterRefactoring extends Refactoring {
 			OperationCanceledException {
 		return changes;
 	}
+	
+	public MethodDecl getMethod() {
+		return selectedNode;
+	}
 
 	public void setType(String type) {
 		this.type = type;
 	}
 	
-	public void setName(String name) {
+	public String getParmType() {
+		return type;
+	}
+	
+	public void setParmName(String name) {
 		this.name = name;
+	}
+	
+	public String getParmName() {
+		return name;
 	}
 	
 	public void setDefaultValue(String value) {
 		this.value = value;
+	}
+	
+	public String getDefaultValue() {
+		return value;
+	}
+	
+	public void setCreateDelegate(boolean createDelegate) {
+		this.createDelegate = createDelegate;
+	}
+	
+	public void setParmPos(int pos) {
+		this.pos = pos;
+	}
+	
+	public int getParmPos() {
+		return pos;
 	}
 }
