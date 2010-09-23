@@ -6,7 +6,7 @@
        gen             - generates java files
        genClean        - removes all generated files and their class files
 -->
-<project name="Refactoring" default="build">
+<project name="Refactoring" default="gen">
 
 <!-- location of Java1.4Frontend -->
 <property name="Java1.4Frontend" value="../Java1.4Frontend"/>
@@ -29,35 +29,15 @@
 <taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
+<!-- "lib" is the directory where additional libraries are located -->
+<property name="lib" value="${Refactoring}/lib"/>
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar">
+	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar:${lib}/cream106.jar">
 	  <include name="**/*.java"/>
-	  <exclude name="tests/eclipse/ChangeSignature/can*/**"/>
-	  <exclude name="tests/eclipse/ConvertAnonymousToNested/can*/**"/>
-          <exclude name="tests/eclipse/ExtractClass/test*/**"/>
-          <exclude name="tests/eclipse/ExtractConstant/can*/**"/>
-          <exclude name="tests/eclipse/ExtractTemp/can*/**"/>
-          <exclude name="tests/eclipse/InlineConstant/can*/**"/>
-          <exclude name="tests/eclipse/InlineMethodWorkspace/TestCases/**"/>
-          <exclude name="tests/eclipse/InlineTemp/can*/**"/>
-          <exclude name="tests/eclipse/IntroduceFactory/Bugzilla/*/**"/>
-          <exclude name="tests/eclipse/IntroduceFactory/negative/*"/>
-          <exclude name="tests/eclipse/IntroduceFactory/positive/*"/>
-          <exclude name="tests/eclipse/IntroduceIndirection/test*/**"/>
-          <exclude name="tests/eclipse/IntroduceParameter/invalid/**"/>
-          <exclude name="tests/eclipse/IntroduceParameter/simple/**"/>
-          <exclude name="tests/eclipse/IntroduceParameterObject/test*/**"/>
-          <exclude name="tests/eclipse/MoveInnerToTopLevel/test*/**"/>
-          <exclude name="tests/eclipse/MoveInstanceMethod/can*/**"/>
-          <exclude name="tests/eclipse/MoveMembers/test*/**"/>
-          <exclude name="tests/eclipse/PromoteTempToField/can*/**"/>
-          <exclude name="tests/eclipse/PromoteTempToField/test*/**"/>
-          <exclude name="tests/eclipse/PullUp/test*/**"/>
-          <exclude name="tests/eclipse/PushDown/test*/**"/>
-          <exclude name="tests/eclipse/RenamePackage/test*/**"/>
-          <exclude name="tests/eclipse/SelfEncapsulateField/tests/**"/>
+	  <exclude name="tests/eclipse/**/*.java"/>
+	  <exclude name="tests/RelativesTests/**/*.java"/>
 	</javac>
 </target>
 
