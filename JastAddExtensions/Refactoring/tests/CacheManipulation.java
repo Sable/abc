@@ -553,7 +553,6 @@ public class CacheManipulation {
 	
 	public static void splitAllFlushCacheMethods(File ASTDir, boolean collect) throws IOException {
 		File[] files = ASTDir.listFiles(new FilenameFilter() {
-			@Override
 			public boolean accept(File dir, String name) {
 				return name.matches(".*\\.java");
 			}

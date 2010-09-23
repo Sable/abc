@@ -23,7 +23,7 @@ aspect Navigation {
 				break;
 			pkg = new_pkg;
 		}
-		TypeDecl tp = pkg.isEmpty() ? findSimpleType(path[(i=1)-1]) : findType(pkg, path[i++]);
+		TypeDecl tp = pkg.length()==0 ? findSimpleType(path[(i=1)-1]) : findType(pkg, path[i++]);
 		if(tp == null)
 			return null;
 		for(;i<path.length;++i) {

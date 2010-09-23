@@ -68,7 +68,6 @@ aspect MoveMethod {
 				final MethodDecl md_ = m;
 				final int k_ = k;
 				Or.or(new Or.Refactoring() {
-					@Override
 					public void refactor() {
 						md_.removeUnusedParameter(k_);
 					}

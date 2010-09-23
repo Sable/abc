@@ -5,7 +5,7 @@ aspect AddRequiredMembers {
 		worklist.addAll(fds);
 		worklist.addAll(mtds);
 		while(!worklist.isEmpty())
-			worklist.pop().addRequiredMembers(this, meths, fds, mtds);
+			worklist.removeFirst().addRequiredMembers(this, meths, fds, mtds);
 	}
 	
 	public void ASTNode.addRequiredMembers(TypeDecl host, java.util.Set<MethodDecl> meths, java.util.Set<FieldDeclaration> fds, java.util.Set<MemberTypeDecl> mtds) {

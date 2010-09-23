@@ -60,11 +60,11 @@ aspect MethodExt {
 		LinkedList<TypeDecl> worklist = new LinkedList<TypeDecl>();
 		worklist.add(hostType());
 		while(!worklist.isEmpty()) {
-			TypeDecl td = worklist.pop();
+			TypeDecl td = worklist.removeFirst();
 			result.add(td);
 			for(TypeDecl child : td.childTypes())
 				if(!child.overrides(this))
-					worklist.push(child);
+					worklist.addFirst(child);
 		}
 		return result;
 	}
