@@ -21,8 +21,6 @@ aspect Or {
 		}
 		
 		public final static Refactoring ID = new Refactoring() {
-			
-			@Override
 			public void refactor() throws RefactoringException {
 				// ID();
 			}

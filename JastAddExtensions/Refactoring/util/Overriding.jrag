@@ -154,9 +154,9 @@ aspect Overriding {
 			return Collections.singleton(this);
 		Collection<MethodDecl> res = new LinkedHashSet<MethodDecl>();
 		LinkedList<MethodDecl> worklist = new LinkedList<MethodDecl>();
-		worklist.push(this);
+		worklist.addFirst(this);
 		while(!worklist.isEmpty()) {
-			MethodDecl md = worklist.pop();
+			MethodDecl md = worklist.removeFirst();
 			if(res.contains(md))
 				continue;
 			if(md.overrides().isEmpty())
