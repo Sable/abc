@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Iterator;
 
 aspect TypeConstraints {
 	public abstract class TypeConstraint {
@@ -12,6 +13,10 @@ aspect TypeConstraints {
 		
 		public abstract boolean solved();
 		public abstract String describe();
+		public abstract boolean isFixed();
+		public boolean implies(TypeConstraint that) {
+			return false;
+		}
 		
 		public boolean fromSource() {
 			return node.fromSource();
@@ -49,6 +54,28 @@ aspect TypeConstraints {
 			SimpleTypeConstraint that = (SimpleTypeConstraint)o;
 			return this.left.equals(that.left) && this.op == that.op && this.right.equals(that.right);
 		}
+		
+		public boolean implies(TypeConstraint tc) {
+			if(tc instanceof SimpleTypeConstraint) {
+				SimpleTypeConstraint that = (SimpleTypeConstraint)tc;
+				return this.left.equals(that.left) && this.right.equals(that.right) && that.op == Operator.LE &&
+				       (this.op == Operator.EQ || this.op == Operator.LT);
+			} else if(tc instanceof DisjunctiveTypeConstraint) {
+				for(Iterator<TypeConstraint> iter=((DisjunctiveTypeConstraint)tc).getSubconstraints();iter.hasNext();)
+					if(this.implies(iter.next()))
+						return true;
+				return false;
+			} else {
+				return false;
+			}
+		}
+		
+		public boolean isFixed() {
+			return left.isFixed() && right.isFixed();
+		}
+		
+		public TypeConstraintVariable getLeft() { return left; }
+		public TypeConstraintVariable getRight() { return right; }
 	}
 	
 	class IsArrayTypeConstraint extends TypeConstraint {
@@ -71,6 +98,10 @@ aspect TypeConstraints {
 			if(!(o instanceof IsArrayTypeConstraint))
 				return false;
 			return this.var.equals(((IsArrayTypeConstraint)o).var);
+		}
+		
+		public boolean isFixed() {
+			return var.isFixed();
 		}
 	}
 	
@@ -115,6 +146,21 @@ aspect TypeConstraints {
 			DisjunctiveTypeConstraint that = (DisjunctiveTypeConstraint)o;
 			return this.constraints.equals(that.constraints);
 		}
+		
+		public int getNumAlternatives() {
+			return constraints.size();
+		}
+		
+		public Iterator<TypeConstraint> getSubconstraints() {
+			return constraints.iterator();
+		}
+		
+		public boolean isFixed() {
+			for(TypeConstraint tc : constraints)
+				if(!tc.isFixed())
+					return false;
+			return true;
+		}
 	}
 	
 	TypeDecl implements IAmPartiallyOrdered<TypeDecl>;
@@ -127,6 +173,8 @@ aspect TypeConstraints {
 	interface TypeConstraintVariable { }
 	syn TypeDecl TypeConstraintVariable.getConstrainedType();
 	syn String TypeConstraintVariable.describeConstraintVariable();
+	syn boolean TypeConstraintVariable.isFixed();
+	syn lazy TypedDeclaration TypeConstraintVariable.getTypedDecl();
 	
 	BodyDecl implements TypeConstraintVariable;
 	eq BodyDecl.getConstrainedType() = hostType();
@@ -134,14 +182,30 @@ aspect TypeConstraints {
 	eq MethodDecl.describeConstraintVariable() = "Decl(" + hostType().fullName() + "." + signature() + ")";
 	eq ConstructorDecl.describeConstraintVariable() = "Decl(" + signature() + ")";
 	eq FieldDeclaration.describeConstraintVariable() = "Decl(" + name() + ")";
+	eq BodyDecl.isFixed() = true;
+	eq BodyDecl.getTypedDecl() = null;
 	
 	Expr implements TypeConstraintVariable;
 	eq Expr.getConstrainedType() = type();
 	eq Expr.describeConstraintVariable() = "[" + this + "]";
+	eq Expr.isFixed() = !fromSource();
+	eq Expr.getTypedDecl() {
+		if(isTypeAccess() && getParent() instanceof TypedDeclaration)
+			return (TypedDeclaration)getParent();
+		if(varDecl() != null)
+			return varDecl();
+		if(isMethodAccess())
+			return ((MethodAccess)((Access)this).lastAccess()).decl();
+		return null;
+	}
 	
 	TypeDecl implements TypeConstraintVariable;
 	eq TypeDecl.getConstrainedType() = this;
 	eq TypeDecl.describeConstraintVariable() = fullName();
+	eq TypeDecl.isFixed() = true;
+	eq TypeDecl.getTypedDecl() {
+		return null;
+	}
 	
 	public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
 	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
@@ -157,5 +221,73 @@ aspect TypeConstraints {
 	public void DisjunctiveTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
 		for(TypeConstraint tc : constraints)
 			tc.subst(oldNode, newNode);
-	}	
+	}
+	
+	// have to include this here due to stupid ordering of .jrag files...
+	
+	class TypeConstraintSystem {
+		private Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
+		private TypedDeclaration update;
+		private TypeDecl newType;
+		
+		public TypeConstraintSystem(Collection<TypeConstraint> constraints, TypedDeclaration update, TypeDecl newType) {
+			this.constraints.addAll(constraints);
+			this.update = update;
+			this.newType = newType;
+		}
+		
+		public Collection<TypedDeclaration> solve() {
+			Collection<TypedDeclaration> res = new HashSet<TypedDeclaration>();
+			res.add(update);
+			int size;
+			do {
+				size = res.size();
+				for(TypeConstraint constraint : constraints)
+					constraint.propagate(newType, res);
+			} while(size != res.size());
+			return res;
+		}
+	}
+	
+	public abstract void TypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update);
+	public void SimpleTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
+		if(op == Operator.EQ) {
+			if(update.contains(left.getTypedDecl())) {
+				if(right.getTypedDecl() == null)
+					throw new RefactoringException("cannot make " + right + " be of type " + newType.typeName());
+				update.add(right.getTypedDecl());
+			} else if(update.contains(right.getTypedDecl())) {
+				if(left.getTypedDecl() == null)
+					throw new RefactoringException("cannot make " + left + " be of type " + newType.typeName());
+				update.add(left.getTypedDecl());
+			}
+		} else if(op == Operator.LE) {
+			if(update.contains(left.getTypedDecl()) && !newType.subtype(right.getConstrainedType())) {
+				if(right.getTypedDecl() == null)
+					throw new RefactoringException("cannot make " + right + " be of type " + newType.typeName());
+				update.add(right.getTypedDecl());
+			}
+		} else if(op == Operator.LT) {
+			if(update.contains(left.getTypedDecl()))
+				throw new RefactoringException("cannot propagate through constraint " + this);
+		} else {
+			throw new RefactoringException("cannot propagate through constraint " + this);
+		}
+	}
+	public void IsArrayTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
+		if(update.contains(var.getTypedDecl()) && !newType.isArrayDecl())
+			throw new RefactoringException(var + " has to be an array");
+	}
+	public void DisjunctiveTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
+		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
+		if(update.contains(constr.getLeft().getTypedDecl())) {
+			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
+				constr = (SimpleTypeConstraint)iter.next();
+				if(newType.subtype(constr.getRight().getConstrainedType()))
+					return;
+			}
+			throw new RefactoringException("cannot satisfy " + this);
+		}
+	}
+	
 }

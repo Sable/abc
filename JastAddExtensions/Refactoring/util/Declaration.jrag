@@ -13,6 +13,7 @@ aspect Declaration {
 	interface TypedDeclaration extends Declaration {
 		TypeDecl type();
 		Access getTypeAccess();
+		void setTypeAccess(Access acc);
 	}
 	
 	Variable extends TypedDeclaration;

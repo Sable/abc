@@ -2,21 +2,19 @@ aspect ChangeParameterType {
 	public void MethodDecl.changeParameterType(int idx, TypeDecl newType) {
 		if(idx < 0 || idx >= getNumParameter())
 			throw new RefactoringException("invalid parameter index");
+		ParameterDeclaration pd = getParameter(idx);
+		if(!pd.type().supertypes().contains(newType))
+			throw new RefactoringException("unsupported refactoring");
 		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
 		programRoot().lockMethodNames(name());
 		programRoot().lockOverridingDependencies(name());
-		Collection<MethodDecl> relatives = relatives();
-		for(MethodDecl md : relatives) {
-			ParameterDeclaration pd = md.getParameter(idx);
-			Access newAccess = newType.createLockedAccess(); 
-			for(TypeConstraint constraint : constraints)
-				constraint.subst(pd.getTypeAccess(), newAccess);
-			pd.setTypeAccess(newAccess);
-		}
-		programRoot().flushCaches();
-		for(TypeConstraint constraint : constraints)
-			if(!constraint.solved())
-				throw new RefactoringException("type constraint " + constraint.describe() + " is violated");
+		
+		TypeConstraintSystem s = new TypeConstraintSystem(constraints, pd, newType);
+		Collection<TypedDeclaration> update = s.solve();
+		
+		for(TypedDeclaration td : update)
+			td.setTypeAccess(newType.createLockedAccess());
+		
 		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 }
