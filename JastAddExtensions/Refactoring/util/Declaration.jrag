@@ -5,10 +5,16 @@ aspect Declaration {
 	
 	PackageDecl implements Declaration;
 	TypeDecl implements Declaration;
-	Variable extends Declaration;
-	MethodDecl implements Declaration;
 	
 	public String PackageDecl.name() {
 		return getName();
 	}
+	
+	interface TypedDeclaration extends Declaration {
+		TypeDecl type();
+		Access getTypeAccess();
+	}
+	
+	Variable extends TypedDeclaration;
+	MethodDecl implements TypedDeclaration;
 }

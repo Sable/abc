@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 aspect TypeConstraints {
 	public abstract class TypeConstraint {
 		private ASTNode node;
@@ -32,8 +34,8 @@ aspect TypeConstraints {
 		}
 		
 		public boolean solved() {
-			TypeDecl lefttp = left.getConstrainedType().erasure().refresh(),
-			         righttp = right.getConstrainedType().erasure().refresh();
+			TypeDecl lefttp = left.getConstrainedType().refresh().erasure(),
+			         righttp = right.getConstrainedType().refresh().erasure();
 			return !lefttp.isReferenceType() || !righttp.isReferenceType() || op.eval(lefttp, righttp);
 		}
 		
@@ -49,40 +51,31 @@ aspect TypeConstraints {
 		}
 	}
 	
-	class WithinTypeThatSubclassesConstraint extends TypeConstraint {
-		private TypeConstraintVariable left, right;
+	class IsArrayTypeConstraint extends TypeConstraint {
+		private TypeConstraintVariable var;
 		
-		public WithinTypeThatSubclassesConstraint(ASTNode node, String cause, TypeConstraintVariable left, TypeConstraintVariable right) {
+		public IsArrayTypeConstraint(ASTNode node, String cause, TypeConstraintVariable var) {
 			super(node, cause);
-			this.left = left;
-			this.right = right;
+			this.var = var;
 		}
 		
 		public boolean solved() {
-			TypeDecl lefttp = left.getConstrainedType().erasure(),
-	         		 righttp = right.getConstrainedType().erasure();
-			return !lefttp.isReferenceType() || !righttp.isReferenceType() || lefttp.withinBodyThatSubclasses(righttp) != null;
+			return var.getConstrainedType().refresh().isArrayDecl();
 		}
 		
 		public String describe() {
-			return left.describeConstraintVariable() + " within type that subclasses " + right.describeConstraintVariable();
+			return var.describeConstraintVariable() + " is array type";
 		}
 		
 		public boolean equals(Object o) {
-			if(!(o instanceof WithinTypeThatSubclassesConstraint))
+			if(!(o instanceof IsArrayTypeConstraint))
 				return false;
-			WithinTypeThatSubclassesConstraint that = (WithinTypeThatSubclassesConstraint)o;
-			return this.left.equals(that.left) && this.right.equals(that.right);
+			return this.var.equals(((IsArrayTypeConstraint)o).var);
 		}
 	}
 	
 	class DisjunctiveTypeConstraint extends TypeConstraint {
 		private Collection<TypeConstraint> constraints;
-		
-		public DisjunctiveTypeConstraint(ASTNode node, String cause, Collection<TypeConstraint> constraints) {
-			super(node, cause);
-			this.constraints = constraints;
-		}
 		
 		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left, Operator op, Collection<? extends TypeConstraintVariable> rights) {
 			super(node, cause);
@@ -91,12 +84,8 @@ aspect TypeConstraints {
 				this.constraints.add(new SimpleTypeConstraint(node, cause, left, op, right));
 		}
 		
-		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left1, Operator op1, TypeConstraintVariable right1,
-																	 TypeConstraintVariable left2, Operator op2, TypeConstraintVariable right2) {
-			super(node, cause);
-			this.constraints = new ArrayList<TypeConstraint>(2);
-			this.constraints.add(new SimpleTypeConstraint(node, cause, left1, op1, right1));
-			this.constraints.add(new SimpleTypeConstraint(node, cause, left2, op2, right2));
+		public DisjunctiveTypeConstraint(ASTNode node, String cause, TypeConstraintVariable left, Operator op, TypeConstraintVariable... rights) {
+			this(node, cause, left, op, Arrays.asList(rights));
 		}
 		
 		public boolean solved() {
@@ -135,25 +124,24 @@ aspect TypeConstraints {
 	
 	// a type constraint variable constrains either the type of a program element,
 	// or the host type in which it is declared
-	interface TypeConstraintVariable { 
-		public TypeDecl getConstrainedType();
-		public String describeConstraintVariable();
-	}
+	interface TypeConstraintVariable { }
+	syn TypeDecl TypeConstraintVariable.getConstrainedType();
+	syn String TypeConstraintVariable.describeConstraintVariable();
 	
 	BodyDecl implements TypeConstraintVariable;
-	public TypeDecl BodyDecl.getConstrainedType() { return hostType(); }
-	public String BodyDecl.describeConstraintVariable() { return "Decl(" + toString() + ")"; }
-	public String MethodDecl.describeConstraintVariable() { return "Decl(" + hostType().fullName() + "." + signature() + ")"; }
-	public String ConstructorDecl.describeConstraintVariable() { return "Decl(" + signature() + ")"; }
-	public String FieldDeclaration.describeConstraintVariable() { return "Decl(" + name() + ")"; }
+	eq BodyDecl.getConstrainedType() = hostType();
+	eq BodyDecl.describeConstraintVariable() = "Decl(" + toString() + ")";
+	eq MethodDecl.describeConstraintVariable() = "Decl(" + hostType().fullName() + "." + signature() + ")";
+	eq ConstructorDecl.describeConstraintVariable() = "Decl(" + signature() + ")";
+	eq FieldDeclaration.describeConstraintVariable() = "Decl(" + name() + ")";
 	
 	Expr implements TypeConstraintVariable;
-	public TypeDecl Expr.getConstrainedType() { return type(); }
-	public String Expr.describeConstraintVariable() { return "[" + this + "]"; }
+	eq Expr.getConstrainedType() = type();
+	eq Expr.describeConstraintVariable() = "[" + this + "]";
 	
 	TypeDecl implements TypeConstraintVariable;
-	public TypeDecl TypeDecl.getConstrainedType() { return this; }
-	public String TypeDecl.describeConstraintVariable() { return fullName(); }
+	eq TypeDecl.getConstrainedType() = this;
+	eq TypeDecl.describeConstraintVariable() = fullName();
 	
 	public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
 	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
@@ -162,14 +150,12 @@ aspect TypeConstraints {
 		if(right == oldNode)
 			right = newNode;
 	}
-	public void WithinTypeThatSubclassesConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
-		if(left == oldNode)
-			left = newNode;
-		if(right == oldNode)
-			right = newNode;
+	public void IsArrayTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
+		if(var == oldNode)
+			var = newNode;
 	}
 	public void DisjunctiveTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
 		for(TypeConstraint tc : constraints)
 			tc.subst(oldNode, newNode);
-	}
+	}	
 }

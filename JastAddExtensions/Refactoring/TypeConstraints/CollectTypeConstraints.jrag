@@ -10,8 +10,8 @@ aspect CollectTypeConstraints {
 	             to Program.typeConstraints()
 	             for programRoot();
 	
-	VarAccess contributes Collections.singleton(fieldAccessConstraint())
-	          when decl() instanceof FieldDeclaration
+	VarAccess contributes Collections.singleton(new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl()))
+	          when isQualified()
 	          to Program.typeConstraints()
 	          for programRoot();
 	
@@ -47,14 +47,16 @@ aspect CollectTypeConstraints {
 			 for programRoot();
 
 	ArrayTypeWithSizeAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "sized array type",
-				getExpr(), Operator.LE, typeInt().boxed(),
-				getExpr(), Operator.LE, typeInt()))
+				getExpr(), Operator.LE, typeInt().boxed(), typeInt()))
 	         to Program.typeConstraints()
 	         for programRoot();
 	
-	ArrayAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "array access",
-				getExpr(), Operator.LE, typeInt().boxed(),
-				getExpr(), Operator.LE, typeInt()))
+	ArrayAccess contributes Collections.singleton(new DisjunctiveTypeConstraint(this, "array access (1)",
+				getExpr(), Operator.LE, typeInt().boxed(), typeInt()))
+			 to Program.typeConstraints()
+			 for programRoot();
+	
+	ArrayAccess contributes Collections.singleton(new IsArrayTypeConstraint(this, "array access (2)", qualifier()))
 			 to Program.typeConstraints()
 			 for programRoot();
 	
@@ -62,16 +64,17 @@ aspect CollectTypeConstraints {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
 		MethodDecl md = decl();
 		for(int i=0;i<md.getNumParameter();++i) {
-			Expr arg = getArg(i);
 			ParameterDeclaration parm = md.getParameter(i);
 			if(parm.isVariableArity()) {
 				// TODO: handle this
 				continue;
 			} else {
+				Expr arg = getArg(i);
 				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
-		constraints.add(methodAccessConstraint());
+		if(isQualified())
+			constraints.add(new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, decl().rootDefs()));
 		return constraints;
 	}
 	
@@ -79,12 +82,12 @@ aspect CollectTypeConstraints {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
 		ConstructorDecl cd = decl();
 		for(int i=0;i<cd.getNumParameter();++i) {
-			Expr arg = getArg(i);
 			ParameterDeclaration parm = cd.getParameter(i);
 			if(parm.isVariableArity()) {
 				// TODO: handle this
 				continue;
 			} else {
+				Expr arg = getArg(i);
 				constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
@@ -105,24 +108,6 @@ aspect CollectTypeConstraints {
 			}
 		}
 		return constraints;
-	}
-	
-	syn lazy TypeConstraint MethodAccess.methodAccessConstraint() {
-		Collection<MethodDecl> rootDefs = decl().rootDefs();
-		if(isQualified()) {
-			return new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, rootDefs);
-		} else {
-			Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
-			for(MethodDecl rootDef : rootDefs)
-				constraints.add(new WithinTypeThatSubclassesConstraint(this, "method invocation", hostBodyDecl(), rootDef));
-			return new DisjunctiveTypeConstraint(this, "method invocation", constraints);
-		}
-	}
-	
-	syn lazy TypeConstraint VarAccess.fieldAccessConstraint() {
-		if(isQualified())
-			return new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl());
-		return new WithinTypeThatSubclassesConstraint(this, "field access", hostBodyDecl(), (FieldDeclaration)decl());
 	}
 	
 	public Collection<TypeConstraint> MethodDecl.overridingTypeConstraints() {
