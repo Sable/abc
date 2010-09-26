@@ -6,6 +6,16 @@ aspect CollectTypeConstraints {
 	                 to Program.typeConstraints()
 	                 for programRoot();
 	
+	VariableDeclaration contributes Collections.singleton(new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()))
+				 when hasInit()
+				 to Program.typeConstraints()
+				 for programRoot();
+	
+	FieldDeclaration contributes Collections.singleton(new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()))
+	 			 when hasInit()
+	 			 to Program.typeConstraints()
+	 			 for programRoot();
+	
 	MethodAccess contributes typeConstraints()
 	             to Program.typeConstraints()
 	             for programRoot();
@@ -59,6 +69,12 @@ aspect CollectTypeConstraints {
 	ArrayAccess contributes Collections.singleton(new IsArrayTypeConstraint(this, "array access (2)", qualifier()))
 			 to Program.typeConstraints()
 			 for programRoot();
+	
+	MethodDecl contributes Collections.singleton(new SimpleTypeConstraint(this, "main method", 
+														getParameter(0).getTypeAccess(), Operator.EQ, getParameter(0).type()))
+	         when isMainMethod()
+	         to Program.typeConstraints()
+	         for programRoot();
 	
 	public Collection<TypeConstraint> MethodAccess.typeConstraints() {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();

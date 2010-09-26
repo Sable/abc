@@ -3,7 +3,7 @@ aspect ChangeParameterType {
 		if(idx < 0 || idx >= getNumParameter())
 			throw new RefactoringException("invalid parameter index");
 		ParameterDeclaration pd = getParameter(idx);
-		if(!pd.type().supertypes().contains(newType))
+		if(!pd.type().subtype(newType))
 			throw new RefactoringException("unsupported refactoring");
 		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
 		programRoot().lockMethodNames(name());
@@ -12,9 +12,19 @@ aspect ChangeParameterType {
 		TypeConstraintSystem s = new TypeConstraintSystem(constraints, pd, newType);
 		Collection<TypedDeclaration> update = s.solve();
 		
-		for(TypedDeclaration td : update)
+		for(TypedDeclaration td : update) {
+			if(!td.canChangeType())
+				throw new RefactoringException("type cannot be changed");
 			td.setTypeAccess(newType.createLockedAccess());
+		}
 		
 		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
+	
+	syn boolean TypedDeclaration.canChangeType();
+	eq MethodDecl.canChangeType() = fromSource() && !isNative();
+	syn boolean Variable.canChangeType(); 
+	eq FieldDeclaration.canChangeType() = fromSource();
+	eq ParameterDeclaration.canChangeType() = fromSource() && (!(getParent().getParent() instanceof MethodDecl) || !((MethodDecl)getParent().getParent()).isNative());
+	eq VariableDeclaration.canChangeType() = fromSource();
 }
