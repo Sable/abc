@@ -26,7 +26,7 @@ aspect IntroduceIndirection {
 		for(MethodAccess ma : usesOfAllCopies()) {
 			if(ma.hostBodyDecl() == indirection)
 				continue;
-			if(ma.isMonoCall() && !this.overriders().isEmpty())
+			if(ma.isMonoCall() && !this.overridingMethods().isEmpty())
 				continue;
 			if(!isStatic()) {
 				ma.bundleQualifier();

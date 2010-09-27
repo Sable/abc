@@ -50,24 +50,23 @@ aspect Overriding {
 	}
 
 	// collect all method declarations overriding a given method declaration
-	coll HashSet<MethodDecl> MethodDecl.coll_overriders() [new HashSet<MethodDecl>()] with add root Program;
-	MethodDecl contributes this to MethodDecl.coll_overriders() for each overrides();
+	coll HashSet<MethodDecl> MethodDecl.coll_overridingMethods() [new HashSet<MethodDecl>()] with add root Program;
+	MethodDecl contributes this to MethodDecl.coll_overridingMethods() for each overriddenMethods();
 	
-	/* Problem with generics for overriders/overrides:
+	/* Problem with generics for overriding/overriddenMethods:
 	 * 
-	 * overrides returns MethodDeclSubstituted, so overriders from source class from param superclass don't work
-	 * as expected
-	 * 
+	 * overriddenMethods returns MethodDeclSubstituted, so overridingMethods from generic superclass 
+	 * don't work as expected
 	 */
 	
-	public HashSet<MethodDecl> MethodDecl.overriders() {
+	public HashSet<MethodDecl> MethodDecl.overridingMethods() {
 		if(this.isFinal() || this.isPrivate() || this.isStatic())
 			return new HashSet<MethodDecl>();
-		return coll_overriders();
+		return coll_overridingMethods();
 	}
 	
 	// get all method declarations overridden by a given method declaration
-	syn lazy HashSet<MethodDecl> MethodDecl.overrides() {
+	syn lazy HashSet<MethodDecl> MethodDecl.overriddenMethods() {
 		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
 		if(this.isPrivate() || this.isStatic())
 			return ret;
@@ -159,9 +158,9 @@ aspect Overriding {
 			MethodDecl md = worklist.removeFirst();
 			if(res.contains(md))
 				continue;
-			if(md.overrides().isEmpty())
+			if(md.overriddenMethods().isEmpty())
 				res.add(md);
-			worklist.addAll(md.overrides());
+			worklist.addAll(md.overriddenMethods());
 		}
 		return res;
 	}
@@ -182,6 +181,20 @@ aspect Overriding {
 		return res;		
 	}
 	
+	syn lazy Collection<InterfaceDecl> TypeDecl.superinterfaces() = Collections.emptySet();
+	eq ClassDecl.superinterfaces() {
+		Collection<InterfaceDecl> res = new LinkedList<InterfaceDecl>();
+		for(Iterator<InterfaceDecl> iter = interfacesIterator(); iter.hasNext();)
+			res.add(iter.next());
+		return res;
+	}
+	eq InterfaceDecl.superinterfaces() {
+		Collection<InterfaceDecl> res = new LinkedList<InterfaceDecl>();
+		for(Iterator<InterfaceDecl> iter = superinterfacesIterator(); iter.hasNext();)
+			res.add(iter.next());
+		return res;			
+	}
+	
 	syn lazy Collection<FieldDeclaration> FieldDeclaration.hiddenFields() {
 		Collection<FieldDeclaration> res = new LinkedHashSet<FieldDeclaration>();
 		for(TypeDecl std : hostType().supertypes()) {
@@ -193,4 +206,22 @@ aspect Overriding {
 		}
 		return res;
 	}
+	
+	/* Indirect overriding: We say that a method m in a class A indirectly overrides a method m' in an interface
+	 * 						I if there is some class C inheriting both m from A and m' from I under the same
+	 *                      signature, yet A itself does not inherit m' under the signature of m.
+	 */
+	syn lazy Collection<MethodDecl> MethodDecl.indirectlyOverriddenMethods() {
+		Collection<TypeDecl> inheritors = inheritingTypes();
+		Collection<MethodDecl> res = new HashSet<MethodDecl>();
+		for(TypeDecl inheritor : inheritors) {
+			if(inheritor == hostType())
+				continue;
+			for(InterfaceDecl sup : inheritor.superinterfaces())
+				for(Iterator<MethodDecl> iter = sup.methodsSignature(signature()).iterator();iter.hasNext();)
+					res.add(iter.next());
+		}
+		return res;
+	}
+	
 }

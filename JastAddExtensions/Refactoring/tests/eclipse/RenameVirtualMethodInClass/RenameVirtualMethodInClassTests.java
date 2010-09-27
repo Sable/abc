@@ -177,39 +177,44 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		helper1();
 	}
 
+	/* disabled: we can handle this
 	public void testFail8() throws Exception{
 		helper1();
-	}
+	}*/
 
 	/* disabled: does not compile
 	public void testFail9() throws Exception{
 		helper1_0("m", "k", null);
 	}*/
 
+	/* disabled: we can handle this
 	public void testFail10() throws Exception{
 		helper1();
-	}
+	}*/
 
 	public void testFail11() throws Exception{
 		helper1();
 	}
 
+	/* disabled: we can handle this
 	public void testFail12() throws Exception{
 		helper1();
-	}
+	}*/
 
 	/* disabled: does not compile
 	public void testFail13() throws Exception{
 		helper1();
 	}*/
 
+	/* disabled: we can handle this
 	public void testFail14() throws Exception{
 		helper1_0("m", "k", null);
-	}
+	}*/
 
+	/* disabled: we can handle this
 	public void testFail15() throws Exception{
 		helper1();
-	}
+	}*/
 
 	public void testFail17() throws Exception{
 		helper1();
@@ -219,13 +224,15 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		helper1();
 	}
 
+	/* disabled: we can handle this
 	public void testFail19() throws Exception{
 		helper1();
-	}
+	}*/
 
+	/* disabled: we can handle this
 	public void testFail20() throws Exception{
 		helper1();
-	}
+	}*/
 
 	public void testFail21() throws Exception{
 		helper1();
@@ -235,17 +242,19 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		helper1();
 	}
 
+	/* disabled: we can handle this
 	public void testFail23() throws Exception{
 		helper1();
-	}
+	}*/
 
 	public void testFail24() throws Exception{
 		helper1();
 	}
 
+	/* disabled: we can handle this
 	public void testFail25() throws Exception{
 		helper1();
-	}
+	}*/
 
 	public void testFail26() throws Exception{
 		helper1();
@@ -283,9 +292,10 @@ public class RenameVirtualMethodInClassTests extends TestCase {
 		helper1_not_available("toString", new String[0]);
 	}*/
 
+	/* disabled: we can handle this
 	public void testFail34() throws Exception{
 		helper1_0("m", "k", new String[]{"QString;"});
-	}
+	}*/
 
 //	//test removed - was invalid
 //	public void testFail35() throws Exception{

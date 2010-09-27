@@ -30,7 +30,7 @@ aspect InsertUnusedMethod {
 			throw new RefactoringException("method is used");
 		m.checkEnclosingTypeNames(this);
 		if(m.isAbstract())
-			for(TypeDecl td : m.typesToMakeAbstract())
+			for(TypeDecl td : m.inheritingTypes())
 				td.makeAbstract();
 	}
 	

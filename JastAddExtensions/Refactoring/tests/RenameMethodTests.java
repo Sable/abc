@@ -571,10 +571,13 @@ public class RenameMethodTests extends TestCase {
     }
     
     public void test40() {
-    	testFail(
+    	testSucc(
     		"A", "m()", "n",
     		Program.fromClasses(
     		"class A { void m() { } }",
+    		"class B extends A { void n() { } }"),
+    		Program.fromClasses(
+    		"class A { private void n() { } }",
     		"class B extends A { void n() { } }"));
     }
     
@@ -589,10 +592,14 @@ public class RenameMethodTests extends TestCase {
     }
     
     public void test42() {
-    	testFail(
+    	testSucc(
     		"A", "m()", "n",
     		Program.fromClasses(
     		"class A { void m() { } }",
+    		"abstract class B extends A implements I { }",
+    		"interface I { void n(); }"),
+    		Program.fromClasses(
+    		"class A { public void n() { } }",
     		"abstract class B extends A implements I { }",
     		"interface I { void n(); }"));
     }
@@ -612,5 +619,14 @@ public class RenameMethodTests extends TestCase {
     		"  void n(String x, Object y) { }" +
     		"  { n((String)\"\", (Object)\"\"); }" +
     		"}"));
+    }
+    
+    public void test44() {
+    	testFail(
+    		"A", "m()", "n",
+    		Program.fromClasses(
+    		"class A { void m() { } }",
+    		"class B extends A { void n() { } }" +
+    		"class C { void foo(A a) { a.m(); } }"));
     }
 }

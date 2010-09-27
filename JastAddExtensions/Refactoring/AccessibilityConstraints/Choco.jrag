@@ -4,7 +4,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 
 // integration of Choco for constraint solving
@@ -66,7 +66,7 @@ aspect Choco {
 		Solver solver = new CPSolver();
 		solver.read(model);
 		solver.setVarIntSelector(new RandomIntVarSelector(solver));
-		solver.setValIntIterator(new IncreasingDomain());
+		solver.setValIntIterator(new DecreasingDomain());
 		if(!solver.minimize(solver.getVar(weight), false))
 			return null;
 		return generateAccessibilityMap(model, solver);
@@ -93,7 +93,7 @@ aspect Choco {
 		Solver solver = new CPSolver();
 		solver.read(model);
 		solver.setVarIntSelector(new RandomIntVarSelector(solver));
-		solver.setValIntIterator(new IncreasingDomain());
+		solver.setValIntIterator(new DecreasingDomain());
 		Collection<Map<Visible, Integer>> res = new LinkedList<Map<Visible, Integer>>();
 		if(!solver.solve())
 			return res;

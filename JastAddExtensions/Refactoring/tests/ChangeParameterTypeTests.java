@@ -203,4 +203,24 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void n(Object a) { }" +
 				"}"));
 	}
+	
+	public void test11() {
+		testSucc("Super", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class Super {" +
+				"  public void m(String s) { }" +
+				"}",
+				"interface I {" +
+				"  void m(String s);" +
+				"}",
+				"class A extends Super implements I { }"),
+				Program.fromClasses(
+				"class Super {" +
+				"  public void m(Object s) { }" +
+				"}",
+				"interface I {" +
+				"  void m(Object s);" +
+				"}",
+				"class A extends Super implements I { }"));
+	}
 }

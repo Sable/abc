@@ -128,7 +128,7 @@ aspect CollectTypeConstraints {
 	
 	public Collection<TypeConstraint> MethodDecl.overridingTypeConstraints() {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
-		for(MethodDecl that : overrides()) {
+		for(MethodDecl that : overriddenMethods()) {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
 									 thatParm = that.getParameter(i);
@@ -136,6 +136,14 @@ aspect CollectTypeConstraints {
 			}
 			constraints.add(new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			constraints.add(new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
+		}
+		for(MethodDecl that : indirectlyOverriddenMethods()) {
+			for(int i=0;i<getNumParameter();++i) {
+				ParameterDeclaration thisParm = this.getParameter(i),
+									 thatParm = that.getParameter(i);
+				constraints.add(new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
+			}			
+			constraints.add(new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		return constraints;
 	}

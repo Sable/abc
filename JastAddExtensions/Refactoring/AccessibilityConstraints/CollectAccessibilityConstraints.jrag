@@ -70,9 +70,13 @@ aspect CollectConstraints {
 	syn lazy Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverridingAndHiding() {
 		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
 		// (Sub-1), (Sub-2), (Dyn-1)
-		for(MethodDecl that : overrides()) {
+		for(MethodDecl that : overriddenMethods()) {
 			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
 			constrs.add(new AccessibilityConstraint(this, that.minAccess(hostType().hostPackage(), hostType()), Operator.LE, that));
+		}
+		for(MethodDecl that : indirectlyOverriddenMethods()) {
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+			// TODO: add corresponding second constraint; see above
 		}
 		// (Sub-1)
 		for(MethodDecl that : hiddenMethods()) {

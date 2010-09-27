@@ -13,9 +13,29 @@ aspect LockedOverriding {
 	private HashSet<SavedMethodDecl> MethodDecl.lockedOverridingDependencies = null;
 	public void MethodDecl.lockOverridingDependencies(Collection<String> names) {
 		if(names.contains(name())) {
-			lockedOverridingDependencies = new HashSet<SavedMethodDecl>();
-			for(MethodDecl md : overrides())
-				lockedOverridingDependencies.add(md.save());
+			HashSet<SavedMethodDecl> deps = new HashSet<SavedMethodDecl>();
+			for(MethodDecl md : overriddenMethods())
+				deps.add(md.save());
+			this.lockedOverridingDependencies = deps;
+		}
+	}
+	
+	refine Overriding eq MethodDecl.overriddenMethods() {
+		if(lockedOverridingDependencies == null) {
+			return refined();
+		} else {
+			HashSet<MethodDecl> res = new HashSet<MethodDecl>();
+			for(SavedMethodDecl md : lockedOverridingDependencies)
+				res.add(md.getDecl());
+			return res;
+		}
+	}
+	
+	refine LookupMethod eq MethodDecl.overrides(MethodDecl m) {
+		if(lockedOverridingDependencies == null) {
+			return refined(m);
+		} else {
+			return overriddenMethods().contains(m);
 		}
 	}
 	
@@ -39,11 +59,10 @@ aspect LockedOverriding {
 	}
 	public void MethodDecl.unlockOverriding() {
 		if(lockedOverridingDependencies != null) {
-			HashSet<MethodDecl> old_overrides = new HashSet<MethodDecl>();
-			for(SavedMethodDecl md : lockedOverridingDependencies)
-				old_overrides.add(md.getDecl());
+			HashSet<MethodDecl> old_overridden = overriddenMethods();
 			lockedOverridingDependencies = null;
-			if(!old_overrides.equals(overrides()))
+			this.flushCaches();
+			if(!old_overridden.equals(overriddenMethods()))
 				throw new RefactoringException("overriding has changed");
 		}
 		super.unlockOverriding();

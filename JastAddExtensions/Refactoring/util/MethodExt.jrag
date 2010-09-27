@@ -7,7 +7,7 @@ aspect MethodExt {
 		getModifiers().addModifier("abstract");
 		setBlockOpt(new Opt());
 		hostType().makeAbstract();
-		for(TypeDecl td : typesToMakeAbstract())
+		for(TypeDecl td : inheritingTypes())
 			td.makeAbstract();
 		this.flushCaches();
 	}
@@ -18,8 +18,8 @@ aspect MethodExt {
 	public void MethodDecl.removeMethod() {
 		if(isCallableFromOutside() || isReferencedFromOutside())
 			throw new RefactoringException("method is still used");
-		if(!overrides().isEmpty() && allAbstract(overrides())) {
-			for(TypeDecl td : typesToMakeAbstract())
+		if(!overriddenMethods().isEmpty() && allAbstract(overriddenMethods())) {
+			for(TypeDecl td : inheritingTypes())
 				td.makeAbstract();
 		}
 		hostType().removeBodyDecl(this);
@@ -45,7 +45,7 @@ aspect MethodExt {
 		if(polyUses().isEmpty())
 			return false;
 		// not if no object of a type that inherits this method is ever constructed
-		for(TypeDecl td : typesToMakeAbstract())
+		for(TypeDecl td : inheritingTypes())
 			if(td.instancesAreConstructed())
 				return true;
 		return false;
@@ -53,7 +53,7 @@ aspect MethodExt {
 	
 	// all types that inherit a certain method and do not provide an overriding definition
 	// including search through subclasses in different package that can't override the method (if package access)
-	syn lazy Collection<TypeDecl> MethodDecl.typesToMakeAbstract() {
+	syn lazy Collection<TypeDecl> MethodDecl.inheritingTypes() {
 		if(isStatic() || isPrivate())
 			return Collections.singleton(hostType());
 		Collection<TypeDecl> result = new HashSet<TypeDecl>();
@@ -165,7 +165,6 @@ aspect MethodExt {
 	//									/\ m,m'' are inherited/overriden to T
 	// does BFS from the method
 	syn lazy Collection<MethodDecl> MethodDecl.relatives() {
-    	
 		if(isPrivate() || isStatic())
 			return Collections.singleton(this);
     	
@@ -199,13 +198,14 @@ aspect MethodExt {
 				}
 
 				// superclass
-				String sup_sig = superTypeSignature(sig, cd.superclass().sourceTypeDecl(), cd);
-				if (!cd.superclass().sourceTypeDecl().methodsSignature(sup_sig).isEmpty()
-						&& ((MethodDecl) cd.superclass().sourceTypeDecl().methodsSignature(sup_sig).iterator().next())
-							.accessibleFrom(cd)
-						) {
-					to_process.push((ReferenceType) cd.superclass().sourceTypeDecl());
-					sigs.push(sup_sig);
+				if(!cd.isObject()) {
+					TypeDecl superclass = cd.superclass().sourceTypeDecl();
+					String sup_sig = superTypeSignature(sig, superclass, cd);
+					SimpleSet mds = superclass.methodsSignature(sup_sig);
+					if (!mds.isEmpty() && ((MethodDecl) mds.iterator().next()).accessibleFrom(cd)) {
+						to_process.push((ReferenceType)superclass);
+						sigs.push(sup_sig);
+					}
 				}
 				
 				// interfaces
@@ -234,7 +234,7 @@ aspect MethodExt {
 				// super interfaces
 				for (Iterator<InterfaceDecl> i = id.superInterfacesSourceDecls().iterator(); i.hasNext();) {
 					InterfaceDecl idecl = i.next();
-					String sup_sig = superTypeSignature(sig, id, rt);
+					String sup_sig = superTypeSignature(sig, idecl, rt);
 					if (!idecl.methodsSignature(sup_sig).isEmpty()) {
 						to_process.push(idecl);
 						sigs.push(sup_sig);
@@ -249,8 +249,8 @@ aspect MethodExt {
 			for (Iterator i = rt.childTypes().iterator(); i.hasNext();) {
 				ReferenceType rtp = (ReferenceType) ((ReferenceType) i.next()).sourceTypeDecl();
 				String sub_sig = subTypeSignature(sig, rt, rtp);
-				if (!rtp.methodsSignature(sub_sig).isEmpty()
-						&& ((MethodDecl) rtp.methodsSignature(sub_sig).iterator().next())
+				SimpleSet mds = rtp.methodsSignature(sub_sig);
+				if (!mds.isEmpty() && ((MethodDecl)mds.iterator().next())
 								// these should be OK even if there are more such methods
 							.accessibleFrom(rt)
 						) {
@@ -294,25 +294,9 @@ aspect MethodExt {
 	}
 	
 	private static ParTypeDecl MethodDecl.linkSupSub(GenericTypeDecl gtd, TypeDecl sub) {
-		for(int i = 0; i < gtd.getNumParTypeDecl(); i++) {
-			ParTypeDecl ptd = gtd.getParTypeDecl(i);
-			if (sub instanceof ClassDecl) {
-				ClassDecl cd = (ClassDecl) sub;
-				if (cd.superclass() == ptd)
-					return ptd;
-				for (Iterator it = cd.interfacesIterator(); it.hasNext();) {
-					if (it.next() == ptd)
-						return ptd;
-				}
-			}
-			if (sub instanceof InterfaceDecl) {
-				InterfaceDecl id = (InterfaceDecl) sub;
-				for (Iterator it = id.superinterfacesIterator(); it.hasNext();) {
-					if (it.next() == ptd)
-						return ptd;
-				}
-			}
-		}
+		for(TypeDecl sup : sub.supertypes())
+			if(sup instanceof ParTypeDecl && ((ParTypeDecl)sup).genericDecl().sourceTypeDecl() == gtd)
+				return (ParTypeDecl)sup;
 		return null;
 	}
 

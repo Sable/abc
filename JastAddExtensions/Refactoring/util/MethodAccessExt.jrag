@@ -13,7 +13,7 @@ aspect MethodAccessExt {
 			sz = res.size();
 			HashSet<MethodDecl> next_layer = new HashSet<MethodDecl>();
 			for(MethodDecl md : res)
-				next_layer.addAll(md.overriders());
+				next_layer.addAll(md.overridingMethods());
 			res.addAll(next_layer);
 		} while(res.size() != sz);
 		return res;
@@ -21,7 +21,7 @@ aspect MethodAccessExt {
 	
 	syn lazy MethodDecl MethodAccess.getUniqueTarget() {
 		MethodDecl md = decl();
-		if(isPolyCall() && !md.overriders().isEmpty())
+		if(isPolyCall() && !md.overridingMethods().isEmpty())
 			return null;
 		return decl();
 	}
