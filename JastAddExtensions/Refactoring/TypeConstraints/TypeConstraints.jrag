@@ -254,17 +254,17 @@ aspect TypeConstraints {
 		if(op == Operator.EQ) {
 			if(update.contains(left.getTypedDecl())) {
 				if(right.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + right + " be of type " + newType.typeName());
+					throw new RefactoringException("cannot make " + right.describeConstraintVariable() + " be of type " + newType.typeName());
 				update.add(right.getTypedDecl());
 			} else if(update.contains(right.getTypedDecl())) {
 				if(left.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + left + " be of type " + newType.typeName());
+					throw new RefactoringException("cannot make " + left.describeConstraintVariable() + " be of type " + newType.typeName());
 				update.add(left.getTypedDecl());
 			}
 		} else if(op == Operator.LE) {
 			if(update.contains(left.getTypedDecl()) && !newType.subtype(right.getConstrainedType())) {
 				if(right.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + right + " be of type " + newType.typeName());
+					throw new RefactoringException("cannot make " + right.describeConstraintVariable() + " be of type " + newType.typeName());
 				update.add(right.getTypedDecl());
 			}
 		} else if(op == Operator.LT) {

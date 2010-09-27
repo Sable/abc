@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/cream106.jar" sourcepath="/home/xiemaisi/cream/src"/>
+	<classpathentry kind="lib" path="lib/choco-solver.jar" sourcepath="/home/xiemaisi/choco/choco-solver/target/choco-solver-2.1.1-SNAPSHOT-src.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -1,0 +1,134 @@
+import choco.Choco;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.kernel.model.Model;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+
+// integration of Choco for constraint solving
+aspect Choco {
+	syn lazy IntegerVariable Visible.chocoVariable(Model model) = Choco.makeIntVar(name(), VIS_PRIVATE, VIS_PUBLIC);
+	
+	public void AccessibilityConstraint.generateChocoConstraint(Model model) {
+		op.generateChocoConstraint(model, left.chocoVariable(model), right.chocoVariable(model));
+	}
+	
+	public abstract void Operator.generateChocoConstraint(Model model, IntegerVariable left, IntegerVariable right);
+	public void EQOperator.generateChocoConstraint(Model model, IntegerVariable left, IntegerVariable right) {
+		model.addConstraint(Choco.equ(left, right));
+	}
+	
+	public void NEOperator.generateChocoConstraint(Model model, IntegerVariable left, IntegerVariable right) {
+		model.addConstraint(Choco.neq(left, right));
+	}
+	
+	public void LEOperator.generateChocoConstraint(Model model, IntegerVariable left, IntegerVariable right) {
+		model.addConstraint(Choco.leq(left, right));
+	}
+	
+	public void LTOperator.generateChocoConstraint(Model model, IntegerVariable left, IntegerVariable right) {
+		model.addConstraint(Choco.lt(left, right));
+	}
+	
+	public abstract IntegerVariable WithAccessModifier.chocoVariable(Model model);
+	
+	public IntegerVariable AccessModifierConstant.chocoVariable(Model model) {
+		return Choco.constant(vis);
+	}
+	
+	public IntegerVariable AccessModifierVariable.chocoVariable(Model model) {
+		return element.chocoVariable(model);
+	}
+	
+	public IntegerVariable Program.populateModel(Model model, Collection<AccessibilityConstraint> accessibilityConstraints) {
+		ArrayList<Visible> sourceVisibles = new ArrayList<Visible>(sourceVisibles());
+		IntegerVariable w = Choco.makeIntVar("weight", VIS_PRIVATE, (VIS_PUBLIC-VIS_PRIVATE)*sourceVisibles.size());
+		IntegerVariable[] ds = Choco.makeIntVarArray("dist", sourceVisibles.size(), VIS_PRIVATE, VIS_PUBLIC);
+		
+		// make sure we have variables for all visible elements that come from source
+		for(int i=0;i<sourceVisibles.size();++i) {
+			Visible sourceVis = sourceVisibles.get(i);
+			IntegerVariable var = sourceVis.chocoVariable(model);
+			model.addVariable(var);
+			model.addConstraint(Choco.distanceEQ(var, Choco.constant(sourceVis.getVisibility()), ds[i]));
+		}
+		
+		model.addConstraint(Choco.equ(w, Choco.sum(ds)));
+		
+		for(AccessibilityConstraint constr : accessibilityConstraints)
+			constr.generateChocoConstraint(model);
+		return w;
+	}
+	
+	public Map<Visible, Integer> Program.solve(Model model, IntegerVariable weight) {
+		Solver solver = new CPSolver();
+		solver.read(model);
+		solver.setVarIntSelector(new RandomIntVarSelector(solver));
+		solver.setValIntIterator(new IncreasingDomain());
+		if(!solver.minimize(solver.getVar(weight), false))
+			return null;
+		return generateAccessibilityMap(model, solver);
+	}
+	
+	public Map<Visible, Integer> Program.solve(Collection<AccessibilityConstraint> accessibilityConstraints) {
+		Model model = new CPModel();
+		IntegerVariable weight = populateModel(model, accessibilityConstraints);
+		return solve(model, weight);
+	}
+	
+	private Map<Visible, Integer> Program.generateAccessibilityMap(Model model, Solver solver) {
+		Map<Visible, Integer> map = new HashMap<Visible, Integer>();
+		for(Visible element : sourceVisibles()) {
+			IntegerVariable var = element.chocoVariable(model);
+			int val = solver.getVar(var).getVal();
+			if(val != element.getVisibility())
+				map.put(element, val);
+		}
+		return map;
+	}
+	
+	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions(Model model) {
+		Solver solver = new CPSolver();
+		solver.read(model);
+		solver.setVarIntSelector(new RandomIntVarSelector(solver));
+		solver.setValIntIterator(new IncreasingDomain());
+		Collection<Map<Visible, Integer>> res = new LinkedList<Map<Visible, Integer>>();
+		if(!solver.solve())
+			return res;
+		do {
+			res.add(generateAccessibilityMap(model, solver));
+		} while(solver.nextSolution());
+		return res;
+	}
+	
+	public Collection<Map<Visible, Integer>> Program.allPossibleSolutions() {
+		Model model = new CPModel();
+		populateModel(model, accessibilityConstraints());
+		return allPossibleSolutions(model);
+	}
+	
+	// collect all visible elements that are from source
+	public Collection<Visible> Program.sourceVisibles() {
+		Collection<Visible> visibles = new HashSet<Visible>();
+		collectSourceVisibles(visibles);
+		return visibles;
+	}
+	
+	public void ASTNode.collectSourceVisibles(Collection<Visible> visibles) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectSourceVisibles(visibles);
+	}
+	
+	public void CompilationUnit.collectSourceVisibles(Collection<Visible> visibles) {
+		if(!fromSource())
+			return;
+		super.collectSourceVisibles(visibles);
+	}
+	
+	public void Visible.collectSourceVisibles(Collection<Visible> visibles) {
+		visibles.add(this);
+		super.collectSourceVisibles(visibles);
+	}
+}
