@@ -105,9 +105,11 @@ public class ChangeParameterTypeTests extends TestCase {
 	}
 	
 	public void test6() {
-		testFail("A", "m(A)", 0, "java.lang.Object",
+		testSucc("A", "m(A)", 0, "java.lang.Object",
 				 Program.fromClasses("class Super { void m(Object o) { } }",
-				 					 "class A extends Super { void m(A a) { } }"));
+				 					 "class A extends Super { void m(A a) { } }"),
+				 Program.fromClasses("class Super { private void m(Object o) { } }",
+						 			 "class A extends Super { void m(Object a) { } }"));
 	}
 	
 	private final Program example =

@@ -16,7 +16,7 @@ aspect LockedOverriding {
 			HashSet<SavedMethodDecl> deps = new HashSet<SavedMethodDecl>();
 			for(MethodDecl md : overriddenMethods())
 				deps.add(md.save());
-			this.lockedOverridingDependencies = deps;
+			setOverridingDependencies(deps);
 		}
 	}
 	
@@ -39,8 +39,11 @@ aspect LockedOverriding {
 		}
 	}
 	
+	private void MethodDecl.setOverridingDependencies(HashSet<SavedMethodDecl> deps) {
+		this.lockedOverridingDependencies = deps;
+	}
 	public void MethodDecl.clearOverridingDependencies() {
-		lockedOverridingDependencies = null;
+		setOverridingDependencies(null);
 	}
 	
 	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
@@ -60,11 +63,17 @@ aspect LockedOverriding {
 	public void MethodDecl.unlockOverriding() {
 		if(lockedOverridingDependencies != null) {
 			HashSet<MethodDecl> old_overridden = overriddenMethods();
-			lockedOverridingDependencies = null;
+			clearOverridingDependencies();
 			this.flushCaches();
 			if(!old_overridden.equals(overriddenMethods()))
 				throw new RefactoringException("overriding has changed");
 		}
 		super.unlockOverriding();
+	}
+	
+	refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
+		if(lockedOverridingDependencies != null)
+			s.append("@LockedOverriding\n");
+		refined(s);
 	}
 }
