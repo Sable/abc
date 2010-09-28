@@ -76,6 +76,10 @@ aspect CollectTypeConstraints {
 	         to Program.typeConstraints()
 	         for programRoot();
 	
+	ArrayInit contributes typeConstraints()
+	         to Program.typeConstraints()
+	         for programRoot();
+	
 	public Collection<TypeConstraint> MethodAccess.typeConstraints() {
 		Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
 		MethodDecl md = decl();
@@ -163,5 +167,13 @@ aspect CollectTypeConstraints {
 	
 	syn lazy boolean CastExpr.isUpCast() {
 		return getExpr().type().subtype(getTypeAccess().type());
+	}
+	
+	public Collection<TypeConstraint> ArrayInit.typeConstraints() {
+		TypeDecl initializerType = declType().componentType();
+		Collection<TypeConstraint> res = new LinkedList<TypeConstraint>();
+		for(Expr e : getInits())
+			res.add(new SimpleTypeConstraint(e, "array init", e, Operator.LE, initializerType));
+		return res;
 	}
 }

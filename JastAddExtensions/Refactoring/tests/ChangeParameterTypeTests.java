@@ -223,4 +223,14 @@ public class ChangeParameterTypeTests extends TestCase {
 				"}",
 				"class A extends Super implements I { }"));
 	}
+	
+	public void test12() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(String s) {" +
+				"    String[] ss = { s };" +
+				"  }" +
+				"}"));
+	}
 }

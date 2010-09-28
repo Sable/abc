@@ -1,5 +1,3 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 aspect UndoASTNodeChildren {
 	
 	refine AST public void ASTNode.setChild(final T node, final int i) {
@@ -192,7 +190,7 @@ aspect UndoASTNodeChildren {
 	refine PermuteParameters public void ASTNode.permute(int[] perm) {
 		if (Program.isRecordingASTChanges()) {
 			// Recording of permute action for undo.
-			throw new NotImplementedException();
+			throw new Error("not implemented");
 		}
 		refined(perm);
 	}
