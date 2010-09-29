@@ -223,30 +223,16 @@ aspect TypeConstraints {
 			tc.subst(oldNode, newNode);
 	}
 	
-	// have to include this here due to stupid ordering of .jrag files...
-	
-	class TypeConstraintSystem {
-		private Collection<TypeConstraint> constraints = new LinkedList<TypeConstraint>();
-		private TypedDeclaration update;
-		private TypeDecl newType;
-		
-		public TypeConstraintSystem(Collection<TypeConstraint> constraints, TypedDeclaration update, TypeDecl newType) {
-			this.constraints.addAll(constraints);
-			this.update = update;
-			this.newType = newType;
-		}
-		
-		public Collection<TypedDeclaration> solve() {
-			Collection<TypedDeclaration> res = new HashSet<TypedDeclaration>();
-			res.add(update);
-			int size;
-			do {
-				size = res.size();
-				for(TypeConstraint constraint : constraints)
-					constraint.propagate(newType, res);
-			} while(size != res.size());
-			return res;
-		}
+	public static Collection<TypedDeclaration> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypedDeclaration update, TypeDecl newType) {
+		Collection<TypedDeclaration> res = new HashSet<TypedDeclaration>();
+		res.add(update);
+		int size;
+		do {
+			size = res.size();
+			for(TypeConstraint constraint : constraints)
+				constraint.propagate(newType, res);
+		} while(size != res.size());
+		return res;
 	}
 	
 	public abstract void TypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update);
