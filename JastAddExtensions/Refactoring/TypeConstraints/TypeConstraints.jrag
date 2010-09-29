@@ -207,7 +207,7 @@ aspect TypeConstraints {
 		return null;
 	}
 	
-	public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
+	/*public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
 	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
 		if(left == oldNode)
 			left = newNode;
@@ -221,10 +221,10 @@ aspect TypeConstraints {
 	public void DisjunctiveTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
 		for(TypeConstraint tc : constraints)
 			tc.subst(oldNode, newNode);
-	}
+	}*/
 	
-	public static Collection<TypedDeclaration> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypedDeclaration update, TypeDecl newType) {
-		Collection<TypedDeclaration> res = new HashSet<TypedDeclaration>();
+	public static Collection<TypeConstraintVariable> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypeConstraintVariable update, TypeDecl newType) {
+		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
 		res.add(update);
 		int size;
 		do {
@@ -235,38 +235,32 @@ aspect TypeConstraints {
 		return res;
 	}
 	
-	public abstract void TypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update);
-	public void SimpleTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
+	public abstract void TypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update);
+	public void SimpleTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
 		if(op == Operator.EQ) {
-			if(update.contains(left.getTypedDecl())) {
-				if(right.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + right.describeConstraintVariable() + " be of type " + newType.typeName());
-				update.add(right.getTypedDecl());
-			} else if(update.contains(right.getTypedDecl())) {
-				if(left.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + left.describeConstraintVariable() + " be of type " + newType.typeName());
-				update.add(left.getTypedDecl());
+			if(update.contains(left)) {
+				addConstraintVar(update, right);
+			} else if(update.contains(right)) {
+				addConstraintVar(update, left);
 			}
 		} else if(op == Operator.LE) {
-			if(update.contains(left.getTypedDecl()) && !newType.subtype(right.getConstrainedType())) {
-				if(right.getTypedDecl() == null)
-					throw new RefactoringException("cannot make " + right.describeConstraintVariable() + " be of type " + newType.typeName());
-				update.add(right.getTypedDecl());
+			if(update.contains(left) && !newType.subtype(right.getConstrainedType())) {
+				addConstraintVar(update, right);
 			}
 		} else if(op == Operator.LT) {
-			if(update.contains(left.getTypedDecl()))
+			if(update.contains(left))
 				throw new RefactoringException("cannot propagate through constraint " + this);
 		} else {
 			throw new RefactoringException("cannot propagate through constraint " + this);
 		}
 	}
-	public void IsArrayTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
-		if(update.contains(var.getTypedDecl()) && !newType.isArrayDecl())
+	public void IsArrayTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(update.contains(var) && !newType.isArrayDecl())
 			throw new RefactoringException(var + " has to be an array");
 	}
-	public void DisjunctiveTypeConstraint.propagate(TypeDecl newType, Collection<TypedDeclaration> update) {
+	public void DisjunctiveTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
 		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
-		if(update.contains(constr.getLeft().getTypedDecl())) {
+		if(update.contains(constr.getLeft())) {
 			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
 				constr = (SimpleTypeConstraint)iter.next();
 				if(newType.subtype(constr.getRight().getConstrainedType()))
@@ -276,4 +270,9 @@ aspect TypeConstraints {
 		}
 	}
 	
+	protected void TypeConstraint.addConstraintVar(Collection<TypeConstraintVariable> update, TypeConstraintVariable tcvar) {
+		if(tcvar.isFixed())
+			throw new RefactoringException("cannot satisfy constraint " + this);
+		update.add(tcvar);
+	}
 }

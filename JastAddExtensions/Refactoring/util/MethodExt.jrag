@@ -76,6 +76,17 @@ aspect MethodExt {
 		return false;
 	}
 	
+	// m.ancestorIn(T) finds a method m' such that m <:* m' and T <:* m'.hostType(), and whenever the same holds for m''
+	// then m' <:* m''
+	syn lazy MethodDecl MethodDecl.ancestorIn(TypeDecl td) {
+		if(td.subtype(hostType()))
+			return this;
+		for(MethodDecl md : overriddenMethods())
+			if(md.ancestorIn(td) != null)
+				return md.ancestorIn(td);
+		return null;
+	}
+	
 	// uses of a method, including its substituted and parameterised copies
 	public Collection<MethodAccess> MethodDecl.usesOfAllCopies() {
 		Collection<MethodAccess> res = new HashSet<MethodAccess>(uses());
@@ -130,39 +141,9 @@ aspect MethodExt {
 		return desc;
 	}
 	
-	// the rootdef of a method m is the method m' defined in an ancestor class of m such that m overrides m',
-	// and m' doesn't override anything; m' might be abstract
-	// this is only defined for methods in classes
-	syn lazy MethodDecl MethodDecl.rootdef() {
-		if(isPrivate() || isStatic())
-			return this;
-		if(!hostType().isClassDecl())
-			throw new Error("undefined operation");
-		return hostType().rootdef(signature(), isPackageProtected());
-	}
-	
-	syn lazy MethodDecl TypeDecl.rootdef(String sig, boolean isPkg) = null;
-	eq ClassDecl.rootdef(String sig, boolean isPkg) {
-		MethodDecl md = null;
-		for(Iterator<MethodDecl> iter=localMethodsSignature(sig).iterator(); iter.hasNext();) {
-			MethodDecl md2 = iter.next();
-			if(!md2.isPrivate()) {
-				md = md2;
-				if(md.isPublic() || md.isProtected())
-					isPkg = false;
-			}
-		}
-		if(hasSuperclass() && (!isPkg || superclass().packageName().equals(this.packageName()))) {
-			MethodDecl md2 = superclass().rootdef(sig, isPkg);
-			if(md2 != null)
-				return md2;
-		}
-		return md;
-	}
-	
 	// relatives(m, m') = common_desc*(m, m')
 	// common_desc(m, m') = exists type T : T <:* m.hostType() /\ T <:* m'.hostType() 
-	//									/\ m,m'' are inherited/overriden to T
+	//									/\ T inherits/overrides both m and m''
 	// does BFS from the method
 	syn lazy Collection<MethodDecl> MethodDecl.relatives() {
 		if(isPrivate() || isStatic())

@@ -4,34 +4,46 @@ aspect ChangeParameterType {
 			throw new RefactoringException("unsupported type change");
 		
 		Program root = programRoot();
-		Collection<TypeConstraint> constraints = root.typeConstraints();
+		Collection<TypeConstraint> constraints = root.typeConstraints(type());
 		
-		Collection<TypedDeclaration> update = propagateGeneralisation(constraints, this, newType);
+		Collection<TypeConstraintVariable> update = propagateGeneralisation(constraints, this.getTypeAccess(), newType);
 		
 		Collection<String> affectedMethods = new HashSet<String>();
 		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();
 		
-		for(TypedDeclaration td : update) {
-			if(td instanceof ParameterDeclaration) {
-				Callable c = ((ParameterDeclaration)td).getParameterisedCallable();
+		for(TypeConstraintVariable tcv : update) {
+			if(tcv.getTypedDecl() instanceof ParameterDeclaration) {
+				Callable c = ((ParameterDeclaration)tcv.getTypedDecl()).getParameterisedCallable();
 				if(c instanceof MethodDecl)
 					affectedMethods.add(((MethodDecl)c).name());
 				else if(c instanceof ConstructorDecl)
 					affectedConstructors.add(((ConstructorDecl)c).hostType());
 			}
+			if(tcv instanceof Expr) {
+				Expr e = (Expr)tcv;
+				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
+					MethodAccess ma = (MethodAccess)e.nextAccess();
+					ma.lock(ma.decl().ancestorIn(newType));
+				}
+			}
 		}
 		
-		programRoot().lockMethodNames(affectedMethods);
-		programRoot().lockConstructorCalls(affectedConstructors);
-		programRoot().lockOverridingDependencies(affectedMethods);
+		root.lockMethodNames(affectedMethods);
+		root.lockConstructorCalls(affectedConstructors);
+		root.lockOverridingDependencies(affectedMethods);
 		
-		for(TypedDeclaration td : update) {
-			if(!td.canChangeType())
-				throw new RefactoringException("type cannot be changed");
-			td.setTypeAccess(newType.createLockedAccess());
+		for(TypeConstraintVariable tcv : update) {
+			TypedDeclaration td = tcv.getTypedDecl();
+			if(td != null) {
+				if(!td.canChangeType())
+					throw new RefactoringException("type cannot be changed");
+				td.setTypeAccess(newType.createLockedAccess());
+			}
 		}
 		
-		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
+		root.flushCaches();
+		
+		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 
 	syn boolean TypedDeclaration.canChangeType();

@@ -3,6 +3,7 @@ package tests;
 import junit.framework.TestCase;
 import AST.MethodDecl;
 import AST.Program;
+import AST.RawCU;
 import AST.RefactoringException;
 import AST.TypeDecl;
 
@@ -298,5 +299,25 @@ public class ChangeParameterTypeTests extends TestCase {
 				"    System.out.println(42);" +
 				"  }" +
 				"}"));
+	}
+	
+	public void test15() {
+		testSucc("q.Main", "n", 0, "p.C",
+				Program.fromCompilationUnits(
+				new RawCU("C.java", 
+						"package p;" +
+						"public class C { protected void m() { } }"),
+				new RawCU("D.java", 
+						"package q;" +
+						"public class D extends p.C { public void m() { } }" +
+						"class Main { void n(D d) { d.m(); } }")),
+				Program.fromCompilationUnits(
+				new RawCU("C.java", 
+						"package p;" +
+						"public class C { public void m() { } }"),
+				new RawCU("D.java", 
+						"package q;" +
+						"public class D extends p.C { public void m() { } }" +
+						"class Main { void n(p.C d) { d.m(); } }")));
 	}
 }
