@@ -25,6 +25,56 @@ aspect UndoLocking {
 			});
 		}
 	}
+	
+	// Locked constructor access
+	
+	refine LockedConstructor private void ConstructorAccess.setTarget(final ConstructorDecl targetConstructor) {
+		final ConstructorDecl saved = this.targetConstructor;
+		refined(targetConstructor);
+		if (Program.isRecordingASTChanges()) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
+				@Override
+				public void undo() {
+					ConstructorAccess.this.targetConstructor = saved;
+				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(targetConstructor);
+				}
+				
+				@Override
+				public String toString() {
+					return "ConstructorAccess.setTarget";
+				}
+			});
+		}
+	}
+
+	refine LockedConstructor private void ClassInstanceExpr.setTarget(final ConstructorDecl targetConstructor) {
+		final ConstructorDecl saved = this.targetConstructor;
+		refined(targetConstructor);
+		if (Program.isRecordingASTChanges()) {
+			Program.addUndoAction(new ASTModification() {
+				@Override
+				public void undo() {
+					ClassInstanceExpr.this.targetConstructor = saved;
+				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(targetConstructor);
+				}
+				
+				@Override
+				public String toString() {
+					return "ClassInstanceExpr.setTarget";
+				}
+			});
+		}
+	}
 
 	// Locked Method Access
 	

@@ -20,6 +20,11 @@ aspect Locking {
 		return this;
 	}
 	
+	public void ASTNode.lockConstructorCalls(Collection<TypeDecl> endangered) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).lockConstructorCalls(endangered);
+	}
+	
 	public ASTNode ASTNode.lockAllNames() {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).lockAllNames();

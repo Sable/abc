@@ -221,11 +221,11 @@ aspect LockedMethodAccess {
 		for(MethodDecl cand : competitors)
 			if(cand.applicableTo(args))
 				if(cand.moreSpecificThan(target) || !target.moreSpecificThan(cand))
-					return (MethodAccess) original.replace(original).with(new MethodAccess(target.name(), insertCasts(args)));
+					return (MethodAccess) original.replace(original).with(new MethodAccess(target.name(), insertCasts(target, args)));
 		return original;
 	}
 	
-	protected List<Expr> MethodAccessInfo.insertCasts(List<Expr> args) {
+	public static List<Expr> MethodAccessInfo.insertCasts(Callable target, List<Expr> args) {
 		List<Expr> new_args = new List<Expr>();
 		for(int i=0;i<target.getNumParameter();++i) {
 			ParameterDeclaration parm = target.getParameter(i);

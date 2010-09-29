@@ -27,4 +27,112 @@ aspect LockedConstructor {
 	}
 
 	public boolean ConstructorDecl.isLocked() { return locked; }
+	
+	// locked constructor accesses and class instance expressions are analogous to locked method accesses
+	private ConstructorDecl ConstructorAccess.targetConstructor = null;
+	private ConstructorDecl ClassInstanceExpr.targetConstructor = null;
+	private void ConstructorAccess.setTarget(ConstructorDecl targetConstructor) {
+		this.targetConstructor = targetConstructor;
+	}
+	private void ClassInstanceExpr.setTarget(ConstructorDecl targetConstructor) {
+		this.targetConstructor = targetConstructor;
+	}
+	
+	refine LookupConstructor eq ConstructorAccess.decl() = targetConstructor == null ? refined() : targetConstructor;
+	refine LookupConstructor eq ClassInstanceExpr.decl() = targetConstructor == null ? refined() : targetConstructor;
+	
+	refine PrettyPrint public void ConstructorAccess.toString(StringBuffer s) {
+		if(targetConstructor == null) {
+			refined(s);
+		} else {
+			s.append("[[");
+			refined(s);
+			s.append("]]");
+		}
+	}
+	refine PrettyPrint public void ClassInstanceExpr.toString(StringBuffer s) {
+		if(targetConstructor == null) {
+			refined(s);
+		} else {
+			s.append("[[");
+			refined(s);
+			s.append("]]");
+		}
+	}
+	
+	public void ConstructorAccess.lockConstructorCalls(Collection<TypeDecl> endangered) {
+		if(endangered.contains(decl().hostType()))
+			lock();
+		super.lockConstructorCalls(endangered);
+	}
+	public void ClassInstanceExpr.lockConstructorCalls(Collection<TypeDecl> endangered) {
+		if(endangered.contains(decl().hostType()))
+			lock();
+		super.lockConstructorCalls(endangered);
+	}
+	
+	public ConstructorAccess ConstructorAccess.lock() {
+		if(targetConstructor == null)
+			lock(decl());
+		return this;
+	}
+	public ClassInstanceExpr ClassInstanceExpr.lock() {
+		if(targetConstructor == null)
+			lock(decl());
+		return this;
+	}
+	
+	public ConstructorAccess ConstructorAccess.lock(ConstructorDecl ctor) {
+		assert ctor != null && ctor != unknownConstructor();
+		setTarget(ctor.sourceConstructorDecl());
+		return this;
+	}
+	public ClassInstanceExpr ClassInstanceExpr.lock(ConstructorDecl ctor) {
+		assert ctor != null && ctor != unknownConstructor();
+		setTarget(ctor.sourceConstructorDecl());
+		return this;
+	}
+	
+	public void ConstructorAccess.eliminateLockedNames() {
+		if(targetConstructor != null)
+			unlock().eliminateLockedNames();
+		else
+			super.eliminateLockedNames();
+	}
+	private ConstructorAccess ConstructorAccess.unlock() {
+		ConstructorDecl targetConstructor = this.targetConstructor;
+		setTarget(null);
+		flushCache();
+		if(decl() != targetConstructor) {
+			if(!fromSource())
+				throw new RefactoringException("cannot adjust constructor access in library code");
+			setArgList(MethodAccessInfo.insertCasts(targetConstructor, getArgList()));
+			flushCache();
+			if(decl() != targetConstructor)
+				throw new RefactoringException("cannot disambiguate constructor access");
+		}
+		return this;
+	}
+	public void ClassInstanceExpr.eliminateLockedNames() {
+		if(targetConstructor != null)
+			unlock().eliminateLockedNames();
+		else
+			super.eliminateLockedNames();
+	}
+	private ClassInstanceExpr ClassInstanceExpr.unlock() {
+		ConstructorDecl targetConstructor = this.targetConstructor;
+		setTarget(null);
+		if(fromSource() && getAccess().type() != targetConstructor.hostType())
+			setAccess(targetConstructor.hostType().createLockedAccess());
+		flushCache();
+		if(decl() != targetConstructor) {
+			if(!fromSource())
+				throw new RefactoringException("cannot adjust constructor access in library code");
+			setArgList(MethodAccessInfo.insertCasts(targetConstructor, getArgList()));
+			flushCache();
+			if(decl() != targetConstructor)
+				throw new RefactoringException("cannot disambiguate constructor access");
+		}
+		return this;
+	}
 }

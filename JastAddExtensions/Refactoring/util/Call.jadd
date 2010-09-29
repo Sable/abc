@@ -6,10 +6,13 @@ aspect Call {
 		public void setArg(Expr e, int i);
 		public void setArgList(List<Expr> list);
 		public void addArg(Expr e);
+		public Callable decl();
+		sons Arg:Expr*;
 	}
 	
 	MethodAccess implements Call;
 	ConstructorAccess implements Call;
+	ClassInstanceExpr implements Call;
 	
 	interface Callable { 
 		public void setParameter(ParameterDeclaration pd, int i);
@@ -19,6 +22,7 @@ aspect Call {
 		public boolean hasBlock();
 		public Block getBlock();
 		public void setBlock(Block b);
+		sons Parameter:ParameterDeclaration* Exception:Access* [Block:Block];
 	}
 	ConstructorDecl implements Callable;
 	MethodDecl implements Callable;
@@ -58,12 +62,21 @@ aspect Call {
 	public boolean ConstructorDecl.isStatic() { return false; }
 	public boolean ConstructorDecl.hasBlock() { return true; }
 	
-	
 	public void ConstructorAccess.insertArg(Expr arg, int i) {
 		getArgList().insertChild(arg, i);
 	}
 	
 	public void ClassInstanceExpr.insertArg(Expr arg, int i) {
 		getArgList().insertChild(arg, i);
+	}
+	
+	// TODO: better name for this attribute, perhaps?
+	syn lazy Callable ParameterDeclaration.getParameterisedCallable() {
+		if(getParent() == null)
+			return null;
+		ASTNode gp = getParent().getParent();
+		if(gp instanceof Callable && ((Callable)gp).getParameterList() == getParent())
+			return (Callable)gp;
+		return null;
 	}
 }

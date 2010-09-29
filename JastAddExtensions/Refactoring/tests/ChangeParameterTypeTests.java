@@ -13,7 +13,7 @@ public class ChangeParameterTypeTests extends TestCase {
 		assertNotNull(md);
 		assertNotNull(type);
 		try {
-			md.changeParameterType(idx, type);
+			md.getParameter(idx).changeType(type);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
@@ -45,7 +45,7 @@ public class ChangeParameterTypeTests extends TestCase {
 		assertNotNull(md);
 		assertNotNull(type);
 		try {
-			md.changeParameterType(idx, type);
+			md.getParameter(idx).changeType(type);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
@@ -232,6 +232,70 @@ public class ChangeParameterTypeTests extends TestCase {
 				"class A {" +
 				"  void m(String s) {" +
 				"    String[] ss = { s };" +
+				"  }" +
+				"}"));
+	}
+	
+	public void test13() {
+		testSucc("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(String s) {" +
+				"    n(s, \"\");" +
+				"  }" +
+				"  void n(String s1, String s2) {" +
+				"    System.out.println(23);" +
+				"  }" +
+				"  void n(String s, Object o) {" +
+				"    System.out.println(42);" +
+				"  }" +
+				"  { n(null, \"\"); }" +
+				"}"),
+				Program.fromClasses(
+				"class A {" +
+				"  void m(Object s) {" +
+				"    n(s, \"\");" +
+				"  }" +
+				"  void n(Object s1, String s2) {" +
+				"    System.out.println(23);" +
+				"  }" +
+				"  void n(String s, Object o) {" +
+				"    System.out.println(42);" +
+				"  }" +
+				"  { n((Object)null, (String)\"\"); }" +
+				"}"));
+	}
+	
+	public void test14() {
+		testSucc("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(String s) {" +
+				"    new B(s, \"\");" +
+				"  }" +
+				"  { new B(null, \"\"); }" +
+				"}",
+				"class B {" +
+				"  B(String s1, String s2) {" +
+				"    System.out.println(23);" +
+				"  }" +
+				"  B(String s, Object o) {" +
+				"    System.out.println(42);" +
+				"  }" +
+				"}"),
+				Program.fromClasses(
+				"class A {" +
+				"  void m(Object s) {" +
+				"    new B(s, \"\");" +
+				"  }" +
+				"  { new B((Object)null, (String)\"\"); }" +
+				"}",
+				"class B {" +
+				"  B(Object s1, String s2) {" +
+				"    System.out.println(23);" +
+				"  }" +
+				"  B(String s, Object o) {" +
+				"    System.out.println(42);" +
 				"  }" +
 				"}"));
 	}

@@ -1,16 +1,29 @@
 aspect ChangeParameterType {
-	public void MethodDecl.changeParameterType(int idx, TypeDecl newType) {
-		if(idx < 0 || idx >= getNumParameter())
-			throw new RefactoringException("invalid parameter index");
-		ParameterDeclaration pd = getParameter(idx);
-		if(!pd.type().subtype(newType))
-			throw new RefactoringException("unsupported refactoring");
-		Collection<TypeConstraint> constraints = programRoot().typeConstraints();
-		programRoot().lockMethodNames(name());
-		programRoot().lockOverridingDependencies(name());
+	public void ParameterDeclaration.changeType(TypeDecl newType) {
+		if(!type().subtype(newType))
+			throw new RefactoringException("unsupported type change");
 		
-		TypeConstraintSystem s = new TypeConstraintSystem(constraints, pd, newType);
-		Collection<TypedDeclaration> update = s.solve();
+		Program root = programRoot();
+		Collection<TypeConstraint> constraints = root.typeConstraints();
+		
+		Collection<TypedDeclaration> update = propagateGeneralisation(constraints, this, newType);
+		
+		Collection<String> affectedMethods = new HashSet<String>();
+		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();
+		
+		for(TypedDeclaration td : update) {
+			if(td instanceof ParameterDeclaration) {
+				Callable c = ((ParameterDeclaration)td).getParameterisedCallable();
+				if(c instanceof MethodDecl)
+					affectedMethods.add(((MethodDecl)c).name());
+				else if(c instanceof ConstructorDecl)
+					affectedConstructors.add(((ConstructorDecl)c).hostType());
+			}
+		}
+		
+		programRoot().lockMethodNames(affectedMethods);
+		programRoot().lockConstructorCalls(affectedConstructors);
+		programRoot().lockOverridingDependencies(affectedMethods);
 		
 		for(TypedDeclaration td : update) {
 			if(!td.canChangeType())
@@ -20,7 +33,7 @@ aspect ChangeParameterType {
 		
 		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
-	
+
 	syn boolean TypedDeclaration.canChangeType();
 	eq MethodDecl.canChangeType() = fromSource() && !isNative();
 	syn boolean Variable.canChangeType(); 
