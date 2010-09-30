@@ -49,6 +49,9 @@ aspect AccessVariable {
 			this.directlyVisible = true;
 		}
 		
+		public TypeDecl getSource() { return source; }
+		public TypeDecl getBend() { return bend; }
+		
 		public SymbolicFieldAccess moveDownTo(TypeDecl td) {
 			bend = td;
 			if(!td.localFields(target.name()).isEmpty() || td.ambiguousFieldName(target.name()))

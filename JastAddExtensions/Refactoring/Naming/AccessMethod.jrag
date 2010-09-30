@@ -30,6 +30,9 @@ aspect AccessMethod {
 			this.competitors = competitors;
 			this.directlyVisible = true;
 		}
+		
+		public TypeDecl getSource() { return source; }
+		public TypeDecl getBend() { return bend; }
 	}
 	
 	public boolean MethodDecl.applicableTo(List<Expr> args) {

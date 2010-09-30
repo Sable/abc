@@ -33,13 +33,17 @@ aspect PushDownMethod {
 		MethodDecl md = this;
 		for(TypeDecl child : hostType().childTypes()) {
 			MethodAccess ma = child.triviallyOverrideInheritedMethod(md);
+			MethodDecl pushed_down = null;
 			if(ma != null) {
-				MethodDecl pushed_down = (MethodDecl)ma.hostBodyDecl();
+				pushed_down = (MethodDecl)ma.hostBodyDecl();
 				ma.inline();
-				pushed_down.foldSynchronized();
 			}
 			md = (MethodDecl)parent.getChild(idx);
 			child.eliminate(WITH_STMT, FRESH_VARIABLES);
+			if(pushed_down != null) {
+				pushed_down.removeSyntheticThis();
+				pushed_down.foldSynchronized();
+			}
 		}
 		final MethodDecl md_ = md;
 		md.removeUnused(leaveAbstract);

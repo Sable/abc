@@ -12,12 +12,16 @@ aspect LockedOverriding {
 	
 	private HashSet<SavedMethodDecl> MethodDecl.lockedOverridingDependencies = null;
 	public void MethodDecl.lockOverridingDependencies(Collection<String> names) {
-		if(names.contains(name())) {
-			HashSet<SavedMethodDecl> deps = new HashSet<SavedMethodDecl>();
-			for(MethodDecl md : overriddenMethods())
-				deps.add(md.save());
-			setOverridingDependencies(deps);
-		}
+		if(names.contains(name()))
+			lockOverriding();
+		super.lockOverridingDependencies(names);
+	}
+	
+	public void MethodDecl.lockOverriding() {
+		HashSet<SavedMethodDecl> deps = new HashSet<SavedMethodDecl>();
+		for(MethodDecl md : overriddenMethods())
+			deps.add(md.save());
+		setOverridingDependencies(deps);
 	}
 	
 	refine Overriding eq MethodDecl.overriddenMethods() {
@@ -44,6 +48,9 @@ aspect LockedOverriding {
 	}
 	public void MethodDecl.clearOverridingDependencies() {
 		setOverridingDependencies(null);
+	}
+	public void MethodDecl.addOverriddenMethod(MethodDecl md) {
+		lockedOverridingDependencies.add(md.save());
 	}
 	
 	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {

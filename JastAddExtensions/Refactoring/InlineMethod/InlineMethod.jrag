@@ -18,7 +18,7 @@ aspect InlineMethod {
 	}
 	
 	public void MethodAccess.doInline() {
-    	Program root = programRoot();
+    	BodyDecl root = hostBodyDecl();
 		inline();
 		root.eliminate(WITH_STMT, FRESH_VARIABLES, LOCKED_NAMES);
 	}

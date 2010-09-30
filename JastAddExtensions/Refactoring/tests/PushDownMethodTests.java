@@ -1,7 +1,6 @@
 package tests;
 
 import junit.framework.TestCase;
-import tests.AllTests;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RawCU;
@@ -15,8 +14,6 @@ public class PushDownMethodTests extends TestCase {
 	
 	public void testSucc(Program in, Program out) {		
 		assertNotNull(in);
-		String originalProgram = in.toString();
-		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		assertNotNull(out);
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
@@ -26,21 +23,19 @@ public class PushDownMethodTests extends TestCase {
 			md.doPushDown(false);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
-			fail("Refactoring was supposed to succeed; failed with "+rfe);
+			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
 
 	public void testFail(Program in) {		
 		assertNotNull(in);
-		String originalProgram = in.toString();
-		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
 		TypeDecl td = in.findType("A");
 		assertNotNull(td);
 		MethodDecl md = td.findMethod("m");
 		assertNotNull(md);
 		try {
 			md.doPushDown(false);
-			fail("Refactoring was supposed to fail; succeeded with "+in);
+			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
 	}
 
@@ -506,5 +501,24 @@ public class PushDownMethodTests extends TestCase {
     			 new RawCU("B.java",
     			 "package q;" +
     			 "public class B extends p.A { }")));
+    }
+    
+    public void test38() {
+    	testFail(Program.fromClasses(
+    			"class OuterSuper {" +
+    			"    int f;" +
+    			"    OuterSuper(int f) { this.f = f; }" +
+    			"    class A {" +
+    			"        int m() { return f; }" +
+    			"    }" +
+    			"}",
+    			"class OuterSub extends OuterSuper {" +
+    			"    OuterSub() { super(23); }" +
+    			"    class B extends A {" +
+    			"        B() {" +
+    			"            new OuterSuper(42).super();" +
+    			"        }" +
+    			"    }" +
+    			"}"));
     }
 }

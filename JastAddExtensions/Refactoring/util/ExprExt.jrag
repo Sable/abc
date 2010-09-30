@@ -69,9 +69,9 @@ aspect ExprExt {
 	public Expr TypeDecl.enclosingInstanceQualifier(TypeDecl td, boolean innermost) {
 		if(this.instanceOf(td)) {
 			if(innermost)
-				return new ThisAccess("this");
+				return new ThisAccess(true);
 			else
-				return createLockedAccess().qualifiesAccess(new ThisAccess("this"));
+				return createLockedAccess().qualifiesAccess(new ThisAccess(true));
 		} else {
 			return enclosingType() == null ? null : enclosingType().enclosingInstanceQualifier(td, false);
 		}
@@ -80,5 +80,10 @@ aspect ExprExt {
 	syn Expr Expr.convertSuperToThis() = this;
 	eq AbstractDot.convertSuperToThis() = new AbstractDot(getLeft().convertSuperToThis(), 
 														  (Access)getRight().convertSuperToThis());
-	eq SuperAccess.convertSuperToThis() = new ThisAccess("this");
+	eq SuperAccess.convertSuperToThis() = new ThisAccess(true);
+	
+	syn Expr Expr.convertThisToSuper() = null;
+	eq AbstractDot.convertThisToSuper() = new AbstractDot((Expr)getLeft().fullCopyAndDetach(), (Access)getRight().convertThisToSuper());
+	eq Dot.convertThisToSuper() = new Dot((Expr)getLeft().fullCopyAndDetach(), (Access)getRight().convertThisToSuper());
+	eq ThisAccess.convertThisToSuper() = new SuperAccess(true);
 }

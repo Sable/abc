@@ -106,6 +106,7 @@ aspect With {
 	
 	public Stmt WithStmt.eliminateWith() {
 		getStmt().eliminateWith(getQualifiers(), hostType());
+		getStmt().removeSyntheticThis();
 		return getStmt();
 	}
 	
@@ -115,7 +116,7 @@ aspect With {
 	}
 	
 	public void TypeDecl.eliminateWith(List<Access> qualifiers, TypeDecl hostType) {
-		qualifiers.add(this.createLockedAccess().qualifiesAccess(new ThisAccess("this")));
+		qualifiers.add(this.createLockedAccess().qualifiesAccess(new ThisAccess(true)));
 		super.eliminateWith(qualifiers, hostType);
 		qualifiers.removeChild(qualifiers.getNumChild()-1);
 	}
@@ -125,8 +126,12 @@ aspect With {
 			for(int i=qualifiers.getNumChild()-1;i>=0;--i) {
 				Access qual = qualifiers.getChild(i);
 				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
-				if(this.type().equals(qual_type)) {
-					if(!qual.isThisAccess())
+				if(qual_type.subtype(this.type())) {
+					if(qual.isThisAccess())
+						return;
+					if(isLeftChildOfDot())
+						replace(getParent()).with(((Expr)qual.fullCopyAndDetach()).qualifiesAccess(parentDot().getRight()));
+					else
 						replaceWith(qual.fullCopyAndDetach());
 					return;
 				}
@@ -140,11 +145,19 @@ aspect With {
 					continue;
 				ClassDecl cd = (ClassDecl)qual_type;
 				if(this.type().equals(cd.superclass())) {
-					if(!qual.isThisAccess()) {
-						if(((Access)this).qualifiesMethodAccess())
-							throw new RefactoringException("cannot eliminate with on super method calls");
+					if(((Access)this).qualifiesMethodAccess()) {
+						if(qual.isThisAccess()) {
+							Access qual_super = (Access)qual.convertThisToSuper();
+							if(qual_super != null) {
+								if(isLeftChildOfDot())
+									replace(getParent()).with(qual_super.qualifiesAccess(parentDot().getRight()));
+								return;
+							}
+						}
+						throw new RefactoringException("cannot eliminate with on super method calls");
+					} else {
 						replaceWith(new ParExpr(new CastExpr(cd.superclass().createLockedAccess(),
-								                             (Expr)qual.fullCopyAndDetach())));
+															 (Expr)qual.fullCopyAndDetach())));
 					}
 					return;
 				}
@@ -209,7 +222,7 @@ aspect With {
 		if(!isQualified() && decl() instanceof FieldDeclaration && !decl().isStatic()) {
 			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
 				Access qual = qualifiers.getChild(i);
-				if(qual.type().memberFields(name()).contains(decl())) {
+				if(qual.type().subtype(decl().hostType())) {
 					if(!((FieldDeclaration)decl()).accessibleFrom(hostType))
 						throw new RefactoringException("field not accessible");
 					qualifyWith((Expr)qual.fullCopyAndDetach());
