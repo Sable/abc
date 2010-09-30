@@ -320,4 +320,32 @@ public class ChangeParameterTypeTests extends TestCase {
 						"public class D extends p.C { public void m() { } }" +
 						"class Main { void n(p.C d) { d.m(); } }")));
 	}
+	
+	public void test16() {
+		testSucc("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  String m(String s) {" +
+				"    return s;" +
+				"  }" +
+				"}" +
+				"class B {" +
+				"  String s;" +
+				"  void f(A a) {" +
+				"    s = a.m(null);" +
+				"  }" +
+				"}"),
+				Program.fromClasses(
+				"class A {" +
+				"  Object m(Object s) {" +
+				"    return s;" +
+				"  }" +
+				"}" +
+				"class B {" +
+				"  Object s;" +
+				"  void f(A a) {" +
+				"    s = a.m(null);" +
+				"  }" +
+				"}"));
+	}
 }

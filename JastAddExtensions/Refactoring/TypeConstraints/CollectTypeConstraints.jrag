@@ -167,6 +167,12 @@ aspect CollectTypeConstraints {
 		}
 		super.collectTypeConstraints(C, constraints);
 	}
+	
+	protected void AbstractDot.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
+		if(type() == C)
+			constraints.add(new SimpleTypeConstraint(this, "abstract dot", this, Operator.EQ, getRight()));
+		super.collectTypeConstraints(C, constraints);
+	}
 
 	/*coll Collection<TypeConstraint> Program.typeConstraints() [new LinkedHashSet<TypeConstraint>()]
 	                                	                      with addAll root Program;
