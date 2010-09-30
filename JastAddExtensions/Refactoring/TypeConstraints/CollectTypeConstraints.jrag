@@ -133,6 +133,8 @@ aspect CollectTypeConstraints {
 	}
 
 	protected void ArrayAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
+		if(type() == C)
+			constraints.add(new SimpleTypeConstraint(this, "array access", this, Operator.EQ, type()));
 		if(getExpr().type() == C)
 			constraints.add(new DisjunctiveTypeConstraint(this, "array index (1)", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
 		if(qualifier().type() == C)
@@ -173,7 +175,7 @@ aspect CollectTypeConstraints {
 			constraints.add(new SimpleTypeConstraint(this, "abstract dot", this, Operator.EQ, getRight()));
 		super.collectTypeConstraints(C, constraints);
 	}
-
+	
 	/*coll Collection<TypeConstraint> Program.typeConstraints() [new LinkedHashSet<TypeConstraint>()]
 	                                	                      with addAll root Program;
 	

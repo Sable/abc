@@ -348,4 +348,16 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  }" +
 				"}"));
 	}
+	
+	public void test17() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  String[] ss;" +
+				"  void m(String s) {" +
+				"    ss = new String[1];" +
+				"    ss[0] = s;" +
+				"  }" +
+				"}"));
+	}
 }
