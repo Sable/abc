@@ -1,0 +1,74 @@
+aspect ExtractInterface {
+	public void ClassDecl.extractInterface(String pkg, String name, Collection<MethodDecl> methods) {
+		if(!fromSource())
+			throw new RefactoringException("cannot extract from non-source type");
+		Program root = programRoot();
+		List<BodyDecl> body = new List<BodyDecl>();
+		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		mods.removeModifier("abstract");
+		mods.removeModifier("final");
+		InterfaceDecl newInterface = new InterfaceDecl(mods, name, new List<Access>(), body);
+		
+		// TODO: determine path to put new compilation unit at
+		root.insertUnusedType("", pkg == null ? packageName() : pkg, new List<ImportDecl>(), newInterface);
+		addImplements(newInterface.createLockedAccess());
+		for(MethodDecl md : methods) {
+			if(md.hostType() != this)
+				throw new RefactoringException("selected method is not a member of this type");
+			MethodDecl new_md = md.lockedCopyWithEmptyBody();
+			// for Eclipse compatibility
+			new_md.getModifiers().addModifier("abstract");
+			new_md.getModifiers().removeModifier("final");	
+			body.add(new_md);
+		}
+		
+		Collection<TypeConstraintVariable> updatable = computeUpdatableExprs(root.typeConstraints(this), this, newInterface);
+		Collection<String> affectedMethods = new HashSet<String>();
+		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();
+		
+		findAffectedCallables(updatable, newInterface, affectedMethods, affectedConstructors);
+		
+		root.lockMethodNames(affectedMethods);
+		root.lockConstructorCalls(affectedConstructors);
+		root.lockOverridingDependencies(affectedMethods);
+		
+		for(TypeConstraintVariable tcv : updatable) {
+			TypedDeclaration td = tcv.getTypedDecl();
+			if(td != null)
+				td.setTypeAccess(newInterface.createLockedAccess());
+		}
+		
+		root.flushCaches();
+		
+		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
+	}
+	
+	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, ClassDecl cd, InterfaceDecl id) {
+		Collection<TypeConstraintVariable> res = programRoot().allUpdatableExprs(cd);
+		int size;
+		do {
+			size = res.size();
+			for(TypeConstraint constraint : constraints)
+				constraint.propagateBackwards(id, res);
+		} while(size != res.size());
+		return res;		
+	}
+	
+	public Collection<TypeConstraintVariable> Program.allUpdatableExprs(TypeDecl type) {
+		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
+		collectAllUpdatableExprs(type, res);
+		return res;
+	}
+	
+	protected void ASTNode.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllUpdatableExprs(type, res);
+	}
+	
+	protected void Expr.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
+		if(type() == type)
+			if(getTypedDecl() == null || getTypedDecl().canChangeType())
+				res.add(this);
+		super.collectAllUpdatableExprs(type, res);
+	}
+}

@@ -11,22 +11,7 @@ aspect ChangeParameterType {
 		Collection<String> affectedMethods = new HashSet<String>();
 		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();
 		
-		for(TypeConstraintVariable tcv : update) {
-			if(tcv.getTypedDecl() instanceof ParameterDeclaration) {
-				Callable c = ((ParameterDeclaration)tcv.getTypedDecl()).getParameterisedCallable();
-				if(c instanceof MethodDecl)
-					affectedMethods.add(((MethodDecl)c).name());
-				else if(c instanceof ConstructorDecl)
-					affectedConstructors.add(((ConstructorDecl)c).hostType());
-			}
-			if(tcv instanceof Expr) {
-				Expr e = (Expr)tcv;
-				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
-					MethodAccess ma = (MethodAccess)e.nextAccess();
-					ma.lock(ma.decl().ancestorIn(newType));
-				}
-			}
-		}
+		findAffectedCallables(update, newType, affectedMethods, affectedConstructors);
 		
 		root.lockMethodNames(affectedMethods);
 		root.lockConstructorCalls(affectedConstructors);
@@ -44,6 +29,25 @@ aspect ChangeParameterType {
 		root.flushCaches();
 		
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
+	}
+	
+	public static void ASTNode.findAffectedCallables(Collection<TypeConstraintVariable> update, TypeDecl newType, Collection<String> affectedMethods, Collection<TypeDecl> affectedConstructors) {
+		for(TypeConstraintVariable tcv : update) {
+			if(tcv.getTypedDecl() instanceof ParameterDeclaration) {
+				Callable c = ((ParameterDeclaration)tcv.getTypedDecl()).getParameterisedCallable();
+				if(c instanceof MethodDecl)
+					affectedMethods.add(((MethodDecl)c).name());
+				else if(c instanceof ConstructorDecl)
+					affectedConstructors.add(((ConstructorDecl)c).hostType());
+			}
+			if(tcv instanceof Expr) {
+				Expr e = (Expr)tcv;
+				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
+					MethodAccess ma = (MethodAccess)e.nextAccess();
+					ma.lock(ma.decl().ancestorIn(newType));
+				}
+			}
+		}		
 	}
 
 	syn boolean TypedDeclaration.canChangeType();

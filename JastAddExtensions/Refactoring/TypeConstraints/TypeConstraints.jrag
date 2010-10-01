@@ -207,22 +207,6 @@ aspect TypeConstraints {
 		return null;
 	}
 	
-	/*public abstract void TypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode);
-	public void SimpleTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
-		if(left == oldNode)
-			left = newNode;
-		if(right == oldNode)
-			right = newNode;
-	}
-	public void IsArrayTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
-		if(var == oldNode)
-			var = newNode;
-	}
-	public void DisjunctiveTypeConstraint.subst(TypeConstraintVariable oldNode, TypeConstraintVariable newNode) {
-		for(TypeConstraint tc : constraints)
-			tc.subst(oldNode, newNode);
-	}*/
-	
 	public static Collection<TypeConstraintVariable> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypeConstraintVariable update, TypeDecl newType) {
 		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
 		res.add(update);
@@ -267,6 +251,41 @@ aspect TypeConstraints {
 					return;
 			}
 			throw new RefactoringException("cannot satisfy " + this);
+		}
+	}
+	
+	public abstract void TypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update);
+	public void SimpleTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(op == Operator.EQ) {
+			if(!update.contains(left)) {
+				update.remove(right);
+			} else if(!update.contains(right)) {
+				update.remove(left);
+			}
+		} else if(op == Operator.LE) {
+			if(!update.contains(right) && !newType.subtype(right.getConstrainedType())) {
+				update.remove(left);
+			}
+		} else if(op == Operator.LT) {
+			if(!update.contains(right))
+				update.remove(left);
+		} else {
+			throw new RefactoringException("cannot propagate through constraint " + this);
+		}
+	}
+	public void IsArrayTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(!newType.isArrayDecl())
+			update.remove(var);
+	}
+	public void DisjunctiveTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
+		if(update.contains(constr.getLeft())) {
+			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
+				constr = (SimpleTypeConstraint)iter.next();
+				if(newType.subtype(constr.getRight().getConstrainedType()))
+					return;
+			}
+			update.remove(constr.getLeft());
 		}
 	}
 	
