@@ -13,10 +13,6 @@ aspect TypeConstraints {
 		
 		public abstract boolean solved();
 		public abstract String describe();
-		public abstract boolean isFixed();
-		public boolean implies(TypeConstraint that) {
-			return false;
-		}
 		
 		public boolean fromSource() {
 			return node.fromSource();
@@ -55,25 +51,6 @@ aspect TypeConstraints {
 			return this.left.equals(that.left) && this.op == that.op && this.right.equals(that.right);
 		}
 		
-		public boolean implies(TypeConstraint tc) {
-			if(tc instanceof SimpleTypeConstraint) {
-				SimpleTypeConstraint that = (SimpleTypeConstraint)tc;
-				return this.left.equals(that.left) && this.right.equals(that.right) && that.op == Operator.LE &&
-				       (this.op == Operator.EQ || this.op == Operator.LT);
-			} else if(tc instanceof DisjunctiveTypeConstraint) {
-				for(Iterator<TypeConstraint> iter=((DisjunctiveTypeConstraint)tc).getSubconstraints();iter.hasNext();)
-					if(this.implies(iter.next()))
-						return true;
-				return false;
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean isFixed() {
-			return left.isFixed() && right.isFixed();
-		}
-		
 		public TypeConstraintVariable getLeft() { return left; }
 		public TypeConstraintVariable getRight() { return right; }
 	}
@@ -98,10 +75,6 @@ aspect TypeConstraints {
 			if(!(o instanceof IsArrayTypeConstraint))
 				return false;
 			return this.var.equals(((IsArrayTypeConstraint)o).var);
-		}
-		
-		public boolean isFixed() {
-			return var.isFixed();
 		}
 	}
 	
@@ -154,13 +127,6 @@ aspect TypeConstraints {
 		public Iterator<TypeConstraint> getSubconstraints() {
 			return constraints.iterator();
 		}
-		
-		public boolean isFixed() {
-			for(TypeConstraint tc : constraints)
-				if(!tc.isFixed())
-					return false;
-			return true;
-		}
 	}
 	
 	TypeDecl implements IAmPartiallyOrdered<TypeDecl>;
@@ -174,7 +140,6 @@ aspect TypeConstraints {
 	syn TypeDecl TypeConstraintVariable.getConstrainedType();
 	syn String TypeConstraintVariable.describeConstraintVariable();
 	syn boolean TypeConstraintVariable.isFixed();
-	syn lazy TypedDeclaration TypeConstraintVariable.getTypedDecl();
 	
 	BodyDecl implements TypeConstraintVariable;
 	eq BodyDecl.getConstrainedType() = hostType();
@@ -183,29 +148,28 @@ aspect TypeConstraints {
 	eq ConstructorDecl.describeConstraintVariable() = "Decl(" + signature() + ")";
 	eq FieldDeclaration.describeConstraintVariable() = "Decl(" + name() + ")";
 	eq BodyDecl.isFixed() = true;
-	eq BodyDecl.getTypedDecl() = null;
 	
 	Expr implements TypeConstraintVariable;
 	eq Expr.getConstrainedType() = type();
 	eq Expr.describeConstraintVariable() = "[" + this + "]";
-	eq Expr.isFixed() = !fromSource();
-	eq Expr.getTypedDecl() {
-		if(isTypeAccess() && getParent() instanceof TypedDeclaration)
-			return (TypedDeclaration)getParent();
-		if(varDecl() != null)
-			return varDecl();
-		if(isMethodAccess())
-			return ((MethodAccess)((Access)this).lastAccess()).decl();
-		return null;
+	eq Expr.isFixed() {
+		if(!fromSource())
+			return true;
+		if(isTypeAccess()) {
+			// only types of declarations and types appearing in casts are variable
+			if(getParent() instanceof TypedDeclaration)
+				return this != ((TypedDeclaration)getParent()).getTypeAccess();
+			if(getParent() instanceof CastExpr)
+				return this != ((CastExpr)getParent()).getTypeAccess();
+			return true;
+		}
+		return false;
 	}
 	
 	TypeDecl implements TypeConstraintVariable;
 	eq TypeDecl.getConstrainedType() = this;
 	eq TypeDecl.describeConstraintVariable() = fullName();
 	eq TypeDecl.isFixed() = true;
-	eq TypeDecl.getTypedDecl() {
-		return null;
-	}
 	
 	public static Collection<TypeConstraintVariable> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypeConstraintVariable update, TypeDecl newType) {
 		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();

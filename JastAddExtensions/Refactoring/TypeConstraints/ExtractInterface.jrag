@@ -33,9 +33,11 @@ aspect ExtractInterface {
 		root.lockOverridingDependencies(affectedMethods);
 		
 		for(TypeConstraintVariable tcv : updatable) {
-			TypedDeclaration td = tcv.getTypedDecl();
-			if(td != null)
-				td.setTypeAccess(newInterface.createLockedAccess());
+			if(tcv instanceof Expr) {
+				Expr e = (Expr)tcv;
+				if(e.isTypeAccess())
+					e.replaceWith(newInterface.createLockedAccess());
+			}			
 		}
 		
 		root.flushCaches();
@@ -43,7 +45,7 @@ aspect ExtractInterface {
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 	
-	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, ClassDecl cd, InterfaceDecl id) {
+	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, TypeDecl cd, InterfaceDecl id) {
 		Collection<TypeConstraintVariable> res = programRoot().allUpdatableExprs(cd);
 		int size;
 		do {
@@ -67,7 +69,7 @@ aspect ExtractInterface {
 	
 	protected void Expr.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
 		if(type() == type)
-			if(getTypedDecl() == null || getTypedDecl().canChangeType())
+			if(!isFixed())
 				res.add(this);
 		super.collectAllUpdatableExprs(type, res);
 	}
