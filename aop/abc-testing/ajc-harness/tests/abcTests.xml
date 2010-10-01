@@ -10730,5 +10730,9 @@
         <compile files="DoubleAssociate.java" options="-ext,abc.ra,-warn-unused-advice:on"/>
 		<run class="DoubleAssociate"/>
     </ajc-test>
-    
+
+    <ajc-test num="1500" dir="abctests/cjp/shopping"
+        title="Shopping Session Example">
+        <compile files="ShoppingSession.java" options="-ext,abc.ja.cjp"/>
+    </ajc-test>    
 </suite>

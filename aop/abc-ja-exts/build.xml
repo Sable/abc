@@ -67,6 +67,7 @@
                 <src path="${basedir}/src-tm"/>
                 <src path="${basedir}/src-eaj"/>
                 <src path="${basedir}/src-om"/>
+	            <src path="${basedir}/src-cjp"/>
                 <src path="${basedir}/generated"/>
         </javac>
 </target>
@@ -94,9 +95,32 @@
                 <src path="${basedir}/generated"/>
         </javac>
 </target>
+	
+<target name="build-cjp" depends="settings,gen-cjp">
+        <antcall target="build-ja"/>
+        <mkdir dir="${basedir}/classes"/>
+        <!-- compile sources compiler="jikes" nowarn="true" -->
+        <javac debug="true"
+               fork="true" memoryMaximumSize="256M" destdir="classes">
+	<classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="${abc.loc}/classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+              <pathelement location="${abc.loc}/testing-classes"/>
+              <pathelement location="${abc-ja.loc}/classes"/>
+	      <pathelement location="${basedir}"/>
+            </classpath>
+                <src path="${basedir}/src-cjp"/>
+                <src path="${basedir}/generated"/>
+        </javac>
+</target>	
 
 <!-- generate compiler source files -->
-<target name="gen" depends="settings,gen-tm,om-parser,om-jrag">
+<target name="gen" depends="settings,gen-cjp,gen-tm,gen-om">
   <!-- copy library files-->
   <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
@@ -104,6 +128,10 @@
 </target>
 
 <target name="gen-tm" depends="gen-eaj,tm-parser,tm-jrag"/>
+
+<target name="gen-om" depends="om-parser,om-jrag"/>
+	
+<target name="gen-cjp" depends="cjp-parser,cjp-jrag"/>
 
 <target name="gen-eaj" depends="eaj-parser,eaj-jrag"/>
 
@@ -232,6 +260,66 @@
   </jastadd>
 </target>
 	
+<target name="cjp-jrag" depends="settings">
+  <!-- create AST node types and weave aspect modules -->
+        <echo message="Generating to ${basedir}/generated..."/>
+        <mkdir dir="${basedir}/generated"/>
+	<jastadd package="abc.ja.cjp.jrag" rewrite="true"
+                beaver="true" noVisitCheck="true"
+                noCacheCycle="true" noComponentCheck="true"
+                outdir="${basedir}/generated" lazyMaps="true"
+                suppressWarnings="false" parentInterface="false">
+		<fileset dir="${frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+ 			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="BytecodeDescriptor.jrag"/>
+			<exclude name="BytecodeReader.jrag"/>
+		</fileset>
+		<fileset dir="${frontend1.5}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${javabackend}">
+			<include name="InnerClasses.jrag"/>
+			<include name="Transformations.jrag"/>
+			<include name="Java2Rewrites.jrag"/>
+		</fileset>
+		<fileset dir="${backend1.5}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${itds}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+      <exclude name="JastAdd.*"/>
+      <exclude name="DeclarePrecedence.ast"/>
+      <exclude name="DeclareParents.ast"/>
+      <exclude name="Glue.jrag"/>
+			<exclude name="GlueCodegen.jrag"/>
+		</fileset>
+		<fileset dir="${backend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${abc-ja.loc}/src/abc/ja/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${basedir}/src-cjp/abc/ja/cjp/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+  </jastadd>
+</target>	
+	
 <target name="om-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
         <echo message="Generating to ${basedir}/generated..."/>
@@ -358,6 +446,39 @@
   <beaver file="${eaj-parserdir}/JavaParser.beaver" terminalNames="yes"
           compress="no" useSwitch="yes"/>
 </target>
+	
+<target name="cjp-parser" depends="settings">
+  <property name="cjp-parserdir" location="${basedir}/generated/abc/ja/cjp/parse"/>
+  <mkdir dir="${cjp-parserdir}"/>
+  <!-- generate the parser phase 1, create a full .lalr
+     - specification from fragments -->
+  <concat destfile="${cjp-parserdir}/JavaParser.all" binary="true" force="no">
+    <filelist dir=".">
+      <file name="src-cjp/abc/ja/cjp/parse/header.parser"/>
+    </filelist>
+    <filelist dir="${frontend}">
+      <file name="parser/java14.parser"/>
+    </filelist>
+    <fileset dir="${frontend1.5}">
+      <include name="*.parser"/>
+    </fileset>
+    <filelist dir="${abc-ja.loc}">
+      <file name="src/abc/ja/parse/errorproductions.parser"/>
+      <file name="src/abc/ja/parse/aspectj.parser"/>
+    </filelist>
+    <filelist dir="${basedir}">
+      <file name="src-cjp/abc/ja/cjp/parse/cjp.parser"/>
+    </filelist>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
+              classname="Main" fork="true" dir="${cjp-parserdir}">
+		<arg line="JavaParser.all JavaParser.beaver"/>
+	</java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${cjp-parserdir}/JavaParser.beaver" terminalNames="yes"
+          compress="no" useSwitch="yes"/>
+</target>	
 	
 <target name="om-parser" depends="settings">
   <property name="om-parserdir" location="${basedir}/generated/abc/ja/om/parse"/>

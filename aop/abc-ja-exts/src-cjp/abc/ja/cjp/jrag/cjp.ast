@@ -1,0 +1,9 @@
+ClosureJoinpointAccess : Access ::=
+	<ID:String>
+	Formal:ParameterDeclaration*
+	Actual:Expr*
+	[Body:Block];  
+
+JoinpointTypeDecl : BodyDecl ::= Signature:MethodDecl;
+	
+CJPAdviceDecl : BodyDecl ::= Modifiers AdviceSpec Exception:Access* Block;
