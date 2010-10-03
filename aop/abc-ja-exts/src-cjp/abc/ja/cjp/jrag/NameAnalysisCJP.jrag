@@ -1,0 +1,15 @@
+aspect NameAnalysisCJP {
+
+    public static final NameType NameType.CJPTYPE_NAME = new NameType() {
+      public Access reclassify(String name, int start, int end) { return new CJPTypeAccess("",name); }
+    };
+    
+    eq ClosureJoinpointAccess.getName().nameType() = NameType.CJPTYPE_NAME;
+    
+    eq MemberCJPTypeDecl.typeDecl() = getJoinpointTypeDecl(); 
+    
+	//eq JoinpointTypeDecl.declaresType(String name) = getSignature().getID().equals(name);	
+
+	//eq JoinpointTypeDecl.memberTypes() = SimpleSet.emptySet;	
+
+}

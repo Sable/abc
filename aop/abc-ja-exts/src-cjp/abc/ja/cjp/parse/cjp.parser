@@ -26,9 +26,23 @@ ExprStmt statement_expression =
 ;
 
 ClosureJoinpointAccess closure_joinpoint =
-	EXHIBIT IDENTIFIER.i LPAREN formal_parameter_list.p? RPAREN block.b LPAREN argument_list.a? RPAREN 
+	EXHIBIT name.i LPAREN formal_parameter_list.p? RPAREN block.b LPAREN.l argument_list.a? RPAREN.r 
 		{:			
-			return new ClosureJoinpointAccess(p,new List()/*no type params*/,null/*no ret type for now (will be inferred)*/,new List()/*no exceptions type for now (will be inferred)*/,b,a,i);
+			/*Access n;
+			//copied from java14.parser-rule for method_invocation
+			if(i instanceof AbstractDot) {    
+				AbstractDot d = (AbstractDot)i; 
+				ParseName pn = (ParseName)d.extractLast();
+				MethodAccess m = new CJPTypeAccess(pn.getID(), a);
+				d.replaceLast(m);
+				n=d;
+ 			} else {
+                ParseName pn = (ParseName)i;
+                MethodAccess m = new CJPTypeAccess(pn.getID(), a);
+                n=m;
+            }*/
+
+			return new ClosureJoinpointAccess(p,new List()/*no type params*/,new PrimitiveTypeAccess("void")/*no ret type for now (will be inferred)*/,new List()/*no exceptions type for now (will be inferred)*/,b,a,i);
 		:}
 ;
 
@@ -36,9 +50,11 @@ BodyDecl aspect_body_declaration =
 	joinpointtype_decl.d			{: return d; :}
 ;
 
-JoinpointTypeDecl joinpointtype_decl =
+MemberCJPTypeDecl joinpointtype_decl =
 			  //this allows for a throws-clause, which we need to weed out later
-	JOINPOINT abstract_method_declaration.d 	{: return new JoinpointTypeDecl((MethodDecl)d); :}
+	JOINPOINT abstract_method_declaration.d 	{:
+		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers(),((MethodDecl)d).getID(),new List(),(MethodDecl)d));
+	:}
 ;
 
 BodyDecl aspect_body_declaration =

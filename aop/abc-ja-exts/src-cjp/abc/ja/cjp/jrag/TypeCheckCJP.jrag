@@ -1,0 +1,31 @@
+aspect TypeCheckCJP {
+
+	public boolean ClosureJoinpointAccess.passedTypeCheck = false;
+	
+	public void ClosureJoinpointAccess.typeCheck() {
+		correctReturnType();	
+		super.typeCheck();
+		this.passedTypeCheck=true;
+	}
+
+	public void ClosureJoinpointAccess.correctReturnType() {
+		TypeDecl t = getName().type();
+		if(t instanceof JoinpointTypeDecl) {
+			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) t;
+			setReturnType(joinpointTypeDecl.getSignature().getTypeAccess());
+		}
+	}
+
+	syn lazy boolean ASTNode.allCjpHavePassedTypeCheck() {
+		for(int i = 0; i < getNumChild(); i++)
+			if(!getChild(i).allCjpHavePassedTypeCheck())
+				return false;
+		return true;
+	}
+
+	eq ClosureJoinpointAccess.allCjpHavePassedTypeCheck() = passedTypeCheck;
+
+}
+
+
+

@@ -1,5 +1,9 @@
-ClosureJoinpointAccess : AnonymousMethod ::= <ID:String>;
+MemberCJPTypeDecl : MemberTypeDecl ::= JoinpointTypeDecl;
 
-JoinpointTypeDecl : BodyDecl ::= Signature:MethodDecl;
+CJPTypeAccess : TypeAccess;
+
+ClosureJoinpointAccess : AnonymousMethod ::= Name:Access;
+
+JoinpointTypeDecl : TypeDecl ::= Signature:MethodDecl;
 	
 CJPAdviceDecl : BodyDecl ::= Modifiers AdviceSpec Exception:Access* Block;

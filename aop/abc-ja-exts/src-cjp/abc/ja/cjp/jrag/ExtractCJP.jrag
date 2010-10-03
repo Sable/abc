@@ -1,0 +1,29 @@
+aspect ExtractCJP {
+
+	rewrite ClassDecl {
+		when(hasCJPAccesses() && allCjpHavePassedTypeCheck()) to ClassDecl {			
+			extractIntoMethod();
+			return this;		
+		}
+	}
+
+	syn lazy boolean ASTNode.hasCJPAccesses() {
+		for(int i = 0; i < getNumChild(); i++)
+			if(getChild(i).hasCJPAccesses())
+				return true;
+		return false;
+	}
+	
+	syn lazy boolean ClosureJoinpointAccess.hasCJPAccesses() = true;
+
+	public void ASTNode.extractIntoMethod() {
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).extractIntoMethod();
+	}
+
+	public void ClosureJoinpointAccess.extractIntoMethod() {
+		AnonymousMethod am = this.convert();
+		am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp");
+	}
+
+}
