@@ -488,16 +488,16 @@ aspect Pointcuts
         }
     }
 
-    syn lazy Set TypeDecl.inheritedPointcuts()
+    syn lazy java.util.Set TypeDecl.inheritedPointcuts()
     {
-        Set visited = new HashSet();
-        Set names = new HashSet();
+        java.util.Set visited = new HashSet();
+        java.util.Set names = new HashSet();
         addInheritedPointcuts(visited, names);
         return names;
     }
 
-    public void TypeDecl.addInheritedPointcuts(Set visited, Set names) { }
-    public void ClassDecl.addInheritedPointcuts(Set visited, Set names)
+    public void TypeDecl.addInheritedPointcuts(java.util.Set visited, java.util.Set names) { }
+    public void ClassDecl.addInheritedPointcuts(java.util.Set visited, java.util.Set names)
     {
         visited.add(this);
         if (hasSuperclass() && !visited.contains(superclass())) {
@@ -514,7 +514,7 @@ aspect Pointcuts
             }
         }
     }
-    public void InterfaceDecl.addInheritedPointcuts(Set visited, Set names)
+    public void InterfaceDecl.addInheritedPointcuts(java.util.Set visited, java.util.Set names)
     {
         visited.add(this);
         Iterator i = superinterfacesIterator();
@@ -526,13 +526,13 @@ aspect Pointcuts
             }
         }
     }
-    protected void TypeDecl.addLocalPointcuts(Set names)
+    protected void TypeDecl.addLocalPointcuts(java.util.Set names)
     {
         for (int i = 0; i < getNumBodyDecl(); i++)
             getBodyDecl(i).addLocalPointcuts(names);
     }
-    public void BodyDecl.addLocalPointcuts(Set names) { }
-    public void PointcutDecl.addLocalPointcuts(Set names)
+    public void BodyDecl.addLocalPointcuts(java.util.Set names) { }
+    public void PointcutDecl.addLocalPointcuts(java.util.Set names)
     {
         names.add(name());
     }

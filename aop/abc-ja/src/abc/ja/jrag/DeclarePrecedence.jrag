@@ -70,12 +70,12 @@ aspect DeclarePrecedence {
                         .getGlobalAspectInfo().getPrecedenceRelation();
 
     // The aspects that have matched previous patterns
-    Set passed = new HashSet();
+    java.util.Set passed = new HashSet();
 
     // Iterate through the list of patterns
     for (int i = 0; i < getNumPattern(); i++) {
       // The aspects that match the current pattern
-      Set current = new HashSet();
+      java.util.Set current = new HashSet();
 
       // Iterate through aspects
       AspectDecl a = firstAspect();
@@ -95,7 +95,7 @@ aspect DeclarePrecedence {
           Iterator pi = passed.iterator();
           while (pi.hasNext()) {
             String prev = (String) pi.next();
-            ((Set) precedence.get(prev)).add(aspectName);
+            ((java.util.Set) precedence.get(prev)).add(aspectName);
           }
 
           // Add it to the current set

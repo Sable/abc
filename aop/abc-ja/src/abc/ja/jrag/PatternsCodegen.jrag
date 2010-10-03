@@ -417,7 +417,7 @@ aspect PatternsCodegen
             return false;
 
         // find supertypes of R that matches the type pattern
-        Set supertypes = superTypes(classR);
+        java.util.Set supertypes = superTypes(classR);
 
         Iterator i = supertypes.iterator();
         while (i.hasNext()) {
@@ -461,14 +461,14 @@ aspect PatternsCodegen
         }
     }
 
-    protected static Set ASTNode.superTypes(SootClass sc)
+    protected static java.util.Set ASTNode.superTypes(SootClass sc)
     {
-        Set supertypes = new HashSet();
+        java.util.Set supertypes = new HashSet();
         addSuperTypes(sc, supertypes);
         return supertypes;
     }
 
-    protected static void ASTNode.addSuperTypes(SootClass sc, Set supertypes)
+    protected static void ASTNode.addSuperTypes(SootClass sc, java.util.Set supertypes)
     {
         supertypes.add(sc);
 
@@ -511,7 +511,7 @@ aspect PatternsCodegen
     }
     
     eq SimpleNamePattern.matchesType(SootClass c) {
-        Set set = matchSubtype() ? superTypes(c) : new HashSet();
+        java.util.Set set = matchSubtype() ? superTypes(c) : new HashSet();
         set.add(c);
         for(Iterator iter = set.iterator(); iter.hasNext(); ) {
           c = (SootClass)iter.next();
@@ -525,7 +525,7 @@ aspect PatternsCodegen
         return false;
     }
     eq ExplicitTypeNamePattern.matchesType(SootClass c) {
-        Set set = matchSubtype() ? superTypes(c) : new HashSet();
+        java.util.Set set = matchSubtype() ? superTypes(c) : new HashSet();
         set.add(c);
         for(Iterator iter = set.iterator(); iter.hasNext(); ) {
           c = (SootClass)iter.next();
@@ -739,14 +739,14 @@ aspect PatternsCodegen
     // attributes, in order to ignore declare-parents.
     // TODO: This is, however, used in front-end CPE matching (e.g. ExplicitTypePattern.matchesType())
     // which will be used by other extensions. Try to fix.
-    syn Set TypeDecl.superTypes()
+    syn java.util.Set TypeDecl.superTypes()
     {
-        Set set = new HashSet();
+        java.util.Set set = new HashSet();
         addSuperTypes(set);
         return set;
     }
-    public void TypeDecl.addSuperTypes(Set set) { }
-    public void ClassDecl.addSuperTypes(Set set)
+    public void TypeDecl.addSuperTypes(java.util.Set set) { }
+    public void ClassDecl.addSuperTypes(java.util.Set set)
     {
         if (hasSuperClassAccess()) {
             TypeDecl superclass = getSuperClassAccess().type();
@@ -763,7 +763,7 @@ aspect PatternsCodegen
             }
         }
     }
-    public void InterfaceDecl.addSuperTypes(Set set)
+    public void InterfaceDecl.addSuperTypes(java.util.Set set)
     {
         for (int i = 0; i < getNumSuperInterfaceId(); i++) {
             TypeDecl iface = getSuperInterfaceId(i).type();

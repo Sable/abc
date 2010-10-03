@@ -146,8 +146,8 @@ aspect PatternsEquivalence {
 	 */
 	
 	boolean MemberPattern.modsListsEquivalent(List<ModifierPattern> one, List<ModifierPattern> two) {
-    	Set<String> mods1 = new LinkedHashSet<String>();
-    	Set<String> mods2 = new LinkedHashSet<String>();
+    	java.util.Set<String> mods1 = new LinkedHashSet<String>();
+    	java.util.Set<String> mods2 = new LinkedHashSet<String>();
     	for (ModifierPattern mp : one) {
     		mods1.add((mp instanceof NegModifierPattern ? "!" : "") + mp.getModifier().getID());
     	}
