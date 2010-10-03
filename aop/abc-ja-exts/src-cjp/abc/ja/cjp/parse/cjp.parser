@@ -26,8 +26,10 @@ ExprStmt statement_expression =
 ;
 
 ClosureJoinpointAccess closure_joinpoint =
-	EXHIBIT IDENTIFIER.i LPAREN formal_parameter_list.p? RPAREN method_body.b LPAREN argument_list.a? RPAREN 
-		{: return new ClosureJoinpointAccess(i,p,a,b); :}
+	EXHIBIT IDENTIFIER.i LPAREN formal_parameter_list.p? RPAREN block.b LPAREN argument_list.a? RPAREN 
+		{:			
+			return new ClosureJoinpointAccess(p,new List()/*no type params*/,null/*no ret type for now (will be inferred)*/,new List()/*no exceptions type for now (will be inferred)*/,b,a,i);
+		:}
 ;
 
 BodyDecl aspect_body_declaration =

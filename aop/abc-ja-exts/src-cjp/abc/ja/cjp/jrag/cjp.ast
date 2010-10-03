@@ -1,8 +1,4 @@
-ClosureJoinpointAccess : Access ::=
-	<ID:String>
-	Formal:ParameterDeclaration*
-	Actual:Expr*
-	[Body:Block];  
+ClosureJoinpointAccess : AnonymousMethod ::= <ID:String>;
 
 JoinpointTypeDecl : BodyDecl ::= Signature:MethodDecl;
 	

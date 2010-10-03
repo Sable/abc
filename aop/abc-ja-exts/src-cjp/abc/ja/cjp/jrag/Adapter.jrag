@@ -19,10 +19,16 @@
 
 aspect Adapter {
 
-     //implement default attributes for our new syntax nodes
+      //implement default attributes for our new syntax nodes
      
- 	  eq ClosureJoinpointAccess.getBody().reachable() = true;
-
+      eq Dims.getChild().maxPrecedence() = Integer.MAX_VALUE;
+      eq Proceed.getChild().maxPrecedence() = Integer.MAX_VALUE;
+      eq IfPointcutExpr.getChild().maxPrecedence() = Integer.MAX_VALUE;
+     
+      eq BoundMethodAccess.getChild().throwTarget(TypeDecl exn) {
+      	throw new UnsupportedOperationException();
+  	  }     
+     
 	  eq CJPAdviceDecl.getBlock().reachable() = true;
 
   	  eq CJPAdviceDecl.getAdviceSpec().proceedSig() {

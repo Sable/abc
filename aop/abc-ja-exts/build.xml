@@ -112,7 +112,7 @@
               <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
               <pathelement location="${abc.loc}/testing-classes"/>
               <pathelement location="${abc-ja.loc}/classes"/>
-	      <pathelement location="${basedir}"/>
+	          <pathelement location="${basedir}"/>
             </classpath>
                 <src path="${basedir}/src-cjp"/>
                 <src path="${basedir}/generated"/>
@@ -296,10 +296,10 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-      <exclude name="JastAdd.*"/>
-      <exclude name="DeclarePrecedence.ast"/>
-      <exclude name="DeclareParents.ast"/>
-      <exclude name="Glue.jrag"/>
+	        <exclude name="JastAdd.*"/>
+	        <exclude name="DeclarePrecedence.ast"/>
+	        <exclude name="DeclareParents.ast"/>
+	        <exclude name="Glue.jrag"/>
 			<exclude name="GlueCodegen.jrag"/>
 		</fileset>
 		<fileset dir="${backend}">
@@ -317,7 +317,30 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-  </jastadd>
+		<fileset dir="${jastadd.ext}/Refactoring/util">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ASTReplace.jrag"/>
+		</fileset>	
+		<fileset dir="${jastadd.ext}/ControlFlowGraph">
+				    <include name="Nodes.ast"/>
+					<include name="ControlFlowGraph.jrag"/>
+					<include name="Sets.jrag"/>
+					<include name="Exceptions.jrag"/>
+					<include name="Alias.jrag"/>
+					<include name="ReachingDefinitions.jrag"/>
+					<include name="DotGeneration.jrag"/>
+		</fileset>
+		<fileset dir="${jastadd.ext}/Refactoring">
+		    <include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="Locks/**"/>
+			<exclude name="util/**"/>
+			<exclude name="tests/**"/>
+		</fileset>
+	</jastadd>
 </target>	
 	
 <target name="om-jrag" depends="settings">
