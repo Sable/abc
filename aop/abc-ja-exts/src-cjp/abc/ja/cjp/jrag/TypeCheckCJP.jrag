@@ -1,14 +1,19 @@
 aspect TypeCheckCJP {
 
 	public boolean ClosureJoinpointAccess.passedTypeCheck = false;
-	
-	public void ClosureJoinpointAccess.typeCheck() {
-		correctReturnType();	
-		super.typeCheck();
-		this.passedTypeCheck=true;
-	}
 
-	public void ClosureJoinpointAccess.correctReturnType() {
+
+	refine NameCheck public void TypeDecl.nameCheck() {
+		correctTheReturnType();	
+		NameCheck.TypeDecl.nameCheck();
+	}
+	
+	public void ASTNode.correctTheReturnType() {
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).correctTheReturnType();
+	}
+	
+	public void ClosureJoinpointAccess.correctTheReturnType() {
 		TypeDecl t = getName().type();
 		if(t instanceof JoinpointTypeDecl) {
 			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) t;
@@ -16,6 +21,29 @@ aspect TypeCheckCJP {
 		}
 	}
 
+ 	eq AnonymousMethod.getParameter().outerScope() = this;
+ 	inh VariableScope AnonymousMethod.outerScope();
+ 	 	
+ 	AnonymousMethod implements VariableScope;
+ 	
+	refine NameCheck public void ParameterDeclaration.nameCheck() {
+		//do nothing
+	}
+ 	
+
+	public SimpleSet AnonymousMethod.lookupVariable(String name) {
+		SimpleSet set = parameterDeclaration(name);
+		if(!set.isEmpty()) return set;
+		return outerScope().lookupVariable(name);
+	}
+ 	
+	public void ClosureJoinpointAccess.typeCheck() {
+		super.typeCheck();
+		//setting this flag will enable the rewrite that
+		//extracts the closure into a proper method
+		this.passedTypeCheck=true;
+	}
+	
 	syn lazy boolean ASTNode.allCjpHavePassedTypeCheck() {
 		for(int i = 0; i < getNumChild(); i++)
 			if(!getChild(i).allCjpHavePassedTypeCheck())
