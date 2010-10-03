@@ -4,7 +4,7 @@ aspect ClosureConversion {
 								Val = new java.util.LinkedHashSet<Variable>(),
 								Out = new java.util.LinkedHashSet<Variable>(),
 								Ref = new java.util.LinkedHashSet<Variable>();
-		for(VarAccess va : varAccesses()) {
+		for(VarAccess va : getBlock().varAccesses()) {
 			if(va.hostBodyDecl() == hostBodyDecl() && va.isDest() && va.decl().isFinal())
 				throw new RefactoringException("cannot extract writes to final fields");
 			Variable v = va.decl();
