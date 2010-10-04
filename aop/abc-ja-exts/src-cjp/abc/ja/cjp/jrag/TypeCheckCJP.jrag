@@ -2,6 +2,22 @@ aspect TypeCheckCJP {
 
 	public boolean ClosureJoinpointAccess.passedTypeCheck = false;
 
+	public void ClosureJoinpointAccess.typeCheck() {
+		super.typeCheck();
+		//setting this flag will enable the rewrite that
+		//extracts the closure into a proper method
+		this.passedTypeCheck=true;
+	}
+	
+	syn boolean ASTNode.allCjpHavePassedTypeCheck() {
+		for(int i = 0; i < getNumChild(); i++)
+			if(!getChild(i).allCjpHavePassedTypeCheck())
+				return false;
+		return true;
+	}
+
+	eq ClosureJoinpointAccess.allCjpHavePassedTypeCheck() = passedTypeCheck;
+
 
 	refine NameCheck public void TypeDecl.nameCheck() {
 		correctTheReturnType();	
@@ -32,22 +48,6 @@ aspect TypeCheckCJP {
 		//do nothing
 	}
  	
-	public void ClosureJoinpointAccess.typeCheck() {
-		super.typeCheck();
-		//setting this flag will enable the rewrite that
-		//extracts the closure into a proper method
-		this.passedTypeCheck=true;
-	}
-	
-	syn lazy boolean ASTNode.allCjpHavePassedTypeCheck() {
-		for(int i = 0; i < getNumChild(); i++)
-			if(!getChild(i).allCjpHavePassedTypeCheck())
-				return false;
-		return true;
-	}
-
-	eq ClosureJoinpointAccess.allCjpHavePassedTypeCheck() = passedTypeCheck;
-
 	inh boolean MethodDecl.isWithinJoinpointTypeDecl();
 	eq JoinpointTypeDecl.getSignature().isWithinJoinpointTypeDecl() = true;
 	eq Program.getChild().isWithinJoinpointTypeDecl() = false;

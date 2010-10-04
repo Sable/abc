@@ -6,7 +6,7 @@ aspect ExtractCJP {
 			return this;		
 		}
 	}
-
+	
 	syn lazy boolean ASTNode.hasCJPAccesses() {
 		for(int i = 0; i < getNumChild(); i++)
 			if(getChild(i).hasCJPAccesses())
@@ -15,7 +15,7 @@ aspect ExtractCJP {
 	}
 	
 	syn lazy boolean ClosureJoinpointAccess.hasCJPAccesses() = true;
-
+	
 	public void ASTNode.extractIntoMethod() {
 		for(int i = 0; i < getNumChild(); i++)
 			getChild(i).extractIntoMethod();
