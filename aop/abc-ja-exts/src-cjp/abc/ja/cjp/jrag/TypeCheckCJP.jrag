@@ -30,13 +30,6 @@ aspect TypeCheckCJP {
 		//do nothing
 	}
  	
-
-	public SimpleSet AnonymousMethod.lookupVariable(String name) {
-		SimpleSet set = parameterDeclaration(name);
-		if(!set.isEmpty()) return set;
-		return outerScope().lookupVariable(name);
-	}
- 	
 	public void ClosureJoinpointAccess.typeCheck() {
 		super.typeCheck();
 		//setting this flag will enable the rewrite that
