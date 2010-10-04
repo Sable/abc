@@ -51,6 +51,7 @@ aspect TypeCheckCJP {
 	inh boolean MethodDecl.isWithinJoinpointTypeDecl();
 	eq JoinpointTypeDecl.getSignature().isWithinJoinpointTypeDecl() = true;
 	eq Program.getChild().isWithinJoinpointTypeDecl() = false;
+	
 
 	refine IntertypeMethodErrorCheck public void MethodDecl.nameCheck() {
 		if(isWithinJoinpointTypeDecl()) {
@@ -69,6 +70,28 @@ aspect TypeCheckCJP {
 		}
 	}
 
+  //copied from Advice.jrag
+  eq CJPAdviceDecl.getAdviceSpec().lookupVariable(String name) {
+    SimpleSet v = getAdviceSpec().localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    v = getAdviceSpec().lookupAfterVariable(name);
+    if(!v.isEmpty()) return v;
+    return lookupVariable(name);
+  }
+  eq CJPAdviceDecl.getBlock().lookupVariable(String name) {
+    SimpleSet v = getAdviceSpec().localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    v = getAdviceSpec().lookupAfterVariable(name);
+    if(!v.isEmpty()) return v;
+    return lookupVariable(name);
+  }
+  inh SimpleSet CJPAdviceDecl.lookupVariable(String name);
+  
+  eq CJPAdviceDecl.getBlock().returnType() = returnType();
+  
+  //copied from AdviceCodegen.jrag
+  eq CJPAdviceDecl.getBlock().aroundSpec() = getAdviceSpec().aroundSpec();
+  
 }
 
 
