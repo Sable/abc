@@ -53,7 +53,8 @@ BodyDecl aspect_body_declaration =
 MemberCJPTypeDecl joinpointtype_decl =
 			  //this allows for a throws-clause, which we need to weed out later
 	JOINPOINT abstract_method_declaration.d 	{:
-		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers(),((MethodDecl)d).getID(),new List(),(MethodDecl)d));
+		MethodDecl m = (MethodDecl)d;
+		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers(),((MethodDecl)d).getID(),new List(),m));
 	:}
 ;
 

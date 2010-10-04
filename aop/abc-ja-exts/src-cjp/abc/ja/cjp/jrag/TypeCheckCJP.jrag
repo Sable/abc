@@ -48,6 +48,27 @@ aspect TypeCheckCJP {
 
 	eq ClosureJoinpointAccess.allCjpHavePassedTypeCheck() = passedTypeCheck;
 
+	inh boolean MethodDecl.isWithinJoinpointTypeDecl();
+	eq JoinpointTypeDecl.getSignature().isWithinJoinpointTypeDecl() = true;
+	eq Program.getChild().isWithinJoinpointTypeDecl() = false;
+
+	refine IntertypeMethodErrorCheck public void MethodDecl.nameCheck() {
+		if(isWithinJoinpointTypeDecl()) {
+		    if(!hostType().methodsSignature(signature()).contains(this)) {
+		      boolean allZap = true;
+		      for(Iterator iter = hostType().methodsSignature(signature()).iterator(); allZap && iter.hasNext(); ) {
+		        MethodDecl m = (MethodDecl)iter.next();
+		        if(!m.zaps(this))
+		          allZap = false;
+		      }
+		      if(!allZap)
+		        error("method with signature " + signature() + " is multiply declared in type " + hostType().typeName());
+		    }
+		} else {
+			IntertypeMethodErrorCheck.MethodDecl.nameCheck();
+		}
+	}
+
 }
 
 
