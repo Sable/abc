@@ -26,6 +26,8 @@ aspect TypeCheckCJP {
  	 	
  	AnonymousMethod implements VariableScope;
  	
+ 	eq AnonymousMethod.getBlock().returnType() = type();
+ 	
 	refine NameCheck public void ParameterDeclaration.nameCheck() {
 		//do nothing
 	}
