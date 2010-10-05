@@ -1,5 +1,6 @@
 aspect CodeGenCJP {
 
+	//do not jimplify joinpointtype declarations
 	public void JoinpointTypeDecl.jimplify2() {
 		//do not jimplify
 	}
@@ -15,5 +16,13 @@ aspect CodeGenCJP {
 		}
 		return res;
 	}
+
+	//flag extracted methods with a tag
+	refine EmitJimple public void MethodDecl.jimplify1phase2() {
+		EmitJimple.MethodDecl.jimplify1phase2();
+		SootMethod m = sootMethod();
+		m.addTag(new abc.ja.cjp.weaving.ExtractedTag(cjpTypeName()));
+	}
+	
 
 }

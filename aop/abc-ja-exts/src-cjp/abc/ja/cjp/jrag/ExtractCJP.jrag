@@ -26,10 +26,17 @@ aspect ExtractCJP {
 	public void ClosureJoinpointAccess.extractIntoMethod() {
 		AnonymousMethod am = this.convert();
 		MethodDecl md = am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp$generated$"+(methodCounter++));
+		TypeDecl type = getName().type();
+		if(type instanceof JoinpointTypeDecl) {
+			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) type;
+			md.cjpTypeName = joinpointTypeDecl.getQualifiedName(); 
+		}
 		md.wasExtractedFromCJP = true;
 	}
 	
 	public boolean MethodDecl.wasExtractedFromCJP = false;
-	
 	syn boolean MethodDecl.wasExtractedFromCJP() = wasExtractedFromCJP; 
+	
+	public String MethodDecl.cjpTypeName = "<not set>";
+	syn String MethodDecl.cjpTypeName() = cjpTypeName; 
 }

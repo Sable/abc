@@ -8,8 +8,8 @@ aspect NameAnalysisCJP {
     
     eq MemberCJPTypeDecl.typeDecl() = getJoinpointTypeDecl(); 
     
-	//eq JoinpointTypeDecl.declaresType(String name) = getSignature().getID().equals(name);	
-
-	//eq JoinpointTypeDecl.memberTypes() = SimpleSet.emptySet;	
+	syn lazy String JoinpointTypeDecl.getQualifiedName() {
+		return enclosingType().getID()+"."+getID();
+	}	
 
 }
