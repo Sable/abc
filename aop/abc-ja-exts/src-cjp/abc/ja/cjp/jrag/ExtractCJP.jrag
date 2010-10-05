@@ -1,20 +1,20 @@
 aspect ExtractCJP {
 
-	rewrite ClassDecl {
-		when(hasCJPAccesses() && allCjpHavePassedTypeCheck()) to ClassDecl {			
-			extractIntoMethod();
-			return this;		
-		}
+	//extract CJPs after having finished error checking
+	refine CompileSequence public void Program.checkErrors(Options options, ErrorQueue error_queue)
+			throws CompilerFailedException {
+		CompileSequence.Program.checkErrors(options,error_queue);
+		this.extractCJPs();		
 	}
-	
-	syn lazy boolean ASTNode.hasCJPAccesses() {
+
+	public void ASTNode.extractCJPs() {
 		for(int i = 0; i < getNumChild(); i++)
-			if(getChild(i).hasCJPAccesses())
-				return true;
-		return false;
+			getChild(i).extractCJPs();
 	}
-	
-	syn lazy boolean ClosureJoinpointAccess.hasCJPAccesses() = true;
+
+	public void ClassDecl.extractCJPs() {
+			extractIntoMethod();
+	}
 	
 	public void ASTNode.extractIntoMethod() {
 		for(int i = 0; i < getNumChild(); i++)
