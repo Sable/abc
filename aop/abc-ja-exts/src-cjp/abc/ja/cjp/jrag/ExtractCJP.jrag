@@ -25,7 +25,11 @@ aspect ExtractCJP {
 
 	public void ClosureJoinpointAccess.extractIntoMethod() {
 		AnonymousMethod am = this.convert();
-		am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp$generated$"+(methodCounter++));
+		MethodDecl md = am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp$generated$"+(methodCounter++));
+		md.wasExtractedFromCJP = true;
 	}
-
+	
+	public boolean MethodDecl.wasExtractedFromCJP = false;
+	
+	syn boolean MethodDecl.wasExtractedFromCJP() = wasExtractedFromCJP; 
 }
