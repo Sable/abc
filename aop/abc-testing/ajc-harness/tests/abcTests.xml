@@ -10735,4 +10735,10 @@
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.cjp"/>
     </ajc-test>    
+
+    <ajc-test num="1501" dir="abctests/cjp/matching"
+        title="Don't match regular execution joinpoints on extracted method">
+        <compile files="DontMatchExecution.java" options="-ext,abc.ja.cjp"/>
+		<run class="DontMatchExecution"/>
+    </ajc-test>    
 </suite>
