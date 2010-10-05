@@ -31,15 +31,16 @@ aspect MoveMemberTypeToToplevel {
 	}
 
 	public void TypeDecl.removeNonToplevelModifiers() {
-		Modifiers new_mods = new Modifiers();
-		for(Modifier mod : getModifiers().getModifiers()) {
-			String id = mod.getID();
-			if(id.equals("public") || id.equals("abstract") || id.equals("final"))
-				new_mods.addModifier(mod);
-		}
 		if(isPublic())
-			new_mods.addModifier("public");
-		setModifiers(new_mods);
+			getModifiers().addModifier("public");
+		getModifiers().removeNonToplevelModifiers();
+		getModifiers().flushCaches();
+	}
+	
+	public void Modifiers.removeNonToplevelModifiers() {
+		removeModifier("private");
+		removeModifier("protected");
+		removeModifier("static");
 	}
 
 	public LinkedList<FieldDeclaration> TypeDecl.addEnclosingInstanceFields(TypeDecl encl, String instanceName, boolean makeInstanceFieldFinal) {

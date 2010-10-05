@@ -83,9 +83,11 @@ aspect CollectConstraints {
 			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
 		}
 		// (Dyn-2)
-		for(MethodDecl that : possiblyOverriddenAncestors()) {
-			if(!this.overrides(that))
-				constrs.add(new AccessibilityConstraint(this, that, Operator.LT, that.minAccess(hostType().hostPackage(), hostType())));
+		if(!isStatic()) {
+			for(MethodDecl that : possiblyOverriddenAncestors()) {
+				if(!this.overrides(that))
+					constrs.add(new AccessibilityConstraint(this, that, Operator.LT, that.minAccess(hostType().hostPackage(), hostType())));
+			}
 		}
 		return constrs;
 	}

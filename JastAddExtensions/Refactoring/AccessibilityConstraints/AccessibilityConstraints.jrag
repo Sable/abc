@@ -52,7 +52,13 @@ aspect AccessibilityConstraints {
 		}
 		
 		public String toString() {
-			return node + ": " + left + " " + op + " " + right;
+			return toString(node) + ": " + left + " " + op + " " + right;
+		}
+		
+		public static String toString(ASTNode nd) {
+			if(nd instanceof TypeDecl)
+				return ((TypeDecl)nd).fullName();
+			return nd.toString();
 		}
 	}
 	
@@ -70,7 +76,10 @@ aspect AccessibilityConstraints {
 		public abstract <T> boolean eval(IAmPartiallyOrdered<T> left, T right);
 		
 		public boolean eval(final int left, final int right) {
-			return eval(new IAmPartiallyOrdered<Integer>() { public boolean leq(Integer right) { return left <= right; } }, right);
+			return eval(new IAmPartiallyOrdered<Integer>() { 
+				public boolean leq(Integer right) { return left <= right; }
+				public boolean equals(Object o) { return new Integer(left).equals(o); }
+			}, right);
 		}
 		
 		public String toString() {
@@ -160,7 +169,7 @@ aspect AccessibilityConstraints {
 		}
 		
 		public String toString() {
-			return "visibility(" + element + ")";
+			return "visibility(" + AccessibilityConstraint.toString((ASTNode)element) + ")";
 		}
 	}
 }

@@ -36,7 +36,8 @@ aspect ChangeAccessibility {
 	}
 	
 	private void Program.adjustAccessibility() {
-		Map<Visible, Integer> acc_map = solve(accessibilityConstraints());
+		Collection<AccessibilityConstraint> accessibilityConstraints = accessibilityConstraints();
+		Map<Visible, Integer> acc_map = solve(accessibilityConstraints);
 		if(acc_map == null)
 			// we could throw an exception here, but having unlocking fail instead will give nicer error messages
 			return;

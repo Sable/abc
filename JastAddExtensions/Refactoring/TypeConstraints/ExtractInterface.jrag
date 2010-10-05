@@ -5,12 +5,15 @@ aspect ExtractInterface {
 		Program root = programRoot();
 		List<BodyDecl> body = new List<BodyDecl>();
 		Modifiers mods = (Modifiers)getModifiers().fullCopy();
+		mods.removeNonToplevelModifiers();
 		mods.removeModifier("abstract");
 		mods.removeModifier("final");
 		InterfaceDecl newInterface = new InterfaceDecl(mods, name, new List<Access>(), body);
 		
 		// TODO: determine path to put new compilation unit at
-		root.insertUnusedType("", pkg == null ? packageName() : pkg, new List<ImportDecl>(), newInterface);
+		String pathName = compilationUnit().pathName();
+		String path = pathName.substring(0, pathName.lastIndexOf(File.separatorChar)+1);
+		root.insertUnusedType(path, pkg == null ? packageName() : pkg, new List<ImportDecl>(), newInterface);
 		addImplements(newInterface.createLockedAccess());
 		for(MethodDecl md : methods) {
 			if(md.hostType() != this)
@@ -39,11 +42,14 @@ aspect ExtractInterface {
 					e.replaceWith(newInterface.createLockedAccess());
 			}			
 		}
-		
-		root.flushCaches();
-		
+	}
+	
+	public void ClassDecl.doExtractInterface(String pkg, String name, Collection<MethodDecl> methods) {
+		Program root = programRoot();
+		extractInterface(pkg, name, methods);
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
+
 	
 	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, TypeDecl cd, InterfaceDecl id) {
 		Collection<TypeConstraintVariable> res = programRoot().allUpdatableExprs(cd);
