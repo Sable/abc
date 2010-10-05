@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="src-tm"/>
 	<classpathentry kind="src" path="generated"/>
 	<classpathentry kind="src" path="src-om"/>
+	<classpathentry kind="src" path="src-cjp"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/abc-ja"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libs"/>

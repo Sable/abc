@@ -1,0 +1,19 @@
+aspect CodeGenCJP {
+
+	public void JoinpointTypeDecl.jimplify2() {
+		//do not jimplify
+	}
+	
+	//do not emit inner-class attributes for JoinpointTypeDecls
+	syn lazy boolean TypeDecl.isJoinpointTypeDecl() = false;
+	eq JoinpointTypeDecl.isJoinpointTypeDecl() = true;	
+	refine EmitJimple eq TypeDecl.innerClassesAttributeEntries() {
+		Collection res = EmitJimple.TypeDecl.innerClassesAttributeEntries();
+		for(Iterator iter = res.iterator();iter.hasNext();) {
+			TypeDecl t = (TypeDecl)iter.next();
+			if(t.isJoinpointTypeDecl()) iter.remove();
+		}
+		return res;
+	}
+
+}
