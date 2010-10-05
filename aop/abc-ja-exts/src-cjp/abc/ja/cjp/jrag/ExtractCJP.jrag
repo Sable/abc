@@ -21,9 +21,11 @@ aspect ExtractCJP {
 			getChild(i).extractIntoMethod();
 	}
 
+	public static int ClosureJoinpointAccess.methodCounter = 0;
+
 	public void ClosureJoinpointAccess.extractIntoMethod() {
 		AnonymousMethod am = this.convert();
-		am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp");
+		am.doExtractToMethod(ASTNode.VIS_PRIVATE, "cjp$generated$"+(methodCounter++));
 	}
 
 }
