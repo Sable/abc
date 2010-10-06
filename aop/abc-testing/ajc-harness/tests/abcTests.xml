@@ -10751,6 +10751,6 @@
         <ajc-test num="1503" dir="abctests/cjp/matching"
         title="Match on closure joinpoints with arguments">
         <compile files="MatchCJPWithArgs.java" options="-ext,abc.ja.cjp"/>
-		<run class="MatchCJP"/>
+		<run class="MatchCJPWithArgs"/>
     </ajc-test>   
 </suite>

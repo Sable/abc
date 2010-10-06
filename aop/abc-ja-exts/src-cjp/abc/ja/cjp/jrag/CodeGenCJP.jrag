@@ -29,13 +29,30 @@ aspect CodeGenCJP {
 	}
 	
 	syn lazy Pointcut CJPPointcutExpr.pointcut() {
-        return new abc.ja.cjp.weaving.CJPCall(joinpointTypeDeclReferencedByAdvice().getQualifiedName(),pos());
+		Pointcut cjpCall = new abc.ja.cjp.weaving.CJPCall(joinpointTypeDeclReferencedByAdvice().getQualifiedName(),pos());
+		java.util.List args = new LinkedList();
+		for(ParameterDeclaration p: paramDecls()) {
+			args.add(new ArgVar(new Var(p.getID(), pos()), pos()));
+		}
+		if(args.isEmpty())
+			return cjpCall;
+		else
+			return AndPointcut.construct(cjpCall, new Args(args,pos()), pos());
     }
     
     inh JoinpointTypeDecl CJPPointcutExpr.joinpointTypeDeclReferencedByAdvice();
-    
     eq CJPAdviceDecl.getPointcutExpr().joinpointTypeDeclReferencedByAdvice() = cjpTypeDecl();
-
     eq Program.getChild().joinpointTypeDeclReferencedByAdvice() { throw new InternalError("attribute not supported here"); } 
+
+    inh List<ParameterDeclaration> CJPPointcutExpr.paramDecls();
+    eq CJPAdviceDecl.getPointcutExpr().paramDecls() = getAdviceSpec().getParameters();
+    eq Program.getChild().paramDecls() { throw new InternalError("attribute not supported here"); } 
 	
+	syn lazy int CJPPointcutExpr.binds(String var) {
+		int i = 0;
+		for(ParameterDeclaration p: paramDecls()) {
+			if(var.equals(p.getID())) i++;
+		}
+		return i;
+	}
 }
