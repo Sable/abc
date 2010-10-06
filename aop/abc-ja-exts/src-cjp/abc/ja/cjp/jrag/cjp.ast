@@ -6,4 +6,6 @@ ClosureJoinpointAccess : AnonymousMethod ::= Name:Access;
 
 JoinpointTypeDecl : TypeDecl ::= Signature:MethodDecl;
 	
-CJPAdviceDecl : BodyDecl ::= Modifiers AdviceSpec Exception:Access* Block;
+CJPAdviceDecl : AdviceDecl;
+
+CJPPointcutExpr: PointcutExpr;

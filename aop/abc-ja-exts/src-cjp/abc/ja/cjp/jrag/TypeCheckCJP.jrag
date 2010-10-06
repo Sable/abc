@@ -70,6 +70,25 @@ aspect TypeCheckCJP {
 		}
 	}
 
+	syn lazy JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl() = cjpTypeDecl(getAdviceSpec().getGivenName()); 
+
+	inh JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl(String name);
+	
+	eq TypeDecl.getBodyDecl().cjpTypeDecl(String name) {
+		for(BodyDecl b: getBodyDecls()) {
+			if(b instanceof MemberCJPTypeDecl) {
+				MemberCJPTypeDecl mj = (MemberCJPTypeDecl)b;
+				JoinpointTypeDecl j = (JoinpointTypeDecl)mj.typeDecl();
+				if(j.getID().equals(name)) {
+					return j;
+				}
+			}						
+		}
+		return null;
+	}
+
+	eq Program.getChild().cjpTypeDecl(String name) { throw new InternalError("attribute not supported here"); }
+
   //copied from Advice.jrag
   eq CJPAdviceDecl.getAdviceSpec().lookupVariable(String name) {
     SimpleSet v = getAdviceSpec().localLookupVariable(name);

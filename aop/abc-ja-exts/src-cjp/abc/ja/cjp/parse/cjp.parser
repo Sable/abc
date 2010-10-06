@@ -65,7 +65,7 @@ BodyDecl aspect_body_declaration =
 CJPAdviceDecl cjp_advice_declaration =
 	modifiers.m? cjp_advice_spec.s throws.t? block.b 
        {: ParserTrace.parserTrace("cjp advice declaration");
-          return new CJPAdviceDecl(new Modifiers(m), s, t, b);
+          return new CJPAdviceDecl(new Modifiers(m), s, new CJPPointcutExpr(), t, b);
        :}
 ;
 

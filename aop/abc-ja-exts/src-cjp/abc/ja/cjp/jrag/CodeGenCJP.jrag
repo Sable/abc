@@ -26,5 +26,14 @@ aspect CodeGenCJP {
 		}
 	}
 	
+	syn lazy Pointcut CJPPointcutExpr.pointcut() {
+        return new abc.ja.cjp.weaving.CJPCall(joinpointTypeDeclReferencedByAdvice().getQualifiedName(),pos());
+    }
+    
+    inh JoinpointTypeDecl CJPPointcutExpr.joinpointTypeDeclReferencedByAdvice();
+    
+    eq CJPAdviceDecl.getPointcutExpr().joinpointTypeDeclReferencedByAdvice() = cjpTypeDecl();
 
+    eq Program.getChild().joinpointTypeDeclReferencedByAdvice() { throw new InternalError("attribute not supported here"); } 
+	
 }
