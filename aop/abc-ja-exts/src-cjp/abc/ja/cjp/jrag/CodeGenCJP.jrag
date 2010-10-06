@@ -1,5 +1,7 @@
 aspect CodeGenCJP {
 
+	//TODO still must add appropriate args(..) pointcuts for forwarding arguments
+
 	//do not jimplify joinpointtype declarations
 	public void JoinpointTypeDecl.jimplify2() {
 		//do not jimplify
