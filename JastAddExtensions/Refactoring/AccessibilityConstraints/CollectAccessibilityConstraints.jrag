@@ -39,7 +39,8 @@ aspect CollectConstraints {
 			   when isQualified() &&
 			   		!decl().isStatic() &&
 			   		decl().minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-			   		!qualifier().type().instanceOf(hostType())
+			   		!qualifier().type().instanceOf(hostType()) &&
+			   		!qualifier().isSuperAccess()
 			   to Program.accessibilityConstraints()
 			   for programRoot();
 	
@@ -85,8 +86,12 @@ aspect CollectConstraints {
 		// (Dyn-2)
 		if(!isStatic()) {
 			for(MethodDecl that : possiblyOverriddenAncestors()) {
-				if(!this.overrides(that))
-					constrs.add(new AccessibilityConstraint(this, that, Operator.LT, that.minAccess(hostType().hostPackage(), hostType())));
+				if(!this.overrides(that)) {
+					// we want to avoid "this" overriding "that"
+					// note that we never need to require for the visibility of "that" to be less than private, hence the Math.max
+					int alpha = Math.max(VIS_PACKAGE, that.minAccess(hostType().hostPackage(), hostType()));
+					constrs.add(new AccessibilityConstraint(this, that, Operator.LT, alpha));
+				}
 			}
 		}
 		return constrs;
