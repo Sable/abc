@@ -20,8 +20,10 @@ aspect CodeGenCJP {
 	//flag extracted methods with a tag
 	refine EmitJimple public void MethodDecl.jimplify1phase2() {
 		EmitJimple.MethodDecl.jimplify1phase2();
-		SootMethod m = sootMethod();
-		m.addTag(new abc.ja.cjp.weaving.ExtractedTag(cjpTypeName()));
+		if(wasExtractedFromCJP()) {
+			SootMethod m = sootMethod();
+			m.addTag(new abc.ja.cjp.weaving.ExtractedTag(cjpTypeName()));
+		}
 	}
 	
 

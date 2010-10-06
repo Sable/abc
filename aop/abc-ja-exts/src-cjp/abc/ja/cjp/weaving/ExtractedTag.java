@@ -17,7 +17,7 @@ public class ExtractedTag implements Tag {
 
 	@Override
 	public String getName() {
-		return getClass().getName();
+		return "abc.ja.cjp.weaving.ExtractedTag";
 	}
 
 	@Override

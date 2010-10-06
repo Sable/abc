@@ -1,0 +1,15 @@
+aspect MatchingCJP {
+
+	//TODO:
+	//we still need to make sure that we do match joinpoints when selected
+	//using within(<name of a method bearing a CJP>)
+
+	//prevent regular execution pointcuts from matching the execution of an extracted method
+	refine PatternsCodegen public boolean MethodPattern.matchesCall(SootMethodRef smr) {
+		if(!PatternsCodegen.MethodPattern.matchesCall(smr)) return false;
+		
+		//match if the method is not tagged
+		return !smr.resolve().hasTag("abc.ja.cjp.weaving.ExtractedTag");
+	}
+
+}
