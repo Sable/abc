@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="/home/xiemaisi/JastAdd/Refactoring/lib/cream106.jar"/>
+	<classpathentry kind="lib" path="lib/choco-solver.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

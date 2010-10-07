@@ -70,8 +70,7 @@ public class ChangeParameterTypeRefactoring extends Refactoring {
 			RefactoringUtil.recompileSourceCompilationUnits(root, selectedNode);
 			Program.startRecordingASTChangesAndFlush();
 
-			MethodDecl md = (MethodDecl)bd;
-			md.changeParameterType(md.getParameterList().getIndexOfChild(pd), td);	
+			pd.changeType(td);
 
 			changes = RefactoringUtil.createChanges("ChangeParameterType", Program.cloneUndoStack());
 		} catch (RefactoringException re) {

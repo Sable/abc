@@ -35,6 +35,7 @@ import org.jastadd.plugin.jastaddj.editor.actions.AddParameterRefactoringHandler
 import org.jastadd.plugin.jastaddj.editor.actions.ChangeParameterTypeRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractInterfaceRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
@@ -151,6 +152,10 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				"Extract Class", "JastAddJ Extract Class", null,
 				new ExtractClassRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
+				"Extract Interfacce", "JastAddJ Extract Interface", null,
+				new ExtractInterfaceRefactoringHandler());
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
 				"Extract Temp", "JastAddJ Extract Temp", "Shift+Alt+L",
@@ -443,6 +448,12 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"E&xtract Class",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				new ExtractClassRefactoringHandler());
+		
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.ExtractInterfaceTopMenuItem",
+				"Extract &Interface",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
+				new ExtractInterfaceRefactoringHandler());
 		
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.ExtractTempTopMenuItem",

@@ -49,6 +49,7 @@ import org.jastadd.plugin.jastaddj.editor.actions.AddParameterRefactoringHandler
 import org.jastadd.plugin.jastaddj.editor.actions.ChangeParameterTypeRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.EncapsulateFieldRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractClassRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ExtractInterfaceRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractMethodRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ExtractTempRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
@@ -521,6 +522,10 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 		addContextMenuItem(refactorMenu, "E&xtract Class",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
 				new ExtractClassRefactoringHandler());
+
+		addContextMenuItem(refactorMenu, "Extract &Interface",
+				"org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
+				new ExtractInterfaceRefactoringHandler());
 
 		addContextMenuItem(refactorMenu, "Extract Temp",
 				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
