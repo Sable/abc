@@ -44,6 +44,25 @@ ClosureJoinpointAccess closure_joinpoint =
 
 			return new ClosureJoinpointAccess(p,new List()/*no type params*/,new PrimitiveTypeAccess("void")/*no ret type for now (will be inferred)*/,new List()/*no exceptions type for now (will be inferred)*/,b,a,i);
 		:}
+	|
+	EXHIBIT name.i block.b 
+		{:			
+			/*Access n;
+			//copied from java14.parser-rule for method_invocation
+			if(i instanceof AbstractDot) {    
+				AbstractDot d = (AbstractDot)i; 
+				ParseName pn = (ParseName)d.extractLast();
+				MethodAccess m = new CJPTypeAccess(pn.getID(), a);
+				d.replaceLast(m);
+				n=d;
+ 			} else {
+                ParseName pn = (ParseName)i;
+                MethodAccess m = new CJPTypeAccess(pn.getID(), a);
+                n=m;
+            }*/
+
+			return new ClosureJoinpointAccess(new List()/*no params*/,new List()/*no type params*/,new PrimitiveTypeAccess("void")/*no ret type for now (will be inferred)*/,new List()/*no exceptions type for now (will be inferred)*/,b,new List()/*no args*/,i);
+		:}
 ;
 
 BodyDecl aspect_body_declaration =
