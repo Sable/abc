@@ -10835,10 +10835,18 @@
         title="Check return types at compile time">
         <compile files="CheckReturnTypesIncorrect.java" options="-ext,abc.ja.cjp">
 	        <message kind="error" line="7"/>
+	        <message kind="error" line="12"/>
         </compile>
     </ajc-test>   
 
     <ajc-test num="1516" dir="abctests/cjp/typechecks"
+        title="Check return types at compile time (2)">
+        <compile files="CheckReturnTypesIncorrect2.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1517" dir="abctests/cjp/typechecks"
         title="Check that CJP type is declared">
         <compile files="CheckCJPDeclared.java" options="-ext,abc.ja.cjp">
 	        <message kind="error" line="4"/>
