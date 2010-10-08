@@ -10855,10 +10855,26 @@
     </ajc-test>   
 
     <ajc-test num="1518" dir="abctests/cjp/typechecks"
-        title="Check that CJP type is declared">
+        title="Check argument types">
         <compile files="CheckArgumentTypes.java" options="-ext,abc.ja.cjp">
 	        <message kind="error" line="10"/>
 	        <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1519" dir="abctests/cjp/typechecks"
+        title="Check exception types in advice">
+        <compile files="CheckExceptions.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1520" dir="abctests/cjp/typechecks"
+        title="Check exception types in base code">
+        <compile files="CheckExceptions2.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="18"/>
         </compile>
     </ajc-test>   
 </suite>
