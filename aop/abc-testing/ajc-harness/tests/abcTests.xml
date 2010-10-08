@@ -10791,4 +10791,11 @@
 	        <message kind="error" line="22"/>
         </compile>
     </ajc-test>  
+    
+    <ajc-test num="1509" dir="abctests/cjp/typechecks"
+        title="Check field accesses">
+        <compile files="CheckFieldAccess.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>     
 </suite>
