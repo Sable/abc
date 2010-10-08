@@ -10798,4 +10798,12 @@
 	        <message kind="error" line="15"/>
         </compile>
     </ajc-test>     
+
+    <ajc-test num="1510" dir="abctests/cjp/typechecks"
+        title="Check access to 'this'">
+        <compile files="CheckThisAccess.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>   
 </suite>
