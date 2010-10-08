@@ -10842,7 +10842,6 @@
     <ajc-test num="1516" dir="abctests/cjp/typechecks"
         title="Check return types at compile time (2)">
         <compile files="CheckReturnTypesIncorrect2.java" options="-ext,abc.ja.cjp">
-	        <message kind="error" line="6"/>
 	        <message kind="error" line="17"/>
         </compile>
     </ajc-test>   
