@@ -48,20 +48,25 @@ aspect TypeCheckCJP {
 
 
 	refine NameCheck public void TypeDecl.nameCheck() {
-		correctTheReturnType();	
+		correctTheReturnTypeAndThrowsList();	
 		NameCheck.TypeDecl.nameCheck();
 	}
 	
-	public void ASTNode.correctTheReturnType() {
+	public void ASTNode.correctTheReturnTypeAndThrowsList() {
 		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).correctTheReturnType();
+			getChild(i).correctTheReturnTypeAndThrowsList();
 	}
 	
-	public void ClosureJoinpointAccess.correctTheReturnType() {
+	public void ClosureJoinpointAccess.correctTheReturnTypeAndThrowsList() {
 		TypeDecl t = getName().type();
 		if(t instanceof JoinpointTypeDecl) {
 			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) t;
-			setReturnType(joinpointTypeDecl.getSignature().getTypeAccess());
+			try{
+				setReturnType(joinpointTypeDecl.getSignature().getTypeAccess().clone());
+				setExceptionList(joinpointTypeDecl.getSignature().getExceptionList().clone());
+			} catch(CloneNotSupportedException e) {
+				throw new RuntimeException(e); //cannot occur
+			}
 		}
 	}
 	
