@@ -10771,4 +10771,12 @@
         <compile files="SimpleSyntax.java" options="-ext,abc.ja.cjp"/>
 		<run class="SimpleSyntax"/>
     </ajc-test>  
+
+    <ajc-test num="1507" dir="abctests/cjp/typechecks"
+        title="Dont allow capture of break and continue">
+        <compile files="CheckBreakContinueCapture.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>  
 </suite>

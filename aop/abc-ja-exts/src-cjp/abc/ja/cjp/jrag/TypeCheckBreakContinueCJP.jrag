@@ -1,0 +1,24 @@
+aspect TypeCheckBreakContinueCJP {
+
+    inh ClosureJoinpointAccess Expr.enclosingClosureJoinpointAccess();
+    inh ClosureJoinpointAccess Stmt.enclosingClosureJoinpointAccess();
+    inh ClosureJoinpointAccess TypeDecl.enclosingClosureJoinpointAccess();
+    eq Program.getChild().enclosingClosureJoinpointAccess() = null;
+    eq ClosureJoinpointAccess.getChild().enclosingClosureJoinpointAccess() = this;
+
+    public void BreakStmt.typeCheck() {
+    	ClosureJoinpointAccess cjp = enclosingClosureJoinpointAccess();
+    	if(cjp!=null && cjp!=targetStmt().enclosingClosureJoinpointAccess()) {
+    		error("break statement may only refer to targets within the closure");
+    	}
+    	super.typeCheck();
+    }
+
+    public void ContinueStmt.typeCheck() {
+    	ClosureJoinpointAccess cjp = enclosingClosureJoinpointAccess();
+    	if(cjp!=null && cjp!=targetStmt().enclosingClosureJoinpointAccess()) {
+    		error("continue statement may only refer to targets within the closure");
+    	}
+    	super.typeCheck();
+    }
+}
