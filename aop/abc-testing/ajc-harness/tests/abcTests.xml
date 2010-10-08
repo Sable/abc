@@ -10820,8 +10820,29 @@
     </ajc-test>   
 
     <ajc-test num="1513" dir="abctests/cjp/matching"
-        title="Check thisJoinPoint.getArgs()()">
+        title="Check thisJoinPoint.getArgs()">
         <compile files="CheckArgsExposure.java" options="-ext,abc.ja.cjp"/>
 		<run class="CheckArgsExposure"/>
+    </ajc-test>   
+
+    <ajc-test num="1514" dir="abctests/cjp/typechecks"
+        title="Check return types and casts at runtime">
+        <compile files="CheckReturnTypesCorrect.java" options="-ext,abc.ja.cjp"/>
+    	<run class="CheckReturnTypesCorrect"/>
+    </ajc-test>   
+
+    <ajc-test num="1515" dir="abctests/cjp/typechecks"
+        title="Check return types at compile time">
+        <compile files="CheckReturnTypesIncorrect.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1516" dir="abctests/cjp/typechecks"
+        title="Check that CJP type is declared">
+        <compile files="CheckCJPDeclared.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="4"/>
+	        <message kind="error" line="5"/>
+        </compile>
     </ajc-test>   
 </suite>

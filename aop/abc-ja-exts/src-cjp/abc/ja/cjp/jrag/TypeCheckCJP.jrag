@@ -36,6 +36,13 @@ aspect TypeCheckCJP {
 			setReturnType(joinpointTypeDecl.getSignature().getTypeAccess());
 		}
 	}
+	
+	public void ClosureJoinpointAccess.nameCheck() {
+		TypeDecl t = getName().type();
+		if(!t.isUnknown() && !(t instanceof JoinpointTypeDecl)) {
+			error("type "+getName()+" is not a joinpoint type");	
+		} 
+	}
 
  	eq AnonymousMethod.getParameter().outerScope() = this;
  	inh VariableScope AnonymousMethod.outerScope();
