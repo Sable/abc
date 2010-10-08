@@ -4,6 +4,20 @@ aspect TypeCheckCJP {
 
 	public void ClosureJoinpointAccess.typeCheck() {
 		super.typeCheck();
+		
+  		TypeDecl decl = getName().type();
+  		if(decl.isJoinpointTypeDecl()) {
+  			JoinpointTypeDecl d = (JoinpointTypeDecl)decl;
+  			MethodDecl m = d.getSignature();
+  			int i=0;
+  			for(ParameterDeclaration p: getParameters()) {
+				if(p.type()!=m.getParameter(i).type()) {
+					error(p.getID()+" must be of type "+m.getParameter(i).type().name()+" but is of type "+p.type().name()+" instead.");
+				}
+				i++;
+  			}
+		}
+
 		//setting this flag will enable the rewrite that
 		//extracts the closure into a proper method
 		this.passedTypeCheck=true;
@@ -39,7 +53,7 @@ aspect TypeCheckCJP {
 	
 	public void ClosureJoinpointAccess.nameCheck() {
 		TypeDecl t = getName().type();
-		if(!t.isUnknown() && !(t instanceof JoinpointTypeDecl)) {
+		if(!t.isUnknown() && !t.isJoinpointTypeDecl()) {
 			error("type "+getName()+" is not a joinpoint type");	
 		} 
 	}

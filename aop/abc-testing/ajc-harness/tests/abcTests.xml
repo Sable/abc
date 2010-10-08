@@ -10853,4 +10853,12 @@
 	        <message kind="error" line="5"/>
         </compile>
     </ajc-test>   
+
+    <ajc-test num="1518" dir="abctests/cjp/typechecks"
+        title="Check that CJP type is declared">
+        <compile files="CheckArgumentTypes.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="10"/>
+	        <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>   
 </suite>
