@@ -10748,9 +10748,27 @@
 		<run class="MatchCJP"/>
     </ajc-test>  
     
-        <ajc-test num="1503" dir="abctests/cjp/matching"
+    <ajc-test num="1503" dir="abctests/cjp/matching"
         title="Match on closure joinpoints with arguments">
         <compile files="MatchCJPWithArgs.java" options="-ext,abc.ja.cjp"/>
 		<run class="MatchCJPWithArgs"/>
     </ajc-test>   
+
+    <ajc-test num="1504" dir="abctests/cjp/matching"
+        title="Match on two closure joinpoints of the same type">
+        <compile files="Match2CJP.java" options="-ext,abc.ja.cjp"/>
+		<run class="Match2CJP"/>
+    </ajc-test>  
+    
+    <ajc-test num="1505" dir="abctests/cjp/matching"
+        title="Match on closure joinpoints with arguments">
+        <compile files="Match2CJPWithDifferentArgs.java" options="-ext,abc.ja.cjp"/>
+		<run class="Match2CJPWithDifferentArgs"/>
+    </ajc-test>   
+    
+    <ajc-test num="1506" dir="abctests/cjp/simplesyntax"
+        title="Test simple syntax">
+        <compile files="SimpleSyntax.java" options="-ext,abc.ja.cjp"/>
+		<run class="SimpleSyntax"/>
+    </ajc-test>  
 </suite>
