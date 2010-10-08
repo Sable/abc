@@ -22,6 +22,20 @@ aspect TypeCheckCJP {
 		//extracts the closure into a proper method
 		this.passedTypeCheck=true;
 	}
+
+	syn lazy boolean AdviceSpec.isAround() = false;
+	eq AroundSpec.isAround() = true;
+	
+	public void CJPAdviceDecl.typeCheck() {
+		super.typeCheck();
+	
+		AdviceSpec spec = getAdviceSpec();
+		if(spec.isAround()) {
+			if(spec.returnType()!=cjpTypeDecl().getSignature().getTypeAccess().type()) {
+				error("return type must be "+cjpTypeDecl().getSignature().getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
+			}
+		}		
+	}
 	
 	syn boolean ASTNode.allCjpHavePassedTypeCheck() {
 		for(int i = 0; i < getNumChild(); i++)

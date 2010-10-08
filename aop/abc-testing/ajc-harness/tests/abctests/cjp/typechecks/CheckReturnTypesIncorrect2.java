@@ -3,7 +3,7 @@ import java.util.*;
 public aspect CheckReturnTypesIncorrect2 {
 	
 	static void correct() {
-		Set s = exhibit JPHashSet {  //error: cannot apply around advice returning Set here //TODO: this should better give an error on the advice declaration 
+		Set s = exhibit JPHashSet {  
 			return new HashSet();
 		};
 	}
@@ -14,7 +14,7 @@ public aspect CheckReturnTypesIncorrect2 {
 
 	joinpoint HashSet JPHashSet();
 	
-	Set around JPHashSet() {			
+	Set around JPHashSet() {	//error: return type must be HashSet
 		return new TreeSet();
 	}
 	
