@@ -2,11 +2,13 @@ aspect TypeCheckFinalAccessCJP {
 
     inh ClosureJoinpointAccess Variable.enclosingClosureJoinpointAccess();
 	eq ClosureJoinpointAccess.getParameter().enclosingClosureJoinpointAccess() = this;
+	eq ClosureJoinpointAccess.getArg().enclosingClosureJoinpointAccess() = enclosingClosureJoinpointAccess(); 
 
 	refine NameCheck public void VarAccess.nameCheck() {
 		NameCheck.VarAccess.nameCheck();
 	    ClosureJoinpointAccess jpa = enclosingClosureJoinpointAccess();
 	    if(jpa!=null) {
+	    	Variable v = decl();
 		    if(!v.isFinal() && !v.isClassVariable() && !v.isInstanceVariable()) {
 		    	if(v.isMethodParameter() || v.isConstructorParameter() || v.isLocalVariable()) {
 		    		ClosureJoinpointAccess declJPA = v.enclosingClosureJoinpointAccess();
