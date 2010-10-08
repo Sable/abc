@@ -10806,4 +10806,10 @@
 	        <message kind="error" line="15"/>
         </compile>
     </ajc-test>   
+
+    <ajc-test num="1511" dir="abctests/cjp/matching"
+        title="Check thisJoinPoint.getThis()">
+        <compile files="CheckThisExposure.java" options="-ext,abc.ja.cjp"/>
+		<run class="CheckThisExposure"/>
+    </ajc-test>   
 </suite>
