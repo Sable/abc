@@ -3,7 +3,7 @@ import java.util.*;
 public aspect CheckReturnTypesIncorrect2 {
 	
 	static void correct() {
-		Set s = exhibit JPHashSet {  
+		HashSet s = exhibit JPHashSet {  
 			return new HashSet();
 		};
 	}
