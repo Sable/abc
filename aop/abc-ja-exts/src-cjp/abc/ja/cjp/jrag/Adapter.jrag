@@ -53,4 +53,8 @@ aspect Adapter {
       refine LockedVariableAccess eq VarAccess.decls()
   	  to refine IntertypeFieldNameAnalysis eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
       
+      /* refine AST public void ASTNode.flushCaches()
+  	   to refine Java2Rewrites public void ASTNode.flushCaches() {
+  	  	refined();
+  	  }*/
 }
