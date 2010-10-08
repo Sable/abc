@@ -4,11 +4,9 @@ class ShoppingSession {
 
 	void buy(final Item item, int amount) {
 		Category category = Database.categoryOf(item);
-		int m;
 		totalAmount = exhibit								
 			BonusProgram.Buying(int amount, Category c) {
 				sc.add(item, amount);		
-				m=3;
 				return totalAmount + amount;				
 	    	} (amount,category); 							
 	}
