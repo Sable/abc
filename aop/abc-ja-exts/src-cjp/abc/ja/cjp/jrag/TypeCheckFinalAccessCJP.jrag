@@ -1,0 +1,20 @@
+aspect TypeCheckFinalAccessCJP {
+
+    inh ClosureJoinpointAccess Variable.enclosingClosureJoinpointAccess();
+	eq ClosureJoinpointAccess.getParameter().enclosingClosureJoinpointAccess() = this;
+
+	refine NameCheck public void VarAccess.nameCheck() {
+		NameCheck.VarAccess.nameCheck();
+	    ClosureJoinpointAccess jpa = enclosingClosureJoinpointAccess();
+	    if(jpa!=null) {
+		    if(!v.isFinal() && !v.isClassVariable() && !v.isInstanceVariable()) {
+		    	if(v.isMethodParameter() || v.isConstructorParameter() || v.isLocalVariable()) {
+		    		ClosureJoinpointAccess declJPA = v.enclosingClosureJoinpointAccess();
+		    		if(jpa!=declJPA) {
+		    			error("can only access final parameters/locals from enclosing scopes");
+		    		}
+		    	} 
+		    }
+	    }
+    }
+}

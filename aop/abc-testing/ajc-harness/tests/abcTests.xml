@@ -10779,4 +10779,16 @@
 	        <message kind="error" line="41"/>
         </compile>
     </ajc-test>  
+
+    <ajc-test num="1508" dir="abctests/cjp/typechecks"
+        title="Only allow access to final locals">
+        <compile files="CheckFinalAccess.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="4"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>  
 </suite>
