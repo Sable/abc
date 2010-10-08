@@ -48,4 +48,9 @@ aspect Adapter {
       
       syn lazy String CJPAdviceDecl.name() =  getAdviceSpec().kind() + "$" + hostType().adviceCounter++;
       
+      //arrange refinements
+      
+      refine LockedVariableAccess eq VarAccess.decls()
+  	  to refine IntertypeFieldNameAnalysis eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
+      
 }
