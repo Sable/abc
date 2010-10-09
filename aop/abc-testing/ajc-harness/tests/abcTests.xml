@@ -10851,6 +10851,7 @@
         <compile files="CheckCJPDeclared.java" options="-ext,abc.ja.cjp">
 	        <message kind="error" line="4"/>
 	        <message kind="error" line="5"/>
+	        <message kind="error" line="16"/>
         </compile>
     </ajc-test>   
 
@@ -10891,8 +10892,21 @@
     </ajc-test>   
 
     <ajc-test num="1523" dir="abctests/cjp/matching"
-        title="Check after-returning value">
+        title="Check after-throwing value">
         <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.cjp"/>
     	<run class="MatchAfterThrowing"/>
+    </ajc-test>   
+
+    <ajc-test num="1524" dir="abctests/cjp/typechecks"
+        title="Check after-returning">
+        <compile files="CheckAfterReturning.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1525" dir="abctests/cjp/typechecks"
+        title="Check after-throwing">
+        <compile files="CheckAfterThrowing.java" options="-ext,abc.ja.cjp">	        
+        </compile>
     </ajc-test>   
 </suite>

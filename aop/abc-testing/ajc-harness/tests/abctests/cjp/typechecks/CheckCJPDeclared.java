@@ -11,4 +11,8 @@ public aspect CheckCJPDeclared {
 	joinpoint void JP2();
 
 	joinpoint void Exception();
+	
+	after JP2() {} //ok
+
+	after JP() {} //error: not declared
 }
