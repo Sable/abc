@@ -19,13 +19,11 @@
 
 package abc.ja.cjp;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import polyglot.types.SemanticException;
-import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import abc.aspectj.parse.AbcLexer;
@@ -49,7 +47,7 @@ public class AbcExtension extends abc.ja.AbcExtension
     protected void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
-        versions.append(" with cjp (JastAdd version) " +
+        versions.append(" with Closure Joinpoints " +
                         new abc.ja.cjp.Version().toString() +
                         "\n");
     }
