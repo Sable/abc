@@ -1,4 +1,5 @@
 import org.aspectj.testing.Tester;
+import java.io.*;
 
 public aspect MatchAfterThrowing {
 	
@@ -21,4 +22,8 @@ public aspect MatchAfterThrowing {
 	after JP() throwing(Exception r) {
 		e = r;
 	}	
+
+	after JP() throwing(IOException r) { //should not execute, as an Exception is no IOException
+		Tester.check(false,"executed wrong piece of advice");
+	}
 }

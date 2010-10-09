@@ -1,19 +1,24 @@
 import org.aspectj.testing.Tester;
+import java.util.*;
 
 public aspect MatchAfterReturning {
 	
-	static Object o;
+	static HashMap o;
 	
 	public static void main(String args[]) {		
-		Object ret = exhibit JP { return foo(); };
+		HashMap ret = exhibit JP { return foo(); };
 		Tester.check(o==ret, "after-returning advice captured incorrect value: "+o);
 	}
 	
-	static Object foo() { return new Object(); }
+	static HashMap foo() { return new HashMap(); }
 	
-	joinpoint Object JP(); 
+	joinpoint HashMap JP(); 
 	
-	after JP() returning(Object r) {
+	after JP() returning(HashMap r) {
 		o = r;
+	}	
+
+	after JP() returning(List l) { //should never execute because a HashMap is no List
+		Tester.check(false,"executed wrong piece of advice");
 	}	
 }
