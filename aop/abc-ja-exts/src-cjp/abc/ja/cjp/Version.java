@@ -24,5 +24,25 @@ package abc.ja.cjp;
  * @author Eric Bodden
  */
 public class Version extends abc.aspectj.Version {
-    public String name() { return "abc+ja+cjp"; }    
+    public String name() { return "abc+ja+cjp"; }  
+    
+    @Override
+    public int major() {
+    	return 0;
+    }
+    
+    @Override
+    public int minor() {
+    	return 9;
+    }
+    
+    @Override
+    public int patch_level() {
+    	return 0;
+    }
+    
+    @Override
+    public String prerelease() {
+    	return "";
+    }
 }
