@@ -10883,4 +10883,16 @@
         <compile files="CorrectWithinSemantics.java" options="-ext,abc.ja.cjp">
         </compile>
     </ajc-test>   
+
+    <ajc-test num="1522" dir="abctests/cjp/matching"
+        title="Check after-returning value">
+        <compile files="MatchAfterReturning.java" options="-ext,abc.ja.cjp"/>
+    	<run class="MatchAfterReturning"/>
+    </ajc-test>   
+
+    <ajc-test num="1523" dir="abctests/cjp/matching"
+        title="Check after-returning value">
+        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.cjp"/>
+    	<run class="MatchAfterThrowing"/>
+    </ajc-test>   
 </suite>
