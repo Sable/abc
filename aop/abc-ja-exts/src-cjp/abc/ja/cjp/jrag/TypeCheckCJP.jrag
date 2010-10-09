@@ -72,7 +72,7 @@ aspect TypeCheckCJP {
 		    				break;
 	    				}
 		    			if(!found)
-		    				error("joinpoints of type "+ cjpTypeDecl().getID() + " declare to never throw checked exceptions of type "+here.name()); 
+		    				error("joinpoints of type "+ cjpTypeDecl().getID() + " cannot throw checked exceptions of type "+here.name()); 
 			        }
 		        }
 			}
