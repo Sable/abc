@@ -10879,11 +10879,12 @@
         </compile>
     </ajc-test>   
 
-    <ajc-test num="1521" dir="abctests/cjp/matching"
+	<ajc-test num="1521" dir="abctests/cjp/matching"
         title="Correct semantics for within pointcuts">
-        <compile files="CorrectWithinSemantics.java" options="-ext,abc.ja.cjp">
-        </compile>
-    </ajc-test>   
+        <abckeywords><skip/></abckeywords>
+        <compile files="CorrectWithinSemantics.java" options="-ext,abc.ja.cjp"/>
+    	<run class="CorrectWithinSemantics"/>
+    </ajc-test>    
 
     <ajc-test num="1522" dir="abctests/cjp/matching"
         title="Check after-returning value">
