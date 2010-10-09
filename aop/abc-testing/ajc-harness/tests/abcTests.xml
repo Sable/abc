@@ -10907,6 +10907,7 @@
     <ajc-test num="1525" dir="abctests/cjp/typechecks"
         title="Check after-throwing">
         <compile files="CheckAfterThrowing.java" options="-ext,abc.ja.cjp">	        
+	        <message kind="error" line="18"/>
         </compile>
     </ajc-test>   
 </suite>
