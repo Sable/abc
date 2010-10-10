@@ -1,3 +1,9 @@
+/*
+ * This aspect defines a collection attribute that collects all accessibility constraints in the whole program.
+ * 
+ * While this is surprisingly still feasible for medium-sized programs (100KSLOC), it is not exactly fast. We should
+ * try to be a little smarter about which constraints have to be collected.
+ */
 aspect CollectConstraints {
 	coll Collection<AccessibilityConstraint> Program.accessibilityConstraints() [new LinkedHashSet<AccessibilityConstraint>()]
 	                                         with addAll root Program;

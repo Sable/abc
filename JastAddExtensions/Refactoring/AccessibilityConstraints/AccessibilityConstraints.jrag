@@ -1,6 +1,14 @@
+/*
+ * This aspect defines classes representing accessibility constraints (AccessibilityConstraint) and the constraint
+ * variables/constants that occur in them (AccessModifierConstant, AccessModifierVariable, WithAccessModifier).
+ */
+
 aspect AccessibilityConstraints {
 	class AccessibilityConstraint {
+		// the node which gives rise to this constraint
 		private ASTNode node;
+		
+		// the two sides of the constraint and the operator connecting them
 		private WithAccessModifier left, right;
 		private Operator op;
 		
@@ -11,6 +19,7 @@ aspect AccessibilityConstraints {
 			this.right = right;
 		}
 		
+		// several convenience constructors
 		public AccessibilityConstraint(ASTNode node, int left, Visible right) {
 			this(node, AccessModifierConstant.fromVisibility(left), Operator.LE, AccessModifierVariable.forVisible(right));
 		}
@@ -31,6 +40,7 @@ aspect AccessibilityConstraints {
 			this(node, AccessModifierVariable.forVisible(left), op, AccessModifierVariable.forVisible(right));
 		}
 		
+		// assorted setters and getters
 		public boolean fromSource() {
 			return node.fromSource();
 		}
@@ -55,66 +65,25 @@ aspect AccessibilityConstraints {
 			return toString(node) + ": " + left + " " + op + " " + right;
 		}
 		
+		// special-purpose pretty printing method for AST nodes that occur in constraints
 		public static String toString(ASTNode nd) {
-			if(nd instanceof TypeDecl)
+			if(nd instanceof TypeDecl) {
 				return ((TypeDecl)nd).fullName();
+			}
+			if(nd instanceof MethodDecl) {
+				MethodDecl md = (MethodDecl)nd;
+				return md.hostType().fullName() + "." + md.signature();
+			}
 			return nd.toString();
 		}
 	}
 	
-	interface IAmPartiallyOrdered<T> {
-		public boolean leq(T that);
-	}
-	
-	abstract class Operator {
-		String sym;
-		
-		protected Operator(String sym) {
-			this.sym = sym;
-		}
-		
-		public abstract <T> boolean eval(IAmPartiallyOrdered<T> left, T right);
-		
-		public boolean eval(final int left, final int right) {
-			return eval(new IAmPartiallyOrdered<Integer>() { 
-				public boolean leq(Integer right) { return left <= right; }
-				public boolean equals(Object o) { return new Integer(left).equals(o); }
-			}, right);
-		}
-		
-		public String toString() {
-			return sym;
-		}
-	}
-	
-	class LTOperator extends Operator {
-		public LTOperator() { super("<"); }
-		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right) && !left.equals(right); }
-	}
-	
-	class LEOperator extends Operator {
-		public LEOperator() { super("<="); }
-		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right); }
-	}
-	
-	class EQOperator extends Operator {
-		public EQOperator() { super("="); }
-		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.equals(right); }
-	}
-	
-	class NEOperator extends Operator {
-		public NEOperator() { super("!="); }
-		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return !left.equals(right); }
-	}
-	
-	public static final Operator Operator.LT = new LTOperator();
-	public static final Operator Operator.LE = new LEOperator();
-	public static final Operator Operator.EQ = new EQOperator();
-	public static final Operator Operator.NE = new NEOperator();
-	
+	// abstract supertype for representing both access modifier constants and variables
 	abstract class WithAccessModifier {
 		public abstract int getAccessModifier();
 		
+		// factory method: a declaration element occurring in a library gives rise to an access modifier
+		// constant, otherwise a variable
 		public static WithAccessModifier forVisible(Visible vis) {
 			if(vis.fromSource())
 				return new AccessModifierVariable(vis);

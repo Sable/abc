@@ -1,0 +1,52 @@
+/*
+ * Glue code for integrating accessibility adjustment with name unlocking to make it more powerful.
+ * 
+ * The basic idea is to collect accessibility constraints before unlocking names and solving them if necessary.
+ * 
+ * At the moment, we use a pipelined approach in which we first adjust accessibility, and then unlock names.
+ * This is not always sufficient, however, since name unlocking can introduce new locked names, for which
+ * another round of accessibility adjusting may be necessary.
+ * 
+ * Implementing this efficiently is not trivial, and it needs some changes to the way name unlocking is performed
+ * currently.
+ */
+
+aspect AccessibilityGlue {
+	public void Program.eliminateLockedNames() {
+		adjustAccessibility();
+		flushCaches();
+		super.eliminateLockedNames();
+	}
+	
+	private void Program.adjustAccessibility() {
+		Collection<AccessibilityConstraint> accessibilityConstraints = accessibilityConstraints();
+		// if all constraints are already solved, we do not need to build a constraint network, which makes things faster
+		boolean all_solved = true;
+		for(AccessibilityConstraint ac : accessibilityConstraints) {
+			if(!ac.isSolved()) {
+				all_solved = false;
+				break;
+			}
+		}
+		if(all_solved)
+			return;
+		Map<Visible, Integer> acc_map = solve(accessibilityConstraints);
+		if(acc_map == null)
+			throw new RefactoringException("cannot adjust accessibilities");
+		for(Map.Entry<Visible, Integer> e : acc_map.entrySet()) {
+			Visible vis = e.getKey();
+			// TODO: hide this behind an interface (see ChangeAccessibility.jrag)
+			if(vis instanceof FieldDeclaration) {
+				FieldDeclaration fd = (FieldDeclaration)vis;
+				programRoot().lockNames(fd.name());
+			} else if(vis instanceof MethodDecl) {
+				MethodDecl md = (MethodDecl)vis;
+				programRoot().lockMethodNames(md.name());
+			} else if(vis instanceof TypeDecl) {
+				TypeDecl td = (TypeDecl)vis;
+				programRoot().lockNames(td.name());
+			}
+			vis.setVisibility(e.getValue());
+		}
+	}	
+}

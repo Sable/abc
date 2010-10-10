@@ -1,0 +1,55 @@
+/*
+ * Partial orders with operators <, <=, =, and !=.
+ */
+aspect PartialOrder {
+	interface IAmPartiallyOrdered<T> {
+		public boolean leq(T that);
+	}
+	
+	abstract class Operator {
+		String sym;
+		
+		protected Operator(String sym) {
+			this.sym = sym;
+		}
+		
+		public abstract <T> boolean eval(IAmPartiallyOrdered<T> left, T right);
+		
+		// convenience method for comparing integers
+		public boolean eval(final int left, final int right) {
+			return eval(new IAmPartiallyOrdered<Integer>() { 
+				public boolean leq(Integer right) { return left <= right; }
+				public boolean equals(Object o) { return new Integer(left).equals(o); }
+			}, right);
+		}
+		
+		public String toString() {
+			return sym;
+		}
+	}
+	
+	class LTOperator extends Operator {
+		public LTOperator() { super("<"); }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right) && !left.equals(right); }
+	}
+	
+	class LEOperator extends Operator {
+		public LEOperator() { super("<="); }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.leq(right); }
+	}
+	
+	class EQOperator extends Operator {
+		public EQOperator() { super("="); }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return left.equals(right); }
+	}
+	
+	class NEOperator extends Operator {
+		public NEOperator() { super("!="); }
+		public <T> boolean eval(IAmPartiallyOrdered<T> left, T right) { return !left.equals(right); }
+	}
+	
+	public static final Operator Operator.LT = new LTOperator();
+	public static final Operator Operator.LE = new LEOperator();
+	public static final Operator Operator.EQ = new EQOperator();
+	public static final Operator Operator.NE = new NEOperator();
+}

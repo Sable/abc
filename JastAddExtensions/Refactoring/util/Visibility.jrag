@@ -76,7 +76,28 @@ aspect Visibility {
 	public void ClassDecl.setVisibility(int v) {
 		getModifiers().setVisibility(v);
 		setVisibilityOfDefaultConstructor(v);
-		/*for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
-			cd.getModifiers().setVisibility(v);*/
+	}
+	
+	// collect all visible elements that are from source
+	public Collection<Visible> Program.sourceVisibles() {
+		Collection<Visible> visibles = new HashSet<Visible>();
+		collectSourceVisibles(visibles);
+		return visibles;
+	}
+	
+	public void ASTNode.collectSourceVisibles(Collection<Visible> visibles) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectSourceVisibles(visibles);
+	}
+	
+	public void CompilationUnit.collectSourceVisibles(Collection<Visible> visibles) {
+		if(!fromSource())
+			return;
+		super.collectSourceVisibles(visibles);
+	}
+	
+	public void Visible.collectSourceVisibles(Collection<Visible> visibles) {
+		visibles.add(this);
+		super.collectSourceVisibles(visibles);
 	}
 }

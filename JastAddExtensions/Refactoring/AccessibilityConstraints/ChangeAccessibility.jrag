@@ -1,6 +1,8 @@
 aspect ChangeAccessibility {
+	// the Change Accessibility refactoring changes the accessibility of a given declaration (represented as a Visible)
+	// to a new accessibility and adjusts accessibilities of other elements as necessary
 	public void Visible.changeAccessibility(int v) {
-		// check: array decls?
+		// TODO: array decls are fromSource(); maybe that should be changed in general?
 		if(!fromSource())
 			throw new RefactoringException("cannot change accessibility of non-source type");
 		Collection<AccessibilityConstraint> constraints = programRoot().accessibilityConstraints();
@@ -25,45 +27,6 @@ aspect ChangeAccessibility {
 				vis.setVisibility(e.getValue());
 			}
 			programRoot().eliminate(LOCKED_NAMES);
-		}
-	}
-	
-	/* code for integrating Change Accessibility with name unlocking to make it more powerful (makes it really slow as well) */
-	public void Program.eliminateLockedNames() {
-		adjustAccessibility();
-		flushCaches();
-		super.eliminateLockedNames();
-	}
-	
-	private void Program.adjustAccessibility() {
-		Collection<AccessibilityConstraint> accessibilityConstraints = accessibilityConstraints();
-		boolean all_solved = true;
-		for(AccessibilityConstraint ac : accessibilityConstraints) {
-			if(!ac.isSolved()) {
-				all_solved = false;
-				break;
-			}
-		}
-		if(all_solved)
-			return;
-		Map<Visible, Integer> acc_map = solve(accessibilityConstraints);
-		if(acc_map == null)
-			// we could throw an exception here, but having unlocking fail instead will give nicer error messages
-			return;
-		for(Map.Entry<Visible, Integer> e : acc_map.entrySet()) {
-			Visible vis = e.getKey();
-			// TODO: hide this behind an interface
-			if(vis instanceof FieldDeclaration) {
-				FieldDeclaration fd = (FieldDeclaration)vis;
-				programRoot().lockNames(fd.name());
-			} else if(vis instanceof MethodDecl) {
-				MethodDecl md = (MethodDecl)vis;
-				programRoot().lockMethodNames(md.name());
-			} else if(vis instanceof TypeDecl) {
-				TypeDecl td = (TypeDecl)vis;
-				programRoot().lockNames(td.name());
-			}
-			vis.setVisibility(e.getValue());
 		}
 	}
 }

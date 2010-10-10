@@ -7,7 +7,7 @@ import choco.kernel.solver.Solver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 
-// integration of Choco for constraint solving
+// integration of Choco for accessibility constraint solving
 aspect Choco {
 	syn lazy IntegerVariable Visible.chocoVariable(Model model) = Choco.makeIntVar(name(), VIS_PRIVATE, VIS_PUBLIC);
 	
@@ -107,28 +107,5 @@ aspect Choco {
 		Model model = new CPModel();
 		populateModel(model, accessibilityConstraints());
 		return allPossibleSolutions(model);
-	}
-	
-	// collect all visible elements that are from source
-	public Collection<Visible> Program.sourceVisibles() {
-		Collection<Visible> visibles = new HashSet<Visible>();
-		collectSourceVisibles(visibles);
-		return visibles;
-	}
-	
-	public void ASTNode.collectSourceVisibles(Collection<Visible> visibles) {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).collectSourceVisibles(visibles);
-	}
-	
-	public void CompilationUnit.collectSourceVisibles(Collection<Visible> visibles) {
-		if(!fromSource())
-			return;
-		super.collectSourceVisibles(visibles);
-	}
-	
-	public void Visible.collectSourceVisibles(Collection<Visible> visibles) {
-		visibles.add(this);
-		super.collectSourceVisibles(visibles);
 	}
 }

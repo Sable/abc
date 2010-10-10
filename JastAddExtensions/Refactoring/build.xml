@@ -81,7 +81,7 @@
 			<include name="**/*.jadd"/>
 			<exclude name="util/**"/>
 			<exclude name="undo/NoUndo.jrag"/>
-			<exclude name="AccessibilityConstraints/Choco.jrag"/>
+			<exclude name="AccessibilityConstraints/SolverChoco.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
