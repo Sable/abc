@@ -360,4 +360,18 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  }" +
 				"}"));
 	}
+	
+	public void test18() {
+		testSucc("C", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"interface I { }",
+				"class A implements I { A(I i) { } }",
+				"class B { B(I i) { new A(i); } }",
+				"class C { void m(A a) { new B(a); } }"),
+				Program.fromClasses(
+				"interface I { }",
+				"class A implements I { A(Object i) { } }",
+				"class B { B(Object i) { new A(i); } }",
+				"class C { void m(Object a) { new B(a); } }"));
+	}
 }

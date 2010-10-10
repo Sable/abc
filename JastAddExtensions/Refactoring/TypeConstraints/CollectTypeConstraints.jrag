@@ -15,13 +15,13 @@ aspect CollectTypeConstraints {
 	}
 	
 	protected void VariableDeclaration.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(hasInit() && (getInit().type() == C || type() == C))
+		if(hasInit() && (C.subtype(getInit().type()) || C.subtype(type())))
 			constraints.add(new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void FieldDeclaration.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(hasInit() && (getInit().type() == C || type() == C))
+		if(hasInit() && (C.subtype(getInit().type()) || C.subtype(type())))
 			constraints.add(new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
 		for(FieldDeclaration that : hiddenFields())
 			constraints.add(new SimpleTypeConstraint(this, "field hiding", this, Operator.LT, that));
@@ -36,10 +36,10 @@ aspect CollectTypeConstraints {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
 									 thatParm = that.getParameter(i);
-				if(thisParm.type() == C)
+				if(C.subtype(thisParm.type()))
 					constraints.add(new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			if(this.type() == C || that.type() == C)
+			if(C.subtype(this.type()) || C.subtype(that.type()))
 				constraints.add(new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			constraints.add(new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
 		}
@@ -47,10 +47,10 @@ aspect CollectTypeConstraints {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
 									 thatParm = that.getParameter(i);
-				if(thisParm.type() == C)
+				if(C.subtype(thisParm.type()))
 					constraints.add(new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			if(this.type() == C || that.type() == C)
+			if(C.subtype(this.type()) || C.subtype(that.type()))
 				constraints.add(new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		super.collectTypeConstraints(C, constraints);
@@ -59,7 +59,7 @@ aspect CollectTypeConstraints {
 	protected void ReturnStmt.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
 		if(hasResult()) {
 			MethodDecl md = (MethodDecl)hostBodyDecl();
-			if(getResult().type() == C || md.type() == C)
+			if(C.subtype(getResult().type()) || C.subtype(md.type()))
 				constraints.add(new SimpleTypeConstraint(this, "return", getResult(), Operator.LE, md.getTypeAccess()));
 		}
 		super.collectTypeConstraints(C, constraints);
@@ -67,41 +67,41 @@ aspect CollectTypeConstraints {
 	
 	protected void TryStmt.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
 		for(CatchClause cc : getCatchClauses())
-			if(cc.getParameter().type() == C)
+			if(C.subtype(cc.getParameter().type()))
 				constraints.add(new SimpleTypeConstraint(cc, "catch clause", cc.getParameter().getTypeAccess(), Operator.LE, cc.typeThrowable()));
 		// TODO: add constraints that types in later catch clauses may not be subtypes of types in earlier ones
 		super.collectTypeConstraints(C, constraints);
 	}
 
 	protected void AssignSimpleExpr.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(getSource().type() == C || getDest().type() == C)
+		if(C.subtype(getSource().type()) || C.subtype(getDest().type()))
 			constraints.add(new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void MethodAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C)
+		if(C.subtype(type()))
 			constraints.add(new SimpleTypeConstraint(this, "method invocation", this, Operator.EQ, decl().getTypeAccess()));
 		collectArgumentTypeConstraints(C, constraints);
-		if(isQualified() && qualifier().type() == C)
+		if(isQualified() && C.subtype(qualifier().type()))
 			constraints.add(new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, decl().rootDefs()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ConstructorAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
 		collectArgumentTypeConstraints(C, constraints);
-		if(isQualified() && qualifier().type() == C)
+		if(isQualified() && C.subtype(qualifier().type()))
 			constraints.add(new SimpleTypeConstraint(this, "constructor invocation", qualifier(), Operator.EQ, qualifier().type()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ClassInstanceExpr.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C) {
+		if(C.subtype(type())) {
 			constraints.add(new SimpleTypeConstraint(this, "constructor invocation", this, Operator.EQ, C));
 			constraints.add(new SimpleTypeConstraint(this, "constructor invocation", this, Operator.EQ, getAccess()));
 		}
 		collectArgumentTypeConstraints(C, constraints);
-		if(isQualified() && qualifier().type() == C)
+		if(isQualified() && C.subtype(qualifier().type()))
 			constraints.add(new SimpleTypeConstraint(this, "constructor invocation", qualifier(), Operator.EQ, qualifier().type()));
 		super.collectTypeConstraints(C, constraints);
 	}
@@ -115,43 +115,43 @@ aspect CollectTypeConstraints {
 				continue;
 			} else {
 				Expr arg = getArg(i);
-				if(arg.type() == C || parm.type() == C)
+				if(C.subtype(arg.type()) || C.subtype(parm.type()))
 					constraints.add(new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
 	}
 
 	protected void VarAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(decl().type() == C)
+		if(C.subtype(decl().type()))
 			constraints.add(new SimpleTypeConstraint(this, "variable access", this, Operator.EQ, decl().getTypeAccess()));
-		if(isQualified() && qualifier().type() == C)
+		if(isQualified() && C.subtype(qualifier().type()))
 			constraints.add(new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl()));
 		super.collectTypeConstraints(C, constraints);
 	}
 
 	protected void CastExpr.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(this.type() == C || getExpr().type() == C)
+		if(C.subtype(this.type()) || C.subtype(getExpr().type()))
 			if(isDownCast())
 				constraints.add(new SimpleTypeConstraint(this, "downcast", getTypeAccess(), Operator.LE, getExpr()));
 			else if(isUpCast())
 				constraints.add(new SimpleTypeConstraint(this, "upcast", getExpr(), Operator.LE, getTypeAccess()));
-		if(this.type() == C)
+		if(C.subtype(this.type()))
 			constraints.add(new SimpleTypeConstraint(this, "cast", this, Operator.EQ, getTypeAccess()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ArrayTypeWithSizeAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(getExpr().type() == C)
+		if(C.subtype(getExpr().type()))
 			constraints.add(new DisjunctiveTypeConstraint(this, "sized array type", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
 		super.collectTypeConstraints(C, constraints);
 	}
 
 	protected void ArrayAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C)
+		if(C.subtype(type()))
 			constraints.add(new SimpleTypeConstraint(this, "array access", this, Operator.EQ, type()));
-		if(getExpr().type() == C)
+		if(C.subtype(getExpr().type()))
 			constraints.add(new DisjunctiveTypeConstraint(this, "array index (1)", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
-		if(qualifier().type() == C)
+		if(C.subtype(qualifier().type()))
 			constraints.add(new IsArrayTypeConstraint(this, "array access (2)", qualifier()));
 		super.collectTypeConstraints(C, constraints);
 	}
@@ -159,25 +159,25 @@ aspect CollectTypeConstraints {
 	protected void ArrayInit.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
 		TypeDecl initializerType = declType().componentType();
 		for(Expr e : getInits())
-			if(e.type() == C)
+			if(C.subtype(e.type()))
 				constraints.add(new SimpleTypeConstraint(e, "array init", e, Operator.LE, initializerType));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ThisAccess.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C)
+		if(C.subtype(type()))
 			constraints.add(new SimpleTypeConstraint(this, "this", this, Operator.EQ, hostBodyDecl()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ParExpr.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C)
+		if(C.subtype(type()))
 			constraints.add(new SimpleTypeConstraint(this, "this", this, Operator.EQ, getExpr()));
 		super.collectTypeConstraints(C, constraints);
 	}
 	
 	protected void ConditionalExpr.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C) {
+		if(C.subtype(type())) {
 			constraints.add(new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.EQ, getFalseExpr()));
 			constraints.add(new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, getTrueExpr()));
 		}
@@ -185,7 +185,7 @@ aspect CollectTypeConstraints {
 	}
 	
 	protected void AbstractDot.collectTypeConstraints(TypeDecl C, Collection<TypeConstraint> constraints) {
-		if(type() == C && !isTypeAccess())
+		if(C.subtype(type()) && !isTypeAccess())
 			constraints.add(new SimpleTypeConstraint(this, "abstract dot", this, Operator.EQ, getRight()));
 		super.collectTypeConstraints(C, constraints);
 	}
