@@ -82,7 +82,11 @@
 			<exclude name="util/**"/>
 			<exclude name="undo/NoUndo.jrag"/>
 			<exclude name="AccessibilityConstraints/SolverChoco.jrag"/>
+			<exclude name="TypeConstraints/TypeConstraintSolving.jrag"/>
 		</fileset>
+  		<fileset dir="${Refactoring}">
+  			<include name="TypeConstraints/TypeConstraintSolving.jrag"/>
+  		</fileset>
   </jastadd>
   <!-- copy library files-->
   <copy todir="beaver" preservelastmodified="true">

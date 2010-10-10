@@ -1,3 +1,6 @@
+/*
+ * The Extract Interface refactoring
+ */
 aspect ExtractInterface {
 	public void ClassDecl.extractInterface(String pkg, String name, Collection<MethodDecl> methods) {
 		if(!fromSource())
@@ -48,35 +51,5 @@ aspect ExtractInterface {
 		Program root = programRoot();
 		extractInterface(pkg, name, methods);
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
-	}
-
-	
-	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, TypeDecl cd, InterfaceDecl id) {
-		Collection<TypeConstraintVariable> res = programRoot().allUpdatableExprs(cd);
-		int size;
-		do {
-			size = res.size();
-			for(TypeConstraint constraint : constraints)
-				constraint.propagateBackwards(id, res);
-		} while(size != res.size());
-		return res;		
-	}
-	
-	public Collection<TypeConstraintVariable> Program.allUpdatableExprs(TypeDecl type) {
-		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
-		collectAllUpdatableExprs(type, res);
-		return res;
-	}
-	
-	protected void ASTNode.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
-		for(int i=0;i<getNumChild();++i)
-			getChild(i).collectAllUpdatableExprs(type, res);
-	}
-	
-	protected void Expr.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
-		if(type() == type)
-			if(!isFixed())
-				res.add(this);
-		super.collectAllUpdatableExprs(type, res);
 	}
 }

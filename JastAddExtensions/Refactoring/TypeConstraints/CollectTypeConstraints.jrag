@@ -1,3 +1,10 @@
+/*
+ * Attributes for collecting type constraints. At the moment, this algorithm is somewhat geared towards
+ * Extract Interface, and will only collect type constraints involving a given type C or its supertypes.
+ * 
+ * Most Java 1.4 features are taken care of (exception handling is not quite done yet), but no serious support
+ * is offered for Java 5.
+ */
 aspect CollectTypeConstraints {
 	// originally, the type constraints were computed using a collection attribute
 	// usually, however, we are only interested in collecting all type constraints to do with a certain type C

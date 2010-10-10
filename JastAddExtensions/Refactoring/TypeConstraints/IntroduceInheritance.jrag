@@ -1,0 +1,32 @@
+/*
+ * The Introduce Inheritance refactoring.
+ * 
+ * TODO: this needs much more thought
+ */
+aspect IntroduceInheritance {
+	public void ClassDecl.implement(InterfaceDecl iface) {
+		if(this.subtype(iface))
+			return;
+		if(!fromSource())
+			throw new RefactoringException("cannot modify class that is not from source");
+		Map<String, MethodDecl> ifacemeths = new HashMap<String, MethodDecl>();
+		for(Iterator<MethodDecl> iter=iface.methodsIterator();iter.hasNext();) {
+			MethodDecl md = iter.next();
+			ifacemeths.put(md.signature(), md);
+			if(md.isAbstract() && methodsSignature(md.signature()).isEmpty())
+				throw new RefactoringException("class must implement " + iface.fullName() + "." + md.signature());
+		}
+		for(Iterator<MethodDecl> iter=localMethodsIterator();iter.hasNext();) {
+			MethodDecl md = iter.next();
+			md.lockOverriding();
+			if(ifacemeths.containsKey(md.signature()))
+				md.addOverriddenMethod(ifacemeths.get(md.signature()));
+		}
+		addImplements(iface.createLockedAccess());
+	}
+	
+	public void ClassDecl.doImplement(InterfaceDecl iface) {
+		implement(iface);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
+	}
+}

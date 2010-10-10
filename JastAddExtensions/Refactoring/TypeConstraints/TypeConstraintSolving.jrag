@@ -1,0 +1,135 @@
+/*
+ * This aspect contains algorithms for simplifying and solving systems of type constraints.
+ */
+aspect TypeConstraintSolving {
+	// a simple worklist algorithm for determining the set of type constraint variables that have to be updated
+	// if a given type variable is to be updated to a new, more general type
+	// (similar to the algorithm in Tip et al.'s OOPSLA 03 paper)
+	public static Collection<TypeConstraintVariable> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypeConstraintVariable update, TypeDecl newType) {
+		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
+		res.add(update);
+		int size;
+		do {
+			size = res.size();
+			for(TypeConstraint constraint : constraints)
+				constraint.propagateGeneralisation(newType, res);
+		} while(size != res.size());
+		return res;
+	}
+	
+	// propagate generalisation through an individual constraint
+	public abstract void TypeConstraint.propagateGeneralisation(TypeDecl newType, Collection<TypeConstraintVariable> update);
+	
+	public void SimpleTypeConstraint.propagateGeneralisation(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(op == Operator.EQ) {
+			if(update.contains(left)) {
+				addConstraintVar(update, right);
+			} else if(update.contains(right)) {
+				addConstraintVar(update, left);
+			}
+		} else if(op == Operator.LE) {
+			if(update.contains(left) && !newType.subtype(right.getConstrainedType())) {
+				addConstraintVar(update, right);
+			}
+		} else if(op == Operator.LT) {
+			if(update.contains(left))
+				throw new RefactoringException("cannot propagate through constraint " + this);
+		} else {
+			throw new RefactoringException("cannot propagate through constraint " + this);
+		}
+	}
+	
+	public void IsArrayTypeConstraint.propagateGeneralisation(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(update.contains(var) && !newType.isArrayDecl())
+			throw new RefactoringException(var + " has to be an array");
+	}
+	
+	// NB: this crucially relies on disjunctive type constraints being of the form
+	//          [E] <= T_1 or [E] <= T_2 or ... or [E] <= T_n
+	//     with all the [E] being the same, and all the T_i being constant
+	//     this precondition is _not_ checked!
+	public void DisjunctiveTypeConstraint.propagateGeneralisation(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
+		if(update.contains(constr.getLeft())) {
+			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
+				constr = (SimpleTypeConstraint)iter.next();
+				if(newType.subtype(constr.getRight().getConstrainedType()))
+					return;
+			}
+			throw new RefactoringException("cannot satisfy " + this);
+		}
+	}
+	
+	protected void TypeConstraint.addConstraintVar(Collection<TypeConstraintVariable> update, TypeConstraintVariable tcvar) {
+		if(tcvar.isFixed())
+			throw new RefactoringException("cannot satisfy constraint " + this);
+		update.add(tcvar);
+	}	
+	
+	// computing all updatable expressions for the Extract Interface refactoring; see Tip et al. OOPSLA '03
+	public Collection<TypeConstraintVariable> ASTNode.computeUpdatableExprs(Collection<TypeConstraint> constraints, TypeDecl cd, InterfaceDecl id) {
+		Collection<TypeConstraintVariable> res = programRoot().allUpdatableExprs(cd);
+		int size;
+		do {
+			size = res.size();
+			for(TypeConstraint constraint : constraints)
+				constraint.propagateBackwards(id, res);
+		} while(size != res.size());
+		return res;		
+	}
+	
+	// collect all type constraint variables of a given type that are not fixed
+	public Collection<TypeConstraintVariable> Program.allUpdatableExprs(TypeDecl type) {
+		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
+		collectAllUpdatableExprs(type, res);
+		return res;
+	}
+	
+	protected void ASTNode.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllUpdatableExprs(type, res);
+	}
+	
+	protected void Expr.collectAllUpdatableExprs(TypeDecl type, Collection<TypeConstraintVariable> res) {
+		if(type() == type)
+			if(!isFixed())
+				res.add(this);
+		super.collectAllUpdatableExprs(type, res);
+	}
+	
+	// propagate through constraints to compute maximal set of updatable expressions (see above)
+	public abstract void TypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update);
+	public void SimpleTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(op == Operator.EQ) {
+			if(!update.contains(left)) {
+				update.remove(right);
+			} else if(!update.contains(right)) {
+				update.remove(left);
+			}
+		} else if(op == Operator.LE) {
+			if(!update.contains(right) && !newType.subtype(right.getConstrainedType())) {
+				update.remove(left);
+			}
+		} else if(op == Operator.LT) {
+			if(!update.contains(right))
+				update.remove(left);
+		} else {
+			throw new RefactoringException("cannot propagate through constraint " + this);
+		}
+	}
+	public void IsArrayTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(!newType.isArrayDecl())
+			update.remove(var);
+	}
+	public void DisjunctiveTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
+		if(update.contains(constr.getLeft())) {
+			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
+				constr = (SimpleTypeConstraint)iter.next();
+				if(newType.subtype(constr.getRight().getConstrainedType()))
+					return;
+			}
+			update.remove(constr.getLeft());
+		}
+	}
+}

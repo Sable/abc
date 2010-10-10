@@ -1,9 +1,16 @@
 import java.util.Arrays;
 import java.util.Iterator;
 
+/*
+ * Classes for representing type constraints and the constraint variables occuring in them. 
+ */
+
 aspect TypeConstraints {
 	public abstract class TypeConstraint {
+		// node giving rise to the constraint
 		private ASTNode node;
+		
+		// further description of why the constraint was generated
 		private String cause;
 		
 		public TypeConstraint(ASTNode node, String cause) {
@@ -23,6 +30,7 @@ aspect TypeConstraints {
 		}
 	}
 	
+	// a simple type constraint records a subtype or equality constraint between two type constraint variables
 	class SimpleTypeConstraint extends TypeConstraint {
 		private TypeConstraintVariable left, right;
 		private Operator op;
@@ -34,6 +42,7 @@ aspect TypeConstraints {
 			this.right = right;
 		}
 		
+		// TODO: we use erasure() to get around dealing with generics; obviously, this only works in the simplest cases
 		public boolean solved() {
 			TypeDecl lefttp = left.getConstrainedType().refresh().erasure(),
 			         righttp = right.getConstrainedType().refresh().erasure();
@@ -55,6 +64,8 @@ aspect TypeConstraints {
 		public TypeConstraintVariable getRight() { return right; }
 	}
 	
+	// an is-array type constraint records that a certain constraint variable has to be an array
+	// TODO: Eclipse seems to have a better way of dealing with this (see test cases)
 	class IsArrayTypeConstraint extends TypeConstraint {
 		private TypeConstraintVariable var;
 		
@@ -78,6 +89,9 @@ aspect TypeConstraints {
 		}
 	}
 	
+	// a disjunctive type constraint is a disjunction of type constraints
+	// at the moment, all disjunctive constraints are disjunctions of simple type constraints whose left hand side is
+	// the same
 	class DisjunctiveTypeConstraint extends TypeConstraint {
 		private Collection<TypeConstraint> constraints;
 		
@@ -134,8 +148,8 @@ aspect TypeConstraints {
 		return this.subtype(that);
 	}
 	
-	// a type constraint variable constrains either the type of a program element,
-	// or the host type in which it is declared
+	// a type constraint variable constrains either the type of a program element ([E]),
+	// or the host type in which it is declared (Decl(E))
 	interface TypeConstraintVariable { }
 	syn TypeDecl TypeConstraintVariable.getConstrainedType();
 	syn String TypeConstraintVariable.describeConstraintVariable();
@@ -166,96 +180,9 @@ aspect TypeConstraints {
 		return false;
 	}
 	
+	// type declarations represent constant types appearing in type constraints
 	TypeDecl implements TypeConstraintVariable;
 	eq TypeDecl.getConstrainedType() = this;
 	eq TypeDecl.describeConstraintVariable() = fullName();
 	eq TypeDecl.isFixed() = true;
-	
-	public static Collection<TypeConstraintVariable> ASTNode.propagateGeneralisation(Collection<TypeConstraint> constraints, TypeConstraintVariable update, TypeDecl newType) {
-		Collection<TypeConstraintVariable> res = new HashSet<TypeConstraintVariable>();
-		res.add(update);
-		int size;
-		do {
-			size = res.size();
-			for(TypeConstraint constraint : constraints)
-				constraint.propagate(newType, res);
-		} while(size != res.size());
-		return res;
-	}
-	
-	public abstract void TypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update);
-	public void SimpleTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		if(op == Operator.EQ) {
-			if(update.contains(left)) {
-				addConstraintVar(update, right);
-			} else if(update.contains(right)) {
-				addConstraintVar(update, left);
-			}
-		} else if(op == Operator.LE) {
-			if(update.contains(left) && !newType.subtype(right.getConstrainedType())) {
-				addConstraintVar(update, right);
-			}
-		} else if(op == Operator.LT) {
-			if(update.contains(left))
-				throw new RefactoringException("cannot propagate through constraint " + this);
-		} else {
-			throw new RefactoringException("cannot propagate through constraint " + this);
-		}
-	}
-	public void IsArrayTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		if(update.contains(var) && !newType.isArrayDecl())
-			throw new RefactoringException(var + " has to be an array");
-	}
-	public void DisjunctiveTypeConstraint.propagate(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
-		if(update.contains(constr.getLeft())) {
-			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
-				constr = (SimpleTypeConstraint)iter.next();
-				if(newType.subtype(constr.getRight().getConstrainedType()))
-					return;
-			}
-			throw new RefactoringException("cannot satisfy " + this);
-		}
-	}
-	
-	public abstract void TypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update);
-	public void SimpleTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		if(op == Operator.EQ) {
-			if(!update.contains(left)) {
-				update.remove(right);
-			} else if(!update.contains(right)) {
-				update.remove(left);
-			}
-		} else if(op == Operator.LE) {
-			if(!update.contains(right) && !newType.subtype(right.getConstrainedType())) {
-				update.remove(left);
-			}
-		} else if(op == Operator.LT) {
-			if(!update.contains(right))
-				update.remove(left);
-		} else {
-			throw new RefactoringException("cannot propagate through constraint " + this);
-		}
-	}
-	public void IsArrayTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		if(!newType.isArrayDecl())
-			update.remove(var);
-	}
-	public void DisjunctiveTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
-		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
-		if(update.contains(constr.getLeft())) {
-			for(Iterator<TypeConstraint> iter=constraints.iterator();iter.hasNext();) {
-				constr = (SimpleTypeConstraint)iter.next();
-				if(newType.subtype(constr.getRight().getConstrainedType()))
-					return;
-			}
-			update.remove(constr.getLeft());
-		}
-	}
-	
-	protected void TypeConstraint.addConstraintVar(Collection<TypeConstraintVariable> update, TypeConstraintVariable tcvar) {
-		if(tcvar.isFixed())
-			throw new RefactoringException("cannot satisfy constraint " + this);
-		update.add(tcvar);
-	}
 }

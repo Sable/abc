@@ -21,7 +21,7 @@ This is the command-line version of the refactoring engine for
 JastAddJ.  It comes with a number of test and driver programs, but it
 should not be thought of as an end-user tool. Most refactorings from
 recent versions of Eclipse are implemented, with the notable exception
-of type-based refactorings.
+of most type-based refactorings.
 
 Building:
 =========
@@ -83,6 +83,6 @@ internal tests), use tests.eclipse.EclipseTests instead.
 If you have junit.jar on your classpath, you can also run the test
 cases from the command line by issuing a command like
 
-  java -classpath .:/path/to/junit.jar junit.awtui.TestRunner tests.AllTests
+  java -classpath .:/path/to/junit.jar:lib/cream106.jar -Xmx2G junit.awtui.TestRunner tests.AllTests
 
 from the Refactoring/ directory.
