@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/classes"/>
+	<classpathentry kind="lib" path="classes/servlet.jar"/>
+	<classpathentry kind="lib" path="classes/Tidy.jar"/>
+	<classpathentry kind="lib" path="classes/xerces.jar"/>
+	<classpathentry kind="lib" path="lib/tools.jar"/>
+	<classpathentry kind="lib" path="classes/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="src/classes"/>
+</classpath>

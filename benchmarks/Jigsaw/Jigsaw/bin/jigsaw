@@ -1,0 +1,22 @@
+#!/bin/sh
+# Jigsaw
+# $Id$
+# Jigsaw launcher example
+
+# Setting to use abs version of Java runtime:
+
+JAVA_HOME=/u/tarantula/0/w3c/ylafon/Jigsaw
+export JAVA_HOME
+JAVA_BIN=$JAVA_HOME/bin/java
+export JAVA_BIN
+
+# Adding Jigsaw into your class path (using team version):
+
+JIGSAW_HOME=/afs/w3.org/pub/WWW/Jigsaw
+export JIGSAW_HOME
+JIGSAW_CLASSES=$JIGSAW_HOME/classes/jigsaw.jar:$JIGSAW_HOME/classes/sax.jar:$JIGSAW_HOME/classes/xp.jar
+
+CLASSPATH=$JIGSAW_CLASSES
+export CLASSPATH
+
+exec $JAVA_BIN org.w3c.jigsaw.Main $*

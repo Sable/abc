@@ -1,0 +1,35 @@
+The W3C (World Wide Web Consortium) is happy to announce a new release
+of Jigsaw (2.2.5), its new object oriented server. Jigsaw is
+entirely written in Java, with emphasis on the object-oriented aspect of
+the HTTP protocol.
+
+http://www.w3.org/Jigsaw/
+
+This new release comes with an impressive set of 
+features, among which: 
+
+    . Full HTTP/1.1 compliancy
+    . Caching proxy module for HTTP
+    . Server side includes 
+    . Servlet 2.2 support (2.3 partial)
+    . Jsp Support
+    . Virtual Hosting
+    . WebDAV Support
+    . SSL support
+ 
+New to 2.2.5
+ 
+    . New RFC 2617 based Digest Authentication
+    . Improved HTTP client stack
+    . Improved SSL code.
+    . More timeout controls.
+
+and more...
+
+Check the new feature page available at:
+
+http://www.w3.org/Jigsaw/features.html
+
+Enjoy !
+Jigsaw Team <jigsaw@w3.org>
+

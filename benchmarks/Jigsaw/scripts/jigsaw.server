@@ -1,0 +1,94 @@
+#!/sbin/sh
+#
+# Copyright (c) 1999 by Roland Mainz (Roland.Mainz@informatik.med.uni-giessen.de)
+# All rights reserved.
+# /etc/init.d/jigsaw.server
+# /etc/rc3.d/S10jigsaw.server
+# /etc/rc0.d/K39jigsaw.server
+#
+#pragma ident	"@(#)jigsaw.server	1.1	99/03/30 IMI"
+
+
+JIGHOME=/home/jigsaw
+JIGHOST=gyros.informatik.med.uni-giessen.de
+JIGUID=jigsaw
+JIGGID=www
+
+JIGADMINUSER=admin
+JIGADMINPASSWD=pizza4all
+
+# be carefull that this is in sync with the user classpath variables
+CLASSPATH=/usr/local/java/sax1.0/sax.jar:/usr/local/java/javasoft-project-x/xml-tr1/xml.jar:/usr/local/java/ibmxml4j/xml4j_2_0_0/xml4j.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/usr/local/java/javamail-1.1.1/mail.jar:/usr/local/java/jaf/activation.jar:/usr/java/lib/dt.jar:/usr/java/jre/lib/ext/iiimp.jar:/usr/java/jre/lib/i18n.jar:/usr/java/jre/lib/rt.jar
+export CLASSPATH
+
+## do not edit below this line !!
+JIGBIN=${JIGHOME}/Jigsaw/Jigsaw/bin
+
+# jigsaw installed on this system ?
+[ ! -d "${JIGHOME}" ] && exit
+
+
+# asserts
+if [ ! -x ${JIGBIN}/jigsaw  ] ; then echo "${0}: no ${JIGBIN}/jigsaw"  ; exit 0 ; fi
+if [ ! -x ${JIGBIN}/jigkill ] ; then echo "${0}: no ${JIGBIN}/jigkill" ; exit 0 ; fi
+
+
+# Start/stop processes required for jigsaw WWW server
+case "$1" in
+'start')
+    echo "jigsaw webserver\c"
+    
+    if [ -f /etc/jigsaw.pid ] ; then
+        echo " already running."
+        exit 0
+    else
+        # launch jigsaw web server
+        ${JIGBIN}/jigsaw -host ${JIGHOST} -root ${JIGHOME}/Jigsaw/Jigsaw -user ${JIGUID} -group ${JIGGID} </dev/null >/dev/console 2>&1 &
+    
+        # store web-servers PID in /etc/jigsaw.pid
+        echo $! >/etc/jigsaw.pid
+        
+        echo " started."
+        
+        exit 0
+    fi    
+    ;;
+
+'stop')   
+    if [ -f /etc/jigsaw.pid ] ; then
+        echo "Attempt to kill jigsaw web server\c"
+        
+        JIGPID=`cat /etc/jigsaw.pid`
+        
+        echo ".\c"
+        ${JIGBIN}/jigkill -u ${JIGADMINUSER} -p ${JIGADMINPASSWD} --stop http://${JIGHOST}:8009/ >/dev/null &
+        
+        # time to wait for jigsaw to exit, after this fire a SIGTERM to the JVM
+        TIMETOKILLJIG=48 # 4 min
+        
+        while [ "`ps -ef -o pid | grep ${JIGPID}`" != "" ] ; do 
+            echo ".\c"
+            sleep 5
+            TIMETOKILLJIG=`expr ${TIMETOKILLJIG} - 1`
+            
+            # sometimes the JVM hangs; in this case (after TIMETOKILLJIG * 5 sec) send a SIGTERM...
+            if [ ${TIMETOKILLJIG} -lt 1 ] ; then
+                echo "(sending SIGTERM)\c"
+                kill ${JIGPID}
+            fi
+        done 
+        
+        # remove pid key
+        rm /etc/jigsaw.pid
+        
+        echo " done."
+    else
+        echo "jigsaw web server not running."
+    fi
+    ;;
+*)
+    echo "Usage: ${0} { start | stop }"
+    exit 1
+    ;;
+esac
+exit 0

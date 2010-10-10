@@ -1,0 +1,19 @@
+#!/bin/sh
+# Jigadm
+# $Id$
+# Jigadm launcher example
+
+# Setting to use abs version of Java runtime:
+JAVA_HOME=/usr/java
+export JAVA_HOME
+JAVA_BIN=${JAVA_HOME}/bin/java
+export JAVA_BIN
+
+# Adding Jigsaw into your class path (using team version):
+JIGSAW_HOME=/home/jigsaw/Jigsaw
+export JIGSAW_HOME
+
+JIGSAW_CLASSES=${JIGSAW_HOME}/classes/jigsaw.jar:${JIGSAW_HOME}/classes/xp.jar:${JIGSAW_HOME}/classes/sax.jar:${JIGSAW_HOME}/classes/servlet.jar
+
+exec ${JAVA_BIN} -Xms16m -Xmx128m org.w3c.jigadm.Main $*
+# done.

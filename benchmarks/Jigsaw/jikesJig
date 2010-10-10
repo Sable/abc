@@ -1,0 +1,16 @@
+#!/bin/sh
+echo "Current benchmark in Jigsaw"
+
+TOOLSJAR="$JAVA_HOME/lib/tools.jar";
+TIDYJAR="$PWD/classes/Tidy.jar";
+SERVLETJAR="$PWD/classes/servlet.jar";
+OROJAR="$PWD/classes/jakarta-oro-2.0.8.jar";
+XALANJAR="$PWD/classes/xerces.jar";
+
+JSDKJARS="$JAVA_HOME/jre/lib/charsets.jar:$JAVA_HOME/jre/lib/jce.jar:$JAVA_HOME/jre/lib/jsse.jar:$JAVA_HOME/jre/lib/plugin.jar:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/jre/lib/sunrsasign.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/htmlconverter.jar:$JAVA_HOME/lib/tools.jar";
+
+MYPATH=$JSDKJARS:$XALANJAR:$OROJAR:$TIDYJAR:$SERVLETJAR:$TOOLSJAR:/home/torbjorn/bench/new/Jigsaw/src/classes
+echo $MYPATH
+SRC=src/classes/org
+
+for i in 1 2 ; do rm -rf `find $SRC -name "*.class"`; /usr/bin/time -f %e jikes -nowarn -classpath $MYPATH `find $SRC -name "*.java"`; done

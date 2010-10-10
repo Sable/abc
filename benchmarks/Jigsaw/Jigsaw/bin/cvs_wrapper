@@ -1,0 +1,10 @@
+#!/bin/sh
+# This wrapper is intended to take as command line arguments env variable setting
+# It first set the env vars, and than exec the appropriate script
+
+USAGE='cvs_wrapper -directory <directory> <cvs-command>'
+
+directory=$2
+shift; shift ;
+cd $directory; eval exec $*
+

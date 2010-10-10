@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+
+   Build file for Jigsaw
+
+Notes:
+   This is a build file for use with the Jakarta Ant build tool.
+
+Prerequisites:
+
+   jakarta-ant from http://jakarta.apache.org
+
+Build Instructions:
+   To build, run
+
+     java org.apache.tools.ant.Main <target>
+
+   on the directory where this file is located with the target you want.
+
+Most useful targets:
+
+ - compile  -> compile classes package in "${build.dir}/classes"
+ - jar      -> jar the classes to "${build.lib}/${name}.jar"
+ - javadocs -> creates the javadocs in "${build.dir}/javadocs"
+ - dist     -> creates the complete binary distribution
+
+Authors:
+
+  David Li <david@d11e.com>
+
+Copyright:
+  Copyright 2000 (c) DigitalSesame 
+
+   $Id: build.xml,v 1.1 2003/11/27 13:22:46 ylafon Exp $
+
+==================================================================== -->
+
+<project default="jar" basedir=".">
+
+  <property name="name"    value="jigsaw"/>
+  <property name="Name"    value="Jigsaw"/>
+  <property name="version" value="2.1.2"/>
+  <property name="year"    value="2000"/>
+
+  <property name="debug" value="off"/>
+
+  <property name="src.dir"  value="src/classes"/>
+  <property name="docs.dir" value="${src.dir}/docs"/>
+
+  <property name="packages" value="org.*"/>
+
+  <property name="build.file"     value="build.xml"/>
+  <property name="build.dir"      value="ant.build"/>
+  <property name="build.lib"      value="classes"/>
+  <property name="build.javadocs" value="${build.dir}/javadocs"/>
+  <property name="build.compiler.emacs" value="yes"/>
+
+  <!-- directory for classes -->
+  <property name="build.classes" value="${build.dir}/classes"/>
+
+  <!-- jigsaw.jar -->
+  <property name="build.core.classes" value="${build.classes}/core"/>
+  <property name="build.core.jar"     value="${build.lib}/jigsaw.jar"/>
+
+  <!-- jigadmin.jar -->
+  <property name="build.admin.classes" value="${build.classes}/admin"/>
+  <property name="build.admin.jar"     value="${build.lib}/jigadmin.jar"/>
+
+  <!-- jigedit.jar -->
+  <property name="build.edit.classes" value="${build.classes}/edit"/>
+  <property name="build.edit.jar"     value="${build.lib}/jigedit.jar"/>
+
+  <property name="dist.dir" value="${build.dir}/${Name}-${version}"/>
+
+  <!-- extra library jar -->
+  <path id="build.classpath">
+    <pathelement path="classes/sax.jar"/>
+    <pathelement path="classes/xp.jar"/>
+    <pathelement path="classes/servlet.jar"/>
+    <pathelement path="${build.core.classes}"/>
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Prepares the build directory                                        -->
+  <!-- =================================================================== -->
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.core.classes}"/>
+    <mkdir dir="${build.edit.classes}"/>
+    <mkdir dir="${build.admin.classes}"/>
+  </target>
+
+  <target name="compile" depends="compile.core,compile.admin,compile.edit"/>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the core package                                           -->
+  <!-- =================================================================== -->
+  <target name="compile.core" depends="prepare">
+    <javac srcdir="${src.dir}" 
+	   destdir="${build.core.classes}" 
+	   debug="${debug}"
+	   excludes="org/w3c/jigadm/** org/w3c/jigedit/**"
+	   classpathref="build.classpath"
+	   />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the admin package                                           -->
+  <!-- =================================================================== -->
+  <target name="compile.admin" depends="compile.core">
+    <javac srcdir="${src.dir}" 
+	   destdir="${build.admin.classes}" 
+	   debug="${debug}"
+	   includes="org/w3c/jigadm/**"
+	   classpathref="build.classpath"
+	   />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the edit package                                           -->
+  <!-- =================================================================== -->
+  <target name="compile.edit" depends="compile.core">
+    <javac srcdir="${src.dir}" 
+	   destdir="${build.edit.classes}" 
+	   debug="${debug}"
+	   includes="org/w3c/jigedit/**"
+	   classpathref="build.classpath"
+	   />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Jar the library                                                     -->
+  <!-- =================================================================== -->
+  <target name="jar" depends="compile">
+    <mkdir dir="${build.lib}"/>
+    <jar jarfile="${build.core.jar}" basedir="${build.core.classes}"/>
+    <jar jarfile="${build.admin.jar}" basedir="${build.admin.classes}"/>
+    <jar jarfile="${build.edit.jar}" basedir="${build.edit.classes}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the binary distribution                                     -->
+  <!-- =================================================================== -->
+  <target name="dist" depends="jar">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/docs"/>
+    <mkdir dir="${dist.dir}/classes"/>
+
+    <copy todir="${dist.dir}/classes">
+      <fileset dir="${build.lib}"/>
+    </copy>
+    <copy todir="${dist.dir}/Jigsaw">
+      <fileset dir="Jigsaw"/>
+    </copy>
+    <copy todir="${dist.dir}/scripts">
+      <fileset dir="scripts"/>
+    </copy>
+    <chmod perm="ugo+x">
+       <fileset dir="${dist.dir}/scripts">
+         <include name="*.sh"/>
+       </fileset>
+   </chmod>
+   <fixcrlf srcdir="${dist.dir}/scripts"
+       cr="add"
+       includes="*.bat"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the API documentation                                       -->
+  <!-- =================================================================== -->
+  <target name="javadocs" depends="prepare">
+    <mkdir dir="${build.javadocs}"/>
+    <javadoc packagenames="${packages}"
+	     sourcepath="${src.dir}"
+             destdir="${build.javadocs}"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="${Name} ${version} API"
+             doctitle="${Name}"
+    />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Cleans everything                                                   -->
+  <!-- =================================================================== -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+</project>

@@ -1,0 +1,73 @@
+
+###############################################################################################
+# 
+# Makefile for libUnix.jnilib and Unix*.class for darwin
+# jigsaw features
+#
+###
+#
+# written by gisburn (Roland.Mainz@informatik.med.uni-giessen.de)
+# created       4.2.1999
+# last modified 4.2.1999
+#
+### 
+# test configuration:
+# uname -a      == SunOS puck 5.7 Generic sun4m sparc SUNW,SPARCstation-5
+# java -version == Solaris VM (build Solaris_JDK_1.2_01_dev06_fcsV, native threads, sunwjit)
+# gcc 2.8.1
+# GNU Make version 3.77
+# GNU bash, version 2.02.1(1)-release
+# and so on...
+#
+
+
+###############################################################################################
+# user paths
+JNIINCLUDE=/System/Library/Frameworks/JavaVM.framework/Headers
+JNIINC=-I ${JNIINCLUDE}
+# -I ${JNIINCLUDE}/linux
+
+## think twice before editing the stuff below...
+
+
+###############################################################################################
+# CC (tested with gcc 2.8.1)
+CC     = cc
+CFLAGS = ${JNIINC} -fPIC -O2 -Wall
+
+###############################################################################################
+# JAVA stuff
+JAVAC      = javac
+JAVACFLAGS = -deprecation
+JAVAH      = javah
+JAVAHFLAGS = -jni
+###############################################################################################
+# All required targets
+all: ../../classes/org/w3c/util/Unix.class ../../classes/org/w3c/util/UnixException.class libUnix.jnilib 
+
+###############################################################################################
+# single project targets...	
+org_w3c_util_Unix.h: ../../classes/org/w3c/util/Unix.class
+	${JAVAH} ${JAVAHFLAGS} org.w3c.util.Unix
+
+libUnix.o: org_w3c_util_Unix.h libUnix.c
+	${CC} ${CFLAGS}	-c libUnix.c 
+	
+libUnix.jnilib: libUnix.o
+	ld -dynamic -framework JavaVM -bundle -o libUnix.jnilib libUnix.o /usr/lib/bundle1.o -lSystem.B
+	
+../../classes/org/w3c/util/Unix.class:../../classes/org/w3c/util/Unix.java
+	(cd ../../classes/org/w3c/util/ && ${JAVAC} ${JAVACFLAGS} Unix.java)
+	
+# this is normally build by Unix.class -> Unix.java, but...	
+UnixException.class: UnixException.java
+	${JAVAC} ${JAVACFLAGS} UnixException.java			
+
+###############################################################################################
+# misc. development targets	
+clean: 
+	-rm org_w3c_util_Unix.h libUnix.jnilib libUnix.o	
+
+###############################################################################################		
+# done.
+		
