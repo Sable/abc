@@ -1,0 +1,51 @@
+BENCHMARK xalan
+building class hierarchy...done
+NUMBER OF APPLICATION CLASSES: 560
+finding synchronized methods and blocks...done
+49 synchronized methods
+24 synchronized blocks
+RUNNING TIME: 8577
+TYPES WITH A SYNCHRONIZED INSTANCE METHOD: 
+<Application,Lorg/apache/xalan/lib/sql/ConnectionPoolManager>
+<Application,Lorg/apache/xalan/templates/ElemTextLiteral>
+<Application,Lorg/apache/xml/dtm/ref/CoroutineManager>
+<Application,Lorg/apache/xml/utils/ObjectPool>
+<Application,Ldacapo/xalan/XalanHarness$WorkQueue>
+<Application,Lorg/apache/xpath/axes/IteratorPool>
+<Application,Lorg/apache/xml/dtm/DTMException>
+<Application,Lorg/apache/xalan/lib/sql/DefaultConnectionPool>
+<Application,Lorg/apache/xalan/serialize/SerializerToXML>
+<Application,Lorg/apache/xml/dtm/ref/DTMManagerDefault>
+<Application,Lorg/apache/xpath/VariableStack>
+<Application,Lorg/apache/xalan/serialize/CharInfo>
+<Application,Lorg/apache/xml/dtm/ref/DTMSafeStringPool>
+TYPES WITH A SYNCHRONIZED STATIC METHOD: 
+<Application,Lorg/apache/xml/dtm/DTMManager>
+<Application,Lorg/apache/xml/utils/StringBufferPool>
+SYNCHRONIZED BLOCKS SYNCING ON THIS: 
+[< Application, Lorg/apache/xalan/transformer/TransformerImpl, isTransformDone()Z >,3]
+[< Application, Lorg/apache/xalan/transformer/TransformerImpl, setIsTransformDone(Z)V >,3]
+[< Application, Lorg/apache/xalan/transformer/TransformerImpl, postExceptionFromThread(Ljava/lang/Exception;)V >,12]
+[< Application, Lorg/apache/xalan/processor/StylesheetHandler, init(Lorg/apache/xalan/processor/TransformerFactoryImpl;)V >,6]
+[< Application, Lorg/apache/xpath/operations/Variable, execute(Lorg/apache/xpath/XPathContext;Z)Lorg/apache/xpath/objects/XObject; >,54]
+OTHER INFERRED TYPES FOR SYNCHRONIZED BLOCKS:
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet, start()V >,47] syncs on obj. of type <Primordial,Ljavax/xml/transform/TransformerFactory>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet, getHtmlText()Ljava/lang/String; >,11] syncs on obj. of type <Primordial,Ljava/lang/Thread>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet, getTreeAsText(Ljava/lang/String;)Ljava/lang/String; >,18] syncs on obj. of type <Primordial,Ljava/lang/Thread>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet, getSource()Ljava/lang/String; >,24] syncs on obj. of type <Primordial,Ljavax/xml/transform/TransformerFactory>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet, processTransformation()Ljava/lang/String; >,9] syncs on obj. of type <Primordial,Ljavax/xml/transform/TransformerFactory>
+block [< Application, Lorg/apache/xalan/templates/OutputProperties, getDefaultMethodProperties(Ljava/lang/String;)Ljava/util/Properties; >,7] syncs on obj. of type <Primordial,Ljava/lang/Integer>
+block [< Application, Lorg/apache/xalan/serialize/SerializerToXML, init(Ljava/io/Writer;Ljava/util/Properties;Z)V >,110] syncs on obj. of type <Application,Lorg/apache/xalan/serialize/CharInfo>
+block [< Application, Ldacapo/Benchmark, <init>(Ldacapo/parser/Config;Ljava/io/File;)V >,17] syncs on obj. of type <Primordial,Ljava/io/PrintStream>
+block [< Application, Ldacapo/Benchmark, <init>(Ldacapo/parser/Config;Ljava/io/File;)V >,42] syncs on obj. of type <Primordial,Ljava/io/PrintStream>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, setOutputProperty(Ljava/lang/String;Ljava/lang/String;)V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, setOutputProperties(Ljava/util/Properties;)V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, transform(Ljavax/xml/transform/Source;Ljavax/xml/transform/Result;Z)V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, transformNode(I)V >,8] syncs on obj. of type <Primordial,Lorg/xml/sax/ContentHandler>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, clearParameters()V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, setURIResolver(Ljavax/xml/transform/URIResolver;)V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/transformer/TransformerImpl, setErrorListener(Ljavax/xml/transform/ErrorListener;)V >,4] syncs on obj. of type <Primordial,Ljava/lang/Boolean>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet$TrustedAgent, run()V >,73] syncs on obj. of type <Primordial,Ljava/lang/Thread>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet$TrustedAgent, run()V >,94] syncs on obj. of type <Primordial,Ljava/lang/Thread>
+block [< Application, Lorg/apache/xalan/client/XSLTProcessorApplet$TrustedAgent, run()V >,115] syncs on obj. of type <Primordial,Ljava/lang/Thread>
+++++++++++++++++++++++++++++++++++++++++++++++++++
