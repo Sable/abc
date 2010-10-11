@@ -104,40 +104,8 @@ aspect AST {
 		super.flushCaches();
 	}
 	
-//	public void ASTNode.flushOtherCaches() {
-//		this.flushOtherCache();
-//		for(int i=0;i<getNumChild();++i) {
-//			ASTNode child = getChild(i);
-//			if(child != null)
-//				child.flushOtherCaches();
-//		}
-//	}
-//	
-//	public void BodyDecl.flushOtherCaches() {
-//		entry.flushOtherCaches();
-//		exit.flushOtherCaches();
-//		super.flushOtherCaches();
-//	}
-//	
-//	public void ASTNode.flushPossibleNTAReferencesCaches() {
-//		this.flushPossibleNTAReferencesCache();
-//		for(int i=0;i<getNumChild();++i) {
-//			ASTNode child = getChild(i);
-//			if(child != null)
-//				child.flushPossibleNTAReferencesCaches();
-//		}
-//	}
-//	
-//	public void BodyDecl.flushPossibleNTAReferencesCaches() {
-//		entry.flushPossibleNTAReferencesCaches();
-//		exit.flushPossibleNTAReferencesCaches();
-//		super.flushPossibleNTAReferencesCache();
-//	}
-	
 	protected void ASTNode.replaceWith(ASTNode newnode) {
 		replace(this).with(newnode);
-//		ASTNode parent = getParent();
-//		parent.setChild(newnode, parent.getIndexOfChild(this));
 	}
 	
 	protected void Access.qualifyWith(Expr qual) {
@@ -175,6 +143,19 @@ aspect AST {
 			Access rdot_left = (Access) rdot.getLeft(); rdot.setLeft(null);
 			l = new AbstractDot(l, rdot_left);
 			r = rdot.getRight(); rdot.setRight(null);
+		}
+		setLeft(l);
+		setRight(r);
+	}
+	
+	public void AbstractDot.rotateRight() {
+		Expr l = getLeft(); setLeft(null);
+		Access r = getRight(); setRight(null);
+		while(l instanceof AbstractDot) {
+			AbstractDot ldot = (AbstractDot)l;
+			Access ldot_right = (Access)ldot.getRight(); ldot.setRight(null);
+			r = new AbstractDot(ldot_right, r);
+			l = ldot.getLeft(); ldot.setLeft(null);
 		}
 		setLeft(l);
 		setRight(r);

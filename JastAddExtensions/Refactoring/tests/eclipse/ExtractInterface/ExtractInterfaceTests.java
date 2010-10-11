@@ -50,7 +50,7 @@ public class ExtractInterfaceTests extends TestCase {
 					if(md.name().equals(extractedMethodNames[i]))
 						methods.add(md);
 			}
-			((ClassDecl)td).extractInterface(null, newInterfaceName, methods);
+			((ClassDecl)td).doExtractInterface(null, newInterfaceName, methods);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
@@ -71,7 +71,7 @@ public class ExtractInterfaceTests extends TestCase {
 				if(md.isPublic())
 					methods.add(md);
 			}
-			((ClassDecl)td).extractInterface(null, newInterfaceName, methods);
+			((ClassDecl)td).doExtractInterface(null, newInterfaceName, methods);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.getMessage());
@@ -91,7 +91,7 @@ public class ExtractInterfaceTests extends TestCase {
 				if(md.isPublic())
 					methods.add(md);
 			}
-			((ClassDecl)td).extractInterface(null, newInterfaceName, methods);
+			((ClassDecl)td).doExtractInterface(null, newInterfaceName, methods);
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}

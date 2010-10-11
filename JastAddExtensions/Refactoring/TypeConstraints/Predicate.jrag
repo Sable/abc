@@ -1,0 +1,17 @@
+aspect Predicate {
+	interface Predicate<T> {
+		boolean holds(T that);
+		
+		public static final Predicate<Object> TRUE = new Predicate<Object>() {
+			public boolean holds(Object that) {
+				return true;
+			}
+		};
+		
+		public static final Predicate<Object> FALSE = new Predicate<Object>() {
+			public boolean holds(Object that) {
+				return false;
+			}
+		};
+	}
+}

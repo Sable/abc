@@ -7,7 +7,7 @@ aspect Alpha {
 		if(isTopLevelType()) {
 			if(this.hostPackage().equals(pkg))
 				return ASTNode.VIS_PACKAGE;
-		} else if(isMemberType()) {
+		} else if(isMemberType() && !isLocalClass()) {
 			BodyDecl bd = (BodyDecl)getParent();
 			return bd.minAccess(pkg, type);
 		} else {

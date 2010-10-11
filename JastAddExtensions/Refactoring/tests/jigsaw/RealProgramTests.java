@@ -13,7 +13,6 @@ import AST.ClassDecl;
 import AST.ClassDeclSubstituted;
 import AST.CompilationUnit;
 import AST.MethodDecl;
-import AST.ParameterDeclaration;
 import AST.Program;
 import AST.RefactoringException;
 import AST.TypeDecl;
@@ -29,24 +28,33 @@ public class RealProgramTests extends TestCase {
 																		 + File.separator + ".classpath"));
 	}
 	
+	// 101 KSLOC
 	private static Program compileJigsaw() throws Exception {
 		return checkProgram(compile("Jigsaw"));
 	}
 	
+	// 76 KSLOC
 	private static Program compileJHotDraw() throws Exception {
 		return checkProgram(compile("JHotDraw"));
 	}
 	
+	// 110 KSLOC
 	private static Program compileXalan() throws Exception {
 		return checkProgram(compile("xalan"));
 	}
 	
+	// 144 KSLOC
 	private static Program compileHSQLDB() throws Exception {
-		return checkProgram(compile("hsqldb"));
-	}
+		return checkProgram(compile("hsqldb"));	}
 
+	// 49 KSLOC
 	private static Program compileHadoop() throws Exception {
 		return checkProgram(compile("hadoop-core"));
+	}
+	
+	// 169 KSLOC
+	private static Program compileTomcat() throws Exception {
+		return checkProgram(compile("tomcat-6.0.x"));
 	}
 	
 	private static Program checkProgram(Program prog) {
@@ -147,8 +155,10 @@ public class RealProgramTests extends TestCase {
 		compileHadoop();
 		compileHSQLDB();
 		compileXalan();
+		compileTomcat();
 	}
 	
+	// exhaustively generalise parameter types
 	public void testJigsaw() throws Exception {
 		exhaustivelyChangeParameterTypes(compileJigsaw());
 	}
@@ -167,5 +177,9 @@ public class RealProgramTests extends TestCase {
 	
 	public void testHadoop() throws Exception {
 		exhaustivelyChangeParameterTypes(compileHadoop());
+	}
+	
+	public void testTomcat() throws Exception {
+		exhaustivelyChangeParameterTypes(compileTomcat());
 	}
 }
