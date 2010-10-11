@@ -1,0 +1,458 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Appendix&nbsp;B.&nbsp;Building HyperSQL Jars</title>
+<link href="../docbook.css" rel="stylesheet" type="text/css">
+<meta content="DocBook XSL-NS Stylesheets V1.74.0" name="generator">
+<meta name="keywords" content="HSQLDB, HyperSQL, Building, Ant">
+<meta name="keywords" content="Hsqldb, HyperSQL, Database, JDBC, Java">
+<link rel="home" href="index.html" title="HyperSQL User Guide">
+<link rel="up" href="index.html" title="HyperSQL User Guide">
+<link rel="prev" href="lists-app.html" title="Appendix&nbsp;A.&nbsp;Lists of Keywords">
+<link rel="next" href="openoffice-app.html" title="Appendix&nbsp;C.&nbsp;HyperSQL with OpenOffice.org">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+<tr>
+<td align="left" width="30%"><a accesskey="p" href="lists-app.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="40%" style="font-weight:bold;">Appendix&nbsp;B.&nbsp;Building HyperSQL Jars</td><td align="right" width="30%">&nbsp;<a accesskey="n" href="openoffice-app.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%">Appendix&nbsp;A.&nbsp;Lists of Keywords&nbsp;</td><td align="center" width="40%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="30%">&nbsp;Appendix&nbsp;C.&nbsp;HyperSQL with OpenOffice.org</td>
+</tr>
+</table>
+</div>
+<HR>
+<div class="appendix" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h1 class="title">
+<a name="building-app"></a>Building HyperSQL Jars</h1>
+</div>
+<div>
+<h3 class="subtitle">
+<i>How to build customized or specialized jar files</i>
+</h3>
+</div>
+<div>
+<div class="author">
+<h3 class="author">
+<span class="firstname">Fred</span> <span class="surname">Toussi</span>
+</h3>
+<div class="affiliation">
+<span class="orgname">The HSQL Development Group<br>
+</span>
+</div>
+</div>
+</div>
+<div>
+<p class="releaseinfo">$Revision: 3556 $</p>
+</div>
+<div>
+<p class="pubdate">$Date: 2010-03-26 19:09:40 -0400 (Fri, 26 Mar 2010) $</p>
+</div>
+</div>
+</div>
+<div class="toc">
+<p>
+<b>Table of Contents</b>
+</p>
+<dl>
+<dt>
+<span class="section"><a href="building-app.html#N14693">Purpose</a></span>
+</dt>
+<dt>
+<span class="section"><a href="building-app.html#building-ant-sect">Building with Ant</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="building-app.html#N146AA">Obtaining Ant</a></span>
+</dt>
+<dt>
+<span class="section"><a href="building-app.html#N146C0">Building Hsqldb with Ant</a></span>
+</dt>
+<dt>
+<span class="section"><a href="building-app.html#N1475D">Building for Older JDKs</a></span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span class="section"><a href="building-app.html#N14765">Building with IDE's</a></span>
+</dt>
+<dt>
+<span class="section"><a href="building-app.html#N1476A">Hsqldb CodeSwitcher</a></span>
+</dt>
+<dt>
+<span class="section"><a href="building-app.html#N14791">Building documentation</a></span>
+</dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N14693"></a>Purpose</h2>
+</div>
+</div>
+</div>
+<p>From 2.0, the supplied <code class="filename">hsqldb.jar</code> file is
+    built with Java 1.6. If you want to run with a 1.5 or older JVM, or if you
+    want to use an alternative jar (<code class="filename">hsqldb-min.jar</code>, etc.)
+    you must build the desired jar with a Java JDK and Ant version
+    1.7.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="building-ant-sect"></a>Building with Apache Ant</h2>
+</div>
+</div>
+</div>
+<a name="N146A4" class="indexterm"></a>
+<p>You should use version 1.7.x of Ant (Another Neat Tool) to do
+    builds with HyperSQL.</p>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title">
+<a name="N146AA"></a>Obtaining Ant</h3>
+</div>
+</div>
+</div>
+<p>Ant is a part of the Jakarta/Apache Project.</p>
+<div class="itemizedlist">
+<ul type="disc">
+<li>
+<a class="link" href="http://ant.apache.org" target="_top">Home of the Apache
+          Ant project</a>
+</li>
+<li>The <a class="link" href="http://ant.apache.org/manual/install.html#installing" target="_top">
+          Installing Ant</a> page of the <a class="link" href="http://ant.apache.org/manual" target="_top">Ant Manual</a>. Follow
+          the directions for your platform.</li>
+</ul>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title">
+<a name="N146C0"></a>Building Hsqldb with Ant</h3>
+</div>
+</div>
+</div>
+<p>Once you have unpacked the zip package for hsqldb, under the
+      <code class="filename">/hsqldb</code> folder, in <code class="filename">/build</code>
+      there is a <code class="filename">build.xml</code> file that builds the
+      <code class="filename">hsqldb.jar</code> with Ant (Ant must be already
+      installed). To use it, change to <code class="filename">/build</code> then
+      type:</p>
+<div class="informalexample">
+<pre class="screen"> ant -projecthelp</pre>
+</div>
+<p>This displays the available ant targets, which you can supply
+      as command line arguments to ant. These include</p>
+<div class="variablelist">
+<table border="0">
+<col valign="top" align="left">
+<tbody>
+<tr>
+<td>
+<p>
+<span class="term">hsqldb</span>
+</p>
+</td><td>to build the <code class="filename">hsqldb.jar</code>
+            file</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">explainjars</span>
+</p>
+</td><td>Lists all targets which build jar files, with an
+            explanation of the purposes of the different jars.</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">clean</span>
+</p>
+</td><td>to clean up the /classes directory that is
+            created</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">clean-all</span>
+</p>
+</td><td>to remove the old jar and doc files as well</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">javadoc</span>
+</p>
+</td><td>to build javadoc</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">hsqldbmain</span>
+</p>
+</td><td>to build a smaller jar for HSQLDB that does not contain
+            utilities</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">hsqljdbc</span>
+</p>
+</td><td>to build an extremely small jar containing only the
+            client-side JDBC driver (can connect only to a HyperSQL
+            Server).</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">hsqldbmin</span>
+</p>
+</td><td>to build a small jar that supports
+            <span class="emphasis"><em>in-process</em></span> catalogs, but neither running nor
+            connecting to HyperSQL Servers.</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">sqltool</span>
+</p>
+</td><td>to build sqltool.jar, which contains only the SqlTool
+            classes.</td>
+</tr>
+<tr>
+<td>
+<p>
+<span class="term">...</span>
+</p>
+</td><td>Many more targets are available. Run <code class="literal">ant
+            -p</code> and <code class="literal">ant explainjars</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>HSQLDB can be built in any combination of two JRE (Java Runtime
+      Environment) versions and many jar file sizes.</p>
+<p>A jar built with an older JRE is compatible for use with a
+      newer JRE (you can compile with Java 1.5 and run with 1.6). But the
+      newer JDBC capabilities of the JRE will be not be available.</p>
+<p>The client jar (<code class="filename">hsqljdbc.jar</code>) contains
+      only the HSQLDB JDBC Driver client. The smallest engine jar
+      (<code class="filename">hsqldbmin.jar</code>) contains the engine and the HSQLDB
+      JDBC Driver client. The default size (<code class="filename">hsqldb.jar</code>)
+      also contains server mode support and the utilities. The largest size
+      (<code class="filename">hsqldbtest.jar</code>)includes some test classes as well.
+      Before building the <code class="filename">hsqldbtest.jar</code> package, you
+      should download the junit jar from <a class="link" href="http://www.junit.org" target="_top">http://www.junit.org</a> and put it in the
+      <code class="filename">/lib</code> directory, alongside
+      <code class="filename">servlet.jar</code>, which is included in the .zip
+      package.</p>
+<p>If you want your code built for high performance, as opposed to
+      debugging (in the same way that we make our production distributions),
+      make a file named <code class="filename">build.properties</code> in your build
+      directory with the contents <div class="informalexample">
+<pre class="screen">build.debug: false</pre>
+</div>The resulting Java binaries will be faster and
+      smaller, at the cost of exception stack traces not identifying source
+      code locations (which can be extremely useful for debugging).</p>
+<p>After installing Ant on your system use the following command
+      from the <code class="filename">/build</code> directory. Just run <code class="literal">ant
+      explainjars</code> for a concise list of all available jar
+      files.</p>
+<div class="informalexample">
+<pre class="screen">ant explainjars</pre>
+</div>
+<p>The command displays a list of different options for building
+      different sizes of the HSQLDB Jar. The default is built using:</p>
+<div class="example">
+<a name="N14756"></a>
+<p class="title">
+<b>Example&nbsp;B.1.&nbsp;Buiding the standard Hsqldb jar file with Ant</b>
+</p>
+<div class="example-contents">
+<pre class="screen">ant hsqldb</pre>
+</div>
+</div>
+<br class="example-break">
+<p>The Ant method always builds a jar with the JDK that is used by
+      Ant and specified in its JAVA_HOME environment variable.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title">
+<a name="N1475D"></a>Building for Older JDKs</h3>
+</div>
+</div>
+</div>
+<p>HyperSQL version 2.0 cannot be directly compiled or used with JDK
+      1.4. It may be possible to use the RetroTranslator tool to achieve this.
+      The suggested procedure is as follows: First use Ant with JDK 1.5 and
+      build the jar. Then translate the jar using RetroTranslator with
+      backport (which bundles replacement classes for concurrency control).
+      This translation should cover the concurrency features that are specific
+      to version 1.5 and later.<div class="informalexample">
+<pre class="screen">ant switchtojdk14
+ant hsqldb
+-- translate the jar
+</pre>
+</div>
+</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N14765"></a>Building with IDE's</h2>
+</div>
+</div>
+</div>
+<p>All HyperSQL source files are supplied ready to compile. There is
+    no complex pre-compile stage. It is therefore possible to compile the
+    sources with an IDE, without using ant. Only if compilation with Java 1.5
+    is required, you should first run the Ant code switcher task before
+    compiling and remove from the source directories a few source files that
+    are specific to Java 6 (these are listed in the build.xml file).</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N1476A"></a>Hsqldb CodeSwitcher</h2>
+</div>
+</div>
+</div>
+<p>CodeSwitcher is a tool to manage different version of Java source
+    code. It allows to compile HyperSQL for different JDKs. It is something
+    like a precompiler in C but it works directly on the source code and does
+    not create intermediate output or extra files.</p>
+<p>CodeSwitcher is used internally in the Ant build. You do not have
+    to use it separately to compile HyperSQL.</p>
+<p>CodeSwitcher reads the source code of a file, removes comments
+    where appropriate and comments out the blocks that are not used for a
+    particular version of the file. This operation is done for all files of a
+    defined directory, and all subdirectories.</p>
+<div class="example">
+<a name="N14773"></a>
+<p class="title">
+<b>Example&nbsp;B.2.&nbsp;Example source code before CodeSwitcher is run</b>
+</p>
+<div class="example-contents">
+<pre class="programlisting">
+        ...
+
+    //#ifdef JAVA2
+
+        properties.store(out,"hsqldb database");
+
+    //#else
+
+    /*
+
+        properties.save(out,"hsqldb database");
+
+    */
+
+    //#endif
+
+        ...</pre>
+</div>
+</div>
+<br class="example-break">
+<p>The next step is to run CodeSwitcher.</p>
+<div class="example">
+<a name="N1477A"></a>
+<p class="title">
+<b>Example&nbsp;B.3.&nbsp;CodeSwitcher command line invocation</b>
+</p>
+<div class="example-contents">
+<pre class="screen">
+    java org.hsqldb.util.CodeSwitcher . -JAVA2</pre>
+</div>
+</div>
+<br class="example-break">
+<p>The '.' means the program works on the current directory (all
+    subdirectories are processed recursively). <code class="literal">-JAVA2</code> means
+    the code labelled with JAVA2 must be switched off.</p>
+<div class="example">
+<a name="N14784"></a>
+<p class="title">
+<b>Example&nbsp;B.4.&nbsp;Source code after CodeSwitcher processing</b>
+</p>
+<div class="example-contents">
+<pre class="programlisting">
+        ...
+
+    //#ifdef JAVA2
+
+    /*
+
+        pProperties.store(out,"hsqldb database");
+
+    */
+
+    //#else
+
+        pProperties.save(out,"hsqldb database");
+
+    //#endif
+
+        ...</pre>
+</div>
+</div>
+<br class="example-break">
+<p>For detailed information on the command line options run
+    <code class="classname">java org.hsqldb.util.CodeSwitcher</code>. Usage examples
+    can be found in the build.xml file in the <code class="filename">/build</code>
+    directory.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N14791"></a>Building documentation</h2>
+</div>
+</div>
+</div>
+<p>The JavaDoc can be built simply by invoking the javadoc
+    target.</p>
+<p>The two Guides are in DocBook XML source format. To rebuild, run
+    the Ant target <code class="literal">gen-docs</code>. Instructions will be
+    displayed. See the file <code class="filename">doc-src/readme-docauthors.txt</code>
+    for tips.</p>
+</div>
+</div>
+<HR xmlns:xi="http://www.w3.org/2001/XInclude">
+<P xmlns:xi="http://www.w3.org/2001/XInclude" class="svnrev">$Revision: 3601 $</P>
+<div class="navfooter">
+<hr>
+<table summary="Navigation footer" width="100%">
+<tr>
+<td align="left" width="40%"><a accesskey="p" href="lists-app.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="20%">&nbsp;</td><td align="right" width="40%">&nbsp;<a accesskey="n" href="openoffice-app.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="40%">Appendix&nbsp;A.&nbsp;Lists of Keywords&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="40%">&nbsp;Appendix&nbsp;C.&nbsp;HyperSQL with OpenOffice.org</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,976 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter&nbsp;12.&nbsp;Properties</title>
+<link href="../docbook.css" rel="stylesheet" type="text/css">
+<meta content="DocBook XSL-NS Stylesheets V1.74.0" name="generator">
+<meta name="keywords" content="Hsqldb, HyperSQL, SQL">
+<meta name="keywords" content="Hsqldb, HyperSQL, Database, JDBC, Java">
+<link rel="home" href="index.html" title="HyperSQL User Guide">
+<link rel="up" href="index.html" title="HyperSQL User Guide">
+<link rel="prev" href="deployment-chapt.html" title="Chapter&nbsp;11.&nbsp;System Management and Deployment Issues">
+<link rel="next" href="listeners-chapt.html" title="Chapter&nbsp;13.&nbsp;HyperSQL Network Listeners">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+<tr>
+<td align="left" width="30%"><a accesskey="p" href="deployment-chapt.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="40%" style="font-weight:bold;">Chapter&nbsp;12.&nbsp;Properties</td><td align="right" width="30%">&nbsp;<a accesskey="n" href="listeners-chapt.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%">Chapter&nbsp;11.&nbsp;System Management and Deployment
+  Issues&nbsp;</td><td align="center" width="40%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="30%">&nbsp;Chapter&nbsp;13.&nbsp;HyperSQL Network Listeners</td>
+</tr>
+</table>
+</div>
+<HR>
+<div class="chapter" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title">
+<a name="dbproperties-chapt"></a>Chapter&nbsp;12.&nbsp;Properties</h2>
+</div>
+<div>
+<div class="authorgroup">
+<div class="author">
+<h3 class="author">
+<span class="firstname">Fred</span> <span class="surname">Toussi</span>
+</h3>
+<div class="affiliation">
+<span class="orgname">The HSQL Development Group<br>
+</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<p class="releaseinfo">$Revision: 3626 $</p>
+</div>
+<div>
+<div class="legalnotice">
+<a name="N13AB9"></a>
+<p>Copyright 2002-2009 Fred Toussi. Permission is granted to
+      distribute this document without any alteration under the terms of the
+      HSQLDB license. Additional permission is granted to the HSQL Development
+      Group to distribute this document with or without alterations under the
+      terms of the HSQLDB license.</p>
+</div>
+</div>
+<div>
+<p class="pubdate">$Date: 2010-06-05 07:49:07 -0400 (Sat, 05 Jun 2010) $</p>
+</div>
+</div>
+</div>
+<div class="toc">
+<p>
+<b>Table of Contents</b>
+</p>
+<dl>
+<dt>
+<span class="section"><a href="dbproperties-chapt.html#dbproperties_connections-sect">Connections</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="dbproperties-chapt.html#conn_props-sect">Connection properties</a></span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span class="section"><a href="dbproperties-chapt.html#N13C11">Database Properties in Connection URL and Properties</a></span>
+</dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="dbproperties_connections-sect"></a>Connections</h2>
+</div>
+</div>
+</div>
+<p>The normal method of accessing a HyperSQL catalog is via the JDBC
+    Connection interface. An introduction to different methods of providing
+    database services and accessing them can be found in the <a class="link" href="sqlgeneral-chapt.html" title="Chapter&nbsp;2.&nbsp;SQL Language">SQL Language</a> chapter.
+    Details and examples of how to connect via JDBC are provided in our
+    JavaDoc for <code class="classname"><a class="classname" href="apd.html#JDBCConnection.html-link">
+    JDBCConnection</a></code>.</p>
+<p>A uniform method is used to distinguish between different types of
+    connection. The common driver identifier is
+    <code class="literal">jdbc:hsqldb:</code> followed by a protocol identifier
+    (<code class="literal">mem: file: res: hsql: http: hsqls: https:</code>) then
+    followed by host and port identifiers in the case of servers, then
+    followed by database identifier. Additional property / value pairs can be
+    appended to the end of the URL, separated with semicolons.</p>
+<div class="table">
+<a name="N13AD2"></a>
+<p class="title">
+<b>Table&nbsp;12.1.&nbsp;HyperSQL URL Components</b>
+</p>
+<div class="table-contents">
+<table summary="HyperSQL URL Components" cellspacing="0" width="100%" style="border-collapse: collapse;border-top: 0.5pt solid ; border-bottom: 0.5pt solid ; border-left: 0.5pt solid ; border-right: 0.5pt solid ; ">
+<colgroup>
+<col align="left">
+<col align="left">
+<col align="left">
+</colgroup>
+<thead>
+<tr>
+<th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Driver and Protocol</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Host and Port</th><th style="border-bottom: 0.5pt solid ; " align="left">Database</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">jdbc:hsqldb:mem:</code></td>
+</tr>
+</table>
+</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">not available</td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">accounts</code></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Lowercase, single-word
+            identifier creates the in-memory database when the first
+            connection is made. Subsequent use of the same Connection URL
+            connects to the existing DB.</p> 
+<p>The old form for the
+            URL, <code class="literal">jdbc:hsqldb:.</code> creates or connects to the
+            same database as the new form for the URL,
+            <code class="literal">jdbc:hsqldb:mem:.</code>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">jdbc:hsqldb:file:</code></td>
+</tr>
+</table>
+</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">not available</td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="filename">mydb</code></td>
+</tr>
+<tr>
+<td><code class="filename">/opt/db/accounts</code></td>
+</tr>
+<tr>
+<td><code class="filename">C:/data/mydb</code></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The file path specifies the
+            database file. In the above examples the first one refers to a set
+            of mydb.* files in the directory where the
+            <code class="literal">java</code>command for running the application was
+            issued. The second and third examples refer to absolute paths on
+            the host machine.</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">jdbc:hsqldb:res:</code></td>
+</tr>
+</table>
+</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">not available</td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="filename">/adirectory/dbname</code></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">Database files can be loaded from
+            one of the jars specified as part of the <code class="literal">Java</code>
+            command the same way as resource files are accessed in Java
+            programs. The <code class="literal">/adirectory</code> above stands for a
+            directory in one of the jars.</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">jdbc:hsqldb:hsql:</code></td>
+</tr>
+<tr>
+<td><code class="literal">jdbc:hsqldb:hsqls:</code></td>
+</tr>
+<tr>
+<td><code class="literal">jdbc:hsqldb:http:</code></td>
+</tr>
+<tr>
+<td><code class="literal">jdbc:hsqldb:https:</code></td>
+</tr>
+</table>
+</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">//localhost</code></td>
+</tr>
+<tr>
+<td><code class="literal">//192.0.0.10:9500</code></td>
+</tr>
+<tr>
+<td><code class="literal">//dbserver.somedomain.com</code></td>
+</tr>
+</table>
+</td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">
+<table summary="Simple list" border="0" class="simplelist">
+<tr>
+<td><code class="literal">/an_alias</code></td>
+</tr>
+<tr>
+<td><code class="literal">/enrollments</code></td>
+</tr>
+<tr>
+<td><code class="literal">/quickdb</code></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="" colspan="3" align="left" valign="top">
+<p>The host and port specify
+            the IP address or host name of the server and an optional port
+            number. The database to connect to is specified by an alias. This
+            alias is a lowercase string defined in the
+            <code class="filename">server.properties</code> file to refer to an actual
+            database on the file system of the server or a transient,
+            in-memory database on the server. The following example lines in
+            <code class="filename">server.properties</code> or
+            <code class="filename">webserver.properties</code> define the database
+            aliases listed above and accessible to clients to refer to
+            different file and in-memory databases.</p> 
+<p>The old form
+            for the server URL, e.g.,
+            <code class="literal">jdbc:hsqldb:hsql//localhost</code> connects to the
+            same database as the new form for the URL,
+            <code class="literal">jdbc:hsqldb:hsql//localhost/</code> where the alias is
+            a zero length string.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br class="table-break">
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title">
+<a name="conn_props-sect"></a>Connection properties</h3>
+</div>
+</div>
+</div>
+<p>Each JDBC Connection to a database can specify connection
+      properties. The properties <span class="property">user</span> and
+      <span class="property">password</span> are always required. In 2.0 the following
+      optional properties can also be used.</p>
+<p>Connection properties are specified either by establishing the
+      connection via the method call below, or the property can be appended to
+      the full Connection URL.</p>
+<pre class="programlisting">    DriverManager.getConnection (String url, Properties info);</pre>
+<div class="table">
+<a name="N13B9C"></a>
+<p class="title">
+<b>Table&nbsp;12.2.&nbsp;Connection Properties</b>
+</p>
+<div class="table-contents">
+<table summary="Connection Properties" cellspacing="0" width="100%" style="border-collapse: collapse;border-top: 0.5pt solid ; border-bottom: 0.5pt solid ; border-left: 0.5pt solid ; border-right: 0.5pt solid ; ">
+<colgroup>
+<col align="left">
+<col align="left">
+<col align="left">
+</colgroup>
+<tbody valign="top">
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">get_column_name</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">column name in ResultSet</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property is used for
+              compatibility with other JDBC driver implementations. When true
+              (the default), <code class="methodname">ResultSet.getColumnName(int
+              c)</code> returns the underlying column name. This
+              property can be specified differently for different connections
+              to the same database.</p>
+<p>The default is true. When the
+              property is false, the above method returns the same value as
+              <code class="methodname">ResultSet.getColumnLabel(int column)</code>
+              Example below:</p>
+<pre class="programlisting">    jdbc:hsqldb:hsql://localhost/enrollments;get_column_name=false</pre>
+<p>When
+              a ResultSet is used inside a user-defined stored procedure, the
+              default, true, is always used for this property.</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">ifexists</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">connect only if database already exists</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Has an effect only with
+              <em class="glossterm">mem:</em> and <em class="glossterm">file:</em>
+              database. When true, will not create a new database if one does
+              not already exist for the URL.</p>
+<p>When the property is
+              false (the default), a new <em class="glossterm">mem:</em> or
+              <em class="glossterm">file:</em> database will be created if it does
+              not exist.</p> 
+<p>Setting the property to true is useful
+              when troubleshooting as no database is created if the URL is
+              malformed. Example below:</p> 
+<pre class="programlisting">    jdbc:hsqldb:file:enrollments;ifexists=true</pre>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">shutdown</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">shut down the database when the last connection is
+              closed</td>
+</tr>
+<tr>
+<td style="" colspan="3" align="left" valign="top">
+<p>If this property is
+              <code class="literal">true</code>, when the last connection to a database
+              is closed, the database is automatically shut down. The property
+              takes effect only when the first connection is made to the
+              database. This means the connection that opens the database. It
+              has no effect if used with subsequent connections.</p>
+              
+<p>This command has two uses. One is for test suites, where
+              connections to the database are made from one JVM context,
+              immediately followed by another context. The other use is for
+              applications where it is not easy to configure the environment
+              to shutdown the database. Examples reported by users include web
+              application servers, where the closing of the last connection
+              coincides with the web app being shut
+              down.</p>
+<pre class="programlisting">    jdbc:hsqldb:file:enrollments;shutdown=true</pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br class="table-break">
+<p>In addition, when a connection to an
+      <em class="glossterm">in-process</em> database creates a new database, or
+      opens an existing database (i.e. it is the first connection made to the
+      database by the application), all the user-defined database properties
+      can be specified as URL properties. This can be used to specify
+      properties to enforce more strict SQL adherence, or to change
+      cache_scale or similar properties before the database files are created.
+      However, for new databases, it is recommended to use the SET PROPERTY
+      command for such settings.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N13C11"></a>Database Properties in Connection URL and Properties</h2>
+</div>
+</div>
+</div>
+<p>The database engine has several properties that are listed in the
+    <a class="link" href="deployment-chapt.html" title="Chapter&nbsp;11.&nbsp;System Management and Deployment Issues">System Management and Deployment
+  Issues</a>
+    chapter. These properties can be changed via SQL commands after a
+    connection is made to the database. It is possible to specify all of these
+    properties in the connection properties on as part of the URL string when
+    the first connection is made to a new file: or mem: database. This allows
+    the properties to be set without using any SQL commands. The corresponding
+    SQL command is given for each property.</p>
+<p>Management of properties has changed since version 1.8. The old SET
+    PROPERTY does not change a property and is retained to simplify
+    application upgrades.</p>
+<p>In the example URL below, two properties are set for the first
+    connection to a new database. If the properties are used for connection to
+    an existing database, they are ignored.</p>
+<pre class="programlisting">    jdbc:hsqldb:file:enrollments;hsqldb.cache_rows=10000;hsqldb.nio_data_file=false</pre>
+<p>In the table below, database properties that can be used as part of
+    the URL below are given. For each property that can also be set with an
+    SQL statement, the statement is also given. These statements are described
+    in the <a class="link" href="deployment-chapt.html" title="Chapter&nbsp;11.&nbsp;System Management and Deployment Issues">System Management and Deployment
+  Issues</a> chapter.</p>
+<div class="table">
+<a name="N13C26"></a>
+<p class="title">
+<b>Table&nbsp;12.3.&nbsp;Database-specific Property File Properties</b>
+</p>
+<div class="table-contents">
+<table summary="Database-specific Property File Properties" cellspacing="0" width="100%" style="border-collapse: collapse;border-top: 0.5pt solid ; border-bottom: 0.5pt solid ; border-left: 0.5pt solid ; border-right: 0.5pt solid ; ">
+<colgroup>
+<col align="left">
+<col align="left">
+<col align="left">
+</colgroup>
+<thead>
+<tr>
+<th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Value</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Default</th><th style="border-bottom: 0.5pt solid ; " align="left">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">check_props</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">checks the validity of the connection properties</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>If the property is true,
+            every database property that is specified on the URL or in
+            connection properties is checked and if it is not used correctly,
+            an error is returned</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">crypt_lobs</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">encryption of lobs</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>If the property is true, the
+            contents of the .lobs file is encrypted as
+            well.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">crypt_key</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">none</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">encryption</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The cipher key for an
+            encrypted database</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">crypt_provider</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">none</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">encryption</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The fully-qualified class
+            name of the cryptography provider. This property is not used for
+            the default security provider.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">crypt_type</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">none</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">encryption</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The cipher
+            specification.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">read_only</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">readonly database</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property is a special
+            property that can be added manually to the .properties file, or
+            included in the URL or connection properties. When this property
+            is true, the database becomes
+            readonly.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">files_read_only</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">readonly files database</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property is used
+            similarly to the hsqldb.read_only property. When this property is
+            true, CACHED and TEXT tables are readonly but memory files are
+            not. Any change to the data is not persisted to database
+            files.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.log_data</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">recovery log</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property can be set to
+            false when database recovery in the event of an unexpected crash
+            is not necessary. A database that is used as a temporary cache is
+            an example. Regardless of the value of this property, if there is
+            a proper shutdown of the database, all the change data is
+            stored.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">sql.enforce_names</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">enforcing SQL keywords</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property, when set
+            true, prevents SQL keywords being used for database object names
+            such as columns and tables.</p>
+<p>
+<pre class="programlisting">SET DATABASE SQL NAMES { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">sql.enforce_size</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">trimming and padding string columns.</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property is the same as
+            sql.enforce_strict_size</p>
+</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">sql.enforce_strict_size</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">size enforcement and padding string columns</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Conforms to SQL standards
+            for size and precision of data types. When true, all CHARACTER,
+            VARCHAR, NUMERIC and DECIMAL values that are in a row affected by
+            an INSERT INTO or UPDATE statement are checked against the size
+            specified in the SQL table definition. An exception is thrown if
+            the value is too long. Also all CHARACTER values that are shorter
+            than the specified size are padded with
+            spaces.</p>
+<p>
+<pre class="programlisting">SET DATABASE SQL SIZE { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">sql.enforce_refs</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">false</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">enforcing column reference disambiguation</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This property, when set
+            true, causes an error when an SQL statements contains column
+            references that can be resovled by more than one table name or
+            alias. In effect forces such column references to have a table
+            name or table alias qualifier.</p>
+<p>
+<pre class="programlisting">SET DATABASE SQL REFERENCES { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">runtime.gc_interval</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">0</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">forced garbage collection</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>This setting forces garbage
+            collection each time a set number of result set row or cache row
+            objects are created. The default, "0" means no garbage collection
+            is forced by the program.</p>
+<p>
+<pre class="programlisting">SET DATABASE GC &lt;numeric value&gt;</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.default_table_type</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">memory</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">type of table created with unqualified CREATE TABLE</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The CREATE TABLE command
+            results in a MEMORY table by default. Setting the value
+            <span class="emphasis"><em>cached</em></span> for this property will result in a
+            cached table by default. The qualified forms such as CREATE MEMORY
+            TABLE or CREATE CACHED TABLE are not affected at all by this
+            property.</p>
+<p>
+<pre class="programlisting">SET DATABASE DEFAULT TABLE TYPE { CACHED | MEMORY }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.applog</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">0</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">application logging level</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The default level 0
+            indicates no logging. Level 1 results in events related to
+            persistence to be logged, including any failures. Level 2
+            indicates all events, including ordinary events. The events are
+            logged in a file ending with
+            ".app.log".</p>
+<p>
+<pre class="programlisting">SET DATABASE EVENT LOG LEVEL { 0 | 1 | 2 }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.result_max_memory_rows</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">0</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">amount of result rows that are kept in memory</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Sets the maximum number of
+            rows of each result set and other internal temporary table that is
+            held in memory. </p>
+<p>
+<pre class="programlisting">SET DATABASE DEFAULT RESULT MEMORY ROWS &lt;unsigned integer literal&gt;</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.tx</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">locks</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">database transaction control mode</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Indicates the transaction
+            control mode for the database. The values, locks, mvlocks and mvcc
+            are allowed.</p>
+<p>
+<pre class="programlisting">SET DATABASE TRANSACTION CONTROL { LOCKS | MVLOCKS | MVCC }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.cache_rows</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">50000</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">maximum number of rows in memory cache</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Indicates the maximum number
+            of rows of cached tables that are held in memory.</p>
+<p>The
+            value can range between 100-1,000,000. If the value is set via SET
+            FILES then it becomes effective after the next database SHUTDOWN
+            or CHECKPOINT.</p>
+<p>The property is changed via the
+            <code class="literal">SET FILES CACHE ROWS nnn</code> SQL
+            command.</p>
+<p>
+<pre class="programlisting">SET FILES CACHE ROWS &lt;numeric value&gt;</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.cache_size</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">10000</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">memory cache size</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>Indicates the total size (in
+            kilobytes) of rows in the memory cache used with cached tables.
+            This size is calculated as the binary size of the rows, for
+            example an INTEGER is 4 bytes. The actual memory size used by the
+            objects is 2 to 4 times this value. This depends on the types of
+            objects in database rows, for example with binary objects the
+            factor is less than 2, with character strings, the factor is just
+            over 2 and with date and timestamp objects the factor is over
+            3.</p>
+<p>The value can range between 100-1,000,000. The
+            default is 10,000, representing 10,000 kilobytes. If the value is
+            set via SET FILES then it becomes effective after the next
+            database SHUTDOWN or CHECKPOINT.</p>
+<p>
+<pre class="programlisting">SET FILES CACHE SIZE &lt;numeric value&gt;</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.inc_backup</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">incremental backup of data file</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>During updates, the contents
+            of the .data file are modified. When this property is true, the
+            modified contents are backed up gradually. This causes a marginal
+            slowdown in operations, but allows fast checkpoint and
+            shutdown.</p>
+<p>When the property is false, the .data file
+            is backed up entirely at the time of checkpoint and shutdown. Up
+            to version 1.8, HSQLDB supported only full
+            backup.</p>
+<p>
+<pre class="programlisting">SET FILES INCREMENT BACKUP { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.lock_file</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">use of lock file</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>By default, a lock file is
+            created for each file database that is opened for read and write.
+            This property can be specified with the value false to prevent the
+            lock file from being created. This usage is not recommended but
+            may be desirable when flash type storage is
+            used.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.log_data</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">logging data change</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>When
+            <code class="literal">false</code> is specified, no data logging takes
+            place. A checkpoint or shutdown still rewrites the
+            <code class="literal">.script</code> file and saves the
+            <code class="literal">.backup</code> file according to the other
+            settings.</p>
+<p>
+<pre class="programlisting">SET FILES LOG  { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.log_size</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">50</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">size of log when checkpoint is performed</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>The value is the size (in
+            megabytes) that the <code class="literal">.log</code> file can reach before
+            an automatic checkpoint occurs. A checkpoint rewrites the
+            <code class="literal">.script</code> file and clears the
+            <code class="literal">.log</code> file.</p>
+<p>
+<pre class="programlisting">SET FILES LOG SIZE &lt;numeric value&gt;</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.nio_data_file</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">use of nio access methods for the .data file</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>When HyperSQL is compiled
+            and run in Java 1.4 or higher, setting this property to
+            <code class="literal">false</code> will avoid the use of nio access methods,
+            resulting in somewhat reduced speed. If the data file is larger
+            than 256MB when it is first opened, nio access methods are not
+            used. Also, if the file gets larger than the amount of available
+            computer memory that needs to be allocated for nio access, non-nio
+            access methods are used.</p>
+<p>If used before defining any
+            CACHED table, it applies immediately, otherwise it comes into
+            effect after a SHUTDOWN and restart or
+            CHECKPOINT.</p>
+<p>
+<pre class="programlisting">SET FILES NIO { TRUE | FALSE }</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.translate_dti_types</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">usage of type codes for advanced type datetime
+            types</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>If the property is true, the
+            datetime WITH TIME ZONE types and INTERVAL types are represented
+            as JDBC datetime types without time zone and the VARCHAR type
+            respectively.</p>
+<p>
+<pre class="programlisting">this property cannot be set with an SQL statement</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.write_delay</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">true</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">write delay for writing log file entries</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>If the property is true, the
+            default WRITE DELAY property of the database is used, which is
+            1000 milliseconds. If the property is false, the WRITE DELAY is
+            set to 0 seconds. The SQL command for this property allows more
+            precise control over the property.</p>
+<p>
+<pre class="programlisting">SET FILES WRITE DELAY {{ TRUE | FALSE } | &lt;seconds value&gt; | &lt;milliseconds value&gt; MILLIS</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">hsqldb.write_delay_millis</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">1000</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">write delay for writing log file entries</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">
+<p>If the property is used, the
+            WRITE DELAY property of the database is set the given value. The
+            SQL command for this property allows the same level of control
+            over the property.</p>
+<p>
+<pre class="programlisting">SET FILES WRITE DELAY {{ TRUE | FALSE } | &lt;seconds value&gt; | &lt;milliseconds value&gt; MILLIS</pre>
+</p>
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 0.5pt solid ; " colspan="3" align="left" valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><span class="property">textdb.*</span></td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left" valign="top"><code class="literal">0</code></td><td style="border-bottom: 0.5pt solid ; " align="left" valign="top">default properties for new text tables</td>
+</tr>
+<tr>
+<td style="" colspan="3" align="left" valign="top">
+<p>Properties that override the
+            database engine defaults for newly created text tables. Settings
+            in the text table <code class="literal">SET &lt;tablename&gt; SOURCE &lt;source
+            string&gt; </code>command override both the engine defaults and
+            the database properties defaults. Individual
+            <span class="property">textdb.*</span> properties are listed in the <a class="link" href="texttables-chapt.html" title="Chapter&nbsp;5.&nbsp;Text Tables">Text Tables</a>
+            chapter.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br class="table-break">
+<p>When connecting to an <em class="glossterm">in-process</em> database
+    creates a new database, or opens an existing database (i.e. it is the
+    first connection made to the database by the application), all the
+    user-defined database properties listed in this section can be specified
+    as URL properties.</p>
+<p>When HSQLDB is used in OpenOffice.org, some property values will
+    have a different default. The properties and values are:</p>
+<p>hsqldb.default_table_type=cached hsqldb.cache_rows=25000;
+    hsqldb.cache_size=6000; hsqldb.log_size=10; hsqldb.nio_data_file=false;
+    sql.enforce_strict_size=true</p>
+</div>
+</div>
+<HR xmlns:xi="http://www.w3.org/2001/XInclude">
+<P xmlns:xi="http://www.w3.org/2001/XInclude" class="svnrev">$Revision: 3601 $</P>
+<div class="navfooter">
+<hr>
+<table summary="Navigation footer" width="100%">
+<tr>
+<td align="left" width="40%"><a accesskey="p" href="deployment-chapt.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="20%">&nbsp;</td><td align="right" width="40%">&nbsp;<a accesskey="n" href="listeners-chapt.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="40%">Chapter&nbsp;11.&nbsp;System Management and Deployment
+  Issues&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="40%">&nbsp;Chapter&nbsp;13.&nbsp;HyperSQL Network Listeners</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

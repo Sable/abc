@@ -1,0 +1,188 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Appendix&nbsp;A.&nbsp;Lists of Keywords</title>
+<link href="../docbook.css" rel="stylesheet" type="text/css">
+<meta content="DocBook XSL-NS Stylesheets V1.74.0" name="generator">
+<meta name="keywords" content="HSQLDB, HyperSQL, SQL Keywords SQL STAT">
+<meta name="keywords" content="Hsqldb, HyperSQL, Database, JDBC, Java">
+<link rel="home" href="index.html" title="HyperSQL User Guide">
+<link rel="up" href="index.html" title="HyperSQL User Guide">
+<link rel="prev" href="unix-chapt.html" title="Chapter&nbsp;14.&nbsp;HyperSQL on UNIX">
+<link rel="next" href="building-app.html" title="Appendix&nbsp;B.&nbsp;Building HyperSQL Jars">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+<tr>
+<td align="left" width="30%"><a accesskey="p" href="unix-chapt.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="40%" style="font-weight:bold;">Appendix&nbsp;A.&nbsp;Lists of Keywords</td><td align="right" width="30%">&nbsp;<a accesskey="n" href="building-app.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%">Chapter&nbsp;14.&nbsp;HyperSQL on UNIX&nbsp;</td><td align="center" width="40%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="30%">&nbsp;Appendix&nbsp;B.&nbsp;Building HyperSQL Jars</td>
+</tr>
+</table>
+</div>
+<HR>
+<div class="appendix" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h1 class="title">
+<a name="lists-app"></a>Lists of Keywords</h1>
+</div>
+<div>
+<h3 class="subtitle">
+<i>List of SQL Keywords</i>
+</h3>
+</div>
+<div>
+<div class="author">
+<h3 class="author">
+<span class="firstname">Fred</span> <span class="surname">Toussi</span>
+</h3>
+<div class="affiliation">
+<span class="orgname">The HSQL Development Group<br>
+</span>
+</div>
+</div>
+</div>
+<div>
+<p class="releaseinfo">$Revision: 847 $</p>
+</div>
+<div>
+<p class="pubdate">$Date: 2009-01-19 22:24:49 +0000 (Mon, 19 Jan 2009) $</p>
+</div>
+</div>
+</div>
+<div class="toc">
+<p>
+<b>Table of Contents</b>
+</p>
+<dl>
+<dt>
+<span class="section"><a href="lists-app.html#N14607">List of SQL Standard Keywords</a></span>
+</dt>
+<dt>
+<span class="section"><a href="lists-app.html#N1463A">List of SQL Keywords Disallowed as HyperSQL Identifiers</a></span>
+</dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N14607"></a>List of SQL Standard Keywords</h2>
+</div>
+</div>
+</div>
+<p>According to the SQL Standard, the SQL Language keywords cannot be
+    used as identifiers (names of database objects such as columns and
+    tables). HyperSQL has two modes of operation, which are selected with the
+    SET DATABASE SQL NAMES { TRUE | FALSE } to allow or disallow the keywords
+    as identifiers. The default mode is FALSE and allows the use of most
+    keywords as identifiers. Even in this mode, keywords cannot be used as
+    USER or ROLE identifiers.</p>
+<p>ABS ALL ALLOCATE ALTER AND ANY ARE ARRAY AS ASENSITIVE ASYMMETRIC
+    AT ATOMIC AUTHORIZATION AVG</p>
+<p>BEGIN BETWEEN BIGINT BINARY BLOB BOOLEAN BOTH BY</p>
+<p>CALL CALLED CARDINALITY CASCADED CASE CAST CEIL CEILING CHAR
+    CHAR_LENGTH CHARACTER CHARACTER_LENGTH CHECK CLOB CLOSE COALESCE COLLATE
+    COLLECT COLUMN COMMIT COMPARABLE CONDITION CONNECT CONSTRAINT CONVERT CORR
+    CORRESPONDING COUNT COVAR_POP COVAR_SAMP CREATE CROSS CUBE CUME_DIST
+    CURRENT CURRENT_CATALOG CURRENT_DATE CURRENT_DEFAULT_TRANSFORM_GROUP
+    CURRENT_PATH CURRENT_ROLE CURRENT_SCHEMA CURRENT_TIME CURRENT_TIMESTAMP
+    CURRENT_TRANSFORM_GROUP_FOR_TYPE CURRENT_USER CURSOR CYCLE</p>
+<p>DATE DAY DEALLOCATE DEC DECIMAL DECLARE DEFAULT DELETE DENSE_RANK
+    DEREF DESCRIBE DETERMINISTIC DISCONNECT DISTINCT DO DOUBLE DROP
+    DYNAMIC</p>
+<p>EACH ELEMENT ELSE ELSEIF END END_EXEC ESCAPE EVERY EXCEPT EXEC
+    EXECUTE EXISTS EXIT EXP EXTERNAL EXTRACT</p>
+<p>FALSE FETCH FILTER FIRST_VALUE FLOAT FLOOR FOR FOREIGN FREE FROM
+    FULL FUNCTION FUSION</p>
+<p>GET GLOBAL GRANT GROUP GROUPING</p>
+<p>HANDLER HAVING HOLD HOUR</p>
+<p>IDENTITY IN INDICATOR INNER INOUT INSENSITIVE INSERT INT INTEGER
+    INTERSECT INTERSECTION INTERVAL INTO IS ITERATE</p>
+<p>JOIN</p>
+<p>LAG</p>
+<p>LANGUAGE LARGE LAST_VALUE LATERAL LEAD LEADING LEAVE LEFT LIKE
+    LIKE_REGEX LN LOCAL LOCALTIME LOCALTIMESTAMP LOOP LOWER</p>
+<p>MATCH MAX MAX_CARDINALITY MEMBER MERGE METHOD MIN MINUTE MOD
+    MODIFIES MODULE MONTH MULTISET</p>
+<p>NATIONAL NATURAL NCHAR NCLOB NEW NO NONE NORMALIZE NOT NTH_VALUE
+    NTILE NULL NULLIF NUMERIC</p>
+<p>OCCURRENCES_REGEX OCTET_LENGTH OF OFFSET OLD ON ONLY OPEN OR
+    ORDER OUT OUTER OVER OVERLAPS OVERLAY</p>
+<p>PARAMETER PARTITION PERCENT_RANK PERCENTILE_CONT PERCENTILE_DISC
+    POSITION POSITION_REGEX POWER PRECISION PREPARE PRIMARY
+    PROCEDURE</p>
+<p>RANGE RANK READS REAL RECURSIVE REF REFERENCES REFERENCING
+    REGR_AVGX REGR_AVGY REGR_COUNT REGR_INTERCEPT REGR_R2 REGR_SLOPE REGR_SXX
+    REGR_SXY REGR_SYY RELEASE REPEAT RESIGNAL RESULT RETURN RETURNS REVOKE
+    RIGHT ROLLBACK ROLLUP ROW ROW_NUMBER ROWS</p>
+<p>SAVEPOINT SCOPE SCROLL SEARCH SECOND SELECT SENSITIVE
+    SESSION_USER SET SIGNAL SIMILAR SMALLINT SOME SPECIFIC SPECIFICTYPE SQL
+    SQLEXCEPTION SQLSTATE SQLWARNING SQRT STACKED START STATIC STDDEV_POP
+    STDDEV_SAMP SUBMULTISET SUBSTRING SUBSTRING_REGEX SUM SYMMETRIC SYSTEM
+    SYSTEM_USER</p>
+<p>TABLE TABLESAMPLE THEN TIME TIMESTAMP TIMEZONE_HOUR
+    TIMEZONE_MINUTE TO TRAILING TRANSLATE TRANSLATE_REGEX TRANSLATION TREAT
+    TRIGGER TRIM TRIM_ARRAY TRUE TRUNCATE</p>
+<p>UESCAPE UNDO UNION UNIQUE UNKNOWN UNNEST UNTIL UPDATE UPPER USER
+    USING</p>
+<p>VALUE VALUES VAR_POP VAR_SAMP VARBINARY VARCHAR VARYING</p>
+<p>WHEN WHENEVER WHERE WIDTH_BUCKET WINDOW WITH WITHIN WITHOUT
+    WHILE</p>
+<p>YEAR</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both">
+<a name="N1463A"></a>List of SQL Keywords Disallowed as HyperSQL Identifiers</h2>
+</div>
+</div>
+</div>
+<p>A subset of SQL Standard keywords cannot be used at all as HyperSQL
+    identifiers. The keywords are as follows:</p>
+<p>ADMIN AND ALL ANY AS AT AVG</p>
+<p>BETWEEN BOTH BY</p>
+<p>CALL CASE CAST COALESCE CORRESPONDING CONVERT COUNT CREATE
+    CROSS</p>
+<p>DISTINCT DROP</p>
+<p>ELSE END EVERY EXISTS EXCEPT</p>
+<p>FOR FROM FULL</p>
+<p>GRANT GROUP</p>
+<p>HAVING</p>
+<p>IN INNER INTERSECT INTO IS</p>
+<p>JOIN</p>
+<p>LEFT LEADING LIKE</p>
+<p>MAX MIN</p>
+<p>NATURAL NOT NULLIF</p>
+<p>ON ORDER OR OUTER</p>
+<p>PRIMARY</p>
+<p>REFERENCES RIGHT</p>
+<p>SELECT SET SOME STDDEV_POP STDDEV_SAMP SUM</p>
+<p>TABLE THEN TO TRAILING TRIGGER</p>
+<p>UNION UNIQUE USING</p>
+<p>VALUES VAR_POP VAR_SAMP</p>
+<p>WHEN WHERE WITH</p>
+</div>
+</div>
+<HR xmlns:xi="http://www.w3.org/2001/XInclude">
+<P xmlns:xi="http://www.w3.org/2001/XInclude" class="svnrev">$Revision: 3601 $</P>
+<div class="navfooter">
+<hr>
+<table summary="Navigation footer" width="100%">
+<tr>
+<td align="left" width="40%"><a accesskey="p" href="unix-chapt.html"><img src="../images/db/prev.png" alt="Prev"></a>&nbsp;</td><td align="center" width="20%">&nbsp;</td><td align="right" width="40%">&nbsp;<a accesskey="n" href="building-app.html"><img src="../images/db/next.png" alt="Next"></a></td>
+</tr>
+<tr>
+<td valign="top" align="left" width="40%">Chapter&nbsp;14.&nbsp;HyperSQL on UNIX&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html"><img src="../images/db/home.png" alt="Home"></a></td><td valign="top" align="right" width="40%">&nbsp;Appendix&nbsp;B.&nbsp;Building HyperSQL Jars</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

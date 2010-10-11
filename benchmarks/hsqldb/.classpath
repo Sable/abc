@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="hsqldb/src"/>
+	<classpathentry kind="lib" path="hsqldb/lib/sqltool.jar"/>
+	<classpathentry kind="lib" path="hsqldb/lib/junit.jar"/>
+	<classpathentry kind="lib" path="hsqldb/lib/ant.jar"/>
+	<classpathentry kind="lib" path="hsqldb/lib/servlet-2_3-fcs-classfiles.zip"/>
+	<classpathentry kind="lib" path="hsqldb/lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="hsqldb/lib/hibernate3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
