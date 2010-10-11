@@ -36,8 +36,9 @@ aspect CollectConstraints {
 	                decl() instanceof FieldDeclaration && 
 	                !decl().isStatic() &&
 	                ((FieldDeclaration)decl()).minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-	                !qualifier().type().instanceOf(hostType()) &&
-	                !qualifier().isSuperAccess()
+	                !qualifier().isSuperAccess() &&
+	                hostType().withinBodyThatSubclasses(((FieldDeclaration)decl()).hostType()) != null &&
+	                !qualifier().type().instanceOf(hostType().withinBodyThatSubclasses(((FieldDeclaration)decl()).hostType()))
 	           to Program.accessibilityConstraints()
 	           for programRoot();
 	
@@ -45,8 +46,9 @@ aspect CollectConstraints {
 			   when isQualified() &&
 			   		!decl().isStatic() &&
 			   		decl().minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-			   		!qualifier().type().instanceOf(hostType()) &&
-			   		!qualifier().isSuperAccess()
+			   		!qualifier().isSuperAccess() &&
+	                hostType().withinBodyThatSubclasses(decl().hostType()) != null &&
+	                !qualifier().type().instanceOf(hostType().withinBodyThatSubclasses(decl().hostType()))
 			   to Program.accessibilityConstraints()
 			   for programRoot();
 	

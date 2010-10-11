@@ -8,6 +8,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 import tests.CompileHelper;
 import AST.ASTNode;
+import AST.AccessibilityConstraint;
 import AST.ClassDecl;
 import AST.ClassDeclSubstituted;
 import AST.CompilationUnit;
@@ -20,35 +21,42 @@ import AST.TypeDecl;
 public class RealProgramTests extends TestCase {
 	private static String HOME = System.getProperty("user.home");
 	
-	// NB: adjust the following paths for your machine
+	// NB: adjust the following path for your machine
+	private static Program compile(String benchmarkName) throws Exception {
+		return CompileHelper.buildProjectFromClassPathFile(new File(HOME + File.separator + "JastAdd"
+																		 + File.separator + "benchmarks"
+																		 + File.separator + benchmarkName
+																		 + File.separator + ".classpath"));
+	}
 	
 	private static Program compileJigsaw() throws Exception {
-		return CompileHelper.buildProjectFromClassPathFile(new File(HOME + File.separator + "Jigsaw" 
-																		 + File.separator + ".classpath"));
+		return checkProgram(compile("Jigsaw"));
 	}
 	
 	private static Program compileJHotDraw() throws Exception {
-		return CompileHelper.buildProjectFromClassPathFile(new File(HOME + File.separator + "JHotDraw 7.5.1"
-																		 + File.separator + ".classpath"));
+		return checkProgram(compile("JHotDraw"));
 	}
 	
 	private static Program compileXalan() throws Exception {
-		return CompileHelper.buildProjectFromClassPathFile(new File(HOME + File.separator + "RefactoringForConcurrency" 
-																		 + File.separator + "trunk" 
-																		 + File.separator + "concurrency-benchmarks" 
-																		 + File.separator + "xalan-j_2_4_1" 
-																		 + File.separator + ".classpath"));
+		return checkProgram(compile("xalan"));
 	}
 	
-	public static void main(String[] args) {
-		new RealProgramTests().test3();
-	}
-	
-	public void test1() throws Exception {
-		Program prog = compileJigsaw();
-		exhaustivelyChangeParameterTypes(prog);
+	private static Program compileHSQLDB() throws Exception {
+		return checkProgram(compile("hsqldb"));
 	}
 
+	private static Program compileHadoop() throws Exception {
+		return checkProgram(compile("hadoop-core"));
+	}
+	
+	private static Program checkProgram(Program prog) {
+		assertNotNull(prog);
+		for(AccessibilityConstraint ac : prog.accessibilityConstraints())
+			if(!ac.isSolved())
+				fail();
+		return prog;
+	}
+	
 	private String orig;
 	private void exhaustivelyChangeParameterTypes(Program prog, boolean checkUndo) {
 		Collection<MethodDecl> meths = prog.sourceMethods();
@@ -86,153 +94,6 @@ public class RealProgramTests extends TestCase {
 	
 	private void exhaustivelyChangeParameterTypes(Program prog) { exhaustivelyChangeParameterTypes(prog, false); }
 	
-	public void test2() {
-		try {
-			Program prog = compileJigsaw();
-			//String orig = prog.toString();
-			assertNotNull(prog);
-			TypeDecl tp = prog.findType("org.w3c.www.http", "ChunkedInputStream");
-			assertNotNull(tp);
-			MethodDecl md = (MethodDecl)tp.methodsSignature("read(byte[], int, int)");
-			assertNotNull(md);
-			try {
-				int idx = 0;
-				ParameterDeclaration pd = md.getParameter(idx);
-				Program.startRecordingASTChangesAndFlush();
-				long start = System.currentTimeMillis();
-				md.getParameter(idx).changeType(prog.findType("java.lang", "Cloneable"));
-				long elapsed = System.currentTimeMillis()-start;
-				System.out.println("refactoring took " + elapsed + "ms");
-				LinkedList errors = new LinkedList();
-				prog.errorCheck(errors);
-				if(!errors.isEmpty())
-					System.out.println(errors);
-				else
-					System.out.println("OK");
-			} catch(RefactoringException rfe) {
-				System.out.println(rfe.getMessage());
-			} finally {
-				Program.undoAll();
-				prog.flushCaches();
-				//assertEquals(orig, prog.toString());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
-	
-	public void test3() {
-		try {
-			Program prog = compileJHotDraw();
-			Collection<MethodDecl> meths = prog.sourceMethods();
-			System.out.println(meths.size()+" source methods");
-			int cnt=0;
-			for(MethodDecl md : meths) {
-				for(int i=0;i<md.getNumParameter();++i) {
-					TypeDecl tp = md.getParameter(i).type();
-					for(TypeDecl stp : tp.supertypes()) {
-						System.out.print("refactoring parameter #" + i + " of method " + md.hostType().typeName() + "." + md.signature() + " to " + stp.fullName() + "... ");
-						long start = System.currentTimeMillis(), elapsed = -1;
-						try {
-							Program.startRecordingASTChangesAndFlush();
-							md.getParameter(i).changeType(stp);
-							elapsed = System.currentTimeMillis()-start;
-							System.out.print("success; ");
-							LinkedList errors = new LinkedList();
-							prog.errorCheck(errors);
-							if(!errors.isEmpty())
-								System.out.println("\n Refactoring introduced errors: " + errors);
-						} catch(RefactoringException rfe) {
-							elapsed = System.currentTimeMillis()-start;
-							System.out.print("failed (" + rfe.getMessage() + "); ");
-						} finally {
-							System.out.println("refactoring took " + elapsed + "ms");
-							Program.undoAll();
-							prog.flushCaches();
-						}
-					}
-				}
-				System.out.println(++cnt);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void test4() {
-		try {
-			Program prog = compileJHotDraw();
-			assertNotNull(prog);
-			TypeDecl tp = prog.findType("org.jhotdraw.samples.pert.figures", "TaskFigure");
-			assertNotNull(tp);
-			MethodDecl md = tp.findMethod("setName");
-			assertNotNull(md);
-			TypeDecl newType = prog.findType("java.lang", "Object");
-			assertNotNull(newType);
-			try {
-				Program.startRecordingASTChangesAndFlush();
-				System.out.print("starting refactoring... ");
-				long start = System.currentTimeMillis();
-				md.getParameter(0).changeType(newType);
-				long elapsed = System.currentTimeMillis()-start;
-				System.out.println("done (" + elapsed + "ms)");
-				LinkedList errors = new LinkedList();
-				prog.errorCheck(errors);
-				if(!errors.isEmpty())
-					System.out.println("\n Refactoring introduced errors: " + errors);
-			} catch(RefactoringException rfe) {
-				System.out.println(rfe.getMessage());
-			} finally {
-				Program.undoAll();
-				prog.flushCaches();
-				//assertEquals(orig, prog.toString());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}		
-	}
-	
-	public void test5() throws Exception {
-		Program prog = compileXalan();
-		assertNotNull(prog);
-		//exhaustivelyChangeParameterTypes(prog, true);
-		TypeDecl td = prog.findType("org.apache.xalan.xsltc.compiler.util.IntType");
-		assertNotNull(td);
-		MethodDecl md = (MethodDecl)td.methodsSignature("translateTo(org.apache.xalan.xsltc.compiler.util.ClassGenerator, org.apache.xalan.xsltc.compiler.util.MethodGenerator, org.apache.xalan.xsltc.compiler.util.StringType)");
-		assertNotNull(md);
-		TypeDecl newType = prog.findType("org.apache.xalan.xsltc.compiler.util.Type");
-		assertNotNull(newType);
-		long start = System.currentTimeMillis();
-		md.getParameter(2).changeType(newType);
-		long elapsed = System.currentTimeMillis()-start;
-		System.out.println("took " + elapsed + "ms");
-		LinkedList errors = new LinkedList();
-		prog.errorCheck(errors);
-		if(!errors.isEmpty())
-			System.out.println("\n Refactoring introduced errors: " + errors);
-		/*Collection<Collection<MethodDecl>> overloaded_methods = findOverloadedMethods(prog);
-		for(Collection<MethodDecl> mds : overloaded_methods) {
-			if(mds.size() != 2)
-				continue;
-			Iterator<MethodDecl> iter = mds.iterator();
-			MethodDecl md1 = iter.next(), md2 = iter.next();
-			TypeDecl host = md1.hostType();
-			for(int i=0;i<md1.getNumParameter()-1;++i) {
-				for(int j=i+1;j<md1.getNumParameter();++j) {
-					TypeDecl td1i = md1.getParameter(i).type(), td1j = md1.getParameter(j).type(),
-							 td2i = md2.getParameter(i).type(), td2j = md2.getParameter(j).type();
-					if(td1i==td2i && td1j!=td2j && td1j.subtype(td2j)) {
-						System.out.println(host.fullName() + ":\n\t" + md1.signature() + ",\n\t" + md2.signature());
-					} else if(td1i!=td2i && td1i.subtype(td2i) && td1j==td2j) {
-						System.out.println(host.fullName() + ":\n\t" + md1.signature() + ",\n\t" + md2.signature());
-					}
-				}
-			}
-		}*/
-	}
-
 	private Collection<Collection<MethodDecl>> findOverloadedMethods(Program prog) {
 		Collection<Collection<MethodDecl>> res = new LinkedList<Collection<MethodDecl>>();
 		findOverloadedMethods(prog, res);
@@ -277,5 +138,34 @@ public class RealProgramTests extends TestCase {
 		for(int i=0;i<nd.getNumChild();++i)
 			cnt += countSourceTypes(nd.getChild(i));
 		return cnt;
+	}
+	
+	// ensure that all projects compile and accessibility constraints are initially satisfied
+	public void testCompile() throws Exception {
+		compileJigsaw();
+		compileJHotDraw();
+		compileHadoop();
+		compileHSQLDB();
+		compileXalan();
+	}
+	
+	public void testJigsaw() throws Exception {
+		exhaustivelyChangeParameterTypes(compileJigsaw());
+	}
+	
+	public void testJHotDraw() throws Exception {
+		exhaustivelyChangeParameterTypes(compileJHotDraw());
+	}
+	
+	public void testXalan() throws Exception {
+		exhaustivelyChangeParameterTypes(compileXalan());
+	}
+	
+	public void testHSQLDB() throws Exception {
+		exhaustivelyChangeParameterTypes(compileHSQLDB());
+	}
+	
+	public void testHadoop() throws Exception {
+		exhaustivelyChangeParameterTypes(compileHadoop());
 	}
 }
