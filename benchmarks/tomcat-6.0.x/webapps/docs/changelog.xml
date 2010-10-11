@@ -1,0 +1,4120 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document [
+  <!ENTITY project SYSTEM "project.xml">
+]>
+<?xml-stylesheet type="text/xsl" href="tomcat-docs.xsl"?>
+<document url="changelog.html">
+
+  &project;
+
+  <properties>
+    <author email="remm@apache.org">Remy Maucherat</author>
+    <author email="yoavs@apache.org">Yoav Shapira</author>
+    <author email="fhanik@apache.org">Filip Hanik</author>
+    <author email="rjung@apache.org">Rainer Jung</author>
+    <author email="pero@apache.org">Peter Rossbach</author>
+    <author email="kkolinko@apache.org">Konstantin Kolinko</author>
+    <author email="jfclere@apache.org">Jean-Frederic Clere</author>
+    <author email="kfujino@apache.org">Keiichi Fujino</author>
+    <title>Changelog</title>
+  </properties>
+
+<body>
+<!-- Section names:
+ General, Catalina, Coyote, Jasper, Cluster, Webapps, Other
+-->
+<section name="Tomcat 6.0.29 (jfclere)">
+  <subsection name="Catalina">
+    <changelog>
+      <add>
+        <bug>48960</bug>: Add a new option to the SSI Servlet and SSI Filter to
+        allow the disabling of the <code>exec</code> command. This is now
+        disabled by default. Based on a patch by Yair Lenga. (markt)
+      </add>
+      <fix>
+        <bug>49551</bug>: Allow default context.xml location to be specified
+        using an absolute path. (markt)
+      </fix>
+      <fix>
+        <bug>49598</bug>: When session is changed and the session cookie is
+        replaced, ensure that the new Set-Cookie header overwrites the old
+        Set-Cookie header. (markt) 
+      </fix>
+      <fix>
+        Fix order when listing Webapp loader search URLs. (rjung)
+      </fix>
+      <add>
+        Add support for <code>*.jar</code> pattern in VirtualWebappLoader.
+        (kkolinko)
+      </add>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.28 (jfclere)" rtext="released 2010-07-09">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>Arrange filter logic. (jfclere)
+      </fix>
+      <fix>
+        <bug>49230</bug>: Enhance JRE leak prevention listener with protection
+        for the keep-alive thread started by
+        <code>sun.net.www.http.HttpClient</code>. Patch provided by Rob Kooper.
+        (markt)
+      </fix>
+      <fix>
+        <bug>49351</bug>: Fix possible NPe when embedding and no name is
+        specified for the Service. (markt)
+      </fix>
+      <fix>
+        <bug>49424</bug>: Avoid NPE if client provides no data with a chunked
+        POST request. (markt)
+      </fix>
+      <fix>
+        <bug>49414</bug>: Differentiate between request threads and application
+        created threads when warning about still running threads when an
+        application stops. (markt)
+      </fix>
+      <fix>
+        <bug>49443</bug>: Use remoteIpHeader rather than remoteIPHeader
+        consistently. (markt)
+      </fix>
+      <add>
+        Add property <code>searchExternalFirst</code> to WebappLoader.
+        If set, the external repositories will be searched before
+        the WEB-INF ones. (rjung)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        <bug>49445</bug>: When session ID is changed after authentication,
+        ensure the DeltaManager replicates the change in ID to the other nodes
+        in the cluster. (kfujino)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>49213</bug>: Grant permissions required by manager application when
+        running under a security manager. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>49436</bug>: Correct documented default for readonly attribute of
+        the UserDatabase component. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.27 (jfclere)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+      <update>
+        Update DBCP to 1.3. (markt)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Fix CVE-2010-1157. Prevent possible disclosure of host name or IP
+        address via the HTTP WWW-Authenticate header when using BASIC or DIGEST
+        authentication. (markt)
+      </fix>
+      <add>
+        Include context name when reporting memory leaks to aid root cause
+        identification. (markt)
+      </add>
+      <fix>
+        Improve exception handling on session de-serialization to assist in
+        identifying the root cause of <bug>48007</bug>. (kkolinko)
+      </fix>
+      <add>
+        <bug>48379</bug>: Make session cookie name, domain and path configurable
+        per context. (markt)
+      </add>
+      <fix>
+        <bug>48589</bug>: Make JNDIRealm easier to extend. Based on a patch by
+        Candid Dauth. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48629</bug>: Allow user names as well as DNs to be used with the
+        nested role search. Add roleNested to the documentation. Patch provided
+        by Felix Schumacher. (markt)
+      </fix>
+      <fix>
+        <bug>48661</bug>: Make error page behavior consistent, regardless of how
+        the error page is defined. If a response has been committed, always
+        include the error page. (markt)
+      </fix>
+      <fix>
+        <bug>48729</bug>: Return roles defined by both userRoleName and roleName
+        mechanisms. Patch provided by 'eric'. Also make user's role list
+        immutable.(markt)
+      </fix>
+      <fix>
+        <bug>48760</bug>: Fix potential multi-threading issue in static resource
+        serving where multiple threads could try to use the the same
+        InputStream. (markt)
+      </fix>
+      <fix>
+        <bug>48790</bug>: Fix thread safety issue in the count of the maximum
+        number of active session. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48793</bug>: Make catalina.sh more robust to different return
+        values on different platforms. Patch provided by Thomas GL. (markt)
+      </fix>
+       <fix>
+        <bug>48840</bug>: Swallow output (if any) from use of cd when determining
+        $CATALINA_HOME in catalina.sh and tool-wrapper.sh scripts. Based on patch
+        provided by mdietze. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48895</bug>: Make clearing of ThreadLocals that are causing memory
+        leaks on web application stop, reload or undeploy configurable since the
+        process of clearing them is not thread-safe. (markt)
+      </fix>
+      <fix>
+        <bug>48903</bug>: Fix deadlock in webapp class loader. (rjung)
+      </fix>
+      <fix>
+        <bug>48971</bug>: Make stopping of leaking Timer threads optional and
+        disabled by default. (markt)
+      </fix>
+      <fix>
+        <bug>48976</bug>: Document JAVA_ENDORSED_DIRS in start-up scripts. Patch
+        provided by Laurent Vaills. (markt)
+      </fix>
+      <fix>
+        <bug>48983</bug>: Improve debug logging for situations when
+        <code>RemoteIpValve</code> is bypassed. Patch provided by Cyrille Le
+        Clerc. (markt)
+      </fix>
+      <fix>
+        <bug>49018</bug>: Fix processing of time argument in the Expire sessions 
+        action in the Manager web application. (kkolinko)
+      </fix>
+      <fix>
+        <bug>49116</bug>: If session is already invalid, expire session to 
+        prevent memory leak. (kfujino)
+      </fix>
+      <fix>
+        <bug>49158</bug>: Ensure only one session cookie is returned for a
+        single request. (markt/fhanik)
+      </fix>
+      <fix>
+        <bug>49245</bug>: Fix session expiration check in cross-context
+        requests. (markt)
+      </fix>
+      <fix>
+        <bug>49398</bug>: ByteChunk.indexOf(String, int, int, int) could not
+        find a string of length 1. (kkolinko)
+      </fix>
+      <fix>
+        Fix possible overflows when calculating session statistics. (kkolinko)
+      </fix>
+      <add>
+        Log unexpected exceptions when providing access to web application
+        resources in ApplicationContext. (kkolinko)
+      </add>
+      <fix>
+        Improve exception handling in CatalinaShutdownHook. (kkolinko)
+      </fix>
+      <add>
+        Expose properties of VirtualWebappLoader and WebappClassLoader via JMX.
+        (rjung)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>48839</bug>: Correctly handle HTTP header folding in the NIO
+        connector. Patch suggested by Richa Baronia. (markt)
+      </fix>
+      <fix>
+        <bug>48843</bug>: Prevent possible deadlock for worker allocation in
+        connectors. (kkolinko)
+      </fix>
+      <fix>
+        <bug>48843</bug>: Fix handling of add queues in AprEndpoint.Poller and
+        AprEndpoint.Sendfile. Do not miss wakeups. (kkolinko)
+      </fix>
+      <add>
+        <bug>48862</bug>: Add support for the backlog parameter to the AJP
+        connector. (pero/markt)
+      </add>
+      <fix>
+        <bug>48917</bug>: Correct name of mod_jk module in ApacheConfig. Patch
+        provided by Todd Hicks. (markt)
+      </fix>
+      <fix>
+        <bug>49095</bug>: AprEndpoint did not wakeup acceptors during shutdown
+        when deferAccept option was enabled. Based on a patch provided by
+        Ruediger Pluem. (kkolinko)
+      </fix>
+      <add>
+        Use chunked encoding for http 1.1 requests with no content-length
+        (regardless of keep-alive) so client can differentiate between complete
+        and partial responses. (markt)
+      </add>
+      <fix>
+        Correct the SSL session timeout attribute name so the code agrees with
+        the documentation. (markt)
+      </fix>
+      <add>
+        CoyotePrincipal now implements Serializable. (fhanik)
+      </add>
+      <fix>
+        Enable the BIO AJP connector to run under a security manager. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>45015</bug>: Correct a regression in quote handling caused by the
+        re-factoring of attribute parsing. (markt)
+      </fix>
+      <fix>
+        <bug>48701</bug>: Add a system property to allow disabling enforcement
+        of JSP.5.3. The specification recommends, but does not require, this
+        enforcement. (kkolinko)
+      </fix>
+      <fix>
+        <bug>48737</bug>: Don't assume paths that start with /META-INF/... are
+        always in JARs. This is not true for some IDEs. Patch provided by
+        Fabrizio Giustina. (markt)
+      </fix>
+      <fix>
+        <bug>49081</bug>: Correctly handle EL expressions of the form #${...}.
+        (markt)
+      </fix>
+      <fix>
+        <bug>49196</bug>: Avoid NullPointerException in PageContext.getErrorData()
+        if an error-handling JSP page is called directly. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        <bug>48717</bug>: When a node joins a cluster and it receives all the
+        current sessions, ensure the sessionCreated event is fired if the
+        Manager is configured to replicate session events. (markt)
+      </fix>
+      <fix>
+        <bug>48934</bug>: Previous fix to handle dropped connections incorrectly
+        permanently disabled session replication. (fhanik)
+      </fix>
+      <fix>
+        <bug>49051</bug>: memberAlive is not called if member has not already 
+        existed in membership. (kfujino)
+      </fix>
+      <fix>
+        <bug>49151</bug>: Avoid ClassCastException in BackupManager#stop. 
+        (kfujino)
+      </fix>
+      <fix>
+        <bug>49170</bug>: Do not send duplicated session. (kfujino)
+      </fix>
+      <fix>
+        Add missing messages and ensure cluster listeners log messages to
+        correct logger. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <add>
+        Use underscores instead of spaces in anchor names in Tomcat
+        documentation. (kkolinko)
+      </add>
+      <add>
+        Add support for displaying the Spring Security user name (if present) in
+        the Manager application. (markt)
+      </add>
+      <update>
+        Improve the ChatServlet <a href="aio.html">Comet</a> example
+        (/examples/jsp/chat/). (kkolinko)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <update>Update to Commons Daemon 1.0.2. Use service launcher (procrun)
+      from the Commons Daemon release. Do not keep a copy of it in our source
+      tree. (mturk/kkolinko)</update>
+      <update>
+        Update to NSIS 2.46. (kkolinko)
+      </update>
+      <fix>
+        <bug>48990</bug>: Fix the <code>skip.installer</code> build property
+        so if set, only the Windows installer is skipped. (markt)
+      </fix>
+      <fix>
+        <bug>49178</bug>: Provide in catalina.policy an example of additional
+        permissions that might be needed for code located in
+        <code>$CATALINA_BASE/lib</code>. (markt)
+      </fix>
+      <fix>
+        <bug>49236</bug>: Do not use indexing when packing Tomcat JARs.
+        (kkolinko)
+      </fix>
+      <fix>
+        Remove unused code from org.apache.tomcat.util.buf classes. (kkolinko)
+      </fix>
+      <update>
+        Rearrange tomcat-juli.jar permissions and wrap long lines in the
+        <code>conf/catalina.policy</code> file, to make the text more readable
+        when cited in documentation. (kkolinko)
+      </update>
+      <fix>
+        Do not evaluate the <code>execute.installer</code> property when building
+        a release. The <code>skip.installer</code> property is used instead.
+        (kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.26 (jfclere)" rtext="released 2010-03-11">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Close security hole in unreleased 6.0.25 by ensuring new find leaks
+        functionality is protected by a security constraint. (kkolinko)
+      </fix>
+      <fix>
+        <bug>48831</bug>: Improve logging shutdown behaviour. Use Catalina's
+        shutdown hook to shutdown JULI. This enables them to be shutdown in the
+        correct order. Do not shutdown global handlers several times.
+        (markt/kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>48584</bug>: Prevent the APR connector logging an error if the
+        acceptor fails during shutdown since this is expected. (mturk) 
+      </fix>
+      <fix>
+        <bug>48660</bug>: Using compression should not overwrite any Vary header
+        set by a web application. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>48371</bug>: Ensure generated servlet mappings are inserted at the
+        correct location when using JspC and allow the option that controls this
+        to be configured on the command line. Also allow the encoding of web.xml
+        to be configured when using JspC and deprecate some unused JspC methods.
+        (markt/kkolinko) 
+      </fix>
+      <fix>
+        <bug>48498</bug>: Avoid ArrayIndexOutOfBoundsException triggered by a
+        Java 6/7 XML parser bug. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48668</bug>: Additional fixes to ensure deferred syntax is handled
+        correctly. (kkolinko)
+      </fix>
+      <fix>
+        <bug>48827</bug>: Correct a regression in the fix for <bug>47977</bug>
+        that caused an incorrect non-empty body error to be reported for valid
+        JSP documents. (markt) 
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <add>
+        Make changelog.xml be directly rendered as HTML by certain browsers.
+        (kkolinko)
+      </add>
+      <add>
+        Add support for automated generation of TOC tables and for links to svn
+        revisions to tomcat-docs.xsl in documentation. (kkolinko/fhanik)
+      </add>
+      <add>
+        Move Manager application JSPs that are not intended to be accessed
+        directly under the WEB-INF directory. (kkolinko)
+      </add>
+      <fix>
+        Improve the messages displayed by the find leaks diagnostic in the
+        Manager application. (kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        Encode all property files using ascii escaped UTF-8. Also fixes
+        deployment problem when using French locale. (jfclere/rjung)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.25 (jfclere)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>48039</bug>: Return immediately if start() is called on an already
+        started StandardService. (markt)
+      </fix>
+      <fix>
+        <bug>48109</bug>: Ensure InputStream is closed on error condition in web
+        application class loader. (markt)
+      </fix>
+      <fix>
+        <bug>48179</bug>: Clean up dead code that was used to read tldCache
+        file. (kkolinko)
+      </fix>
+      <fix>
+        <bug>48318</bug>: Handle case where WebDAV resource is in directory
+        listing but is not accessible. (markt)
+      </fix>
+      <add>
+        <bug>48384</bug>: Add a per context xslt option for directory listings.
+        Make the fallback options work as described in the documentation.
+        (markt)
+      </add>
+      <fix>
+        <bug>48577</bug>: Filter URL when displaying missing included page.
+        (markt)
+      </fix>
+      <fix>
+        <bug>48612</bug>: Prevent exception on shutdown if the address attribute
+        is specified for a connector. (markt)
+      </fix>
+      <fix>
+        <bug>48613</bug>: Further fixes to ensure APRLifecycleListener is only
+        used if defined in server.xml. (fhanik)
+      </fix>
+      <fix>
+        <bug>48614</bug>: Correct JULI log file buffering so default behaviour
+        is no buffering. (fhanik)
+      </fix>
+      <fix>
+        <bug>48625</bug>: Provide an option to exit if an error occurs during
+        the initialization phase. (fhanik)
+      </fix>
+      <fix>
+        <bug>48645</bug>: Use specified encoding rather than null in calls to
+        <code>RequestUtil.URLDecode(byte[] bytes, String enc)</code> (markt)
+      </fix>
+      <fix>
+        <bug>48653</bug>: Force request.secure and request.scheme to
+        <code>false</code> and <code>http</code> if the X-Forwarded-Proto header
+        has the value http. Patch provided by Cyrille Le Clerc. (markt)
+      </fix>
+      <fix>
+        <bug>48678</bug>: Remove duplicate server field from
+        <code>org.apache.catalina.startup.Catalina</code>. (markt)
+      </fix>
+      <fix>
+        <bug>48694</bug>: Remove potential deadlock in web application class
+        loader. (markt)
+      </fix>
+      <add>
+        <bug>48716</bug>: Provide additional configuration options for JULI.
+        (markt)
+      </add>
+      <fix>
+        <bug>48726</bug>: Prevent OOME when uploading large WAR files with the
+        deployer. Patch provided by adam. (markt)
+      </fix>
+      <add>
+        Improve memory leak protection by safely stopping threads started via
+        <code>java.util.Timer</code> that an application starts but fails to
+        stop and by clearing references retained due to the use of
+        <code>java.util.ResourceBundle</code>. (markt)
+      </add>
+      <update>
+        Modify ThreadLocal memory leak detection to not report false positives
+        and to simplify implementation. (markt/kkolinko)
+      </update>
+      <add>
+        Basic memory leak detection was added to the standard Host
+        implementation and exposed via JMX to detect memory leaks on web
+        application reload. (markt/kkolinko)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        Update the native/APR library version bundled with Tomcat to 1.1.20.
+        (kkolinko)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <add>
+        Add some debug logging to the compiler where exceptions were previously
+        swallowed. (markt)
+      </add>
+      <fix>
+        <bug>48170</bug>: Remove unnecessary synchronization that is causing
+        issues under load. (markt) 
+      </fix>
+      <fix>
+        <bug>48580</bug>: Prevent AccessControlException if first access is to a
+        JSP that uses a FunctionMapper. (markt)
+      </fix>
+      <fix>
+        <bug>48582</bug>: Avoid NPE on background compilation failure. (markt)
+      </fix>
+      <fix>
+        <bug>48616</bug>: Don't declare or synchronize scripting variables for
+        JSP fragments since they are scriptless. This is an alternative fix for
+        <bug>42390</bug> that avoids both the original problem and the
+        regression in the first fix. (kkolinko) 
+      </fix>
+      <fix>
+        <bug>48627</bug>: Fix regression in re-factored EL parsing. Keep
+        literals as literals and handle deferredSyntaxAllowedAsLiteral.
+        (kkolinko)
+      </fix>
+      <fix>
+        <bug>48668</bug>: When parsing JSPs only parse EL as EL if EL is enabled
+        else strings such as ${ will be silently dropped. (markt)
+      </fix>
+      <fix>
+        Various EL TCK failures. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        Force a disconnect if an error occurs during replication such as
+        a firewall dropping the connection. (fhanik)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <add>
+        Add new "Find leaks" command to the Manager application. It allows to
+        detect web applications that have caused memory leaks on stop,
+        reload or undeploy. (markt/kkolinko)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        Ensure files in conf directory have CRLF line endings when using the
+        Windows installer. (kkolinko)
+      </fix>
+      <fix>
+        Allow special characters recognized by the Windows command-line shell to
+        be present in the names of CATALINA_HOME/_BASE and the current directory
+        used to call the Tomcat scripts. (kkolinko)
+      </fix>
+      <fix>
+        Don't use @Deprecated annotations in
+        <code>javax.servlet.jsp.JspContext</code> since the specification does
+        not include them in the API definition. (markt)
+      </fix>
+      <add>
+        Improve the information in the JAR manifest files. (markt)
+      </add>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.24 (jfclere)" rtext="released 2010-01-21">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Correct TCK failures with security manager caused by the original fix
+        for <bug>47774</bug>. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        Remove broken link in README.html. (jfclere)
+      </fix>
+      <fix>
+        Add <code>.notice</code> files to the set of files that have their line
+        endings changed. (markt)
+      </fix>
+      <fix>
+        <code>.zip</code> distributions should have windows line endings.
+        (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.23 (jfclere)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>47774</bug>: Ensure web application class loader is used when
+        calling session listeners. (markt)
+      </fix>
+      <add>
+        <bug>48006</bug>: Add additional information to the optional
+        X-Powered-By header to align with the content suggested in the Servlet
+        specification. (markt)
+      </add>
+      <fix>
+        <bug>48345</bug>: Sessions timed out too early when using
+        PersistentManager. Patch provided by Keiichi Fujino. (markt)
+      </fix>
+      <fix>
+        <bug>48398</bug>: Make objects used as locks final to ensure correct
+        operation. Patch provided by sebb. (markt)
+      </fix>
+      <fix>
+        <bug>48417</bug>: Update French translations. Patch provided by André
+        Warnier. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48421</bug>: Fix file descriptor and potential memory leak when a
+        web application uses a local logging.properties file. Allow a web
+        applciation's log files to be deleted once the web application has been
+        stopped. (markt) 
+      </fix>
+      <fix>
+        <bug>48454</bug>: Ensure stderr is completely read before terminating
+        the CGI process. Patch provided by Markus Grieder. (markt)
+      </fix>
+      <fix>
+        <bug>48516</bug>: Prevent NPE in JNDIRealm if requested user does not
+        exist. Patch provided by Kevin Conaway. (markt)
+      </fix>
+      <fix>
+        Fix implementation of log buffer size and provide a cleaner interface.
+        (fhanik/kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        Update version of native bundled in Windows installer to 1.1.19. (mturk)
+      </update>
+      <update>
+        Update recommended version for native to 1.1.19. (rjung)
+      </update>
+      <fix>
+        <bug>48004</bug>: All web applications to set the http
+        <code>Server</code> header. (markt)
+      </fix>
+      <fix>
+        <bug>48470</bug>: Ensure Tomcat does not lock up if shut down under
+        load. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+  <changelog>
+    <fix>
+      <bug>47977</bug>: Using a body with a tag that has an empty body should
+      cause an error. (markt)
+    </fix>
+    <fix>
+      <bug>48112</bug>: Correct handling of } character in literals when parsing
+      expressions. This also improves the fix for <bug>47413</bug>. (markt)
+    </fix>
+  </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <add>
+        <bug>48530</bug>: Add information on the Manager Server Status page to
+        the Manager How-To in the documentation webapp. Based on a patch by
+        Arnaud Espy. (markt)
+      </add>
+      <add>
+        <bug>48532</bug>: Add information to the BIO/NIO SSL configuration page
+        in the documentation web application to specify how the defaults for the
+        various trust store attributes are determined. (markt)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        Remove hard coded version numbers and instead apply version filter
+        already defined in ant scripts. (rjung)
+      </fix>
+      <fix>
+        <bug>47609</bug>: Correct regression in previous fix. (markt)
+      </fix>
+      <add>
+        <bug>48464</bug>: Provide an option to specify the command window title
+        in catalina.bat on Windows. Patch provided by LiuYan. (markt)
+      </add>
+      <fix>
+        Add some missing deprecation markers for
+        <code>javax.servlet.jsp.JspContext</code>. (markt/kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.22 (jfclere)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <add>
+        Log errors if a web application starts a thread but fails to stop the
+        thread when the web application stops or is reloaded. Failure to stop a
+        thread is very likely to result in a memory leak. (markt)
+      </add>
+      <add>
+        Provide an option to stop any threads a web application starts but fails
+        to stop when the web application stops or is reloaded. Using this option
+        is very likely to result in instability and should be viewed as a last
+        resort in development and is not recommended at all in production.
+        (markt)
+      </add>
+      <add>
+        Log errors if a web application creates a ThreadLocal but fails to clear
+        it when the web application stops or is reloaded. Failure to clear a
+        ThreadLocal is very likely to result in a memory leak. (markt)
+      </add>
+      <add>
+        Clear any unintentional references remaining in
+        <code>sun.rmi.transport.Target</code> when the web application stops or
+        is reloaded. Failure to clear these is very likely to result in a memory
+        leak. (markt)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Remove unneeded line from the method that normalizes decodedURI.
+        (kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        Correct MD5 generation in the build process. (jfclere/kkolinko)
+      </fix>
+      <fix>
+        <bug>47609</bug>: Provide fail-safe EOL conversion for build process.
+        Based on patches by sebb/kkolinko. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.21 (jfclere)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Fix issues with expression language when running under a
+        SecurityManager. (markt)
+      </fix>
+      <fix>
+        Remove duplicate mime-mapping entries in web.xml. Re-order entries
+        alphabetically to make it easier to identify duplicates. (markt) 
+      </fix>
+      <update>
+        Use a more sensible default (webapps) for a Host's appBase.
+        (markt/idarwin)
+      </update>
+      <fix>
+        <bug>37794</bug>: Support the parsing of parameters from chunked POSTs.
+        (markt)
+      </fix>
+      <fix>
+        <bug>37984</bug>: Strip {MD5} as well as {SHA} if present in digest
+        passwords in LDAP directories. (markt)
+      </fix>
+      <fix>
+        <bug>38352</bug>: Allow JSPs to write to the directory defined by
+        <code>javax.servlet.context.tempdir</code> when running under a security
+        manager. (markt)
+      </fix>
+      <fix>
+        <bug>39231</bug>: Call LoginContext.logout() when using JAAS realm and
+        session expires. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>40380</bug>: Fix potential synchronization issue in
+        StandardSession.expire(). (markt) 
+      </fix>
+      <fix>
+        <bug>41059</bug>: Reduce chances of errors when ENABLE_CLEAR_REFERENCES
+        is used. Patch provided by Curt Arnold. (markt)
+      </fix>
+      <fix>
+        <bug>43343</bug>: Fix additional concurrency issues identified with the
+        persistent session manager. (markt)
+      </fix>
+      <fix>
+        <bug>44041</bug>: Fix threading issue in WebappClassLoader that can lead
+        to duplicate class definition under high load. (markt/fhanik)
+      </fix>
+      <fix>
+        <bug>44943</bug>: Use the same engine name in server.xml comments to
+        reduce copy and pastes issues. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>45255</bug>: Provide protection against session fixation by
+        changing session ID automatically on authentication. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>45403</bug>: Add additional checks on web application deployment
+        and do not swallow IO errors. (kkolinko) 
+      </fix>
+      <fix>
+        <bug>45785</bug>: Additional fix required for the extension validator.
+        Based on a patch by Rolf Wojtech. (markt)
+      </fix>
+      <fix>
+        <bug>46908</bug>: Try and support java encoding names when using an xml
+        parser provided via the endorsed mechanism. (markt)
+      </fix>
+      <fix>
+        <bug>46967</bug>: Better handling of errors when trying to use
+        Manager.randomFile. Based on a patch by Kirk Wolf. (markt)
+      </fix>
+      <fix>
+        <bug>47046</bug>: Unregister all MBeans, including when non-default
+        engine names are used. (markt)
+      </fix>
+      <fix>
+        Use native2ascii to ensure non-ASCII characters in property files are
+        handled correctly in all circumstances. (markt)
+      </fix>
+      <fix>
+        <bug>47050</bug>: Remove unnecessary filtering of error messages.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47080</bug>: Fix NPE in RealmBase when uri is null. (markt)
+      </fix>
+      <fix>
+        <bug>47158</bug>: Fix some thread safety issues in the AccessLogValve.
+        (markt) 
+      </fix>
+      <fix>
+        <bug>47228</bug>: Correct French translations. Patch provided by sebb.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47299</bug>: Simplify code and make embedding easier. (markt)
+      </fix>
+      <fix>
+        <bug>47316</bug>: Allow different values for Service name and Engine
+        name. This corrects a regression introduced by the fix for
+        <bug>42707</bug>. (markt)
+      </fix>
+      <fix>
+        <bug>47343</bug>: Editing context.xml for a directory should not delete
+        the directory. This was a regression caused by the fix for
+        <bug>42747</bug>. (markt)
+      </fix>
+      <fix>
+        <bug>47364</bug>: Improve Javadoc for
+        org.apache.catalina.connector.Request.getAttributeNames() to include
+        information on the handling of Tomcat's internal request attributes.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47451</bug>: Don't throw an NPE if the various response.setHeader()
+        methods are called with null header name, zero length header name or
+        null value. Silently ignore the calls in the same way they are ignored
+        if the response has already been committed. (markt)
+      </fix>
+      <fix>
+        <bug>47462</bug>: Allow individual web applications to override metadata
+        complete if set in the global web.xml. Patch provided by Keiichi Fujino.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47495</bug>: Provide a more meaningful error message is server.xml
+        is not readable and exit immediately if a server cannot be created.
+        (funkman/kkolinko)
+      </fix>
+      <fix>
+        <bug>47518</bug>: Correct reference in Valve Javadoc that referred to an
+        old method. Patch provided by Christopher Schultz. (markt)
+      </fix>
+      <fix>
+        <bug>47537</bug>: Return an error page rather than a zero length 200
+        response if the forward to the login or error page fails during FORM
+        authentication. (markt)
+      </fix>
+      <fix>
+        <bug>47718</bug>: Fix file descriptor leak on context stop/reload. Patch
+        provided by George Sexton. (markt)
+      </fix>
+      <fix>
+        <bug>47796</bug>: Fix OpenEJB integration. Reset annotation processor on
+        context stop. (markt)
+      </fix>
+      <fix>
+        <bug>47826</bug>: Correct error in debug message in
+        org.apache.catalina.Bootstrap (markt)
+      </fix>
+      <fix>
+        <bug>47836</bug>: Clear cached TLD information on context reload.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47841</bug>: When using the CombinedRealm, if one of the nested
+        Realms fails to start, skip that Realm rather than preventing the
+        CombinedRealm from starting. (markt)
+      </fix>
+      <fix>
+        <bug>47881</bug>: Fix processing of startd and stopd arguments. Patch
+        provided by Qingyang Xu. (kkolinko)
+      </fix>
+      <fix>
+        <bug>47918</bug>: Correct mbean descriptors for the host deployer. Patch
+        provided by Uwe Günther. (markt)
+      </fix>
+      <fix>
+        <bug>47930</bug>: Fix thread safety issues on session swap-in in the
+        persistent session manager. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>47976</bug>: Correct usage message and Javadoc for
+        <code>org.apache.catalina.startup.Catalina</code>. (markt)
+      </fix>
+      <fix>
+        <bug>47997</bug>: Ensure the NamingContextListener applies to all naming
+        contexts, not just the global one. Patch provided by Michael Allman.
+        (markt)
+      </fix>
+      <fix>
+        <bug>48049</bug>: Fix copy and paste error so
+        <code>NamingContext.destroySubContext()</code> works correctly.
+        Patch provided by gingyang.xu (markt)
+      </fix>
+      <update>
+        <bug>48097</bug>: Make WebappClassLoader to do not swallow
+        AccessControlException. (kkolinko)
+      </update>
+      <fix>
+        <bug>48097</bug>: Avoid throwing an AccessControlException which can
+        lead to a NoClassDefFoundError on first access of first jsp.
+        (kkolinko/markt)
+      </fix>
+      <fix>
+        <bug>48257</bug>: Correct error in Spanish translations. Patch provided
+        by Guillermo Gutiérrez. (markt)
+      </fix>
+      <fix>
+        <bug>48306</bug>, <bug>48307</bug>: Correct French translations. Patches
+        provided by Marc Paquette. (markt)
+      </fix>
+      <fix>
+        <bug>48322</bug>: Single quote characters are not HTTP separators and
+        should not be treated as such in the cookie handling. (markt)
+      </fix>
+      <fix>
+        <bug>48413</bug>: Correct some French translations. Patch provided by
+        André Warnier. (markt)
+      </fix>
+      <update>
+        Deprecate the <code>caseSensitive</code> option on the
+        <code>StandardContext</code> which will be removed in Tomcat 7 onwards.
+        (markt)
+      </update>
+      <fix>
+        Log deployments consistently for WAR, directory and descriptor
+        deployments. (markt)
+      </fix>
+      <add>
+        Better logging for parameter decoding issues to help identify broken
+        requests. (markt) 
+      </add>
+      <update>
+        Update Apache Commons Pool from 1.4 to 1.5.4. This update includes
+        various fixes to prevent deadlocks, reduces synchronization and makes
+        object allocation occur fairly - i.e. objects are allocated to threads
+        in the order that the threads request them. This update fixes a number
+        of issues in Tomcat's built-in copy of DBCP. (markt)
+      </update>
+      <add>
+        Allow log file encoding to be configured for JULI FileHandler. (kkolinko)
+      </add>
+      <add>
+        Provide debug logging for JNDI lookups. (markt)
+      </add>
+      <fix>
+        Correct JDBC driver de-registration on web application stop and fix NPE
+        that is exposed by the fix. (markt)
+      </fix>
+      <fix>
+        Ensure JDBC driver de-registration works with a security manager.
+        (markt)
+      </fix>
+      <fix>
+        <bug>48214</bug>: Ensure JDBC driver de-registration is not too zealous.
+        (markt)
+      </fix>
+      <update>
+        Various JNDI realm improvements for Active Directory. These include the
+        ability to specify a default role, optional handling for nested roles
+        and an option to ignore PartialResultExceptions (markt). 
+      </update>
+      <add>
+        Expose Servlet Filters via JMX. Based on a patch by Xie Xiaodong as part
+        of GSOC2009. (markt)
+      </add>
+      <update>
+        Tomcat now uses the Platform MBean server by default so all MBeans
+        registered by Tomcat will be exposed via JMX (eg via JConsole) without
+        requiring any additional configuration. (markt)
+      </update>
+      <add>
+        The JMX Remote Lifecycle Listener allows the ports used by JMX to be
+        fixed, making it easier to configure firewalls to all JMX traffic to
+        pass through. Part of the extras package. (markt)
+      </add>
+      <fix>
+        Make context deployment error message for fixDocBase() more meaningful.
+        (markt)
+      </fix>
+      <fix>
+        Add an additional permission required by JULI when running under newer
+        JDKs and a security manager. (markt)
+      </fix>
+      <fix>
+        Remove unnecessary reference to tomcat-coyote.jar from the bootstrap JAR
+        manifest. (kkolinko)
+      </fix>
+      <fix>
+        Use correct method to create URLs in VirtualWebappLoader. (kkolinko)
+      </fix>
+      <fix>
+        Provide a new listener to protect against a memory leak caused by a
+        change in the Sun JRE from version 1.6.0_15 onwards. Also include
+        protection against locked JAR files, memory leaks triggered by
+        XML parsing and the GC Daemon. (markt)
+      </fix>
+      <fix>
+        Don't swallow exceptions in ApplicationContextFacade.doPrivileged()
+        (kkolinko)
+      </fix>
+      <fix>
+        Close resource stream in WebappClassLoader after read error. (pero)
+      </fix>
+      <update>
+        Include attribute name into the text of Non-serializable exception
+        that might be thrown by Session.setAttribute() in distributable
+        applications. (mturk)
+      </update>
+      <add>
+        Add RemoteIpValve, a port of mod_remoteip. Patch provided by Cyrille Le
+        Clerc. (markt)
+      </add>
+      <update>
+        Allow per instance configuration of JULI or log4j for core Tomcat
+        logging when using CATALINA_BASE. (markt/kkolinko)
+      </update>
+      <fix>
+        Prevent NPE in JULI during shutdown when resources try to log messages
+        after JULI has been shutdown. (fhanik/kkolinko) 
+      </fix>
+      <add>
+        Make the JULI FileHandler easier to extend. (fhanik)
+      </add>
+      <add>
+        Make buffer size for FileHandler configurable. (fhanik)
+      </add>
+      <fix>
+        Make JULI FileHandler thread safe. (fhanik)
+      </fix>
+      <add>
+        Provide an option to disable buffering in the JULI FileHandler.
+        (kkolinko)
+      </add>
+      <fix>
+        Ensure log messages are not lost on shutdown. (markt)
+      </fix>
+      <add>
+        <bug>44679</bug>: Provide an option to allow the equals character in
+        unquoted cookie values. (markt)
+      </add>
+      <add>
+        Add support for a connectionTimeout parameter to the JNDIRealm. (markt)
+      </add>
+      <fix>
+        Various (un)deployment related improvements including better handling of
+        failed (un)deployment, additional checking for valid zip entries that
+        don't make sense in a WAR and improved validation of WAR file names.
+        (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>Implement <code>socket.unlockTimeout</code> attribute for NIO connector.</update>
+      <update>
+        Update version of native bundled in Windows installer
+        to 1.1.18. (kkolinko)
+      </update>
+      <update>
+        Update minimum required version for native to 1.1.17. (rjung)
+      </update>
+      <fix>
+        <bug>46950</bug>: Fix doing SSL renegotiation when a resource with CLIENT-CERT
+        auth is requested. (markt)
+      </fix>
+      <fix>
+        Align tcnative native and Java method names. (rjung)
+      </fix>
+      <update>Dont report thread count from connector if an external executor is used.</update> 
+      <fix>
+        <bug>39637</bug>: Enable the AJP connectors to correctly handle client
+        certificate chains. Patch by Patrik Schnellmann. (markt)
+      </fix>
+      <fix>
+        <bug>46985</bug>: Clean up code and remove impossible condition.
+        (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>47225</bug>: Fix error in calculation of a buffer length in the
+        mapper. (markt)
+      </fix>
+      <fix>
+        <bug>47320</bug>: Don't rely on the platform default encoding being
+        suitable to parse the session ID. (markt)
+      </fix>
+      <fix>
+        <bug>47499</bug>: Don't swallow bind exceptions. (markt)
+      </fix>
+      <fix>
+        <bug>47744</bug>: Prevent a medium term memory leak if using SSl with
+        the JSSE provider and also using a security manager. Based on a patch by
+        Greg Vanore. (markt)
+      </fix>
+      <fix>
+        <bug>47963</bug>: Ensure that any HTTP status messages are compliant
+        with RFC2616. (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>47987</bug>: Limit size of not found resources cache. (markt)
+      </fix>
+      <fix>
+        <bug>48009</bug>: Protect against the situation where editing a
+        context.xml file may result in the file disappearing for a very short
+        time. (markt)
+      </fix>
+      <fix>
+        Use correct connector attribute (SSLEnabled) rather than secure to
+        determine if SSL should be used. (fhanik)
+      </fix>
+      <fix>
+        Provide a workaround for CVE-2009-3555, the TLS renegotiation issue, for
+        the default Blocking IO Java connector.
+      </fix>
+      <fix>
+        <bug>48252</bug>: Fix stack overflow exception when setting jkHome on
+        NIO connector. (fhanik)
+      </fix>
+      <fix>
+        <bug>48311</bug>: Only the APR lifecycle listener should try and
+        initialise APR. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>38797</bug>: Fix a regression in the previous patch for
+        <bug>37933</bug>. (markt)
+      </fix>
+      <fix>
+        <bug>38897</bug>: Add uri of broken TLD to error message to aid
+        debugging. (markt)
+      </fix>
+      <fix>
+        <bug>41661</bug>: Fix thread safety issue with JspConfig.init() (markt)
+      </fix>
+      <fix>
+        <bug>41824</bug>: Need to use canonical rather than binary form when
+        writing code. (markt)
+      </fix>
+      <fix>
+        <bug>42390</bug>: Fix compilation issue with some nested tag files and
+        simple tags. (kkolinko/markt)
+      </fix>
+      <fix>
+        <bug>43656</bug>: Correctly coerce <code>null</code> to zero when the
+        target type is <code>Number</code>. (markt)
+      </fix>
+      <fix>
+        <bug>46907</bug>: Don't swallow input stream when debug logging is
+        enabled. (markt)
+      </fix>
+      <fix>
+        <bug>47318</bug>: Process directives found in include preludes and
+        codas. (markt)
+      </fix>
+      <fix>
+        <bug>47331</bug>: Treat uninterpreted tags as template text for JSP.2.2.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47413</bug>: Ensure expressions of the form &quot;${a}${b}&quot;
+        are correctly coerced to String. (kkolinko)
+      </fix>
+      <fix>
+        <bug>47453</bug>: Handle void return types for deferred methods.
+        (funkman)
+      </fix>
+      <update>
+        Remove the code that auto-detects the value for compilerSourceVM,
+        compilerTargetVM options of Jasper, because we know that this version
+        of Tomcat cannot run on JDK 1.4 and thus the value is always "1.5".
+        (kkolinko)
+      </update>
+      <update>
+        Change default values for JDK version compliance options of JspC
+        (-source and -target when running from command line)
+        to be "1.5", to be the same as the ones used by Jasper servlet.
+        (kkolinko)
+      </update>
+      <fix>
+        Make constants in the TagHandlerPool really constant. (markt)
+      </fix>
+      <fix>
+        When development mode is enabled and a JSP is deleted, ensure next
+        request for that JSP is consistent with the JSP having been removed.
+        (markt/kkolinko)
+      </fix>
+      <fix>
+        <bug>48019</bug>: Be more careful about skipping content that does not
+        need to be parsed. (markt)
+      </fix>
+      <fix>
+        Better handling of exception in JSP if parsed JSP source is not
+        available. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        DeltaSession needs endAccess so that CrossContext replication works. (pero)
+      </fix>
+      <fix>
+        DeltaManager needs to replicate changed attributes even if session
+        gets invalidated. Otherwise session listeners will not see the right
+        data on the secondary nodes. (rjung)
+      </fix>
+      <fix>
+        Spurious startup errors during session transfer.
+        Sessions get transferred, but node still waits until timeout. (rjung)
+      </fix>
+      <update>
+        Perform deserializtion events with context class loader. (fhanik)
+      </update>
+      <fix>
+        <bug>47515</bug>: Correctly replicate timestamp during startup. (fhanik)
+      </fix>
+      <fix>
+        <bug>47478</bug>: Call replication listeners when using BackupManager. (fhanik)
+      </fix>
+      <fix>
+        <bug>47369</bug>: Reset data diff after replication. (fhanik)
+      </fix>
+      <fix>
+        <bug>40551</bug>: Enable the JvmRouteBinderValve to work with
+        PersistentManagers as well as clustering. Based on a patch by Chris
+        Chandler. (markt)
+      </fix>
+      <fix>
+        <bug>47342</bug>: Fix potential NPE on replicated context start. Patch
+        provided by Keiichi Fujino. (markt)
+      </fix>
+      <fix>
+        <bug>47389</bug>: DeltaManager doesn't do session replication if
+        notifySessionListenersOnReplication=false.
+        Patch by Keiichi Fujino. (fhanik)
+      </fix>
+      <fix>
+        <bug>47502</bug>: Don't replicate session attributes known not to be
+        serializable. (funkman)
+      </fix>
+      <fix>
+        <bug>47554</bug>: Include httpOnly attribute when re-writing session
+        cookie after fail over. (markt)
+      </fix>
+      <fix>
+        <bug>47799</bug>: Enable the domain to be configured for Membership and
+        DomainFilterInterceptor. Patch provided by Keiichi Fujino. (markt)
+      </fix>
+      <fix>
+        <bug>48113</bug>: Display IP addresses using 0 to 255 rather than -128
+        to +127. Based on a patch by Quintin Beukes. (fhanik/kkolinko)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>41564</bug>: Add some documentation on installing Tomcat as a
+        service on operating systems with User Account Control, e.g. Vista.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47161</bug>: Report thread count correctly in Manager when exectors
+        are used and return -1 when it can not easily be determined. (markt)
+      </fix>
+      <fix>
+        <bug>47235</bug>: Remove use of autoReconnect from MySQL examples.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47324</bug>: Fix submit URL for session list page so it works
+        behind a reverse proxy. Patch provided by Maik Jablonski. (markt)
+      </fix>
+      <fix>
+        <bug>47425</bug>: Add crlFile attribute to the SSL configuration
+        documentation. (markt)
+      </fix>
+      <fix>
+        <bug>47444</bug>: Remove Jakarta references from the documentation.
+        (markt)
+      </fix>
+      <fix>
+        <bug>47656</bug>: Add information to documentation on system property
+        replacement in configuration files. (markt)
+      </fix>
+      <fix>
+        <bug>47705</bug>: Fix division by zero error in the manager when trying
+        to expire sessions when the session timeout is set to infinite.
+        (funkman)
+      </fix>
+      <fix>
+        Fix display of session information pages of Manager application
+        in Internet Explorer. (kkolinko)
+      </fix>
+      <update>
+        Do not reuse windows (tabs) for session detail pages in Manager
+        application. (kkolinko)
+      </update>
+      <fix>
+        <bug>47769</bug>: Clarify the JNDI docs with repect to use of
+        &lt;resource-ref&gt; and related elements, specifically when they are
+        required and when they may be omitted. (markt) 
+      </fix>
+      <fix>
+        <bug>48381</bug>: Add information on how Tomcat treats host names to the
+        host configuration documentation. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <add>
+        <bug>37847</bug>: Make location and filename of catalina.out configurable
+        in catalina.sh. (fhanik)
+      </add>
+      <fix>
+        <bug>37848</bug>: Re-fix not outputting info messages when there is no
+        terminal. (markt)
+      </fix>
+      <fix>
+        <bug>39194</bug>: Make classpath configuration consistent in the startup
+        scripts. (markt/kkolinko)
+      </fix>
+      <update>
+        Update Tomcat Windows service application (procrun) to version 2.0.5.
+        It contains a fix for issue <bug>41538</bug> (mturk)
+      </update>
+      <fix>
+        <bug>40786</bug>: Include 64-bit Windows service wrapper in
+        distributions. Update the Windows installer to automatically use the
+        correct binary on 64-bit machines. (markt)
+      </fix>
+      <update>
+        Update Windows Installer to use NSIS 2.45. They say that this version
+        provides support for the upcoming Microsoft Windows 7. (kkolinko)
+      </update>
+      <fix>
+        Don't add blank lines to end of files when fixing line-endings for
+        tar.gz distribution. (markt) 
+      </fix>
+      <fix>
+        Use explicit encoding during filtering operations when building Tomcat
+        for distribution. (kkolinko)
+      </fix>
+      <update>
+        Remove references to unused commons-collections from the build scripts.
+        (markt)
+      </update>
+      <fix>
+        Fix download task check for commons-pool and commons-dbcp in the
+        build scripts. (kkolinko)
+      </fix>
+      <add>
+        Include deployer-howto.html into the deployer distributive. (kkolinko)
+      </add>
+      <fix>
+        <bug>47149</bug>: Build scripts: Explicitly specify encoding when
+        compiling. (kkolinko)
+      </fix>
+      <fix>
+        <bug>47267</bug>: Ensure release notes displayed by Windows installer
+        have CRLF line-endings regardless of which OS the install package is
+        built on. (markt/kkolinko)
+      </fix>
+      <add>
+        Include NOTICE, LICENSE and manifest files in all Tomcat JARs and add a
+        mechanism to the build process to enable these files to be customised
+        per JAR as required. (markt)
+      </add>
+      <fix>
+        <bug>47699</bug>: Provide better handling of PID files. (markt)
+      </fix>
+      <fix>
+        <bug>47824</bug>: Make Servlet API an optional dependency for JULI when
+        using Maven. (markt)
+      </fix>
+      <add>
+        Add support for per instance (using $CATALINA_BASE) log4j.properties
+        files, JDBC drivers etc by adding ${catalina.base}/lib and
+        ${catalina.base}/lib/*.jar to the start of the common loader class
+        path. (markt)
+      </add>
+      <fix>
+        Correct CVE-2009-3548. When installed via the Windows installer and
+        using defaults, don't create an administrative user with a blank
+        password. Additionally, the administrative user is only created if the
+        manager or host-manager web applications are selected for installation.
+        (markt)
+      </fix>
+      <update>
+        Further improvements to the administrative user name and password
+        handling in the Windows installer. (kkolinko)
+      </update>
+    </changelog>
+  </subsection>
+</section>
+
+<section name="Tomcat 6.0.20 (remm)" rtext="released 2009-06-03">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>42579</bug>: Handle both relative and absolute search results in
+        the JNDIRealm. Patch provided by Brandon DuRette. (markt)
+      </fix>
+      <fix>
+        <bug>46562</bug>: Close shtml files after processing to allow other
+        processes to modify the files. (markt)
+      </fix>
+      <fix>
+        <bug>46815</bug>: Make the MemoryUserDatabase read-only by default.
+        (markt)
+      </fix>
+      <fix>
+        <bug>46816</bug>: Align session manager mbean descriptor with
+        implementation. (markt)
+      </fix>
+      <fix>
+        Fix a typo in the OPTIONS response from the default servlet. (markt)
+      </fix>
+      <fix>
+        <bug>46822</bug>: Remove unnecessary object creation from
+        StandardContext. Patch provided by Anthony Whitford. (markt)
+      </fix>
+      <fix>
+        <bug>46866</bug>: Better initialisation of Random objects. (markt)
+      </fix>
+      <fix>
+        <bug>46875</bug>: Catch and handle possible IllegalStateExceptions
+        in CometConnectionManagerValve related to session expiration. (markt)
+      </fix>
+      <fix>
+        Correct some errors reported when testing the WebDAV servlet with the
+        Litmus test suite. (markt)
+      </fix>
+      <update>
+        <bug>46933</bug>: Update StringManager to use Java 5 features. Patch
+        provided by Jens Kapitza. (markt)
+      </update>
+      <fix>
+        <bug>46990</bug>: Fix synchronization issues reported by FindBugs. Patch
+        provided by Sebb. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        Allow huge request body packets for AJP13. (rjung)
+      </update>
+      <fix>
+        <bug>45026</bug>: Never return an empty HTTP status reason phrase.
+        mod_jk and httpd 2.x do not like that. (rjung)
+      </fix>
+      <update>
+        Set remote port for AJP connectors from the optional request
+        attribute AJP_REMOTE_PORT. (rjung)
+      </update>
+      <update>
+        Update tc-native to 1.1.16 (markt)
+      </update>
+      <fix>
+        <bug>46982</bug>: Correct reporting of DST offset in access logs.
+        (markt)
+      </fix>
+      <fix>
+        <bug>46984</bug>: Invalid characters in HTTP request method now result
+        in a 400 response. (markt)
+      </fix>
+      <fix>
+        <bug>46991</bug>: Fix AJP connector always reporting bytes received as
+        zero. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>37929</bug>: Fix invalidated session causing pageContext methods to
+        fail. (markt)
+      </fix>
+      <fix>
+        <bug>41606</bug>: Prevent double initialisation of JSPs. Patch provided
+        by Chris Halstead. (markt)
+      </fix>
+      <fix>
+        <bug>46354</bug>: ArrayIndexOutOfBoundsException when using
+        org.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true
+        Patch provided by Konstantin Kolinko. (markt)
+      </fix>
+      <fix>
+        <bug>46909</bug>: Only include semi-colon in type attribute for
+        &lt;jsp:plugin&gt; when it is required. (markt)
+      </fix>
+      <fix>
+        <bug>47013</bug>: Use system property rather than hard-coded string for
+        pre-compilation flag. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        A node should ignore its own heartbeat messages. (rjung)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>46509</bug>: Use correct link on error page in JSP security
+        example. Patch provided by Michael Moody. (markt)
+      </fix>
+      <fix>
+        <bug>46599</bug>: Document known DAEMON issue. (markt)
+      </fix>
+      <fix>
+        <bug>46807</bug>: Correct docs for configuration of tag pooling. (markt)
+      </fix>
+      <fix>
+        <bug>46924</bug>: Clarify behaviour when auto deployment is enabled and
+        a WAR, directory or context file is deleted or updated. (markt)
+      </fix>
+      <fix>
+        <bug>46958</bug>: All xml manager status output to work regardless of
+        context path. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        <bug>46351</bug>: Refactor the build script. Patch provided by Marc
+        Guillemot. (markt)
+      </fix>
+      <fix>
+        <bug>46910</bug>: Properties files corrupted by build process. (remm)
+      </fix>
+      <fix>
+        <bug>46915</bug>: When resolving ResourceBundle properties, don't claim
+        to have resolved the property unless we really have resolved it. (markt)
+      </fix>
+      <fix>
+        Fix .pdf and .exe corruption in -src.tar.gz distribution. (markt)
+      </fix>
+      <add>
+        Enable running Tomcat directly from the build directory on linux
+        systems. (markt)
+      </add>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.19 (remm)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <update>
+        Manager application prints FAIL if application was deployed but failed to start (fhanik)
+      </update>
+      <update>
+        When shutdown port is disabled, print user friendly message and not a stack trace. (fhanik)
+      </update>
+      <fix>
+        <bug>37458</bug>: Correct sync issue that leads to NPE in rare
+        circumstances. Patch provided by Konstantin Kolinko. (markt)
+      </fix>
+      <fix>
+        <bug>38553</bug>: Return 401 rather than 400 if client does not present
+        a certificate CLIENT-CERT authentication. (markt)        
+      </fix>
+      <fix>
+        <bug>38570</bug>: When checking docBase against appBase, make sure we
+        check for an exact match against the appBase. (markt)
+      </fix>
+      <fix>
+        <bug>39013</bug>: When testing for invalid docBase, test for an exact
+        match with the appBase dir. (markt)
+      </fix>
+      <fix>
+        <bug>39396</bug>: Don't include TRACE in OPTIONS response unless we
+        know it hasn't been disabled in the connector. (markt)
+      </fix>
+      <fix>
+        <bug>42747</bug>: Ensure context.xml takes effect on first deployment
+        for WAR and DIR deployments. context.xml is now copied to
+        CATALINA_BASE/&lt;engine name&gt;/&lt;host name&gt; for DIR as well as
+        WAR deployments. (markt)
+      </fix>
+      <fix><bug>43071</bug>: Start poller before acceptor (r719267)</fix>
+      <update>
+        Fix read/write timeout of async comet operations
+        (r719264)
+      </update>
+      <update> 
+        Implement async close behaviour for Comet/NIO.
+        No-op for APR (same behavior as before)
+        (r719262)
+      </update>
+      <fix>
+        Default thread count for HTTP connectors is 200. (r713186)
+      </fix>
+      <fix>
+        Comet should always invoke END and properly invoke READ (r713174)
+     </fix>
+      <fix>
+        Fix class cast exception when shutting down a replicated context but no cluster has been configured in server.xml (r713177)
+     </fix>
+      <fix>
+        Dererence socket when its no longer used. Frees up socket buffers and memory. No functional change. (r713175)
+      </fix>
+      <fix>
+        Correct wrong "No role found" debug message,
+        logged in RealmBase even if a role was found. (rjung)
+      </fix>
+      <fix><bug>44809</bug>: Improve AprLifecycleListener Error Messages. (jfclere)</fix>
+      <fix>
+        Log AccessControlException for context specific logging.properties
+        during startup with security manager. (rjung)
+      </fix>
+      <add>
+        <bug>41407</bug>: Add CLIENT-CERT support to the JAAS Realm. (markt)
+      </add>
+      <fix>
+        <bug>42409</bug>: Make custom and standard error page handling
+        consistent by using resetBuffer() which will not alter previously set
+        headers. (markt)
+      </fix>
+      <fix>
+        <bug>42673</bug>: Fix SSI virtual includes for multi-level contexts.
+        Patch provided by Peter Jodeleit. (markt)
+      </fix>
+      <fix>
+        <bug>42707</bug>: Make adding a host alias via JMX take effect
+        immediately. (markt)
+      </fix>
+      <fix>
+        <bug>43656</bug>: Correct regression in previous fix for this bug. Patch
+        provided by Nils Eckert. (markt)
+      </fix>
+      <fix>
+        <bug>45419</bug>: Set Accept-Ranges for static resources served by
+        DefaultServlet. (markt)
+      </fix>
+      <fix>
+        <bug>45441</bug>: Correctly map filters for FORWARD and INCLUDE. (markt)
+      </fix>
+      <fix>
+        <bug>45447</bug>: Convert Spanish resource files to use UTF-8 and provide
+        translations where previously missing. Patch provided by Jesus Marin.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45453</bug>: Remove potential race condition in JDBC Realm.
+        Based on a patch by Santtu Hyrkk. (markt)
+      </fix>
+      <add>
+        <bug>45576</bug>: Add DIGEST support to the JAAS Realm. (markt)
+      </add>
+      <fix>
+        <bug>45585</bug>: Allow Tomcat to start if using
+        <code>$CATALINA_BASE</code> but not JULI. Patch based on a suggestion by
+        Ian Ward Comfort. (markt)
+      </fix>
+      <fix>
+        The JAAS Realm did not assign roles to authenticated users. (markt)
+      </fix>
+      <add>
+        Provide full stacktrace and message when the ErrorReportValveClass can't
+        be instantiated. (funkman) 
+      </add>
+      <fix>
+        <bug>45608</bug>: Make allocated servlet count synchronized to ensure
+        the correct allocated servlet count is available during shutdown.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45628</bug>: When checking MANIFEST dependancies, JARs without
+        dependencies should allows be considered to be full-filled. (markt) 
+      </fix>
+      <fix>
+        <bug>45735</bug>: Improve ETag handling. (remm)
+      </fix>
+      <fix>
+        <bug>45785</bug>: Ignore directories named xxx.jar in WEB-INF/lib.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45823</bug>: Log missing request headers as '-' not 'null'. Based
+        on a patch by Per Landberg. (markt)
+      </fix>
+      <fix>
+        <bug>45825</bug>: Correctly handle annotations in parent classes. Based
+        on a patch by Florent Benoit. (markt)
+      </fix>
+      <fix>
+        <bug>45906</bug>: Further ETag handling improvements. Patch provided by
+        Chris Hubick. (markt)
+      </fix>
+      <add>
+        Add the CombinedRealm that enables authentication to be attempted
+        against multiple realms. (markt) 
+      </add>
+      <add>
+        Add the LockOutRealm that enables a standard Realm to be wrapped with
+        the functionality to lock out a user after too many failed logins.
+        (markt)
+      </add>
+      <add>
+        Make the upper size limit of the static resource cache configurable
+        since the default of <code>cacheMaxSize/20</code> gave too high a value
+        for large caches. (markt)
+      </add>
+      <fix>
+        Fix HTML decoding error in SSI processing. (markt)
+      </fix>
+      <fix>
+        Fix cast error in JULI log factory. (markt)
+      </fix>
+      <fix>
+        Fix some thread safety issues in date formatting. (markt)
+      </fix>
+      <fix>
+        Fix a String comparison bug in the digester property replacement that
+        resulted in non-optimal operation. (markt)
+      </fix>
+      <fix>
+        Correct handle multi-level contexts defined using context.xml files.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45933</bug>: Don't use xml parser from web-app to process tld
+        files. (markt)
+      </fix>
+      <add>
+        <bug>45951</bug>: Support changing of JSESSIONID cookie name and
+        jsessionid path parameter name. Based on a patch by Jean-frederic Clere.
+        (markt)
+      </add>
+      <fix>
+        <bug>46011</bug>: Make Principal accessible (if set) via
+        <code>Subject.getSubject(AccessController.getContext())</code> when
+        processing filters. Based on a patch by tsveg1. (markt)
+      </fix>
+      <fix>
+        <bug>46075</bug>: When uploading files, don't create buffers at the
+        maximum configured size. Use the default size and let the buffers grow
+        to the maximum size if necessary. (markt)
+      </fix>
+      <fix>
+        <bug>46085</bug>: Fix a rare thread safety issue with session
+        expiration. (markt)
+      </fix>
+      <fix>
+        <bug>46096</bug>:  Support annotation processing whilst running under a
+        security manager. (markt)
+      </fix>
+      <fix>
+        The invoker servlet has been deprecated and will be removed in Tomcat 7
+        onwards. (markt)
+      </fix>
+      <fix>
+        <bug>46105</bug>:  Correctly set URI encoding when replaying a request
+        after FORM authentication. (markt)
+      </fix>
+      <fix>
+        Remove unnecessary reference to commons-logging from the bootstrap JAR
+        manifest. (markt)
+      </fix>
+      <fix>
+        <bug>46232</bug>: Enabled the XMl parser to be over-ridden using the
+        standard endorsed mechanism. (markt)
+      </fix>
+      <fix>
+        <bug>46261</bug>: Treat %2F in a context name literally rather than
+        converting it (inconsistently) to '/' - that is what '#' is for. (markt)
+      </fix>
+      <fix>
+        <bug>46298</bug>: Throw an SQLException with a useful message rather
+        than a NPE if the URL for the JDBCRealm is invalid. Based on a patch by
+        Owen Jacobson. (markt)
+      </fix>
+      <fix>
+        <bug>46304</bug>: Further fixes to make Principal accessible (if set)
+        via <code>Subject.getSubject(AccessController.getContext())</code> when
+        processing filters. (markt)
+      </fix>
+      <fix>
+        <bug>46403</bug>: Provide a workaround for an IE and Safari bug that
+        means the Max-Age attribute of a cookie is ignored. (markt)
+      </fix>
+      <fix>
+        <bug>46408</bug>: Fix invalid cast in security utility package. (markt)
+      </fix>
+      <fix>
+        Remove duplicate normalisation implementations and make normalise
+        behaviour consistent throughout code base. (markt)
+      </fix>
+      <fix>
+        <bug>46683</bug>: Fix typo in French localisation file name for the
+        org.apache.catalina.loader package. (markt)
+      </fix>
+      <fix>
+        <bug>46606</bug>: Make the max DEPTH for a WebDAV request configurable.
+        The default is still 3. (markt)
+      </fix>
+      <add>
+        <bug>44382</bug>: Add support for using httpOnly for session cookies.
+        This is disabled by default. (markt/fhanik)
+      </add>
+      <fix>
+        Fix possible NCDFE when using FORM authentication. (jfclere)
+      </fix>
+      <fix>
+        Fix possible synchronisation bottleneck in cookie creation. (markt)
+      </fix>
+      <fix>
+        Fix various spelling errors reported on the mailing lists. (markt) 
+      </fix>
+      <add>
+        Make the logging manager and properties file configurable via
+        environment variables. (fhanik)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix><bug>45154</bug>:
+        Implement SEND_FILE behavior for SSL connections using NIO (fhanik)
+      </fix>
+      <update>
+        Fix file descriptor leak during NIO send file behavior. (fhanik)
+      </update>
+      <update>
+        Implement usage of keyAlias attribute for NIO, previously attribute was ignored. (fhanik)
+      </update>
+      <update>
+        Prevent server from calling close on an already closed NIO socket. One that had timed out. (fhanik)
+      </update>
+      <update>
+        Fix bug with SEND_FILE behavior in NIO. Send file would delay until selector timed out, even though socket was ready to be written. (fhanik)
+      </update>
+      <update>
+        Fix possible NPE in NioEndpoint.java (fhanik)
+      </update>
+      <update>
+        Update tc-native to 1.1.15 in build.properties.default (jfclere)
+      </update>
+      <fix>
+        <bug>43327</bug>: Socket bind fails when using APR on a system with IPv6
+        enabled but no explicit IPv6 address configured. (markt/jfclere)
+      </fix>
+      <add>
+        <bug>44285</bug>: Make the SSL session cache size and timeout
+        configurable. (markt)
+      </add>
+      <fix>
+        <bug>45074</bug>: Add configuration parameters to enable the tuning
+        of sendfile and poller thread count in the APR HTTP connector. Patch
+        provided by Alex Barclay. (jfclere/markt)
+      </fix>
+      <fix>
+        <bug>45528</bug>: Add detection for invalid SSL configuration to prevent
+        infinite logging loop on start-up. (markt)
+      </fix>
+      <fix>
+        <bug>45591</bug>: NPE on start-up failure in some cases. Based on a
+        patch by Matt Passell. (markt)
+      </fix>
+      <fix>
+        <bug>46077</bug>: Expose deferAccept for configuration. Patch provided
+        by Michael Leinartas. (markt)
+      </fix>
+      <add>
+         Don't swallow input if we know the connection is going to be closed. (billbarker)
+      </add>
+      <fix>
+        <bug>46125</bug>: Return a status code of 400 if the request headers are
+        too large. (markt)
+      </fix>
+      <fix>
+       Make certain that classes are first loaded by trusted code when working in a sandbox. (billbarker)
+      </fix>
+      <add>
+        Log a message if we reach maxThreads in a connector thread pool. (markt)
+      </add>
+      <add>
+        Enable the thread pool limits to be modified via JMX. (markt)
+      </add>
+      <fix>
+       Fix HTTP/1.0 redirects handling with APR AJP connector. (remm)
+      </fix>
+      <fix>
+        <bug>46666</bug>: keepAliveTimeout should be used regardless of setting
+        of disableUploadTimeout. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>36923</bug>: Treat EL expressions as template text if EL
+        expressions are disabled. (markt)
+      </fix>
+      <fix>
+        <bug>37515</bug>: Support 1.6 and 1.7 as source and target for
+        compilation. (markt)
+      </fix>
+      <fix>
+        ClassCastException in EL ExpressionBuilder. (rjung)
+      </fix>
+      <update>
+        Use more generics in EL to improve type safety. (rjung)
+      </update>
+      <fix>
+        Use a lookahead to remove potential ambiguity in EL parsing. (markt)
+      </fix>
+      <fix>
+        Correct typo in JSP EL examples. (markt)
+      </fix>
+      <fix>
+        <bug>38197</bug>: Take account of jsp:attribute elements when pooling
+        tags. (markt)
+      </fix>
+      <fix>
+        <bug>42077</bug>: Ensure the iterator returned by
+        javax.el.CompositeELResolver#getFeatureDescriptor() skips any null
+        FeatureDescriptors. Patch provided by Mathias Broekelmann. (markt)
+      </fix>
+      <fix>
+        <bug>42693</bug>: Fix JSP generation error with recursive tag file
+        structure. (markt)
+      </fix>
+      <fix>
+        <bug>45427</bug>: Correctly handle unmatched quotes in EL expressions.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45511</bug>: The failure of the <code>empty</code> keyword was a
+        regression caused by the previous fix for <bug>42565</bug>. The original
+        fix for <bug>42565</bug> has been reverted and a new fix applied.
+        (markt)
+      </fix>
+      <fix>
+        <bug>45648</bug>: Don't trim the last character when parsing the EL
+        namespace. (markt)
+      </fix>
+      <fix>
+        <bug>45666</bug>: Prevent infinite loop on include. (markt)
+      </fix>
+      <fix>
+        <bug>45691</bug>: Prevent generation of duplicate variable names when
+        generating code for JSPs. (markt)
+      </fix>
+      <fix>
+        Correct signed/unsigned conversion error in ASCII parsing. (markt)
+      </fix>
+      <fix>
+        Fix various edge-cases when parsing EL, particularly inside attribute
+        values. Note the the Expert Group has confirmed that JSP.1.6 takes
+        precedence over JSP.1.3.10. Therefore EL in attributes must be escaped
+        twice. (markt)
+      </fix>
+      <fix>
+        <bug>46047</bug>: Include the path to the JAR when recording
+        dependencies that are located inside a JAR file. Patch provided by
+        Cédric Mailleux. (markt)
+      </fix>
+      <fix>
+        <bug>46381</bug>: Composite expressions used for attribute values must
+        be coerced to Strings. (markt)
+      </fix>
+      <fix>
+        <bug>46397</bug>: Don't pool tag instances that implement JspIdConsumer.
+        (markt)
+      </fix>
+      <fix>
+        <bug>46462</bug>: Limit package test to just the o.a.jsp package to
+        allow use of packages such as o.a.jspwiki. (markt)
+      </fix>
+      <fix>
+        <bug>46471</bug>: Fix naming clash when tags in different libraries have
+        the same name. (markt)
+      </fix>
+      <fix>
+        <bug>46564</bug>: Make page encoding check for tagx compilation
+        case-insensitive. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <add>
+        Prevent NPE for ReplicationValve (pero)
+      </add>
+      <add>
+        Provide TCP only start-up option when using static membership. (fhanik)
+      </add>
+      <add>
+        Document the multicast recovery options. (fhanik)
+      </add>
+      <add>
+        <bug>45261</bug>: Add a new SimpleCoordinator for tribes provided by
+        Robert Newson. (markt)
+      </add>
+      <fix>
+        <bug>45618</bug>: Make sure NIO selector is closed when no longer used.
+        Unlikely to be an issue in normal usage. (markt)
+      </fix>
+      <fix>
+        <bug>45851</bug>: Fix out of order message processing issues with the
+        FarmWarDeployer. (markt)
+      </fix>
+      <fix>
+        Fix small memory leak in FarmWarDeployer. (markt)
+      </fix>
+      <fix>
+        <bug>46357</bug>: Corrected test for host's parent must be an engine.
+        (markt)
+      </fix>
+      <fix>
+        Fix so that JvmrouteBinderValve can rewrite session suffix with parallel
+        requests from same client. (pero)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>45940</bug>: Correct name of username attribute for JDBC resources
+        in JNDI how to. (markt)
+      </fix>
+      <fix>
+        <bug>46035</bug>: Fix multiple typos in monitoring how to. (markt)
+      </fix>
+      <fix>
+        <bug>46067</bug>: Fix typos in Advanced IO how to. (markt) 
+      </fix>
+      <fix>
+        <bug>46115</bug>: Correct Manager UI to show that path is required when
+        using the deploy command. (markt)
+      </fix>
+      <fix>
+        <bug>46121</bug>: Add note to manager documentation regarding possible
+        naming clash with new Ant 1.7 resources datatype and how to avoid it.
+        (markt)
+      </fix>
+      <fix>
+        Remove unsed parameters from Native/APR example connector configuration
+        in docs. (markt)
+      </fix>
+      <fix>
+        Use CSS based solution for printer-friendly docs. Patch provided by
+        vitezslav.smid as part of GSoc with additional work by Tim Funk. (markt)
+      </fix>
+      <fix>
+        Update the FAQ linsk in the docs to refer to the wiki. Use xlst task
+        rather than style task to generate docs. (funkman/markt)
+      </fix>
+      <fix>
+        Document the LifecycleListeners. (markt)
+      </fix>
+      <fix>
+        Fix broken URL mapping in the examples. (markt)
+      </fix>
+      <fix>
+        <bug>46563</bug>: Update doc for correct default for pollerThreadCount.
+        (markt)
+      </fix>
+      <fix>
+        <bug>46600</bug>: Document maxKeepAliveRequests for the NIO connector.
+        (markt)
+      </fix>
+      <fix>
+        Fix CVE-2009-0781. XSS in calendar example. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <fix>
+        <bug>41861</bug>: Update service name to Apache Tomcat 6 to prevent
+        conflicts with previous major Tomcat versions. (markt/rjung)
+      </fix>
+      <fix>
+        <bug>45852</bug>: Add special handling for cp932 (aka ms932) when
+        creating tomcat-users.xml with Windows installer. (markt)
+      </fix>
+      <fix>
+        <bug>45878</bug>: Restore manifest, licence and notice files to the jsp
+        and servlet jars. (markt)
+      </fix>
+      <fix>
+        <bug>45879</bug>: Move NOTICE file from documentation webapp to the
+        installation directory. (markt)
+      </fix>
+      <fix>
+        Add a workaround for DBCP-191. Tomcat will now build without error on a
+        1.6 JDK but because it does this by skipping DBCP, release builds must
+        be generated with a 1.5 JDK. (costin/markt)
+      </fix>
+      <fix>
+        <bug>46366</bug>: Correct information in RUNNING.txt regarding use of
+        CATALINA_HOME and CATALINA_BASE. (markt) 
+      </fix>
+      <fix>
+        Use more useful JPDA defaults in catalina.bat. (markt)
+      </fix>
+      <fix>
+        Correct error in 2.5 web-app XSD.
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.18 (remm)" rtext="released 2008-07-31">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>42727</bug>: Correctly handle request lines that are exact
+        multiples of 4096 in length. Patch provided by Will Pugh. (markt)
+      </fix>
+      <fix>
+        <bug>42678</bug>: Only ignore docBase if it really is a subdir of
+        appBase. Patch provided by juergen. (markt)
+      </fix>
+      <fix>
+        <bug>42722</bug>: Possible NPE in CGI Servlet. (markt)
+      </fix>
+      <update>
+        <bug>45285</bug>: Look for annotations in class hierarchy. (markt)
+      </update>
+      <fix>
+        Add additional checks for URI normalization. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>42565</bug>: Make EL ternary expression without space before colon
+        work. Patch provided by Lucas Galfaso. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <update>
+        <bug>45323</bug>: Add note that context.xml files can only contain a
+        single Context element. (markt)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <update>
+        <bug>45317</bug>: Properly document and log the value of the state transfer timeout flag (fhanik)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <update>
+        <bug>45332</bug>: Specify the correct encoding (the current Windows code
+        page) rather than assuming UTF-8 when creating tomcat-users.xml with the
+        Windows installer. (markt)
+      </update>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.17 (remm)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+      <update>
+        <bug>45315</bug>: Add Unix support for NSIS. (remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix><bug>45272</bug>: Put in work around for Internet Explorer not accepting a quoted Path: value using the Set-Cookie header (fhanik)</fix>
+      <fix>
+        APR connector now adds connection to poller after using send file.
+        (remm)
+      </fix>
+      <update>
+        Add ManagerBase session getLastAccessedTimestamp and
+        getCreationTimestamp for better remote JMX access. (pero)
+      </update>
+      <update>
+        Expose alwaysSend flag for message dispatch interceptor. (fhanik)
+      </update>  
+      <fix>
+        <bug>29936</bug>: Create digesters and parsers earlier so we aren't
+        using the webapp class loader when we create them. (markt)
+      </fix>
+      <fix>
+        <bug>42662</bug>: Properly resolve reflection proxies during session
+        replication. (fhanik)
+      </fix>
+      <fix>
+        <bug>42750</bug>: Request line should be tolerant of multiple
+        whitespaces. (markt/fhanik)
+      </fix>
+      <fix>
+        <bug>42934</bug>: Change the order of events on context start so
+        <code>contextInitialized()</code> event is fired before
+        <code>sessionDidActivate()</code>. The spec isn't 100% clear on the
+        required order but this seems more logical than the current behaviour.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43079</bug>: Fix identification of suspicious URL patterns. Patch
+        provided by John Kew. (markt)
+      </fix>
+      <fix>
+        <bug>43080</bug>: Log suspicious URL patterns to the correct web app.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43117</bug>: Setting an empty workDir could result in all of
+        CATALINA_HOME being deleted. Patch provided by Takayuki Kaneko. (markt)
+      </fix>
+      <fix>
+        <bug>43142</bug>: Don't assume a directory named xxx.war is a war file.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43150</bug>: Allow Tomcat to start correctly when installed on a
+        path that contains a # character. (markt)
+      </fix>
+      <add>
+        The fix for <bug>43285</bug> had the side-effect of coercing
+        <code>null</code> values to zero. This side-effect has been made
+        configurable with a system property,
+        <code>org.apache.el.parser.COERCE_TO_ZERO</code> which defaults to
+        <code>true</code>. Patch provided by Nils Eckert. (markt)
+      </add>
+      <fix>
+        <bug>43343</bug>: Correctly handle requesting a session we are in the
+        middle of persisting. Based on a suggestion by Wade Chandler. (markt)
+      </fix>
+      <fix>
+        <bug>43425</bug>: Make annotations spec compliant. Patch provided by
+        Dain Sundstrom. (markt)
+      </fix>
+      <fix>
+        <bug>43470</bug>: Fix various class cast exceptions. Based on a patch
+        by Lucas Galfaso. (markt)
+      </fix>
+      <fix>
+        <bug>43578</bug>: Fix startup when installation path contains a space.
+        Patch provided by Ray Sauers. (markt)
+      </fix>
+      <fix>
+        <bug>43683</bug>: Fix 404 that could occur if a Servlet is accessed
+        while the context is reloading. (markt)
+      </fix>
+      <fix>ExtendedAccessLogValve cs-uri not print empty querystring. (pero)
+      </fix>
+      <update>
+        ServletContext.getResource("noslash/resource") only requires forward
+        slash if STRICT_SERVLET_COMPLIANCE flag is set to true. This mimics the
+        behavior of 6.0.15 and earlier. (fhanik)
+      </update>
+      <fix>
+        <bug>44021</bug>: Add support for using the # character to define
+        multi-level contexts in WARs and directories in the appBase. (markt)
+      </fix>
+      <fix>
+        <bug>44282</bug>: Fix TRACE level class loader logging message when a
+        security manager is used. (markt)
+      </fix>
+      <fix>
+        <bug>44337</bug>: Dir listing crashes if no readme-file present.
+        (funkman)
+      </fix>
+      <fix>
+        If listener declared in web.xml, only add it once. (funkman)
+      </fix>
+      <fix>
+        Fix NPE when iterating through sessions for expiration. (fhanik/jim)
+      </fix>
+      <fix>
+        <bug>44380</bug>: Don't scan non-file URLs for TLDs. Patch provided by
+        Florent Benoit. (markt)
+      </fix>
+      <fix>
+        <bug>44389</bug>: Fix memory leak that occurred if using a
+        RequestDispatcher. Patch provided by Arto Huusko. (markt)
+      </fix>
+      <fix>
+        <bug>44529</bug>: Correct handling of resource constraints so no roles
+        (deny all) overrides no aoth-constraint (allow all). (markt)
+      </fix>
+      <fix>
+        <bug>44562</bug>: HEAD requests cannot use includes. Patch provided by
+        David Jencks. (markt)
+      </fix>
+      <fix>
+        <bug>44595</bug>: Add possibility to request the QueueSize of an
+        executor via JMX. (jfclere)
+      </fix>
+      <fix>
+        Fix CGI Servlet so it correctly reads the environment variables on
+        Vista. (markt)
+      </fix>
+      <fix>
+        <bug>44611</bug>: DirContextURLConnection didn't implement
+        getHeaderFields(), getHeaderField(String name) was case sensitive and
+        returned "" rather than null for header values that did not exist. Patch
+        provided by Chris Hubick. (markt)
+      </fix>
+      <fix>
+        <bug>44633</bug>: Provide a more helpful error message if a class can't
+        be loaded due to a version error. (rjung/markt)
+      </fix>
+      <fix>
+        <bug>44646</bug>: Correct various issues, including an ISE, in
+        CometConnectionManagerValve. (markt)
+      </fix>
+      <fix>
+        <bug>44673</bug>: ServletInputStream is no longer readable once closed.
+        (markt)
+      </fix>
+      <fix>
+        Better handling of lack of permission for context specific logging.
+        (markt)
+      </fix>
+      <fix>
+        Add permission required to read JDK logging config. (markt)
+      </fix>
+      <fix>
+        Update web.xml to reflect packaging of SSI and CGI. (markt)
+      </fix>
+      <fix>
+        Add missing access check for ThreadWithAttributes. (markt)
+      </fix>
+      <fix>
+        <bug>44833</bug>: Correctly override StandardSession methods from
+        DeltaSession. (fhanik)
+      </fix>
+      <fix>
+        <bug>44943</bug>: Use the same engine name in server.xml comments to
+        reduce copy and pastes issues. (markt)
+      </fix>
+      <fix>
+        <bug>44988</bug>: Use Java5 syntax for debug options. Patch provided
+        by Cedrik Lime. (markt)
+      </fix>
+      <fix>
+        <bug>45101</bug>: Format header dates obtained from
+        <code>DirContextURLConnection</code> as per the HTTP spec. Patch
+        provided by Chris Hubick. (markt)
+      </fix>
+      <add>
+        A new valve, <code>org.apache.catalina.valves.WebdavFixValve</code>,
+        that forces MS clients connecting to the WebDAV Servlet on port 80 to
+        use a client that works rather than the default broken one. (markt)
+      </add>
+      <fix>
+        <bug>45195</bug>: Passing in null into setAttribute or removeAttribute
+        cause NPE. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        NIO: Fix bug in NIO sendfile, symptoms during heavy traffic is that
+        connection don't get closed. For previous versions, one can disable
+        sendfile to work around the problem. (fhanik)
+      </update>
+      <update>
+        APR: Allow to specify the "random device" to use to collect the entropy.
+        (jfclere)
+      </update>
+      <update>
+        Fix NIO/SSL live lock during client disconnect. (fhanik)
+      </update>
+      <fix>
+        Fix possible ArrayIndexOutOfBoundsException. Patch provided by Charles R
+        Caldarale. (markt/jim)
+      </fix>
+      <update>
+        Add support for keystore types that do not need a file. Based on a patch
+        by Bruno Harbulot. (markt)
+      </update>
+      <update>
+        <bug>43094</bug>: Allow specification of keystore providers. Based on a
+        patch by Bruno Harbulot. (markt)
+      </update>
+      <fix>
+        <bug>43191</bug>: Make it possible to override the defaults with the
+        compressableMimeType attribute. Based on a patch by Len Popp. (markt)
+      </fix>
+      <fix>
+        <bug>44391</bug>: Correct handling of escaped values in SSI processing.
+        (markt) 
+      </fix>
+      <fix>
+        <bug>44392</bug>: HTML entities now handled correctly in SSI processing.
+        (markt)
+      </fix>
+      <fix>
+        <bug>44558</bug>: Improve error message so address is included if
+        binding fails. (markt)
+      </fix>
+      <fix>
+        <bug>44494</bug>: Character input limited to 8KB. (remm)
+      </fix>
+      <fix>
+        <bug>44620</bug>: Infinite loop in NIO connector. (markt)
+      </fix>
+      <fix>
+        <bug>44785</bug>: Correctly document default maxThreads for AJP
+        connector. (markt)
+      </fix>
+      <update>
+        Log errors for AJP signoffs at DEBUG level, 
+        since it is harmless if mod_jk has hung up the phone. (billbarker)
+      </update>
+      <fix>
+        <bug>44968</bug>: Provide more information when the load of a keystore
+        fails. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>31257</bug>: Quote endorsed dirs if they contain a space. (markt)
+      </fix>
+      <fix>
+        <bug>42943</bug>: Make sure nested element is inside &lt;jsp:text&gt;
+        element before throwing exception. (markt)
+      </fix>
+      <fix>
+        <bug>43617</bug>: Correctly escape attribute values in tag files.
+        Based on a patch by Lucas Galfaso. (markt)
+      </fix>
+      <fix>
+        <bug>43656</bug>: Fix various numeric coercion bugs. Includes a patch by
+        Nils Eckert and fixes related issues identified in a test case provided
+        by Konstantin Kolinko. (markt)
+      </fix>
+      <fix>
+        <bug>43741</bug>: Correctly handle dependencies for tag files in JARs.
+        (markt)
+      </fix>
+      <fix>
+        <bug>44408</bug>: Reduce synchronisation when evaluating EL expressions.
+        Patch provided by Robert Andersson. (markt)
+      </fix>
+      <fix>
+        <bug>44428</bug>: Fix possible NPE during serialization. (markt)
+      </fix>
+      <fix>
+        <bug>44766</bug>: EL doesn't coerce custom Number subclasses. (markt)
+      </fix>
+      <fix>
+        <bug>44877</bug>: Prevent collisions on tag pool names. (markt)
+      </fix>
+      <fix>
+        <bug>44986</bug>: Make page encoding consistency checks
+        case-insensitive. (markt)
+      </fix>
+      <fix>
+        <bug>44994</bug>: Enable nested conditional expressions in JSP EL. Patch
+        provided by James Manger. (markt)
+      </fix>
+      <fix>
+        <bug>45015</bug>: You can't use an unescaped quote if you quote the
+        value with that character. (markt/fhanik)  
+      </fix>  
+      <add>
+        Add HTML filtering of error messages for included resources in case the
+        app has tried to include an unsafe URL that does not exist. This is
+        really an app responsibility but the filtering has been added for XSS
+        safety. (markt)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <update>
+        Update documentation to use correct version number, correct file paths
+        and to use $CATALINA_BASE rather than $CATALINA_HOME where applicable.
+        (markt/jim)
+      </update>
+      <add>
+        Add a section on available system property configuration options.
+        (markt)
+      </add>
+      <fix>
+        Amend the JNDI datasource doc to reflect new value for no limit used by
+        updated commons-pool and commons-DBCP. (markt)
+      </fix>
+      <fix>
+        <bug>43333</bug>: Fix errors in sendfile documentation. (markt)
+      </fix>
+      <fix>
+        <bug>43366</bug>: Provide backwards compatibility for manager sessions
+        command. (markt)
+      </fix> 
+      <fix>
+        <bug>44541</bug>: Document packetSize attribute for AJP connector.
+        (markt)
+      </fix>
+      <fix>
+        <bug>44715</bug>: Document secret attribute for AJP connector. (markt)
+      </fix>
+      <fix>
+        Fix some links in the ROOT application that are broken if ROOT is
+        renamed. (markt)
+      </fix>
+      <fix>
+        Align the Realm documentation so that both the configuration and the
+        how-to are consistent. (markt)
+      </fix>
+      <fix>
+        <bug>45277</bug>: Fix typo in logging docs. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        <bug>45212</bug>: AbstractReplicatedMap.entrySet() now returns entries
+        rather than vaules. (markt)
+      </fix>
+      <fix><bug>45279</bug>: Properly close multicast socket.</fix>
+      <update>
+        Fix session replication dead lock during non sticky load balancing.
+        (fhanik)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <add>
+        Improve the Tests for unit tests for the cookie issues. (jfclere)
+      </add>
+      <fix>
+        Fix build for JavaDoc. Patch provided by Stephen Bannasch. (markt)
+      </fix>
+      <fix>
+        <bug>44955</bug>: Use correct location for endorsed directory in Windows
+        installer. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.16 (remm)" rtext="released 2008-02-08">
+  <subsection name="General">
+    <changelog>
+      <update>
+        Update commons-logging to version 1.1.1 and the NSIS installer to 2.34.
+        (markt)
+      </update>
+      <update>
+        Update to commons-pool version 1.4, native version 1.1.12 and update
+        the download location for the commons libraries. (markt)
+      </update>
+      <update>
+        Change chunked input parsing, always parse CRLF directly after a chunk has been
+        received, except if data is not available. If data is not available for CRLF
+        parsing, we run into BZ 11117, and must defer the parsing of CRLF to the next read event.
+        This fixes the incorrect blocking when using CometProcessor and the draining data during the READ event
+        where it before would block incorrectly waiting for the next chunk (fhanik)
+      </update>
+      <update>
+        The CometProcessor interface now extends the javax.servlet.Servlet interface(fhanik)
+      </update>
+      <fix>
+        Fix CVE-2007-5342 by limiting permissions granted to JULI. (markt)
+      </fix>
+      <update>
+        Fix handling of CometEvent.close when called during BEGIN event (fhanik)
+      </update>
+      <fix>
+        <bug>43594</bug>: Use setenv from CATALINA_BASE (if set) in preference
+        to the one in CATALINA_HOME. Patch provided by Shaddy Baddah.
+        (markt/jim)
+      </fix>
+      <fix>
+        <bug>43692</bug>: Clean up unused entries from build scripts. Patch
+        provided by Paul Shemansky. (markt)
+      </fix>
+      <fix>
+        <bug>43775</bug>: Don't try to change line endings of binary files in
+        the source distribution. (markt)
+      </fix>
+      <fix><bug>43846</bug>:
+        Fix block simulated read and writes causing timeouts.
+        Add non blocking parsing of HTTP request headers.
+        Perf improvements(fhanik)
+      </fix>
+      <fix>
+        <bug>43957</bug>: Service.bat doesn't configure logging correctly. Patch
+        provided by  Richard Fearn. (markt/jim)
+      </fix>
+      <update>
+        Cookie handling/parsing changes!
+        The following behavior has been changed with regards to Tomcat's cookie handling
+        a) Cookies containing control characters, except 0x09(HT), are rejected using an InvalidArgumentException <br/>
+        b) If cookies are not quoted, they will be quoted if they contain tspecials(ver0), tspecials2(ver1) characters<br/>
+        c) Escape character '\\' is allowed and respected as a escape character, will be unescaped during parsing
+      </update>
+      <fix>
+        Cookie parsing of $Version regression from 6.0.15 has been fixed
+      </fix>
+      <fix>
+        The script that builds the windows installer was including additional
+        files due to the way it processes recurrsive file selectors. The
+        selectors have been modified to only include the intended files. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Fix ManagerServlet.expireSessions throws Exceptions as iterate longer
+        session lists at production servers. (pero)
+      </fix>
+      <fix><bug>38131</bug>: WatchedResource doesn't work if app is outside host appbase webapps.
+        Patch provided by Peter Lynch (pero)
+      </fix>
+      <update>Add -Dorg.apache.catalina.tribes.dns_lookups=false as default. The ability to turn off reverse DNS lookups for membership.(fhanik)</update>
+      <fix>
+         Set correct StandardManager.sessionCounter after reload/restart. (pero)
+      </fix>
+      <fix>
+        <bug>42503</bug>: ServletContext.getResourceAsStream() could return
+        stale data. Patch provided by Arvind Srinivasan. (funkman/jim)
+      </fix>
+      <fix>
+        <bug>43236</bug>: When resetting the response, also reset the flags
+        associated with using a writer or an output stream to allow the user to
+        change character set after the reset. (markt)
+      </fix>
+      <fix>
+        <bug>43241</bug>: Make ServletContext.getResourceAsStream() conform to
+        the specification. Patch provided by John Kew. (markt)
+      </fix>
+      <fix>
+        <bug>43530</bug>: doc link fixes provided by  Paul Shemansky (funkman)
+      </fix>
+      <fix>
+        <bug>43675</bug>: Fix a possible logging related classloader leak.
+        (markt)
+      </fix>
+      <fix><bug>43687</bug>: Remove conditional headers on Form Auth replay,
+           since the UA (esp. FireFox) isn't expecting it.
+      </fix>
+      <fix>
+        <bug>43706</bug>: WebDAV copy/move now returns 201 on success. Based on
+        a patch by Panagiotis Astithas. (markt)
+      </fix>
+      <fix>
+        <bug>43840</bug>: Include user principal if possible when serializing /
+        de-serializing sessions. (markt)
+      </fix>
+      <fix>
+        <bug>43868</bug>: MBean methods getInvoke and getSetter were broken.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43887</bug>: Make error messages much more helpful when illegal
+        Servlet names are used. Based on a patch provided by Mike Baranczak.
+        (markt)
+      </fix>
+      <fix>
+        Fix a bug that causes CGI Servlet to fail when it is included. (markt)
+      </fix>
+      <update>
+        Improve the webDAV Servlet Javadocs to make clear that the WebDAV
+        Servlet can not be used as the default servlet. (markt)
+      </update>
+      <fix>
+        <bug>43993</bug>: mime mapping for WS-Policy. Patch by Fabian Ritzmann  (funkman)
+      </fix>
+      <fix>
+        <bug>44041</bug>: Fix duplicate class definition under load. (markt)
+      </fix>
+      <fix>
+        <bug>44084</bug>: JASSRealm was broken for application provided
+        Principals. Patch provided by Noah Levitt. (markt)
+      </fix>
+      <fix>
+        <bug>44223</bug>: Use the javax.net.ssl.trustStoreType setting if no
+        explicit connector configuration is provided and the property is set.
+        (markt/jim)
+      </fix>
+      <update>
+        <bug>44268</bug>: Log a warning if a duplicate listener configuration is
+        ignored. (markt/jim)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>43622</bug>: Don't overwrite the min compression size set by the
+        compression attribute with the default. (markt/jim)
+      </fix>
+      <fix>
+        <bug>43839</bug>: URL based session tracking failed when a session
+        cookie from a parent context was present. Based on a patch by Yuan
+        Qingyun. (markt)
+      </fix>
+      <fix>
+        <bug>43914</bug>: URLs in location headers should be encoded. Patch
+        provided by Ivan Todoroski. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>43285</bug>: Missing EL Coercion causes argument type mismatch.
+        Patch provided by Bernhard Huemer. (funkman/jim)
+      </fix>
+      <fix>
+        <bug>43675</bug>: Fix a possible logging related classloader leak.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43702</bug>: Inner class files have unnecessarily long names.
+        (markt)
+      </fix>
+      <fix>
+        <bug>43743</bug>: Fix NPE when compiling nest tag files packaged in a
+        JAR. (markt)
+      </fix>
+      <fix>
+        <bug>43757</bug>: Rather than use string matching to work out the line
+        in the JSP with the error, use the SMAP info and the knowledge that for
+        a scriptlet there is a one to one line mapping. (markt/jim)
+      </fix>
+      <fix>
+        <bug>43758</bug>: Fix NPE when scripting elements are empty. (markt)
+      </fix>
+      <fix>
+        <bug>43909</bug>: Make sure locale maps to wrapped ELContext. Patch
+        provided by Tuomas Kiviaho. (markt)
+      </fix>
+      <fix>
+        <bug>43944</bug>: Fix a missing resource exception. (markt)
+      </fix>
+      <fix>
+        Improve docs for Jasper configuration. Put options in alphabetcial
+        order, add some missing options, deprecate an unused one and address
+        feedback about the page provided on the users list.
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>43173</bug>: Fix typo in logging documentation regarding location
+        of logging.properties. (markt)
+      </fix>
+      <fix>
+        <bug>43344</bug>: Fix typo in if.jsp example. Patch provided by Tim
+        Nowaczyk. (markt)
+      </fix>
+      <fix>
+        <bug>43468</bug>: Fix possible NPE when listing contexts in the Manager
+        application. (markt)
+      </fix>
+      <fix>
+        <bug>43515</bug>: Fix bug in Manager application that may have caused
+        problems when listing contexts. Patch provided by Lucas Galfaso. (markt)
+      </fix>
+      <fix>
+        <bug>43611</bug>: Provide an error message if user tries to upload a war
+        for a context defined in server.xml rather than failing silently.
+        (markt/jim)
+      </fix>
+      <fix>
+        <bug>43800</bug>: Make relationship between APR and the native connector
+        clearer. (markt)
+      </fix>
+      <fix>
+        <bug>44088</bug>: Fix expire session button in manager. (markt)
+      </fix>
+      <fix>
+        <bug>44094</bug>: Add a note about the side effects of configuring a
+        context as privileged. (markt)
+      </fix>
+      <update>
+        Update JNDI documentation to refer to configuring contexts via
+        context.xml rather than server.xml. (markt/jim)
+      </update>
+    </changelog>
+  </subsection>
+   <subsection name="Cluster">
+    <changelog>
+      <fix>
+        Fix FarmWarDeployer can be only configured as host subelement (pero)
+      </fix>
+      <fix>
+        Fix wrong &amp;&amp; at ReplicationValve (pero)
+      </fix>
+      <update>
+        Add get/set methods for properties in the Tcp Failure detector.
+        (fhanik/jim)
+      </update>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.15 (remm)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+      <update>Fix the MD5 file contents in distribution</update>
+      <update>
+        Add ANT script to be able to publish signed Tomcat JAR's to ASF Maven repo (fhanik)
+      </update>
+      <update>
+        Use Eclipse JDT 3.3.1. (pero)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <update>Guess java location from the PATH environment and improve fix for 37284</update>
+      <update>Add NIO connector to server.xml parsing warning, remove Connector as exception case</update>
+      <fix><bug>43653</bug>: Fix SSL buffer mixup when response is unable to write more than socket buffer can handle</fix>
+      <fix><bug>43643</bug>: If connector doesn't support external executor, display warning</fix>
+      <fix><bug>43641</bug>: Property bind multicast address for cluster membership</fix>
+      <fix><bug>42693</bug>: Fix JSP compiler bug</fix>
+      <update>Add mbean descriptor for virtual webapp loader</update>
+      <fix><bug>43487</bug>:
+        Fix request processing stats
+      </fix>
+      <fix>
+        <bug>43435</bug>: Don't iterate and relocate sessions if they are not part of the map.
+      </fix>
+      <fix>
+        <bug>43356</bug>: Keystore parameter is relative to CATALINA_BASE,
+        Truststore is either defined as parameter, javax.net.ssl.trustStore or if empty
+        defaults to the keystore.
+        SSL Client cert authentication changed from boolean to &quot;true|false|want&quot; (fhanik)
+      </fix>
+      <fix>
+        <bug>30949</bug>: Improve previous fix. Ensure requests are re-cycled
+        on cross-context includes and forwards when an exception occurs in the
+        target page. (markt)
+      </fix>
+      <fix>
+        <bug>42944</bug>: Correctly handle servlet mappings that use a '+'
+        character as part of the url pattern. (markt)
+      </fix>
+      <fix>
+         <bug>42951</bug>: Don't use CATALINA_OPTS when stopping Tomcat. This
+         allows options for starting and stopping to be set on JAVA_OPTS and
+         options for starting only to be set on CATALINA_OPTS. Without this
+         fix, some startup options (eg the port for remote JMX) would cause
+         stop to fail. Based on a fix suggested by Michael Vorburger.
+         Port of r454193 (<bug>36976</bug>) from Tomcat 5.5.x. (markt,rjung)
+      </fix>
+      <add>
+         Validation of attributes and elements used in server.xml. (remm)
+      </add>
+      <fix>
+        <bug>43175</bug>: Fix typos in servlet XSD files. Patch provided by
+        Takayuki Kaneko. (markt)
+      </fix>
+      <fix>
+        <bug>43216</bug>: Set correct StandardSession#accessCount as StandardSession.ACTIVITY_CHECK is true.
+        Patch provided by Takayuki Kaneko (pero)
+      </fix>
+      <add>
+        Made session createTime accessible for all SessionManager via JMX (pero)
+      </add>
+      <update>
+        <bug>43129</bug>: Support logging of all response header values at AccessLogValve (ex. add %{Set-Cookie}o to your pattern). (pero)
+      </update>
+      <add>
+        Support logging of all response header values at ExtendedAccessLogValve (ex. add x-O(Set-Cookie) to your pattern). (pero)
+      </add>
+      <add>
+        Support logging of current thread name at AccessLogValve (ex. add %I to your pattern).
+        Usefull to compare access logging entry later with a stacktraces. (pero)
+      </add>
+      <fix>
+        Improve large-file support (more then 4 Gb) at all AccessLogValves, backport from 5.5.25. (pero)
+      </fix>
+      <update>
+        Optimized JDBCAccessLogValve combined pattern request attribute access. (pero)
+      </update>
+      <fix>
+        o.a.juli.ClassLoaderLogManager handle more then one system property replacement at file logging.properties. (pero)
+      </fix>
+      <fix>
+        <bug>43338</bug>: Support '*' servlet-name mapping at filter-mapping.
+        Patch provided by Keiichi Fujino. (pero)
+      </fix>
+      <fix>
+        <bug>41797</bug>: CNFE/NPE thrown from function mapper when externalizing
+        Patch by Tuomas Kiviaho- tuomas.kiviahos at ikis fi (funkman)
+      </fix>
+      <fix>
+        <bug>43453</bug>: ClassCastException at
+        org.apache.catalina.core.StandardContext.findStatusPage(int)
+         (funkman)
+      </fix>
+      <fix>
+        Fix important vulnerability when webdav is enabled for write. (markt)
+      </fix>
+      <fix>
+        Call stopAwait in StandardServer.stop if port == -1. (pero)
+      </fix>
+      <fix>
+        <bug>43668</bug>: Fix NPE when the outer most wrapper is a ServletRequest/ResponseWrapper, but not a HttpServletRequest/ResponseWrapper on a Forward. (billbarker)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Harmonize with HTTP java.io code. Otherwise the socket is not closed.
+      </fix>
+      <fix>
+        In the APR connector, start accepting connections after fully starting
+        the connector, to prevent possible exceptions due to non initialized fields. (remm)
+      </fix>
+      <update>
+        Cookie parser refactoring, submitted by John Kew. (remm)
+      </update>
+      <fix>
+        Make cookie escaping / unescaping consistent. (markt)
+      </fix>
+      <fix>
+        <bug>43479</bug>: Memory leak cleaning up sendfile connections, submitted by Chris Elving. (remm)
+      </fix>
+      <fix>
+        <bug>42925</bug>: Add maintain for sendfile. (remm)
+      </fix>
+      <fix>
+        Fix explicit flush before response commit in the org.apache.jk AJP connector. (pero)
+      </fix>
+      <fix>
+        <bug>43621</bug>: Fix possible Dos condition when using the experimental NIO/AJP Connector (billbarker)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>37326</bug>: No error reported when an included page does not
+        exist. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        Fix WebDAV Servlet so it works correctly with MS clients. (markt)
+      </fix>
+      <fix>
+        Fix CVE-2007-5461, an important information disclosure vulnerability in
+        the WebDAV Servlet. Based on a patch by Marc Schoenefeld. (markt)
+      </fix>
+      <fix>
+        <bug>42979</bug>: Update sample.war to include recent security fixes
+        in the source code. (markt)
+      </fix>
+      <fix>
+        Minor connector doc fix. (jfclere)
+      </fix>
+    </changelog>
+  </subsection>
+   <subsection name="Cluster">
+    <changelog>
+      <fix>
+         Set correct BioReceiver transfer buffer size. (pero)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <add>
+         Tests for unit tests for the cookie issues. (jfclere)
+      </add>
+    </changelog>
+  </subsection>
+
+</section>
+<section name="Tomcat 6.0.14 (remm)" rtext="released 2007-08-13">
+  <subsection name="General">
+    <changelog>
+      <docs>
+        Correct j.u.l log levels in JULI docs. (rjung)
+      </docs>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Handle special case of ROOT when re-loading webapp after ROOT.xml has
+        been modified. In some circumstances the reloaded ROOT webapp had no
+        associated resources. (markt)
+      </fix>
+      <fix>
+        Remove invalid attribute "encoding" of MBean MemoryUserDatabase,
+        which lead to errors in the manager webapp JMXProxy output. (rjung)
+      </fix>
+      <fix>
+        <bug>33774</bug>: Retry JNDI authentiction on ServiceUnavailableException
+        as at least one provider throws this after an idle connection has been
+        closed. (markt)
+      </fix>
+      <fix>
+         <bug>39875</bug>: Fix BPE in RealmBase.init(). Port of yoavs's fix from
+         Tomcat 5. (markt)
+      </fix>
+      <fix>
+        <bug>41722</bug>: Make the role-link element optional (as required by
+        the spec) when using a security-role-ref element. (markt)
+      </fix>
+      <fix>
+         <bug>42361</bug>: Handle multi-part forms when saving requests during
+         FORM authentication process. Patch provided by Peter Runge. (markt)
+      </fix>
+      <fix>
+         <bug>42401</bug>: Update RUNNING.txt with better JRE/JDK information.
+         (markt)
+      </fix>
+      <fix>
+         <bug>42444</bug>: prevent NPE for AccessLogValve
+         Patch provided by Nils Hammar (funkman)
+      </fix>
+      <fix>
+         <bug>42449</bug>:
+         JNDIRealm does not catch NullPointerException for Sun's
+         LDAP provider (See bug for details) (funkman)
+      </fix>
+      <fix>
+         <bug>42497</bug>: Ensure ETag header is present in a 304 response.
+         Patch provided by Len Popp. (markt)
+      </fix>
+      <fix>
+        Fix XSS security vulnerability (CVE-2007-2450) in the Manager and Host
+        Manager. Reported by Daiki Fukumori. (markt)
+      </fix>
+      <fix>
+        <bug>42547</bug>: Fix NPE when a ResourceLink in context.xml tries to
+        override an env-entry in web.xml. (markt)
+      </fix>
+      <fix>
+        Avoid some casting in ErrorReportValve (remm)
+      </fix>
+      <fix>
+        Fix persistence API annotation, submitted by Bill Burke (remm)
+      </fix>
+      <fix>
+        In Comet mode, if bytes are not read, send an error event (otherwise,
+        fields referring to the connection could remain) (remm)
+      </fix>
+      <fix>
+        Fix Comet when running Tomcat with the security manager (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>39425</bug>: Add additional system property permission to
+        catalina.policy for pre-compiled JSPs. (markt)
+      </fix>
+      <fix>
+        <bug>42438</bug>: Duplicate temporary variables were created when
+        jsp:attribute was used in conjunction with custom tags. Patch provided
+        by Brian Lenz. (markt)
+      </fix>
+      <fix>
+        <bug>42643</bug>: Prevent creation of duplicate JSP function mapper
+        variables. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Separate sequence increment from getter in ThreadPool to avoid
+        misleading increments during monitoring via JMX. (rjung)
+      </fix>
+      <fix>
+        Add back missing socketBuffer attribute in the java.io HTTP connector (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        Don't write error on System.out, use log() instead. (rjung)
+      </fix>
+      <fix>
+        <bug>39813</bug>: Correct handling of new line characters in JMX
+        attributes. Patch provided by R Bramley. Ported from tc5.5.x r415029. (markt,rjung)
+      </fix>
+      <fix>
+         <bug>42459</bug>: Fix Tomcat Web Application Manager table error. (rjung)
+      </fix>
+      <fix>
+        Fix XSS security vulnerabilities (CVE-2007-2449) in the examples.
+        Reported by Toshiharu Sugiyama. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.13 (remm)" rtext="released 2007-05-15">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+         More accurate available() method. (remm)
+      </fix>
+      <fix>
+         Add recycle check in the event object, since it is a facade like the others. (remm)
+      </fix>
+      <fix>
+         When processing a read event, enforce that the servlet consumes all available bytes. (remm)
+      </fix>
+      <update>
+         Add a flag in ContainerBase which could be used in embedded scenarios to avoid a double start
+         of contexts (this problem generally occurs when adding contexts to a started host). (remm)
+      </update>
+      <fix>
+         <bug>42309</bug>: Ability to create a connector using a custom protocol specification for embedded.
+         (fhanik)
+      </fix>
+      <fix>
+         Add SSL engine flag to AprLifecycleListener. (fhanik)
+      </fix>
+      <fix>
+         Improve event processing, so that an END event is generated when encountering EOF, and an
+         ERROR is always generated on client disconnects. (remm)
+      </fix>
+      <fix>
+         Add declarations for the new XSD files. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+         Add heartbeatBackgroundEnabled flag to SimpleTcpCluster.
+         Enable this flag don't forget to disable the channel heartbeat thread (pero)
+      </fix>
+      <fix>
+         Possible memory leak when using comet, caused by adding the socket to the poller before
+         cleaning up the connection tracking structure. (remm)
+      </fix>
+      <fix>
+         <bug>42308</bug>: nextRequest recycles the request, which caused issues with statistics. (remm)
+      </fix>
+      <fix>
+         Fix non recycled comet flag in the APR connector. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+         Add heartbeatBackgroundEnabled flag to SimpleTcpCluster.
+         Enable this flag don't forget to disable the channel heartbeat thread (pero)
+      </fix>
+      <fix>
+         Method name cleanup. (fhanik)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+         Some examples webapp fixes. Submitted by Frank McCown. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.12 (remm)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        License source headers. Submitted by Niall Pemberton. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>42039</bug>: Log a stack trace if a servlet throws an
+         UnavailableException. Patch provided by Kawasima Kazuh. (markt)
+      </fix>
+      <fix>
+        <bug>41990</bug>: Add some additional mime-type mappings. (markt)
+      </fix>
+      <fix>
+        <bug>41655</bug>: Fix message translations. Japanese translations
+        provided by Suzuki Yuichiro. (markt)
+      </fix>
+      <add>
+        Add enabled attribute to AccessLogValve (pero)
+      </add>
+      <fix>
+        <bug>42085</bug>: Avoid adding handlers for the root logger twice when they are explicitly
+        specified. (remm)
+      </fix>
+      <fix>
+        Reduce thread local manipulation in the request dispatcher. Submitted by
+        Arvind Srinivasan. (remm)
+      </fix>
+      <fix>
+        Avoid keeping references to loggers tied to the webapp classloaders after a reload in
+        a couple more places. (remm)
+      </fix>
+      <fix>
+        <bug>42202</bug>: Fix container parsing of TLDs in webapps when Tomcat is installed in
+        a URL encodable path. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>42119</bug>: Fix return value for request.getCharacterEncoding() when
+        Content-Type headers contain parameters other than charset. Patch by
+        Leigh L Klotz Jr. (markt)
+      </fix>
+      <update>
+        Move away from using a thread local processor for the APR and java.io
+        connectors, as this does not work well when using an executor. (remm)
+      </update>
+      <fix>
+        Remove Comet timeout hack in the APR connector. Comet connections will now
+        use the regular timeout or the keepalive timeout if specified. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>42025</bug>: Update valve documentation to refer to correct regular
+        expression implementation. (markt)
+      </fix>
+      <fix>
+        Fix various paths in the manager webapps (remm)
+      </fix>
+      <add>
+        Session viewer and editor for the HTML manager. Submitted by Cédrik Lime. (remm)
+      </add>
+      <add>
+        Session handling tools for the manager. Submitted by Rainer Jung. (remm)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>41869</bug>: TagData.getAttribute() should return
+        TagData.REQUEST_TIME_VALUE when the attribute value is an EL expression.
+        (markt)
+      </fix>
+      <fix>
+        <bug>42071</bug>: Fix IllegalStateException on multiple requests to
+        an unavailable JSP. Patch provided by Kawasima Kazuh. (markt)
+      </fix>
+      <fix>
+        After a JSP throws an UnavailableException allow it to be accessed once
+        the unavailable period has expired. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+         Add toString method to better logging session replication message at tribes MESSAGES (pero)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.11 (remm)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+      <update>
+        Update DBCP to 1.2.2, pool to 1.3, JDT to 3.2.2 and remove collections
+        build dependency (pero, remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Don't log pattern subtoken at ExtendedAccesLogValve (pero)
+      </fix>
+      <fix>
+        Add some missing JMX attributes for new AccessLogValve (pero)
+      </fix>
+      <fix>
+        <bug>41786</bug>: Incorrect reference to catalina_home in catalina.sh/bat Patch provided by Mike Hanafey (fhanik)
+      </fix>
+      <fix>
+        <bug>41703</bug>: SingleSignOnMessage invalid setter, patch provided by Nils Hammar (fhanik)
+      </fix>
+      <fix>
+        <bug>41682</bug>: ClassCastException when logging is turned on (fhanik)
+      </fix>
+      <fix>
+        <bug>41530</bug>: Don't log error messages when connector is stopped (fhanik)
+      </fix>
+      <fix>
+        <bug>41166</bug>: Invalid handling when using replicated context (fhanik)
+      </fix>
+      <add>
+        Added SENDFILE support for the NIO connector. (fhanik) <br/>
+      </add>
+      <add>
+        Added support for shared thread pools by adding in the &lt;Executor&gt;
+        element as a nested element to the &lt;Service&gt; element. (fhanik)
+      </add>
+      <fix>
+        <bug>41666</bug>: Correct handling of boundary conditions for
+        If-Unmodified-Since and If-Modified-Since headers. Patch provided by
+        Suzuki Yuichiro. (markt)
+      </fix>
+      <fix>
+        <bug>41739</bug>: Correct handling of servlets with a load-on-startup
+        value of zero. These are now the first servlets to be started. (markt)
+      </fix>
+      <fix>
+        <bug>41747</bug>: Correct example ant script for deploy task. (markt)
+      </fix>
+      <fix>
+        <bug>41752</bug>: Correct error message on exception in MemoryRealm.
+        (markt)
+      </fix>
+      <update>
+        <bug>39883</bug>: Add documentation warning about using antiResourceLocking
+        on a webapp outside the Host's appBase. (yoavs)
+      </update>
+      <fix>
+        <bug>40150</bug>: Ensure user and roll classnames are validated on startup.  Patch by
+          Tom. (yoavs)
+      </fix>
+      <update>
+        Refactor extend access log valve using the optimized access log valve. Submitted by
+        Takayuki Kaneko. (remm)
+      </update>
+      <fix>
+        Possible deadlock in classloading when defining packages. (remm)
+      </fix>
+      <fix>
+        Remove excessive syncing from listener support. (remm)
+      </fix>
+      <add>
+        Web services support. The actual factory implementations are implemented in the
+        extras. Submitted by Fabien Carrion. (remm)
+      </add>
+      <update>
+        Add logging to display APR capabilities on the platform. (remm)
+      </update>
+      <fix>
+        Expose executors in JMX. (remm)
+      </fix>
+      <fix>
+        CRLF inside a URL pattern is always invalid. (remm)
+      </fix>
+      <fix>
+        Tweak startup time display. (remm)
+      </fix>
+      <fix>
+        Adjustments to handling exceptions with Comet. (remm)
+      </fix>
+      <fix>
+        If the event is closed asynchronously, generate an end event for cleanup on the
+        next event. (remm)
+      </fix>
+      <fix>
+        Cleanup hello webapp from the docs and fix a XSS issue in the JSP.  (remm)
+      </fix>
+      <fix>
+        Examples webapp cleanup. Submitted by Takayuki Kaneko and Markus Schönhaber. (remm)
+      </fix>
+      <fix>
+        <bug>41289</bug>: Create configBase, since it is no longer created elsewhere.
+        Submitted by Shiva Kumar H R. (remm)
+      </fix>
+     </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        Fixed NIO memory leak caused by the NioChannel cache not working properly.
+      </update>
+      <update>
+        Added flag to enable/disable the usage of the pollers selector instead of a Selector pool
+        when the serviet is reading/writing from the input/output streams
+        The flag is <code>-Dorg.apache.tomcat.util.net.NioSelectorShared=true</code>
+      </update>
+      <fix>
+        Requests with multiple content-length headers are now rejected. (markt)
+      </fix>
+      <add>
+        <bug>41675</bug>: Add a couple of DEBUG-level logging statements to Http11Processors
+          when sending error responses.  Patch by Ralf Hauser. (yoavs)
+      </add>
+      <fix>
+        Reuse digester used by the modeler. (remm)
+      </fix>
+      <update>
+        When the platform does not support deferred accept, put accepted sockets in the
+        poller. (remm)
+      </update>
+      <fix>
+        Fix problem with blocking reads for keepalive when using an executor (the number
+        of busy threads is always 0). (remm)
+      </fix>
+      <update>
+        The poller now has good performance, so remove firstReadTimeout. (remm)
+      </update>
+      <fix>
+        <bug>42119</bug>: Fix return value for request.getCharacterEncoding() when
+        Content-Type headers contain parameters other than charset. Patch by
+        Leigh L Klotz Jr. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        Fix previous update to servlet 2.5 xsd to use correct declaration.
+        (markt)
+      </fix>
+      <update>
+        Update host configuration document for new behaviour for directories
+        in appBase. (markt)
+      </update>
+      <update>
+        <bug>39540</bug>: Add link to httpd 2.2 mod_proxy_ajp docs in AJP connector doc. (yoavs)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>41227</bug>: Add a bit of DEBUG-level logging to JspC so users know
+          which file is being compiled. (yoavs)
+      </fix>
+      <update>
+        Remove some dead utility code, and refactor stream capture as part of the Ant compiler. (remm)
+      </update>
+      <fix>
+        Support the trim directive of JSP 2.1 as an equivalent of Jasper's own parameter. (remm)
+      </fix>
+      <fix>
+        <bug>41790</bug>: Close file stream used to read the Java source. (remm)
+      </fix>
+      <fix>
+        Fix reporting of errors which do not correspond to a portion of the JSP source. (remm)
+      </fix>
+      <fix>
+        Remove try/catch usage for annotation processing in classic tags. The usage
+        of the log method might have been questionable as well. (remm)
+      </fix>
+      <fix>
+        Cleanup of the message that is displayed for compilation errors. (remm)
+      </fix>
+      <fix>
+        Skip BOM when reading a JSP file. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+ </section>
+<section name="Tomcat 6.0.10 (remm)" rtext="released 2007-02-28">
+  <subsection name="Catalina">
+    <changelog>
+      <update>
+        Unify usage of security manager flag, submitted by Arvind Srinivasan. (remm)
+      </update>
+      <fix>
+        Fix formatting of CGI variable SCRIPT_NAME. (markt)
+      </fix>
+      <fix>
+        <bug>41521</bug>: Support * for servlet-name, submitted by Paul McMahan. (remm)
+      </fix>
+      <update>
+        Cache getServletContext value, submitted by Arvind Srinivasan. (remm)
+      </update>
+      <fix>
+        Add options for handling special URL characters in paths, and disallow '\' and encoded '/'
+        due to possible differences in behavior between Tomcat and a front end webserver. (remm)
+      </fix>
+      <fix>
+        Fix bad comparison for FORM processing, submitted by Anil Saldhana. (remm)
+      </fix>
+      <fix>
+        <bug>41608</bug>: Make log levels consistent when Servlet.service()
+        throws an exception. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Reduce usage of MessageBytes.getLength(), submitted by Arvind Srinivasan. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>41558</bug>: Don't call synced method on every request, submitted by Arvind Srinivasan. (remm)
+      </fix>
+      <fix>
+        Switch to a thread local page context pool. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.9 (remm)" rtext="beta, 2007-02-08">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        Use 2.5 xsd in Tomcat webapps. (markt)
+      </fix>
+      <fix>
+        Compression filter improvements, submitted by Eric Hedström. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Properly return connector names. (remm)
+      </fix>
+      <fix>
+        Remove logging of the XML validation flag. (remm)
+      </fix>
+      <fix>
+        Correct error messages for context.xml. (markt)
+      </fix>
+      <fix>
+        <bug>41217</bug>: Set secure flag correctly on SSO cookie, submitted by
+        Chris Halstead. (markt)
+      </fix>
+      <fix>
+        <bug>40524</bug>: request.getAuthType() now returns CLIENT_CERT rather
+        than CLIENT-CERT. (markt)
+      </fix>
+      <fix>
+        <bug>40526</bug>: Return support for JPDA_OPTS to catalina.bat and add
+        a new option JPDA_SUSPEND, submitted by by Kurt Roy. (markt)
+      </fix>
+      <fix>
+        <bug>41265</bug>: In embedded, remove the code that resets checkInterval
+        values of zero to 300. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>37869</bug>: Fix getting client certificate, submitted by Christophe Pierret. (remm)
+      </fix>
+      <fix>
+        <bug>40960</bug>: Throw a timeout exception when getting a timeout rather than a
+        generic IOE, submitted by Christophe Pierret. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        EL validation fixes for attributes. (remm)
+      </fix>
+      <fix>
+        <bug>41327</bug>: Show full URI for a 404. (markt)
+      </fix>
+      <fix>
+        JspException now uses getCause() as the result for getRootCause(). (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <fix>
+        <bug>41466</bug>: When using the NioChannel and SecureNioChannel its
+        important to use the channels buffers. (fhanik)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.8 (remm)" rtext="alpha">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Make provided instances of RequestDispatcher thread safe. (markt)
+      </fix>
+      <add>
+        Optional development oriented loader implementation. (funkman)
+      </add>
+      <add>
+        Optimized access log valve, submitted by Takayuki Kaneko. (remm)
+      </add>
+      <fix>
+        Fix error messages when parsing context.xml that incorrectly referred to
+        web.xml. (markt)
+      </fix>
+      <fix>
+        <bug>41217</bug>: Set secure attribute on SSO cookie when cookie is
+        created during a secure request. Patch provided by Chris Halstead.
+        (markt)
+      </fix>
+      <fix>
+        <bug>40524</bug>: HttpServletRequest.getAuthType() now returns
+        CLIENT_CERT rather than CLIENT-CERT for certificate authentication
+        as per the spec. Note that web.xml continues to use CLIENT-CERT to
+        specify the certificate authentication should be used. (markt)
+      </fix>
+      <fix>
+        <bug>41401</bug>: Add support for JPDA_OPTS to catalina.bat and add a
+        JPDA_SUSPEND environment variable to both startup scripts. Patch
+        provided by Kurt Roy. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Use the tomcat-native-1.1.10 as recommended version.
+        OpenSSL detection on some platforms was broken 1.1.8 will continue to work,
+        although on some platforms there can be JVM crash if IPV6 is enabled and
+        platform doesn't support IPV4 mapped addresses on IPV6 sockets.
+      </fix>
+  </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        When displaying JSP source after an exception, handle included files.
+        (markt)
+      </fix>
+      <fix>
+        Display the JSP source when a compilation error occurs and display
+        the correct line number rather than start of a scriptlet block. (markt)
+      </fix>
+      <fix>
+        Fix NPE when processing dynamic attributes. (remm)
+      </fix>
+      <fix>
+        More accurate EL usage validation. (remm)
+      </fix>
+      <fix>
+        Fix regression for implicit taglib and page data version numbers. (remm)
+      </fix>
+      <fix>
+        <bug>41265</bug>: Allow JspServlet checkInterval init parameter to be
+        explicitly set to the stated default value of zero by removing the
+        code that resets it to 300 if explicitly specified as zero. (markt)
+      </fix>
+      <fix>
+        <bug>41327</bug>: Show full URI for a 404. Patch provided by Vijay.
+        (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <docs>
+        Add a virtual hosting how-to contributed by Hassan Schroeder. (markt)
+      </docs>
+      <update>
+        Update all webapps to use the servlet 2.5 xsd. (markt)
+      </update>
+      <fix>
+        <bug>39572</bug>: Improvements to CompressionFilter example provided by
+        Eric Hedström. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.7 (remm)" rtext="beta, 2007-01-10">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        Fix installer's bitmap (mturk)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Refactor logging of errors which may occur when reading a post body (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>37869</bug>: Also use the SSL_INFO_CLIENT_CERT field if the chain is empty,
+        submitted by Grzegorz Grzybek (remm)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.6 (remm)" rtext="alpha">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        Fix tagging which did not include 6.0.5's changelog (remm)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.5 (remm)" rtext="not released">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>40585</bug>: Fix parameterised constructor for o.a.juli.FileHandler
+        so parameters have an effect. (markt)
+      </fix>
+      <fix>
+        Escape invalid characters from request.getLocale. (markt, remm)
+      </fix>
+      <update>
+        Update required version for native to 1.1.8. (remm)
+      </update>
+      <fix>
+        Do not log broken pipe errors which can occur when flushing the content of an error page. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Fix firstReadTimeout behavior for the AJP connector. (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        <bug>41057</bug>: Make jsp:plugin output XHTML compliant. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <update>
+        Cluster interface cleanup. (fhanik)
+      </update>
+      <update>
+        Refactoring to allow usage of executors. (fhanik)
+      </update>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.4 (remm)" rtext="alpha">
+  <subsection name="General">
+    <changelog>
+      <update>
+        Update to NSIS 2.22 (remm)
+      </update>
+      <fix>
+        Fix regression in 6.0.3 with Windows wrapper (mturk)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.3 (remm)" rtext="not released">
+  <subsection name="General">
+    <changelog>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>37509</bug>: Do not remove whitespace from the end of values
+        defined in logging.properties files. (markt)
+      </fix>
+      <fix>
+        <bug>38198</bug>: Add reference to Context documentation from Host
+        documentation that explains how Context name is obtained from the
+        Context filename. (markt)
+      </fix>
+      <fix>
+        <bug>40844</bug>: Missing syncs in JDBCRealm. (markt)
+      </fix>
+       <fix>
+        <bug>40901</bug>: Encode directory listing output. Based on a patch
+        provided by Chris Halstead. (markt)
+      </fix>
+      <fix>
+        <bug>40929</bug>: Correct JavaDoc for StandardClassLoader. (markt)
+      </fix>
+      <fix>
+        <bug>41008</bug>: Allow POST to be used for indexed queries with CGI
+        Servlet. Patch provided by Chris Halstead. (markt)
+      </fix>
+      <fix>
+        Fix usage of print on the servlet output stream if the processor never used
+        a writer (fhanik)
+      </fix>
+      <fix>
+        Fix logic of sameSameObjects used to determine correct wrapping of request and
+        response objects (fhanik)
+      </fix>
+      <fix>
+        Update TLD scan lists, and disable caching for now (remm)
+      </fix>
+      <update>
+        Add system property to WebappClassLoader to allow disabling setting references
+        to null when stopping it (remm)
+      </update>
+      <add>
+        Add clustered SSO code, submitted by Fabien Carrion (remm)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        <bug>40860</bug>: Log exceptions and other problems during parameter
+        processing. (markt)
+      </fix>
+      <update>
+        Enable JMX for trust store attributes for SSL connector. (markt)
+      </update>
+      <update>
+        Port memory usage reduction changes to the java.io HTTP connector. (remm)
+      </update>
+      <fix>
+        MessageBytes.setString(null) will remove the String value. (remm)
+      </fix>
+      <fix>
+        <bug>41057</bug>: Caching large strings is not useful and takes too much
+        memory, so don't cache these (remm)
+      </fix>
+      <update>
+        Add keepAliveTimeout attribute to most connectors (mturk, remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <fix>
+        Relax EL type validation for litterals. (remm)
+      </fix>
+      <fix>
+        Update some version numbers to 2.1. (funkman, remm)
+      </fix>
+      <fix>
+        Add xsds for JSP 2.1 (remm)
+      </fix>
+      <fix>
+        <bug>41106</bug>: Update validation checks for EL to also include
+        legacy 1.2 tags (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Webapps">
+    <changelog>
+      <fix>
+        <bug>40677</bug>: Update SSL documentation to indicate that PKCS11
+        keystores may be used. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.2 (remm)" rtext="beta, 2006-11-23">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        Various tweaks to distribution (remm, funkman)
+      </fix>
+      <update>
+        Update Tomcat native to 1.1.7 (mturk)
+      </update>
+      <update>
+        Update to JDT 3.2.1 (remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        Fix EJB annotation interface (remm)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <fix>
+        Fix passing of the keystore password for the NIO connector (fhanik)
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.1 (remm)" rtext="alpha">
+  <subsection name="General">
+    <changelog>
+      <fix>
+        <bug>37439</bug>, <bug>40823</bug>: Documentation cleanup (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Catalina">
+    <changelog>
+      <update>
+        Refactor exception processing using Throwable.getCause to improve exception chaining (remm)
+      </update>
+      <add>
+        Remove dead code involving the Logger (funkman)
+      </add>
+      <fix>
+        <bug>37458</bug>: Fix some exceptions which could happen during classloading (markt)
+      </fix>
+      <fix>
+        <bug>40817</bug>: Fix CGI path (markt)
+      </fix>
+      <fix>
+        <bug>34956</bug>: Add the possibility to enforce usage of request and response
+        wrapper objects (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <update>
+        Many fixes for JSP 2.1 compliance, invloving tag files handling, deferred expressions
+        validation, bom encoding support (remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <update>
+        Many HTTP NIO connector fixes and refactorings (fhanik)
+      </update>
+      <update>
+        HTTP NIO connector performance improvements (fhanik)
+      </update>
+      <update>
+        Add packetSize option for the classic AJP connector (jfclere)
+      </update>
+      <update>
+        Implement explicit flushing in AJP (mturk)
+      </update>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 6.0.0 (remm)" rtext="alpha">
+  <subsection name="Catalina">
+    <changelog>
+      <add>
+        SSLEngine attribute added to the AprLifecycleListener(fhanik)
+      </add>
+      <add>
+        Add API for Comet IO handling (remm, fhanik)
+      </add>
+      <add>
+        Servlet 2.5 support (remm)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <add>
+        JSP 2.1 support (jhook, remm)
+      </add>
+      <add>
+        Unifed EL 2.1 support (jhook)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <add>
+        SSLEnabled attribute required for SSL to be turned on, on all HTTP connectors (fhanik)
+      </add>
+      <update>
+        Memory usage reduction for the HTTP connectors, except java.io (remm)
+      </update>
+      <update>
+        Modeler update to use dynamic mbeans rather than model mbeans, which consume more
+        resources (costin)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Cluster">
+    <changelog>
+      <add>
+        New cluster configuration and new documentation (fhanik)
+      </add>
+    </changelog>
+  </subsection>
+</section>
+</body>
+</document>

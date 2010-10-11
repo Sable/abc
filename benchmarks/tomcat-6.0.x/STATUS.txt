@@ -1,0 +1,168 @@
+================================================================================
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+================================================================================
+
+$Id: STATUS.txt 965451 2010-07-19 12:21:42Z kkolinko $
+
+                         =================================
+                         Apache Tomcat 6.0 Patch Proposals
+                         =================================
+
+
+RELEASE SHOWSTOPPERS:
+
+
+PATCHES ACCEPTED TO BACKPORT:
+  [ start all new proposals below, under PATCHES PROPOSED. ]
+
+
+PATCHES PROPOSED TO BACKPORT:
+  [ New proposals should be added at the end of the list ]
+
+* Fix the maven stuff for the maven repo.
+  Before it does't find tomcat-juli.jar and the remoteRepository seems broken .
+  http://people.apache.org/~jfclere/patches/maven.patch.100711
+  +1: jfclere
+  -1: fhanik - easier to pass in the root path (lib/bin) to the macro instead of hacking around it
+               if we remove the SCP auto feature, then there should be something to replace it with
+               (http://ant.apache.org/manual/OptionalTasks/scp.html)  
+  +1: kkolinko: +1 for the updated patch (maven.patch.100711)
+      I still think that it is not so good to remove the old code of <remoteRepository/>,
+      because it ignores ${maven.repo.url} parameter provided by deploy-snapshot,
+      deploy-staging and deploy-release targets. Maybe leave old code as a comment
+      and fix it later if needed? I think that actually nobody besides the release manager
+      uses this, so I am letting this pass.
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=48545
+  Truststores don't have to have passwords
+  Based on a patch by 'smmwpf54'
+  http://svn.apache.org/viewvc?view=revision&revision=910266
+  +1: markt
+  -1: jfclere: Doc says it should use keystorePass (http://tomcat.apache.org/tomcat-6.0-doc/config/http.html).
+               so that would break existing configurations.
+      markt: It shouldn't break existing configs. JSSE allows trust stores to be
+             read without providing the password
+      kkolinko: 1. My understanding of KeyStore.load(stream,pwd) doc is that when the
+             password is not needed to open a store, it is used to verify its integrity.
+             So, this patch changes behaviour: skips the verification.
+             2. Note, that the password might be provided by overriding the
+             getKeystorePassword() method. There is no way to provide such password
+             for the truststore in the new code.
+             3. I would be fine if this new behaviour in TC6 were triggered by some
+             system property, but defaults to the old behaviour.
+
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49030
+  Failure of one connector should not leave some connectors started and some
+  ignored
+  http://people.apache.org/~markt/patches/2010-06-14-bug49030.patch
+  +1: markt
+  -1: kkolinko: it breaks the fix for BZ 48625
+    https://issues.apache.org/bugzilla/show_bug.cgi?id=49030#c4
+
+  Alternative patch:
+  https://issues.apache.org/bugzilla/attachment.cgi?id=25633
+  +1: kkolinko
+  -1:
+
+* Configure Tomcat to use HttpOnly for session cookies by default
+  http://people.apache.org/~kkolinko/patches/2010-04-21_tc6_context_httpOnly.patch
+  +1: kkolinko
+  -0: markt - There wasn't consensus previously.
+            - If you are going to change the default, do it in the code
+  -1:
+
+* Expose the new WebappLoader flag in the VirtualWebappLoader,
+  but allow alternative name searchVirtualFirst to make it
+  consistent with the "virtual" terminology.
+  Now you can decide, whether the virtual paths will
+  be searched before the webapp or after it.
+  If searched before, external resources take precendence
+  over internal ones. Before that change one couldn't overwrite
+  resources already present in the webapp.
+  http://svn.apache.org/viewvc?view=revision&revision=936825
+  http://people.apache.org/~rjung/patches/2010-05-14-loader-backport-r936825.patch
+  +1: rjung
+  -1: 
+  -0: kkolinko: The patch itself is OK, but I think having a synonym will
+   cause confusion. I'd prefer not to invent a new name, but mention the
+   one that we already have when documenting virtualClasspath.
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49343
+  When ChannelException is thrown, remove listener from channel.
+  http://svn.apache.org/viewvc?view=revision&revision=948402
+  +1: kfujino, kkolinko
+  -1: 
+   kkolinko:
+    Maybe "this.channel.removeChannelListener(this.rpcChannel);" call
+    has to be replaced with "this.rpcChannel.breakdown();"
+  
+  Additional patch.
+  "this.channel.removeChannelListener(this.rpcChannel);" call is 
+  replaced with "this.rpcChannel.breakdown();". 
+  http://svn.apache.org/viewvc?view=revision&revision=950922
+  +1: kfujino, kkolinko
+  -1: 
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49099
+  Provide a mechanism for including requests rejected by the CoyoteAdapter in
+  the standard access log
+  http://people.apache.org/~markt/patches/2010-07-07-bug49099.patch
+  This is a backport of: r950587, r950809, r951018, r951093, r951447,
+                         r951892, r952295
+  +1: markt
+  -1: 
+
+
+* Backport the CSRF prevention filter to Tomcat 6 and configure the Manager and
+  Host Manager applications to use it. The configuration is such that the using
+  the old roles (manager, admin) will work and will bypass the CSRF protection
+  but using the new roles (manager-gui, admin-gui etc.) will not bypass the CSRF
+  protection.
+  http://people.apache.org/~markt/patches/2010-06-26-crsf-prevention-filter-tc6.patch
+  http://svn.apache.org/viewvc?rev=962865&view=rev
+  http://svn.apache.org/viewvc?rev=962872&view=rev
+  http://svn.apache.org/viewvc?rev=962881&view=rev
+  http://svn.apache.org/viewvc?rev=962900&view=rev
+  +1: markt
+  -1: 
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49217
+  Ensure EL identifiers conform to the Java Language Specification with an
+  option to disable this check.
+  https://issues.apache.org/bugzilla/attachment.cgi?id=25727
+  +1: markt
+  -1: 
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49555
+  Correctly handle tag libraries that use functions defined in static inner
+  classes
+  http://svn.apache.org/viewvc?rev=961948&view=rev
+  http://svn.apache.org/viewvc?rev=963106&view=rev
+  +1: markt, jfclere
+  -1: kkolinko:
+      Needs to use TCCL instead of plain Class.forName(String) call.
+      The /examples/jsp/jsp2/el/functions.jsp page breaks with a ClassNotFoundException.
+
+* Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=49521
+  http://people.apache.org/~kkolinko/patches/2010-07-17_tc6_bug49521.patch
+  - Disable scanning for a free port in Jk AJP/1.3 connector by default.
+  - Do not change maxPort field value of ChannelSocket in its #setPort()
+    and #init() methods.
+  - Add support for "maxPort" attribute on a <Connector> element as a synonym
+    for channelSocket.maxPort
+  +1: kkolinko
+  -1:
