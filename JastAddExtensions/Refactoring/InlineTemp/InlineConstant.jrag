@@ -15,6 +15,8 @@ aspect InlineConstant {
 		FieldDeclaration cnst = (FieldDeclaration)decl();
 		if(!cnst.hasInit())
 			throw new RefactoringException("no initialiser");
+		if(cnst.isEnumConstant())
+			throw new RefactoringException("cannot inline enum constant");
 		bundleQualifier();
 		if(isQualified() && !qualifier().isPure())
 			throw new RefactoringException("cannot discard impure qualifier");

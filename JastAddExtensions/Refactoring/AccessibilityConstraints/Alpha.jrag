@@ -4,6 +4,8 @@ aspect Alpha {
 	syn lazy int TypeDecl.minAccess(String pkg, TypeDecl type) {
 		if(sourceTypeDecl() != this)
 			return sourceTypeDecl().minAccess(pkg, type);
+		if(type != null && this.topLevelType() == type.topLevelType())
+			return ASTNode.VIS_PRIVATE;
 		if(isTopLevelType()) {
 			if(this.hostPackage().equals(pkg))
 				return ASTNode.VIS_PACKAGE;

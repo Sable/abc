@@ -161,6 +161,13 @@ aspect AST {
 		setRight(r);
 	}
 	
+	// TODO: some bits of the compiler don't work properly when AbstractDots are left-heavy; these refinements are just temporary fixes
+	refine QualifiedNames eq ImportDecl.typeName() {
+    	if(getAccess() instanceof AbstractDot)
+    		((AbstractDot)getAccess()).rotateRight();
+    	return refined();
+	}
+	
 	/* f.bundleQualifier() does the following:
 	 * 
 	 * 

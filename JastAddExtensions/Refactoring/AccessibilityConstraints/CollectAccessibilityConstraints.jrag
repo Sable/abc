@@ -14,7 +14,8 @@ aspect CollectConstraints {
 	           for programRoot();
 	
 	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(this), (FieldDeclaration)decl()))
-	           when decl() instanceof FieldDeclaration
+	           when decl() instanceof FieldDeclaration 
+	             && !(this instanceof BoundFieldAccess)    // BoundFieldAccesses are used internally by the frontend to circumvent name binding
 	           to Program.accessibilityConstraints()
 	           for programRoot();
 	
@@ -33,7 +34,8 @@ aspect CollectConstraints {
 	// Acc-2
 	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.EQ, AccessModifierConstant.PUBLIC))
 	           when isQualified() &&
-	                decl() instanceof FieldDeclaration && 
+	                decl() instanceof FieldDeclaration &&
+	                !(this instanceof BoundFieldAccess) &&
 	                !decl().isStatic() &&
 	                ((FieldDeclaration)decl()).minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
 	                !qualifier().isSuperAccess() &&
@@ -61,7 +63,9 @@ aspect CollectConstraints {
 	// Inh-1
 	VarAccess contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type()),
 																			Operator.LE, ((FieldDeclaration)decl())))
-              when isQualified() && decl() instanceof FieldDeclaration
+              when isQualified() 
+	            && decl() instanceof FieldDeclaration
+	            && !(this instanceof BoundFieldAccess)
 	          to Program.accessibilityConstraints()
 	          for programRoot();
 	
