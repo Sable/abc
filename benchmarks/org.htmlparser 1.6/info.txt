@@ -1,0 +1,5 @@
+HTMLparser 1.6 downloaded 2009-05-06 from 
+
+cvs -d:pserver:anonymous@htmlparser.cvs.sourceforge.net:/cvsroot/htmlparser login 
+
+Commented out 10 JUnit-Tests methods in total
