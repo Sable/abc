@@ -21,6 +21,8 @@ aspect ExtractInterface {
 		for(MethodDecl md : methods) {
 			if(md.hostType() != this)
 				throw new RefactoringException("selected method is not a member of this type");
+			if(md.isStatic())
+				throw new RefactoringException("selected method is static");
 			MethodDecl new_md = md.lockedCopyWithEmptyBody();
 			// for Eclipse compatibility
 			new_md.getModifiers().addModifier("abstract");

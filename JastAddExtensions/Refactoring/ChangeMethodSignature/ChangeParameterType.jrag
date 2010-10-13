@@ -46,7 +46,12 @@ aspect ChangeParameterType {
 				}
 				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
 					MethodAccess ma = (MethodAccess)e.nextAccess();
-					ma.lock(ma.decl().ancestorIn(newType));
+					MethodDecl oldTarget = ma.decl(),
+							   newTarget = oldTarget.ancestorIn(newType);
+					// TODO: this should be part of the type constraints
+					if(!oldTarget.throwsSameExceptionsAs(newTarget))
+						throw new RefactoringException("new target throws different exceptions");
+					ma.lock(newTarget);
 				}
 			}
 		}		
@@ -54,4 +59,20 @@ aspect ChangeParameterType {
 	
 	syn boolean Expr.isParameterType() = false;
 	eq Access.isParameterType() = isTypeAccess() && getParent() instanceof ParameterDeclaration;
+	
+	syn boolean Callable.throwsSameExceptionsAs(Callable that) {
+		if(this.getExceptionList().getNumChild() != that.getExceptionList().getNumChild())
+			return false;
+		for(Access exn : this.getExceptionList())
+			if(!that.throwsExactException(exn.type()))
+				return false;
+		return true;
+	}
+	
+	syn lazy boolean Callable.throwsExactException(TypeDecl exnType) {
+		for(Access exn : this.getExceptionList())
+			if(exn.type().equals(exnType))
+				return true;
+		return false;
+	}
 }

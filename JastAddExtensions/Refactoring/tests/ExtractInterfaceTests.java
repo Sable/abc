@@ -36,7 +36,29 @@ public class ExtractInterfaceTests extends TestCase {
 			assertEquals(out.toString(), rfe.getMessage());
 		}
 	}
-	
+
+	private void testFail(String className, String[] signatures, String pkg, String iface, Program in) {
+		assertNotNull(in);
+		
+		TypeDecl td = in.findType(className);
+		assertTrue(td instanceof ClassDecl);
+		
+		Collection<MethodDecl> mds = new ArrayList<MethodDecl>();
+		for(String sig : signatures) {
+			SimpleSet s = td.localMethodsSignature(sig);
+			assertTrue(s instanceof MethodDecl);
+			mds.add((MethodDecl)s);
+		}
+		
+		assertNotNull(iface);
+		
+		try {
+			((ClassDecl)td).doExtractInterface(pkg, iface, mds);
+			assertEquals("<failure>", in.toString());
+		} catch(RefactoringException rfe) {
+		}
+	}
+
 	public void test1() {
 		testSucc("X.C", new String[]{"foo(X.B)"}, null, "I",
 				Program.fromClasses(
@@ -132,5 +154,14 @@ public class ExtractInterfaceTests extends TestCase {
 				"  }" +
 				"  Y.B f;" +
 				"}")));
+	}
+	
+	public void test3() {
+		testFail("A", new String[]{"m()"}, "p", "I", Program.fromCompilationUnits(
+				new RawCU("A.java",
+						  "package p;" +
+						  "class A {" +
+						  "  public static void m() { }" +
+						  "}")));
 	}
 }

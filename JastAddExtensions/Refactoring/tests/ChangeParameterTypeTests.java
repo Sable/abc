@@ -374,4 +374,20 @@ public class ChangeParameterTypeTests extends TestCase {
 				"class B { B(Object i) { new A(i); } }",
 				"class C { void m(Object a) { new B(a); } }"));
 	}
+	
+	public void test19() {
+		testFail("A", "m", 0, "B",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(C c) {" +
+				"    c.n();" +
+				"  }" +
+				"}",
+				"class B {" +
+				"  void n() throws Exception { }" +
+				"}" +
+				"class C extends B {" +
+				"  void n() { }" +
+				"}"));
+	}
 }
