@@ -38,5 +38,8 @@ aspect Refresh {
 		TypeDecl encl = enclosingType().refreshType();
 		String name = sourceTypeDecl().name();
 		return (ClassDeclSubstituted)encl.localTypeDecls(name).iterator().next();
-	}	
+	}
+	
+	// bound type accesses may sometimes hold onto stale copies of parameterised types
+	refine BoundNames eq BoundTypeAccess.decls() = SimpleSet.emptySet.add(getTypeDecl().refresh());
 }

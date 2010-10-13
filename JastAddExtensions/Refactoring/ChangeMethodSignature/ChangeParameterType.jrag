@@ -1,5 +1,8 @@
 aspect ChangeParameterType {
 	public void ParameterDeclaration.changeType(TypeDecl newType) {
+		if(getParameterisedCallable() != null && 
+				(!getParameterisedCallable().fromSource() || getParameterisedCallable().isNative()))
+			throw new RefactoringException("cannot change this parameter declaration");
 		if(!type().subtype(newType))
 			throw new RefactoringException("unsupported type change");
 		

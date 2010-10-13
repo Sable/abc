@@ -15,6 +15,7 @@ import AST.CompilationUnit;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
+import AST.SimpleSet;
 import AST.TypeDecl;
 
 public class RealProgramTests extends TestCase {
@@ -139,10 +140,10 @@ public class RealProgramTests extends TestCase {
 	
 	private String orig;
 	private void exhaustivelyChangeParameterTypes(Program prog, boolean checkUndo) {
-		Collection<MethodDecl> meths = prog.sourceMethods();
-		System.out.println(meths.size()+" source methods");
+		Collection<MethodDecl> meths = findOverloadedSourceMethods(prog);
+		System.out.println(meths.size() + " overloaded source methods");
 		orig = checkUndo ? prog.toString() : null;
-		for(MethodDecl md : meths) {
+		for(MethodDecl md : findOverloadedSourceMethods(prog)) {
 			for(int i=0;i<md.getNumParameter();++i) {
 				TypeDecl tp = md.getParameter(i).type();
 				for(TypeDecl stp : tp.supertypes()) {
@@ -174,13 +175,13 @@ public class RealProgramTests extends TestCase {
 	
 	private void exhaustivelyChangeParameterTypes(Program prog) { exhaustivelyChangeParameterTypes(prog, false); }
 	
-	private Collection<Collection<MethodDecl>> findOverloadedMethods(Program prog) {
-		Collection<Collection<MethodDecl>> res = new LinkedList<Collection<MethodDecl>>();
+	private Collection<MethodDecl> findOverloadedSourceMethods(Program prog) {
+		Collection<MethodDecl> res = new LinkedList<MethodDecl>();
 		findOverloadedMethods(prog, res);
 		return res;
 	}
 
-	private void findOverloadedMethods(ASTNode nd, Collection<Collection<MethodDecl>> res) {
+	private void findOverloadedMethods(ASTNode nd, Collection<MethodDecl> res) {
 		if(nd instanceof CompilationUnit && !((CompilationUnit)nd).fromSource())
 			return;
 		if(nd instanceof ClassDecl) {
@@ -201,7 +202,9 @@ public class RealProgramTests extends TestCase {
 					}
 					for(Collection<MethodDecl> mds : sizemap)
 						if(mds != null && mds.size() > 1)
-							res.add(mds);
+							for(MethodDecl md : mds)
+								if(md.fromSource() && !md.isNative())
+									res.add(md);
 				}
 			}
 		}
@@ -323,5 +326,24 @@ public class RealProgramTests extends TestCase {
 	
 	public void testClojure() throws Exception {
 		exhaustivelyChangeParameterTypes(compileClojure());
+	}
+	
+	public void generaliseParameterType(Program prog, String type, String sig, int idx, String newType) {
+		TypeDecl td = prog.findType(type);
+		assertNotNull(td);
+		SimpleSet s = td.localMethodsSignature(sig);
+		assertTrue(s instanceof MethodDecl);
+		TypeDecl newtd = prog.findType(newType);
+		((MethodDecl)s).getParameter(idx).changeType(newtd);
+		LinkedList errors = new LinkedList();
+		prog.errorCheck(errors);
+		if(!errors.isEmpty())
+			System.out.println("\n Refactoring introduced errors: " + errors);
+	}
+	
+	public void testGeneraliseParameterType() throws Exception {
+		generaliseParameterType(compileJUnit45(), "junit.framework.Assert", 
+								"assertEquals(java.lang.String, java.lang.String, java.lang.String)", 
+								0, "java.lang.Object");
 	}
 }
