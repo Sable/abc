@@ -43,18 +43,22 @@ aspect CollectTypeConstraints {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
 									 thatParm = that.getParameter(i);
-				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
+				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type for method " + that.fullName(), 
+																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type for method " + that.fullName(),
+																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
 		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
 									 thatParm = that.getParameter(i);
-				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type", thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
+				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type for method " + that.fullName(),
+																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type", this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type for method " + that.fullName(),
+																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		super.collectTypeConstraints(pred, constraints);
 	}
@@ -112,7 +116,7 @@ aspect CollectTypeConstraints {
 				continue;
 			} else {
 				Expr arg = getArg(i);
-				addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing", arg, Operator.LE, parm.getTypeAccess()));
+				addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
 	}
@@ -140,8 +144,8 @@ aspect CollectTypeConstraints {
 
 	protected void ArrayAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "array access", this, Operator.EQ, type()));
-		addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "array index (1)", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
-		addConstraint(constraints, pred, new IsArrayTypeConstraint(this, "array access (2)", qualifier()));
+		addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "array index type", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
+		addConstraint(constraints, pred, new IsArrayTypeConstraint(this, "array type", qualifier()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 

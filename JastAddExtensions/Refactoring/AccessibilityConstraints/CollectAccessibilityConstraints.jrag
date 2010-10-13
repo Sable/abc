@@ -121,7 +121,8 @@ aspect CollectConstraints {
 	 		 for programRoot();
 	
 	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PUBLIC))
-	         when fromSource() && isTopLevelType() && !compilationUnit().getID().equals(name())
+	         when fromSource() && isTopLevelType() && !isTypeVariable() && !compilationUnit().getID().equals(name())
+	         		// for some reason, JastAddJ considers type variables to be toplevel
 	 		 to Program.accessibilityConstraints()
 	 		 for programRoot();
 	

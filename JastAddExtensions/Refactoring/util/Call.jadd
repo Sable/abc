@@ -23,9 +23,14 @@ aspect Call {
 		public Block getBlock();
 		public void setBlock(Block b);
 		sons Parameter:ParameterDeclaration* Exception:Access* [Block:Block];
+		public String signature();
 	}
 	ConstructorDecl implements Callable;
 	MethodDecl implements Callable;
+	
+	public String Callable.fullName() {
+		return hostType().fullName() + "." + signature(); 
+	}
 	
 	public void Callable.setParameter(String name, ParameterDeclaration pd) {
 		setParameter(pd, getIndexOfParameter(name));

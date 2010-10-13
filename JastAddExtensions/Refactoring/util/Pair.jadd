@@ -15,5 +15,19 @@ aspect Pair {
 		public S snd() {
 			return snd;
 		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof Pair))
+				return false;
+			Pair that = (Pair)o;
+			if(this.fst == null) {
+				if(that.fst != null)
+					return false;
+			} else {
+				if(!this.fst.equals(that.fst))
+					return false;
+			}
+			return this.snd == null ? that.snd == null : this.snd.equals(that.snd);
+		}
 	}
 }
