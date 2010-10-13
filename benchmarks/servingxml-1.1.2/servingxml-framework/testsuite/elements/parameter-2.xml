@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t2="elements/parameter-2/">
+
+  <sx:flatFile id="t2:HutFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record-type" start="1" width="1"/>
+        <sx:when test='record-type="1"'>
+          <sx:flatRecordType id="t2:R1" name="R1">
+            <sx:positionalField name="TOTO" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test='record-type="2"'>
+          <sx:flatRecordType id="t2:R2" name="R2">
+            <sx:positionalField name="TATA" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test='record-type="3"'>
+          <sx:flatRecordType id="t2:R3" name="R3">
+            <sx:positionalField name="TITI" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+    <sx:flatFileReader id="t2:HutFlatFileReader">
+      <sx:inlineSource>1A
+2B
+3C 
+2D 
+3E</sx:inlineSource>
+      <sx:flatFile ref="t2:HutFlatFile"/>
+    </sx:flatFileReader> 
+
+  <sx:recordContent id="t2:hut">
+    <sx:flatFileReader ref="t2:HutFlatFileReader"/>
+    <sx:recordMapping ref="t2:hut2ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordContent id="t2:hut2">
+    <sx:flatFileReader ref="t2:HutFlatFileReader"/>
+    <sx:recordMapping ref="t2:hut2ToXmlMapping2"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="t2:hut2ToXmlMapping">
+    <doc>
+      <sx:innerGroup startTest="sx:current/R1"> <sx:parameter name="temp"
+      value="{TOTO}"/>
+        <sx:outerGroup startTest="sx:current/R2">
+          <b>
+            <sx:fieldAttributeMap value="{TATA}" attribute="attr"/>
+      <sx:onRecord recordType="R3">
+        <sx:fieldElementMap value="{$temp}" element="c">
+          <sx:fieldAttributeMap value="{TITI}" attribute="attr"/>
+        </sx:fieldElementMap>
+      </sx:onRecord>
+          </b>
+        </sx:outerGroup>
+      </sx:innerGroup>
+    </doc>
+  </sx:recordMapping>
+
+  <sx:recordMapping id="t2:hut2ToXmlMapping2">
+    <doc>
+      <sx:parameter name="temp" value="{TOTO}"/>
+        <sx:outerGroup startTest="sx:current/R2">
+          <b>
+            <sx:fieldAttributeMap value="{TATA}" attribute="attr"/>
+      <sx:onRecord recordType="R3">
+        <sx:fieldElementMap value="{$temp}" element="c">
+          <sx:fieldAttributeMap value="{TITI}" attribute="attr"/>
+        </sx:fieldElementMap>
+      </sx:onRecord>
+          </b>
+        </sx:outerGroup>
+    </doc>
+  </sx:recordMapping>
+
+  <sx:document id="t2:expected">
+<doc><b attr="B"><c attr="C">A</c></b><b attr="D"><c attr="E">A</c></b></doc> 
+  </sx:document>
+
+  <sx:transform id="t2:test-hut">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/parameter-2/hut'),fn:document('elements/parameter-2/expected'))">
+test-parameter:  Output
+      <sx:content ref="t2:hut"/> 
+      does not match expected output
+      <sx:content ref="t2:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t2:test-hut2">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/parameter-2/hut2'),fn:document('elements/parameter-2/expected'))">
+test-parameter:  Output
+      <sx:content ref="t2:hut2"/> 
+      does not match expected output
+      <sx:content ref="t2:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>

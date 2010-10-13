@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<vin>
+  <vindata country="US" id="3545" language="en" make="Acura" model="Integra" styleName="3dr Hatchback RS" vinpart="JH4DA3 4 H " year="1987">
+    <engine>
+      <architecture>4 Cylinder</architecture>
+      <displacement>1.6L</displacement>
+    </engine>
+    <vehicleAttribute availability="typical" name="transmissionmanual"/>
+    <vehicleAttribute availability="optional" name="transmissionautomatic"/>
+    <vehicleAttribute availability="standard" name="powersteering"/>
+    <vehicleAttribute availability="optional" name="airconditioningfront"/>
+    <vehicleAttribute availability="optional" name="cruisecontrol"/>
+    <vehicleAttribute availability="optional" name="leather"/>
+    <vehicleAttribute availability="optional" name="moonroof"/>
+    <vehicleAttribute availability="optional" name="powerlocks"/>
+    <vehicleAttribute availability="optional" name="powerdriversseat"/>
+    <vehicleAttribute availability="optional" name="powerwindows"/>
+    <vehicleAttribute name="amfm"/>
+    <vehicleAttribute availability="optional" name="cassette"/>
+    <vehicleAttribute availability="optional" name="cd"/>
+    <vehicleAttribute availability="optional" name="sunroof"/>
+    <vehicleAttribute availability="optional" name="sunroofpopup"/>
+    <vehicleAttribute availability="standard" name="tiltsteering"/>
+    <vehicleAttribute availability="optional" name="customwheels"/>
+    <vehicleAttribute availability="notavailable" name="airconditioningrear"/>
+    <vehicleAttribute availability="optional" name="abs"/>
+  </vindata>
+</vin>

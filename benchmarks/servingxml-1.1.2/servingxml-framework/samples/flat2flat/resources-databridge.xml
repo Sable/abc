@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+    xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="databridge_example">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="importFlatFile" />
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="outputFileFormat" />
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+
+    <sx:flatRecordTypeChoice>
+      <sx:positionalField name="record-type" start="20" width="2" />
+      <sx:when test="record-type='PA'">
+        <sx:flatRecordType id="outputFileFormat" name="outputFileFormat">
+          <sx:positionalField name="client" width="10"/>
+          <sx:positionalField name="effective_date" width="30"/>
+          <sx:positionalField name="accountNumber" width="30"/>
+          <sx:positionalField name="statusValue" width="10"/>
+        </sx:flatRecordType>
+      </sx:when>
+    </sx:flatRecordTypeChoice>
+   </sx:service>
+
+  <sx:flatRecordType id="outputFileFormat" name="outputFileFormat">
+      <sx:positionalField name="client" width="10"/>
+      <sx:positionalField name="effective_date" width="30"/>
+      <sx:positionalField name="accountNumber" width="30"/>
+      <sx:positionalField name="statusValue" width="10"/>   
+  </sx:flatRecordType>
+
+  <sx:flatFile id="importFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record-type" start="20" width="2" />
+        <sx:when test="record-type='PA'">
+          <sx:flatRecordType name="paymentRec">
+            <sx:positionalField name="accountNumber" start="1" width="19" />
+            <sx:positionalField name="record-type" width="2" />
+            <sx:positionalField name="amount" width="15" />
+            <sx:positionalField name="type" width="3" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record-type='RE'">
+          <sx:flatRecordType name="recallRec">
+            <sx:positionalField name="accountNumber" start="1" width="19" />
+            <sx:positionalField name="record-type" width="2" />
+            <sx:positionalField name="reasonCode" width="3" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record-type='DE'">
+          <sx:flatRecordType name="demographicRec">
+            <sx:positionalField name="accountNumber" start="1" width="19" />
+            <sx:positionalField name="record-type" width="2" />
+            <sx:positionalField name="workPhone" width="10" />
+            <sx:positionalField name="homePhone" width="10" />
+            <sx:positionalField name="city" width="20" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType name="other">
+            <sx:positionalField name="client" start="1" width="9" />
+            <sx:positionalField name="effectiveDate" width="8" />
+            <sx:positionalField name="numberOfRecords" start="1" width="10" />
+            <sx:positionalField name="totalAmount" width="8" />
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+</sx:resources>
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<inv:invoices xmlns:inv="http://www.telio.be/ns/2002/invoice">
+  <inv:invoice currency="EUR" id="200302-01" paid="false">
+  	<inv:client id="test">
+      <inv:email>danielaparker@abc.ca</inv:email>
+    </inv:client>
+  	<inv:date>2003-02-03</inv:date>
+  	<inv:description>Test description</inv:description>
+  	<inv:item>
+  	<inv:quantity>67.5</inv:quantity>
+  	<inv:unit>h</inv:unit>
+  	<inv:description>January 2004</inv:description>
+  	<inv:unitprice>400</inv:unitprice>
+  	<inv:tax>21.00</inv:tax>
+  	</inv:item>
+  </inv:invoice>
+  <inv:invoice currency="EUR" id="200302-02" paid="true">
+    <inv:client id="test">
+      <inv:email>danielaparker@efg.com</inv:email>
+    </inv:client>
+    <inv:date>2003-02-03</inv:date>
+    <inv:description>Test description</inv:description>
+    <inv:item>
+    <inv:quantity>67.5</inv:quantity>
+    <inv:unit>h</inv:unit>
+    <inv:description>January 2004</inv:description>
+    <inv:unitprice>400</inv:unitprice>
+    <inv:tax>21.00</inv:tax>
+    </inv:item>
+  </inv:invoice>
+</inv:invoices>
+

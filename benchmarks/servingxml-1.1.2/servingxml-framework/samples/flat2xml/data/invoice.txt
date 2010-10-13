@@ -1,0 +1,23 @@
+12|2007-02-02|DocType|} 
+SndId|SndName|SndAddress|SndZip|} 
+RecId|RecName|RecAddress|RecZip|} 
+~ 
+1|Item 1|2|Kg|150|300|} 
+2|Item 2|2|Kg|350|700|} 
+3|Item 3|1|$|50|50|} 
+4|Item 4|10|Unt|30|100|} 
+~ 
+1|Ref 1|Doc 1|Text|} 
+2|Ref 2|Doc 2|Text|} 
+~ 
+1|Disc 1|Item 1|} 
+2|Disc 2|Item 2|} 
+3|Disc 3|Item 3|} 
+~ 
+Code a|Value 1|} 
+Code z|Value 3|} 
+Code x|Value 2|} 
+Code w|Value 2|} 
+Code y|Value 1|}
+~ 
+!

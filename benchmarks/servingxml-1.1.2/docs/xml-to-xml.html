@@ -1,0 +1,107 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Serving XML: XML to XML</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="recordstreams"></a>Serving XML: XML to XML</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Daniel</span> <span class="surname">Parker</span></h3></div></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e7"></a></span></dt><dt><span class="section"><a href="#d4e23">Validating XML</a></span></dt><dt><span class="section"><a href="#d4e25">Mutating a Subtree of an XML Document</a></span></dt><dt><span class="section"><a href="#d4e30">Extracting a Selection of Subtrees, Wrapping All in Enclosing 
+      Tags</a></span></dt><dt><span class="section"><a href="#d4e32">Extracting a Selection of Subtrees, Writing Each as a 
+      Separate Document</a></span></dt><dt><span class="section"><a href="#d4e34">Comparing Two XML Documents with fn:deep-equal</a></span></dt></dl></div>
+  
+  <div class="section" lang="en"><div class="titlepage"></div>
+    <p> This article describes how to tranform flatfiles to XML with the
+  ServingXML pipeline language.
+    </p>
+<div class="itemizedlist"><ul type="disc"><li><span>
+<a class="ulink" href="servingxml-1.html" target="_top">ServingXML: Pipeline Language</a>
+</span></li><li><span>
+<a class="ulink" href="flat-file-to-xml.html" target="_top">ServingXML: Flat Files</a>
+</span></li><li><span>
+<a class="ulink" href="servingxml-3.html" target="_top">ServingXML: Inversion of Control 
+  Container</a>
+</span></li></ul></div>
+    <p>
+This article discusses processing of XML content in a <code class="code">ServingXML</code> 
+pipeline.
+    </p>
+    <p>
+      The <code class="code">ServingXML</code> framework allows streaming of a large volume 
+      of XML content to be combined with non-streamed processing of parts of
+      that content.
+    </p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e23"></a>Validating XML</h2></div></div></div>
+    
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e25"></a>Mutating a Subtree of an XML Document</h2></div></div></div>
+    
+      <div class="figure"><a name="countires.csv"></a><p class="title"><b>Figure&nbsp;1.&nbsp;Input flat file countries.csv</b></p><div class="figure-contents">
+        
+        <pre class="programlisting">
+          
+
+        </pre>
+      </div></div><br class="figure-break">
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e30"></a>Extracting a Selection of Subtrees, Wrapping All in Enclosing 
+      Tags</h2></div></div></div>
+    
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e32"></a>Extracting a Selection of Subtrees, Writing Each as a 
+      Separate Document</h2></div></div></div>
+    
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e34"></a>Comparing Two XML Documents with fn:deep-equal</h2></div></div></div>
+    
+        <pre class="programlisting">
+          <p>The example below shows how to compare two XML documents for equality with
+          the XPATH fn:deep-equal function.
+            
+          </p>
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"&gt; 
+
+  &lt;sx:service id="test"&gt;
+    &lt;sx:transform ref="test-documents-are-equal"/&gt;
+  &lt;/sx:service&gt;
+
+  &lt;sx:document id="odd-element-document"&gt;
+    &lt;document&gt;
+      &lt;title&gt;Title&lt;/title&gt;
+      &lt;para&gt;First paragraph.&lt;/para&gt;
+    &lt;/document&gt;
+  &lt;/sx:document&gt;
+
+  &lt;sx:document id="another-odd-element-document"&gt;
+    &lt;document&gt;
+      &lt;title&gt;Title&lt;/title&gt;
+      &lt;para&gt;First paragraph.&lt;/para&gt;
+    &lt;/document&gt;
+  &lt;/sx:document&gt;
+
+  &lt;sx:transform id="test-documents-are-equal"&gt;
+    &lt;sx:choose&gt;
+      &lt;sx:when test="fn:deep-equal(fn:document('odd-element-document'),
+                     fn:document('another-odd-element-document'))"&gt;
+        &lt;sx:document&gt;
+          &lt;result&gt;equal&lt;/result&gt;
+        &lt;/sx:document&gt;
+      &lt;/sx:when&gt;
+      &lt;sx:otherwise&gt;
+        &lt;sx:document&gt;
+          &lt;result&gt;unequal&lt;/result&gt;
+        &lt;/sx:document&gt;
+      &lt;/sx:otherwise&gt;
+    &lt;/sx:choose&gt;
+    &lt;sx:assert test="text()='equal'"&gt; Expected documents are equal.
+    &lt;/sx:assert&gt;
+  &lt;/sx:transform&gt;
+
+&lt;/resources&gt;
+
+        </pre>
+<p>
+The documents are equal, so the script produces the result  
+
+&lt;result&gt;equal&lt;/result&gt;
+
+</p>
+  </div>
+</div></body></html>

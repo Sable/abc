@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="messages">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="messages"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="messages">
+
+    <sx:flatFileReader>
+      <sx:flatFile>
+        <sx:commentStarter value="#"/>
+        <sx:commentStarter value="//"/>
+        <sx:recordDelimiter continuation="\" value="\r\n"/>
+        <sx:recordDelimiter continuation="\" value="\n"/>
+        <sx:flatFileBody>
+          <sx:flatRecordType name="property">
+            <sx:delimitedField name="name">
+              <sx:fieldDelimiter value="="/>
+              <sx:subfieldDelimiter value="."/>
+            </sx:delimitedField>
+            <sx:delimitedField name="value"/>
+          </sx:flatRecordType>
+        </sx:flatFileBody>
+      </sx:flatFile>
+    </sx:flatFileReader>
+
+    <sx:recordMapping>
+      <messages>
+        <sx:groupBy fields="name[1]">
+          <sx:elementMap element="{name[1]}">
+            <sx:groupBy fields="name[1] name[2]">
+              <sx:elementMap element="{name[2]}">
+                <sx:onRecord>
+                  <sx:fieldElementMap field="value" element="{name[3]}"/>
+                </sx:onRecord>
+              </sx:elementMap>
+            </sx:groupBy>
+          </sx:elementMap>
+        </sx:groupBy>
+      </messages>
+    </sx:recordMapping>
+
+  </sx:recordContent>
+
+</sx:resources>
+

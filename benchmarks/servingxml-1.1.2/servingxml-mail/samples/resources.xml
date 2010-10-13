@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:jm="http://www.servingxml.com/extensions/javamail">
+
+  <sx:service id="pulp">
+    <!--  Our first task is to send an email with the pulp novel as an attachment   -->
+    <jm:sendMail subject="test"
+                 to="danielaparker@abc.ca"
+                 cc="danielaparker@efg.com">
+      <jm:mailAccount ref="myMailAccount"/>
+      <jm:message>
+
+        <!-- Put some HTML in the message body -->
+        <jm:part type="alternative">
+          <sx:transform>
+            <sx:document>
+              <xxx/>
+            </sx:document>
+            <sx:xslt ref="welcome/html"/>
+            <sx:xsltSerializer/>
+          </sx:transform>
+        </jm:part>
+          
+        <jm:attachment filename="pulp.pdf">
+          <sx:transform>
+            <sx:content ref="pulp"/>
+            <sx:xslt ref="novel/fo"/>
+            <fop:foSerializer/>
+          </sx:transform>
+        </jm:attachment>
+      </jm:message>
+      <sx:onError>
+        <!-- If send mail fails (e.g. no smtp host), just proceed with the next action -->
+        <!-- (the error will still be logged) -->
+      </sx:onError>
+    </jm:sendMail>
+                                        
+    <!--  Our second task is to write the pulp novel to a file   -->
+    <sx:transform>
+      <sx:content ref="pulp"/>
+      <sx:xslt ref="novel/fo"/>
+      <fop:foSerializer/>
+    </sx:transform>
+
+  </sx:service>
+
+  <!-- Set up this mail account, substituting your smtp host, display name, and email address -->
+  <!-- You will also need to enter the 'to' and 'cc' recipient addresses in the  jm:sendMail element -->
+  <jm:mailAccount id="myMailAccount"
+                  smtpHost="smtp1.abc.ca">
+    <jm:sender displayName="DP"
+                 emailAddress="danielaparker@abc.ca"/>
+  </jm:mailAccount>
+
+  <sx:document id="pulp">
+    <sx:urlSource url="data/pulp.xml"/>
+  </sx:document>
+
+  <sx:xslt id="novel/fo">
+    <sx:urlSource url="data/novel.xsl"/>
+  </sx:xslt>
+
+  <sx:xslt id="welcome/html">
+    <sx:urlSource url="data/welcome.xsl"/>
+  </sx:xslt>
+
+</sx:resources>
+
+

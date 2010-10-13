@@ -1,0 +1,17 @@
+Special thanks to the following individuals:
+
+Bob Bartholomay for contributions to the original Presenting XML project.
+John Austin for feedback and debugging assistance with the original Presenting XML project.
+Shaun Woodrow for a proposal for record variants, the "trades" example, and a proposal
+for a custom JDBC connection pool.
+Dimitrios Varsos for the "group by" problem, examples, and debugging.
+Pedro Mendoza for the "hot" example and the requirements that led to the sx:innerGroup
+and sx:outerGroup.
+Pierre-Alexandre Losson for the "fragment" example and the use case that led to the
+sx:processFragmentFilter element.
+Dale Chinault for contribution of SQL batch update code
+Gordon Zhang
+Anne Johnston
+Kenneth Westelinck
+Sajeev Nair
+

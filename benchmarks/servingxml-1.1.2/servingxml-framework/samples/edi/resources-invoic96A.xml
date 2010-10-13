@@ -1,0 +1,564 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="invoic96A-to-xml">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="Invoic_96A_1"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="Invoic_96A_1" name="Invoic96A">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="edifactFlatFile"/>
+      </sx:flatFileReader>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:recordContent>
+	
+  <sx:flatFile id="edifactFlatFile">
+    <sx:recordDelimiter value="'" escapeCharacter="?"/>
+    <!-- If a line is broken with a new line character, strip the new line character -->
+    <sx:recordDelimiter value="\r\n" continuationSequence="\r\n"/>
+    <sx:recordDelimiter value="\n" continuationSequence="\n"/>
+    <!-- if a ' character is found after a ? (?')-->
+    <!-- it is an escape sequence and should remain the ' character-->
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+        <sx:delimitedField name="segmentType"/>
+
+        <sx:when test="segmentType='UNA' or segmentType='UNA:'">
+          <sx:flatRecordType name='UNA'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+          </sx:flatRecordType>
+        </sx:when>
+
+        <sx:when test="segmentType='UNB'">
+          <sx:flatRecordType name='UNB'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+          </sx:flatRecordType>
+        </sx:when>
+
+        <sx:when test="segmentType='UNH'">
+          <sx:flatRecordType name='UNH'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE0062"/>
+            <sx:nonrepeatingGroup name="S009">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="S009">
+                <sx:delimitedField name="DE0065"/>
+                <sx:delimitedField name="DE0052"/>
+                <sx:delimitedField name="DE0054"/>
+                <sx:delimitedField name="DE0051"/>
+                <sx:delimitedField name="DE0057"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE0068"/>
+            <sx:nonrepeatingGroup name="S010">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="S010">
+                <sx:delimitedField name="DE0070"/>
+                <sx:delimitedField name="DE0073"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='BGM'">
+          <sx:flatRecordType name='BGM'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C002">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C002">
+                <sx:delimitedField name="DE1001"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE1000"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE1004"/>
+            <sx:delimitedField name="DE1225"/>
+            <sx:delimitedField name="DE4343"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='DTM'">
+          <sx:flatRecordType name='DTM'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C507">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C507">
+                <sx:delimitedField name="DE2005"/>
+                <sx:delimitedField name="DE2380"/>
+                <sx:delimitedField name="DE2379"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='PAI'">
+          <sx:flatRecordType name='PAI'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C534">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C534">
+                <sx:delimitedField name="DE4439"/>
+                <sx:delimitedField name="DE4431"/>
+                <sx:delimitedField name="DE4461"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE4435"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='FTX'">
+          <sx:flatRecordType name='FTX'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE4451"/>
+            <sx:delimitedField name="DE4453"/>
+            <sx:nonrepeatingGroup name="C107">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C107">
+                <sx:delimitedField name="DE4441"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C108">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C108">
+                <sx:delimitedField name="DE4440-1"/>
+                <sx:delimitedField name="DE4440-2"/>
+                <sx:delimitedField name="DE4440-3"/>
+                <sx:delimitedField name="DE4440-4"/>
+                <sx:delimitedField name="DE4440-5"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE3453"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='NAD'">
+          <sx:flatRecordType name='NAD'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE3035"/>
+            <sx:nonrepeatingGroup name="C082">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C082">
+                <sx:delimitedField name="DE3039"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C058">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C058">
+                <sx:delimitedField name="DE3124-1"/>
+                <sx:delimitedField name="DE3124-2"/>
+                <sx:delimitedField name="DE3124-3"/>
+                <sx:delimitedField name="DE3124-4"/>
+                <sx:delimitedField name="DE3124-5"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C080">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C080">
+                <sx:delimitedField name="DE3036-1"/>
+                <sx:delimitedField name="DE3036-2"/>
+                <sx:delimitedField name="DE3036-3"/>
+                <sx:delimitedField name="DE3036-4"/>
+                <sx:delimitedField name="DE3036-5"/>
+                <sx:delimitedField name="DE3045"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C059">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C059">
+                <sx:delimitedField name="DE3042-1"/>
+                <sx:delimitedField name="DE3042-2"/>
+                <sx:delimitedField name="DE3042-3"/>
+                <sx:delimitedField name="DE3042-4"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE3164"/>
+            <sx:delimitedField name="DE3229"/>
+            <sx:delimitedField name="DE3251"/>
+            <sx:delimitedField name="DE3207"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='FII'">
+          <sx:flatRecordType name='FII'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE3035"/>
+            <sx:nonrepeatingGroup name="C078">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C078">
+                <sx:delimitedField name="DE3194"/>
+                <sx:delimitedField name="DE3192-1"/>
+                <sx:delimitedField name="DE3192-2"/>
+                <sx:delimitedField name="DE6345"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C088">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C088">
+                <sx:delimitedField name="DE3433"/>
+                <sx:delimitedField name="DE1131-1"/>
+                <sx:delimitedField name="DE3055-1"/>
+                <sx:delimitedField name="DE3434"/>
+                <sx:delimitedField name="DE1131-2"/>
+                <sx:delimitedField name="DE3055-2"/>
+                <sx:delimitedField name="DE3432"/>
+                <sx:delimitedField name="DE3436"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE3207"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='RFF'">
+          <sx:flatRecordType name='RFF'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C506">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C506">
+                <sx:delimitedField name="DE1153"/>
+                <sx:delimitedField name="DE1154"/>
+                <sx:delimitedField name="DE1156"/>
+                <sx:delimitedField name="DE4000"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='CTA'">
+          <sx:flatRecordType name='CTA'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE3139"/>
+            <sx:nonrepeatingGroup name="C056">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C056">
+                <sx:delimitedField name="DE3413"/>
+                <sx:delimitedField name="DE3412"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='COM'">
+          <sx:flatRecordType name='COM'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C076">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C076">
+                <sx:delimitedField name="DE3148"/>
+                <sx:delimitedField name="DE3155"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType> 
+        </sx:when>
+        <sx:when test="segmentType='CUX'">
+          <sx:flatRecordType name='CUX'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:repeatingGroup name="C504" count="2">
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:repeatDelimiter value="+" escapeCharacter="?"/>
+              <!--<sx:segmentDelimiter value="+" escapeCharacter="?"/>-->
+              <sx:flatRecordType name="C504">
+                <sx:delimitedField name="DE6347"/>
+                <sx:delimitedField name="DE6345"/>
+                <sx:delimitedField name="DE6343"/>
+                <sx:delimitedField name="DE6348"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+            <sx:delimitedField name="DE5402"/>
+            <sx:delimitedField name="DE6341"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='PAT'">
+          <sx:flatRecordType name='PAT'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE4279"/>
+            <sx:nonrepeatingGroup name="C110">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C110">
+                <sx:delimitedField name="DE4277"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE4276-1"/>
+                <sx:delimitedField name="DE4276-2"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C112">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C112">
+                <sx:delimitedField name="DE2475"/>
+                <sx:delimitedField name="DE2009"/>
+                <sx:delimitedField name="DE2151"/>
+                <sx:delimitedField name="DE2152"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='PCD'">
+          <sx:flatRecordType name='PCD'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C501">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C501">
+                <sx:delimitedField name="DE5245"/>
+                <sx:delimitedField name="DE5482"/>
+                <sx:delimitedField name="DE5249"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='MOA'">
+          <sx:flatRecordType name='MOA'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C516">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C516">
+                <sx:delimitedField name="DE5025"/>
+                <sx:delimitedField name="DE5004"/>
+                <sx:delimitedField name="DE6345"/>
+                <sx:delimitedField name="DE6343"/>
+                <sx:delimitedField name="DE4405"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='ALC'">
+          <sx:flatRecordType name='ALC'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE5463"/>
+            <sx:nonrepeatingGroup name="C552">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C552">
+                <sx:delimitedField name="DE1230"/>
+                <sx:delimitedField name="DE5189"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE4471"/>
+            <sx:delimitedField name="DE1227"/>
+            <sx:nonrepeatingGroup name="C214">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C214">
+                <sx:delimitedField name="DE7161"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE7160-1"/>
+                <sx:delimitedField name="DE7160-2"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <!-- Detail segments -->
+        <sx:when test="segmentType='LIN'">
+          <sx:flatRecordType name='LIN'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE1082"/>
+            <sx:delimitedField name="DE1229"/>
+            <sx:nonrepeatingGroup name="C212">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C212">
+                <sx:delimitedField name="DE7140"/>
+                <sx:delimitedField name="DE7143"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C829">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C829">
+                <sx:delimitedField name="DE5495"/>
+                <sx:delimitedField name="DE1082"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE1222"/>
+            <sx:delimitedField name="DE7083"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='PIA'">
+          <sx:flatRecordType name='PIA'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE4347"/>
+            <sx:nonrepeatingGroup name="C212">
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <!--<sx:segmentDelimiter value="+" escapeCharacter="?"/>-->
+              <sx:flatRecordType name="C212">
+                <sx:delimitedField name="DE7140"/>
+                <sx:delimitedField name="DE7143"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='IMD'">
+          <sx:flatRecordType name='IMD'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE7077"/>
+            <sx:delimitedField name="DE7081"/>
+            <sx:nonrepeatingGroup name="C273">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C273">
+                <sx:delimitedField name="DE7009"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE7008-1"/>
+                <sx:delimitedField name="DE7008-2"/>
+                <sx:delimitedField name="DE3435"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE7383"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='QTY'">
+          <sx:flatRecordType name='QTY'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C186">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C186">
+                <sx:delimitedField name="DE6063"/>
+                <sx:delimitedField name="DE6060"/>
+                <sx:delimitedField name="DE6411"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='PRI'">
+          <sx:flatRecordType name='PRI'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:nonrepeatingGroup name="C509">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C509">
+                <sx:delimitedField name="DE5125"/>
+                <sx:delimitedField name="DE5118"/>
+                <sx:delimitedField name="DE5375"/>
+                <sx:delimitedField name="DE5387"/>
+                <sx:delimitedField name="DE5284"/>
+                <sx:delimitedField name="DE6411"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE5213"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='TAX'">
+          <sx:flatRecordType name='TAX'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE5283"/>
+            <sx:nonrepeatingGroup name="C241">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C241">
+                <sx:delimitedField name="DE5153"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+                <sx:delimitedField name="DE5152"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:nonrepeatingGroup name="C533">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C533">
+                <sx:delimitedField name="DE5289"/>
+                <sx:delimitedField name="DE1131"/>
+                <sx:delimitedField name="DE3055"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE5286"/>
+            <sx:nonrepeatingGroup name="C243">
+              <sx:segmentDelimiter value="+" escapeCharacter="?"/>
+              <sx:fieldDelimiter value=":" escapeCharacter="?"/>
+              <sx:flatRecordType name="C243">
+                <sx:delimitedField name="DE5279"/>
+                <sx:delimitedField name="DE1131-1"/>
+                <sx:delimitedField name="DE3055-1"/>
+                <sx:delimitedField name="DE5278"/>
+                <sx:delimitedField name="DE5273"/>
+                <sx:delimitedField name="DE1131-2"/>
+                <sx:delimitedField name="DE3055-2"/>
+              </sx:flatRecordType>
+            </sx:nonrepeatingGroup>
+            <sx:delimitedField name="DE5305"/>
+            <sx:delimitedField name="DE3446"/>
+          </sx:flatRecordType>
+        </sx:when>
+		
+        <!-- Trailer segments -->
+        <sx:when test="segmentType='UNS'">
+          <sx:flatRecordType name='UNS'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE0081"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='UNT'">
+          <sx:flatRecordType name='UNT'>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="DE0074"/>
+            <sx:delimitedField name="DE0062"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='UNZ'">
+          <sx:flatRecordType name='UNZ'>
+            <sx:fieldDelimiter value="+" escapeCharacter="?"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F0036"/>
+            <sx:delimitedField name="F0020"/>
+          </sx:flatRecordType>
+        </sx:when>
+
+        <sx:otherwise>
+          <sx:flatRecordType name='ERROR'>
+            <sx:delimitedField name="segmentType"/>
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:fileSource file="data/{$rootName}.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <sx:batchedRecordWriter batchSize="50">
+        <sx:flatFileWriter>
+          <sx:fileSink file="intermediate/{$rootName}-{$sx:batchSequenceNumber}.csv"/>
+          <sx:flatFile ref="countriesFile"/>
+        </sx:flatFileWriter>
+      </sx:batchedRecordWriter>
+    </sx:recordStream>
+
+    <sx:recordStream>
+      <sx:directoryReader directory="intermediate">
+        <sx:fileFilter pattern="countries.*[.]csv"/>
+      </sx:directoryReader>
+      <sx:processRecord>
+        <sx:parameter name="output-file">
+          <sx:findAndReplace searchFor="(countries.*)[.]csv" replaceWith ="$1.xml">
+            <sx:toString value="{name}"/>
+          </sx:findAndReplace>
+        </sx:parameter>
+        <sx:serialize>
+          <sx:xsltSerializer>
+            <sx:fileSink directory="output" file="{$output-file}"/>
+          </sx:xsltSerializer>
+          <sx:transform>
+            <sx:content ref="countries"/>
+          </sx:transform>
+        </sx:serialize>
+      </sx:processRecord>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:recordContent id="countries">
+    <sx:flatFileReader>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="countriesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="countriesToXmlMapping">
+    <countries>
+      <sx:onRecord>
+        <country>
+          <sx:fieldElementMap field="name" element="countryName"/>
+          <sx:fieldAttributeMap field="code" attribute="countryCode"/>
+        </country>
+      </sx:onRecord>
+    </countries>
+  </sx:recordMapping>
+
+</sx:resources>
+

@@ -1,0 +1,606 @@
+<reference id="ref-common-elements"
+  xmlns:sx="http://www.servingxml.com/core">
+  <title>Common Elements</title>  
+  <refentry id="idref-attributes"  xreflabel="idref-attributes">
+<refnamediv>
+  <refname>id ref attributes</refname>
+  <refpurpose>Common id ref attributes for referencing top level elements</refpurpose>
+</refnamediv>
+
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>id</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>An identifier of an element instance.  This id is the target for references by <sgmltag class="attribute">ref</sgmltag> attributes.</entry>
+</row>
+<row>
+<entry>ref</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+The resources defined in a resources script may be given ids and referred to by reference,
+as shown below.
+</para>
+<figure id="sax-pipeline2"  xreflabel="sax-pipeline2">
+  <title>SAX pipeline with references</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="myPreFilter"/>
+        <sx:content ref="myFilter"/>     
+        <sx:content ref="myPostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:saxFilter id="myPreFilter" class="PreFilter"/>
+  <sx:xslt id="myFilter">
+    <sx:urlSource url="filter.xsl"/>
+  </sx:xslt>
+  <sx:saxFilter id="myPostFilter" class="PostFilter"/>     
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Note that we could have written <code><![CDATA[<sx:saxFilter ref="myPreFilter"/>]]></code>,
+but instead we wrote <code><![CDATA[<sx:content ref="myPreFilter"/>]]></code>, 
+substituting the abstract component <xref linkend="sx:content"/> for the derived <xref linkend="sx:saxFilter"/>.
+Identifiers given to components must be unique up to
+the abstract component level, for instance, a service and a filter may both be named "myPipeline",
+but a <xref linkend="sx:saxFilter"/> and a <xref linkend="sx:xslt"/> must be identified differently.
+</para>
+</refsection>
+    
+  </refentry>
+
+<refentry id="sx:defaultValue" xreflabel="sx:defaultValue">
+<refnamediv>
+  <refname>sx:defaultValue</refname>
+  <refpurpose>Defines a default value for a parameter or field</refpurpose>
+</refnamediv>
+<indexterm><primary>defaultValue</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string value that may contain a parameter inside curly braces, e.g. "{$my-param}.xml".</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>An XPath expression evaluated against an <xref linkend="sx:content"/> 
+substitutable child element, or, if none, the default XML document.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, if there is a <sgmltag>select</sgmltag> attribute, 
+            an <xref linkend="sx:content"/> element.  If supplied, the select 
+            expression will be evaluated against this content, otherwise it will
+            be evaluated against the default content.
+</para>
+</listitem>
+<listitem><para>Optionally, if there is no <sgmltag>field</sgmltag>, 
+                                   <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <sgmltag>sx:defaultValue</sgmltag> element is used in a <xref linkend="sx:parameter"/> element to define a 
+default value for a parameter.
+</para>
+<para>
+The default value may be specified either by a <sgmltag class="attribute">value</sgmltag> attribute
+or by the content. This value is only a default value, and if a run-time parameter is passed with the 
+same name, the run-time value will be used in place of the default value. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:parameter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of initializing a parameter to a constant.</title>
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate"><sx:defaultValue>yes</sx:defaultValue></sx:parameter>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:documentation" xreflabel="sx:documentation">
+<refnamediv>
+  <refname>sx:documentation</refname>
+  <refpurpose>To annotate scripts with human readable 
+    documentation.  sx:documentation elements may appear anywhere in resources
+    scripts, and are ignored by the processor.</refpurpose>
+</refnamediv>
+<indexterm><primary>documentation</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+  <para>None</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Human readable documentation.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:parameter" xreflabel="sx:parameter">
+<refnamediv>
+  <refname>sx:parameter</refname>
+  <refpurpose>Parameter</refpurpose>
+</refnamediv>
+<indexterm><primary>parameter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the parameter.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string value that may reference a parameter or field name inside curly braces, e.g. "{$my-param}.xml".</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>An XPath expression evaluated against an <xref linkend="sx:content"/> 
+substitutable child element, or, if none, the default XML document.
+</entry>
+</row>
+<row>
+<entry>type</entry>
+<entry>No</entry>
+<entry><xref linkend="xml-schema-types"/></entry>
+<entry>The parameter value type.  Defaults to <sgmltag>xs:string</sgmltag>  The input parameter values will be converted to this type 
+if required.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+    Optionally, a <xref linkend="sx:defaultValue"/> element.
+  </para>
+</listitem>
+<listitem><para>Optionally, if there is a <sgmltag>select</sgmltag> attribute, 
+            an <xref linkend="sx:content"/> element.  If supplied, the select 
+            expression will be evaluated against this content, otherwise it will
+            be evaluated against the default content.
+</para>
+</listitem>
+<listitem><para>Optionally, if there is no <sgmltag>field</sgmltag>, 
+                                   <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <sgmltag>sx:parameter</sgmltag> element is used to define a parameter as a QName-value pair,
+for example,
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate">no</sx:parameter>
+]]></programlisting>
+The value of the parameter may be specified either by a <code>value</code> attribute
+or by the content. 
+</para>
+<para>
+A parameter defined inside an element is visible to all siblings and all their descendents.
+It is not visible to ancestors.  If the parameter has the same QName as a parameter in an ancestor,
+a new parameter value replaces the old one within the scope of siblings and descendents, but
+not in the scope of ancestors, the old value is still visible to ancestors. It is not possible
+to change the parameter value of an ancestor, changes are visible to siblings and descendents
+only. This is to avoid side effects.
+</para>
+<para>
+The application processing the resources script may pass additional parameters to the
+script.  For example, the console app may pass the parameter <code>validate</code> like this:
+<programlisting>
+<![CDATA[
+java -jar dir/servingxml.jar -r resources.xml myPipeline validate=yes
+    < input.xml > output.xml
+]]></programlisting>
+</para>
+<para>
+If you want to define a default value for the parameter, you must do so with 
+a <sgmltag>sx:defaultValue</sgmltag> element as follows.
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate"><sx:defaultValue>no</sx:defaultValue></sx:parameter>
+]]></programlisting>
+A passed parameter cannot override a parameter defined in a resources script unless
+the script's value is a default value, enclosed by a <sgmltag>sx:defaultValue</sgmltag> element.
+More generally, a parameter in an ancestor cannot override a parameter in a descendent
+unless the descendant's value is a default value.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of initializing a parameter to a constant.</title>
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate">yes</sx:parameter>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Example of initializing a parameter with the output of a transformation.</title>
+<programlisting>
+<![CDATA[
+  <sx:parameter name="myParam">
+    <sx:serialize>
+      <sx:transform>
+        <sx:xslt> 
+          <sx:urlSource url="styles/transform1.xsl"/> 
+        </sx:xslt> 
+        <sx:content ref="flat1"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:parameter>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Example of initializing a parameter using regular expression substitution on a record field called "name"</title>
+<programlisting>
+<![CDATA[
+  <sx:parameter name="output-file-name">
+    <sx:findAndReplace searchFor="(books.*)[.]txt" replaceWith ="$1-new.txt"><sx:toString value="{name}"/></sx:findAndReplace>
+  </sx:parameter>   
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:defaultValue"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:property" xreflabel="sx:property">
+<refnamediv>
+  <refname>sx:property</refname>
+  <refpurpose>Property</refpurpose>
+</refnamediv>
+<indexterm><primary>property</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>key</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>Deprecated, use <sgmltag class="attribute">name</sgmltag> instead.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The custom property name.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The custom property value.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:systemProperty" xreflabel="sx:systemProperty">
+<refnamediv>
+  <refname>sx:systemProperty</refname>
+  <refpurpose>System property</refpurpose>
+</refnamediv>
+<indexterm><primary>systemProperty</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>key</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>Deprecated, use <sgmltag class="attribute">name</sgmltag> instead.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The system property name.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The value of a system property.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:validator" xreflabel="sx:validator">
+  <refnamediv>
+<refname>sx:validator</refname>
+<refpurpose>Abstract element standing for a validator</refpurpose>
+</refnamediv>
+
+<indexterm><primary>validator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any 
+<sgmltag>sx:validator</sgmltag> specialization, such as <xref linkend="sx:recordValidator"/>,
+<xref linkend="sx:fieldValidator"/>, or <xref linkend="msv:schemaValidator"/>. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordValidator"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldValidator"/>
+</listitem>
+<listitem>
+<xref linkend="msv:schemaValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+
+<refentry id="sx:removeEmptyElementFilter" xreflabel="sx:removeEmptyElementFilter">
+<refnamediv>
+  <refname>sx:removeEmptyElementFilter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:removeEmptyElements"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>removeEmptyElementFilter</primary></indexterm>
+</refentry>
+
+<refentry id="sx:withParameters" xreflabel="sx:withParameters">
+<refnamediv>
+  <refname>sx:withParameters</refname>
+  <refpurpose>Declare the parameters that need to be passed to an XSLT processor</refpurpose>
+</refnamediv>
+<indexterm><primary>withParameters</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>parameters</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all parameters."
+A namespace prefix followed by a colon followed by the value '*' means all parameters belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>exceptParameters</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all parameters."
+A namespace prefix followed by a colon followed by the value '*' means all parameters belonging to the namespace. 
+</entry>
+</row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <xref linkend="sx:withParameters"/> declares the parameters that need to be passed to an XSLT processor
+The <code>parameters</code> attribute is mandatory and identifies the 
+parameters that need to be passed.  The value '*' may be used to mean "all parameters", 
+exceptions may be identified with the <code>exceptParameters</code> attribute.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:removeEmptyAttributes"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+</reference>
+

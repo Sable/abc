@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:include href="flatfile-hot.xml"/>
+
+  <sx:service id="hot1">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="hot1"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="hot1">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="hotFlatFile"/>
+      </sx:flatFileReader>
+      <sx:recordValidator>
+        <msv:schemaValidator>
+          <sx:urlSource url="data/hot-record.xsd"/>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+      <sx:customRecordFilter class="flat2xml.HotRecordFilter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="hot1ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="hot1ToXmlMapping">
+    <hot>
+      <sx:onRecord recordType="bkp84">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+          <sx:fieldAttributeMap field="calculatedAmount"  attribute="amount"/>
+          <sx:fieldAttributeMap field="currency" attribute="currency"/>
+        </sx:elementMap>
+      </sx:onRecord>
+      <sx:onRecord recordType="bkt06">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+        </sx:elementMap>
+      </sx:onRecord>
+      <sx:onRecord recordType="other">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+        </sx:elementMap>
+      </sx:onRecord>
+    </hot>
+  </sx:recordMapping>
+    
+
+</sx:resources>

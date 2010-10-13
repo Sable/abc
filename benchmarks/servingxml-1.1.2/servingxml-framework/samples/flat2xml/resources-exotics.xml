@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="exotics">
+	<sx:serialize>
+	  <sx:transform>
+		<sx:content ref="exotics"/>
+	  </sx:transform>
+	</sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="exotics">
+	<sx:flatFileReader>
+	  <sx:fileSource file="data/exotics.txt"/>
+	  <sx:flatFile ref="exoticsFlatFile"/>
+	</sx:flatFileReader>
+	<sx:recordMapping ref="exoticsToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="exoticsFlatFile">
+	<sx:flatFileBody>
+	  <sx:flatRecordTypeChoice>
+		<sx:fieldDelimiter value="|"/>
+		<sx:delimitedField name="recordType"/>
+		<sx:delimitedField name="tradeId"/>
+		<sx:delimitedField name="style"/>
+		<sx:when test="recordType='Cap'">
+		  <sx:flatRecordType name='Cap'>
+			<sx:fieldDelimiter value="|"/>
+			<sx:delimitedField name="recordType"/>
+			<sx:delimitedField name="tradeId"/>
+			<sx:delimitedField name="placeholder1"/>
+			<sx:delimitedField name="currency"/>
+			<sx:delimitedField name="buySell"/>
+			<sx:delimitedField name="maturityDate"/>
+			<sx:delimitedField name="strike"/>
+		  </sx:flatRecordType>
+		</sx:when>
+		<sx:when test="recordType='SWAP' and style='FLOAT'">
+		  <sx:flatRecordType name='SwapFloatingLeg'>
+			<sx:fieldDelimiter value="|"/>
+			<sx:delimitedField name="recordType"/>
+			<sx:delimitedField name="tradeId"/>
+			<sx:delimitedField name="style"/>
+			<sx:delimitedField name="side"/>
+			<sx:delimitedField name="currency"/>
+			<sx:delimitedField name="index"/>
+			<sx:delimitedField name="maturityDate"/>
+			<sx:delimitedField name="notional"/>
+		  </sx:flatRecordType>
+		</sx:when>
+		<sx:when test="recordType='SWAP' and style='FIX'">
+		  <sx:flatRecordType name='SwapFixedLeg'>
+			<sx:fieldDelimiter value="|"/>
+			<sx:delimitedField name="recordType"/>
+			<sx:delimitedField name="tradeId"/>
+			<sx:delimitedField name="style"/>
+			<sx:delimitedField name="side"/>
+			<sx:delimitedField name="placeholder1"/>
+			<sx:delimitedField name="currency"/>
+		  </sx:flatRecordType>
+		</sx:when>
+	  </sx:flatRecordTypeChoice>
+	</sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="exoticsToXmlMapping">
+	<exotics>
+	  <sx:groupBy fields="tradeId">
+		<trade><option>
+		  <sx:choose>
+			<sx:when test="recordType='Cap' or (recordType='SWAP' and style='FLOAT')">
+			  <sx:toString value="{recordType}"/>
+			</sx:when>
+		  </sx:choose></option>
+		  <sx:fieldAttributeMap field="tradeId" attribute="tradeId"/>
+		  <sx:onRecord recordType="Cap">
+			  <sx:choose>
+				<sx:when test="buySell='BUY'">
+		 	<capBuy>
+			  <sx:fieldElementMap field="buySell" element="buySell"/>
+			  <sx:elementMap element="maturityDate">
+				<sx:fieldAttributeMap field="maturityDate" attribute="original"/>
+			  	<sx:choose>
+			  		<sx:when test="maturityDate='2010/04/28'">
+			  			<sx:toString value="2001/04/28"/>
+			  		</sx:when>
+			  	</sx:choose>
+			  </sx:elementMap>
+			  <sx:fieldElementMap field="strike" element="strike"/>
+			</capBuy>
+				</sx:when>
+				<sx:otherwise>
+		 	<capSell>
+			  <sx:fieldElementMap field="buySell" element="buySell"/>
+			  <sx:elementMap element="maturityDate">
+				<sx:fieldAttributeMap field="maturityDate" attribute="original"/>
+			  	<sx:choose>
+			  		<sx:when test="maturityDate='2010/04/28'">
+			  			<sx:toString value="2001/04/28"/>
+			  		</sx:when>
+			  	</sx:choose>
+			  </sx:elementMap>
+			  <sx:fieldElementMap field="strike" element="strike"/>
+			</capSell>
+				</sx:otherwise>
+			  </sx:choose>
+		  </sx:onRecord>
+		  <sx:onRecord recordType="SwapFloatingLeg">
+			<swapLeg>
+			  <sx:fieldAttributeMap field="style" attribute="style"/>
+			  <sx:fieldElementMap field="side" element="side"/>
+			  <maturityDate>
+				<sx:fieldAttributeMap field="maturityDate" attribute="original"/>
+			  	<sx:choose>
+			  		<sx:when test="maturityDate='2010/04/28'">
+			  			<sx:toString value="2001/04/29"/>
+			  		</sx:when>
+			  	</sx:choose>
+			  </maturityDate>
+			  <sx:fieldElementMap field="currency" element="currency"/>
+			  <sx:fieldElementMap field="index" element="index"/>
+			  <sx:fieldElementMap field="notional" element="notional"/>
+			</swapLeg>
+		  </sx:onRecord>
+		  <sx:onRecord recordType="SwapFixedLeg">
+			<swapLeg>
+			  <sx:fieldAttributeMap field="style" attribute="style"/>
+			  <sx:fieldElementMap field="side" element="side"/>
+			</swapLeg>
+		  </sx:onRecord>
+		</trade>
+	  </sx:groupBy>
+	</exotics>
+  </sx:recordMapping>
+
+</sx:resources>
+

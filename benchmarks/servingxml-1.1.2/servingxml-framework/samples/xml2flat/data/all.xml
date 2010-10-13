@@ -1,0 +1,10 @@
+<all>
+    <field1>val1</field1>
+    <field2>val2</field2>
+    <field3>val3</field3>
+    <compositeA attr1="av11" attr2="av21" attr3="av31"/> 
+    <compositeA attr1="av21" attr2="av22" attr3="av23"/>
+    <compositeA attr1="av31" attr2="av32" attr3="av33"/>
+    <compositeB attrx="avx" attry="avy"/> 
+</all>
+

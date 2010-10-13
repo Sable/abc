@@ -1,0 +1,129 @@
+Coding Standards for Contributions
+
+Licensing
+=========
+
+Any contributions should be distributed with the Mozilla Public License 
+Version 1.1 header at the top of the file, see any existing Java file in 
+the distribution.  If you are contributing a new file, include your name 
+as the original developer, and your name or organization as the copyright 
+holder.  If you are modifying an existing file, include your name as a 
+contributor.  
+
+Coding Style
+============
+
+1.  K&R brace style, i.e.
+
+    if (expression) {
+    }
+
+2.  Indent two spaces.
+
+3.  As a general rule, declare variables at assignment time.  Prefer
+
+      int x = 1;
+      
+    to
+    
+      int x;
+      x = 1;
+      
+even if it's not at the start of a code block.
+      
+4.  Always import classes explicitly, i.e. always prefer
+
+  import java.util.HashMap;
+    
+to
+
+  import java.util.*;  
+
+5.  Don't use adornments on data member names.  Follow this convention:
+
+public class A {
+  private int x;
+  
+  public A(int x) {
+    this.x = x;
+  }
+  
+  public int getX() {
+    return x;
+  }
+}
+
+6.  Private data members should be declared at the top of the class.
+The main() method, if there is one, should be declared at the bottom.
+Inner classes should be defined at the bottom.
+
+7.  Data members should normally be declared private.  Avoid protected data members.
+
+
+Naming Conventions
+==================
+
+1.  For class names, use mixed case, e.g. StreamFilter.  Prefer SqlFilter to 
+SQLFilter.
+
+2.  For method names, use first letter lowercase, afterwards mixed case.  Prefer
+newXmlFilter to newXMLFilter.
+
+3.  For package names, use all lowercase.
+
+
+Coding Practices 
+================
+   
+1.  Normally exceptions shouldn't be swallowed silently, i.e., normally there 
+shouldn't be code like
+
+try {
+  //  some IO code
+} catch (java.io.IOException e) {
+  //  no rethrow or handling
+}
+
+When rethrowing a new exception, use an exception constructor that takes a nested exception
+so as not to lose stack trace information, e.g.
+
+try {
+  //  some IO code 
+} catch (java.io.IOException e) {
+  throw new ConfigurationException("message",e);
+}
+
+If an exception is swallowed for a good reason, include a comment.
+
+2.  Don't use println to print trace or log messages.  Use the logging api instead.
+The logging api trace methods take className and methodName as arguments.  For
+consistency, take the following approach:
+
+class A {
+  private static final String className = A.class.getName();
+  
+  public void doSomething() {
+    final String methodName = "doSomething";
+    
+    SystemResourceServices.getContext().trace(className, methodName, "something",3);
+  }
+}
+
+3.  Try to avoid extending concrete classes.  Prefer extending abstract classes
+or implementing interfaces.
+
+4.  packages shouldn't have circular references vis a vis other packages
+(e.g. com.servingxml.resources uses classes in 
+com.servingxml.components, but not the other way around.)
+    
+
+Documentation
+=============
+
+Classes and methods should have javadoc comments.
+
+Testing
+=======
+
+All significant functionality should be accompanyied by junit test cases in 
+the tests directory.  

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="edi-tests/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-edi-to-xml"/>
+  </sx:service>
+
+  <sx:transform id="t:test-edi-to-xml">
+    <sx:assert
+      test="fn:deep-equal(fn:document('edi-tests/edi-output'),fn:document('edi-tests/expected-output'))">
+test-edi-to-xml:  Output 
+      <sx:content ref="t:edi-output"/> 
+      does not match expected output 
+      <sx:content ref="t:expected-output"/>
+    </sx:assert>
+  </sx:transform>
+
+
+  <sx:flatFileReader id="t:edi-input">
+    <sx:inlineSource>a+b:c+d+e'a+b'a+++d'a+:b+c'a'
+    </sx:inlineSource>
+    <sx:recordDelimiter value="'"/>
+    <sx:flatFile>
+      <sx:flatFileBody>
+        <sx:flatRecordType name="title">
+          <sx:fieldDelimiter value="+"/>
+          <sx:delimitedField name="A"/>
+          <sx:repeatingGroup name="B">
+            <sx:repeatDelimiter value="+"/>
+            <sx:segmentDelimiter value="+"/>
+            <sx:flatRecordType name="B">
+              <sx:fieldDelimiter value=":"/>
+              <sx:delimitedField name="B1"/>
+              <sx:delimitedField name="B2"/>
+              <sx:delimitedField name="B3"/>
+            </sx:flatRecordType>
+          </sx:repeatingGroup>
+          <sx:delimitedField name="C"/>
+          <sx:delimitedField name="D"/>
+        </sx:flatRecordType>
+      </sx:flatFileBody>
+    </sx:flatFile>
+  </sx:flatFileReader>
+
+  <sx:document id="t:expected-output"><examples><title><A>a</A><B><B1>b</B1><B2>c</B2></B><C>d</C><D>e</D></title><title><A>a</A><B><B1>b</B1></B></title><title><A>a</A><D>d</D></title><title><A>a</A><B><B2>b</B2></B><C>c</C></title><title><A>a</A></title></examples></sx:document>
+  <sx:transform id="t:edi-output">
+    <sx:recordContent ref="t:edi-content"/>
+    <sx:removeEmptyElements elements="*"/>
+  </sx:transform>
+
+  <sx:recordContent id="t:edi-content">
+    <sx:flatFileReader ref="t:edi-input"/>
+    <sx:recordMapping>
+      <examples>
+        <sx:onRecord>
+          <title>
+            <sx:fieldElementMap field="A" element="A"/>
+            <sx:subrecordMapping repeatingGroup="B">
+              <B>
+                <sx:onRecord>
+                  <sx:fieldElementMap field="B1" element="B1"/>
+                  <sx:fieldElementMap field="B2" element="B2"/>
+                  <sx:fieldElementMap field="B3" element="B3"/>
+                </sx:onRecord>
+              </B>
+            </sx:subrecordMapping>
+            <sx:fieldElementMap field="C" element="C"/>
+            <sx:fieldElementMap field="D" element="D"/>
+          </title>
+        </sx:onRecord>
+      </examples>
+    </sx:recordMapping>
+  </sx:recordContent>
+
+</sx:resources>
+

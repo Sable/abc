@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/wrap/"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-1"/>
+  </sx:service>
+
+  <sx:transform id="t:test-1"> 
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/wrap/wrapped-1'),fn:document('elements/wrap/expected-1'))">
+wrap-test-1:  Output
+      <sx:content ref="t:wrapped-1"/> 
+      does not match expected output
+      <sx:content ref="t:expected-1"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:document id="t:document"><A>value</A></sx:document>
+
+  <sx:document id="t:expected-1">
+    <wrap><A>value</A></wrap>
+  </sx:document>
+
+  <sx:wrap id="t:wrapped-1">
+    <wrap><sx:content ref="t:document"/></wrap>
+  </sx:wrap>
+
+</sx:resources>
+

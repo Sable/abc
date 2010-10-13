@@ -1,0 +1,16 @@
+<project basedir="." default="build.extensions">
+  <!-- You can exclude an optional extension by commenting out the ant task -->
+  <target name="build.extensions">
+    <ant antfile="build.xml" dir="servingxml-msv" target="${ext.target}"/>
+    <ant antfile="build.xml" dir="servingxml-mail" target="${ext.target}"/> 
+    <ant antfile="build.xml" dir="servingxml-fop" target="${ext.target}"/>
+    <ant antfile="build.xml" dir="servingxml-edtftpj" target="${ext.target}"/> 
+    <ant antfile="build.xml" dir="servingxml-saxon" target="${ext.target}"/> 
+    <!-- <ant antfile="build.xml" dir="./extensions/poi" target="${ext.target}"/> -->
+    <ant antfile="build.xml" dir="servingxmlx" target="${ext.target}"/> 
+    <!-- <ant antfile="build.xml" dir="./extensions/webservices" target="${ext.target}"/>  -->
+    <!-- <ant antfile="build.xml" dir="./extensions/servlet" target="${ext.target}"/>  -->
+    <!-- ant antfile="build.xml" dir="servingxml-poi" target="${ext.target}"/ --> 
+  </target>
+</project>
+

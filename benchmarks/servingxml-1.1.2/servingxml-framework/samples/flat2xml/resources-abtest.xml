@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="abtest">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="data"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="data">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/abtest.txt"/>
+      <sx:flatFile ref="flatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="abtestToXml"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="flatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="match">
+        <sx:positionalField name="first" width="2"/>
+        <sx:positionalField name="second" width="4"/>
+        <sx:positionalField name="third" width="2"/>
+        <sx:positionalField name="fourth" width="2"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="abtestToXml">
+    <Recs>
+      <sx:onRecord>
+        <Rec>
+          <sx:fieldElementSequenceMap match="first[text()='AB']" select="'SOUTH'" element="First"/>
+          <sx:fieldElementSequenceMap match="first[text()='AC']" select="'WEST'" element="First"/>
+          <sx:fieldElementSequenceMap field="second" element="Second"/>
+          <sx:fieldElementSequenceMap match="third[text()='CD']" select="'01'" element="Third"/>
+          <sx:fieldElementSequenceMap match="third[text()!='CD']" select="'02'" element="Third"/>
+          <sx:fieldElementSequenceMap field="fourth" element="Last"/>
+        </Rec>
+      </sx:onRecord>
+    </Recs>
+  </sx:recordMapping>
+
+</sx:resources>
+

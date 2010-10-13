@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="compare-documents">
+    <sx:task ref="test-documents-are-equal"/>
+  </sx:service>
+
+  <sx:document id="odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:document id="another-odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:serialize id="test-documents-are-equal">
+    <sx:transform>
+      <sx:choose>
+        <sx:when test="fn:deep-equal(fn:document('odd-element-document'),
+                     fn:document('another-odd-element-document'))">
+          <sx:document>
+            <result>equal</result>
+          </sx:document>
+        </sx:when>
+        <sx:otherwise>
+          <sx:document>
+            <result>unequal</result>
+          </sx:document>
+        </sx:otherwise>
+      </sx:choose>
+    </sx:transform>
+  </sx:serialize>
+
+</sx:resources>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mytest>
+  <field1>a</field1>
+  <field2>b</field2>
+  <detail>
+    <field1>a</field1>
+    <field2>b</field2>
+  </detail>
+  <detail>
+    <field1>a</field1>
+    <field2>b</field2>
+  </detail>
+  <message>
+    <message>test message 1</message>
+    <field2>a</field2>
+  </message>
+  <message>
+    <message>test message 3</message>
+    <field2>a</field2>
+  </message>
+</mytest>

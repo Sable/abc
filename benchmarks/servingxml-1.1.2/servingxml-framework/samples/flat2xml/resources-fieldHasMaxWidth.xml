@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="fieldHasMaxWidth">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="fieldHasMaxWidthDoc"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="fieldHasMaxWidthDoc" name="document">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/fieldHasMaxWidth.txt"/>
+      <sx:flatFile ref="fieldHasMaxWidthFile"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:flatFile id="fieldHasMaxWidthFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="record">
+        <sx:fieldDelimiter>
+          <sx:whitespaceSeparator/>
+        </sx:fieldDelimiter>
+        <sx:delimitedField name="field1" maxWidth="3"/>
+        <sx:delimitedField name="field2" maxWidth="4"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

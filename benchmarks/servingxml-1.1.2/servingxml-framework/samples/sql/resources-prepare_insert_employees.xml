@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+
+      <sx:recordValidator>
+        <msv:schemaValidator>
+          <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+            <xs:element name="employee" type="EmployeeType"/>
+            <xs:complexType name="EmployeeType">
+              <xs:sequence>
+                <xs:element name="EMPNO" type="xs:integer"/>
+                <xs:element name="NAME" type="xs:string"/>
+                <xs:element name="JOB" type="xs:string"/>
+                <xs:element name="MGR" type="xs:integer"/>
+                <xs:element name="HIREDATE" type="xs:date"/>
+                <xs:element name="SAL" type="xs:decimal"/>
+                <xs:element name="COMM" type="xs:decimal" minOccurs="0"/> 
+                <xs:element name="DEPTNO" type="xs:integer"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:schema>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a database table -->
+        <sx:sqlWriter ref="discardWriter"/> 
+        <sx:discardHandler>
+          <sx:log message="{$sx:message}"/>
+        </sx:discardHandler>
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlWriter id="employeesWriter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>                                                                                                                        
+      <!-- Because the SQL insert executes a prepared statement, values must be
+            associated with appropriate types.  In this example, because these values are 
+            coming from a SQL query source, they will already be associated with SQL types, 
+            and no further action is really necessary.  In the case of other data sources, however,
+            values by default will be associated with string types, and may need
+            to be recast in parameter assignments, as shown below.
+      -->
+      <sx:parameter name="employee-no" value="{EMPNO}" type="xs:long"/>
+      <sx:parameter name="mgr" value="{MGR}" type="xs:long"/>
+      <sx:parameter name="hiredate" value="{HIREDATE}" type="xs:date"/>              
+      <sx:parameter name="salary" value="{SAL}" type="xs:decimal"/>              
+      <sx:parameter name="commission" value="{COMM}" type="xs:decimal"/>              
+      <sx:sqlPrepare>
+        INSERT INTO EMP_HISTORY(EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM) 
+        VALUES({$employee-no},{NAME},{JOB}, {$mgr}, {$hiredate},  {$salary}, {$commission})
+      </sx:sqlPrepare>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>                                                                              
+
+  <sx:sqlWriter id="discardWriter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+      <sx:parameter name="employee-no" value="{EMPNO}" type="xs:long"/>
+      <sx:parameter name="mgr" value="{MGR}" type="xs:long"/>
+      <sx:parameter name="hiredate" value="{HIREDATE}" type="xs:date"/>              
+      <sx:parameter name="salary" value="{SAL}" type="xs:decimal"/>              
+      <sx:parameter name="commission" value="{COMM}" type="xs:decimal"/>              
+      <sx:sqlPrepare>
+        INSERT INTO EMP_DISCARD(MESSAGE, EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, 
+                                COMM) 
+        VALUES({$message}, {$employee-no}, {NAME}, {JOB}, {$mgr}, {$hiredate},
+               {$salary}, {$commission})
+      </sx:sqlPrepare>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>                                                                              
+                                                              
+  <sx:sqlReader id="employeesReader">                         
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

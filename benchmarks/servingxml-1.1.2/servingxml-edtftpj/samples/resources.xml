@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                         xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  
+  <edt:ftpClient id="sourceforge" host="upload.sourceforge.net" 
+                 user="anonymous" password="danielaparker@abc.ca"/>
+  
+  <sx:service id="books">
+    <sx:transform>
+      <sx:xsltSerializer>
+        <edt:ftpSink remoteDirectory="incoming" remoteFile="books{$version}.xml">
+          <edt:ftpClient ref="sourceforge"/>
+        </edt:ftpSink>
+      </sx:xsltSerializer>
+
+      <sx:content ref="books"/>
+    </sx:transform>
+  </sx:service>
+
+  <sx:service id="remote-dir-listing">
+    <sx:recordStream>
+      <edt:ftpDirectoryReader remoteDirectory="." recurse="true" maxItems="10">
+        <edt:ftpClient ref="sourceforge"/>
+      </edt:ftpDirectoryReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="directory-flat-file"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="directory-record-type" name="directory-record-type">
+    <sx:positionalField name="parentDirectory" label="Parent" width="30"/>
+    <sx:positionalField name="name" label="Name" width="30"/>
+    <sx:positionalField name="size" label="Size" width="10"/>
+    <sx:positionalField name="lastModified" label="Date Modified" width="30"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="directory-flat-file">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="directory-record-type"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="directory-record-type"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+  
+  <sx:document id="books">
+    <sx:urlSource url="documents/books.xml"/>
+  </sx:document>
+  
+</sx:resources>

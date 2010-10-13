@@ -1,0 +1,88 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+  xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="bookHierarchyToFile">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="bookHierarchyToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="settlementType"/>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="settlementType" name="settlementType">
+    <sx:fieldDelimiter value=","/>
+    <sx:repeatDelimiter value=","/>
+    <sx:segmentDelimiter value="|"/>
+    <sx:delimitedField name="root" label="root"/>
+    <sx:delimitedField name="bookCode" label="bookCode"/>
+    <sx:delimitedField name="bookValue" label="bookValue"/>
+    <sx:delimitedField name="level1" label="level1"/>
+    <sx:delimitedField name="level1Code" label="level1Code"/>
+    <sx:delimitedField name="level1Value" label="level1Value"/>
+    <sx:delimitedField name="level2" label="level2"/>
+    <sx:delimitedField name="level2Code" label="level2Code"/>
+    <sx:delimitedField name="level2Value" label="level2Value"/>
+    <sx:repeatingGroup name="level3" label="level3">
+      <sx:flatRecordType name="level3Record">
+        <sx:delimitedField name="code" label="code"/>
+        <sx:delimitedField name="value" label="value"/>
+        <sx:repeatingGroup name="level4" label="level4">
+          <sx:flatRecordType name="level4Record">
+            <sx:delimitedField name="code" label="code"/>
+            <sx:delimitedField name="value" label="value"/>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="bookHierarchyToFileMapping">
+    <sx:onSubtree path="/myns:rootNode">
+      <sx:parameter name="root" select="myns:name"/>
+      <sx:parameter name="bookCode" select="attribute/myns:name"/>
+      <sx:parameter name="bookValue" select="attribute/value"/>
+
+      <sx:onSubtree path="/myns:rootNode/myns:childNode">
+        <sx:parameter name="level1" select="myns:name"/>
+        <sx:parameter name="level1Code" select="attribute/myns:name"/>
+        <sx:parameter name="level1Value" select="attribute/myns:value"/>
+        <sx:onSubtree path="/myns:childNode/myns:childNode">
+          <sx:flattenSubtree recordType="settlement">
+            <sx:subtreeFieldMap select="$root" field="root"/>
+            <sx:subtreeFieldMap select="$bookCode" field="bookCode"/>
+            <sx:subtreeFieldMap select="$bookValue" field="bookValue"/>
+            <sx:subtreeFieldMap select="$level1" field="level1"/>
+            <sx:subtreeFieldMap select="$level1Code" field="level1Code"/>
+            <sx:subtreeFieldMap select="$level1Value" field="level1Value"/>
+            <sx:subtreeFieldMap select="name" field="level2"/>
+            <sx:subtreeFieldMap select="attribute/myns:name" field="level2Code"/>
+            <sx:subtreeFieldMap select="attribute/myns:value" field="level2Value"/>
+            <sx:subtreeFieldMap match="myns:childNode" field="level3">
+              <sx:flattenSubtree  recordType="level3Record">
+                <sx:subtreeFieldMap select="attribute/myns:name" field="code"/>
+                <sx:subtreeFieldMap select="attribute/myns:value" field="value"/>
+                <sx:subtreeFieldMap match="myns:childNode" field="level4">
+                  <sx:flattenSubtree  recordType="level4Record">
+                    <sx:subtreeFieldMap select="attribute/myns:name" field="code"/>
+                    <sx:subtreeFieldMap select="attribute/myns:value" field="value"/>
+                  </sx:flattenSubtree>
+                </sx:subtreeFieldMap>
+              </sx:flattenSubtree>
+            </sx:subtreeFieldMap>
+          </sx:flattenSubtree>
+        </sx:onSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>

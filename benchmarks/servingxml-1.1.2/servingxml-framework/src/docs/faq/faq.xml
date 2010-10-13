@@ -1,0 +1,412 @@
+<?xml version="1.0" standalone="no"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                         "file:///C:\tools\docbook-5.0b5\dtd/docbook.dtd"[
+]
+>
+
+<article class="faq">
+  <title>FAQ</title>
+<section>
+<title>ServingXML Basics</title>
+<qandaset>
+<qandaentry>
+  <question><para>Which platforms are supported?</para></question>
+  <answer>
+  <para><code>ServingXML</code> should run on any platform with a Java Virtual Machine version 1.5 or higher.  Users have reported running
+  various versions of the software on Windows NT/2000/XP, Linux, and Solaris.</para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Can I use the software in a commercial product?</para></question>
+  <answer>
+  <para>Yes, <code>ServingXML</code> is Apache 2 licensed, which permits free commercial use of the software.
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Can <code>ServingXML</code> handle COBOL packed-decimal fields?</para></question>
+  <answer>
+  <para>Yes, <code>ServingXML</code> can read COBOL packed-decimal values and render them as numeric strings,
+  and read numeric strings and render them as packed-decimal values.
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Can <code>ServingXML</code> handle binary fields?</para></question>
+  <answer>
+  <para>Yes, <code>ServingXML</code> can read binary fields and render them as hexadecimal strings,
+  and read hexadecimal strings and render them as binary values.
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Can <code>ServingXML</code> handle repeating groups?</para></question>
+  <answer>
+  <para>Yes, <code>ServingXML</code> can read 
+  <itemizedlist>
+    <listitem><para>Repeating groups separated by repeat delimiters, and terminated by a segment delimiter or end of record.
+     </para></listitem>
+    <listitem><para>Repeating groups of elements of fixed count.
+     </para></listitem>
+    <listitem><para>Repeating groups of elements of variable count, where the count is read from a field in the record.
+     </para></listitem>
+  </itemizedlist>
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Can <code>ServingXML</code> process large files?</para></question>
+  <answer>
+  <para>Yes.  Flat-to-XML mappings are done one record at a time, and XML-to-flat mappings take a streaming approach to minimize
+  the amount of data held in memory at any one time.  Current users are processing flat files with hundreds of thousands of records
+  without a problem.
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Is XPATH 2/XSLT 2.0 supported?</para></question>
+  <answer>
+  <para>Yes.  All XPATH expressions and XSLT stylesheets referred to in <code>ServingXML</code> pipelines are evaluated using the
+  configured JAXP XSLT transformer.  By default, the <code>ServingXML</code> 
+  console application uses <code>Saxon-B 9</code>, which implements XSLT 2.0 It
+  is possible to configure 
+                                                         <code>ServingXML</code> to use a different transformer, even an older XSLT 1.0 
+  tranformer such as <code>Saxon 6.5</code>.
+  </para>
+  </answer>
+</qandaentry> 
+</qandaset>
+</section>
+<section>
+<title>ServingXML Console App</title>
+<qandaset>
+<qandaentry>
+  <question><para>How can I pass a multi-valued parameter, say <code>price</code> with three values, from the command line?</para></question>
+  <answer>
+<programlisting>
+<![CDATA[
+  java -jar servingxml.jar -i input.csv -o output.xml -r resources.xml myService price=3.0 price=2.0 price=4.0
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+</qandaset>
+</section>
+<section>
+  <title>ServingXML Markup</title>
+  <qandaset>
+<qandaentry>
+  <question><para>If I have a <code>ServingXML</code> resources script that defines a pipeline containing an XSLT stylesheet,
+  and I have XML content defined in the resources script, can I refer to that content inside the document function of the stylesheet?</para></question>
+  <answer>
+  <para>Yes.  Use a URI obtained by concatenating the namespace URI and the local name of the content defined in the resources script.
+  If the <code>ServingXML</code> content requires parameters, append the "?" character to the <code>URI</code>, followed by <code>name=value</code>
+  entries separated by a ";" or an escaped ampersand character (<![CDATA[&amp;]]>).
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>My XML output is one long line.  How can I tell the serializer to indent it for readability?</para></question>
+  <answer>
+<para>Change the default default <code>indent</code> output property in the <filename>servingxml.xml</filename> configuration file.
+</para>
+<programlisting>
+<![CDATA[
+<sx:xsltConfiguration version="1.0" ...
+ 
+  <sx:outputProperty name="indent" value="yes"/>  
+]]>
+</programlisting>
+  <para>Or, use the <sgmltag>sx:outputProperty</sgmltag> element inside a <sgmltag>sx:xsltSerializer</sgmltag> 
+  to override the default <code>indent</code> output property of the <code>XSLT</code> serializer.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:serialize ...  
+
+    <sx:xsltSerializer>
+      <sx:outputProperty name="indent" value="yes"/>
+    </sx:xsltSerializer>
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>How can I change the encoding charset of output xml?</para></question>
+  <answer>
+  <para>Use the <sgmltag>sx:outputProperty</sgmltag> element inside a <sgmltag>sx:xsltSerializer</sgmltag> 
+  to set the <code>encoding</code> output property of the <code>XSLT</code> serializer, e.g.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:serialize ...
+  
+    <sx:xsltSerializer>
+      <sx:outputProperty name="encoding" value="ISO-8859-1"/>
+    </sx:xsltSerializer>
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>How can I set the the "cdata-section-elements" XSLT output property, with a qualified name in the value?</para></question>
+  <answer>
+<para>
+Give the value as a two-part string, the namespace URI enclosed in curly braces ({}), followed by the local name.</para>
+<programlisting>
+<![CDATA[
+  <sx:serialize ...
+
+    <sx:xsltSerializer>
+      <sx:outputProperty name="cdata-section-elements" value="{namespaceUrl}tag"/>
+    </sx:xsltSerializer>
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>How do I set <sgmltag class="attribute">xsi:nil</sgmltag> ="true" for elements with empty values?</para></question>
+  <answer>
+<para>Use <sgmltag>sx:choose</sgmltag> in the record mapping section.</para>
+<programlisting>
+<![CDATA[
+<sx:recordMapping id="countriesToXmlMapping">
+  <countries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <sx:onRecord>
+      <country>
+        <sx:choose>
+          <sx:when test="code = ''">
+            <countryCode xsi:nil="true"/>
+          </sx:when>
+          <sx:otherwise>
+            <sx:fieldElementMap field="code" element="countryCode"/>
+          </sx:otherwise>
+        </sx:choose>
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+</qandaset>
+</section>
+<section>
+  <title>ServingXML Embedding</title>
+  <qandaset>
+<qandaentry>
+  <question><para>What is the minimal number of jar files required in a <code>ServingXML</code> distribution?</para></question>
+  <answer>
+  <para><code>ServingXML</code> versions 0.8.x, which minimally require Java 5, need <filename>servingxml.jar</filename>
+  and a conforming XSLT implementation (the versions of Xalan currently shipping with Java 5.x and 6.x will not work,
+  because of bugs in these versions.)  Earlier <code>ServingXML</code> versions, which minimally require Java 1.4, need additional jar files, including 
+  <filename>concurrent.jar</filename>, <filename>xml-apis.jar</filename>, and <filename>xercesImpl.jar</filename>.
+  Extensions such as Fop need more jar files.
+  </para>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Using <code>ServingXML</code> within a Spring framework, how do I pass a Spring ApplicationContext
+  object down to a custom record filter?</para></question>
+  <answer>
+  <para>Pass it through the parameters.  In the application code, add it to the parameters before 
+  executing a service.</para>
+<programlisting>
+<![CDATA[
+  ApplicationContext appContext ...
+
+  ParameterBuilder paramBuilder = new ParameterBuilder();
+  Name contextName = new QualifiedName("appContext");
+  paramBuilder.setObject(contextName, appContext);
+  Record parameters = paramBuilder.toRecord();
+  
+  Flow flow = new FlowImpl(parameters, defaultStreamSource, defaultStreamSink);
+
+  service.execute(context, flow);
+]]>
+</programlisting>
+<para>In the custom record filter, access the ApplicationContext object from the parameters.</para>
+<programlisting>
+<![CDATA[
+public class MyRecordFilter extends AbstractRecordFilter
+implements RecordFilter  {
+  private static final Name contextName = new QualifiedName("appContext");
+  private ApplicationContext  appContext;
+  
+  public void startRecordStream(ServiceContext context, Flow flow) {
+    super.startRecordStream(context, flow);
+    this.appContext = (ApplicationContext)parameters.getObject(contextName);
+  }
+
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>When creating the <code>Flow</code>, what can I use as a
+              default (empty) <code>StreamSource</code>? 
+</para></question>
+  <answer>Use <code>StreamSource.NULL</code>.
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Is it possible to pass the input file as a 
+              String?</para></question>
+  <answer><para>Yes, by passing a StringStreamSource when creating a Flow,
+    </para>
+    
+<programlisting> <![CDATA[
+  import com.servingxml.io.streamsource.StreamSource;
+  import com.servingxml.io.streamsource.StringStreamSource;
+
+  ..
+
+  StreamSource streamSource = new StringStreamSource(str);
+
+  Flow flow = new FlowImpl(parameters, streamSource, streamSink);
+
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Is it possible to pass the resource file as an 
+              InputStream?</para></question>
+  <answer><para>Yes, using the <code>createIocContainer</code> method that takes 
+  an InputStream,
+    </para>
+<programlisting> <![CDATA[
+ IocContainerFactory iocContainerFactory = new IocContainerFactory();
+ iocContainerFactory.loadComponentDefinitions();
+
+ InputStream is; 
+ //Initialize input stream
+ 
+ IocContainer resources =
+    iocContainerFactory.createIocContainer(is, parameters);
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>Is it possible to pass the resource file as a 
+              String?</para></question>
+  <answer><para>Yes, using the <code>createIocContainer</code> method that takes 
+  a Reader,
+    </para>
+    
+<programlisting> <![CDATA[
+  import java.io.Reader;
+  import java.io.StringReader;
+
+  IocContainerFactory iocContainerFactory = new IocContainerFactory();
+  iocContainerFactory.loadComponentDefinitions();
+
+  Reader reader = new StringReader(str); 
+ 
+  IocContainer resources =
+    iocContainerFactory.createIocContainer(reader, parameters);
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>How do I get the ouput XML as a string?</para></question>
+  <answer><para>Use a <code>StringStreamSink</code>,</para>
+    
+<programlisting> <![CDATA[
+import com.servingxml.io.streamsink.StringStreamSink;
+
+...
+
+StreamSink streamSink = new StringStreamSink(); 
+Flow flow =  new FlowImpl(parameters, streamSource, streamSink);
+
+ ...
+ 
+String s = streamSink.toString(); 
+]]>
+</programlisting>
+  </answer>
+</qandaentry>
+</qandaset>
+</section>
+<section>
+  <title>Troubleshooting</title>
+  <qandaset>
+<qandaentry>
+  <question><para>
+When I try to build ServingXML, I get the following error message: 
+            </para>
+<programlisting>
+<![CDATA[
+[javac]servingxml-0.8.0.1a\build\java\com\servingxml\util\ChildDictionary.java:32: '{' expected 
+[javac] public class ChildDictionary<K,V> implements MutableDictionary<K,V> { 
+]]>
+</programlisting>
+  </question>
+  <answer>
+  <para>This error message means that your version of the Java Development Kit 
+    (JDK) does not support generics, which were introduced in Java 1.5. 
+    ServingXML versions beginning with 0.8.0 require a JDK version 1.5 or later. 
+    See the <ulink url="gettingstarted.html">Getting Started</ulink> guide for 
+    instructions on installing a recent JDK. If you've followed the instructions, and you type
+  </para>
+<programlisting>
+<![CDATA[
+echo %JAVA_HOME% 
+]]>
+</programlisting>
+    <para>
+you should see something like 
+    </para> 
+<programlisting>
+<![CDATA[
+C:\Program Files\Java\jdk1.5.0_11 
+]]>
+</programlisting>
+<para>Later versions are fine.</para> 
+  </answer>
+</qandaentry>
+<qandaentry>
+  <question><para>
+When I try to run the command for ServingXML below: 
+            </para>
+<programlisting>
+<![CDATA[
+java -jar c:\servingxml\servingxml.jar -r resources-APFile.xml -i LoadPayable.xml -o output\APFile.txt AP 
+]]>
+</programlisting>
+    <para>
+I get the following error message: 
+ 
+Exception in thread "main" java.lang.NoClassDefFoundError: java/lang/CharSequence at com.servingxml.app.consoleapp.ConsoleApp.main(ConsoleApp.java:58)               
+            </para>
+  </question>
+  <answer>
+  <para>
+    <code>CharSequence</code> was new to Java 1.4, so it looks like your Java
+     Runtime Environment (JRE) predates 1.4.  ServingXML versions before 0.8.0 
+     require Java runtime 1.4 or later; subsequent versions require Java runtime 
+     1.5 or later. See the <ulink url="gettingstarted.html">Getting 
+     Started</ulink> guide for instructions on installing a recent JRE.
+    If you've followed the instructions, and you type
+    </para>
+<programlisting>
+<![CDATA[
+java -version 
+]]>
+</programlisting>
+    <para>
+you should see something like 
+    </para> 
+<programlisting>
+<![CDATA[
+java version "1.5.0_11"  
+]]>
+</programlisting>
+<para>Later versions are fine.</para> 
+  </answer>
+</qandaentry>
+</qandaset>
+</section>
+</article>
+

@@ -1,0 +1,2295 @@
+<reference id="chap-xml-elements"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>XML Content Producing and Transforming Elements</title>
+
+<refentry id="sx:assert" xreflabel="sx:assert">
+<refnamediv>
+  <refname>sx:assert</refname>
+  <refpurpose>Assert</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/>, <xref linkend="sx:validator"/></refclass>
+</refnamediv>
+<indexterm><primary>assert</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>test</entry>
+<entry>Yes</entry>
+<entry>XPath Boolean Expression</entry>
+<entry>An XPath boolean expression applied to the context document.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any combination of string literals and inlined
+  <xref linkend="sx:stringable"/> substitutable elements. If the assertion 
+  fails, the string expressions will be evaluated in place, forming a message. 
+  Leading and trailing whitespace will be trimmed.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+An <sgmltag>sx:assert</sgmltag> instruction allows an XPATH boolean expression 
+  to be applied to a subtree of the input XML.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>XPath Boolean assertion about subtree.
+</title>
+<programlisting>
+<![CDATA[
+  <sx:transform>
+    <sx:document ref="t:transaction"/>
+    <sx:subtreeFilter path="/transaction/R04">
+      <sx:assert test="count(//*) mod 2 = 0">Expected even number of elements. 
+      </sx:assert> 
+    </sx:subtreeFilter>
+  </sx:transform>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:attribute" xreflabel="sx:attribute">
+<refnamediv>
+  <refname>sx:attribute</refname>
+  <refpurpose>Add an attribute to wrapping elements inside a <xref linkend="sx:wrap"/> element</refpurpose>
+</refnamediv>
+<indexterm><primary>attribute</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>attribute</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>
+The name of an attribute to insert into a parent element. The attribute name may
+contain a field name within curly braces, which will
+evaluate to the value of the field.  The result must evaluate to a <xref linkend="QName"/>.
+</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>An XPath expression evaluated against an <xref linkend="sx:content"/> 
+substitutable child element, or, if none, the default XML document.
+</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Express the attribute value as a literal value, which may contain 
+parameter names and field names enclosed in curly braces.
+The result must evaluate to a <xref linkend="QName"/>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, if there is a <sgmltag>select</sgmltag> attribute, 
+            an <xref linkend="sx:content"/> element.  If supplied, the select 
+            expression will be evaluated against this content, otherwise it will
+            be evaluated against the default content.
+</para>
+</listitem>
+<listitem><para>Optionally, if there is no <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:wrap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:batchedSerializer" xreflabel="sx:batchedSerializer">
+<refnamediv>
+  <refname>sx:batchedSerializer</refname>
+  <refpurpose>Batched serializer</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>batchedSerializer</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>path</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SAXPath"/></entry>
+<entry>
+A <xref linkend="SAXPath"/> expression, which identifies subtrees. 
+</entry>
+</row>
+<row>
+<entry>batchSize</entry>
+<entry>Yes</entry>
+<entry>Integer</entry>
+<entry>
+The number of subtrees in a batch.
+</entry>
+</row>
+<row>
+<entry>maxFiles</entry>
+<entry>No</entry>
+<entry>Integer</entry>
+<entry> The maximum number of batch files.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>One <xref linkend="sx:saxSink"/> based element, such as an <xref linkend="sx:xsltSerializer"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Writing out countries XML with a maximum of 50 countries to a 
+  batch.</title>
+<programlisting>
+<![CDATA[
+              
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="countries"/>
+      </sx:transform>
+      <sx:batchedSerializer path="country" batchSize="50">
+        <sx:xsltSerializer>
+          <sx:fileSink file="output/countries-{$sx:batchSequenceNumber}.xml"/>
+        </sx:xsltSerializer>
+      </sx:batchedSerializer>
+    </sx:serialize>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:cachedContent" xreflabel="sx:cachedContent">
+<refnamediv>
+  <refname>sx:cachedContent</refname>
+  <refpurpose>Cached content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>cachedContent</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+A <xref linkend="sx:content"/> specialization, such as a <xref linkend="sx:document"/>, <xref linkend="sx:recordContent"/> 
+or <xref linkend="sx:transform"/> element.  
+</listitem>
+</itemizedlist>
+</refsection>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This element permits caching of XML content.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:content"/>
+</listitem>
+<listitem>
+<xref linkend="sx:expiryOptions"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:content" xreflabel="sx:content">
+<refnamediv>
+  <refname>sx:content</refname>
+  <refpurpose>Abstract element standing for XML content</refpurpose>
+</refnamediv>
+<indexterm><primary>content</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:content</sgmltag>, such as <xref linkend="sx:document"/>, <xref linkend="sx:transform"/> or <xref linkend="sx:xslt"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Using a <sgmltag>sx:content</sgmltag> element to refer to dynamic content.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+        <sx:xslt ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:dynamicContent name="books" class="samples.books.BookCatalog">
+    <sx:key>
+      <sx:keyField name="category"/>
+    </sx:key>
+  </sx:dynamicContent>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:cachedContent"/>
+</listitem>
+<listitem>
+<xref linkend="sx:document"/>
+</listitem>
+<listitem>
+<xref linkend="sx:dynamicContent"/>
+</listitem>
+<listitem>
+<xref linkend="sx:recordContent"/>
+</listitem>
+<listitem>
+<xref linkend="saxon:xquery"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:customEmitter" xreflabel="sx:customEmitter">
+<refnamediv>
+  <refname>sx:customEmitter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:customSerializer"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>customEmitter</primary></indexterm>
+</refentry>                                                                                             
+
+<refentry id="sx:customSerializer" xreflabel="sx:customSerializer">
+<refnamediv>
+  <refname>sx:customSerializer</refname>
+  <refpurpose>Custom serializer</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>customSerializer</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements <code>com.servingxml.io.saxsink.SaxSink</code>.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:property"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining an Apache fop emitter.</title>
+<programlisting>
+<![CDATA[
+  <sx:customSerializer id="fop-serializer"
+                    class="com.servingxml.extensions.fop.xmlpipeline.FopEmitter">
+  </sx:customSerializer>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Serializing an xsl-fo XML tree with an Apache fop serializer to produce pdf.</title>
+<programlisting>
+<![CDATA[
+  <sx:service id="pulp">
+    <sx:serialize>
+      <sx:saxSink ref="myns:fop-serializer"/>
+      <sx:transform>
+        <sx:content ref="myns:pulp"/>
+        <sx:xslt ref="myns:novel-fo"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:document" xreflabel="sx:document">
+<refnamediv>
+  <refname>sx:document</refname>
+  <refpurpose>XML document</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>document</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, a <xref linkend="sx:streamSource"/> element, or a <xref linkend="sx:saxSource"/> element,
+or an in-line XML document.  Defaults to the default stream source, e.g. a file passed with the -i option on the command line.
+</listitem>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining a document with reference to an XML file.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:document id="countries">
+    <sx:urlSource url="documents/countries.xml"/>
+  </sx:document>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:expiryOptions"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:documentSequence" xreflabel="sx:documentSequence">
+<refnamediv>
+  <refname>sx:documentSequence</refname>
+  <refpurpose>Document sequence</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>documentSequence</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>wrapWith</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Wrap all documents in the sequence with this root element.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+</itemizedlist>
+<para>
+  Either
+</para>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:content"/> elements.</listitem>
+</itemizedlist>
+<para>
+  or
+</para>
+<itemizedlist>
+<listitem>One element that is substitutable for a <xref linkend="sx:recordReader"/>,
+  for example, an <xref linkend="sx:directoryReader"/> element, and</listitem>
+<listitem>One element that is substitutable for a <xref linkend="sx:content"/>, 
+  for example, an 
+              <xref linkend="sx:document"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to read a collection of XML documents on a file 
+system as a sequence of documents wrapped with a root element.  The results are
+streamed so that an arbitrarily large number of files may be processed.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining a sequence of XML documents wrapped with the default root 
+  element "documents".</title>
+  <para>
+    This example uses an <xref linkend="sx:directoryReader"/> element to read 
+    the names of the files in a directory called "data", and an <xref linkend="sx:document"/>
+    element to load each of the files.
+  </para>
+<programlisting>
+<![CDATA[
+<sx:documentSequence wrapWith="documents">
+  <sx:directoryReader directory="data"/>
+  <sx:document>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+  </sx:document>
+</sx:documentSequence>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Defining a sequence of XML documents wrapped with the root element
+  "documents".</title>
+  <para>
+    Note that an <xref linkend="sx:recordStream"/> element is also subtitutable 
+    for a <xref linkend="sx:recordReader"/>, which allows additional filtering 
+    on the contents of the file system. An <xref linkend="sx:transform"/> 
+    element is likewise subtitutable for a <xref linkend="sx:content"/>, which 
+    allows additional transformation and validation of the individual documents.
+  </para>
+<programlisting>
+<![CDATA[
+<sx:documentSequence wrapWith="documents">
+  <sx:recordStream>
+    <sx:directoryReader directory="data"/>
+    <sx:restrictRecordFilter>
+      <sx:fieldRestriction field="name" pattern="countries.*[.]xml"/>
+    </sx:restrictRecordFilter>
+  </sx:recordStream>
+  <sx:transform>
+    <sx:document>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+    </sx:document>
+    <msv:schemaValidator>
+      <sx:urlSource url="data/countries.xsd"/>
+    </msv:schemaValidator>
+  </sx:transform>
+</sx:documentSequence>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:document"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:dynamicContent" xreflabel="sx:dynamicContent">
+<refnamediv>
+  <refname>sx:dynamicContent</refname>
+  <refpurpose>Dynamic content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>dynamicContent</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements com.servingxml.components.content.dynamic.RequestHandler
+and, optionally, com.servingxml.components.content.dynamic.Cacheable.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, a <xref linkend="sx:key"/> element.
+</listitem>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining a document with reference to a Java class
+that simulates a SAX parser.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:dynamicContent name="books" class="samples.books.BookCatalog">
+    <sx:key>
+      <sx:keyField name="category"/>
+    </sx:key>
+  </sx:dynamicContent>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:content"/>
+</listitem>
+<listitem>
+<xref linkend="sx:expiryOptions"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:saxSink" xreflabel="sx:saxSink">
+<refnamediv>
+  <refname>sx:saxSink</refname>
+  <refpurpose>Abstract element standing for a sink of SAX events</refpurpose>
+</refnamediv>
+<indexterm><primary>saxSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:saxSink</sgmltag> e.g. <xref linkend="sx:xsltSerializer"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:xsltSerializer"/>
+</listitem>
+<listitem>
+<xref linkend="sx:customSerializer"/>
+</listitem>
+<listitem>
+<xref linkend="fop:foSerializer"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:emptyDocument" xreflabel="sx:emptyDocument">
+<refnamediv>
+  <refname>sx:emptyDocument</refname>
+  <refpurpose>Empty XML document</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>emptyDocument</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+</refsection>
+</refentry>
+
+<refentry id="sx:filter" xreflabel="sx:filter">
+<refnamediv>
+  <refname>sx:filter</refname>
+  <refpurpose>Deprecated in 1.0.0, use <xref linkend="sx:content"/> instead</refpurpose>
+</refnamediv>
+<indexterm><primary>filter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:content</sgmltag>, such as <xref linkend="sx:xslt"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:key" xreflabel="sx:key">
+<refnamediv>
+  <refname>sx:key</refname>
+  <refpurpose>Key for XML content</refpurpose>
+</refnamediv>
+<indexterm><primary>key</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+One or more <xref linkend="sx:keyField"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>See <xref linkend="sx:dynamicContent"/>.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:keyField" xreflabel="sx:keyField">
+<refnamediv>
+  <refname>sx:keyField</refname>
+  <refpurpose>Key field</refpurpose>
+</refnamediv>
+<indexterm><primary>keyField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>No</entry>
+<entry>Name</entry>
+<entry>Reference to the name of a parameter.  On a request, the
+field value will be set to that parameter value.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>See <xref linkend="sx:dynamicContent"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:key"/>
+</listitem>
+<listitem>
+<xref linkend="sx:dynamicContent"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:outputProperty" xreflabel="sx:outputProperty">
+<refnamediv>
+  <refname>sx:outputProperty</refname>
+  <refpurpose>Output property for XML serializer</refpurpose>
+</refnamediv>
+<indexterm><primary>outputProperty</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The output property name.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The output property value.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>For an XSLT serializer, the value of a single 
+  <sgmltag>xsl:output</sgmltag> property.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Parameter substitution in sx:outputProperty</title>
+<programlisting>
+<![CDATA[
+<sx:xsltSerializer> 
+  <sx:outputProperty name="encoding" value="{$encodingParam}"/> 
+  <sx:outputProperty name="indent" value="{$indentModeParam}"/> 
+</sx:xsltSerializer> 
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:processSubtree" xreflabel="sx:processSubtree">
+<refnamediv>
+  <refname>sx:processSubtree</refname>
+  <refpurpose>Perform tasks on subtrees of an XML document</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>processSubtree</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>path</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SAXPath"/></entry>
+<entry>
+A <xref linkend="SAXPath"/> expression.  
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:task"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+A <sgmltag>sx:processSubtree</sgmltag> instruction processes a matched subtree of an XML document,
+executing one or more tasks applied to the subtree.
+</para>
+<para>
+Note that any elements that may appear as children of <xref linkend="sx:service"/> 
+may also appear as child elements of <sgmltag>sx:processSubtree</sgmltag>, the only difference being that for 
+the subservice, the default XML content is the fragment identified by the <code>path</code> attribute. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Serializing individual document fragments to separate files.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="invoices"> 
+    <sx:transform>
+      <!-- Here we extract a document fragment from the SAX stream -->
+      <sx:processSubtree path="/invoices/invoice">
+         <sx:serialize>
+            <!-- We initialize a parameter with an XPATH expression
+                 applied to the document fragment -->
+            <sx:parameter name="invoice-name" select="@id"/> 
+            <sx:xsltSerializer>
+              <sx:fileSink file="output/invoice{$invoice-name}.html"/>
+            </sx:xsltSerializer>
+            <sx:transform>
+              <sx:xslt><sx:urlSource url="styles/invoice2html.xsl"/></sx:xslt> 
+            </sx:transform>
+         </sx:serialize>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordContent" xreflabel="sx:recordContent">
+<refnamediv>
+  <refname>sx:recordContent</refname>
+  <refpurpose>XML content from records</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>recordContent</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the content, used as the document element in default record mappings, defaults to "document".</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, a <xref linkend="sx:recordReader"/> element.</listitem>
+<listitem>Optionally, a <xref linkend="sx:recordMapping"/> element.
+If the record mapping element is omitted, the mapping is performed according to default
+rules that map fields to elements of the same name.</listitem>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of Comma Separated Value (csv) file content.</title>
+<para>
+<programlisting>
+<![CDATA[
+  <sx:recordContent id="countries">
+    <sx:flatFileReader>
+      <sx:urlSource url="books/countries.csv"/>
+      <sx:flatFile>
+        <sx:flatFileBody>
+          <sx:flatRecordType name="country">
+            <sx:fieldDelimiter value=","/> 
+            <sx:delimitedField name="countryCode"/>
+            <sx:delimitedField name="countryName"/>
+          </sx:flatRecordType>
+        </sx:flatFileBody>
+      </sx:flatFile>
+    </sx:recordReader>
+      
+    <sx:recordMapping>
+      <countries>
+        <sx:onRecord>
+          <country>
+            <sx:fieldAttributeMap attribute="countryCode" attribute="countryCode"/>
+            <sx:fieldElementMap element="countryName" element="countryName"/>
+          </country>  
+        </sx:onRecord>
+      </countries>
+    </sx:recordMapping>  
+    
+  </sx:recordContent>
+]]>
+</programlisting>
+</para>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:content"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flatFileReader"/>
+</listitem>
+<listitem>
+<xref linkend="sx:sqlReader"/>
+</listitem>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:removeEmptyAttributes" xreflabel="sx:removeEmptyAttributes">
+<refnamediv>
+  <refname>sx:removeEmptyAttributes</refname>
+  <refpurpose>Remove empty attributes from XML elements</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>removeEmptyAttributes</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>elements</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all elements."
+A namespace prefix followed by a colon followed by the value '*' means all elements belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>exceptElements</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all elements."
+A namespace prefix followed by a colon followed by the value '*' means all elements belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>attributes</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of element <xref linkend="QName"/>s, or wildcards,
+to include.  The value '*' means "all attributes." A namespace prefix followed 
+by a colon followed by the value '*' means all attributes belonging to the 
+namespace. 
+</entry>
+</row>
+<row>
+<entry>exceptAttributes</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of attribute <xref linkend="QName"/>s, or wildcards, to exclude.  The value '*' means "all attributes." A 
+namespace prefix followed by a colon followed by the value '*' means all 
+attributes belonging to the namespace. 
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <xref linkend="sx:removeEmptyAttributes"/> instruction checks for attributes 
+of elements that have empty values and removes them from the SAX event stream. 
+The <code>elements</code> and <code>attributes</code> attributes are mandatory 
+and identify the elements that should be examined for empty attributes.  The 
+value '*' may be used to mean "all elements" or "all attributes".
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Strip all empty attributes except fileNumber from all elements.
+</title>
+<programlisting>
+<![CDATA[
+<sx:transform> 
+  <sx:document/> 
+  <sx:removeEmptyAttributes elements="*" attributes="*" exceptAttributes="fileNumber"/> 
+</sx:transform> 
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:removeEmptyElements"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:removeEmptyElementFilter" xreflabel="sx:removeEmptyElementFilter">
+<refnamediv>
+  <refname>sx:removeEmptyElementFilter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:removeEmptyElements"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>removeEmptyElementFilter</primary></indexterm>
+</refentry>
+
+<refentry id="sx:removeEmptyElements" xreflabel="sx:removeEmptyElements">
+<refnamediv>
+  <refname>sx:removeEmptyElements</refname>
+  <refpurpose>Remove empty elements from XML content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>removeEmptyElements</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>elements</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all elements."
+A namespace prefix followed by a colon followed by the value '*' means all elements belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>except</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>Deprecated, use <sgmltag class="attribute">exceptElements</sgmltag> 
+                          instead.</entry>
+</row>
+<row>
+<entry>exceptElements</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of <xref linkend="QName"/>s or wildcards.  The value '*' means "all elements."
+A namespace prefix followed by a colon followed by the value '*' means all elements belonging to the namespace. 
+</entry>
+</row>
+<!--
+<row>
+<entry>allDescendents</entry>
+<entry>No</entry>
+<entry>yes|no</entry>
+<entry>Set to "yes" to remove elements meeting the above criteria that are empty apart from empty descendents.  
+Defaults to "no."</entry>
+</row>
+-->
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <xref linkend="sx:removeEmptyElements"/> instruction checks for elements that have no attributes or content
+and removes them from the SAX event stream.  The <code>elements</code> attribute is mandatory and identifies the 
+elements that should be suppressed if found to be empty.  The value '*' may be used to mean "all elements", 
+in which case exceptions may be indicated with the <code>exceptElements</code> attribute.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Strip elements date1 and date2 from document if empty.
+</title>
+<programlisting>
+<![CDATA[
+<sx:transform> 
+  <sx:document/> 
+  <sx:removeEmptyElements elements="date1 date2"/> 
+</sx:transform> 
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:removeEmptyAttributes"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:saxFilter" xreflabel="sx:saxFilter">
+<refnamediv>
+  <refname>sx:saxFilter</refname>
+  <refpurpose>SAX filter</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>saxFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements org.xml.sax.XMLFilter.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:property"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Constructing a SAX pipeline.</title>
+<para>
+The example below shows a resources script that implements a SAX pipeline.
+<code>PreFilter</code> and <code>PostFilter</code> are the names of Java classes that
+implement the <code>org.xml.sax.XMLFilter</code> interface.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="myService">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:urlSource url="documents/mixed-up.xml"/>
+        </sx:document>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt>
+          <sx:urlSource url="styles/filter.xsl"/>
+        </sx:xslt>
+        <sx:saxFilter class="PostFilter"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:content"/>
+</listitem>
+<listitem>
+<xref linkend="sx:transform"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:saxReader" xreflabel="sx:saxReader">
+<refnamediv>
+  <refname>sx:saxReader</refname>
+  <refpurpose>SAX reader</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSource"/></refclass>
+</refnamediv>
+<indexterm><primary>saxReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements org.xml.sax.XMLReader.</entry>
+</row>
+<row>
+<entry>systemId</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The system id passed to the <code>parse</code> method of the reader.
+Defaults to an empty string.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:property"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Implementing a pipeline with SAX events generated by a custom parser.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="pipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:saxReader class="MySaxReader"/>
+        </sx:document>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt><sx:urlSource url="styles/filter.xsl"/></sx:xslt>
+        <sx:saxFilter class="PostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+<para>
+The class <code>MySaxReader</code> could look something like this.
+</para>
+<programlisting>
+<![CDATA[
+public class MySaxReader implements XMLReader ...
+
+  private static final AttributesImpl NO_ATTRIBUTES = new AttributesImpl();
+
+  public void parse(String systemId)
+  throws IOException, SAXException {
+    if (contentHandler != null) {
+      contentHandler.startDocument();
+      contentHandler.startElement("","xxx","",NO_ATTRIBUTES);
+      ...
+      contentHandler.endElement("","xxx","");
+      contentHandler.endDocument();
+    }
+  }  
+
+
+]]>
+</programlisting>
+</refsection>
+</refentry>
+
+<refentry id="sx:saxSource" xreflabel="sx:saxSource">
+<refnamediv>
+  <refname>sx:saxSource</refname>
+  <refpurpose>Abstract element standing for a source of SAX events</refpurpose>
+</refnamediv>
+<indexterm><primary>saxSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:saxSource</sgmltag>, such as <xref linkend="sx:saxReader"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:saxReader"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:serialize" xreflabel="sx:serialize">
+<refnamediv>
+  <refname>sx:serialize</refname>
+  <refpurpose>Serialize XML content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>serialize</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Optionally, a <xref linkend="sx:saxSink"/> element</listitem>
+<listitem>
+Any number of <xref linkend="sx:content"/> specializations, such as <xref linkend="sx:document"/>,
+<xref linkend="sx:xslt"/>, <xref linkend="sx:processSubtree"/>, 
+or <xref linkend="sx:choose"/> elements.  These will be applied in document order.  
+</listitem>
+<listitem>Optionally, a <xref linkend="sx:saxSink"/> element.</listitem>
+<listitem>A <xref linkend="sx:onError"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A sx:serialize instruction encloses a sequence of content generation, transformation and serialization steps
+that result in serialized output of some MIME type.</para>
+  <para>
+Usually, the first element in the sequence of <xref linkend="sx:content"/> elements is a
+content producer, such as a <xref linkend="sx:document"/> or 
+<xref linkend="sx:recordContent"/> element. An empty <xref linkend="sx:document"/> element 
+defaults to reading from the default stream source, e.g. a file passed with the -i option 
+of the console application.  If the first element is not itself a content producer, 
+the initial content is the default stream of SAX events.  
+  </para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:transform"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:style" xreflabel="sx:style">
+<refnamediv>
+  <refname>sx:style</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:xslt"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>style</primary></indexterm>
+</refentry>
+
+<refentry id="sx:tagTee" xreflabel="sx:tagTee">
+<refnamediv>
+  <refname>sx:tagTee</refname>
+  <refpurpose>Splits the stream of SAX events</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/>, <xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>tagTee</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Optionally, a <xref linkend="sx:saxSink"/> element.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:content"/> elements, such as <xref linkend="sx:saxFilter"/>,
+<xref linkend="sx:choose"/>, and <xref linkend="sx:xslt"/> elements.
+These will be applied in document order.</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:subtreeFilter" xreflabel="sx:subtreeFilter">
+<refnamediv>
+  <refname>sx:subtreeFilter</refname>
+  <refpurpose>Apply XML filters to subtrees of XML</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>subtreeFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>path</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SAXPath"/></entry>
+<entry>
+A <xref linkend="SAXPath"/> expression.  
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:content"/> elements, for example, any number of
+<xref linkend="sx:xslt"/>, 
+<xref linkend="sx:removeEmptyElements"/> or <xref linkend="sx:transform"/> 
+elements.  
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+An <sgmltag>sx:subtreeFilter</sgmltag> instruction allows a sequence of XML 
+filters to be applied to a subtree of an XML document.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+</refsection>
+</refentry>
+
+<refentry id="sx:transform" xreflabel="sx:transform">
+<refnamediv>
+  <refname>sx:transform</refname>
+  <refpurpose>Transform XML content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/>, <xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>transform</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:content"/> specializations, such as <xref linkend="sx:document"/>,
+<xref linkend="sx:xslt"/>, <xref linkend="sx:processSubtree"/>, 
+or <xref linkend="sx:choose"/> elements.  These will be applied in document order.  
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A <sgmltag>sx:transform</sgmltag> instruction encloses a sequence of content production 
+and transformation steps that result in transformed content.</para>
+  <para>
+Usually, the first element in the sequence of <xref linkend="sx:content"/> elements is a
+content producer, such as a <xref linkend="sx:document"/> or 
+<xref linkend="sx:recordContent"/> element. An empty <xref linkend="sx:document"/> element 
+defaults to reading from the default stream source, e.g. a file passed with the -i option 
+of the console application.  If the first element is not itself a content producer, 
+the initial content is the default stream of SAX events.  
+  </para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Transforming the books XML document with the books XSLT stylesheet.</title>
+<programlisting>
+<![CDATA[
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="myns:books"/>
+        <sx:xslt ref="myns:books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:serialize"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:wrap" xreflabel="sx:wrap">
+<refnamediv>
+  <refname>sx:wrap</refname>
+  <refpurpose>Wrap XML content with surrounding elements</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/>, <xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>wrap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Literal content, which in turn may contain
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="sx:content"/> specialization, such as <xref linkend="sx:xslt"/>, <xref linkend="sx:processSubtree"/>, 
+or <xref linkend="sx:choose"/> elements.  These will be applied in document order.</listitem>
+</itemizedlist>
+</listitem>
+<listitem>Optionally, a <xref linkend="sx:saxSink"/> element.  Defaults to the default SAX sink.  Use an empty
+<xref linkend="sx:xsltSerializer"/> element to serialize to the default stream sink.</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>The <sgmltag>sx:wrap</sgmltag> instruction wraps the content that 
+  its children write to the default XML sink with containing elements.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Extracting subtrees and wrapping them in containing tags</title>
+<programlisting>
+<![CDATA[
+  <sx:wrap>
+    <sx:xsltSerializer/>
+    <envelope>
+      <header>
+        <sx:attribute name="mode" value="xml"/>
+        <creationDate>
+          <sx:currentDateTime/>
+        </creationDate>
+      </header>
+      <body>
+        <myns:books xmlns:myns="http://mycompany.com/mynames/"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="url2">
+          <!-- Content to be wrapped -->
+          <sx:transform>
+            <sx:document/>
+            <sx:processSubtree path="/myns:books/myns:book">
+              <sx:choose>
+                <sx:when test="@categoryCode='F'">
+                  <sx:transform/>
+                </sx:when>
+              </sx:choose>
+            </sx:processSubtree>
+          </sx:transform>
+        </myns:books>
+      </body>
+      <trailer>This is a trailer element</trailer>
+    </envelope>
+  </sx:wrap>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:transform"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:xmlEmitter" xreflabel="sx:xmlEmitter">
+<refnamediv>
+  <refname>sx:xmlEmitter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:xsltSerializer"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>xsltSerializer</primary></indexterm>
+</refentry>
+
+<refentry id="sx:xslt" xreflabel="sx:xslt">
+<refnamediv>
+  <refname>sx:xslt</refname>
+  <refpurpose>XSLT stylesheet</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>xslt</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>documentBase</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>This attribute is used to explicitly set the base for document URI resolution.  The base can be relative, in which case it is resolved
+relative to the location of the resources script.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Optionally, a <xref linkend="sx:withParameters"/> element to 
+identify the parameters that need to be passed to the stylesheet.
+</listitem>
+<listitem> The XSLT stylesheet, as a <xref linkend="sx:streamSource"/> 
+  or <xref linkend="sx:saxSource"/> instance, or appearing in-line.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <sgmltag>sx:xslt</sgmltag> instruction applies an <code>XSLT</code>
+stylesheet to the <code>XML</code> content on the pipeline and produces
+transformed <code>XML</code> content.  All <xref linkend="sx:parameter"/> 
+elements appearing in the body of the instruction are passed to the 
+<code>XSLT</code> processor. 
+</para>
+<para>If the stylesheet specifies output properties with an 
+<sgmltag>xsl:output</sgmltag> element, the <code>ServingXML</code>
+implementation will capture them, and these become the default output properties
+for the next stage of the pipeline processing.  For example, if
+an <sgmltag>xsl:output</sgmltag> element specifies that method="text",
+and if that property is not later overriden in downstream processing, 
+an XSLT serializer on the final stage will output only the text nodes.
+</para>
+<para>If an XSLT stylesheet uses the <code>document</code> function to 
+reference a URI, the <code>ServingXML</code> implementation will first 
+attempt to resolve that URI against XML content appearing in the 
+<code>ServingXML</code> resources script.  The <code>URI</code> will be resolved
+ if it matches the <code>URI</code> obtained by concatenating the namespace 
+ URI and the local name of an <xref linkend="sx:content"/> instance.  
+ If there is no match, URI resolution reverts to the default URI resolution of the 
+<code>XSLT</code> processor.
+</para>
+<para>
+  The <code>ServingXML</code> implementation will recognize query parameters such as ?directory=input
+  in the URI passed to the <code>document()</code> function.  These parameters may
+  be used by a resolved <xref linkend="sx:content"/> instance.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining a style with reference to an XSLT file.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:xslt id="books">
+    <sx:urlSource url="books/books.xsl"/>
+  </sx:xslt>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+<example>
+<title>A stylesheet that that takes a parameter named "category".</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+        <sx:xslt ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:document id="books">
+    <sx:urlSource url="documents/books.xml"/>
+  </sx:document>
+  
+  <sx:xslt id="books">
+    <!--sx:parameter name="category"><sx:defaultValue>F</sx:defaultValue></sx:parameter-->
+    <sx:withParameters parameters="category"/>
+    <sx:urlSource url="styles/books.xsl"/>
+  </sx:xslt>
+
+</sx:resources>]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:content"/>
+</listitem>
+<listitem>
+<xref linkend="sx:parameter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:xsltSerializer" xreflabel="sx:xsltSerializer">
+<refnamediv>
+  <refname>sx:xsltSerializer</refname>
+  <refpurpose>XML serializer of XSLT processor</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>xsltSerializer</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:outputProperty"/> elements.</listitem>
+<listitem>
+Optionally, a specialized <xref linkend="sx:streamSink"/> element, for example, a 
+<xref linkend="sx:fileSink"/> or a <xref linkend="edt:ftpSink"/> element.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Transforming content and serializing it to XML.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+              
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document><sx:fileSource file="input.xml"/></document>        
+        <sx:xslt><sx:urlSource url="filter.xsl"/></sx:xslt>
+      </sx:transform>
+      <sx:xsltSerializer>
+        <sx:fileSink file="output.xml"/>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+    </sx:serialize>
+  </sx:service>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+</reference>
+

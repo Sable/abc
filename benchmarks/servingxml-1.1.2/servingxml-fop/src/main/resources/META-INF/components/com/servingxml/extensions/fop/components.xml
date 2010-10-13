@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:fop="http://www.servingxml.com/extensions/fop">
+  <ioc:serviceComponent name="fop:foSerializer" base="sx:saxSink"
+                assemblerClass="com.servingxml.extensions.fop.xmlpipeline.FoSerializerFactoryAssembler"/>
+
+  <!-- Deprecated -->
+  <ioc:serviceComponent name="fop:foEmitter" base="sx:saxSink"
+                assemblerClass="com.servingxml.extensions.fop.xmlpipeline.FoSerializerFactoryAssembler"/>
+</ioc:components>
+

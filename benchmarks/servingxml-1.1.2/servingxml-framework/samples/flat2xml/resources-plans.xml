@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="plans">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="plans"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="plans">
+    <sx:flatFileReader>
+      <sx:urlSource url="{$plans-data}"/>
+      <sx:flatFile ref="plansFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="plansToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="plansFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="plan">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="project"/>
+        <sx:delimitedField name="revisiondescription"/>
+        <sx:delimitedField name="currency_type"/>
+        <sx:delimitedField name="detailtype"/>
+        <sx:delimitedField name="finishperiod"/>
+        <sx:delimitedField name="startperiod"/>
+        <sx:delimitedField name="forecasttype"/>
+        <sx:delimitedField name="periodtype"/>
+        <sx:delimitedField name="status"/>
+        <sx:delimitedField name="detailname"/>
+        <sx:delimitedField name="period"/>
+        <sx:delimitedField name="units"/>
+        <sx:delimitedField name="cost"/>
+        <sx:delimitedField name="revenue"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="plansToXmlMapping">
+      <Plans>
+        <sx:groupBy fields="project">
+          <Plan>
+            <sx:fieldAttributeMap field="project" attribute="project"/>
+            <sx:fieldAttributeMap field="revisiondescription" attribute="revisionDescription"/>
+            <sx:fieldAttributeMap field="detailtype" attribute="detailType"/>
+            <sx:fieldAttributeMap field="finishperiod" attribute="finishPeriod"/>
+            <sx:fieldAttributeMap field="startperiod" attribute="startPeriod"/>
+            <sx:fieldAttributeMap field="forecasttype" attribute="forecastType"/>
+            <sx:fieldAttributeMap field="periodtype" attribute="periodType"/>
+            <sx:fieldAttributeMap field="status" attribute="status"/>
+            <Details>
+              <sx:groupBy fields="project detailname">
+                <Detail>
+                  <sx:fieldAttributeMap field="detailname" attribute="detailName"/>
+                  <sx:onRecord>
+                    <PlanData>
+                      <sx:fieldAttributeMap field="period" attribute="period"/>
+                      <sx:fieldAttributeMap field="units" attribute="units"/>
+                      <sx:fieldAttributeMap field="cost" attribute="cost"/>
+                      <sx:fieldAttributeMap field="revenue" attribute="revenue"/>
+                    </PlanData>
+                  </sx:onRecord>
+                </Detail>
+              </sx:groupBy>
+            </Details>
+          </Plan>
+        </sx:groupBy>
+      </Plans>
+  </sx:recordMapping>
+</sx:resources>

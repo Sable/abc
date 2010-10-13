@@ -1,0 +1,560 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>ServingXML: Extending</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0">
+<meta name="verify-v1" content="bjOlpPVOTmerzJUJNrhZOPE53CqnavEJXFi0CLe/FGw=" />
+          </head>
+<script src="http://www.google-analytics.com/urchin.js"
+type="text/javascript">
+</script>
+    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="basics"></a>ServingXML:  Extending</h1></div><div><h3 class="subtitle"><i>How to Extend the ServingXML Mark-Up Vocabulary</i></h3></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e5"></a></span></dt><dt><span class="section"><a href="#d4e9">Record Readers, Writers, and Filters</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e13">Record Readers</a></span></dt><dt><span class="section"><a href="#d4e28">Record Writers</a></span></dt><dt><span class="section"><a href="#d4e43">Record Filters</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e58">XML Serializers</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e61">Assembler</a></span></dt><dt><span class="section"><a href="#d4e64">SaxSinkFactory</a></span></dt><dt><span class="section"><a href="#d4e67">Serializer</a></span></dt><dt><span class="section"><a href="#d4e70">components.xml</a></span></dt></dl></dd></dl></div>
+
+<div class="section" lang="en"><div class="titlepage"></div>
+<p>
+<code class="code">ServingXML</code> works as an "inversion of control" container for assembling components 
+and making them work together to process records and XML.
+New elements may be added by implementing the contracts in the extension API's.
+See <a class="ulink" href="servingxml-3.html" target="_top">Serving XML: Inversion of Control Container</a> for an overview.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e9"></a>Record Readers, Writers, and Filters</h2></div></div></div>
+
+<p>This section provides templates for custom record reader, filter, and writer elements that 
+can be used in ServingXML resources scripts, as illustrated below.
+ </p>
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="myurl"&gt;
+
+  &lt;sx:service id="countries"&gt;
+    &lt;sx:recordStream&gt;
+      &lt;sx:recordReader ref="myFileReader"/&gt;
+      &lt;myns:myRecordFilter myAttribute="xxx"/&gt;
+      &lt;myns:myRecordWriter myAttribute="xxx"/&gt;
+      &lt;sx:discardHandler&gt;
+        &lt;sx:log message="{$sx:message}"/&gt;
+      &lt;/sx:discardHandler&gt;
+    &lt;/sx:recordStream&gt;      
+  &lt;/sx:service&gt;
+
+  &lt;sx:flatFileReader id="myFileReader"&gt;
+    &lt;sx:flatFile ref="countriesFile"/&gt;
+  &lt;/sx:flatFileReader&gt;
+
+&lt;/sx:resources&gt;  
+
+</pre>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e13"></a>Record Readers</h3></div></div></div>
+
+<p>
+ </p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e16"></a>Assembler</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordReaderFactory;
+import com.servingxml.components.recordio.RecordReaderFactoryPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordReaderFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordReaderFactory assemble(ConfigurationContext context) {
+    RecordReaderFactory readerFactory = new MyRecordReaderFactory(/* args */);
+    if (parameterDescriptors.length &gt; 0) {
+      readerFactory = new RecordReaderFactoryPrefilter(readerFactory,parameterDescriptors);
+    }
+
+    return readerFactory;
+  }
+}  
+
+</pre>
+</div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e19"></a>RecordReaderFactory</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReaderFactory;
+import com.servingxml.components.recordio.RecordReader;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyReaderFactory extends AbstractRecordReaderFactory
+implements RecordReaderFactory  {     
+
+  public MyReaderFactory(/* args */) {
+  }
+  
+  protected RecordReader createRecordReader(ServiceContext context, Flow flow) {
+
+    RecordReader recordReader = new MyRecordReader(/* args */);
+    return recordReader;
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e22"></a>RecordReader</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReader;
+import com.servingxml.components.recordio.RecordReader;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyReaderReader extends AbstractRecordReader
+implements RecordReader  {
+
+  //  Per pipeline execution state
+
+  public MyReaderReader(/* args */) {
+  }
+
+  public void readRecords(final ServiceContext context, final Flow flow) {
+    try {
+      startRecordStream(context, flow);
+      //  For each record
+      {
+        RecordBuilder recordBuilder = new RecordBuilder();
+        //  Build record
+        Record newRecord = recordBuilder.toRecord();                                                                                         
+        Flow newFlow = flow.replaceRecord(context, newRecord, ++lineNumber);
+        try {
+          writeRecord(context, newFlow);
+        } catch (ServingXmlException e) {
+          super.discardRecord(context, newFlow, e);
+        }
+      }
+      endRecordStream(context, flow);
+    } finally {
+      close();
+    }
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e25"></a>components.xml</h4></div></div></div>
+<pre class="programlisting">
+
+&lt;ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core"&gt;
+                xmlns:myns="myurl"&gt;
+               
+  &lt;ioc:serviceComponent name="myns:myRecordReader" base="sx:recordReader"
+                assemblerClass="mypackage.MyRecordReaderFactoryAssembler"/&gt;
+  ...
+                  
+&lt;/ioc:components&gt;                
+
+</pre>
+</div>
+  </div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e28"></a>Record Writers</h3></div></div></div>
+
+<p>
+ </p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e31"></a>Assembler</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordWriterFactory;
+import com.servingxml.components.recordio.RecordWriterFactoryPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriterFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordWriterFactory assemble(ConfigurationContext context)  {
+
+    RecordWriterFactory recordWriterFactory = new MyRecordWriterFactory(/* args */);
+    if (parameterDescriptors.length &gt; 0) {
+      recordWriterFactory = new RecordWriterFactoryPrefilter(recordWriterFactory,parameterDescriptors);
+    }
+    return recordWriterFactory;
+  }
+}  
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e34"></a>RecordWriterFactory</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordWriterFactory;
+import com.servingxml.components.recordio.RecordWriter;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriterFactory extends AbstractRecordWriterFactory
+implements RecordWriterFactory {     
+
+  public MyRecordWriterFactory(/* args */) {
+  }
+
+  public RecordWriter createRecordWriter(ServiceContext context, Flow flow) 
+   {
+    RecordWriter recordWriter = new MyRecordWriter();
+    return recordWriter;
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e37"></a>RecordWriter</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordWriter;
+import com.servingxml.components.recordio.RecordWriter;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriter extends AbstractRecordWriter 
+implements RecordWriter {
+
+  //  Per pipeline execution state
+
+  public MyRecordWriter(/* args */) {
+  }
+
+  public void startRecordStream(ServiceContext context, Flow flow)  {
+    //  Set up state
+  }
+
+  public void writeRecord(ServiceContext context, Flow flow) {
+
+    Record record = flow.getRecord();
+
+    //  Write the record 
+  }  
+
+  public void endRecordStream(ServiceContext context, Flow flow) {
+    //  Tear down state
+  }
+
+  public void close()  {
+  // Close all remaining open resources.  The framework will call close() 
+  // even if there is a fault, so close() may be called even if startRecordStream() 
+  // has not been called,  or in the successful case, after resources have already 
+  // been disposed of in endRecordStream().
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e40"></a>components.xml</h4></div></div></div>
+<pre class="programlisting">
+
+&lt;ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core"
+                xmlns:myns="myurl"&gt;
+               
+  &lt;ioc:serviceComponent name="myns:myRecordWriter" base="sx:recordWriter"
+                assemblerClass="mypackage.MyRecordWriterFactoryAssembler"/&gt;
+  ...
+                  
+&lt;/ioc:components&gt;                
+
+</pre>
+</div>
+</div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e43"></a>Record Filters</h3></div></div></div>
+
+<p>
+ </p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e46"></a>Assembler</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordFilterAppender;
+import com.servingxml.components.recordio.RecordFilterAppenderPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilterAppenderAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordFilterAppender assemble(ConfigurationContext context) {
+    RecordFilterAppender recordFilterAppender = new MyRecordFilterAppender(/* args */);
+    if (parameterDescriptors.length &gt; 0) {
+      recordFilterAppender = new RecordFilterAppenderPrefilter(recordFilterAppender,parameterDescriptors);
+    }
+    return recordFilterAppender;
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e49"></a>RecordFilterAppender</h4></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordFilterAppender;
+import com.servingxml.components.recordio.RecordFilterAppender;
+import com.servingxml.components.recordio.RecordPipeline;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilterAppender extends AbstractRecordFilterAppender    
+implements RecordFilterAppender {
+
+  public MyRecordFilterAppender(/* args */) {
+  }
+
+  public void appendToRecordPipeline(ServiceContext context, Flow flow, RecordPipeline pipeline) {
+    RecordFilter filter = new MyRecordFilter();
+    pipeline.addRecordFilter(filter);
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e52"></a>RecordFilter</h4></div></div></div>
+
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordFilter;
+import com.servingxml.util.RecordBuilder;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilter extends AbstractRecordFilter
+implements RecordFilter  {
+
+  //  Per pipeline execution state
+
+  public MyRecordFilter(/* args */) {
+  }
+
+  public void startRecordStream(ServiceContext context, Flow flow) {
+    //  Acquire resources (input streams, SQL connections, etc.)
+    super.startRecordStream(context, flow);
+  }
+
+  public void writeRecord(ServiceContext context, Flow flow) {
+
+    try {                                       
+      Record record = flow.getRecord();
+
+      RecordBuilder recordBuilder = new RecordBuilder(record);
+      //  Modify record
+      Record newRecord = recordBuilder.toRecord();                                                                                         
+      Flow newFlow = flow.replaceRecord(context, newRecord);
+
+      super.writeRecord(context, newFlow);
+    } catch (Exception e) {
+      ServingXmlException reason = new ServingXmlException(e.getMessage(), e);
+      super.discardRecord(context, flow, reason);
+    }
+  }  
+
+  public void endRecordStream(ServiceContext context, Flow flow) {
+    //  Finish up
+    super.endRecordStream(context, flow);
+  }
+  
+  public void close()  {
+    // Close all remaining open resources.  The framework will call close() 
+    // even if there is a fault, so close() may be called even if startRecordStream() 
+    // has not been called,  or in the successful case, after resources have already 
+    // been disposed of in endRecordStream().
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e55"></a>components.xml</h4></div></div></div>
+
+<pre class="programlisting">
+
+&lt;ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core"&gt;
+                xmlns:myns="myurl"&gt;
+               
+  &lt;ioc:serviceComponent name="myns:myRecordFilter" base="sx:recordFilter"
+                assemblerClass="mypackage.MyRecordFilterFactoryAssembler"/&gt;
+  ...
+                  
+&lt;/ioc:components&gt;                
+
+</pre>
+</div>
+
+  </div>
+  </div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e58"></a>XML Serializers</h2></div></div></div>
+
+<p>This section provides templates for custom serializer elements that 
+can be used in ServingXML resources scripts.
+ </p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e61"></a>Assembler</h3></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.property.OutputProperty;
+import com.servingxml.app.xmlpipeline.SerializerFactory;
+import com.servingxml.app.xmlpipeline.SerializerFactoryPrefilter;
+import com.servingxml.ioc.components.ConfigurationContext;
+import com.servingxml.util.ServingXmlException;
+
+public class MySerializerFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private OutputProperty[] outputProperties = new OutputProperty[0];
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public void injectComponent(OutputProperty[] outputProperties) {
+    this.outputProperties = outputProperties;      
+  }
+
+  public SaxSinkFactory assemble(ConfigurationContext context)  {
+
+    SaxSinkFactory saxSinkFactory = new MySerializerFactory(outputProperties);
+    if (parameterDescriptors.length &gt; 0) {
+      saxSinkFactory = new SerializerFactoryPrefilter(saxSinkFactory, parameterDescriptors); 
+    }
+
+    return saxSinkFactory;
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e64"></a>SaxSinkFactory</h3></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import java.util.Properties;
+import org.xml.sax.ContentHandler;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.io.saxsink.SaxSink;
+import com.servingxml.app.xmlpipeline.SerializerFactory;
+import com.servingxml.util.ServingXmlException;
+
+public class MySerializerFactory implements SaxSinkFactory {
+
+  public MySerializerFactory(/* args */) {
+  }
+
+  public Serializer createSerializer(ServiceContext context, Flow flow, Properties outputProperties) {
+
+    ContentHandler handler = new MyContentHandler(/* args */);                    
+    Serializer serializer = new MySerializer(handler, /* other args */);
+    return serializer;
+  }                        
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e67"></a>Serializer</h3></div></div></div>
+<pre class="programlisting">
+
+package mypackage;
+
+import org.xml.sax.ContentHandler;
+
+import com.servingxml.io.saxsink.SaxSink;
+
+public class MySerializer implements SaxSink {
+  private final ContentHandler handler;
+
+  public MySerializer(ContentHandler handler, /* other args */) {
+    this.handler = handler;
+  }
+
+  public ContentHandler getContentHandler() {
+    return handler;
+  }
+
+  public void setOutputProperties(Properties outputProperties) {
+    //  Called by the framework to set output properties on the SAX sink
+  }
+
+  public void close() {
+    //  Close output streams
+  }
+}
+
+</pre>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e70"></a>components.xml</h3></div></div></div>
+
+<pre class="programlisting">
+
+&lt;ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core"&gt;
+                xmlns:myns="myurl"&gt;
+               
+  &lt;ioc:serviceComponent name="myns:mySerializer" base="sx:saxSink"
+                assemblerClass="mypackage.MySerializerFactoryAssembler"/&gt;
+  ...
+                  
+&lt;/ioc:components&gt;                
+
+</pre>
+</div>
+
+</div>
+</div></body></html>

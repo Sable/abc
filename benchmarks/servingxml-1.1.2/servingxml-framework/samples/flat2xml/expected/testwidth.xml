@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc>
+    <Transaction>
+        <Reference>0000000001</Reference>
+        <Remarks2>This is a remark</Remarks2>
+        <FollowingField>XXXXXXXXXX</FollowingField>
+    </Transaction>
+    <Transaction>
+        <Reference>0000000002</Reference>
+        <Remarks2/>
+        <FollowingField/>
+    </Transaction>
+    <Transaction>
+        <Reference>0000000003</Reference>
+        <Remarks2/>
+        <FollowingField>YYYYYYYYYY</FollowingField>
+    </Transaction>
+    <Transaction>
+        <Reference>0000000003</Reference>
+        <Remarks2>Test</Remarks2>
+        <FollowingField>ZZZZZZZZZZ</FollowingField>
+    </Transaction>
+</Doc>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+<!--  Saxon 6.5 settings 
+  <sx:xsltConfiguration version="1.0">   
+
+    <sx:systemProperty name="javax.xml.transform.TransformerFactory" 
+                       value="com.icl.saxon.TransformerFactoryImpl"/>
+
+    <sx:outputProperty name="indent" value="no"/>
+    <sx:outputProperty name="{http://icl.com/saxon}omit-meta-tag" value="yes"/>
+
+  </sx:xsltConfiguration>
+-->  
+
+<!--  Saxon 8 settings -->
+  <sx:xsltConfiguration version="2.0">   
+
+    <sx:systemProperty name="javax.xml.transform.TransformerFactory" 
+                       value="net.sf.saxon.TransformerFactoryImpl"/>
+<!--    <sx:systemProperty name="jaxp.debug" value="true"/>  -->
+
+    <sx:outputProperty name="indent" value="no"/>
+    <sx:outputProperty name="{http://icl.com/saxon}omit-meta-tag" value="yes"/>
+
+  </sx:xsltConfiguration>
+
+</sx:resources>
+

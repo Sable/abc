@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                       xsi:schemaLocation="url2">
+  <myns:book categoryCode="F">
+    <myns:title>Factotum</myns:title>
+    <myns:author>Charles Bukowski</myns:author>
+    <myns:price>22.95</myns:price>
+    <myns:isbn>0876852630</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>The Night Watch</myns:title>
+    <myns:author>Sergei Lukyanenko</myns:author>
+    <myns:price>17.99</myns:price>
+    <myns:isbn>0434014125</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Mr Mee</myns:title>
+    <myns:author>Andrew Crumey</myns:author>
+    <myns:price>22.00</myns:price>
+    <myns:isbn>0312282354</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="C">
+    <myns:title>Building Parsers with Java</myns:title>
+    <myns:author>Steven John Metsker</myns:author>
+    <myns:price>39.95</myns:price>
+    <myns:isbn>0201719622</myns:isbn>
+  </myns:book>
+</myns:books>

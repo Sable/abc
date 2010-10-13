@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mns:Message xmlns:mns="www.abc.be/abc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="www.abc.be/abc abc_v1.1.xsd ">
+	<wf_id>262025218</wf_id>
+	<timeStamp>2006-02-08T15:24:39</timeStamp>
+	<MessageData>
+		<addCustomerRequest>
+			<accountType>POSTPAID</accountType>
+			<custType>Business</custType>
+			<custCat>S/M Enterprise</custCat>
+			<companyName>Trust Company</companyName>
+			<title>Mr</title>
+			<foreName>John</foreName>
+			<surName>Smith</surName>
+			<vatNumber>657827168</vatNumber>
+			<niNumber />
+			<custAddress>
+				<houseNumber>1</houseNumber>
+				<street>Main Street</street>
+				<town>London</town>
+				<postCode>45879</postCode>
+				<country>56</country>
+			</custAddress>
+			<sex>M</sex>
+			<maritalStatus>Not Given</maritalStatus>
+			<dateOfBirth>1968-10-10</dateOfBirth>
+			<custStatus>1</custStatus>
+			<custNationality>ENGLISH</custNationality>
+			<homePhone>
+				<country>56</country>
+				<numberInCountry />
+			</homePhone>
+			<workPhone>
+				<country>56</country>
+				<numberInCountry />
+			</workPhone>
+			<faxPhone>
+				<country>56</country>
+				<numberInCountry />
+			</faxPhone>
+			<methodOfPayment>
+				<directDebit />
+			</methodOfPayment>
+			<directoryEntry>N</directoryEntry>
+			<taxExemptId>BET</taxExemptId>
+			<language>English</language>
+			<password>CHANGE ME</password>
+			<itemisedCalls>Y</itemisedCalls>
+			<navsResult>0</navsResult>
+		</addCustomerRequest>
+	</MessageData>
+	<wf_id>262091012</wf_id>
+	<timeStamp>2006-02-08T15:24:39</timeStamp>
+	<MessageData>
+		<addCustomerRequest>
+			<accountType>POSTPAID</accountType>
+			<custType>Domestic</custType>
+			<custCat>General</custCat>
+			<companyName>My Telecom</companyName>
+			<title>MRS</title>
+			<foreName>Jane</foreName>
+			<surName>Bell</surName>
+			<vatNumber />
+			<niNumber />
+			<custAddress>
+				<houseNumber>105</houseNumber>
+				<street>Penny Lane</street>
+				<town>Oxford</town>
+				<postCode>12345</postCode>
+				<country>56</country>
+			</custAddress>
+			<sex>F</sex>
+			<maritalStatus>Not Given</maritalStatus>
+			<dateOfBirth>1970-02-25</dateOfBirth>
+			<custStatus>1</custStatus>
+			<custNationality>ENGLISH</custNationality>
+			<homePhone>
+				<country>56</country>
+				<numberInCountry />
+			</homePhone>
+			<workPhone>
+				<country>56</country>
+				<numberInCountry />
+			</workPhone>
+			<faxPhone>
+				<country>56</country>
+				<numberInCountry />
+			</faxPhone>
+			<methodOfPayment>
+				<bankTransfer />
+			</methodOfPayment>
+			<directoryEntry>Y</directoryEntry>
+			<taxExemptId>BEN</taxExemptId>
+			<language>English</language>
+			<password>CHANGE ME</password>
+			<itemisedCalls>Y</itemisedCalls>
+			<navsResult>0</navsResult>
+		</addCustomerRequest>
+	</MessageData>
+</mns:Message>

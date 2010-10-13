@@ -1,0 +1,654 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader id="pipeline">
+  <title>Serving XML: Pipeline Language</title>
+  <author><firstname>Daniel</firstname><surname>Parker</surname></author>
+</artheader>
+<section>
+<para>
+This is the first of three articles describing the ServingXML pipeline language.  
+</para>
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">ServingXML: Pipeline Language</ulink>
+</phrase></listitem>
+<!--listitem>
+  <phrase>
+    <ulink url="record-structure.html">Record Pipelines: Record 
+      Structure</ulink>
+  </phrase>
+</listitem-->
+
+<listitem><phrase>
+<ulink url="flat-file-to-xml.html">ServingXML: Flat Files</ulink>
+</phrase></listitem>
+<!--listitem><phrase>
+<ulink url="xml-to-xml.html">ServingXML: XML Content</ulink>
+</phrase></listitem-->
+<listitem><phrase>
+<ulink url="servingxml-3.html">ServingXML: Inversion of Control 
+  Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+<para>
+ServingXML is a language for building XML pipelines, and an extensible Java framework 
+for defining the elements of the language.  This article gives a short introduction to some
+of the basic ideas.  It focuses on pipelines where the input is an XML stream and the
+output is a serialized XML stream. 
+</para>
+</section>
+<section>
+<title>First Example</title>  
+<para>
+ServingXML responds to requests by invoking a service, which in turn reads content and subjects it
+to a number of transformations, and finally writes output.  
+</para>
+<para>
+ServingXML makes it easy to implement SAX pipelines like Example 5 in Michael Kay's 
+<ulink url="http://www.amazon.com/exec/obidos/ASIN/0764543814/102-5652674-7751330">XSLT 2nd Edition Programmer's Reference</ulink>, Appendix F.
+This example is a three-stage pipeline, where the first stage is a SAX filter written in Java, 
+the second stage is an XSLT transformation, and the third stage is another SAX filter written in Java.
+In ServingXML, it may be expressed as follows.
+</para>
+<figure id="sax-pipeline" xreflabel="SAX pipeline">
+  <title>SAX pipeline</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt>
+          <sx:urlSource url="filter.xsl"/>
+        </sx:xslt>
+        <sx:saxFilter class="PostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+To execute the <code>myPipeline</code> service, you need to do two things.
+<itemizedlist>
+<listitem><para>
+Compile the two Java classes, <code>PreFilter</code> and <code>PostFilter</code>, and copy 
+the <filename>.class</filename> files into the <filename>dir/classes</filename> directory.
+</para></listitem>
+<listitem><para>
+Run the command
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml myPipeline 
+    < input.xml > output.xml
+]]>
+</programlisting>
+</para></listitem>
+</itemizedlist>
+Here <filename>dir</filename> is the directory where the ServingXML software is installed, 
+<filename>resources.xml</filename> defines the "myPipeline" service, and <filename>input.xml</filename> 
+and <filename>output.xml</filename> are your input and output.
+</para>
+  <para>
+The pipeline body may be thought of as a sequence
+of processing steps applied to the default input stream.  The input stream is parsed and transformed 
+into a stream of SAX events, and the events pass through a number of stages.  They pass through the inner 
+<sgmltag>sx:transform</sgmltag> element, flowing through the SAX PreFilter, the XSLT stylesheet, 
+and the SAX PostFilter, in that order, on their way to a <sgmltag>sx:serialize</sgmltag> element, 
+there to become serialized to an output stream.      
+</para>
+<para>
+Transform elements can be nested to any depth, and each can contain an arbitrary number
+of filters.  The flow is always from the innermost element to the outermost element, and within a
+transform stage, from the top filter to the bottom filter.
+</para>
+</section>
+<section>
+  <title>Resources</title>
+<para>
+In the example above, the service <filename>myPipeline</filename> is an example of a resource.
+Resources are identified by an absolute or relative URI.  We could have written the resources script like this:
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+  <sx:service id="myns:myPipeline"> ...
+]]></programlisting>
+<para>
+Then we would need to identify the service with a full URI:
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml http://mycompany.com/mynames/myPipeline 
+    < input.xml > output.xml
+]]>
+</programlisting>
+<para>
+Note that ServingXML follows the RDF convention for converting QNames into URIs, by
+concatenating the XML namespace URI and local name.
+</para>
+</section>
+<section>
+  <title>Tasks</title>
+<para>
+In the <xref linkend="sax-pipeline"/> example, the service "myPipeline" executes one task, represented by the 
+<sgmltag>sx:serialize</sgmltag> element, which serializes the XML generated by the XML pipeline body into text, 
+and writes it to the standard output.  A service, however, may execute multiple tasks, including 
+<itemizedlist>
+<listitem>serializing XML to a file (<sgmltag>sx:serialize</sgmltag>)</listitem>
+<listitem>writing records to a file (<sgmltag>sx:recordStream</sgmltag>)</listitem> 
+<listitem>sending mail (<sgmltag>jm:sendMail</sgmltag>)</listitem>
+<listitem>starting a Swing application (<sgmltag>swing:runApp</sgmltag>)</listitem>
+<listitem>running another service (<sgmltag>sx:runService</sgmltag>)</listitem>
+</itemizedlist>
+</para>
+</section>
+
+<section>
+  <title>Parameters</title>
+<para>
+The <sgmltag>sx:parameter</sgmltag> element is used to define a parameter as a QName-value pair,
+for example,
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate">no</sx:parameter>
+]]></programlisting>
+</para>
+<para>
+A parameter defined inside an element is accessible to sibling and descendent elements, but not to ancestor elements.
+If the parameter has the same QName as a parameter in an ancestor,
+the new parameter value replaces the old one within the scope of siblings and descendents, but
+not in the scope of ancestors, the old value is still visible to ancestors. This is to avoid side effects.
+</para>
+<para>
+The application processing the resources script may pass additional parameters to the
+script.  For example, the console app may pass the parameter <code>validate</code> like this:
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml myPipeline validate=yes
+    < input.xml > output.xml
+]]></programlisting>
+</para>
+<para>
+If you want to define a default value for the parameter, you must do so with 
+a <sgmltag>sx:defaultValue</sgmltag> element as follows.
+<programlisting>
+<![CDATA[
+  <sx:parameter name="validate"><sx:defaultValue>no</sx:defaultValue></sx:parameter>
+]]></programlisting>
+A passed parameter cannot override a parameter defined in a resources script unless
+the script's value is a default value, enclosed by a <sgmltag>sx:defaultValue</sgmltag> element.
+More generally, a parameter in an ancestor cannot override a parameter in a descendent
+unless the descendant's value is a default value.
+</para>
+</section>
+
+<section>
+  <title>Conditional Processing</title>
+<para>
+ServingXML supports conditional processing with a <sgmltag>sx:choose</sgmltag> element, 
+which tests XPath boolean expressions against parameters to determine which of several alternative
+pipeline bodies to execute.  Here's an example
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+  <sx:service id="myPipeline">
+  
+    <sx:parameter name="validate"><sx:defaultValue>yes</sx:defaultValue></sx:parameter>
+    
+    <sx:serialize>
+      <sx:choose>
+        <sx:when test="$validate = 'yes'">
+          <sx:transform>
+            <sx:saxFilter class="PreFilter"/>
+            <sx:xslt><sx:urlSource url="filter.xsl"/></sx:xslt>
+            <sx:saxFilter class="PostFilter"/>   
+            <msv:schemaValidator>
+              <sx:urlSource url="mySchema.xsd"/>
+            </msv:schemaValidator>
+          </sx:transform>
+        </sx:when>  
+        <sx:otherwise>
+          <sx:transform>
+            <sx:saxFilter class="PreFilter"/>
+            <sx:xslt><sx:urlSource url="filter.xsl"/></sx:xslt>
+            <sx:saxFilter class="PostFilter"/>   
+          </sx:transform>
+        </sx:otherwise>  
+      <sx:choose>  
+    </sx:serialize>
+
+  </sx:service>
+</sx:resources>
+]]></programlisting>
+<para>
+If the <code>validate</code> parameter is "yes", the pipeline service will stream the SAX events through
+the first three filters, and also through the SUN Multi-Schema Validator, which is implemented by the
+<sgmltag>msv:schemaValidator</sgmltag> component; if it is "no", the validation step is skipped.  The 
+<sgmltag>sx:parameter</sgmltag> element at the top of the script initializes the <code>validate</code> parameter
+to "yes", so by default the validation step will be performed.  This may be overriden by passing a 
+<code>validate</code> parameter on the command line, like this
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml pipeline validate=no
+    < input.xml > output.xml
+]]>
+</programlisting>
+</section>
+<section>
+  <title>Referencing Resources by Id</title>
+<para>
+The resources defined in a resources script may be given ids and referred to by reference. 
+For example, the <xref linkend="sax-pipeline"/> example may be rewritten as follows.
+</para>
+<figure id="sax-pipeline2"  xreflabel="sax-pipeline2">
+  <title>SAX pipeline with references</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="myPreFilter"/>
+        <sx:content ref="myFilter"/>     
+        <sx:content ref="myPostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:saxFilter id="myPreFilter" class="PreFilter"/>
+  <sx:xslt id="myFilter">
+    <sx:urlSource url="filter.xsl"/>
+  </sx:xslt>
+  <sx:saxFilter id="myPostFilter" class="PostFilter"/>     
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Note that we could have written <code><![CDATA[<sx:saxFilter ref="myPreFilter"/>]]></code>,
+but instead we wrote <code><![CDATA[<sx:content ref="myPreFilter"/>]]></code>, 
+substituting the abstract component <sgmltag>sx:content</sgmltag> for the derived <sgmltag>sx:saxFilter</sgmltag>.   
+Names given to components must be unique up to
+the abstract component level, for instance, a service and a filter may both be named "myPipeline",
+but a <sgmltag>sx:saxFilter</sgmltag> and a <sgmltag>sx:xslt</sgmltag> must be named differently.
+</para>
+</section>
+<section>
+  <title>Sources and Sinks</title>
+<para>
+In our example so far, XML input is read from standard input and XML output is written to
+standard output.  We can, however, specify sources of input and sinks of output explicitly in the
+resources script. Below, we specify an input file named "input.xml", and an output file
+named "output.xml".
+</para>
+<figure>
+<title>SAX pipeline with specified input source and output sink</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:fileSink file="output.xml"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="myInput"/>
+        <sx:content ref="myPreFilter"/>
+        <sx:content ref="myFilter"/>     
+        <sx:content ref="myPostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:document id="myInput">
+    <sx:fileSource file="input.xml"/>
+  </document>
+
+  <sx:saxFilter id="myPreFilter" class="PreFilter"/>
+  <sx:xslt id="myFilter">
+    <sx:urlSource url="filter.xsl"/>
+  </sx:xslt>
+  <sx:saxFilter id="myPostFilter" class="PostFilter"/>     
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+The attributes <code>file</code> in <sgmltag>sx:fileSource</sgmltag>, <code>url</code> 
+in <sgmltag>sx:urlSource</sgmltag> and <code>file</code> in <sgmltag>sx:fileSink</sgmltag> 
+can contain parameters.  We can, for example,
+include parameters in the input and output filenames, like this,
+<programlisting>
+<![CDATA[
+  <sx:fileSink file="{$myOutput}.xml"/>
+  
+  <sx:fileSource file="{$myInput}.xml"/>
+]]></programlisting>
+and run the pipeline with passed parameters,
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml myPipeline 
+    myInput=input myOutput=output
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Abstract Elements</title>
+<para>ServingXML supports the idea of abstract elements.  New elements can be created as specializations of abstract elements and used interchangeably with core ServingXML elements in resources
+scripts.  Want your XML serialized to a file on an FTP server? Use the <sgmltag>ftpSink</sgmltag>:
+</para>
+  <programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+             xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+
+ <edt:ftpClient name="myFtpClient"
+                host="tor3" user="dap" password="spring"/>
+
+ <sx:service name="myPipeline">
+
+   <sx:serialize>
+    <sx:xsltSerializer>
+      <edt:ftpSink remoteDirectory="incoming" remoteFile="output.xml">
+        <edt:ftpClient ref="myFtpClient"/>
+      </edt:ftpSink>
+    </sx:xsltSerializer> ...
+]]>
+  </programlisting>
+</section>
+<section>
+<title>Composition</title>
+<para>
+Pipeline bodies may be composed out of other pipeline bodies.  In the example below,
+four common steps in preparing invoices are collected in the <sgmltag>sx:transform</sgmltag> element
+named "steps1-4".  This pipeline body is used in two other pipeline bodies that are
+specialized to produce HTML and XSL-FO output.
+</para>
+<figure id="resources-invoices.xml">
+  <title>Composition of pipeline bodies</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop">
+  
+  <sx:service id="invoice-html">                         
+    <sx:serialize>
+      <sx:transform>
+        <sx:document><sx:urlSource url="invoice.xml"/></sx:document>
+        <sx:transform ref="steps1-4"/>
+        <sx:xslt><sx:urlSource url="styles/invoice2html.xsl"/></sx:xslt> 
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:service id="invoice-pdf">                         
+    <sx:serialize>
+      <fop:foSerializer/>
+      <sx:transform>
+        <sx:document><sx:urlSource url="invoice.xml"/></sx:document>
+        <sx:transform ref="steps1-4"/>
+        <sx:xslt><sx:urlSource url="styles/invoice2fo.xsl"/></sx:xslt> 
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt><sx:urlSource url="styles/step1.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step2.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step3.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step4.xsl"/></sx:xslt> 
+  </sx:transform>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+</section>
+<section>
+  <title>XSLT URI Resolution</title>
+  <para>The <code>ServingXML</code> implementation acts as a URI resolver for an XSLT stylesheet in the pipeline.
+  If an XSLT stylesheet uses the <code>document</code> function to reference a URI,
+  an attempt will be made to resolve that URI against content identified by QName.  
+  The URI will be resolved if it matches the identifier obtained by 
+concatenating the namespace URI and the local name of content defined in the resources script.  
+If there is no match, URI resolution reverts to the default URI resolution for the transformer.
+  </para>
+  <para>
+    The <code>ServingXML</code> implementation will recognize query parameters such as ?directory=input
+    in the URI passed to the <code>document()</code> function.  These parameters may
+    be referenced in XML content elements.
+  </para>
+</section>
+<section>
+  <title>Document Subtrees</title>
+<para>
+ServingXML supports filters that extract subtrees and perform serialization
+or other tasks on those subtrees.  For example, suppose we have a file <filename>invoices.xml</filename>
+containing multiple invoice elements.
+<programlisting>
+<![CDATA[
+<invoices>
+  <invoice id="200302-01" ...
+  
+  <invoice id="200302-02" ...
+</invoices>
+]]>
+</programlisting>
+By applying the resources script below, we can produce a separate PDF file for each invoice,
+each filename being identified by the invoice id.
+</para>
+<figure id="resources-invoices.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice">
+   
+  <sx:service id="invoices"> 
+    <sx:transform>
+      <!-- Here we extract a subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">
+         <!-- Transform invoice subtree to pdf-->
+         <sx:serialize>
+             <!-- We initialize a parameter with an XPATH expression
+                  applied to the document subtree -->
+            <sx:parameter name="invoice-name" select="@id"/> 
+            <fop:foSerializer>
+              <sx:fileSink file="output/invoice{$invoice-name}.pdf"/>
+            </fop:foSerializer>
+            <sx:transform>
+              <sx:transform ref="steps1-4"/>
+              <sx:xslt><sx:urlSource url="styles/invoice2fo.xsl"/></sx:xslt> 
+            </sx:transform>
+         </sx:serialize>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt><sx:urlSource url="styles/step1.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step2.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step3.xsl"/></sx:xslt> 
+    <sx:xslt><sx:urlSource url="styles/step4.xsl"/></sx:xslt> 
+  </sx:transform>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>The <sgmltag>sx:processSubtree</sgmltag> element has an attribute 
+<sgmltag class="attribute">path</sgmltag> that references a <code>SAXPath</code> pattern,
+to extract subtrees from the stream of SAX events.
+A <code>SAXPath</code> pattern is an expression that matches on a stack of SAX events as they flow through a SAX filter.
+The syntax for a <code>SAXPath</code> is a restricted XSLT match pattern, 
+including the parts that make sense for filtering on the SAX <code>startElement</code> event.
+The match pattern is evaluated against the path of elements leading to the current element, 
+the attributes of the elements, and any parameters in scope. 
+</para>
+<para>
+A SAXPath pattern consists of a series of one or more elements separated by "/" or  "//".
+An absolute SAXPath pattern begins with a "/" or "//", and is matched against the entire path of elements.  
+A relative SAXPath pattern is matched against a portion of the path that ends at the current element.
+A "//" expands to match any series of elements separating two matched path entries.  The wildcard "*" may be used to match against any element.  
+Predicates that a path entry must satisfy may be appended to the entry with square brackets.
+</para>
+</section>
+<section>
+<title>XML Tee</title>
+<para>ServingXML supports the notion of an XML tee, to fork a stream of SAX events.  Suppose, for example, we wanted to 
+serialize each invoice in the previous example to HTML as well as PDF.  One way to do this is
+to insert an <sgmltag>sx:tagTee</sgmltag> element in the pipeline, like this:
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice">
+
+  <sx:service id="invoices">
+  
+    <sx:transform>
+      <!-- Here we extract a document subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">
+        <sx:transform>
+          <!-- We initialize a parameter with an XPATH expression
+               applied to the document subtree -->
+          <sx:parameter name="invoice-name" select="@id"/>
+          <fop:foSerializer>
+            <sx:fileSink file="output/invoice{$invoice-name}.pdf"/>
+          </fop:foSerializer>
+          <sx:transform>
+            <sx:transform ref="steps1-4"/>
+            <!-- Tee - invoice document subtree to html-->
+            <sx:tagTee>
+              <sx:xslt documentBase="documents/">
+                <sx:urlSource url="styles/invoice2html.xsl"/>
+              </sx:xslt>
+              <sx:xsltSerializer>
+                <sx:fileSink file="output/invoice{$invoice-name}.html"/>
+              </sx:xsltSerializer>
+            </sx:tagTee>
+            <sx:xslt documentBase="documents/">
+              <sx:urlSource url="styles/invoice2fo.xsl"/>
+            </sx:xslt>
+          </sx:transform>
+        </sx:transform>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="html-output">
+    <sx:xslt documentBase="documents/">
+      <sx:urlSource url="styles/invoice2html.xsl"/>
+    </sx:xslt>
+    <sx:xsltSerializer>
+      <sx:fileSink file="output/invoice{$invoice-name}.html"/>
+    </sx:xsltSerializer>
+  </sx:transform>
+  ...
+
+</sx:resources>
+]]>
+</programlisting>
+</section>
+<section>
+<title>Organizing Resource Scripts</title>
+<para>
+As a resources script gets bigger, it becomes desirable to reorganize it, perhaps splitting off
+the content and filter elements into separate files, and grouping resource names into distinct
+namespaces.  We may, for example, wish to decompose the <filename>resources.xml</filename> 
+file as follows.
+</para>
+<itemizedlist>
+<listitem><para><filename>documents.xml</filename> - File of documents with names assigned from
+the namespace <code>http://www.mydomain.com/documents</code>.
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                      xmlns:myns="http://mycompany.com/mynames/">
+  <sx:document id="myns:myInput">
+    <sx:fileSource file="input.xml"/>
+  </document>
+</sx:resources>
+]]></programlisting>
+</para></listitem>
+<listitem><para><filename>filters.xml</filename> - File of filter definitions.
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:saxFilter id="myPreFilter" class="PreFilter"/>
+  <sx:xslt id="myFilter"><sx:urlSource url="filter.xsl"/></sx:xslt>
+  <sx:saxFilter id="myPostFilter" class="PostFilter"/>     
+</sx:resources>
+]]></programlisting>
+</para></listitem>
+<listitem><para><filename>services.xml</filename> - File of service definitions.</para></listitem>
+</itemizedlist>
+<para>
+We now need to import the content and filter definitions in the services.xml file, and we
+do that using the <filename>sx:include</filename> instruction.
+</para>
+<figure>
+<title>Resources script with includes</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edt="http://www.servingxml.com/extensions/edtftp"
+              xmlns:myns="http://mycompany.com/mynames/">
+  <sx:include href="documents.xml"/>
+  <sx:include href="filters.xml"/>
+
+  <sx:service id="myPipeline">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <edt:ftpSink remoteFile="output.xml">
+            <edt:ftpClient ref="myFtpClient"/>
+        </edt:ftpSink>
+      </sx:xsltSerializer>
+      
+      <sx:transform>
+        <sx:content ref="myns:myInput"/>
+        <sx:content ref="myPreFilter"/>
+        <sx:content ref="myFilter"/>     
+        <sx:content ref="myPostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+    
+  <edt:ftpClient id="myFtpClient" host="myHost" user="xxx" password="xxx"/>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+</section>
+<section>
+  <title>Customization</title>
+  <para>
+A number of elements support custom implementations by accepting a Java class that implements
+a defined interface and a list of custom properties.  These include <sgmltag>sx:saxReader</sgmltag>, 
+<sgmltag>sx:saxFilter</sgmltag>, <sgmltag>sx:customSerializer</sgmltag>, <sgmltag>sx:customRecordFilter</sgmltag>, 
+<sgmltag>sx:customJdbcConnection</sgmltag>, and <sgmltag>sx:dynamicContent</sgmltag>.
+</para>
+</section>
+<section>
+  <title>Extendability</title>
+  <para>
+New components may be created as extensions and used interchangeably with framework components in resources
+scripts.  The <code>edtftpj</code> extension, for example, provides the <sgmltag>edt:ftpSource</sgmltag>
+and <sgmltag>edt:ftpSink</sgmltag> implementations of the abstract <sgmltag>sx:streamSource</sgmltag> 
+and <sgmltag>sx:streamSink</sgmltag> components.
+Including the extension in the deployment build requires only that an entry be added in the 
+<filename>build-extensions.xml</filename> file.
+</para>
+</section>
+</article>
+

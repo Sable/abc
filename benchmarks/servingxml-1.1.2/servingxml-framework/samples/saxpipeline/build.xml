@@ -1,0 +1,37 @@
+<project name="servingxml" default="dist" basedir=".">
+  <target name="init">
+     <tstamp/>
+     <property file="build.properties"/>
+
+     <echo message = "output = ${bin.classes}"/>
+     <property name="dist.lib" value = "${dist.bin}/lib"/>
+
+     <filter token="version" value="1.0.0" />
+     <filter token="year" value="2001" />
+  </target>
+
+  <target name="removetmpfiles">
+  </target>
+
+  <target name="makebuildhome">
+  </target>
+
+  <target name="prepare" depends="init, removetmpfiles, makebuildhome">
+  </target>
+
+  <target name="compile.dist" depends="prepare">
+     <javac debug="${compile.debug}" srcdir="${app.src.base}" includes="**" destdir="${bin.classes}"/>
+  </target>
+  
+  <target name="build.dist" depends="compile.dist">
+  </target>
+  
+  <target name="dist.cleanup">
+  </target>
+
+  <target name="dist" depends="build.dist, dist.cleanup">
+  </target>
+
+</project>
+
+

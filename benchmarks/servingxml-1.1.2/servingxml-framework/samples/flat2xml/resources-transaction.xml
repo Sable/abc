@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="transaction">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="transaction-content"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="transaction-content" name="transaction">
+    <sx:flatFileReader>
+      <sx:flatFile ref="transaction-flat-file"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:flatFile id="transaction-flat-file">
+    <sx:recordDelimiter start="{" end="}"/>
+    <sx:flatFileBody>
+      <sx:repeatDelimiter start="{" end="}"/>
+      <sx:nameDelimiter value="="/>
+      <sx:flatRecordType name="TRAN">
+        <sx:delimitedField name="record-type">
+          <sx:fieldDelimiter value=":"/>
+        </sx:delimitedField>
+        <sx:repeatingField>
+          <sx:fieldDelimiter value="#"/>
+          <sx:segmentDelimiter value="{"/> 
+          <sx:delimitedNamedField/>
+        </sx:repeatingField>
+        <sx:repeatingGroup name="segments">
+          <sx:flatRecordTypeChoice>
+            <sx:delimitedField name="record-type">
+              <sx:fieldDelimiter value=":"/>
+            </sx:delimitedField>
+            <sx:when test="1=1">
+              <sx:flatRecordType name="{record-type}">
+                <sx:delimitedField name="record-type">
+                  <sx:fieldDelimiter value=":"/>
+                </sx:delimitedField>
+                <sx:repeatingField> 
+                  <sx:delimitedNamedField/>
+                  <sx:fieldDelimiter value="#"/>
+                </sx:repeatingField>
+              </sx:flatRecordType>
+            </sx:when>
+          </sx:flatRecordTypeChoice>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

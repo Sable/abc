@@ -1,0 +1,244 @@
+<?xml version="1.0" standalone="no"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN"
+  "file:///C:/tools/docbook-5.0b5/dtd/docbook.dtd"[
+<!ENTITY flat-file-to-xml SYSTEM "flat-file-to-xml.xml">
+<!ENTITY xml-to-flat-file SYSTEM "xml-to-flat-file.xml">
+<!ENTITY flat-file-to-flat-file SYSTEM "flat-file-to-flat-file.xml">
+<!ENTITY xml-to-xml SYSTEM "xml-to-xml.xml">
+<!ENTITY sql-examples SYSTEM "sql-examples.xml">
+]
+>
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader id="consoleapp-egs"><title>ServingXML Examples</title>
+<author>
+  <firstname>Daniel</firstname>
+  <surname>Parker</surname>
+</author>
+<othercredit>
+  <firstname>Shaun</firstname>
+  <surname>Woodrow</surname>
+  <contrib>Contributor of "trades" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Dimitrios</firstname>
+  <surname>Varsos</surname>
+  <contrib>Contributor of "tasks" and "timesheets" examples</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Pedro</firstname>
+  <surname>Mendoza</surname>
+  <contrib>Contributor of "hot" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Pierre-Alexandre</firstname>
+  <surname>Losson</surname>
+  <contrib>Contributor of "invoices" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Aswin</firstname>
+  <surname>Majjiga</surname>
+  <contrib>Contributor of "books-csv" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Dudley</firstname>
+  <contrib>Contributor of Java properties "nested tags" examples</contrib>
+</othercredit>
+<othercredit>
+  <firstname>alexbena</firstname>
+  <contrib>Contributor of "CONV" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Zach</firstname>
+  <contrib>Contributor of "ars" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Sapna</firstname>
+  <contrib>Contributor of "BNF like flat file" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Bill</firstname>
+  <surname>Donovan</surname>
+  <contrib>Contributor of edifact example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Ahmadin</firstname>
+  <contrib>Contributor of abtest example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Scott</firstname>
+  <contrib>Contributor of swath example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Peter</firstname>
+  <surname>Scholz</surname>
+  <contrib>Contributor of "segments" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Wonne</firstname>
+  <surname>Keysers</surname>
+  <contrib>Contributor of "persons" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Ken</firstname>
+  <surname>Brewer</surname>
+  <contrib>Contributor of "students" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Bala</firstname>
+  <surname>Murali</surname>
+  <contrib>Contributor of "book orders" and "checked books" examples</contrib>
+</othercredit>
+<othercredit>
+  <firstname></firstname>
+  <surname>etdwh </surname>
+  <contrib>Contributor of "opdef" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>David</firstname>
+  <surname>Leal Valma</surname>
+  <contrib>Contributor of "field has max width" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Anton</firstname>
+  <surname>Melumad</surname>
+  <contrib>Contributor of "optional elements" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Lance</firstname>
+  <surname>Zant</surname>
+  <contrib>Contributor of "XML-flat header-detail" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>dealogic</firstname>
+  <contrib>Contributor of XML to flat "sequence" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Jim</firstname>
+  <surname>Williams</surname>
+  <contrib>Contributor of XML to flat "multiple summaries" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Alvin</firstname>
+  <surname></surname>
+  <contrib>Contributor of XML to flat "book-listing" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Jim</firstname>
+  <surname>Nurii</surname>
+  <contrib>Contributor of flat to XML and XML to flat "special char" examples</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Jose Ignacio Santa Cruz</firstname>
+  <contrib>Contributor of flat to XML "invoice" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Valentine</firstname>
+  <contrib>Contributor of XML to flat "ungrouping" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Ravikumar</firstname>
+  <surname>Tadysetty</surname>
+  <contrib>Contributor of XML to flat "all" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>José</firstname>
+  <surname>Santos</surname>
+  <contrib>Contributor of XML to flat "formating distinct record lines" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Ramesh</firstname>
+  <surname>Ramasamy</surname>
+  <contrib>Contributor of XML to flat "book hierarchy" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Gordon</firstname>
+  <surname>Zhang</surname>
+  <contrib>Contributed additions to "exotics" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Roopashree</firstname>
+  <surname>Hirasave</surname>
+  <contrib>Contributed "X12 XML to Flat File" example</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Ralph</firstname>
+  <surname>Kutzner</surname>
+  <contrib>Contributed Flat-to-XML example "Computing an Aggregate Value over 
+    Multiple Records"</contrib>
+</othercredit>
+<othercredit>
+  <firstname>Randal</firstname>
+  <surname>Cobb</surname>
+  <contrib>Contributed Flat-to-XML example "Mapping Two Records at the Top of a 
+  File to a Header Element in the XML Output"
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Nicolas</firstname>
+  <surname>Denis</surname>
+  <contrib>Contributed Flat-to-XML example "A UTF-8 positional flat file with double byte characters"
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Johan</firstname>
+  <surname>Hammar</surname>
+  <contrib>Contributed Flat-to-XML example "Converting a positional flat file with variable field widths to 
+  XML"
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Asanga</firstname>
+  <surname>Porage</surname>
+  <contrib>Contributed the "eobclaims" examples, the flat-to-XML "Flat File to Summary and Detail XML Documents", and the 
+    XML-to-flat "Summary and Detail XML Documents to a Flat File"
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Luca</firstname>
+  <surname>Buraggi</surname>
+  <contrib>Contributed the XML-to-Database "Load Master Detail" example.
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Graham</firstname>
+  <surname>Hannington</surname>
+  <contrib>Contributed the Flat-File-to-XML "SMF" example.
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Sajeev</firstname>
+  <surname>Nair</surname>
+  <contrib>Contributed the Flat-File-to-XML "Record Concatenation" example.
+  </contrib>
+</othercredit>
+<othercredit>
+  <firstname>Gabriele</firstname>
+  <surname>Siviero</surname>
+  <contrib>Contributed the Flat-File-to-XML "Invoic96A" example.
+  </contrib>
+</othercredit>
+
+   
+</artheader>
+<para>
+The source for console app examples may be found in the distribution under the <filename>samples</filename> 
+directory.
+</para>
+<para>
+Before running the sample console applications, be sure to build the servingxml project.
+Note that the examples will be deployed under the <filename>target/servingxml/samples</filename>
+directory.  See <ulink url="../gettingstarted.html">Getting Started</ulink> for details.  
+</para>
+
+&flat-file-to-xml;
+&xml-to-flat-file; 
+  &flat-file-to-flat-file; 
+  &xml-to-xml;
+&sql-examples;
+  
+<index><title>Index</title>
+</index>
+
+</article>
+

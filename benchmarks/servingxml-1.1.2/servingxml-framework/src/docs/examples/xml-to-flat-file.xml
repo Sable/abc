@@ -1,0 +1,2668 @@
+<section><title>XML to Flat File</title>
+<section>
+<title>Converting an XML document to a positional flat file with record count in trailer (books-positional)</title>
+<titleabbrev>books (XML) to flat file (positional)</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<indexterm><primary>flat file trailer</primary><secondary>recordCount</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML document into a positional flat file, and include the record count in a trailer section.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="books.xml">
+  <title>Input XML file books.xml</title>
+<programlisting>
+<![CDATA[
+<myns:books xmlns:myns="http://mycompany.com/mynames/">
+  <myns:book categoryCode="F">
+    <myns:title>Kafka on the Shore</myns:title>
+    <myns:author>Haruki Murakami</myns:author>
+    <myns:price>25.17</myns:price>
+  </myns:book>
+  <myns:book categoryCode="C">
+    <myns:title>Concurrent Programming in Java</myns:title>
+    <myns:author>Doug Lea</myns:author>
+    <myns:price>77.13</myns:price>
+  </myns:book>
+</myns:books>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="books.txt">
+  <title>Output positional flat file books.txt</title>
+<programlisting>
+<![CDATA[
+CAuthor                        Title                              Price
+
+FHaruki Murakami               Kafka on the Shore                 25.17
+CDoug Lea                      Concurrent Programming in Java     77.13
+
+
+Number of records: 2
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-books.xml">
+  <title>Resources script resources-books.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books2pos">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:flatRecordType ref="trailer"/>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="trailer" name="trailer">
+    <sx:positionalField name="recordCountLabel" width="19" label="Number of records: "/>
+    <sx:positionalField name="recordCount"  width="10" label="{$sx:recordCount}"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following:
+<itemizedlist>
+  <listitem><para>In header and trailer sections, the <sgmltag class="attribute">label</sgmltag> attributes of fields are treated as data values.
+  </para></listitem>
+  <listitem><para>In a <link xlink:href="../guide/index.html#sx:positionalField">sx:positionalField</link> element, the value of the <sgmltag class="attribute">label</sgmltag> 
+  attribute can contain references to parameters, in
+  particular to <code>$sx:recordCount</code>, which is a parameter that the file record writer adds after finishing writing records.
+  </para></listitem>
+</itemizedlist>
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-books2pos.xml -i data/books.xml 
+    -o output/books.txt books2pos
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Converting an XML document with multiple occurances of an element to a CSV file (books-csv)</title>
+<titleabbrev>books (XML) to flat file (CSV)</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>CSV</secondary></indexterm>
+<para>
+This example shows one way to prepare a resources script that will convert an 
+XML document having multiple occurances of an element into a CSV file.  
+</para>
+<para>
+The input file is an XML file with multiple occurances of the element <sgmltag>myns:review</sgmltag>.
+</para>
+<figure id="books-with-reviews.xml" xreflabel="XML input file">
+  <title>Input XML file books.xml</title>
+<programlisting>
+<![CDATA[
+<myns:books xmlns:myns="http://mycompany.com/mynames/">
+  <myns:book categoryCode="F">
+    <myns:title>Factotum</myns:title>
+    <myns:author>Charles Bukowski</myns:author>
+    <myns:price/>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>*</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Kafka on the Shore</myns:title>
+    <myns:author>Haruki Murakami</myns:author>
+    <myns:price>25.17</myns:price>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Mr Mee</myns:title>
+    <myns:author>Andrew Crumey</myns:author>
+    <myns:price>22.00</myns:price>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>*</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="C">
+    <myns:title>Concurrent Programming in Java</myns:title>
+    <myns:author>Doug Lea</myns:author>
+    <myns:price>77.13</myns:price>
+    <myns:reviews>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="B">
+    <myns:title>Sex, Lies, and Headlocks</myns:title>
+    <myns:author>Shaun Assael</myns:author>
+    <myns:price>7.24 </myns:price>
+    <myns:reviews>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+</myns:books>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="books-csv.txt">
+  <title>Output CSV file books.csv</title>
+<programlisting>
+<![CDATA[
+Category,Author,Title,Price,Review 1,Review 2
+F,Charles Bukowski,Factotum,,*****,*
+F,Haruki Murakami,Kafka on the Shore,25.17,*****,****
+F,Andrew Crumey,Mr Mee,22.00,*****,*
+C,Doug Lea,Concurrent Programming in Java,77.13,****,
+B,Shaun Assael,"Sex, Lies, and Headlocks",7.24 ,****,
+]]>
+</programlisting>
+</figure>
+<para>Note that, because it contains embedded commas,
+ the title of the last book must be enclosed in quote marks.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-books.xml">
+  <title>Resources script resources-books2csv.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books2csv"> 
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="title" label="Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="review1" label="Review 1"/>
+    <sx:delimitedField name="review2" label="Review 2"/>
+  </sx:flatRecordType>
+  
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[1]" field="review1"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[2]" field="review2"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -o output/persons.xml -r resources-persons.xml 
+    personsAddresses 
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Converting an XML document with multiple occurances of an element to a flat file with subfield delimiters (books-pipe)</title>
+<titleabbrev>books (XML) to flat file (delimited)</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>delimited</secondary></indexterm>
+<indexterm><primary>flat file</primary><secondary>multi-valued fields</secondary></indexterm>
+<indexterm><primary>record filters</primary><secondary>sx:choose</secondary></indexterm>
+<para>
+This example shows another way of writing a resources script that will convert an 
+XML document having multiple occurances of an element into a delimited flat file.  
+</para>
+<para>
+The <xref linkend="books-with-reviews.xml"/> is the same as the previous example.
+The desired output, though, is slightly different.
+</para>
+<figure id="books-pipe.txt">
+  <title>Output pipe delimited flat file books-pipe.txt</title>
+<programlisting>
+<![CDATA[
+Category|Author|Title|Price|review
+Fiction|Charles Bukowski|Factotum||*****;*
+Fiction|Haruki Murakami|Kafka on the Shore|25.17|*****;****
+Fiction|Andrew Crumey|Mr Mee|22.00|*****;*
+Computers|Doug Lea|Concurrent Programming in Java|77.13|****
+Biography|Shaun Assael|Sex, Lies, and Headlocks|7.24 |****
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following features of this output.
+<itemizedlist>
+<listitem><para>Fields are separated by the pipe delimiter.</para></listitem>
+<listitem><para>Ratings appear in a multivalued field separated by semi-colon subfield delimiters.</para></listitem>
+<listitem><para>"Fiction" has been substituted for "F", "Computers" for "C", etc.</para></listitem>
+</itemizedlist>
+</para>
+<para>
+This time the resources script looks like this.
+</para>
+<figure id="resources-books.xml">
+  <title>Resources script resources-books2pipe.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books2pipe">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:choose>
+        <sx:when test="category='F'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Fiction"/>
+          </sx:modifyRecord>
+        </sx:when>
+        <sx:when test="category='C'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Computers"/>
+          </sx:modifyRecord>
+        </sx:when>
+        <sx:when test="category='B'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Biography"/>
+          </sx:modifyRecord>
+        </sx:when>
+      </sx:choose>
+      
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="title" label="Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="review" label="review">
+      <sx:subfieldDelimiter value=";"/>
+    </sx:delimitedField>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+        <sx:subtreeFieldMap match="myns:reviews/myns:review" select="text()" field="review"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>                              
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-books2pipe.xml -i data/books.xml 
+    -o output/books-pipe.txt books2pipe
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Converting each book entry in books.xml to a list of three records (book-listing)</title>
+<titleabbrev>books (XML) to listing</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>delimited</secondary></indexterm>
+<indexterm><primary>flat file</primary><secondary>multi-valued fields</secondary></indexterm>
+<indexterm><primary>record filters</primary><secondary>sx:choose</secondary></indexterm>
+<para>
+This example shows how to write a resources script that will convert each book entry
+in the <filename>books.xml</filename> document into a list of three records, the 
+first comma separated, and the last two space separated.  
+</para>
+<para>
+The <xref linkend="books-with-reviews.xml"/> is the same as the previous example.
+</para>
+<para>
+The desired output is follows.
+</para>
+<figure id="book_listing.txt">
+  <title>Output flat file book_lisiting.txt</title>
+<programlisting>
+<![CDATA[
+"Factotum", Charles Bukowski
+Category Fiction
+Price $
+"Kafka on the Shore", Haruki Murakami
+Category Fiction
+Price $25.17
+"Mr Mee", Andrew Crumey
+Category Fiction
+Price $22.00
+"Concurrent Programming in Java", Doug Lea
+Category Computers
+Price $77.13
+"Sex, Lies, and Headlocks", Shaun Assael
+Category Biography
+Price $7.24 
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following features of this output.
+<itemizedlist>
+<listitem><para>The categoryCode 'F' is mapped to "Fiction", 'C' to "Computers", 'B' to "Biography".</para></listitem>
+<listitem><para>A dollar sign '$' is prepended to the price (even if the price is empty.)</para></listitem>
+<listitem><para>Each book title is enclosed in quotation marks.</para></listitem>
+<listitem><para>Each book subtree is output as three records; the first delimited by ", ", the second delimited by a space character.</para></listitem>
+</itemizedlist>
+</para>
+<para>
+This time the resources script looks like this.
+</para>
+<figure id="resources-book_lisiting.xml">
+  <title>Resources script resources-book_listing.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="book-listing">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <!-- Convert category code to label -->
+      <sx:choose>
+        <sx:when test="category='F'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Fiction"/>
+          </sx:modifyRecord>
+        </sx:when>
+        <sx:when test="category='C'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Computers"/>
+          </sx:modifyRecord>
+        </sx:when>
+        <sx:when test="category='B'">
+          <sx:modifyRecord>
+            <sx:newField name="category" value="Biography"/>
+          </sx:modifyRecord>
+        </sx:when>
+      </sx:choose>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordTypeChoice id="bookType">
+    <sx:delimitedField name="xxx"/>  <!-- unused here, used for input only -->
+    <sx:when test="/book">  <!-- matches against record type "book" -->
+      <sx:flatRecordType name="book">
+        <sx:fieldDelimiter value=", "/>
+        <sx:delimitedField name="title" quote="always"/>
+        <sx:delimitedField name="author"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="/bookCategory">  <!-- matches against record type "bookCategory" -->
+      <sx:flatRecordType name="book">
+        <sx:fieldDelimiter value=" "/>
+        <sx:delimitedField name="label"/>
+        <sx:delimitedField name="category"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="/bookPrice">  <!-- matches against record type "bookPrice" -->
+      <sx:flatRecordType name="book">
+        <sx:fieldDelimiter value=" "/>
+        <sx:delimitedField name="label"/>
+        <sx:delimitedField name="price"/>
+      </sx:flatRecordType>
+    </sx:when>
+  </sx:flatRecordTypeChoice>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+      </sx:flattenSubtree>
+      <sx:flattenSubtree recordType="bookCategory">
+        <sx:subtreeFieldMap select="'Category'" field="label"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+      </sx:flattenSubtree>
+      <sx:flattenSubtree recordType="bookPrice">
+        <sx:subtreeFieldMap select="'Price'" field="label"/>
+        <!-- Append dollar sign to price -->
+        <sx:subtreeFieldMap select="concat('$',myns:price)" field="price"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-book_listing.xml -i data/books.xml 
+    -o output/book_listing.txt book-listing
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Converting an XML document into flat file records with multi-valued fields (swath)</title>
+<titleabbrev>swath (XML) to flat file (delimited)</titleabbrev>
+<indexterm><primary>inverse record mapping</primary><secondary>match</secondary></indexterm>
+<indexterm><primary>inverse record mapping</primary><secondary>multi-valued fields</secondary></indexterm>
+<para>
+This example shows another way of writing a resources script that will convert an 
+XML document into flat file records with multi-valued fields.  
+</para>
+<para>
+The input file is an XML file with multiple occurances of the element <sgmltag>GeoPoint</sgmltag> inside a <sgmltag>Swath</sgmltag> element.
+</para>
+<figure id="swath.xml" xreflabel="XML input file">
+  <title>Input XML file swath.xml</title>
+<programlisting>
+<![CDATA[
+<Swath>
+  <Shape>Polygon</Shape>
+  <GeoPoint>
+    <lat>1</lat>
+    <lon>2</lon>
+  </GeoPoint>
+  <GeoPoint>
+    <lat>3</lat>
+    <lon>4</lon>
+  </GeoPoint>
+  <GeoPoint>
+    <lat>5</lat>
+    <lon>6</lon>
+  </GeoPoint>
+</Swath>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="swath.txt">
+  <title>Output pipe delimited flat file swath.txt</title>
+<programlisting>
+<![CDATA[
+Shape|GeoPoint
+Polygon|1 2;3 4;5 6
+]]>
+</programlisting>
+</figure>
+<para>
+This time the resources script looks like this.
+</para>
+<figure id="resources-swath.xml">
+  <title>Resources script resources-swath2pipe.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="swath">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping >
+          <sx:onSubtree  path="/Swath">
+            <sx:flattenSubtree recordType="hdrType">
+              <sx:subtreeFieldMap select="Shape" field="Shape"/>
+              <sx:subtreeFieldMap match="GeoPoint" select="concat(lat,' ',lon)" field="GeoPoint"/>
+            </sx:flattenSubtree>
+          </sx:onSubtree>
+        </sx:inverseRecordMapping>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="swathFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="swathFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="hdrType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="hdrType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="hdrType" name="hdrType">
+    <sx:delimitedField name="Shape">
+      <sx:fieldDelimiter value="|"/>
+    </sx:delimitedField>
+    <sx:delimitedField name="GeoPoint">
+      <sx:subfieldDelimiter value=";"/>
+    </sx:delimitedField>
+  </sx:flatRecordType>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-swath.xml -i data/swath.xml 
+    -o output/swath.txt swath
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Converting an XML document into a flat file with header and multiple detail records (XML-flat header-detail)</title>
+<titleabbrev>XML-flat header-detail</titleabbrev>
+<indexterm><primary>inverse record mapping</primary><secondary>match</secondary></indexterm>
+<indexterm><primary>inverse record mapping</primary><secondary>header-detail records</secondary></indexterm>
+<para>
+This example shows how to write a resources script that will convert an 
+XML document into a flat file records with header and multiple detail records.  
+</para>
+<para>
+The input file is an XML file with multiple occurances of the element <sgmltag>myns:review</sgmltag> inside a <sgmltag>myns:book/myns:reviews</sgmltag> path.
+</para>
+<figure id="bookReviews.xml" xreflabel="XML input file">
+  <title>Input XML file bookReviews.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<myns:books xmlns:myns="http://mycompany.com/mynames/">
+  <myns:book id="002" categoryCode="F">
+    <myns:title>Kafka on the Shore</myns:title>
+    <myns:author>Haruki Murakami</myns:author>
+    <myns:price>25.17</myns:price>
+    <myns:reviews>
+      <myns:review>
+        <myns:reviewer>Curley</myns:reviewer>
+        <myns:rating>*****</myns:rating>
+      </myns:review>
+      <myns:review>
+        <myns:reviewer>Larry</myns:reviewer>
+        <myns:rating>***</myns:rating>
+      </myns:review>
+      <myns:review>
+        <myns:reviewer>Moe</myns:reviewer>
+        <myns:rating>*</myns:rating>
+      </myns:review>
+    </myns:reviews>
+  </myns:book>
+</myns:books>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="bookReviews.txt">
+  <title>Output positional flat file bookReviews.txt</title>
+<programlisting>
+<![CDATA[
+TID CAuthor                        Title                              Price
+
+H002FHaruki Murakami               Kafka on the Shore                 25.17
+L002Curley    *****
+L002Larry     ***  
+L002Moe       *    
+
+This is a trailer record
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script does the job.
+</para>
+<figure id="resources-bookReviews.xml">
+  <title>Resources script resources-bookReviews.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="bookReviews">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+    </sx:recordStream>
+    <sx:flatFileWriter>
+      <sx:flatFile ref="booksFile"/>
+    </sx:flatFileWriter>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="book"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag"  width="1"/>
+        <sx:when test="tag='H'">
+          <sx:flatRecordType ref="book"/>
+        </sx:when>
+        <sx:when test="tag='L'">
+          <sx:flatRecordType ref="review"/>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="book" name="book">
+    <sx:positionalField name="tag" label="Tag" width="1"/>
+    <sx:positionalField name="id" label="ID" width="3"/>
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="review" name="review">
+    <sx:positionalField name="tag" label="Tag" width="1"/>
+    <sx:positionalField name="id" label="ID" width="3"/>
+    <sx:positionalField name="reviewer" label="Reviewer" width="10"/>
+    <sx:positionalField name="rating" label="Rating" width="5"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:parameter name="id" select="@id"/>
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="'H'" field="tag"/>
+        <sx:subtreeFieldMap select="$id" field="id"/>
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+      </sx:flattenSubtree>
+      <sx:flattenSubtree match="myns:reviews/myns:review" recordType="review">
+        <sx:subtreeFieldMap select="'L'" field="tag"/>
+        <sx:subtreeFieldMap select="$id" field="id"/>
+        <sx:subtreeFieldMap select="myns:reviewer" field="reviewer"/>
+        <sx:subtreeFieldMap select="myns:rating" field="rating"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -r resources-bookReviews.xml -i data/bookReviews.xml 
+    -o output/bookReviews.txt bookReviews
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Breaking up a sequence of elements into flat file records ("sequence")</title>
+<titleabbrev>element sequence to flat</titleabbrev>
+<indexterm><primary>filter</primary><secondary>XSLT</secondary></indexterm>
+<para>
+The example below illustrates how to use an XSLT stylesheet in an XML-flat pipeline
+to transform the XML into a form that is easier to map.
+</para>
+<para>
+The input file is an XML file containing a sequence of elements.
+</para>
+<figure id="sequence.xml">
+  <title>Input XML file sequence.xml</title>
+<programlisting>
+<![CDATA[
+<root>
+  <first>1111</first>
+  <second>AD</second>
+  <third>1111</third>
+  <fourth>1111</fourth>
+  <first>2222</first>
+  <second>MO</second>
+  <third>2222</third>
+  <fourth>2222</fourth>
+</root>
+]]>
+</programlisting>
+</figure>
+<para>The desired output file is shown below.
+</para>
+<figure id="sequence.csv">
+  <title>Output CSV file sequence.csv.</title>
+<programlisting>
+<![CDATA[
+1111,AD,1111,1111
+2222,MO,2222,2222
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-sequence.xml">
+  <title>Resources script resources-sequence.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="sequence-csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document>
+            <sx:fileSource file="data/sequence.xml"/>
+          </sx:document>
+          <sx:xslt ref="sequence-hierarchy"/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="sequenceToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="sequenceFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:xslt id="sequence-hierarchy">
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:template match="/root">
+        <xsl:copy>
+          <xsl:apply-templates select="first"/>
+        </xsl:copy>
+      </xsl:template>
+      <xsl:template match="first">
+        <PivotNode>
+          <first>
+            <xsl:value-of select="."/>
+          </first>
+          <second>
+            <xsl:value-of select="following-sibling::second[1]"/>
+          </second>
+          <third>
+            <xsl:value-of select="following-sibling::third[1]"/>
+          </third>
+          <fourth>
+            <xsl:value-of select="following-sibling::fourth[1]"/>
+          </fourth>
+        </PivotNode>
+      </xsl:template>
+    </xsl:stylesheet>
+  </sx:xslt>
+
+  <sx:flatFile id="sequenceFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="sequence">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="first"/>
+        <sx:delimitedField name="second"/>
+        <sx:delimitedField name="third"/>
+        <sx:delimitedField name="fourth"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="sequenceToFileMapping">
+    <sx:onSubtree path="/root/PivotNode">
+      <sx:flattenSubtree  recordType="sequence">
+        <sx:subtreeFieldMap select="first" field="first"/>
+        <sx:subtreeFieldMap select="second" field="second"/>
+        <sx:subtreeFieldMap select="third" field="third"/>
+        <sx:subtreeFieldMap select="fourth" field="fourth"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>                           
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -o output/sequence.csv -r resources-sequence.xml sequence-csv
+]]>
+</programlisting>
+</para>
+</section>
+
+<section id="special-char-eg" xreflabel="special-char">
+<title>Converting an XML file with hexidecimal encoded values to a flat file with special characters</title>
+<titleabbrev>XML to special char</titleabbrev>
+<indexterm><primary>special char</primary></indexterm>
+<indexterm><primary>flat file field</primary><secondary>binary</secondary></indexterm>
+<para>                     
+The example below illustrates how to prepare a resources script that will convert an 
+XML document with hexadecimal encoded values to a flat file with special characters. 
+</para>                                                      
+<para>
+The input XML document is shown below.
+<figure id="transaction.xml">
+  <title>Input XML file transaction.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<transaction>
+  <R03>
+    <firstField>03</firstField>
+    <CLIENUM>1111111</CLIENUM>
+  </R03>
+  <R04>
+    <firstField>04</firstField>
+    <NAME>John Smith</NAME>
+  </R04>
+</transaction>
+]]>
+</programlisting>
+</figure>
+
+</para>
+
+<para>
+The desired output file is a flat file with two adjacent records (no line delimiters):
+<itemizedlist>
+  <listitem><para>A record beginning with the hexadecimal value 03, followed by the text "1111111"
+  </para></listitem>
+  <listitem><para>A record beginning with the hexadecimal value 04, followed by the text "John Smith"
+  </para></listitem>
+</itemizedlist>
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-specialChar.xml">
+  <title>Resources script resources-specialChar.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="transaction">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="fieldsMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter >
+        <sx:flatFile ref="transactionFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="transactionFile" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:binaryField name="firstField" width="1"/>
+        <sx:when test="firstField='03'">
+          <sx:flatRecordType id="R03" name="R03">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="CLIENUM" label="CLIENUM" width="007" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="firstField='04'">
+          <sx:flatRecordType id="R04" name="R04">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="NAME" label="NAME" width="020" />
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="fieldsMapping">
+    <sx:onSubtree path="/transaction/R03">
+      <sx:flattenSubtree match="/R03" recordType="R03">
+        <sx:subtreeFieldMap select="firstField" field="firstField"/>
+        <sx:subtreeFieldMap select="CLIENUM" field="CLIENUM"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="/transaction/R04">
+      <sx:flattenSubtree match="/R04" recordType="R04">
+        <sx:subtreeFieldMap select="firstField" field="firstField"/>
+        <sx:subtreeFieldMap select="NAME" field="NAME"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+Note that the first field of each record is declared as an <link xlink:href="../guide/index.html#sx:binaryField">sx:binaryField</link>.
+The string rendering of this field is as an hexidecimal value.
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -r resources-specialChar.xml -i data/transaction.xml 
+  -o output/transaction.txt transaction
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Converting an XML document to a positional flat file and ungrouping an XML element (ungrouping)</title>
+<titleabbrev>ungrouping</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML document into a positional flat file and ungroup an XML element.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="grouped.xml">
+  <title>Input XML file grouped.xml</title>
+<programlisting>
+<![CDATA[
+<RT_STLMT>
+  <OPERATING_DATE>03/04/2003</OPERATING_DATE>
+  <SETTLEMENT_CODE>S14</SETTLEMENT_CODE>
+  <LINE_ITEMS>
+    <CHG_TYP>
+      <CHG_TYP_ID>RT_ADMIN1</CHG_TYP_ID>
+      <CHG_TYP_NM>Market Administration Amount1</CHG_TYP_NM>
+      <TOTAL>
+        <AMT>288.81</AMT>
+        <INT>
+          <INT_NUM>1</INT_NUM>
+          <VAL>54.4</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>2</INT_NUM>
+          <VAL>31.16</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>3</INT_NUM>
+          <VAL>81.48</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>4</INT_NUM>
+          <VAL>121.77</VAL>
+        </INT>
+      </TOTAL>
+    </CHG_TYP>
+    <CHG_TYP>
+      <CHG_TYP_ID>RT_ADMIN2</CHG_TYP_ID>
+      <CHG_TYP_NM>Market Administration Amount2</CHG_TYP_NM>
+      <TOTAL>
+        <AMT>288.81</AMT>
+        <INT>
+          <INT_NUM>1</INT_NUM>
+          <VAL>54.4</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>2</INT_NUM>
+          <VAL>31.16</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>3</INT_NUM>
+          <VAL>81.48</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>4</INT_NUM>
+          <VAL>121.77</VAL>
+        </INT>
+      </TOTAL>
+    </CHG_TYP>
+  </LINE_ITEMS>
+</RT_STLMT>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="ungrouped.csv">
+  <title>Output positional flat file ungrouped.csv</title>
+<programlisting>
+<![CDATA[
+OPERATING_DATE,SETTLEMENT_CODE,DETERMINANT_ID,DETERMINANT_NAME,TOTAL_AMT,INT01,INT02,INT03,INT04
+03/04/2003,S14,RT_ADMIN1,Market Administration Amount1,288.81,54.4,31.16,81.48,121.77
+03/04/2003,S14,RT_ADMIN2,Market Administration Amount2,288.81,54.4,31.16,81.48,121.77
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-ungrouping.xml">
+  <title>Resources script resources-ungrouping.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core" xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="settlements2csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:parameter name="foo">bar</sx:parameter>
+        <sx:inverseRecordMapping ref="settlementsToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="settlementsFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="settlementsFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="settlementType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="settlementType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="settlementType" name="settlementType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="OPERATING_DATE" label="OPERATING_DATE"/>
+    <sx:delimitedField name="SETTLEMENT_CODE" label="SETTLEMENT_CODE"/>
+    <sx:delimitedField name="DETERMINANT_ID" label="DETERMINANT_ID"/>
+    <sx:delimitedField name="DETERMINANT_NAME" label="DETERMINANT_NAME"/>
+    <sx:delimitedField name="TOTAL_AMT" label="TOTAL_AMT"/>
+    <sx:delimitedField name="INT01" label="INT01"/>
+    <sx:delimitedField name="INT02" label="INT02"/>
+    <sx:delimitedField name="INT03" label="INT03"/>
+    <sx:delimitedField name="INT04" label="INT04"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="settlementsToFileMapping">
+    <sx:onSubtree path="/RT_STLMT">
+      <sx:parameter name="OPERATING_DATE" select="OPERATING_DATE"/>
+      <sx:parameter name="SETTLEMENT_CODE" select="SETTLEMENT_CODE"/>
+      <sx:parameter name="id" select="@id"/>
+      <sx:onSubtree path="LINE_ITEMS/CHG_TYP">
+        <sx:flattenSubtree recordType="settlement">
+          <sx:subtreeFieldMap select="$OPERATING_DATE" field="OPERATING_DATE"/>
+          <sx:subtreeFieldMap select="$SETTLEMENT_CODE" field="SETTLEMENT_CODE"/>
+          <sx:subtreeFieldMap select="'RT'" field="STLMT_TYP"/>
+          <sx:subtreeFieldMap select="CHG_TYP_ID" field="DETERMINANT_ID"/>
+          <sx:subtreeFieldMap select="CHG_TYP_NM" field="DETERMINANT_NAME"/>
+          <sx:subtreeFieldMap select="TOTAL/AMT" field="TOTAL_AMT"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[1]/VAL" field="INT01"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[2]/VAL" field="INT02"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[3]/VAL" field="INT03"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[4]/VAL" field="INT04"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>Note the use of nested <link xlink:href="../guide/index.html#sx:onSubtree">sx:onSubtree</link> elements, and the <link xlink:href="../guide/index.html#sx:parameter">sx:parameter</link>
+elements appearing in the outermost <link xlink:href="../guide/index.html#sx:onSubtree">sx:onSubtree</link>.  The <sgmltag class="attribute">select</sgmltag>
+attribute in these parameter declarations can refer to the outer tags in the XML document under "/RT_STLMT", but not the
+inner tags handled by the inner <link xlink:href="../guide/index.html#sx:onSubtree">sx:onSubtree</link> elements.
+</para>
+<para>An alternative inverse record mapping, which will produce the same output, is shown below.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:inverseRecordMapping id="settlementsToFileMapping">
+    <sx:onSubtree path="/RT_STLMT">
+      <sx:parameter name="OPERATING_DATE" select="OPERATING_DATE"/>
+      <sx:parameter name="SETTLEMENT_CODE" select="SETTLEMENT_CODE"/>
+      <sx:parameter name="id" select="@id"/>
+      <sx:flattenSubtree match="LINE_ITEMS/CHG_TYP" recordType="settlement">
+        <sx:subtreeFieldMap select="$OPERATING_DATE" field="OPERATING_DATE"/> 
+        <sx:subtreeFieldMap select="$SETTLEMENT_CODE" field="SETTLEMENT_CODE"/> 
+        <sx:subtreeFieldMap select="'RT'" field="STLMT_TYP"/>
+        <sx:subtreeFieldMap select="CHG_TYP_ID" field="DETERMINANT_ID"/>
+        <sx:subtreeFieldMap select="CHG_TYP_NM" field="DETERMINANT_NAME"/>
+        <sx:subtreeFieldMap select="TOTAL/AMT" field="TOTAL_AMT"/>
+        <sx:subtreeFieldMap select="TOTAL/INT[1]/VAL" field="INT01"/>
+        <sx:subtreeFieldMap select="TOTAL/INT[2]/VAL" field="INT02"/>
+        <sx:subtreeFieldMap select="TOTAL/INT[3]/VAL" field="INT03"/>
+        <sx:subtreeFieldMap select="TOTAL/INT[4]/VAL" field="INT04"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+]]>
+</programlisting>
+<para>This mapping allows for more flexibility in the <link xlink:href="../guide/index.html#sx:parameter">sx:parameter</link> declarations, as the 
+<sgmltag class="attribute">select</sgmltag> attribute can now refer to any content in the XML document 
+under "/RT_STLMT", but at the expense of keeping more of the document in memory.
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-ungrouping.xml -i data/grouped.xml 
+    -o output/ungrouped.csv  settlements2csv
+]]>
+</programlisting>
+</para>
+</section>
+<section>                                              
+<title>XML to Flat Repeating Group (all)</title>
+<titleabbrev>all</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<indexterm><primary>repeating groups</primary><secondary>fixed</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML document into a positional flat file with repeating groups.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="all.xml">
+  <title>Input XML file all.xml</title>
+<programlisting>
+<![CDATA[
+<all>
+    <field1>val1</field1>
+    <field2>val2</field2>
+    <field3>val3</field3>
+    <compositeA attr1="av11" attr2="av21" attr3="av31"/> 
+    <compositeA attr1="av21" attr2="av22" attr3="av23"/>
+    <compositeA attr1="av31" attr2="av32" attr3="av33"/>
+    <compositeB attrx="avx" attry="avy"/> 
+</all>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="all.csv">
+  <title>Output positional flat file all.txt</title>
+<programlisting>
+<![CDATA[
+val1      val2      val3      av11 av21 av31 av21 av22 av23 av31 av32 av33 avx  avy  
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-all.xml">
+  <title>Resources script resources-all.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="all2flat">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="allToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="allFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="allFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="allType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="allType" name="allType">
+    <sx:positionalField name="f1" label="F1" width="10"/>
+    <sx:positionalField name="f2" label="F2" width="10"/>
+    <sx:positionalField name="f3" label="F3" width="10"/>
+    <sx:repeatingGroup name="compA">
+      <sx:flatRecordType name="compARecord">
+        <sx:positionalField name="ca1"  width="5"/>
+        <sx:positionalField name="ca2"  width="5"/>
+        <sx:positionalField name="ca3"  width="5"/>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+    <sx:repeatingGroup name="compB">
+      <sx:flatRecordType name="compBRecord">
+        <sx:positionalField name="cb1"  width="5"/>
+        <sx:positionalField name="cb2"  width="5"/>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="allToFileMapping">
+    <sx:onSubtree path="/all">
+      <sx:flattenSubtree recordType="allType">
+        <sx:subtreeFieldMap select="field1" field="f1"/>
+        <sx:subtreeFieldMap select="field2" field="f2"/>
+        <sx:subtreeFieldMap select="field3" field="f3"/>
+        <sx:subtreeFieldMap match="compositeA" field="compA">
+          <sx:flattenSubtree  recordType="compARecord">
+            <sx:subtreeFieldMap select="@attr1" field="ca1"/>
+            <sx:subtreeFieldMap select="@attr2" field="ca2"/>
+            <sx:subtreeFieldMap select="@attr3" field="ca3"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+        <sx:subtreeFieldMap match="compositeB" field="compB">
+          <sx:flattenSubtree  recordType="compBRecord">
+            <sx:subtreeFieldMap select="@attrx" field="cb1"/>
+            <sx:subtreeFieldMap select="@attry" field="cb2"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para></para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-all.xml -i data/all.xml 
+    -o output/all.txt  all2flat
+]]>
+</programlisting>
+</para>
+</section>
+<section>                                              
+<title>Formating Distinct Record Lines (blocks)</title>
+<titleabbrev>blocks</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML document into a positional flat file with different record types corresponding to
+different XML subtrees.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="blocks.xml">
+  <title>Input XML file blocks.xml</title>
+<programlisting>
+<![CDATA[
+<BLOCKS>
+  <BLOCK1>
+    <FIELD1>XXXX</FIELD1>
+    <FIELD2>YYYY</FIELD2>
+    <FIELD3>ZZZZ</FIELD3>
+    <FIELD4>WWWW</FIELD4>
+  </BLOCK1>
+  <BLOCK2>
+    <TEXT1>AAAA</TEXT1>
+    <TEXT2>BBBB</TEXT2>
+    <TEXT3>CCCC</TEXT3>
+    <TEXT4>DDDD</TEXT4>
+  </BLOCK2>
+  <BLOCK3>
+    <INTEGER1>1111</INTEGER1>
+    <INTEGER2>2222</INTEGER2>
+    <INTEGER3>3333</INTEGER3>
+  </BLOCK3>
+</BLOCKS>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="blocks.csv">
+  <title>Output positional flat file blocks.txt</title>
+<programlisting>
+<![CDATA[
+XXXXYYYYZZZZWWWW
+AAAABBBBCCCCDDDD
+111122223333
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-blocks.xml">
+  <title>Resources script resources-blocks.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="blocks">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="blocksToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="blockType"/>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordTypeChoice id="blockType" name="blockType">
+    <sx:positionalField name="dummy" width="1"/>
+    <sx:when test="/Block1Record">
+      <sx:flatRecordType name="BLOCK1">
+        <sx:positionalField name="Field1" width="4"/>
+        <sx:positionalField name="Field2" width="4"/>
+        <sx:positionalField name="Field3" width="4"/>
+        <sx:positionalField name="Field4" width="4"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="/Block2Record">
+      <sx:flatRecordType name="BLOCK2">
+        <sx:positionalField name="Text1" width="4"/>
+        <sx:positionalField name="Text2" width="4"/>
+        <sx:positionalField name="Text3" width="4"/>
+        <sx:positionalField name="Text4" width="4"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="/Block3Record">
+      <sx:flatRecordType name="BLOCK3">
+        <sx:positionalField name="Integer1" width="4"/>
+        <sx:positionalField name="Integer2" width="4"/>
+        <sx:positionalField name="Integer3" width="4"/>
+      </sx:flatRecordType>
+    </sx:when>
+  </sx:flatRecordTypeChoice>
+
+  <sx:inverseRecordMapping id="blocksToFileMapping">
+    <sx:onSubtree path="/BLOCKS">
+      <sx:onSubtree path="BLOCK1">
+        <sx:flattenSubtree recordType="Block1Record">
+          <sx:subtreeFieldMap select="FIELD1" field="Field1"/>
+          <sx:subtreeFieldMap select="FIELD2" field="Field2"/>
+          <sx:subtreeFieldMap select="FIELD3" field="Field3"/>
+          <sx:subtreeFieldMap select="FIELD4" field="Field4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+      <sx:onSubtree path="BLOCK2">
+        <sx:flattenSubtree recordType="Block2Record">
+          <sx:subtreeFieldMap select="TEXT1" field="Text1"/>
+          <sx:subtreeFieldMap select="TEXT2" field="Text2"/>
+          <sx:subtreeFieldMap select="TEXT3" field="Text3"/>
+          <sx:subtreeFieldMap select="TEXT4" field="Text4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+      <sx:onSubtree path="BLOCK3">
+        <sx:flattenSubtree recordType="Block3Record">
+          <sx:subtreeFieldMap select="INTEGER1" field="Integer1"/>
+          <sx:subtreeFieldMap select="INTEGER2" field="Integer2"/>
+          <sx:subtreeFieldMap select="INTEGER3" field="Integer3"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para></para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-blocks.xml -i data/blocks.xml 
+    -o output/blocks.txt  blocks
+]]>
+</programlisting>
+</para>
+</section>
+<section>                                              
+<title>Block Subsequences in XML to One Line</title>
+<titleabbrev>block subsequences</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<para> This example illustrates a resources script that will map subsequences of 
+blocks in the XML to a single line in the flat file.
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="block_subsequences">
+  <title>Input XML file block_subsequences.xml</title>
+<programlisting>
+<![CDATA[
+<BLOCKS>
+  <BLOCK1>
+    <FIELD1>XXXX1</FIELD1>
+    <FIELD2>YYYY1</FIELD2>
+    <FIELD3>ZZZZ1</FIELD3>
+    <FIELD4>WWWW1</FIELD4>
+  </BLOCK1>
+  <BLOCK2>
+    <TEXT1>AAAA1</TEXT1>
+    <TEXT2>BBBB1</TEXT2>
+    <TEXT3>CCCC1</TEXT3>
+    <TEXT4>DDDD1</TEXT4>
+  </BLOCK2>
+  <BLOCK1>
+    <FIELD1>XXXX2</FIELD1>
+    <FIELD2>YYYY2</FIELD2>
+    <FIELD3>ZZZZ2</FIELD3>
+    <FIELD4>WWWW2</FIELD4>
+  </BLOCK1>
+  <BLOCK2>
+    <TEXT1>AAAA2</TEXT1>
+    <TEXT2>BBBB2</TEXT2>
+    <TEXT3>CCCC2</TEXT3>
+    <TEXT4>DDDD2</TEXT4>
+  </BLOCK2>
+</BLOCKS>
+]]>
+</programlisting>
+</figure>
+  <para> Note that BLOCK1 and BLOCK2 repeat. 
+  </para>
+<para>
+The desired output is shown below.
+</para>
+<figure id="block_subsequences.txt">
+  <title>Output positional flat file block_subsequences.txt</title>
+<programlisting>
+<![CDATA[
+XXXX1YYYY1ZZZZ1WWWW1AAAA1BBBB1CCCC1DDDD1
+XXXX2YYYY2ZZZZ2WWWW2AAAA2BBBB2CCCC2DDDD2
+]]>
+</programlisting>
+</figure>
+  <para> Note that BLOCK1 and BLOCK2 form a single line in the Flat output file,
+and then BLOCK1 and BLOCK2 repeat. 
+  </para>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-subsequences.xml">
+  <title>Resources script resources-subsequences.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="blocks">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="blocksToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:combineRecords recordType="BLOCKS" repeatingGroup="blocks" 
+                        beginTest="sx:current/BLOCK1"
+                        endTest="sx:current/BLOCK1">
+      </sx:combineRecords>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="blockType"/>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="blockType" name="blockType">
+    <sx:repeatingGroup name="blocks">
+      <sx:flatRecordTypeChoice>
+        <sx:when test="/BLOCK1">
+          <sx:flatRecordType name="BLOCK1">
+            <sx:positionalField name="Field1" width="5"/>
+            <sx:positionalField name="Field2" width="5"/>
+            <sx:positionalField name="Field3" width="5"/>
+            <sx:positionalField name="Field4" width="5"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="/BLOCK2">
+          <sx:flatRecordType name="BLOCK2">
+            <sx:positionalField name="Text1" width="5"/>
+            <sx:positionalField name="Text2" width="5"/>
+            <sx:positionalField name="Text3" width="5"/>
+            <sx:positionalField name="Text4" width="5"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="blocksToFileMapping">
+    <sx:onSubtree path="/BLOCKS">
+      <sx:onSubtree path="BLOCK1">
+        <sx:flattenSubtree recordType="BLOCK1">
+          <sx:subtreeFieldMap select="FIELD1" field="Field1"/>
+          <sx:subtreeFieldMap select="FIELD2" field="Field2"/>
+          <sx:subtreeFieldMap select="FIELD3" field="Field3"/>
+          <sx:subtreeFieldMap select="FIELD4" field="Field4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+      <sx:onSubtree path="BLOCK2">
+        <sx:flattenSubtree recordType="BLOCK2">
+          <sx:subtreeFieldMap select="TEXT1" field="Text1"/>
+          <sx:subtreeFieldMap select="TEXT2" field="Text2"/>
+          <sx:subtreeFieldMap select="TEXT3" field="Text3"/>
+          <sx:subtreeFieldMap select="TEXT4" field="Text4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>The strategy is to map the BLOCK1 and BLOCK2 subtrees to BLOCK1 and 
+  BLOCK2 records, compose the BLOCK1 and BLOCK2 records into a composite record,
+  and to map the composite record to a single line in the flat file.</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-subsequences.xml -i data/block_subsequences.xml
+    -o output/block_subsequences.txt blocks 
+]]>
+</programlisting>
+</para>
+</section>
+<section>                                              
+<title>Ungrouping Elements with Multiple Levels (book hierarchy)</title>
+<titleabbrev>book hierarchy</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>delimited</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML document into a delimited flat file with different record types corresponding to
+different XML subtrees.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="book_hierarchy.xml">
+  <title>Input XML file book_hierarchy.xml</title>
+<programlisting>
+<![CDATA[
+<myns:rootNode xmlns:myns="http://mycompany.com/mynames/">
+  <myns:name>root</myns:name>
+  <attribute>
+    <myns:name>NONE</myns:name>
+    <myns:value>NONE</myns:value>
+  </attribute>
+  <myns:childNode>
+    <myns:name>Entity.LONDON</myns:name>
+    <attribute>
+      <myns:name>Entity</myns:name>
+      <myns:value>LONDON</myns:value>
+    </attribute>
+    <myns:childNode>
+      <myns:name>BookName.EQUITIES_NY</myns:name>
+      <attribute>
+        <myns:name>BookName</myns:name>
+        <myns:value>EQUITIES_NY</myns:value>
+      </attribute>
+      <myns:childNode>
+        <myns:name>BookName.EQUITIES_NY_TR_JAYME</myns:name>
+        <attribute>
+          <myns:name>BookName</myns:name>
+          <myns:value>EQUITIES_NY_TR_JAYME</myns:value>
+        </attribute>
+        <myns:childNode>
+          <myns:name>BookName.PR_EQUITY_NY</myns:name>
+          <attribute>
+            <myns:name>BookName</myns:name>
+            <myns:value>PR_EQUITY_NY</myns:value>
+          </attribute>
+        </myns:childNode>
+        <myns:childNode>
+          <myns:name>BookName.PR_EQUITY_NY1</myns:name>
+          <attribute>
+            <myns:name>BookName</myns:name>
+            <myns:value>PR_EQUITY_NY1</myns:value>
+          </attribute>
+        </myns:childNode>
+      </myns:childNode>
+    </myns:childNode>
+    <myns:childNode>
+      <myns:name>BookName.EQUITIES_LONDON</myns:name>
+      <attribute>
+        <myns:name>BookName</myns:name>
+        <myns:value>EQUITIES_LONDON</myns:value>
+      </attribute>
+      <myns:childNode>
+        <myns:name>BookName.EQUITIES_NY_TR_JAYME</myns:name>
+        <attribute>
+          <myns:name>BookName</myns:name>
+          <myns:value>EQUITIES_NY_TR_JAYME</myns:value>
+        </attribute>
+        <myns:childNode>
+          <myns:name>BookName.PR_EQUITY_NY</myns:name>
+          <attribute>
+            <myns:name>BookName</myns:name>
+            <myns:value>PR_EQUITY_NY</myns:value>
+          </attribute>
+        </myns:childNode>
+      </myns:childNode>
+    </myns:childNode>
+  </myns:childNode>
+</myns:rootNode>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="book_hierarchy.txt">
+  <title>Output delimited flat file book_hierarchy.txt</title>
+<programlisting>
+<![CDATA[
+root,NONE,,Entity.LONDON,Entity,LONDON,,BookName,EQUITIES_NY,BookName,EQUITIES_NY_TR_JAYME,BookName,PR_EQUITY_NY,BookName,PR_EQUITY_NY1
+root,NONE,,Entity.LONDON,Entity,LONDON,,BookName,EQUITIES_LONDON,BookName,EQUITIES_NY_TR_JAYME,BookName,PR_EQUITY_NY
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-bookHierarchy.xml">
+  <title>Resources script resources-bookHierarchy.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+  xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="bookHierarchyToFile">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="bookHierarchyToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="settlementType"/>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="settlementType" name="settlementType">
+    <sx:fieldDelimiter value=","/>
+    <sx:repeatDelimiter value=","/>
+    <sx:segmentDelimiter value="|"/>
+    <sx:delimitedField name="root" label="root"/>
+    <sx:delimitedField name="bookCode" label="bookCode"/>
+    <sx:delimitedField name="bookValue" label="bookValue"/>
+    <sx:delimitedField name="level1" label="level1"/>
+    <sx:delimitedField name="level1Code" label="level1Code"/>
+    <sx:delimitedField name="level1Value" label="level1Value"/>
+    <sx:delimitedField name="level2" label="level2"/>
+    <sx:delimitedField name="level2Code" label="level2Code"/>
+    <sx:delimitedField name="level2Value" label="level2Value"/>
+    <sx:repeatingGroup name="level3" label="level3">
+      <sx:flatRecordType name="level3Record">
+        <sx:delimitedField name="code" label="code"/>
+        <sx:delimitedField name="value" label="value"/>
+        <sx:repeatingGroup name="level4" label="level4">
+          <sx:flatRecordType name="level4Record">
+            <sx:delimitedField name="code" label="code"/>
+            <sx:delimitedField name="value" label="value"/>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="bookHierarchyToFileMapping">
+    <sx:onSubtree path="/myns:rootNode">
+      <sx:parameter name="root" select="myns:name"/>
+      <sx:parameter name="bookCode" select="attribute/myns:name"/>
+      <sx:parameter name="bookValue" select="attribute/value"/>
+
+      <sx:onSubtree path="/myns:rootNode/myns:childNode">
+        <sx:parameter name="level1" select="myns:name"/>
+        <sx:parameter name="level1Code" select="attribute/myns:name"/>
+        <sx:parameter name="level1Value" select="attribute/myns:value"/>
+        <sx:onSubtree path="/myns:childNode/myns:childNode">
+          <sx:flattenSubtree recordType="settlement">
+            <sx:subtreeFieldMap select="$root" field="root"/>
+            <sx:subtreeFieldMap select="$bookCode" field="bookCode"/>
+            <sx:subtreeFieldMap select="$bookValue" field="bookValue"/>
+            <sx:subtreeFieldMap select="$level1" field="level1"/>
+            <sx:subtreeFieldMap select="$level1Code" field="level1Code"/>
+            <sx:subtreeFieldMap select="$level1Value" field="level1Value"/>
+            <sx:subtreeFieldMap select="name" field="level2"/>
+            <sx:subtreeFieldMap select="attribute/myns:name" field="level2Code"/>
+            <sx:subtreeFieldMap select="attribute/myns:value" field="level2Value"/>
+            <sx:subtreeFieldMap match="myns:childNode" field="level3">
+              <sx:flattenSubtree  recordType="level3Record">
+                <sx:subtreeFieldMap select="attribute/myns:name" field="code"/>
+                <sx:subtreeFieldMap select="attribute/myns:value" field="value"/>
+                <sx:subtreeFieldMap match="myns:childNode" field="level4">
+                  <sx:flattenSubtree  recordType="level4Record">
+                    <sx:subtreeFieldMap select="attribute/myns:name" field="code"/>
+                    <sx:subtreeFieldMap select="attribute/myns:value" field="value"/>
+                  </sx:flattenSubtree>
+                </sx:subtreeFieldMap>
+              </sx:flattenSubtree>
+            </sx:subtreeFieldMap>
+          </sx:flattenSubtree>
+        </sx:onSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para></para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-bookHierarchy.xml -i data/book_hierarchy.xml 
+    -o output/book_hierarchy.txt bookHierarchyToFile
+]]>
+</programlisting>
+</para>
+</section>
+<section>                                              
+<title>X12 XML to Flat File using XSLT</title>
+<titleabbrev>X12 XML to Flat File</titleabbrev>
+<indexterm><primary>X12</primary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert an 
+XML representation of an X12 file into a positional flat file.  Different record
+types correspond to different subtrees in the XML document.  
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="Edi517M2xml.xml">
+  <title>Input file Edi517M2xml.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<X12>
+  <!-- Reapting group with in the x12 document -->
+  <ST>
+    <ST01>517</ST01>
+    <ST02>0006</ST02>
+  </ST>
+  <BR>
+    <BR01>00</BR01>
+    <BR02>AN</BR02>
+    <BR03>20071019</BR03>
+    <BR04/>
+    <BR05/>
+    <BR06/>
+    <BR07>X7</BR07>
+    <BR08>0101</BR08>
+    <BR09>150401</BR09>
+    <BR10>XM</BR10>
+    <BR11>003</BR11>
+    <BR12>0101003</BR12>
+  </BR>
+  <G62>
+    <G6201>CA</G6201>
+    <G6202>20070720</G6202>
+  </G62>
+  <G62>
+    <G6201>64</G6201>
+    <G6202>20070903</G6202>
+  </G62>
+  <LM>
+    <LM01>DF</LM01>
+  </LM>
+  <LQ>
+    <LQ01>0</LQ01>
+    <LQ02>AN9</LQ02>
+  </LQ>
+  <N1>
+    <N101>Z4</N101>
+    <N102/>
+    <N103>M4</N103>
+    <N104>GSA</N104>
+    <N105/>
+    <N106>FR</N106>
+  </N1>
+  <N1>
+    <N101>ZR</N101>
+    <N102/>
+    <N103>10</N103>
+    <N104>N23194</N104>
+    <N105/>
+    <N106>TO</N106>
+  </N1>
+  <!-- Repating group with in ST, nmber of times based on value in BR11( current value =3) -->
+  <QTY>
+    <QTY01>63</QTY01>
+    <QTY02>4</QTY02>
+    <QTY03>BX</QTY03>
+    <QTY04>BX4</QTY04>
+  </QTY>
+  <N9>
+    <N901>TN</N901>
+    <N902>N2319471430196</N902>
+  </N9>
+  <N9>
+    <N901>NS</N901>
+    <N902>7920006199162</N902>
+  </N9>
+  <G62>
+    <G6201>17</G6201>
+    <G6202>20070718</G6202>
+  </G62>
+  <LM>
+    <LM01>DF</LM01>
+  </LM>
+  <LQ>
+    <LQ01>0</LQ01>
+    <LQ02>AN1</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>81</LQ01>
+    <LQ02>BV</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>COG</LQ01>
+    <LQ02>9Q</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DE</LQ01>
+    <LQ02>C</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DF</LQ01>
+    <LQ02>S</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>A9</LQ01>
+    <LQ02>N23194</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>78</LQ01>
+    <LQ02>ZQ0</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>79</LQ01>
+    <LQ02>03</LQ02>
+  </LQ>
+  <FA1>
+    <FA101>DN</FA101>
+    <FA102>D340</FA102>
+  </FA1>
+  <FA2>
+    <FA201>B5</FA201>
+    <FA202>RC</FA202>
+  </FA2>
+  <QTY>
+    <QTY01>63</QTY01>
+    <QTY02>1</QTY02>
+    <QTY03>EA</QTY03>
+    <QTY04>EA1</QTY04>
+  </QTY>
+  <N9>
+    <N901>TN</N901>
+    <N902>N2319471430158</N902>
+  </N9>
+  <N9>
+    <N901>NS</N901>
+    <N902>5140003694927</N902>
+  </N9>
+  <G62>
+    <G6201>17</G6201>
+    <G6202>20070725</G6202>
+  </G62>
+  <LM>
+    <LM01>DF</LM01>
+  </LM>
+  <LQ>
+    <LQ01>0</LQ01>
+    <LQ02>AN1</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>81</LQ01>
+    <LQ02>BB</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>COG</LQ01>
+    <LQ02>9Q</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DE</LQ01>
+    <LQ02>C</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DF</LQ01>
+    <LQ02>S</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>A9</LQ01>
+    <LQ02>N23194</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>78</LQ01>
+    <LQ02>ZQ0</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>79</LQ01>
+    <LQ02>03</LQ02>
+  </LQ>
+  <FA1>
+    <FA101>DN</FA101>
+    <FA102>D340</FA102>
+  </FA1>
+  <FA2>
+    <FA201>B5</FA201>
+    <FA202>RC</FA202>
+  </FA2>
+  <QTY>
+    <QTY01>63</QTY01>
+    <QTY02>6</QTY02>
+    <QTY03>BG</QTY03>
+    <QTY04>BG6</QTY04>
+  </QTY>
+  <N9>
+    <N901>TN</N901>
+    <N902>N2319471430272</N902>
+  </N9>
+  <N9>
+    <N901>NS</N901>
+    <N902>5610009851800</N902>
+  </N9>
+  <G62>
+    <G6201>17</G6201>
+    <G6202>20070703</G6202>
+  </G62>
+  <LM>
+    <LM01>DF</LM01>
+  </LM>
+  <LQ>
+    <LQ01>0</LQ01>
+    <LQ02>AN1</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>81</LQ01>
+    <LQ02>BV</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>COG</LQ01>
+    <LQ02>9Q</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DE</LQ01>
+    <LQ02>C</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>DF</LQ01>
+    <LQ02>S</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>A9</LQ01>
+    <LQ02>N23194</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>78</LQ01>
+    <LQ02>ZQ0</LQ02>
+  </LQ>
+  <LQ>
+    <LQ01>79</LQ01>
+    <LQ02>03</LQ02>
+  </LQ>
+  <FA1>
+    <FA101>DN</FA101>
+    <FA102>D340</FA102>
+  </FA1>
+  <FA2>
+    <FA201>B5</FA201>
+    <FA202>RC</FA202>
+  </FA2>
+  <SE>
+    <SE01>54</SE01>
+    <SE02>0006</SE02>
+  </SE>
+</X12>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is shown below.
+</para>
+<figure id="Edi517M.txt">
+  <title>Output delimited flat file Edi517M.txt</title>
+<programlisting>
+<![CDATA[
+AN9GSA0101003               N23194           
+AN1  7920006199162 CBX4N2319471430196N23194SRC9QZQ003  BV       
+AN1  5140003694927 CEA1N2319471430158N23194SRC9QZQ003  BB       
+AN1  5610009851800 CBG6N2319471430272N23194SRC9QZQ003  BV       
+]]>
+</programlisting>
+</figure>
+<para>
+  The following resources script does the transformation.
+</para>
+<figure id="resources-xml-517M.xml">
+  <title>Resources script resources-xml-517M.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="xmltodlss">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+          <sx:xslt ref="dlss-layout"/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="dlssToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="dlssFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:xslt id="dlss-layout">
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:strip-space elements="*"/>
+      <xsl:template match="/X12">
+        <xsl:copy>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:template>
+      
+      <xsl:template match="ST">
+        <PivotNode1>
+          <ST>
+            <xsl:value-of select="."/>
+          </ST>
+          <BR>
+            <xsl:value-of select="following-sibling::BR/BR08"/>
+          </BR>
+          <BR01>
+            <xsl:value-of select="following-sibling::BR/BR11"/>
+          </BR01>
+          <G62Sub1>
+            <xsl:value-of select="following-sibling::G62[1]/G6203"/>
+          </G62Sub1>
+          <G62Sub2>
+            <xsl:value-of select="following-sibling::G62[1]/G6204"/>
+          </G62Sub2>
+          <G62Sub3>
+            <xsl:value-of select="following-sibling::G62[2]/G6203"/>
+          </G62Sub3>
+          <G62Sub4>
+            <xsl:value-of select="following-sibling::G62[2]/G6204"/>
+          </G62Sub4>
+          <LMSub1>
+            <xsl:value-of select="following-sibling::LM[1]/LM01"/>
+          </LMSub1>
+          <LQSub1>
+            <xsl:value-of select="following-sibling::LQ[1]/LQ02"/>
+          </LQSub1>
+          <N1Sub1>
+            <xsl:value-of select="following-sibling::N1[1]/N104"/>
+          </N1Sub1>
+          <N1Sub2>
+            <xsl:value-of select="following-sibling::N1[2]/N104"/>
+          </N1Sub2>
+          <SE>
+            <xsl:value-of select="following-sibling::SE/SE01"/>
+          </SE>
+          <xsl:apply-templates />
+        </PivotNode1>
+      </xsl:template>
+
+      <xsl:template match="QTY">
+        <PivotNode>
+          <QTY>
+            <xsl:value-of select="."/>
+          </QTY>
+          <QTY01>
+            <xsl:value-of select="QTY04"/>
+          </QTY01>
+          <N104Sub>
+            <xsl:value-of select="QTY05"/>
+          </N104Sub>
+          <N9Sub1>
+            <xsl:value-of select="following-sibling::N9[1]/N902"/>
+          </N9Sub1>
+          <N9Sub2>
+            <xsl:value-of select="following-sibling::N9[2]/N902"/>
+          </N9Sub2>
+          <G62Sub5>
+            <xsl:value-of select="following-sibling::G62/G6203"/>
+          </G62Sub5>
+          <G62Sub6>
+            <xsl:value-of select="following-sibling::G62/G6204"/>
+          </G62Sub6>
+          <G62Sub7>
+            <xsl:value-of select="following-sibling::G62/G6205"/>
+          </G62Sub7>
+          <G62Sub8>
+            <xsl:value-of select="following-sibling::G62/G6206"/>
+          </G62Sub8>
+          <LMSub2>
+            <xsl:value-of select="following-sibling::LM[1]/LM01"/>
+          </LMSub2>
+          <LQSub2>
+            <xsl:value-of select="following-sibling::LQ[1]/LQ02"/>
+          </LQSub2>
+          <LQSub3>
+            <xsl:value-of select="following-sibling::LQ[2]/LQ02"/>
+          </LQSub3>
+          <LQSub4>
+            <xsl:value-of select="following-sibling::LQ[3]/LQ02"/>
+          </LQSub4>
+          <LQSub5>
+            <xsl:value-of select="following-sibling::LQ[4]/LQ02"/>
+          </LQSub5>
+          <LQSub6>
+            <xsl:value-of select="following-sibling::LQ[5]/LQ02"/>
+          </LQSub6>
+          <LQSub7>
+            <xsl:value-of select="following-sibling::LQ[6]/LQ02"/>
+          </LQSub7>
+          <LQSub8>
+            <xsl:value-of select="following-sibling::LQ[7]/LQ02"/>
+          </LQSub8>
+          <LQSub9>
+            <xsl:value-of select="following-sibling::LQ[8]/LQ02"/>
+          </LQSub9>
+          <FA1>
+            <xsl:value-of select="following-sibling::FA1/FA102"/>
+          </FA1>
+          <FA2>
+            <xsl:value-of select="following-sibling::FA2/FA202"/>
+          </FA2>
+        </PivotNode>
+      </xsl:template>
+
+    </xsl:stylesheet>
+  </sx:xslt>
+
+  <sx:flatFile id="dlssFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="placeholder" width="1"/>
+        <sx:when test="/dlss1">
+          <sx:flatRecordType name="dlss1">
+            <sx:positionalField name="LQSub1" width="3"/>
+            <sx:positionalField name="N1Sub1" width="3"/>
+            <sx:positionalField name="BR" width="4"/>
+            <sx:positionalField name="BR01" width="3"/>
+            <sx:positionalField name="spaces1" width="15"/>
+            <sx:positionalField name="N1Sub2" width="6"/>
+            <sx:positionalField name="G62Sub1" width="2"/>
+            <sx:positionalField name="G62Sub2" width="3"/>
+            <sx:positionalField name="G62Sub3" width="4"/>
+            <sx:positionalField name="G62Sub4" width="2"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="/dlss2">
+          <sx:flatRecordType name="dlss2">
+            <sx:positionalField name="LQSub2" width="3"/>
+            <sx:positionalField name="N104Sub" width="2"/>
+            <sx:positionalField name="N9Sub2" width="14"/>
+            <sx:positionalField name="LQSub5" width="1"/>
+            <sx:positionalField name="QTY01" width="3"/>
+            <sx:positionalField name="N9Sub1" width="14"/>
+            <sx:positionalField name="LQSub7" width="6"/>
+            <sx:positionalField name="LQSub6" width="1"/>
+            <sx:positionalField name="FA2" width="2"/>
+            <sx:positionalField name="LQSub4" width="2"/>
+            <sx:positionalField name="LQSub8" width="3"/>
+            <sx:positionalField name="LQSub9" width="2"/>
+            <sx:positionalField name="G62Sub6" width="2"/>
+            <sx:positionalField name="LQSub3" width="3"/>
+            <sx:positionalField name="G62Sub7" width="3"/>
+            <sx:positionalField name="G62Sub8" width="3"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="dlssToFileMapping">
+    <sx:onSubtree path="/X12/PivotNode1">
+      <sx:flattenSubtree recordType="dlss1">
+        <sx:subtreeFieldMap select="LQSub1" field="LQSub1"/>
+        <sx:subtreeFieldMap select="N1Sub1" field="N1Sub1"/>
+        <sx:subtreeFieldMap select="BR" field="BR"/>
+        <sx:subtreeFieldMap select="BR01" field="BR01"/>
+        <sx:subtreeFieldMap select="N1Sub2" field="N1Sub2"/>
+        <sx:subtreeFieldMap select="G62Sub1" field="G62Sub1"/>
+        <sx:subtreeFieldMap select="G62Sub2" field="G62Sub2"/>
+        <sx:subtreeFieldMap select="G62Sub3" field="G62Sub3"/>
+        <sx:subtreeFieldMap select="G62Sub4" field="G62Sub4"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="/X12/PivotNode">
+      <sx:flattenSubtree recordType="dlss2">
+        <sx:subtreeFieldMap select="LQSub2" field="LQSub2"/>
+        <sx:subtreeFieldMap select="N104Sub" field="N104Sub"/>
+        <sx:subtreeFieldMap select="N9Sub2" field="N9Sub2"/>
+        <sx:subtreeFieldMap select="LQSub5" field="LQSub5"/>
+        <sx:subtreeFieldMap select="QTY01" field="QTY01"/>
+        <sx:subtreeFieldMap select="N9Sub1" field="N9Sub1"/>
+        <sx:subtreeFieldMap select="LQSub7" field="LQSub7"/>
+        <sx:subtreeFieldMap select="LQSub6" field="LQSub6"/>
+        <sx:subtreeFieldMap select="FA2" field="FA2"/>
+        <sx:subtreeFieldMap select="LQSub4" field="LQSub4"/>
+        <sx:subtreeFieldMap select="LQSub8" field="LQSub8"/>
+        <sx:subtreeFieldMap select="LQSub9" field="LQSub9"/>
+        <sx:subtreeFieldMap select="G62Sub6" field="G62Sub6"/>
+        <sx:subtreeFieldMap select="LQSub3" field="LQSub3"/>
+        <sx:subtreeFieldMap select="G62Sub7" field="G62Sub7"/>
+        <sx:subtreeFieldMap select="G62Sub8" field="G62Sub8"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para></para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -i Edi517M2xml.xml -r resources-xml-517M.xml -o Edi517M.txt xmltodlss 
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>A Directory of XML Documents to a Flat File</title>
+<titleabbrev>aggregates over records</titleabbrev>
+<indexterm><primary>XML input</primary>
+  <secondary>multiple documents</secondary>
+  </indexterm>
+<para> This example shows a resources script that will read a number of XML 
+  documents in a directory and transform them into a single CSV file.  It 
+  illustrates the use of the 
+      <link xlink:href="../guide/index.html#sx:documentSequence">sx:documentSequence</link> 
+        element. 
+</para>
+<para>
+The input is a directory of XML documents.
+</para>
+<programlisting>
+<![CDATA[
+  countries-1.xml
+  countries-2.xml
+  countries-3.xml
+  countries-4.xml
+  countries-5.xml
+]]>
+</programlisting>
+<para>
+The desired output is one CSV file containing all of the country entries.
+</para>
+<programlisting>
+<![CDATA[
+country_code,country_name
+ABW,ARUBA
+ADH,UNITED ARAB EMIRATES
+...
+ZWE,ZIMBABWE
+]]>
+</programlisting>
+<para> The resources script <filename>resources-countrySequence.xml</filename> 
+  does the transformation.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="countries-to-csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="countriesToFileMapping"/>
+        <sx:transform>
+          <sx:documentSequence wrapWith="result">
+            <sx:recordStream>
+              <sx:directoryReader directory="data">
+                <sx:fileFilter pattern="countries.*[.]xml"/>
+              </sx:directoryReader>
+            </sx:recordStream>
+            <sx:transform>
+              <sx:document>
+                <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+              </sx:document> 
+              <msv:schemaValidator>
+                <sx:urlSource url="data/countries.xsd"/>
+              </msv:schemaValidator>
+            </sx:transform>
+          </sx:documentSequence>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="countryType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="countryType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType name="country" id="countryType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="code" label="country_code"/>
+    <sx:delimitedField name="name" label="country_name"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="countriesToFileMapping">
+    <sx:onSubtree path="/result/countries/country">
+      <sx:flattenSubtree  recordType="country">
+        <sx:subtreeFieldMap select="countryName" field="name"/>
+        <sx:subtreeFieldMap select="@countryCode" field="code"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+  <para>
+The effect of the <link xlink:href="../guide/index.html#sx:documentSequence">sx:documentSequence</link> 
+    instruction is to read all the documents in the <filename>data</filename>
+    directory whose file names match the regular expression "countries.*[.]xml".
+    The content of these documents is wrapped in the root element 
+    <sgmltag>result</sgmltag>.
+  </para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-countrySequence.xml -o output/countries.csv countries-to-csv
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Summary and Detail XML Documents to a Flat File (eobclaims)</title>
+<titleabbrev>eobclaims to flat file</titleabbrev>
+<indexterm><primary>XML input</primary>
+  <secondary>multiple documents</secondary>
+  </indexterm>
+<para> This example shows a resources script that will read a number of XML 
+  documents in a directory and transform them into a single CSV file.  It 
+  illustrates the use of the 
+      <link xlink:href="../guide/index.html#sx:documentSequence">sx:documentSequence</link> and
+      <link xlink:href="../guide/index.html#saxon:xquery">saxon:xquery</link>, 
+        elements. 
+</para>
+<para>
+The input is a directory of XML documents.
+</para>
+<programlisting>
+<![CDATA[
+eobclaims1.xml
+eobclaims2.xml
+eobclaimshdrtlr.xml
+]]>
+</programlisting>
+<para>
+The desired output is one CSV file containing all of the country entries.
+</para>
+<programlisting>
+<![CDATA[
+ADM2301EOBS GENERATED ON 06/1 3/08                                                                                                                                                                                                                                                     
+HDR06/13/08200815501300101MEMBER01          BISHOP         
+ADR1234 TEST DR                                                                                       ARVADA            
+HDR06/13/08200815501300102MEMBER02          BISHOP         
+ADR5678 TEST DR                                                                                       ARVADA                                 
+TLRTOTAL EOBS GENERATED: 0000001000000000000010000018                                                                                                                                                                                                                                                       
+]]>
+</programlisting>
+<para> The resources script <filename>resources-eobclaims.xml</filename> 
+  does the transformation.  Note that this script includes the shared <xref linkend="resource-eobclaims-flatfile.xml"/>.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:saxon="http://www.servingxml.com/extensions/saxon">
+
+  <sx:include href="resources-eobclaims-flatfile.xml"/>
+
+  <sx:service id="eobclaims-to-flat">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="eobclaims-to-flat-mapping"/>
+        <sx:transform>
+          <sx:documentSequence wrapWith="result">
+            <sx:content ref="eobclaims-document-header"/>
+            <sx:content ref="eobclaims-document-body"/>
+            <sx:content ref="eobclaims-document-trailer"/>
+          </sx:documentSequence>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="eobclaims-file"/>
+        <sx:fileSink file="output/eobclaims.txt"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <saxon:xquery id="eobclaims-document-header">
+    <sx:preserveMarkup>
+      <header>
+          {doc('data/eobclaimshdrtlr.xml')/headertrailer/ADMIN_RECTYPE}
+      </header>
+    </sx:preserveMarkup>
+  </saxon:xquery>
+
+  <saxon:xquery id="eobclaims-document-trailer">
+    <sx:preserveMarkup>
+        <trailer>
+            {doc('data/eobclaimshdrtlr.xml')/headertrailer/TLR-REC-TYPE}
+        </trailer>
+    </sx:preserveMarkup>
+  </saxon:xquery>
+
+  <sx:documentSequence id="eobclaims-document-body">
+    <sx:directoryReader directory="data">
+      <sx:fileFilter pattern=".*[1-9].xml"/>
+    </sx:directoryReader>
+    <sx:document>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+    </sx:document>
+  </sx:documentSequence>
+
+  <sx:inverseRecordMapping id="eobclaims-to-flat-mapping">
+    <sx:onSubtree path="header/ADMIN_RECTYPE">
+      <sx:flattenSubtree recordType="ADM">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="ADM_0001_TEXT" field="ADM_0001_TEXT"/>
+        <sx:subtreeFieldMap select="ADM_0001_RUN_DATE" field="ADM_0001_RUN_DATE"/>
+        <sx:subtreeFieldMap select="FILLER" field="FILLER"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="eob/HEADER_RECTYPE">
+      <sx:flattenSubtree recordType="HDR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="HDR_STMT_DATE" field="HDR_STMT_DATE"/>
+        <sx:subtreeFieldMap select="HDR_CLAIM_NUMBER" field="HDR_CLAIM_NUMBER"/>
+        <sx:subtreeFieldMap select="HDR_PATIENT_NAME_FIRST" field="HDR_PATIENT_NAME_FIRST"/>
+        <sx:subtreeFieldMap select="HDR_PATIENT_NAME_LAST" field="HDR_PATIENT_NAME_LAST"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="eob/ADR_REC_TYPE">
+      <sx:flattenSubtree recordType="HDR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="ADR_8512_ATTN" field="ADR_8512_ATTN"/>
+        <sx:subtreeFieldMap select="HDR_CLAIM_NUMBER" field="HDR_CLAIM_NUMBER"/>
+        <sx:subtreeFieldMap select="ADR_8514_CITY" field="ADR_8514_CITY"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="trailer/TLR-REC-TYPE">
+      <sx:flattenSubtree recordType="TLR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="TLR_0001_TEXT" field="TLR_0001_TEXT"/>
+        <sx:subtreeFieldMap select="TLR_0001_COUNT" field="TLR_0001_COUNT"/>
+        <sx:subtreeFieldMap select="FILLER" field="FILLER"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+]]>
+</programlisting>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-eobclaims.xml -o output/eobclaims.txt eobclaims-to-flat
+]]>
+</programlisting>
+</para>
+</section>
+</section>
+

@@ -1,0 +1,64 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="hut">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="HutContent"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="HutContent">
+    <sx:flatFileReader ref="HutFlatFileReader"/>
+    <sx:recordMapping ref="hut2ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="HutFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record-type" start="1" width="1"/>
+        <sx:when test='record-type="1"'>
+          <sx:flatRecordType id="R1" name="R1">
+            <sx:positionalField name="TOTO" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test='record-type="2"'>
+          <sx:flatRecordType id="R2" name="R2">
+            <sx:positionalField name="TATA" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test='record-type="3"'>
+          <sx:flatRecordType id="R3" name="R3">
+            <sx:positionalField name="TITI" start="2" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatFileReader id="HutFlatFileReader">
+    <sx:inlineSource>1A
+2B
+3C
+2D
+3E</sx:inlineSource>
+    <sx:flatFile ref="HutFlatFile"/>
+  </sx:flatFileReader>
+
+  <sx:recordMapping id="hut2ToXmlMapping">
+    <doc>
+      <sx:parameter name="temp" value="{TOTO}"/>
+      <sx:outerGroup startTest="sx:current/R2">
+        <b>
+          <sx:fieldAttributeMap value="{TATA}" attribute="attr"/>
+          <sx:onRecord recordType="R3">
+            <sx:fieldElementMap value="{$temp}" element="c">
+              <sx:fieldAttributeMap value="{TITI}" attribute="attr"/>
+            </sx:fieldElementMap>
+          </sx:onRecord>
+        </b>
+      </sx:outerGroup>
+    </doc>
+  </sx:recordMapping>
+
+</sx:resources>

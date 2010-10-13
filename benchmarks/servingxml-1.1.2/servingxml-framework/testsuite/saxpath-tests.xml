@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="run-saxpath-tests">
+    <sx:transform ref="test-saxpath"/>
+  </sx:service>
+
+  <sx:transform id="test-saxpath">
+    <sx:document ref="odd-element-document"/>
+    <sx:processSubtree path="/">
+      <sx:parameter name="title" select="title"/>
+      <sx:transform>
+        <sx:parameter name="first-para" select="para[1]"/>
+        <sx:assert test="$title='Title'">Expected 'Title'
+        </sx:assert>
+        <sx:assert test="$first-para='First paragraph.'">Expected 'First paragraph.'
+        </sx:assert>
+      </sx:transform>
+    </sx:processSubtree>
+  </sx:transform>
+
+  <sx:document id="odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+</sx:resources>
+

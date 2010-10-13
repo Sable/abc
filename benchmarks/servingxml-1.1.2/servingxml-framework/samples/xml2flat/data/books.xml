@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<myns:books xmlns:myns="http://mycompany.com/mynames/">
+  <myns:book categoryCode="F">
+    <myns:title>Factotum</myns:title>
+    <myns:author>Charles Bukowski</myns:author>
+    <myns:price/>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>*</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Kafka on the Shore</myns:title>
+    <myns:author>Haruki Murakami</myns:author>
+    <myns:price>25.17</myns:price>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Mr Mee</myns:title>
+    <myns:author>Andrew Crumey</myns:author>
+    <myns:price>22.00</myns:price>
+    <myns:reviews>
+      <myns:review>*****</myns:review>
+      <myns:review>*</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="C">
+    <myns:title>Concurrent Programming in Java</myns:title>
+    <myns:author>Doug Lea</myns:author>
+    <myns:price>77.13</myns:price>
+    <myns:reviews>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+  <myns:book categoryCode="B">
+    <myns:title>Sex, Lies, and Headlocks</myns:title>
+    <myns:author>Shaun Assael</myns:author>
+    <myns:price>7.24 </myns:price>
+    <myns:reviews>
+      <myns:review>****</myns:review>
+    </myns:reviews>
+  </myns:book>
+</myns:books>
+

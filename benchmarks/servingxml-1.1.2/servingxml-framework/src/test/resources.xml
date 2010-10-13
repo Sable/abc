@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="test">
+    <sx:serialize>
+      <sx:document/>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>

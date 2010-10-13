@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:parameter name="feed1">
+    <sx:defaultValue>NY</sx:defaultValue>
+  </sx:parameter>
+  <sx:parameter name="feed2">
+    <sx:defaultValue>NY</sx:defaultValue>
+  </sx:parameter>
+
+  <sx:service id="trades">
+    <sx:parameter name="feed">
+      <sx:defaultValue>NY</sx:defaultValue>
+    </sx:parameter>
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="trades"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="trades">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:urlSource url="data/trades.txt"/>
+        <sx:flatFile ref="tradesFlatFile"/>
+      </sx:flatFileReader>
+ 
+      <sx:combineRecords recordType="composite" repeatingGroup="detail"
+                                            startTest="sx:current//record_type='TR'">
+        <sx:newField name="id" select="detail/trade/id"/>
+      </sx:combineRecords>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="tradesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="tradesToXmlMapping">
+    <trades>
+      <sx:fieldAttributeMap value="{$feed}" attribute="feed"/>
+      <sx:onRecord recordType="composite">
+        <trade>
+          <sx:fieldAttributeMap field="id" attribute="id"/>
+          <sx:subrecordMapping repeatingGroup="detail">
+            <sx:onRecord recordType="trade">
+              <sx:elementMap element="trade-date">
+                <sx:convertToDateTime format="MM/dd/yyyy H:mm:ss">
+                  <sx:concat separator=" ">
+                    <sx:toString value="{trade_date}"/>
+                    <sx:toString value="{trade_time}"/>
+                  </sx:concat>
+                </sx:convertToDateTime>
+              </sx:elementMap>
+              <sx:fieldElementMap field="description" element="description"/>
+            </sx:onRecord>
+            <sx:onRecord recordType="transaction">
+              <transaction>
+                <sx:fieldAttributeMap field="id" attribute="id"/>
+                <sx:fieldElementMap field="reference" element="reference"/>
+                <sx:fieldElementMap field="description" element="description"/>
+              </transaction>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </trade>
+      </sx:onRecord>
+    </trades>
+  </sx:recordMapping>
+
+  <sx:flatFile id="tradesFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record_type" width="2"/>
+        <sx:when test="record_type='TR'">
+          <sx:flatRecordType name="trade">
+            <sx:positionalField name="record_type" width="2"/>
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="trade_date" width="10"/>
+            <sx:positionalField name="trade_time" width="8"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='TN'">
+          <sx:flatRecordType name="transaction">
+            <sx:positionalField name="record_type" width="2"/>
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="reference" width="5"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

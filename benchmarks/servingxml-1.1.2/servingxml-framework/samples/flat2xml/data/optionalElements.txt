@@ -1,0 +1,2 @@
+262025218|John|Smith|657827168||1|Main Street|London|45879|56|||||
+262091012|Jane|Bell||000000000000|105|Penny Lane|Oxford|12345|56|1|Main Street|London|45879|56

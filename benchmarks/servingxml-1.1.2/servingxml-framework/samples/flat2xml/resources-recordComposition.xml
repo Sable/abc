@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="composite-records-to-xml">
+    <sx:task ref="serialized-composite-records"/>
+  </sx:service>
+
+  <sx:serialize id="serialized-composite-records">
+    <sx:transform>
+      <sx:recordContent ref="composite-record-content"/>
+    </sx:transform>
+  </sx:serialize>
+
+  <sx:recordContent id="composite-record-content">
+    <sx:flatFileReader ref="composite-record-reader"/>
+    <sx:recordMapping ref="composite-record-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFileReader id="composite-record-reader">
+    <sx:flatFile>
+      <sx:flatFileBody>
+        <sx:flatRecordTypeChoice>
+          <sx:positionalField name="recordType" width="1"/>
+          <sx:when test="recordType='O'">
+            <sx:flatRecordType ref="O"/>
+          </sx:when>
+          <sx:when test="recordType='E'">
+            <sx:flatRecordType ref="E"/>
+          </sx:when>
+          <sx:otherwise>
+            <sx:compositeFlatRecordType>
+              <sx:positionalField name="recordType" width="1"/>
+              <sx:positionalField name="code" width="3"/>
+              <sx:positionalField name="book" width="10"/>
+              <sx:positionalField name="isbn" width="6"/>
+              <sx:positionalField name="identifier" width="3"/>
+              <sx:combinePhysicalRecords recordType="composite" repeatingGroup="group"
+                                    startTest = "sx:current//recordType = 'A' 
+                                                 and sx:current//identifier = 'SAS'"
+                                    endTest = "sx:current//recordType = 'A'">
+                <sx:flatRecordTypeChoice>
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:when test="recordType='A'">
+                    <sx:flatRecordType ref="A"/>
+                  </sx:when>
+                  <sx:when test="recordType='B'">
+                    <sx:flatRecordType ref="B-SAS"/>
+                  </sx:when>
+                  <sx:when test="recordType='C'">
+                    <sx:flatRecordType ref="C"/>
+                  </sx:when>
+                  <sx:when test="recordType='D'">
+                    <sx:flatRecordType ref="D"/>
+                  </sx:when>
+                </sx:flatRecordTypeChoice>
+              </sx:combinePhysicalRecords>
+              <sx:combinePhysicalRecords recordType="composite" repeatingGroup="group"
+                                    startTest = "sx:current//recordType = 'A' 
+                                                 and sx:current//identifier = 'AGS'"
+                                    endTest = "sx:current//recordType = 'A'">
+                <sx:flatRecordTypeChoice>
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:when test="recordType='A'">
+                    <sx:flatRecordType ref="A"/>
+                  </sx:when>
+                  <sx:when test="recordType='B'">
+                    <sx:flatRecordType ref="B-AGS"/>
+                  </sx:when>
+                  <sx:when test="recordType='C'">
+                    <sx:flatRecordType ref="C"/>
+                  </sx:when>
+                  <sx:when test="recordType='D'">
+                    <sx:flatRecordType ref="D"/>
+                  </sx:when>
+                </sx:flatRecordTypeChoice>
+              </sx:combinePhysicalRecords>
+            </sx:compositeFlatRecordType>
+          </sx:otherwise>
+        </sx:flatRecordTypeChoice>
+      </sx:flatFileBody>
+    </sx:flatFile>
+  </sx:flatFileReader>
+
+  <sx:flatRecordType id="A" name="A">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="code" width="3"/>
+    <sx:positionalField name="book" width="10"/>
+    <sx:positionalField name="isbn" width="6"/>
+    <sx:positionalField name="identifier" width="3"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="C" name="C">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="author" width="10"/>
+    <sx:positionalField name="publisher" width="10"/>
+    <sx:positionalField name="flag" width="2"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="D" name="D">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="count" width="6"/>
+    <sx:positionalField name="amount" width="10"/>
+    <sx:positionalField name="tracking" width="6"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="E" name="E">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="total" width="5"/>
+    <sx:positionalField name="amount" width="10"/>
+    <sx:positionalField name="count" width="4"/>
+    <sx:positionalField name="tracking" width="3"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="B-SAS" name="B-SAS">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="library" width="6"/>
+    <sx:positionalField name="shelf" width="10"/>
+    <sx:positionalField name="ebook" width="3"/>
+    <sx:positionalField name="code" width="3"/>
+  </sx:flatRecordType>
+  <sx:flatRecordType id="B-AGS" name="B-AGS">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="store" width="8"/>
+    <sx:positionalField name="cost" width="8"/>
+    <sx:positionalField name="code" width="3"/>
+    <sx:positionalField name="make" width="3"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="O" name="O">
+    <sx:positionalField name="recordType" width="1"/>
+    <sx:positionalField name="name" width="10"/>
+    <sx:positionalField name="id" width="3"/>
+    <sx:positionalField name="code" width="6"/>
+    <sx:positionalField name="tracking" width="3"/>
+  </sx:flatRecordType>
+
+  <sx:recordMapping id="composite-record-mapping">
+    <document>
+      <header>
+        <sx:onRecord recordType="O">
+          <O>
+            <sx:defaultFieldElementMap fields="*"/>
+          </O>
+        </sx:onRecord>
+      </header>
+      <body>
+        <sx:onRecord recordType="composite">
+          <sx:subrecordMapping repeatingGroup="group">
+            <sx:onRecord recordType="A">
+              <A>
+                <sx:defaultFieldElementMap fields="*"/>
+              </A>
+            </sx:onRecord>
+            <sx:onRecord recordType="B-SAS">
+              <B-SAS>
+                <sx:defaultFieldElementMap fields="*"/>
+              </B-SAS>
+            </sx:onRecord>
+            <sx:onRecord recordType="B-AGS">
+              <B-AGS>
+                <sx:defaultFieldElementMap fields="*"/>
+              </B-AGS>
+            </sx:onRecord>
+            <sx:onRecord recordType="C">
+              <C>
+                <sx:defaultFieldElementMap fields="*"/>
+              </C>
+            </sx:onRecord>
+            <sx:onRecord recordType="D">
+              <D>
+                <sx:defaultFieldElementMap fields="*"/>
+              </D>
+            </sx:onRecord>
+            <sx:onRecord recordType="O">
+              <O>
+                <sx:defaultFieldElementMap fields="*"/>
+              </O>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </sx:onRecord>
+      </body>
+      <trailer>
+        <sx:onRecord recordType="E">
+          <E>
+            <sx:defaultFieldElementMap fields="*"/>
+          </E>
+        </sx:onRecord>
+      </trailer>
+    </document>
+  </sx:recordMapping>
+
+</sx:resources>
+

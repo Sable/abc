@@ -1,0 +1,26 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+ <xsd:annotation>
+  <xsd:documentation xml:lang="en">
+   Country record schema 
+  </xsd:documentation>
+ </xsd:annotation>
+
+ <!-- This element's name matches the value of the name attribute in the px:flatFileRecordType element. -->
+ <xsd:element name="country" type="CountryType"/>
+
+ <xsd:complexType name="CountryType">
+  <xsd:sequence>
+   <xsd:element name="code" type="CountryCode"/>
+   <xsd:element name="name" type="xsd:string"/>
+  </xsd:sequence>
+ </xsd:complexType>
+
+  <xsd:simpleType name='CountryCode'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:length value='3' fixed='true'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
+
+

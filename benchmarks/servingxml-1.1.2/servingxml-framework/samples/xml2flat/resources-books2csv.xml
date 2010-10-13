@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books2csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:parameter name="foo">bar</sx:parameter>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>                               
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="title" label="Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="review1" label="Review 1"/>
+    <sx:delimitedField name="review2" label="Review 2"/>
+  </sx:flatRecordType>
+                                                                           
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[1]" field="review1"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[2]" field="review2"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+                     
+</sx:resources>
+

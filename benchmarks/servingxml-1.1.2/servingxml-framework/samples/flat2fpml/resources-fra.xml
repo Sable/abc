@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="fra-to-xml">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="fra-xml"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="fra-xml">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="fra-flat-file"/>
+      </sx:flatFileReader>
+      <sx:recordValidator message="Error in trade {trade_id}.">
+        <sx:fieldValidator field="buy_sell_code"
+                          message="Invalid buy_sell_code {buy_sell_code}.">
+          <sx:or>
+            <sx:valueRestriction pattern="BUY"/>
+            <sx:valueRestriction pattern="SELL"/>
+          </sx:or>
+        </sx:fieldValidator>
+        <sx:fieldValidator field="start_date"
+                           message="Invalid start_date {start_date}.">
+          <sx:valueRestriction pattern="(19|20)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+        </sx:fieldValidator>
+        <sx:fieldValidator field="maturity_date"
+                           message="Invalid maturity_date {maturity_date}.">
+          <sx:valueRestriction pattern="(20|21)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+        </sx:fieldValidator>
+      </sx:recordValidator>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <sx:modifyRecord>
+          <sx:newField name="message" value="{$sx:message}"/>
+        </sx:modifyRecord>
+        <sx:flatFileWriter>
+          <sx:fileSink file="output/fra-error.csv"/>
+        </sx:flatFileWriter>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="fra-to-xml-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="fra-flat-file">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="record_type"/>
+        <sx:when test="record_type='FRA'">
+          <sx:flatRecordType name='fra'>
+            <sx:fieldDelimiter value=","/>
+            <sx:delimitedField name="record_type"/>
+            <sx:delimitedField name="trade_id"/>
+            <sx:delimitedField name="client_id"/>
+            <sx:delimitedField name="client_name"/>
+            <sx:delimitedField name="trade_date"/>
+            <sx:delimitedField name="buy_sell_code"/>
+            <sx:delimitedField name="currency"/>
+            <sx:delimitedField name="index"/>
+            <sx:delimitedField name="tenor"/>
+            <sx:delimitedField name="day_count_basis"/>
+            <sx:delimitedField name="fixed_rate"/>
+            <sx:delimitedField name="start_date"/>
+            <sx:delimitedField name="maturity_date"/>
+            <sx:delimitedField name="payment_date"/>
+            <sx:delimitedField name="notional"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="fra-to-xml-mapping">
+    <dataDocument xmlns="http://www.fpml.org/FpML-5-0/reporting"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  fpmlVersion="5-0"
+                  xsi:schemaLocation="http://www.fpml.org/FpML-5-0/reporting ../fpml-main-5-0.xsd">
+      <sx:groupBy fields="trade_id">
+        <trade>
+          <tradeHeader>
+            <partyTradeIdentifier>
+              <sx:fieldElementMap field="trade_id"
+                                  element="tradeId">
+                <sx:fieldAttributeMap value="http://www.banka.com/ird/trade-id"
+                                      attribute="tradeIdScheme"/>
+              </sx:fieldElementMap>
+            </partyTradeIdentifier>
+            <tradeDate>
+              <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                <sx:toString value="{trade_date}"/>
+              </sx:toXmlDate>
+            </tradeDate>
+          </tradeHeader>
+          <sx:onRecord recordType="fra">
+            <fra>
+              <sx:choose>
+                <sx:when test="buy_sell_code='BUY'">
+                  <sx:fieldElementMap field="client_id"
+                                      element="sellerPartyReference"/>
+                </sx:when>
+                <sx:otherwise>
+                  <sx:fieldElementMap field="client_id"
+                                      element="buyerPartyReference"/>
+                </sx:otherwise>
+              </sx:choose>
+              <adjustedEffectiveDate>
+                <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                  <sx:toString value="{start_date}"/>
+                </sx:toXmlDate>
+              </adjustedEffectiveDate>
+              <adjustedTerminationDate>
+                <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                  <sx:toString value="{maturity_date}"/>
+                </sx:toXmlDate>
+              </adjustedTerminationDate>
+              <paymentDate>
+                <adjustedDate>
+                  <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                    <sx:toString value="{payment_date}"/>
+                  </sx:toXmlDate>
+                </adjustedDate>
+              </paymentDate>
+              <sx:fieldElementMap field="day_count_basis"
+                                  element="dayCountFraction"/>
+              <notional>
+                <sx:fieldElementMap field="currency"
+                                    element="currency"/>
+                <sx:fieldElementMap field="notional"
+                                    element="amount"/>
+              </notional>
+              <sx:fieldElementMap field="fixed_rate"
+                                  element="fixedRate"/>
+              <sx:fieldElementMap field="index"
+                                  element="floatingRateIndex"/>
+              <indexTenor>
+                <sx:choose>
+                  <sx:when test="fn:ends-with(tenor,'D')">
+                    <sx:fieldElementMap element="periodMultiplier">
+                      <sx:toString select="fn:substring-before(tenor,'D')"/>
+                    </sx:fieldElementMap>
+                    <period>D</period>
+                  </sx:when>
+                  <sx:when test="fn:ends-with(tenor,'M')">
+                    <sx:fieldElementMap element="periodMultiplier">
+                      <sx:toString select="fn:substring-before(tenor,'M')"/>
+                    </sx:fieldElementMap>
+                    <period>M</period>
+                  </sx:when>
+                  <sx:when test="fn:ends-with(tenor,'Y')">
+                    <sx:fieldElementMap element="periodMultiplier">
+                      <sx:toString select="fn:substring-before(tenor,'Y')"/>
+                    </sx:fieldElementMap>
+                    <period>Y</period>
+                  </sx:when>
+                </sx:choose>
+              </indexTenor>
+            </fra>
+          </sx:onRecord>
+        </trade>
+      </sx:groupBy>
+
+      <sx:nestedContent>
+        <sx:recordContent ref="clients"/>
+      </sx:nestedContent>
+    </dataDocument>
+  </sx:recordMapping>
+
+  <sx:recordContent id="clients">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="fra-flat-file"/>
+      </sx:flatFileReader>
+      <sx:recordProjection fields="client_id client_name"/>
+    </sx:recordStream>
+    <sx:recordMapping>
+      <party id="bankA">
+        <partyId>Bank A</partyId>
+      </party>
+      <sx:onRecord>
+        <party>
+          <sx:fieldAttributeMap field="client_id" attribute="id"/>
+          <sx:fieldElementMap field="client_name" element="partyId"/>
+        </party>
+      </sx:onRecord>
+    </sx:recordMapping>
+  </sx:recordContent>
+
+</sx:resources>
+

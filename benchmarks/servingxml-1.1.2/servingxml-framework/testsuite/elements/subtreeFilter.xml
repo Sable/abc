@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/subtreeFilter/">
+
+  <sx:service id="t:run-tests">
+    <sx:transform ref="t:test-subtreeFilter"/>
+  </sx:service>
+
+  <sx:document id="t:transaction">
+    <transaction><R03><firstField>03</firstField><CLIENUM>1111111</CLIENUM></R03><R04><firstField>04</firstField><NAME>John Smith</NAME></R04></transaction>
+  </sx:document>
+
+  <sx:document id="t:expected">
+    <transaction><R03><firstField>03</firstField><CLIENUM>1111111</CLIENUM></R03><R04><firstField>04</firstField><NAME>Jane Smith</NAME></R04></transaction>
+  </sx:document>
+
+  <sx:transform id="t:output">
+    <sx:document ref="t:transaction"/>
+    <sx:subtreeFilter path="/transaction/R04">
+      <sx:xslt>
+        <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+          <xsl:template match="/R04">
+            <R04>
+              <firstField>04</firstField>
+              <NAME>Jane Smith</NAME>
+            </R04>
+          </xsl:template>
+        </xsl:transform>
+      </sx:xslt>
+    </sx:subtreeFilter>
+  </sx:transform>
+
+  <sx:transform id="t:test-subtreeFilter">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/subtreeFilter/output'),fn:document('elements/subtreeFilter/expected'))">
+test-subtreeFilter:  Output
+      <sx:content ref="t:output"/>
+      does not match expected output
+      <sx:content ref="t:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>
+

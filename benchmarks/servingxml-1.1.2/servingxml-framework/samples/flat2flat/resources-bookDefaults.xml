@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="book-defaults">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="oldBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="newBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:positionalField name="author" width="30" label="Author"/>
+    <sx:positionalField name="title" width="30" label="Title"/>
+    <sx:positionalField name="category" width="1" label="C"/>
+    <sx:positionalField name="pubDate" width="10" label="Pub Date"/>
+    <sx:positionalField name="publisher" width="15" label="Publisher">
+      <sx:defaultValue>Acme</sx:defaultValue>
+    </sx:positionalField>
+    <sx:positionalField name="price2" width="10" justify="right" label="Price">
+      <sx:defaultValue>
+        <sx:findAndReplace searchFor="." replaceWith="," useRegex="false">
+          <sx:toString value="{price}"/>    
+        </sx:findAndReplace>
+      </sx:defaultValue>
+    </sx:positionalField>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:flatFile id="eobclaims-file">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="eobclaims-record"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordTypeChoice id="eobclaims-record">
+    <sx:positionalField name="record_type" width="3"/>
+    <sx:when test="record_type='ADM'">
+      <sx:flatRecordType ref="adm"/>
+    </sx:when>
+    <sx:when test="record_type='HDR'">
+      <sx:flatRecordType ref="hdr"/>
+    </sx:when>
+    <sx:when test="record_type='ADR'">
+      <sx:flatRecordType ref="adr"/>
+    </sx:when>
+    <sx:when test="record_type='TLR'">
+      <sx:flatRecordType ref="tlr"/>
+    </sx:when>
+  </sx:flatRecordTypeChoice>
+
+  <sx:flatRecordType id="adm" name="ADM">
+    <sx:positionalField name="record_type" width="3"/>
+    <sx:positionalField name="ADM_0001_TEXT" width="20"/>
+    <sx:positionalField name="ADM_0001_RUN_DATE" width="249"/>
+    <sx:positionalField name="FILLER" width="8"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="tlr" name="TLR">
+    <sx:positionalField name="record_type" width="3"/>
+    <sx:positionalField name="TLR_0001_TEXT" width="23"/>
+    <sx:positionalField name="TLR_0001_COUNT" width="7"/>
+    <sx:positionalField name="FILLER" width="268"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="hdr" name="HDR">
+    <sx:positionalField name="record_type" width="3"/>
+    <sx:positionalField name="HDR_STMT_DATE" width="8"/>
+    <sx:positionalField name="HDR_CLAIM_NUMBER" width="15"/>
+    <sx:positionalField name="HDR_PATIENT_NAME_FIRST" width="18"/>
+    <sx:positionalField name="HDR_PATIENT_NAME_LAST" width="15"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="adr" name="ADR">
+    <sx:positionalField name="record_type" width="3"/>
+    <sx:positionalField name="ADR_8512_ATTN" width="99"/>
+    <sx:positionalField name="ADR_8514_CITY" start="103" width="18"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+

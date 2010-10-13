@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+  <artheader id="recordstreams">
+    <title>Record Pipeline: Record Structure</title>
+    <author>
+      <firstname>Daniel</firstname>
+      <surname>Parker</surname>
+    </author>
+  </artheader>
+  <section>
+    <para> This article describes the structure of the records that flow through 
+      a ServingXML record stream.
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">ServingXML: Pipeline Language</ulink>
+</phrase></listitem>
+<!--listitem>
+  <phrase>
+    <ulink url="record-structure.html">Record Pipelines: Record 
+      Structure</ulink>
+  </phrase>
+</listitem-->
+
+<listitem><phrase>
+<ulink url="flat-file-to-xml.html">Record Pipelines: Flat File to XML</ulink>
+</phrase></listitem>
+<listitem><phrase>
+<ulink url="servingxml-3.html">ServingXML: Inversion of Control 
+  Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+This article discusses the structure of records.
+    </para>
+  </section>
+  <section>
+    <title>The Record</title>
+    <para>
+ServingXML supports the notion of records that have fields, possibly multi-valued,
+and nested subrecords, possibly repeating.
+    </para>
+    <para>
+A record may be represented in BNF as follows:
+      <programlisting>
+
+Record ::= name (Field+) (Record*) |
+  name (Field*) (Record+)
+
+Field:= name (value*)
+      </programlisting>
+    </para>
+    <para>Here is a sample XML representation of a record.
+    </para>
+    <programlisting>
+      <![CDATA[
+<Employee>
+  <Employee-No>0001</Employee-No>
+  <Employee-Name>Matthew</Employee-Name>
+  <Children>Joe</Children>
+  <Children>Julia</Children>
+  <Children>Dave</Children>
+</Employee>
+]]>
+    </programlisting>
+    <para>The record is of type "Employee" and has three fields named
+      <sgmltag>Employee-No</sgmltag>
+,
+      <sgmltag>Employee-Name</sgmltag>
+and
+      <sgmltag>Children</sgmltag>
+.
+      <sgmltag>Children</sgmltag>
+is a multivalued field.
+    </para>
+  </section>
+</article>
+
+
+

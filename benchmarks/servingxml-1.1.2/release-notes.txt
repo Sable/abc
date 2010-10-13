@@ -1,0 +1,4199 @@
+SERVING XML Release Notes
+-------------------------
+
+Release Notes for ServingXML 1.1.2
+----------------------------------
+
+Changes:
+
+- sx:segmentConcatenation renamed to
+  sx:mergePhysicalSegments
+- sx:recordComposition renamed to
+  sx:combinePhysicalRecords
+- sx:composeRecord renamed to
+  sx:combineRecords
+- sx:decomposeRecord renamed to
+  sx:splitRecord
+
+(old names still supported)
+
+Bug fixes:
+
+- In previous versions, serializing 
+  into a string always used the default 
+  XSLT serializer, this has been fixed
+  to use the appropriate serializer
+  (as long as it writes into the default
+  output stream.)
+
+New features:
+
+- By default, ServingXML assumes one-based
+  positions for positional files, this
+  version adds a zeroBased attribute for
+  sx:flatFile, which when set to true applies
+  zero-based positions.
+- The start attribute in sx:repeatingGroup
+  now allows substitution expressions.
+- sx:overpunchField now supports a decimalPlaces
+  attribute, which allows implied decimal 
+  places.
+
+Release Notes for ServingXML 1.1.1b
+------------------------------------
+
+- Overrides have been added
+  to IocContainerFactory.createIocContainer
+  for Reader arguments.
+
+Release Notes for ServingXML 1.1.1a
+------------------------------------
+
+Bug Fix (bug introduced in 1.1.0):
+
+- JDBC driver fails to load - fixed.
+
+Release Notes for ServingXML 1.1.1
+-----------------------------------
+
+Bug Fixes:
+
+- In a select XPATH expression in a 
+  sx:fieldElementMap or sx:fieldAttributeMap, 
+  the XSLT fn:document function is not able 
+  to load ServingXML defined content -
+  fixed.
+
+- In sx:innerGroup and sx:outerGroup, 
+  startTest and endTest are only 
+  looking at the top level of the record,
+  not subrecords - fixed. 
+
+- sx:onRecord cannot be referenced outside 
+  of sx:recordMapping element - fixed (this
+  also applies to other elements that 
+  allow literal child elements.)
+
+- sx:groupBy does not support conditional
+  grouping inside an sx:choose within a 
+  sx:recordMapping section - fixed.
+
+Enhancements:
+
+- ServingXML now throws an exception
+  if it cannot resolve a mistyped 
+  instruction or if it finds literal 
+  content that it is not expecting.  
+  Previous versions ignored unrecognized
+  instructions.
+
+- The elements 
+
+        - sx:parameter
+        - sx:defaultValue
+        - sx:newField
+        - sx:toString
+        - sx:attribute
+
+  all support select attributes that
+  select against the default XML
+  content.  This version allows the
+  select expression to select against
+  an sx:content child element if
+  present, otherwise defaulting to
+  the default XML content.
+
+Release Notes for ServingXML 1.1.0
+-----------------------------------
+
+Bug Fixes:
+
+- In previous versions, in XML to flat
+  transformation to flat file defintions
+  with repeating groups, each member
+  of the repeating group was 
+  incorrectly written to a separate line.
+  This has been fixed.  See the new
+  XML to flat example, "Block Subsequences 
+  in XML to One Line"
+
+- In previous versions, use of the
+  attribute "start" in sx:positionalField
+  resulted in problems for XML to flat
+  if the fields were written out of
+  sequence.  This has been fixed.
+
+Changes:
+
+- As suggested by Razvan Ludvig, changed
+  Class.forName(value) to 
+  Thread.currentThread().getContextClassLoader().loadClass(value)
+  (better for J2EE apps)
+
+- In record mapping sections, within
+  groupings of records, ServingXML
+  now binds parameter declarations to
+  the record that begins the grouping
+  section.  Previous versions bound it
+  to the current record, which meant
+  that if the parameter was referred
+  to further down in an sx:onRecord
+  section, it was evaluated against 
+  the current record.  Now it retains 
+  the value it is bound to in the
+  grouping section.  This change applies 
+  to in-line content, sx:innerGroup,
+  sx:outerGroup, sx:groupBy, and 
+  sx:elementMap.  See the flat-to-XML
+  example, "Repeat Header Information 
+  in the XML", for an example with a
+  parameter declaration in inline
+  content.  
+
+- Renamed the recently introduced flat 
+  file option "trimQuoted" to  
+  "trimWithinQuotes", and also added
+  "trimLeadingWithinQuotes" and
+  "trimTrailingWithinQuotes".
+  trimQuoted is deprecated but will
+  still work.
+
+Release Notes for ServingXML 1.0.5
+-----------------------------------
+
+Enhancements:
+
+- The new flat file option "trimQuoted"
+  trims quoted fields of leading/trailing 
+  space if set to true, defaults
+  to false (the old option "trim"
+  trims space outside of quotes if 
+  set to true, defaults to true.)
+
+- The new element sx:overpunchField 
+  supports overpunch fields in flat 
+  file definitions, as described in
+  http://en.wikipedia.org/wiki/Signed_overpunch 
+  Special thanks to Matt Dowell for
+  contributing code.  Refer to the 
+  documentation for sx:overpunchField 
+  in the Element Reference.
+
+Release Notes for ServingXML 1.0.4
+-----------------------------------
+
+Bug fixes:
+
+- loadComponentDefinitions(String[] hrefs)
+  fails, fix contributed by Yex) 
+
+Enhancements:
+
+- In previous versions, saxon:xquery could
+  only be used to produce an XML document,
+  now it can evaluate an expression that
+  produces a non-XML string.  See the
+  xml-to-parameters example in 
+  servingxml-saxon/samples.
+
+- Overrides have been added
+  to IocContainerFactory.createIocContainer
+  for DOM Document and InputStream objects.
+
+Release Notes for ServingXML 1.0.3
+-----------------------------------
+
+- sx:recordDelimiter now accepts a
+  continuationSequence attribute
+  (continuation + value).  This
+  allows omitting the continuation
+  character and defining the 
+  continuation sequence as just the
+  linefeed, which has the effect of
+  stripping all the linefeeds.
+
+- In sx:recordDelimiter continuation
+  and continuationSequence attribute
+  values, the special symbols \r, \n 
+  and \t will now be interpreted as CR, 
+  LF and tab. 
+
+Release Notes for ServingXML 1.0.2
+-----------------------------------
+
+- sx:recordDelimiter, sx:fieldDelimiter
+  and sx:subfieldDelimiter, sx:repeatDelimiter,
+  and sx:segmentDelimiter now accept
+  an escapeCharacter attribute for
+  escaping the delimiter.
+
+- A new element sx:nonrepeatingGroup
+  supports defining a nonrepeating group
+  of fields within a segment of a flat 
+  file record.  It's a shortcut for 
+  declaring a sx:repeatingGroup with a 
+  repeat delimiter identical to the 
+  segment delimiter.
+
+- sx:replaceRecordFilter renamed to
+  sx:replaceRecord, old name preserved
+  for backwards compatability, aliased
+  to new name.
+
+- Modified JAXP error listener in
+  line with comments from R.Hernando,
+  to report errors but not throw on
+  recoverable errors, and to include
+  location information with the 
+  error message.
+
+- In older versions, up to 0.9, an
+  empty sx:parameter element inside
+  an sx:xslt element, e.g. 
+  <sx:parameter name="price"/>, caused 
+  the value for that parameter to be 
+  passed to the stylesheet.  Support
+  for this was dropped in a subsequent 
+  release.  The parameter value will 
+  still be passed as before if the 
+  sx:parameter element defines the value, 
+  e.g. as
+  <sx:parameter name="price" value="{price}"/>,
+  but the preferred way since 1.0 is
+  <sx:withParameters parameters="price"/>
+
+Release Notes for ServingXML 1.0.1
+-----------------------------------
+
+- The sx:binaryField width element now
+  allows substitution expressions,
+  so the width may be set from a 
+  previous field value.  Thanks to
+  Sajeev Nair for implementing this.
+
+- The sx:sqlConnectionPool user and
+  password attributes may now be 
+  omitted, in which case ServingXml
+  attempts to create a connection
+  without explicitly providing a 
+  user and password.
+
+Release Notes for ServingXML 1.0.0b
+-----------------------------------
+
+- Fixed issue with 
+  sx:compositeFlatRecordType as child
+  of sx:flatRecordTypeChoice.
+
+- Fixed text of schema error message
+  from "Invalid valid" to "Invalid value"
+
+Release Notes for ServingXML 1.0.0a
+-----------------------------------
+
+- Fixed issue with flushRecordOnWrite
+
+Release Notes for ServingXML 1.0.0
+----------------------------------
+
+Upgrading to 1.0 should not present
+any difficulties to users of 0.8.*
+and 0.9.*, as backwards compatability
+has been largely preserved.  Note the 
+breaking change to the sx:wrap
+element.  See the "Upgrading to 
+Version 1.0" link on the home page 
+for details.
+
+New Test Suites:
+
+  New test suites written in the 
+  ServingXML markup language have 
+  been introduced with this release.  
+  These are located in the 
+  distribution folder 
+  servingxml-framework/testsuite.
+  These tests revealed the bugs 
+  below, now fixed.
+
+Bug Fixes:
+
+- Stringable components failed to 
+  evaluate to strings if referred to 
+  by reference in content compiled to 
+  strings.  Fixed.
+
+- Using ServingXML URI's for content
+  (namespace URI + local name) in
+  the XPATH fn:document function
+  failed if the namespace URI did 
+  not have the form of an absolute URI.
+  Fixed.
+
+- The SAX path expression "/" failed
+  to match on the entire tree.  Fixed.
+
+- XPATH test expressions failed to
+  make use of the ServingXML URI
+  resolver.  Fixed 
+
+- The default flat file reader
+  (without a flat file declaration)
+  failed to produce line numbers.
+  Fixed.
+
+- (Reported by Roopa) Parameters
+  in a record mapping section
+  evaluated after all records were 
+  received were not using the context
+  of the last record.  Fixed.
+
+Breaking change (to element sx:wrap):
+
+Non-breaking Changes to Element and 
+Atribute Names (backwards compatible,
+old names aliased to new names):
+
+- sx:runService attribute "service" 
+  renamed to "serviceRef"
+
+- sx:xmlRecordReader renamed to
+  sx:subtreeRecordReader
+
+- sx:spannedFlatRecordType renamed
+  to sx:vbsFlatRecordType
+
+- sx:defaultFieldMapping renamed
+  to sx:defaultFieldElementMap
+
+- sx:escapeVariables renamed
+  to sx:escapeSubstitutions
+
+New Elements
+
+- sx:assert
+
+- sx:inlineSource
+
+- sx:subtreeFilter
+
+- sx:compositeFlatRecordType
+
+- sx:lineNumber
+
+- sx:withParameters
+
+- sx:defaultFieldAttributeMap
+
+Check testsuite/elements for
+tests of these new elements.
+
+Enhancements:
+
+- Previously, sx:choose didn't do
+  anything useful if present in
+  XML-XML processing.  Now, sx:choose
+  will collect the SAX events in
+  the stream, and the "sx:when" 
+  alternatives will test against 
+  this content.
+
+- A new flat file option 
+  flushRecordOnWrite has been added, 
+  defaulting to false.  This 
+  attribute may be set on the 
+  sx:flatFileWriter or sx:flatFile
+  elements.
+
+- New options -version and -help
+  added to the servingxml console
+  app.
+
+- In previous versions, passing
+  parameters to an XSLT stylesheet
+  required redefining the parameters
+  in the sx:xslt element, e.g. 
+
+  <sx:xslt id="books">
+    <sx:parameter name="category" 
+                  value="{$category}"/>
+    <sx:urlSource url="styles/books.xsl"/>
+  </sx:xslt>
+
+  This can now be done with the
+  sx:withParameters element,
+
+  <sx:xslt id="books">
+    <sx:withParameters parameters="category"/>
+    <sx:urlSource url="styles/books.xsl"/>
+  </sx:xslt>
+
+Updates:
+
+- Jar files for saxon updated to 
+  saxonb9-1-0-5
+
+
+Release Notes for ServingXML 0.9.5
+----------------------------------
+
+Bug Fix:
+
+- The default flat file readers with 
+  no flat file definition (no sx:flatFile
+  element), for csv files with headers,
+  used the byte scanners rather than the
+  character scanners. This could fail
+  for multi-byte character streams.
+  This is fixed.
+
+Changes to Element and Atribute Names:
+  (non breaking, backwards compatible,
+  old names still supported)
+
+- sx:subrecordMapping attribute "field" 
+  renamed to "repeatingGroup"
+
+- In sx:composeRecord, 
+    - attribute compositeRecordType 
+      renamed to recordType, now 
+      allows substitution expressions
+    - attribute repeatingGroupField 
+      renamed to repeatingGroup
+
+- In sx:decomposeRecord, 
+    - attribute compositeRecordType 
+      renamed to recordType
+    - attribute repeatingGroupField 
+      renamed to repeatingGroup
+    - new attribute subrecordType 
+
+Enhancements
+
+- An optional message attribute has
+  been added to msv:recordValidator
+  and msv:schemaValidator.  If a
+  message is supplied, that message
+  will be used instead of the XML
+  Schema error message.
+  
+- ServingXML now supports mapping
+  spanned System Management Facilities 
+  (SMF) files to XML, see the 
+  Flat-File-to-XML example "smf".
+  New elements have been added:
+  sx:spannedFlatRecordType and 
+  sx:segmentConcatenation.
+
+- ServingXML now strips BOM characters 
+  for UTF-8, UTF-16, and UTF-32 in
+  flat file readers as Java does not 
+  strip BOM in all cases.  Legacy 
+  encodings and binary input are 
+  unaffected.  The Flat-File-to-XML
+  sample input file countries.csv
+  now starts with a UTF-8 EF BB BF
+  BOM.
+
+Release Notes for ServingXML 0.9.4
+----------------------------------
+
+Enhancements
+------------
+  
+- A new sx:sqlUpdateDetails element
+  has been added to support inserting
+  master/detail records into separate
+  master and detail tables as a single 
+  transaction.  See the XML-to-Database 
+  "Load Master Detail" example.
+
+- sx:sqlUpdate now allows a recordType
+  attribute, to restrict the database 
+  update to records of the specified 
+  type.
+
+Release Notes for ServingXML 0.9.3
+----------------------------------
+
+Bug Fixes:
+
+- A problem with writing an XML file
+  with a default namespace has been
+  fixed.
+
+- An issue with batch SQL updates,
+  parameter values set in sx:sqlUpdate
+  not being visible to the SQL update
+  statement, has been fixed. 
+
+Changes
+
+- The console app now displays 
+  exception stack traces only if
+  run with the -T option.
+
+- Two elements have been
+  renamed (but the old names still
+  work):
+
+    - sx:segmentMapping to
+      sx:subrecordMapping
+
+    - sx:insertContent to
+      sx:nestedContent   
+      
+- For Java authors of custom 
+  RecordWriter implementations,
+  the RecordWriter writeRecord 
+  method can no longer call
+  discardRecord, but must throw
+  an exception instead, see the 
+  Extend link.  (No changes are
+  necessary for authors of 
+  RecordFilter implementations.)
+    
+Enhancements
+
+- Saxon has been updated to the
+  latest version version 9.1.0.2.
+
+- The servingxml-fop extension now 
+  wraps the latest Apache FOP version 
+  0.95.  This means more jar files
+  (xml-apis-1.3.04.jar, 
+  xml-apis-ext-1.3.04.jar),
+  but you can remove them if you're
+  not interested in this component.
+
+- In the sx:innerGroup, sx:outerGroup,
+  and sx:composeRecord elements,
+  the startTest attribute is now
+  optional and defaults to "true".
+
+-  Two new record filter elements
+   have been added:
+
+     - sx:recordProjection, for 
+       producing a subset of fields,
+       eliminating duplicates
+
+     - sx:recordValidator, for 
+       validating the fields and
+       subrecords of a record with
+       regular expressions, producing
+       user formatted error messages.
+
+New examples:
+
+  Two FpML examples have been added,
+  "FRA to FpML" and "Swap to FpML",
+  that illustrate mapping to the 
+  default namespace, and the use of 
+  sx:composeRecord, sx:recordValidator, 
+  sx:subrecordMapping, sx:recordProjection, 
+  sx:nestedContent and sx:decomposeRecord.
+
+Release Notes for ServingXML 0.9.2d
+-----------------------------------
+
+- For embedded users, the 
+  IocContainerFactory method
+  loadComponentsDefinition(String[] urls) 
+  should have ended with a call to 
+  loadComponents(), thanks to Nicolas 
+  Denis for reporting this, this has 
+  been fixed.
+
+- An issue with sx:or and sx:and has
+  been fixed.
+
+- A new binary field type 
+  sx:integerField has been added.
+
+Release Notes for ServingXML 0.9.2c
+-----------------------------------
+
+Fixed passing of parameters to XSLT 
+stylsheet with empty sx:parameter 
+element.
+
+Release Notes for ServingXML 0.9.2b
+-----------------------------------
+
+- For embedded users, 0.9.2
+  introduced a bug in the now deprecated
+  IocContainerFactory.createIocContainer
+  (String systemId, IocContainer parent)
+  method, fixed in this patch.
+
+Release Notes for ServingXML 0.9.2a
+-----------------------------------
+
+Fixed eobclaims examples
+
+Release Notes for ServingXML 0.9.2
+----------------------------------
+
+Enhancements:
+
+- Substitution expressions, e.g. {$user},
+  are now allowed in the "driver", 
+  "databaseUrl", "user", and "password"
+  attributes of sx:sqlConnectionPool.
+  Note that these parameters must be
+  passed to ServingXML during 
+  configuration rather than with a 
+  call to a service.  Embedded apps,
+  if they want this behaviour, will
+  need to make a modification to the
+  code creating an IocContainer, a
+  parameters record needs to be added
+  to the call to createIocContainer,
+  see the Embed link for details.
+
+- sx:directoryReader now allows an
+  sx:fileFilter child element, e.g.
+
+  <sx:directoryReader directory="data">
+    <sx:fileFilter pattern="books.*[.]txt"/>
+  </sx:directoryReader>
+
+- sx:documentSequence now allows
+  a list of sx:content substitutable
+  elements, as well as a directory
+  reader and a parameterized 
+  sx:content. 
+
+- A new element, saxon:xquery,
+  wraps the Saxon XQuery processor.
+  See the XML-to-flat example,
+  "Summary and Detail XML Documents 
+  to a Flat File", as well as
+  the examples in the Element
+  Reference.
+
+- Two new sx:string specializations
+  have been added:
+
+    - sx:escapeMarkup, which evaluates to
+      an sx:string, while escaping 
+      special XML characters found in
+      its content.
+
+    - sx:preserveMarkup, which evaluates to
+      an sx:string, while preserving
+      special XML characters found in
+      its content.  The main use for 
+      this element is to supply an
+      XQuery expression inline in
+      saxon:xquery.
+
+- A new element, sx:findAndReplace,
+  replaces sx:replace (but sx:replace 
+  is still supported.)  The new
+  element supports, optionally,
+  case insensitive and non-regular 
+  expression searches.  The new
+  element also eliminates the 
+  alternative attribute "match" 
+  for specifying a search condition, 
+  "searchFor" is enough.
+
+Release Notes for ServingXML 0.9.1
+----------------------------------
+
+There are a few changes with this
+release.  Care has been taken,
+however, to preseve backwards
+compatability.  Older resources
+scripts should work without 
+modification.
+
+Updates:
+
+- Jar file for saxon updated to 
+  9-1-0-1
+
+Bug Fix:
+
+- In previous versions, with 
+  lineDelimited="false", ServingXML
+  calculated the record length by
+  summing the widths of all fields,
+  without regard for the possibility
+  of gaps and the values of
+  startPosition, if set.  This has 
+  been fixed.  In addition, if
+  recordLength (see below) is set,
+  ServingXML will use that rather 
+  than calculating the length itself.
+
+Enhancements:
+
+- Previous versions threw an 
+  exception if a positonal field
+  width of zero was specified, this
+  is now allowed.
+
+- sx:flatRecordType now accepts an 
+  optional recordLength attribute,
+  which allows you to specify a fixed 
+  length for the record (including 
+  delimiters, if any.)  If all
+  records of the same type are
+  declared to have fixed record 
+  length, the ServingXML framework
+  will read them as fixed length
+  lines without checking for 
+  line delimiters.
+
+- The field width attribute in
+  sx:positionalField now accepts
+  substitution expressions, e.g.,
+  it is now possible to have
+
+  <sx:flatRecordType name="transaction">
+    <sx:positionalField name="remarksSize" 
+                        width="4"/>
+    <sx:positionalField name="remarksText" 
+                        width="{remarksSize}"/>
+
+- sx:defaultValue is now supported in flat
+  file readers (in addition to writers.)
+  The new behaviour is that if the input
+  field is an empty string, the default 
+  value (if specified) is applied.  This
+  means that we can handle the case
+  where the "remarksSize" field above is
+  blank and there is no following remark, 
+
+  <sx:flatRecordType name="transaction">
+    <sx:positionalField name="remarksSize" 
+                        width="4">
+        <sx:defaultValue value="0"/>
+    </positionalField>    
+    <sx:positionalField name="remarksText" 
+                        width="{remarksSize}"/>
+
+- In previous versions, elements like
+  sx:parameter that accepted text content
+  allowed either string literals, or
+  string elements, but not both. This
+  has been generalized to allow any
+  sx:string substitutable elements to
+  be inlined within string literals. 
+  This change applies to the following
+  elements:  
+
+    sx:attribute
+    sx:cdata 
+    sx:command
+    sx:commandArg
+    sx:defaultValue 
+    sx:elementMap
+    sx:fieldAttributeMap
+    sx:fieldElementMap
+    sx:fieldElementSequenceMap
+    sx:log
+    sx:newField
+    sx:parameter
+    sx:toString
+
+- It's been noted that the occurance
+  of an sx:quoteSymbol child element 
+  can mean different things in different 
+  contexts. In sx:toString, for example, 
+  it means "put quote marks aound values", 
+  and in sx:sqlQuery, it means "replace 
+  quote marks in substitution variables 
+  with escaped quote marks."  While 
+  preserving this behaviour for backwards 
+  compatability, version 0.9.1 introduces 
+  a new element, sx:escapeVaraiables, to 
+  consistently control escaping of quote 
+  characters in substitution variables.  
+  This element is a configuration element, 
+  meaning it can appear anywhere in a 
+  resources script, and will be visible 
+  to all elements belonging to its scope.  
+  Currently, sx:toString, sx:sqlQuery, 
+  and sx:sqlUpdate support the new 
+  sx:escapeVariables element.
+
+Changes:
+
+- For consistency with other markup, 
+  the preferred names for the attributes 
+  in sx:quoteSymbol have been changed 
+  as follows (but note that the 
+  old names will still work):
+
+    "value" to "character"
+    "escapedBy" to "escapeCharacter"
+    "escapeWith" to "escapeSequence"
+
+Release Notes for ServingXML 0.9.0a
+-----------------------------------
+
+Bug Fix:
+
+  In previous versions of ServingXML,
+  in an sx:discardHandler containing
+  a prepared SQL statement for writing
+  to a discard table, if the discard 
+  was because of a SQLException, the
+  prepared statement was never
+  cancelled, resulting in a fatal 
+  error.  This has been fixed.
+
+Release Notes for ServingXML 0.9.0
+----------------------------------
+
+Enhancements:
+
+Previous versions of ServingXML 
+greater than 0.6.0 are unable to 
+read positional files with multi-byte 
+character sequences.  This happened 
+as the result of the introduction of 
+support for binary fields and byte 
+signatures, and the change in the 
+meaning of position and field width 
+from counts of characters to counts 
+of bytes.
+
+This version introduces a new boolean
+attribute used by sx:flatFile, 
+countPositionsInBytes, which allows
+position and width to be measured
+in bytes or characters, as desired.
+It's generally not necessary to set
+this attribute explicitly, none of 
+the examples require changing the 
+default value.  Flat files that 
+have at least one binary field, or 
+which define a byte based signature, 
+default to counts of bytes, all others 
+default to counts of characters.
+
+Special thanks to Nicolas Denis and
+Stefano Pettini for raising this 
+issue and providing test cases.
+Nicholas's test case has been added
+to the examples, see the Flat-to-XML
+example "A UTF-8 positional flat file 
+with double byte characters"
+
+New Elements:
+
+- sx:commandSource, a stream source,
+  which allows a flat file reader 
+  or an XML reader to obtain its 
+  input from the standard output 
+  of a shell command.
+
+- sx:commandSink, a stream sink,
+  which allows a flat file writer 
+  or an XML serializer to send its 
+  output to the standard input of 
+  a shell command. 
+
+Changes:
+
+To achieve consistency, some elements
+and attributes have been renamed, but
+the old names, while deprecated, will
+still work.
+
+Three elements have been renamed:
+
+- sx:tagDelimiter renamed to 
+  sx:nameDelimiter
+
+- sx:taggedDelimitedField renamed to 
+  sx:delimitedNamedField
+
+- sx:repeatingTaggedField renamed to 
+  sx:repeatingField
+
+In sx:decomposeRecord, two attributes
+have been renamed:
+
+- compositeRecordType renamed to
+  ofRecordType
+
+- repeatingGroupField renamed to
+  onField
+
+In the edt:ftpSource and edt:ftpSink
+elements, the attribute remoteDir
+has been renamed to remoteDirectory.
+
+Release Notes for ServingXML 0.8.4
+----------------------------------
+
+Defect fixes:
+
+- In some cases, the select attribute 
+  in sx:fieldAttributeMap did not work.
+  This has been fixed.
+
+- A positional file with all fields
+  fixed length used to default to
+  quote="auto", against convention,
+  this has been changed to quote=
+  "never".  Delimited files are
+  unchanged.
+
+- Positional fields with specified start
+  positions and gaps from the previous
+  field were not written to properly,
+  this has been fixed.
+
+Enhancements
+
+- A new element, sx:documentSequence,
+  substitutable anywhere sx:content
+  is allowed, lets you read a sequence
+  of XML documents from a file system,
+  all wrapped in a root element. See
+  the XML-to-Flat example, "Many XML 
+  Documents to a Flat File"
+
+- The sx:repeatDelimiter has been
+  enhanced to allow nestable start/end 
+  separators, such as {}.  
+
+- sx:repeatingGroup can now do the job
+  of sx:repeatingSegment, so the latter
+  has been deprecated and examples
+  changed, sx:repeatingSegment still
+  works, though.
+
+Release Notes for ServingXML 0.8.3
+----------------------------------
+
+Changes:
+
+There are no breaking changes in this
+release, but, for consistency, ...
+
+- The "except" attribute in 
+  sx:defaultFieldMapping has been
+  renamed to "exceptFields"
+
+- The "except" attribute in 
+  sx:newRecord has been
+  renamed to "exceptFields"
+
+- The "except" attribute in 
+  sx:removeEmptyElements has been
+  renamed to "exceptElements"
+
+- The sx:aggregateRecords 
+  (formerly sx:recordAggregator) element 
+  has been replaced by sx:composeRecord
+
+- sx:batchRecords (a record filter) has 
+  been replaced by sx:batchedRecordWriter
+  (a record writer)
+
+(The old names and elements have been 
+deprecated but will still work.)
+
+Enhancements:
+
+- sx:recordRestriction and 
+  sx:fieldRestriction now allow a 
+  "negate" attribute, which reverses
+  the "test" or "pattern" condition
+  on the record or field.
+
+- New sx:composeRecord element, see
+  the flat-to-XML example "Composing 
+  an Aggregate over Adjacent Records"
+
+- New sx:decomposeRecord element,
+  to decompose a composite record
+  into multiple records, basically
+  the segments belonging to a repeating 
+  group field, each augmented with the 
+  top level fields.  You can use 
+  sx:composeRecord and sx:decomposeRecord 
+  together to compute aggregates over a 
+  group of adjacent records, and then 
+  decompose the composite into the 
+  original records, each augmented with 
+  the computed fields.
+
+- New element sx:removeEmptyAttributes,
+  (code contributed by Gordon Zhang.)
+
+- New mimeType attribute in 
+  fop:foSerializer (code contributed 
+  by Kenneth Westelinck)
+
+- New sx:batchedSerializer element
+  for serializing XML in batches,
+  see the flat-to-XML example
+  "Serializing XML in Batches"
+
+- New sx:batchedRecordWriter element,
+  see the flat file-to-flat file 
+  example "Batched sequences of records"
+
+Updates:
+
+- Saxon updated to Saxon-B 9.0.0.4
+
+Release Notes for ServingXML 0.8.2
+----------------------------------
+
+Enhancements:
+
+- Parameter substitution in delimiter
+  values is now supported.
+
+- Problems with default namespaces
+  have been addressed.  See the new
+  Flat-to-XML example "Converting a flat 
+  file to multiple XML documents with 
+  default namespace prefixes"
+
+Non-breaking changes:
+
+- sx:recordAggregator renamed to
+  sx:aggregateRecords (old name still
+  supported)
+
+Release Notes for ServingXML 0.8.1
+----------------------------------
+
+There are no changes that will break
+existing scripts in this release.
+
+Special thanks to Anne Johnston and
+Gordon Zhang for drawing attention 
+to some quality of implementation 
+issues, these have been addressed.
+
+Bug fixes
+
+- Using a namespace qualified name 
+  for a record type in an inverse 
+  record mapping section resulted
+  in a null pointer exception, 
+  this has been fixed.
+
+Enhancements
+
+- The sx:wrap instruction has been
+  enhanced to allow header and
+  trailer literal elements, 
+  and attributes with parameter
+  expansion.  See the updated
+  XML-to-XML example "wrap".
+
+- Multiple grouping instructions 
+  (sx:innerGroup, sx:outerGroup,
+  sx:groupBy, literal elements)
+  can now be active simultaneously,
+  see the updated flat-to-XML
+  example "persons".  If two
+  grouping sections are active
+  simultaneously, the implementation
+  will buffer the records in memory
+  until the first group is finished,
+  only then starting the second.
+
+- If a sx:flatFileReader does not
+  have a child sx:flatFile element,
+  the reader now defaults to a 
+  delimited field reader, expecting
+  the first row in the file to 
+  provide column labels.  See the
+  updated flat-to-XML example
+  "countries default".
+
+- In sx:outputProperty, property
+  values can now contain substitution
+  expressions, with parameter 
+  expansion.
+
+- For users of the Java API, get 
+  and set property methods have been
+  implemented on the ServiceContext
+  class, contributed by Gordon Zhang.
+
+Non-breaking changes
+
+- Based on user feedback, alternatives
+  have been provided for two element
+  names:  
+
+   - The new preferred name for
+     sx:documentFragment is
+     sx:insertContent.
+   - The new preferred name for 
+     sx:subtreeRecordMap is 
+     sx:flattenSubtree.
+
+
+Release Notes for ServingXML 0.8.0.1a
+-------------------------------------
+
+Bug fix
+
+- In multivalued fields, empty subfield 
+  values were being lost, this has been 
+  fixed.
+
+
+Release Notes for ServingXML 0.8.1
+----------------------------------
+
+Syntax changes (old names still work):
+
+- sx:subtreeRecordMap becomes 
+  sx:flattenSubtree
+
+Enhancements:
+
+- Header and footer elements now 
+  supported in sx:wrap.
+
+Release Notes for ServingXML 0.8.0a
+-----------------------------------
+
+Defect fixes:
+
+- If an sx:flatRecordTypeChoice
+  didn't cover every case, version
+  0.8.8 would throw an exception.  
+  This has been fixed.
+
+- The new support for sx:choose
+  over sx:string elements wasn't 
+  implemented correctly.  This has
+  been fixed.
+
+- The elements sx:convertDate and
+  sx:convertToDateTime now accept
+  empty input values, which evaluate
+  as empty strings (null values.)
+  
+- <sx:toString value="{$myParam}/>
+  now evaluates as an empty string
+  if myParam is null or doesn't exist
+  (previously an exception was thrown.)
+
+Addition to upgrading notes
+
+  If you wish to use sx:processSubtree 
+  element to output subtrees of an XML 
+  document, and simultaneously to output 
+  the entire document, 0.8.0 requires 
+  you to surround the sx:processSubtree 
+  element with an sx:tagTee element;
+  the SAX events no longer flow 
+  straight through.  Refer to the
+  upgrading notes for details.
+  
+
+Release Notes for ServingXML 0.8.0
+----------------------------------
+
+This release introduces some changes
+that have been accumulating for a 
+while. Please refer to the home page
+link "Upgrading to Version 0.8.0" 
+for a comphrehensive list of changes.
+
+Java SE 5.0 or later is now required 
+to build ServingXML, and a Java 5.0 
+or later runtime environment is now 
+required to run ServingXML.  The 
+default XSLT transformer accompanying 
+the download is now the XSLT 2.0 
+transformer Saxon-B 8.9.0.4, replacing 
+the XSLT 1.0 transformer Saxon 6.5.5.
+The build tool Ant is no longer 
+included in the distribution, it must 
+be downloaded separately.
+
+The servingxml-fop extension now wraps 
+the latest Apache FOP version 0.94.
+
+Authors of ServingXML resources
+scripts should experience little if 
+any impact from the changes.  There
+are minor changes to preferred names,
+but old ones are still supported,
+refer to the upgrading link.  Note
+that sx:fieldElementMap is now 
+restricted to mapping a field to 
+a single element (its most common use),
+mapping a multivalued field to a
+sequence of elements now requires
+sx:fieldElementSequenceMap.
+
+There are a number of changes to Java 
+interfaces, which will affect authors 
+of custom record readers and filters, 
+as well as authors of apps that embed 
+this software.  
+
+Previous documentation described running 
+the ServingXML console app with 
+Java's -jar option.  While still 
+supported, it is now more convenient 
+to use the new batch file servingxml.bat 
+(Windows) or shell script servingxml 
+(Unix/Linux).  These command files are 
+based on ant/fop models, and build the 
+classpath dynamically from the lib
+directory.
+
+Enhancements:
+
+- It is no longer necessary to 
+  define the flat file structure  
+  in a flat file writer. If omitted,
+  the file structure defaults to a 
+  CSV file format with labels and
+  values reflecting the names and
+  values in the records.  See the 
+  flat-to-XML example, "Writing the 
+  results of a SQL query to a CSV 
+  file"
+
+- A new sx:recordAggregator element 
+  allows aggregating physical records 
+  into logical records, using test 
+  expressions on adjacent records 
+  similiarly to the grouping instructions. 
+  The resulting composite records can 
+  then be validated as a whole, and 
+  mapped to XML the same way as 
+  composite records are mapped now. 
+  See the revised flat-to-XML "trade" 
+  example.
+
+- XML-to-flat transformation has been
+  enhanced.  In particular, the problem 
+  "Ungrouping Elements with Multiple 
+  Levels" that was posed in the open 
+  discussion forum is addressed, see 
+  the example of that name in the 
+  XML-to-flat examples.
+
+- The sx:choose element may now be
+  used anywhere that a specialization 
+  of sx:string is allowed.  See the
+  revised flat-to-XML "exotics" 
+  example.  Special thanks to
+  Gordon Zhang for his contribution.
+
+- A new sx:wrap element allows you to
+  extract a set of subtrees from an
+  XML document according to some
+  criteria and to wrap them in
+  containing tags.  This functionality
+  will be enhanced in later 0.8.x 
+  releases. See the example in the
+  XML-to-XML examples, "Extracting 
+  subtrees and wrapping them in 
+  containing tags"
+
+Release Notes for ServingXML 0.7.2g
+-----------------------------------
+
+Bug fix:
+
+- When reading delimited repeating
+  groups, quotes around field values
+  were not handled properly.  This
+  has been fixed.
+
+
+Release Notes for ServingXML 0.7.2f
+-----------------------------------
+
+Bug fix:
+
+- Inline content, such as an inline
+  XSLT stylesheet appearing in a
+  sx:transposeRecord within a record
+  mapping section, was re-inserted
+  into a cache with a different key
+  value on each request, resulting in 
+  a memory leak.  This has been fixed.
+
+Release Notes for ServingXML 0.7.2e
+-----------------------------------
+
+Bug fixes:
+
+- By default, in a UNIX environment, 
+  the flat file record writer is
+  supposed to emit a \n record 
+  delimiter.  Instead, if no 
+  sx:recordDelimiter was specified, 
+  it emitted a \r\n.  This has been 
+  fixed.
+
+- If a record reader returned no
+  rows, the outer elements in a
+  record mapping were not being 
+  produced.  This has been fixed.
+
+- sx:processSubtree didn't always
+  produce well formed XML subtrees 
+  in the presence of namespaces, 
+  at least for recent versions of 
+  Saxon.  This has been fixed.
+
+- sx:serialize always required
+  sx:content or sx:transform child
+  elements, but in some contexts
+  with default input this was too
+  strong.  This has been fixed.
+
+New example:
+
+  With the fixes above, this version
+  now supports converting a single
+  flat file to multiple XML files.
+  See the flat-to-XML example,
+  "Converting a flat file to multiple 
+  XML book files "
+  
+
+Release Notes for ServingXML 0.7.2d
+-----------------------------------
+
+Bug fixes
+  
+- In sx:flatFile and descendent 
+elements, quote="never", was not
+supported for record readers.  This
+has been fixed so that if quote=
+"never", the input field is not checked
+for quotes.
+
+- In flat file readers, a quoted empty
+string, with two adjacent quote symbols,
+was incorrectly escaped as a single
+quote.  This has been fixed.   
+
+
+Release Notes for ServingXML 0.7.2c
+-----------------------------------
+
+Bug fixes
+
+- The repeating group record writer 
+  always emitted a final repeat
+  delimiter, irregardless of the
+  value of omitFinalRepeatDelimiter 
+  (which defaults to no.) This has 
+  been fixed.
+
+Release Notes for ServingXML 0.7.2b
+-----------------------------------
+
+Bug fixes
+
+- SQL statements in sx:sqlQuery with 
+  "column AS label" resulted in an
+  error if the record definition
+  contained the field "label".  This
+  has been fixed.
+
+- The select attribute in 
+  sx:fieldElementMap failed in some
+  cases, this has been fixed.
+
+- A parameter value set in a custom 
+  record filter with the first record
+  was, in the record mapping section, 
+  overriden by the value set with the 
+  second record.  This has been fixed.
+
+Special thanks to Roopashree Hirasave
+for identifying the latter two bugs.
+  
+
+Release Notes for ServingXML 0.7.2a
+-----------------------------------
+
+This patch fixes a bug with sx:choose
+in record streams, possibly causing a 
+stack overflow when evaluating a test.  
+
+Release Notes for ServingXML 0.7.2
+----------------------------------
+
+This release fixes two bugs:
+
+- Default serializer output properties 
+  set in the servingxml.xml configuration
+  file were not being passed to the
+  XSLT serializer.  This has been fixed.
+
+- sx:choose in record mapping sections,
+  with an sx:when instruction
+  containing an sx:onRecord descendent,
+  didn't produce correct output.  This
+  has been fixed.  
+
+This release also adds support for a 
+Java Object as a parameter. See the FAQ
+entry "Using ServingXML within a Spring 
+framework, how do I pass a Spring 
+ApplicationContext object down to a custom
+record filter?"
+
+Release Notes for ServingXML 0.7.1a
+-----------------------------------
+
+This patch fixes two bugs in 0.7.1:
+
+- The escape sequences &lt; and &gt; 
+  appearing in test expressions
+  results in an error (this was fixed
+  earlier on a branch for a previous 
+  patched release, but the fix wasn't
+  merged into the main line.)
+
+- In version 0.7.1, if the trim 
+  options are set to "yes", leading or 
+  trailing whitespace appearing inside
+  quote marks around field values 
+  may be lost.  This has been fixed.
+  (This was caught by a test case, but
+  overlooked.)
+
+Release Notes for ServingXML 0.7.1
+----------------------------------
+
+The following bugs have been fixed:
+
+- sx:choose in sx:recordMapping 
+  sections does not accept 
+  sx:fieldAttributeMap descendents
+
+- Same parameter name appearing more 
+  than once in test expression fails
+
+- Loading of non-delimited binary 
+  datasets with repeating groups fails
+
+- sx:choose inside sx:recordContent 
+  fails
+
+In addition, 
+
+- Error messages have 
+  been improved for errors occuring
+  in sx:recordMap sections.  The
+  context stack showing the elements
+  produced to the point of the error
+  is now appended to the error message.
+
+- The value attribute for delimiters
+  may now have an empty value 
+  (occaisonally useful for writing 
+  flat files.)
+
+
+Release Notes for ServingXML 0.7.0
+----------------------------------
+
+Enhancements:
+
+  This release introduces an 
+  sx:batchRecords element for producing
+  record output in batches.  See the
+  flat-to-flat example "Converting a 
+  sequential stream of records into 
+  multiple batch files."  Also see
+  the flat-to-XML example "Batched 
+  sequences of records to XML."  Also
+  see the documentation for 
+  sx:batchRecords in the element 
+  reference.
+
+
+Release Notes for ServingXML 0.6.6a
+-----------------------------------
+
+Defect Fixes:
+
+- sx:choose in sx:recordMapping section,
+  new in version 0.6.5, only allowed one 
+  child element in sx:when, and none in 
+  sx:otherwise.  This has been fixed to 
+  allow any number of child elements in 
+  both.
+
+- sx:fieldAttributeMap produced no
+  output if the field value was empty.
+  This has been fixed. 
+
+Enhancements:
+
+- sx:innerGroup and sx:outerGroup have been 
+  generalized slightly, to allow groupings 
+  of elements where the last record in the 
+  first grouping becomes the first record 
+  in the second grouping.  Refer to the 
+  element reference entry for sx:innerGroup,
+  to the last example.
+
+- XML to flat mapping now supports mapping
+  to repeating groups.  See the XML to flat
+  example "XML to Flat Repeating Group (all)"
+  
+
+Release Notes for ServingXML 0.6.6
+----------------------------------
+
+Withdrawn
+
+
+Release Notes for ServingXML 0.6.5a
+-----------------------------------
+
+Bug Fixes:
+
+- Enhancements to sx:choose
+  introduced in the last release
+  caused problems with sx:choose in
+  sx:sqlQuery statements.  This has
+  been fixed.
+
+
+Release Notes for ServingXML 0.6.5
+----------------------------------
+
+Special thanks to Nicolas Legeay for
+identifying a bug and raising several
+issues addressed in this release.
+
+Bug Fixes:
+
+- In previous versions, the term
+  <sx:urlSource url="{$MovieShotsFile}"/>,
+  where the parameter MovieShotsFile holds
+  an absolute URL, will fail.  This has
+  been fixed.
+
+Changes:
+
+- In previous versions, repeating groups
+  containing an empty (apart from 
+  whitespace) group entry will omit
+  that group entry from the input record.  
+  This behaviour has been changed, and 
+  instead the record will be populated
+  with a field that has an empty string
+  value.  In flat to XML conversion,
+  that means you'll now see an empty 
+  element.
+
+  Previous versions relied on the old
+  behaviour to produce correct results
+  when repeating groups had a final
+  repeat delimiter, the empty entry
+  beyond the final repeat delimiter 
+  would be suppressed.  This has been
+  addressed by introducing an 
+  omitFinalRepeatDelimiter field 
+  option, defaulting to "yes".  See 
+  the updated flat-to-XML example 
+  "Mapping a sequence of nested 
+  repeating groups to XML (invoice)"
+
+- sx:repeatingTaggedField, introduced
+  in the previous release, now
+  requires an sx:taggedDelimitedField
+  element in its content, see the
+  flat-to-XML "transaction" example.
+
+- The sx:startGroup and sx:endGroup
+  child elements of sx:innerGroup
+  and sx:outerGroup have been deprecated,
+  and replaced by startTest and
+  endTest attributes.  (The 
+  sx:startGroup and sx:endGroup elements
+  will still work as before, though.)
+
+  The conversion is as follows:
+
+<sx:outerGroup>
+  <sx:startGroup test="sx:previous//record-type='BFH01'"/>
+  <sx:endGroup test="sx:next//record-type='BFT99'"/>
+  <!-- group content -->
+</sx:outerGroup>
+
+<sx:outerGroup startTest="sx:previous//record-type='BFH01'"
+               endTest="sx:current//record-type='BFT99'">
+  <!-- group content -->
+</sx:outerGroup>
+
+  Note that startGroup test is the same as 
+  startTest. endGroup test, however,
+  refers to the sx:next record while 
+  endTest refers to the sx:current 
+  record.  This is because endGroup tests 
+  the "current" row (already in the group), 
+  while endTest tests the "next" row.  
+  In general, when converting endGroup 
+  test to endTest, replace sx:current 
+  and sx:next records with sx:previous and 
+  sx:current records. A record satisfying 
+  endTest will not appear in the 
+  group, which seems to be more intuitive
+  (at least to the author of this software.)
+
+Enhancements:
+
+- This release introduces an 
+  omitFinalRepeatDelimiter option, 
+  defaulting to "yes", to handle the
+  case when a delimiter is expected 
+  after the final repeating group. 
+
+- This release introduces an 
+  omitFinalFieldDelimiter option, 
+  defaulting to "yes", to handle the
+  case when a delimiter is expected 
+  after the final field. 
+
+- In the sx:xslt element, the 
+  documentBase attribute can now take a
+  substitution expression, and so
+  can contain parameters.
+
+- In the sx:repeatingGroup, 
+  sx:repeatingSegment and 
+  sx:repeatingTaggedField elements,
+  the count attribute can now take a
+  substitution expression, and may be set
+  to a field value appearing earlier in 
+  the record, e.g.
+
+  <sx:flatRecordType name='BKG'>
+    <sx:fieldDelimiter value="+"/>
+    ...
+    <sx:delimitedField name="bookingCodeCount"/>
+    <sx:repeatingGroup name="booking" 
+                   count="{bookingCodeCount}">
+    ...
+
+  See the flat-to-XML "comptest" example.
+
+- sx:choose is now supported within
+  record mapping sections, see the updated
+  flat-to-XML "exotics" example.
+
+- The padCharacter and justify field
+  attributes have been added to the 
+  list of field options that can be 
+  assigned values anywhere in the flat
+  file definition, and become defaults
+  within their scope.  In the element
+  reference, all field options have 
+  been collected in one section,
+  and elements allowing those options
+  contain a link to that section.
+
+Release Notes for ServingXML 0.6.4
+----------------------------------
+
+Bug Fixes:
+
+- Relative urls in import statements
+  of xsds used in msv:recordValidator
+  and msv:msvFilter not resolved
+  correctly - fixed.
+
+Enhancements:
+
+- Updated msv extension to MSV 
+  continuous build #41
+
+- Nested start/end record delimiters 
+  are now supported. 
+  sx:segmentDelimiter now allows
+  start and end attributes, like
+  sx:recordDelimiter.  The new 
+  element sx:repeatingSegment
+  supports reading a sequence of
+  segments enclosed in start/end
+  segment delimiters.  See the 
+  new Flat to XML example, 
+  "Converting flat files with nested 
+  start/end record and segment 
+  delimiters and name/value pairs"
+
+- The name attribute in 
+  sx:flatRecordType now allows
+  substitution expressions, which
+  allows record type names to be
+  assigned from field values in
+  the input file. See the above 
+  mentioned example.
+
+
+- New elements sx:tagDelimiter
+  and sx:repeatingTaggedFields
+  have been added to support
+  reading name/value pairs
+  separated by tag delimiters.
+  See the above mentioned example.
+
+Changes:
+
+- msv:msvFilter renamed to 
+  msv:schemaValidator (the old
+  name is deprecated but still works)
+
+- sx:runService now uses a service
+  attribute to refer to a service,
+  rather than an sx:service child
+  element (which has been deprecated
+  but is still supported.)  The
+  service attribute allows 
+  substitution expressions with
+  parameter values.
+
+Changes to target distribution:
+- samples moved one level up,
+  under deploy, now a sibling to
+  servingxml binary package.
+
+Release Notes for ServingXML 0.6.3
+
+- Inverse record mapping sections have
+  been enhanced to handle a wider
+  class of XML-to-Flat mappings, in
+  particular, sx:onSubtree elements
+  can now have child sx:onSubtree 
+  elements.  See the XML-to-Flat
+  example "ungrouping".
+
+- The sx:repeatingGroup element has
+  been enhanced to handle a wider
+  class of mappings of flat records
+  with repeating groups.  The count
+  attribute is now supported for 
+  delimited repeating groups, as well
+  as fixed repeating groups.  See
+  the Flat-to-XML example "invoice".
+
+- The quote attribute of 
+  sx:delimitedField now accepts 
+  "auto", "never", and "always"
+  values, in addition to the old
+  (and now deprecated) "yes" and 
+  "no" values.  The attribute
+  alwaysQuote is now redundant and
+  has been deprecated.  The default
+  for output has been changed 
+  from "no" to "auto" ("auto" means 
+  quote only if the value contains
+  delimiters.) 
+
+- Documentation for writing custom 
+  serializer tags has been added under 
+  the Extend link.
+
+- For embedded apps, previous versions
+  have used the AppDriver class, and 
+  more recently the Application class,
+  as a helper class for initializing
+  the ServingXML framework.  The
+  Application class is really just a
+  factory for creating IoC containers,
+  so it has been renamed to 
+  IocContainerFactory and moved to the
+  com.servingxml.ioc package.  The 
+  older classes, while deprecated, 
+  will still work, but it is 
+  recommended to use the new class,
+  see the Embed link.
+
+Release Notes for ServingXML 0.6.2
+
+Changes:
+
+- The lastModified field returned by
+  the sx:directoryReader and 
+  edt:ftpDirectoryReader instructions
+  is now expressed with a lexical
+  representation as defined for
+  sx:dateTime in XML Schema 
+  (instead of with the default locale.)
+  It can be reformatted with 
+  sx:formatDateTime, if desired.
+  
+- JAXP 1.3 support is required as of 
+  version 0.6.1, which means that users
+  of Java 1.4 need to have the 
+  xml-apis.jar and xercesImpl.jar files
+  (or equivalent implementations) in the
+  classpath.  xml-apis.jar was included
+  in the 0.6.1 distribution; xercesImpl.jar 
+  has been added to this one.  Java 1.5
+  users can delete these jar files from
+  the deploy/lib directory, after building.
+  
+New features:
+
+- Support for writing binary fields.  See
+  the XML to Flat example "Converting an 
+  XML file with hexidecimal encoded values 
+  to a flat file with special characters."
+
+- Support for Cobol packed decimal data.
+  See the Flat to XML example
+  "Converting a flat file containing Cobol 
+  packed decimal data to XML", and the
+  Flat to Flat examples "Converting an ASCII 
+  Positional File to an EBCDIC Positional 
+  File with a Cobol Packed Decimal Field, 
+  and Vice Versa"
+
+- Improved error handling for SQL batches.
+  More generally, sx:discardFilter
+  (appearing before a sequence of record 
+  filters) should be replaced by 
+  sx:discardHandler (appearing after a 
+  sequence of record filters and writers.)
+  The problem with sx:discardFilter is that
+  it can't handle the case where a filter 
+  or writer creates additional records
+  (such as SQL batches)  This is addressed 
+  with sx:discardHandler.  Record filters
+  and writers are now responsible for 
+  sending bad records to the discardRecord 
+  method, rather than simply throwing an
+  exception.  The defaults are such that
+  existing code and resource scripts with
+  sx:discardFilter will work as before,
+  but moving to sx:discardHandler is 
+  recommended. See the "countries-validated" 
+  example in the Flat-to-XML examples, as 
+  well as the current implementation of the 
+  Hot example custom record filter.
+  
+- A new sx:log element has been introduced
+  that may be used anywhere in a record 
+  stream to write to the log. See the 
+  "countries-validated" example in the 
+  Flat-to-XML examples.  Note that
+  sx:discardHandler, unlike sx:discardFilter,
+  doesn't automatically log, so sx:log is
+  needed here.
+  
+- There is a new link on the home page,
+  "extend", that documents contracts 
+  for extending record readers, filters,
+  and writers.  Anyone experimenting
+  with writing custom reader/filter/writer 
+  extensions should follow the templates 
+  here.
+  
+- This version of ServingXML supports
+  implementing components in Java code,
+  constructing them in an embedded app,
+  registering them programatically with 
+  the ServingXML framework, and referring 
+  to them in a resources script.  See 
+  the new example in the "embed" document.
+  
+- In previous versions, embedded apps
+  use AppDriver as a helper to load
+  ServingXML component definitions and
+  resources.  One problem with AppDriver
+  is that it provides one method to
+  load both component definitions and
+  resources.  Some users want to load
+  component defintions once, but have
+  the flexibility to load different
+  resource scripts on an as needed 
+  basis.  This release provides a new 
+  helper class, Application, which breaks 
+  down these functions, and the console 
+  app and embedded documentation have 
+  been changed to use this class.  The 
+  old AppDriver class has been deprecated,
+  but will work as before.
+  
+Enhancements to Java interfaces:
+
+- fieldCount() and getFieldName(int index) 
+  methods have been added to the Record 
+  interface
+
+Release Notes for Serving XML 0.6.1c
+------------------------------------
+
+New element:
+
+- sx:binaryField, see the Flat to XML
+  example "Converting a flat file with 
+  special characters to XML (special char)"
+  
+Release Notes for ServingXML 0.6.1b
+------------------------------------
+
+Minor bug fixes:
+
+- Fixes bug with sx:choose in record
+  pipeline (see the Flat-Flat example
+  "multiple output files" for an example
+  with record writer choices, and the 
+  XML-Flat example "books-pipe" for 
+  an example with record filter choices.)
+  
+- Flat file writers now work properly 
+  with lineDelimited="no" option.
+  
+- Removed collision of Java class names
+  in custom record reader samples.
+  
+Minor enhancement:
+  
+- Adds alwaysQuote attribute for
+  sx:delimitedField element (see
+  to element rederence.)
+
+Release Notes for ServingXML 0.6.1a
+------------------------------------
+
+Major bug fix:
+
+- Fixes component configuration bug
+  inadvertently introduced in 0.6.1,
+  unfortunately after acceptance testing,
+  affecting cross referencing of
+  record writers in resources scripts.
+
+Release Notes for ServingXML 0.6.1
+-----------------------------------
+
+Fixes
+- Version 0.6.0 dropped support for 
+  specifying a start position for a 
+  delimited field.  This turns out to be 
+  useful in some cases, so it's been 
+  restored.
+
+Non-Breaking Changes:
+
+The following non-breaking changes have 
+been made to element names (the old names 
+will still work, but have been marked 
+as deprecated):
+
+- sx:xmlEmitter to sx:xsltSerializer
+- sx:customEmitter to sx:customSerializer
+- fop:foEmitter to fop:foSerializer
+
+(Element name changes in the future are 
+likely to be rare.)
+
+The following methods on the Java class
+RecordBuilder have been deprecated:
+- setField(Name name, String s)
+- setField(Name name, String[] sa)
+Use these instead:
+- setString(Name name, String s)
+- setStringArray(Name name, String[] sa)
+(setLong, setDouble, setTime, etc. have
+also been added.)
+
+New Elements:
+
+- sx:currentDate
+- sx:currentDateTime
+- sx:currentTime
+  (These elements output the current 
+  datetime as a string with a lexical 
+  representation as defined for the XML 
+  Schema datetime types)
+   
+- sx:convertToDateTime
+- sx:formatDateTime
+
+- sx:modifyRecord
+  (For augmenting a record with additional 
+  fields, e.g. adding a message field to 
+  a discarded record.  Simpler than 
+  sx:replaceRecordFilter.) 
+
+- sx:sqlPrepare
+- sx:sqlBatchWriter
+
+This version adds support for SQL prepared
+statements, using an sx:sqlPrepare in the
+content of sql:sqlUpdate.  Support for
+prepared statements, in turn, required 
+support for typed fields and parameters,
+see the Appendix Data Type Mappings in
+the Element Reference, and the example
+"Prepared SQL inserts" in the "Flat to 
+Flat" section of the Examples.
+
+This version also adds support for batched
+SQL updates, with or without prepared
+statements.  See the examples "Batched
+SQL inserts" and "Batched prepared SQL
+inserts."
+
+This version now supports sx:choose in
+record pipelines.  See the example
+"Generated records to multiple files"
+in the "Flat to Flat" section of the
+examples.
+
+This version requires the Java 1.5
+XML APIs, the jar file xml-apis.jar
+has been added to the distribution to
+support Java 1.4 users.  Java 1.5
+users may remove this jar file if they
+like. 
+
+Release Notes for ServingXML 0.6.0
+-----------------------------------
+
+Breaking Change:
+
+- Authors of custom record filters need
+  to make a simple change to the 
+  signature of the writeRecord method
+  by adding a Flow parameter as the
+  third argument - refer to the hot1
+  example.
+
+Non-Breaking Changes:
+
+The following non-breaking changes have 
+been made to element and attribute names 
+(the old names will still work, but have
+been marked as deprecated):
+
+- sx:restrictRecordType to sx:recordTest,
+  sx:restrictField to sx:regexFieldCriteria 
+  (these appear as children of 
+  sx:restrictRecordFilter)
+- sx:processSubtreeFilter to sx:processSubtree
+- sx:processRecordFilter to sx:processRecord
+- sx:commentSymbol to sx:commentStarter
+- In sx:property, sx:systemProperty and 
+  sx:outputProperty, the "key" attribute 
+  becomes "name" 
+- In sx:delimitedField, the "width"
+  attribute becomes "maxWidth"  
+
+Bug Fixes:
+
+- Prior to this release, the trim options
+  would remove leading or trailing space
+  even if it occured within quote
+  characters.  This appears to be
+  against de facto standards, so
+  starting with this release, white
+  space found within quote characters is 
+  preserved.
+  
+- Flat files with embedded line breaks 
+  inside quote characters can now be
+  read properly.
+  
+Changes to the Distribution:
+
+- The "swing" extension has been removed.
+- The license has been changed from LGPL
+  to Apache 2.0, at the request of the
+  servicemix community. 
+  
+Enhancements:
+
+- Flat files with fixed width fields
+  but no end-of-line delimiters are now
+  supported.  See the examples 
+  "Flat to XML - Fixed Width Fields, 
+  Single Record Type, No End-of-line 
+  Delimiters" and "Flat to XML - Fixed 
+  Width Fields, Multiple Record Types, 
+  No End-of-line Delimiters" 
+  sx:flatFile now has an optional
+  lineDelimited attribute, defaulting
+  to "yes". 
+  
+- Custom record readers are now 
+  supported.  See the example
+  "Flat to XML - Custom Record Reader"
+  
+- The sx:flatFile element now has
+  optional ignoreTrailingEmptyLines
+  and ignoreEmptyLines attributes,
+  defaulting to "yes" and "no"
+  respectively (ignoreEmptyLines 
+  implies ignoreEmptyTrailingLines.)  
+  Previous versions generally ignored 
+  empty lines, except they weren't 
+  able to handle trailing empty lines 
+  in the presence of trailer records.
+  This has been addressed, and control
+  given to the user.
+  
+Changes to Home Page
+
+- The "resources" link at the top of
+  the page has finally been updated to 
+  cover articles about flat/XML 
+  transformations.
+  
+
+Release Notes for ServingXML 0.5.5
+-----------------------------------
+
+Bug fixes:
+
+- The recently reported bug "Not 
+  growing array properly", potentially 
+  affecting XML/flat processing and 
+  scripts using sx:processSubtreeFilter, 
+  has been fixed.
+  
+- edt:ftpSink has been fixed.
+
+Changes:
+
+- The elements sx:crcFlatFileSignature and
+  sx:sizeFlatFileSignature have been
+  deprecated, use sx:flatFileSignature
+  with method = "size" or "crc" instead.
+
+Enhancements:
+
+- Custom flat file signatures stored in
+  headers or trailers are now supported,
+  use sx:flatFileSignature with method=
+  "custom" and class=name of Java class 
+  implementing com.servingxml.components.
+  recordio.flatfile.SignatureMethod.  
+  See the entry for sx:flatFileSignature 
+  in the on-line ServingXML elements 
+  reference.
+  
+- sx:restrictRecordFilter now allows an
+  sx:unmatchedRecord child element,
+  which allows processing in a record
+  pipeline of records not matching the
+  restriction criteria.  This pipeline
+  may include a sx:discard element,
+  which will result in the record being
+  discarded (rather than ignored.)  See
+  the entry for sx:restrictRecordFilter 
+  in the on-line ServingXML elements 
+  reference.
+  
+- The label attribute of 
+  sx:positionalField and 
+  sx:delimitedField elements may now
+  contain references to parameters
+  inside curly braces.
+  
+- Record counts in flat file trailers
+  are now supported.  Flat file
+  writers now add a parameter 
+  recordCount after finishing writing
+  records, and this parameter may be
+  referenced in a field value appearing
+  in a flat file trailer.  See the 
+  XML/flat example "Converting an XML 
+  document to a positional flat file 
+  with record count in trailer", in
+  the on-line examples.
+  
+- Multiple record writers are now
+  allowed in sx:recordStream, 
+  sx:unmatchedRecord, sx:discardFilter,
+  and sx:recordTee elements.
+
+Release Notes for ServingXML 0.5.4
+-----------------------------------
+
+Enhancements:
+
+The sx:onRecord element now allows
+a test attribute as a more general
+(and more expensive) alternative to a 
+recordType attribute. See the
+element reference.
+
+The sx:restrictRecordType element
+now allows a test attribute as a
+more general (and more expensive) 
+alternative to a recordType attribute.
+See the element reference.
+
+Release Notes for ServingXML 0.5.3
+-----------------------------------
+
+NB: All 0.5.0-0.5.2 resources scripts 
+should work without modification 
+with this release.  There is,
+however, a recommended change:
+
+- Rename sx:processRecords to 
+  sx:recordStream.
+    
+The old element will still work,
+though.
+
+The examples have also been changed
+to consistently put record writers
+at the bottom of a list of record
+readers and filters.  Previously,
+many of the examples put record
+writers at the front.  The 
+framework doesn't care, though.
+  
+Bug Fixes:
+
+- Previously, a flat file writer
+  would fail to write positional
+  fields declared in the record
+  type if a field with that name
+  was not present in the input
+  record.  This has been fixed
+  to write a default space value,
+  or alternatively a value 
+  specified with sx:defaultValue
+  (see below.)
+    
+Enhancements:
+
+- An sx:defaultValue element is
+  now allowed in the content of
+  sx:positionalField and 
+  sx:delimitedField.  This defines
+  a default value for flat file
+  writers.  See the "positional
+  defaults" example in the "flat
+  to flat" examples.
+
+- This version supports lazy 
+  evaluation of parameters, a
+  parameter defined with an
+  expression is not evaluated
+  until it is referenced, at 
+  which point it is fixed for 
+  that context.  Note that in 
+  previous versions, a parameter
+  could be evaluated in a
+  number of contexts (e.g. both 
+  during the creation of a record 
+  reader and for each record read) 
+  even if not referenced in all 
+  contexts.
+  
+- This version supports chaining
+  record readers, where the 
+  output of the first reader is
+  used in the selection criteria
+  of the second reader (see the 
+  "chained readers" example in
+  the SQL examples.)  This 
+  supports, for example, joins
+  between rows in two distinct
+  databases, or joins between
+  rows in a flat file and a 
+  database.
+  
+- An sx:sqlUpdateChoice element
+  has been introduced that submits one
+  of two update statements depending
+  on the results of a query.  This
+  allows "if exists update else
+  insert" logic.  See the 
+  "insert/update" example with the
+  SQL examples.
+
+Release Notes for ServingXML 0.5.2
+-----------------------------------
+
+NB: All 0.5.0-0.5.1 resources scripts
+    should work without modification,
+    with one exception.  If you have
+    taken special steps to escape
+    quote characters in fields and 
+    parameters embedded in SQL 
+    statements, these should be 
+    removed, see below.
+    
+Bug fixes:
+
+- The sx:sqlConnectionPool element 
+  has an optional testStatement 
+  attribute.  In previous versions,
+  however, omitting it resulted 
+  in an exception.  This has been fixed.
+  
+Enhancements:
+
+- Inlined schemas are now supported 
+  in msv:msvFilter and msv:recordValidator 
+  (msv:msvRecordFilter)  See the new
+  "load employees" example in the SQL
+  examples.
+  
+- An sx:quoteSymbol element is now allowed 
+  in the content of sx:sqlQuery and 
+  sx:sqlUpdate.  If present, it defines 
+  the escape character for parameters 
+  and fields appearing within quote 
+  characters in the literal SQL
+  statements, see the entries for
+  sx:sqlQuery and sx:sqlUpdate in the
+  element reference.  By default, a
+  single quote character is assumed, to
+  be escaped by two single quote 
+  characters.
+  
+- An sx:quoteSymbol is now allowed in
+  the content of an sx:toString 
+  element, which permits escaping of
+  quote characters in quoted parameter
+  and field values (this replaces the
+  now deprecated quoteSymbol attribute
+  in sx:toString, which did not support
+  escaping.)
+  
+- A new sx:discardFilter record has been
+  added to support catching any 
+  exception raised by a record filter 
+  appearing below it, and logging all
+  bad records to a discard file or 
+  database table.  The error message is
+  accessible in the parameter sx:message,
+  and a new record may be created from
+  the discard record and the message,
+  to be logged together.  See the 
+  "countries-validated" example in the 
+  flat-to-XML examples
+  
+- The msv:msvRecordFilter allows 
+  validating and discarding a bad record
+  with a message, but does not propagate
+  an exception up, so it will not 
+  work with the sx:discardFilter.  A
+  new msv:recordValidator element has
+  therefore been introduced which works
+  like msv:msvRecordFilter, except that
+  it propagates the exception.  If an
+  sx:discardFilter element appears 
+  somewhere before the msv:recordValidator 
+  element, the exception will be caught,
+  logged, and the record pipeline in the
+  body of sx:discardFilter (if present) 
+  will be used to log the record.  An 
+  empty sx:discardFilter element followed
+  by a msv:recordValidator will be
+  equivalent to the old msv:msvRecordFilter
+  element.
+  
+- Base records may now be extended by
+  including a reference to them in the
+  definition of a derived record, see
+  the "countries-validated" example
+  in the flat-to-XML examples, where
+  the "countries" record is extended
+  to define a "countriesDiscard" record
+  with an additional message field.
+
+
+Release Notes for ServingXML 0.5.1
+-----------------------------------
+
+NB: All 0.5.0 resources scripts
+    should work without modification.
+
+Bug fixes:
+
+- In version 0.5.0, a sx:sqlWriter
+  would attempt to insert duplicate 
+  rows.  This has been fixed.
+  
+- In previous versions, by default
+  flat file records were stripped of
+  leading whitespace before being
+  parsed; this caused problems for 
+  positional records with leading
+  whitespace. This has been fixed.
+  
+- A few issues with scoping of 
+  parameters have been addressed.
+  
+- One user reported build issues
+  as a consequence of two source files
+  importing classes contained in those
+  files; this has been cleaned up.
+
+Changes:
+
+- sx:xmlTee has been renamed to 
+  sx:tagTee (old name still supported)
+
+- The sx:innerGroup and sx:outerGroup
+  elements allow sx:startGroup and 
+  sx:endGroup child elements, to 
+  determine when the group starts and
+  ends.  sx:endGroup is optional, but 
+  the old default (the inverse of
+  sx:startGroup) didn't make sense 
+  (because the condition identifies the
+  last record of the group - inclusive.)  
+  The new default behaviour is that a 
+  break occurs only when triggered by a 
+  break in an enclosing group.
+  
+- For anyone writing extension
+  components in Java, note that the
+  insertConfigurationComponent and
+  insertServiceComponent method names 
+  may be replaced by simply 
+  insertComponent (the Java component 
+  assenblers don't care what type of
+  component is injected.)
+
+Enhancements:
+
+- sx:sqlWriter now allows multiple
+  sx:sqlUpdate elements in its content, 
+  which get applied in a transaction.
+  
+- The abstract element sx:transform
+  now specializes sx:content, and
+  sx:processRecords now specializes
+  sx:recordReader.  As a consequence,
+  a record mapping section containing 
+  a sx:aggregate element, which expects 
+  an sx:content specialization, can now
+  accept an sx:transform as well.
+  
+- A new sx:reorderRecords element has 
+  been introduced to allow reordering
+  of records of different types within
+  a group of records, in a record
+  mapping section.  See the online
+  flat to XML example, "multiple 
+  summaries."
+  
+- sx:processRecordFilter now accepts
+  an optional recordType attribute,
+  to restrict the set of records to
+  be processed by the filter.
+
+Release Notes for ServingXML 0.5.0
+-----------------------------------
+
+As anticipated in the release notes
+for 0.4.2, support for record filters 
+as child elements of record readers,
+previously deprecated, has been 
+removed from this release.  Apart 
+from that, all 0.4.2 resource scripts
+should work unmodified with this release.  
+
+The following changes, however, are
+recommended:
+
+- Rename sx:writeRecords to 
+  sx:processRecords (both elements were
+  supported in previous versions, but
+  were effectively the same.)
+- Rename sx:documentSubtreeMap to
+  sx:onSubtree.
+- Rename sx:style to sx:xslt. 
+- Rename sx:recordSubtreeMap to 
+  sx:transformRecord. 
+- In the sx:groupBy attribute "fields", use 
+  a space separator instead of a comma.
+
+The sx:recordMapping element has become
+too overloaded, e.g. in
+
+<sx:recordMapping>
+  <Persons-Addresses>
+    <sx:recordMapping>
+      <sx:recordContent>
+        <sx:flatFileReader>
+          <sx:flatFile ref="personsData"/>
+        </sx:flatFileReader>
+        <sx:recordMapping ref="personsMapping"/>
+
+the second occurance of sx:recordMapping is used
+to express aggregation of content.  Aggregation
+within record mappings should now be done with 
+an sx:aggregate element, e.g. the example above 
+should be re-written as
+
+<sx:recordMapping>
+  <Persons-Addresses>
+    <sx:aggregate>
+      <sx:recordContent>
+        <sx:flatFileReader>
+          <sx:flatFile ref="personsData"/>
+        </sx:flatFileReader>
+        <sx:recordMapping ref="personsMapping"/>
+
+See the flat to 
+XML example "persons" in the on-line examples.
+                   
+New elements have been introduced to support
+XML and record tees:
+  
+- sx:xmlTee (see the XML to XML example 
+  "invoices" in the on-line examples.)
+- sx:recordTee (see the SQL example
+  "employees-tee")
+  
+Java API Changes
+  
+- The com.servingxml.components.xmlpipeline.Emitter
+  interface has changed; anyone who has written
+  a custom Emitter will need to adapt.
+  
+- In embedded apps, a call to 
+
+  appContext.getResources().lookupServiceComponent(Service.class,serviceUri);
+  
+  should pass a string rather than a Name 
+  as the second argument.  The string
+  should correspond to the URI representation 
+  of the QName of the service, which, 
+  following RDF conventions, is the 
+  concatenation of the QName namespace URI 
+  and the local name. 
+  
+- The startRecordStream and endRecordStream methods of the RecordWriter
+  interface now take the additional argument Flow.  This will only be of 
+  interest to users writing specialized RecordWriters.
+  
+Enhancements:
+
+- sx:transform now allows an sx:emitter element.
+  A sx:serialize element without an explicitly
+  specified emitter is now equivalent to
+  
+  <sx:transform>
+    <sx:xmlEmitter/>
+    ...
+  </sx:transform>
+  
+- The SAXPath pattern, appearing in the path 
+  attribute of sx:processSubtreeFilter and
+  sx:onSubtree elements, has been significantly
+  enhanced, with support for wildcards and
+  predicates. See the glossary entry for 
+  SAXPath in the on-line element reference.
+  
+
+Release Notes for ServingXML 0.4.2
+-----------------------------------
+
+Addresses a recently reported issue of
+namespace declarations being duplicated
+in output, when ServingXML is used with
+recent releases of Saxon-B 8.x.  
+
+Note that in previous versions, you 
+could write
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+    xmlns:myns="http://www.mydomain.com/MyNamespace">
+
+  ...
+  
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books>
+    
+    ... 
+    
+In this version, you must include the prefix
+declaration in the literal subtree element,
+
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books 
+      xmlns:myns="http://www.mydomain.com/MyNamespace">
+    
+    ... 
+
+The examples with sx:directoryReader
+have been modified to remove dependence
+on a deprecated feature, i.e.,  
+
+<sx:directoryReader directory="data">
+  <!-- record filters -->
+</sx:directoryReader>
+
+has been replaced by
+
+<sx:directoryReader directory="data"/>
+<!-- record filters -->
+
+Both ways will work in this release,
+but the next release will remove support
+for filters as child elements of readers,
+they'll have to be siblings.
+ 
+
+Release Notes for ServingXML 0.4.1c
+------------------------------------
+
+- Fixed an issue with sx:processRecordFilter
+  (it wasn't allowing the records to flow
+  through the filter.)
+  
+- Fixed an issue with embedded arguments in
+  SQL statements (parameters were substituted
+  correctly, but not fields of the current 
+  record.)
+  
+- Fixed an issue with parameters defined
+  inside a sx:sqlReader.
+  
+- Added an element sx:currentRecordReader,
+  which reads the current record.
+  
+See the new example "employees-tee", which
+shows how to map database records to an XML
+file, and also to write each row to a
+database table as it passes through the pipe.
+
+Release Notes for ServingXML 0.4.1b
+------------------------------------
+
+When evaluating document() in an XSLT stylesheet,
+through sx:style, the default URIResolver is 
+now invoked if there is no document mapping.
+sx:style now also has an optional documentBase
+attribute for explicitly setting the document
+base URI, see the revised XML-to-XML invoices 
+example (the previous version still works.)
+
+Release Notes for ServingXML 0.4.1a
+------------------------------------
+
+Fix for JDK 1.4.2 
+
+Release Notes for ServingXML 0.4.1
+-----------------------------------
+
+Bug fixes:
+
+- In previous releases, the sx:replaceRecordFilter 
+  element only allowed records to pass through 
+  that satisfied the conditions for replacement.  
+  This has been fixed to allow other records 
+  to flow through unchanged. 
+
+Changes:
+
+- The "quote" attribute in the sx:fieldDelimiter
+  element no longer has the affect of quoting 
+  all field values.  Instead, only values that
+  actually contain record, field, subfield, or
+  other kinds of delimiters will be quoted.
+
+New features:
+
+- The "to" and "from" attributes in jm:sendMail
+  may now contain substitution expressions with
+  parameters.  See the "XML to XML" example 
+  "mail invoices" in the on-line examples.
+  
+- When encountering an error in a flat file 
+  record, msv:msvRecordFilter will now report 
+  the file line number.
+  
+- New elements sx:crcFlatFileSignature and
+  sx:sizeFlatFileSignature have been 
+  introduced to allow flat files to be signed
+  with the CRC value and byte count of their
+  data sections, with the signature values 
+  placed in header or trailer records.  These
+  values will be checked when the file is read
+  and created when the file is written.  See the
+  "flat to flat" example "checked books" in the
+  on-line examples.
+
+Release Notes for ServingXML 0.4.0c
+------------------------------------
+
+Added class
+
+com.servingxml.io.helpers.StreamSourceHelper
+
+which has helper methods for creating a
+StreamSource, in particular, from a
+JAXP source (useful for JBI.)
+
+Release Notes for ServingXML 0.4.0b
+------------------------------------
+
+Fixed issue with XML to flat mapping
+with master and detail records.
+See the "XML-flat header-detail" example.
+
+Release Notes for ServingXML 0.4.0
+-----------------------------------
+
+Changes:
+
+First, note that all 0.3.4 resources
+scripts will work with this version,
+with one proviso.  If in the unlikely
+event you use the width attribute in
+an sx:delimitedField element, you 
+must change it to maxLength.
+
+Second, there are some recommended,
+but not required, changes.  A number
+of elements had "fragment" in their
+name, where "subtree" would have been
+more accurate.  So, the preferred
+names for these elements are now
+
+  sx:processSubtreeFilter
+  (replacing sx:processFragmentFilter)
+  
+  sx:documentSubtreeMap
+  (replacing sx:documentFragmentMap)
+
+  sx:subtreeRecordMap
+  (replacing sx:fragmentRecordMap)
+  
+Third, the msv:msvFilter and 
+msv:msvRecordFilter used to take a
+"schema" attribute to specify a 
+schema URL.  While this will still 
+work, these elements now allow
+sx:urlSource and sx:fileSource, like 
+sx:document or sx:style.
+
+Fourth, for users of the embedded API,
+some classes have changed packages, see
+the Embed link.
+
+Fifth, examples in previous releases
+showed record filters in the content
+of record readers, e.g.
+
+  <sx:flatFileReader>
+    <sx:flatFile ref="countriesFile"/>
+    <msv:msvRecordFilter ...
+  </sx:flatFileReader>
+  
+The preferred style now is for record
+filters to appear as siblings of the
+record reader, e.g.
+
+  <sx:flatFileReader>
+    <sx:flatFile ref="countriesFile"/>
+  </sx:flatFileReader>
+  <msv:msvRecordFilter ...
+  
+All the examples have been changed
+accordingly (but the old way will still 
+work.)
+
+Sixth, the version of saxon included in
+the distribution has been updated to the
+latest XSLT 1 version, Saxon 6.5.5.
+
+New Features:
+
+Reading flat files where the field has
+a maximum width, but may be terminated
+earlier with a delimiter, is now
+supported.  See the "field has max
+width" example.
+
+The sx:sqlQuery element now accepts 
+optional trim/trimLeading/trimTrailing
+attributes, which apply to all returned
+values.  The default is "no".
+
+Record mappings now accept an
+sx:recordSubtreeMap element, which allows
+the canonical XML representation of a 
+record to be mapped to an XML subtree
+using XSLT.  See the "optional elements" 
+example.  This is the most flexible way
+to map a record.
+
+Keysers Wonne has contributed code
+for supporting specified charsets.
+This has been incorporated as follows
+   
+-  The elements sx:urlSource, sx:fileSource 
+   and sx:defaultStreamSource now accept an 
+   optional "encoding" attribute, which 
+   allows you to specify a charset name.  
+   If the input is XML, and a charset 
+   is not supplied, the XML parser 
+   will use the encoding specified 
+   by the XML declaration. If the 
+   input is a flat file, and a charset 
+   is not supplied, the default will 
+   be the platform's default charset. 
+   
+-  The elements sx:fileSink and 
+   sx:defaultStreamSink now accept an 
+   optional "encoding" attribute,
+   which allows you to specify a 
+   charset name.   If the output is XML, 
+   and a charset is not supplied, the XML 
+   serializer will use the last encoding 
+   encountered in the output properties of 
+   the transformation pipeline. If the 
+   output is a flat file, and a charset 
+   is not supplied, the default will 
+   be the platform's default charset.
+  
+-  For users of the embedded API, the 
+   classes UrlSource, FileSource,
+   InputStreamSourceAdaptor, FileSink and
+   OutputStreamsinkAdaptor now have 
+   additional constructors that allow you 
+   to specify a charset. 
+   
+See the ascii-ebcdic example in the
+flat to flat section.  This example shows 
+how to use the command line app to convert 
+an ascii positional file to an ebcdic 
+delimited file, and vice versa.
+   
+Bug Fixes:
+
+- The msv:msvFilter instruction was not
+  terminating the app properly when a 
+  schema validation error occurred.  
+  This has been fixed.
+  
+- The trim attribute had no effect in
+  the sx:flatFile section, the default
+  of "yes" was not being overridden.
+  This has been fixed.
+
+
+Release Notes for ServingXML 0.3.4
+-----------------------------------
+
+Bug fix:
+
+  - Record mappings that have inlined elements 
+    with xmlns declarations and attributes
+    may generate invalid XML.  Thanks to Anton 
+    Melumad for reporting this.  This has
+    been fixed. 
+    
+Enhancements:
+
+  - The sx:recordDelimiter element now supports
+    start and end attributes, which allow you
+    to map a portion of a file from an 
+    opening value, e.g. "{", to a closing
+    value, e.g. "}".  See the "opdef"
+    example in the on-line examples.
+    
+  - A new sx:cdata element has been added
+    to the record mapping elements to support 
+    emitting a CDATA section in the XML output.
+    Currently, this has been tested 
+    successfully with xalan 2.7.0, but not
+    with any version of saxon, saxon
+    appears to ignore it (see the 
+    "opdef" example.)
+  
+
+Release Notes for ServingXML 0.3.3
+-----------------------------------
+
+New id attribute
+
+  Previous versions have used a "name" attribute
+  for two purposes:
+  
+  - As an anchor point, where the name becomes 
+    the target of a ref attribute, e.g.
+      <sx:flatFile name="countries">...     
+
+      <sx:flatFile ref="countries"/>
+      
+  - As a meaningful property of an element, 
+    e.g. name is a property of sx:flatRecordType, 
+    sx:positionalField, sx:delimitedField,
+    sx:parameter.
+    
+  This release allows the anchor point role
+  to be served by the "id" attribute, i.e.
+      <sx:flatFile id="countries">...     
+
+      <sx:flatFile ref="countries"/>
+      
+  This is now the official way, but the
+  old way is still supported.  So, no
+  changes to resources scripts are required, 
+  but the new way is recommended.  Note that
+  id is _only_ used as an anchor and a target
+  of ref, it has no other purpose.
+  
+Inlined XML and XSLT 
+
+  This release supports inlined XML in
+  sx:document elements and inlined XSLT in
+  sx:style elements.
+  
+Changes for repeating groups 
+
+  An sx:repeatingGroup child element of an 
+  sx:flatRecordType must now have a name
+  attribute (like any other field)
+  
+  In previous versions, the order of
+  segments within fields was lost, requiring
+  inconsistent record mapping to achieve 
+  intuitive results.  This has been fixed,
+  but changes are required for mapping
+  repeating groups.  Refer to the samples
+  comptest, segments, students-fix and 
+  students-delim in the on-line examples.
+
+New sx:replaceRecordFilter element
+
+  This element supports mutating records
+  in a record stream, without having to
+  write a custom Java record filter.
+  See the bookorder sample in the "Flat
+  to Flat" section of the on-line
+  examples.
+  
+New sx:concat element
+
+  sx:concat takes child sx:string elements
+  and concatenates the results.  (The
+  sx:toString element used to, and still does, 
+  do that, but that element was getting 
+  too overloaded.)  See the example above.    
+  
+Release Notes for ServingXML 0.3.2
+-----------------------------------
+
+Fix for J2EE embedding issue.
+
+  - Wonne Keysers submitted a patch for 
+    loading component.xml resource files 
+    directly in the configuration process,
+    as opposed to looking up the components.xml
+    files in the jar files, which turned out to
+    be a problem for J2EE apps.  This patch is 
+    incorporated in this release -
+    see the Imbed section in the on-line
+    documentation.
+
+Removal of deprecated feature:
+
+  - The old 0.2.x style of defining variant 
+    records, with a default record type followed 
+    by a px:choose sibling, is no longer supported.
+    If you haven't already done so, you must
+    replace this with the 0.3.x 
+    sx:flatRecordTypeChoice element. See any of the 
+    examples with variant records:  trades, exotics, 
+    hot 1, comptest, segments. 
+    
+  - test is no longer supported as an attribute of
+    sx:flatRecordType (introduced briefly in 0.3.0,
+    and deprecated in 0.3.1.)
+
+Two record mapping elements have been renamed 
+(but note that the old names will still work.)
+
+  - sx:fieldSetElementMap renamed to 
+    sx:defaultFieldMapping
+  - <sx:element name=... replaced with
+    <sx:elementMap element=... 
+
+Two filter elements have been renamed 
+(but note that the old names will still work.)
+    
+  - flowFilter renamed to sx:processFragmentFilter  
+  - flowRecordFilter renamed to 
+    sx:processRecordFilter
+    
+sx:repeatingGroup may now appear many times in
+a flat record definition, interspersed with fields,
+with a count attribute for fixed length groups, or
+repeat and segment delimiters for variable length 
+groups. See the students-fix and students-var examples 
+in the on-line examples.
+
+Release Notes for ServingXML 0.3.1b
+------------------------------------
+
+Includes a bug fix for an sx:repeatingGroup within 
+an sx:flatRecordType that is not itself within an 
+sx:flatRecordTypeChoice.
+
+An example script resources-students.xml that
+tests this fix has been added to the flatfile 
+samples. 
+
+Release Notes for ServingXML 0.3.1
+-----------------------------------
+
+This release contains minor revisions to 0.3.0.
+
+Note that all scripts that work with version 0.3.0
+should still work with this version. Note, however, 
+the following two changes:
+
+Changes:
+
+- In the content of the sx:flatRecordTypeChoice
+  element, the sx:flatRecordType choices should 
+  now be surrounded by sx:when or sx:otherwise 
+  elements, similiarly to the 0.1.x and 0.2.x versions.  
+  The "test" expression has been moved back from the 
+  sx:flatRecordType element to the sx:when element.
+  See the "segments" and edi examples.
+  
+  Note that all three styles - the pre 0.3.0 style,
+  the 0.3.0 style and the current style - will all
+  work.  The previous two have been deprecated, though.
+
+- Version 0.3.0 allowed sx:recordContent elements to
+  appear anywhere in the record mapping section.
+  This has been changed - the sx:recordContent element 
+  should now appear only as an immediate child of 
+  sx:recordMapping. sx:recordContent elements
+  appearing elsewhere in the record mapping should
+  be enclosed by a sx:recordMapping element. See the
+  "persons" example.  
+  
+  The 0.3.0 way will still work but has been
+  deprecated.
+  
+  The new way allows all kinds of content - including
+  XML, SQL rows, and other flat files - to be 
+  combined in record mapping sections.
+  
+New features:
+
+- The sx:groupBy element now has an optional recordType
+  attribute, which allows us to restrict the group to
+  records of that type.
+  
+- The sx:restrictRecordFilter element now can have 
+  sx:restrictRecordType child elements.
+  
+Bug fixes:
+
+- Parameter definitions in record mapping sections did 
+  not work in previous versions; this has been fixed.  
+   
+
+Release Notes for ServingXML 0.3.0
+-----------------------------------
+
+The 0.3.0 version of ServingXML contains a number
+of changes to namespaces and Java package names that 
+will affect existing users.  There are also some changes
+to elements, but the old ones are still supported.
+
+This version will be presented at the XML 2005 
+Conference in November.
+
+Namespace changes:
+
+Namespace declarations must be changed to the ones 
+shown below. The prefix "px" should be changes to "sx".
+
+  xmlns:sx="http://www.servingxml.com/core"
+  xmlns:edt="http://www.servingxml.com/extensions/edtftp"
+  xmlns:fop="http://www.servingxml.com/extensions/fop"
+  xmlns:jm="http://www.servingxml.com/extensions/javamail"
+  xmlns:msv="http://www.servingxml.com/extensions/msv"
+  xmlns:swing="http://www.servingxml.com/extensions/swing"
+  
+This change will affect all old resources scripts.
+
+Java API changes:
+
+  - All package names beginning with com.presentingxml
+    have been changed to com.servingxml
+  - The class PresentingXmlException has been
+    renamed to ServingXmlException
+    
+These changes will affect authors of custom filters   
+and extensions, and users of the embedded API. 
+
+The name of the main jar file has been changed from
+presentingxml.jar to servingxml.jar.
+
+Element changes (note that the old ones will still 
+work):
+
+  - The old style of defining variant records, with 
+    px:choose and px:when, should be replaced with the 
+    new style with sx:flatRecordTypeChoice.  See any
+    of the examples:  trades, exotics, hot 1, 
+    comptest, segments. 
+  
+  - The old px:subrecordMapping element has been 
+    deprecated.  It has been superceded by the
+    new support for record segments, see the edi
+    example.
+  
+  - A px:fieldElementMap element with one attribute 
+    called "element" should be renamed to sx:element 
+    with one attribute called "name".    
+  
+  - A px:taskRunnerFilter (or px:subtaskFilter) 
+    element should be renamed to sx:flowFilter
+  
+  - A px:taskRunnerRecordFilter (or 
+    px:subtaskRecordFilter) should be renamed to 
+    sx:flowRecordFilter.
+    
+Enhancements:
+
+There are two major enhancements in this release:
+
+- Repeating groups of record segments, nested to
+  any depth, are now supported.  See the edi 
+  example for a simple illustration.
+  
+- The sx:recordContent element can now appear as a
+  descendent of a sx:recordMapping element.  This 
+  allows a workaround for the limitation that we
+  cannot have two sibling groups - see the new
+  "persons" example.  More generally, this opens
+  up the possibility of aggregating the content of 
+  different flat files, or aggregating over flat 
+  file content and RDBMS content.
+
+
+Release Notes for ServingXML 0.2.5
+-----------------------------------
+
+Changes:
+
+Three elements have been renamed (but the old names 
+will still work!)
+
+- px:flatFileRecordType renamed to px:flatRecordType
+- px:chooseGroup renamed to px:groupChoice
+- px:transformerSettings renamed to px:xsltConfiguration
+
+Multiple grouping elements appearing as content in
+any element except a px:groupChoice element will
+now result in a thrown exception.  For
+a definition of "grouping elements", see the 
+"Record Mapping Elements" section of the 
+Element Reference in the online documentation.
+Multiple sibling grouping elements must be
+enclosed in a px:groupChoice element.
+
+For users using the Java API's, the code
+
+  Name AMOUNT_NAME = new Name("", "amount");
+  
+must be changed to
+
+  Name AMOUNT_NAME = new NameImpl("amount");
+  
+There is also a version of NameImpl that takes a
+namespace, local name, and namespace prefix.  
+(Name is now an interface.)
+
+Enhancements:
+
+- The evaluation of Xpath expressions in record mapping 
+  elements has been optimized.
+- The px:groupElements (px:groupBy, px:innerGroup,
+  px:outerGroup, and px:groupChoice) have been
+  generalized and now allow multiple child elements,
+  the same as other record mapping elements.
+  
+A number of changes have been made to fully support
+Saxon 8.5.1.  This version of Saxon appears to 
+require that the XML Reader support namespace-prefixes
+in addition to namespaces.
+
+- The record mapping component has been enhanced to 
+  generate prefix mappings.  
+
+- QNames are now preserved in all cases along
+  with the namespace and local name.
+
+- A version attribute has been added to the 
+  px:xsltConfiguration element (see the
+  presentingxml.xml file in the config directory.)
+  This allows you to specify the XSLT version used 
+  in generated XSLT stylesheets.  If you are using 
+  Saxon 8.x, set the version to "2.0", to put a stop 
+  to warning messages.   
+  
+Corrections:
+
+- Previously, examples with the px:style element
+  included empty parameter definitions, to indicate
+  the parameters that should be passed to the 
+  style sheet.  As of version 0.2.4, however, these
+  parameter definitions must either have a 
+  px:defaultValue, or else be initialized with the
+  value to be passed.
+             
+Release Notes for ServingXML 0.2.4
+-----------------------------------
+
+Fixed bugs:
+
+- Custom logging didn't work.
+- px:choose inside a px:serialize element was broken.  
+- Inverse record mapping failed if record definitions
+  had field specific delimiters.
+- jm:sendMail was broken
+- A parameter value could not be set within a px:style 
+  
+Changes:
+  
+There are some changes, but all version 0.2.3 resources scripts 
+should still work, with the exception of ones that perform 
+inverse record mapping with a record definition that has 
+subfield delimiters.  These need to be updated, see the 
+books-pipe example.  
+
+Two elements have been renamed:
+
+- px:subtaskFilter renamed to px:px:taskRunnerFilter
+  (old name still works.)
+
+- px:subtaskRecordFilter renamed to px:taskRunnerRecordFilter
+  (old name still works.)
+
+px:fieldElementMap (in record mapping) and px:fragmentFieldMap 
+(in inverse record mapping) now allow the optional attribute 
+"match".  The match value is an XSLT pattern.
+  
+- In px:fieldElementMap: 
+  The match value is an XSLT pattern that defines a 
+  condition that an element in the record's XML representation
+  must satisfy in order to be selected by an XPath expression. 
+  See the "abtest" example in the on-line examples.
+  
+- In px:fragmentFieldMap:
+  The match value is an XSLT pattern that defines 
+  a condition that an element in the XML fragment
+  must satisfy in order to be selected by an XPath expression. 
+  See the "swath" and "books-pipe" examples in the on-line 
+  examples.
+  
+Previously, the "select" attribute in px:fieldElementMap and
+px:fragmentFieldMap had different effects.  An XPath 
+expression in px:fieldElementMap evaluated as a string, while
+an XPath expression in px:fragmentFieldMap evaluated as a 
+node set.  In this version, both evaluate as a string.
+
+Also
+  
+- a px:documentRecordMap element (in inverse record mapping)
+  should be replaced by a px:documentFragmentMap element 
+  containing one or more px:fragmentRecordMap elements,
+  which in turn contain the px:fragmentFieldMap elements.
+  See any of the XML to flat file examples.
+
+  
+Release Notes for ServingXML 0.2.3
+-----------------------------------
+
+Bug fixes
+
+- The px:subrecordMapping didn't handle the case when the 
+  last subrecord was incomplete.  Thanks to Bill Donovan
+  for reporting this bug.  It's fixed in this release.
+  
+Changes
+
+- The behaviour of px:parameter has changed for passed
+  parameters.  Before, a parameter defined as
+  
+  <px:parameter name="validate">no</px:parameter>
+  
+  could be overridden with a passed parameter.  This
+  is no longer the case.  Now, a default parameter
+  must be defined as
+  
+  <px:parameter name="validate">
+    <px:defaultValue>no</px:defaultValue>
+  </px:parameter>
+  
+  See the Parameters section of the home page Pipeline 
+  Language article.  Also see the trades example.
+  
+Enhancements
+
+- A Swing extension has been added.  See the home page 
+  Swing extension link.
+
+  Two new task elements have been added:
+
+  - px:raiseError
+  
+  - px:runService (see the Swing extension link for an 
+    example.)
+  
+  
+Release Notes for ServingXML 0.2.2
+-----------------------------------
+
+Bug fixes
+
+- The inverse record mapping was calling endElement on the 
+  content handler one more time than necessary.  It seems
+  this was ignored by saxon, but caused failures with other
+  XSLT transformers.  Thanks to Ryan Eberly for identifying 
+  and fixing this bug.
+  
+Changes
+
+- The px:whitespaceFieldDelimiter element introduced in the
+  previous release has been deprecated.  It has been 
+  replaced by a px:whitespaceSeparator element, which may
+  appear as content in a px:recordDelimiter, 
+  px:fieldDelimiter, or px:subfieldDelimiter (as an
+  alternative to specifying a value.)  See the example
+  "Converting BNF like flat files to XML."
+  
+Enhancements
+
+- trim, trimLeading and trimTrailing attribute defaults 
+  for fields may now be specified in the enclosing 
+  px:flatFileRecordType element.  Default subfield
+  delimiters may also be specified in the
+  px:flatFileRecordType element, but note that that 
+  only makes sense if all fields have subfield delimiters.
+  Also, the quote symbol specified at the record level may
+  now be overridden at the field level.
+  
+- This release supports repeating groups in record
+  mapping.  This is accomplished with the new
+  px:subrecordMapping element, see the section
+  "Converting edi files to XML" in the online examples,
+  and also the entry in the element reference.  Thanks
+  to Bill Donovan for contributing the example.
+  
+Release Notes for ServingXML 0.2.1
+-----------------------------------
+
+Bug fixes
+
+- In version 0.2.0, parameters set in record mapping sections 
+  at higher scopes were not visible in lower scopes. This has
+  been fixed.
+
+Changes
+
+- First, note that existing resources scripts should continue
+  to work with this version, but going forward, the
+  following changes should be made.
+  
+  - The px:processDocument element, if used, should be omitted.
+    In the ServingXML examples, it was only used
+    in the "fragment" example, where it enclosed a px:transform
+    element.  The px:transform element can stand without it.
+  - A px:processRecords element with an enclosed px:recordWriter
+    element should be renamed to px:writeRecords; a 
+    px:processRecords element without a writer should be left
+    the same.  
+    
+  These changes are necessary to achieve consistency between
+  the XML pipeline and the record pipeline components of the
+  framework - see the chart at the front of the ServingXML 
+  Element Reference.  Also
+  
+  - A sequence of px:innerGroup elements should now be enclosed 
+    in a px:chooseGroup element.  See the revised hot2 example,
+    and also the "Converting BNF like flat files to XML" section
+    of the on-line examples.  Strictly speaking, multiple inner
+    groups only work anyway if at most one tests as active per 
+    record, and the choose group element makes that explicit,
+    as well as improving efficiency. 
+  
+Enhancements
+
+- In inverse record mappings from XML to flat files, 
+  px:fragmentFieldMap elements can now contain px:string 
+  elements.
+- The px:recordMapping element is now optional in a
+  px:recordContent element.  If omitted, automatic mapping
+  rules are applied.  See the section "Automatic record mappings"
+  in the on-line examples.  It is also possible to mix
+  automatic and explicit mappings.
+- This release contains an example showing how to convert
+  BNF like flat files to XML.  It uses the new elements
+  px:chooseGroup and px:whitespaceFieldDelimiter, 
+  an optional new attribute groupOnly in the px:startGroup
+  and px:endGroup elements, and an optional new attribute
+  trimLeading in the px:flatFile element.
+  
+Release Notes for ServingXML 0.2.0
+-----------------------------------
+  
+Fixes
+  
+- This version has been tested successfully with three JAXP 
+  transformers - Saxon 6.5.3 (included in the distribution), 
+  xalan 1.2.6, and Saxon 8.4 (implements XSLT 2.)  Note that
+  earlier versions do not work with Saxon 8.4.  See the
+  "Getting Started" link for information about configuring
+  different transformers.
+  
+- Error listeners have been added to transformers to redirect
+  error messages to standard logging.
+
+Changes to framework
+
+- Some changes in the source will affect embedded apps, see the 
+  "Embed" link of the on-line documentation.
+  
+- In custom Java record filters that extend AbstractRecordFilter, what
+  was previously written as
+  
+    getRecordWriter().writeRecord(context,parameters, record);
+  
+  needs to be rewritten as
+
+    //super.writeRecord(context,parameters, record);
+    
+  See the "hot1" example in the on-line Examples link.
+  
+- The px:fileSource and px:fileSink elements now resolves relative path 
+  names relative to the resources script base url (defaults to the 
+  location of the resources script) in the same way as the 
+  px:urlSource element, provided that the protocol name of the base 
+  url is "file" (if it isn't, absolute paths should be used.)
+  
+- The px:directoryReader element also now resolves relative directory
+  paths relative to the resources script base url.
+
+Renamed elements (the old names have been deprecated but still work)
+
+- The configuration component px:jaxpConfiguration has been renamed 
+  to px:transformerSettings.
+
+- The service component px:currentRecordFilter has been renamed to 
+  px:subtaskRecordFilter.
+
+- The service component px:fragmentFilter has been renamed to 
+  px:subtaskFilter.
+  
+Enhanced elements
+
+- px:fieldElementMap and px:fieldAttributeMap can now have px:string
+  type elements (px:toString, px:convertDate, px:replace) as child 
+  elements.  This allows regular expressions, date formatting, string
+  concatenation, etc. to be used in field mapping.  See the "trades"
+  and the "ars" examples in the on-line guide.
+  
+- The attribue "searchFor" has been added as an alternative to "match" in 
+  the px:replace element.  See the "ars" example for a demonstration
+  of removing commas from field values.
+  
+- Many of the restrictions formerly found in the record mapping 
+  sections of resource scripts have been lifted.  Record mappings 
+  may now contain any number of literal sibling elements and 
+  px:onRecord can now have any number of literal and px:fieldElementMap 
+  child elements. 
+
+New elements
+
+- px:convertDate has been added to support parsing and formatting dates 
+  according to the JDK SimpleDateFormat format strings.  See the "trades" 
+  example for how to convert separate date and time fields to an ISO 8601 
+  date.
+  
+- px:date has been added to support inserting a formatted current date 
+  into XML output, see the "ars" example.
+  
+Documentation
+
+- An index has been added to the Examples.
+  
+  
+Release Notes for ServingXML 0.1.9
+-----------------------------------
+
+Withdrawn
+
+Release Notes for ServingXML 0.1.8
+-----------------------------------
+
+Changes
+
+- Previously, if a field delimiter for a px:delimitedField was not 
+  specified in the px:flatFileRecordType or with the field itself,
+  it defaulted to a comma.  This is no longer the case.  Currently,
+  if not specified, the field is terminated when a record delimiter
+  is encountered.
+  
+- This release contains substantial enhancements for XML to flat
+  file conversion.  The old px:pathRecordMap and px:pathFieldMap
+  have been dropped and replaced by px:documentRecordMap and
+  px:fragmentFieldMap. px:fragmentFieldMap supports mapping 
+  document fragments to fields using full XPath expressions.
+  Mapping documents with multiple occurances of an element to
+  separate fields or subfields in a flat file is now supported.  
+  See the section "Converting XML to flat files" in the on-line
+  Examples.
+  
+- The px:restrictField element must now be enclosed in a 
+  px:restrictRecordFilter element.  See the "books directory" 
+  sample in the on-line Examples.
+  
+- px:documentFragmentFilter has been renamed to px:fragmentFilter
+  (but the old name will still work.)
+  
+- px:expirySettings has been renamed to px:expiryOptions
+  (unlikely to affect anybody here.)
+  
+Enhancements
+
+- The px:recordDelimiter element now permits a continuation 
+  attribute to support breaking records over multiple lines.
+  See the section "Converting Java properties files to XML"
+  in the on-line Examples.
+  
+- Parameter substitution expressions can now contain indexed
+  parameter and field values.  See the section "Transforming 
+  a Java properties file with key subfield delimiters" in the
+  on-line examples.
+  
+- A px:cachedContent element has been added.
+
+- The px:innerGroup and px:outerGroup elements no longer require
+  a px:endGroup child element, if omitted, it defaults to the
+  inverse of the px:startGroup element.  See the new CONV
+  sample in the on-line Examples.
+
+  
+Release Notes for ServingXML 0.1.7
+-----------------------------------
+
+Changes to start-up configuration configuration
+
+- The start-up configuration process now uses the same IoC framework
+  as the resources script.  There is no longer any real difference
+  between the configuration file (presentingxml.xml) and the 
+  resources scripts, apart from the fact that the configuration file
+  is loaded first.  Both can contain the same configuration and
+  service elements, and both get loaded by the IoC container into
+  the same resource container.  The configuration file just provides
+  a convenient place to declare system wide resources, such as JAXP
+  configurations and perhaps JDBC connection pools.
+  
+- The location of configuration file can now be specified on the 
+  command line with the -c option.  If it is not specified, the 
+  app driver will look in the classpath for a file called 
+  presentingxml.xml, as before.
+  
+New features
+
+- Presenting XML now supports filters that extract document 
+  fragments and perform serialization or other tasks on those 
+  fragments.  See the discussion in the "Document fragments"
+  section of the "Presenting XML Pipeline" link, as well as
+  the "fragment" example in the SAX pipeline section of the 
+  Examples link.  Thanks to Pierre-Alexandre Losson for
+  suggesting this feature and contributing the example.
+  
+Changes
+
+-  The fop:fopSerializer and px:customSerializer elements
+   have been dropped, use the fop:foEmitter and 
+   px:customEmitter elements instead.
+   
+-  The px:serialize element should no longer have 
+   px:streamSink and px:outputProperty child elements,
+   these should appear inside a child emitter element 
+   instead.  The old way will still work, though. 
+   
+A number of elements have been renamed, but the old names
+will still work.  These are
+
+-  px:saxParser has been renamed to px:saxReader
+-  px:customProperty has been renamed to px:property      
+-  px:taskRecordFilter has been renamed to px:currentRecordFilter
+-  px:removeEmptyElements has been renamed to
+   px:removeEmptyElementFilter
+   
+  
+Release Notes for ServingXML 0.1.6
+-----------------------------------
+
+Changes
+
+A number of elements have been changed - see the new Appendix A
+"Deprecated Elements and Attributes" in the on-line element reference.
+Note that with two exceptions - px:readerWriterRecordFilter 
+and px:mailOutput - the old versions of the elements will still work.
+
+- px:readerWriterRecordFilter has been removed from the distribution.
+  It is replaced by px:taskRecordFilter (see below.)
+
+- px:streamContent has been renamed to px:document
+- px:customXmlFilter has been renamed back to px:saxFilter
+- px:streamOutput has been changed to px:serialize, px:recordOutput
+  to px:processRecords, and px:mailOutput to px:sendMail.  The
+  abstract type for these elements has been changed from px:output
+  to px:task.
+- px:flatFileLayout has been renamed to px:flatFile  
+- px:emptyContent has been renamed to px:emptyDocument  
+- px:suppressEmptyElementFilter has been renamed to 
+  px:removeEmptyElements
+- px:restrictFieldFilter has been renamed to px:restrictField  
+- The attribute "className" (was "handlerClass") has been renamed 
+  to "class" in the customization elements (px:saxFilter, 
+  px:customRecordFilter, px:customSerializer, 
+  px:customJdbcConnectionPool,px:dynamicContent) 
+  
+- The concrete px:jdbcConnectionPool has been renamed to
+  px:sqlConnectionPool, px:jdbcConnectionPool is now abstract.
+  
+- Elements from extension packages, e.g. px:msvFilter, have been
+  moved to their own namespaces, see the examples, but the old way
+  will work too.  Going forward, all extensions will be assigned
+  to their owm namespace.
+  
+- There are some changes to packaging of classes that will
+  affect users of the embedding API.  See the Embed link.
+  The classes StandardAppContext and StandardServiceContext 
+  in the package com.presentingxml.app have been
+  renamed to DefaultAppContext and DefaultServiceContext.
+
+Enhancements
+
+- Added an optional directory attribute to px:fileSource and 
+  px:fileSink.
+- Added a px:taskRecordFilter allowing all tasks - serializing
+  XML content, procesing records, and sending mail - to be
+  performed repeatedly within a record filter, see the 
+  "Processing directories of files" section of the on-line
+  Examples.
+- Added a px:saxParser element. The px:document element
+  (was px:streamContent) now allows, in addition to a 
+  px:streamSource, any px:saxSource element (such as a 
+  px:saxParser.)  See the example "Streaming dynamically 
+  generated SAX events through a pipeline" in the on-line
+  Examples link.
+- A model extension package called presentingxmlx has been added
+  to encourage users to write their own element extensions.
+  Some documentation on writing extensions has been added
+  in the "Pipeline Language" link.
+  
+    
+Release Notes for ServingXML 0.1.5
+-----------------------------------
+
+Enhancements
+
+- px:streamOutput now allows px:outputProperty child elements.  
+  Output properties set at this point will override output
+  properties picked up earlier in the pipeline, such as in 
+  XSLT stylesheets.
+- A px:stringSource stream source element has been added, 
+  which accepts any child element that support the px:string
+  interface.  
+- px:streamOutput, px:recordOutput, and px:mailOutput now
+  support the px:string interface.  In particular, this means
+  that the output of a pipeline may be used as the input to
+  another pipeline via a px:stringSource.  The output of a
+  pipeline may also now be used as the content of a px:parameter.
+- A px:suppressEmptyElementFilter element has been added,
+  see the "multi-valued" flat file conversion example in the 
+  Examples link.
+- A px:customJdbcConnectionPool element has been added to
+  support custom JDBC connection pools.  An example is
+  provided with the SQL examples in the distribution.
+- A px:ftpDirectoryReader has been added.  See the example
+  in the Examples link. 
+- The px:ftpSource and px:ftpSink elements have been rewritten
+  to require local files as a conduit.  Please note that these
+  instructions have not been throughly tested.
+
+Changes
+  
+  The px:directoryReader now takes a "directory" attribute
+  rather than a px:fileSource sub-element.
+  
+
+  Two other changes, one to an element name and another to an
+  attribute, have been made for consistency.
+  Note, however, that the old names will still work.
+  
+- px:saxFilter has been renamed to px:customXmlFilter
+- The attribute "handlerClass" in the customization elements
+  (px:customXmlFilter, px:customRecordFilter, px:customSerializer,
+  px:customJdbcConnectionPool,px:dynamicContent) has been
+  renamed to "className" 
+  
+  
+Release Notes for ServingXML 0.1.4
+-----------------------------------
+
+Bug Fixes
+
+- Installing the servingxml software under a directory 
+  path that had a directory name containing a space
+  character didn't work.  This has been fixed.
+  
+- The px:sqlQuery and px:sqlUpdate elements were too 
+  aggresive in stripping out whitespace, resulting in 
+  failed SQL queries for some drivers, including MySQL.  
+  This has been fixed.  
+  (Thanks to Eberhard Iglhaut for reporting and 
+  assisting in debugging these two.)
+  
+- Flat file conversion failed in some resource script 
+  arrangements for non comma delimited files.  This 
+  has been fixed.
+  
+- Output properties set in style sheets, other than 
+  media-type and encoding, were not being propagated 
+  up the pipeline to the serializer.  In particular,
+  the output property "method" was being ignored.
+  Note that method="text" is now supported, but the
+  text produced by the stylesheet must be enclosed 
+  by an outer element, because it is being fed through
+  a SAX pipeline.  The outer element will be removed
+  by the serializer at the end of pipeline.
+  
+
+Changes 
+  A number of elements have been renamed as described below.  
+  Note that the old names will still work.
+
+- px:positionalFieldType and px:delimitedFieldType have 
+  been renamed to px:positionalField and px:delimitedField.
+  The old names will still work, though, as will the older
+  px:field.
+- px:emptyDocument has been renamed to px:emptyContent. 
+  The old name will still work.
+- px:flatFileRecord has been renamed to px:flatFileBody. 
+  The old name will still work.
+  
+- Inverse record mapping, which adapts XML to record streams,
+  has been redone.  See the section "Converting XML to flat
+  files" in the Examples link, as well as the section "Inverse
+  Record Mapping Elements" in the Element Reference link.  
+  The implementation of px:inverseRecordMapping will be greatly 
+  enhanced in future releases, but the current version should 
+  support everything that worked before.   
+- For anyone implementing java RecordFilters, this interface has
+  changed.  The easiest way to now implement a RecordFilter is
+  to extend com.presentingxml.components.recordio.AbstractRecordFilter.
+  See the "hot 1" example in the Examples link.  
+
+
+Enhancements
+- A label attribute has been added to px:positionalField and
+  px:delimitedField.  See the "books" example in the Examples
+  link, where the column headings in the books output file 
+  take the values of the label attributes. 
+- A literal document element in a px:recordMapping section 
+  may now be followed by a px:fieldAttributeMap element,
+  which can be used to map a parameter to a document
+  element attribute.  See the "trades" example in the Examples
+  link.
+  
+New elements
+- px:directoryReader
+- px:readerWriterRecordReader
+- px:replace
+- px:restrictFieldFilter
+
+  See the section "Readers within Readers" in the Pipeline Language Record Streams
+  link, and also the "Processing directories of files" section of the Examples link.
+
+  
+Release Notes for ServingXML 0.1.3
+-----------------------------------
+
+Changes
+
+- The elements px:flatFileContent and px:field (under 
+  px:flatFileRecordType) have been deprecated, they
+  will still work in this version, but should be replaced.
+  px:field should be replaced with px:positionFieldType or
+  px:delimitedFieldType.  The px:flatFileContent element
+  should be replaced with a px:recordContent element (over
+  a px:flatFileReader element.)  See any of the flat file
+  examples in the Examples link, as well as the reference 
+  guide.
+  
+- The px:sqlContent element has been removed, use a 
+  px:recordContent over a px:sqlReader instead.
+  
+- There are some changes to packaging of classes that will
+  affect users of the embedding API.  See the Embed link.
+  Also note that creating a new Record instance now requires
+  a RecordBuilder.  See the "hot 1" example.
+  
+- The flat file and SQL components have been moved out of the
+  extensions and into the core.
+  
+- px:onFault renamed to px:onError
+
+- The default cache settingg in presentingxml.xml has been
+  changed to SimpleCache, which does not use threads.
+  
+Enhancements
+
+- The new px:flatFileTrailer element adds support for
+  flat file trailer records.  Both px:flatFileHeader and
+  px:flatFileTrailer can now have child meta records,
+  including px:flatFileRecordType and px:annotationRecord.
+  This supports producing flat files that have headers and
+  trailers, see "Serializing XML to a positional flat file"
+  in the Examples link.
+  
+- Flat file and SQL record readers and writers have been
+  introduced that allow streams of records read as one type
+  to be written as streams of records of another type.
+  This allows flat file conversions from one layout to
+  another, insertions of flat file records into an RDBMS,
+  update of RDBMS records by running a command line app
+  with parameters, etc.  See "Converting XML to flat files"
+  and "Writing record streams to an RDBMS" in the Examples
+  link.
+  
+- Some error reporting has been improved, in particular, the
+  case in which two resources of the same type have been 
+  given the same name.
+  
+Bug fixes
+
+- The sample console app wasn't properly reading multi-valued
+  parameters with the same name.  This has been fixed.
+  (The "employees" SQL example uses multi-valued 
+  parameters in a dynamically generated SQL statement.)
+  
+  
+Release Notes for ServingXML 0.1.2
+-----------------------------------
+  
+Changes
+
+- The px:sqlQuery element now requires a px:sqlStatement child
+  element to contain the SQL statement (previously the statement
+  was included immediately inside the px:sqlQuery element.)
+- The px:fieldAttributeMap and px:fieldElementMap elements now 
+  permit an optional select attribute.  If present, the value 
+  of the attribute or element is determined by an XPath expression
+  against passed parameters and fields of the current record.
+  These expressions may take advantage of any features of the
+  underlying XSLT transformer, including the ability to call
+  external Java functions.  See the "hot 2" example.
+- The px:fieldElementMap element previously required an expression
+  of the form
+  
+     <px:fieldElementMap field="myField" 
+                         element="{myField}" 
+                         value=""/>
+
+  to produce an element with the name "myField" but no value.  
+  This can now be simplified to
+  
+     <px:fieldElementMap element="{myField}"/>
+
+Enhancements
+
+- px:sqlContent and px:flatFileContent now allow any number
+  of px:recordFilter child elements.  This allows, in 
+  particular, chaining a px:msvRecordFilter and a 
+  px:customRecordFilter.  See the "hot 1" example.
+  
+- px:sqlStatement allows px:choose elements embedded in SQL 
+  statements, so different SQL text may be produced depending 
+  on passed parameters.  See the example "Mapping the results 
+  of an ad hoc SQL query into XML (employees)"
+  
+Release Notes for ServingXML 0.1.1
+-----------------------------------
+Bug fixes:
+
+- Stream input was failing when not associated with a valid 
+  filename or url.  This only affected embedded apps, not 
+  command line apps, and has been fixed.
+  
+Changes:
+
+- The href attribute in px:streamContent, px:flatFileContent,
+  and px:style still works, but has been deprecated.  Use
+  px:urlSource (or px:fileSource) instead, see examples.
+  Default input streams for console apps work as before, 
+  with the -i option, and also now with standard input.
+               
+Enhancements:
+
+- px:streamOutput, px:mailOutput, and px:transfer now accept 
+  px:parameter child elements.
+- px:customRecordFilter element added.
+- px:urlSource, px:fileSource, px:ftpSource elements added.
+  
+  
+Release Notes for ServingXML 0.1.0
+-----------------------------------
+
+There are some changes to the embedding API, see
+the Embed link on the home page.
+
+The px:startGroup and px:endGroup elements, which appear
+in px:innerGroup and px:outerGroup, have been changed to
+support a test expression that is evaluated against the
+previous, current, and next records.  The record attribute
+has been removed.  See the "hot" example in the Examples
+link on the home page, as well as the descriptions of
+px:startGroup and px:endGroup in the on-line guide.
+
+A bug with SQL NULL values in SQL content, which resulted in no
+tags being produced for fields with SQL NULL values, has been
+fixed.
+
+The Enterprise Distributed Technologies Ltd ftp client jar file
+has been added to the distribution as an extension and used
+to implement an px:ftpSink element, which may appear as a 
+child of a px:streamOutput element. See the FTP sink example
+in the Examples link on the home page.
+
+The streanfilter extension has been removed from the distribution.
+  
+Release Notes for ServingXML 0.0.9
+-----------------------------------
+
+There are some minor changes to the embedding API, see
+the Embed link on the home page.
+
+By default, ServingXML now uses JDK 1.4 logging.  
+The default logger is named com.presentingxml.core.system.  
+You can configure it in the standard way through a logging 
+property file.  In addition, you can reset the
+logging level in the presentingxml.xml configuration file.
+If you wish to use an alternative logging framework, such as log4j, 
+you will need to implement a custom logger that implements
+com.presentingxml.core.system.Logger, and set it to be the 
+custom logger in the px:logger section of the 
+presentingxml.xml configuration file.
+
+The jakarta-oro jar file has been removed from the distribution,
+and the default pattern matching adaptor has been rewritten with 
+the JDK 1.4 pattern matcher.  The xerces jar files have been removed
+from the distribution, and the ones bundled with JDK 1.4 are used
+by default.
+
+There are some changes to the format of the presentingxml.xml
+configuration file.  See the appendix in the on-line guide, 
+System Configuration Reference.
+  
+Release Notes for ServingXML 0.0.8
+-----------------------------------
+
+Embedding:
+
+This release documents what is required to embed ServingXML in a 
+Java application, see the Embed link on the home web page.
+
+Bugs fixed:
+
+A bug has been fixed for zero length value attributes in
+px:fieldElementMap (affected the "hot" sample.)
+
+  
+Release Notes for ServingXML 0.0.7
+-----------------------------------
+
+Two new elements have been introduced to support different kinds
+of grouping, px:innerGroup and px:outerGroup.  Both elements use 
+px:startGroup and px:endGroup to define the beginning and end of a 
+group through XPath boolean expressions applied to records.  They 
+differ in that px:innerGroup will never allow any descendent
+elements to be produced unless a group is recognized at its level, 
+whereas a px:outerGroup will only suppress content between this 
+element and the next succeeding grouping element. 
+
+See the "hot" example in the examples link on the home page.
+  
+Release Notes for ServingXML 0.0.6
+-----------------------------------
+
+The organization of the distribution has changed, the build command
+now builds a deployment package under the root of the distribution,
+including all binaries, configuration files, and runnable samples. 
+Refer to the Readme.html file.
+
+Changes to element names:
+
+A number of elements have been renamed, the old names are still
+supported, and should still work, but they are no longer documented,
+and may be dropped in the future.
+
+
+- px:serialize should be renamed to px:streamOutput
+  (this one will affect everybody)
+- px:sendMail should be renamed to px:mailOutput
+- px:systemContent should be renamed to px:streamContent
+- The 0-based "offset" attribute in the flat file px:field element 
+  should be replaced with the 1-based "start" attribute.
+- px:defineParameter and px:useParameter should be renamed to px:parameter.  
+- px:valueDelimiter should be renamed to px:subfieldDelimiter
+
+Bugs fixed:
+- Problem with px:groupBy fixed.  The fields attribute now requires a 
+  complete list of comma separated field names, see flatfile samples.
+- The px:fieldAttributeMap element now works correctly when placed inside a 
+  px:fieldElementMap element.  
+- A number of resource management issues were encountered 
+  by people using this software embedded in another app.  These issues, 
+  including closing input and output streams on exit from main, have been 
+  addressed. 
+  
+Enhancements:
+- The console app now supports a -i option to supply a default input file
+  which will be used by a flat file or stream content source if a
+  file location has not been explicitly set with an href attribute,
+  see the "books" and "hot" examples in the distribution.
+- The href attribute in px:style, px:streamContent, and px:flatFileContent
+  now supports parameters, which may be passed on the command line,
+  see the "plans" example in the distribution.
+- px:groupBy now supports a px:customGroupRecognizer child element, which
+  extends the possibility of meeting custom grouping requirements, see the
+  "hot" example in the Examples section of the web page, as well as the 
+  hot example in the flatfile extension of the distribution.
+- Record-based content sources including px:flatFileContent and px:sqlContent
+  now allow a px:msvRecordFilter child element, which allows validation
+  of individual records with XSD schemas, and discards of badly formed
+  individual records.  See the "countries" example for a simple example,
+  and the "hot" example for an example with variant record types.
+  
+New examples:
+
+- An example of converting dynamic content, i.e. start/end tags produced in 
+  custom Java code, to XML.
+- An example of converting an XML file to PDF using the Apache fop processor.
+    
+Release Notes for ServingXML 0.0.5
+-----------------------------------
+
+- This release adds support for flat files that 
+  have multivalued fields with values separated by 
+  subfield delimiters.  See "Converting a flat file 
+  with multi-valued fields to XML" in the examples 
+  section of the on-line documentation.  
+
+Release Notes for ServingXML 0.0.4
+-----------------------------------
+
+- To facilitate a migration path back to Presenting 
+XML, all elements have been moved from the 
+http://www.servingxml.com/ServingXML namespace to 
+the http://www.presentingxml.com/PresentingXML 
+namespace, and the jar files have been renamed from 
+servingxml.xxx to presentingxml.xxx (refer to any 
+sample.) 
+
+- Nested px:groupBy instructions are now 
+supported in px:recordMapping instruction (see 
+timesheets flatfile sample.) 
+
+- px:inverseRecordMapping instruction added (for 
+mapping XML to flat file records) 
+
+- In the instruction sx:jdbcConnectionPool, the 
+databaseURL attribute has been renamed to 
+databaseUrl (for consistency) 
+
+- Instruction sx:cachingOptions renamed to 
+sx:cacheOptions 
+
+- In instructions px:dynamicContent, 
+px:customSerializer, and px:saxFilter, the 
+className attribute has been renamed to 
+handlerClass.  
+  
+Release Notes for ServingXML 0.0.3
+-----------------------------------
+
+Some renaming of resouces instructions: sx:process 
+renamed to sx:service, sx:recordTypeMapping renamed 
+to sx:flatFileRecord, and the lines attribute of 
+sx:flatFileHeader renamed to lineCount.  Also, 
+sx:flatFileRecord (formerly sx:recordTypeMapping) 
+is now a mandatory child of the sx:flatFlatLayout 
+instruction.  See the Flat File Extension section 
+of the Guide in the docs/guide directory, as well 
+as the on-line examples (also in docs/examples.) An 
+sx:groupBy instruction has been added as an 
+optional descendant of sx:recordMapping to support 
+converting SQL or flat file records to XML with 
+grouping level support, see "Converting a flat file 
+to XML with grouping levels" in the on-line 
+examples.  
+  
+Release Notes for ServingXML 0.0.2
+-----------------------------------
+
+Jar files for xerces, saxon, sun msv, and fop 
+updated to newer versions (see readme.txt files in 
+tools and extensions lib directories.) 
+
+Added support for performing flat file to XML 
+conversion for files that have varying record 
+types (see trades example described in samples 
+link.) Special thanks to Shaun Woodrow for 
+providing the use case and contributing to the 
+design.  
+
+Release Notes for ServingXML 0.0.1
+-----------------------------------
+
+This is the first release of files for Serving 
+XML.  This release is derived from another Source 
+Forge project, Presenting XML (presentingxml).  
+The main refactorings were to remove everything 
+related to servlet web presentation and, more 
+generally, everything to do with request matching 
+to content services.  The component model has been 
+simplified, and there has been some renaming and 
+reorganization of source files.  It is anticipated 
+that the servingxml framework will be incorporated 
+back into presentingxml at some point.  
+
+All of the console app samples from presentingxml 
+have been preserved, and all seem to work.  
+
+
+ 
+
+

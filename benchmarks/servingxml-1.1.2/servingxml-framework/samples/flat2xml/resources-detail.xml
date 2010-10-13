@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="detail">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="detail"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="detail">
+    <sx:flatFileReader>
+      <sx:flatFile ref="detailFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="FlatToXml"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="detailFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="base">
+        <sx:delimitedField name="recordtype">
+          <sx:fieldDelimiter value=";"/>
+        </sx:delimitedField>
+        <sx:delimitedField name="detail">
+          <sx:fieldDelimiter value="."/>
+        </sx:delimitedField>
+        <sx:delimitedField name="recordsoort">
+          <sx:fieldDelimiter value="."/>
+        </sx:delimitedField>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="FlatToXml">
+    <data>
+      <sx:outerGroup startTest="sx:current//recordtype='2'" 
+                                 endTest="sx:previous//recordtype='4'">
+        <content>
+          <sx:innerGroup startTest="sx:current//recordsoort='2'" 
+                                     endTest="sx:previous//recordsoort!='2'">
+            <contentHeader>
+              <sx:onRecord>
+                <sx:fieldElementMap element="detail" field="detail"/>
+              </sx:onRecord>
+            </contentHeader>
+          </sx:innerGroup>
+        </content>
+      </sx:outerGroup>
+    </data>
+  </sx:recordMapping>
+
+</sx:resources>
+

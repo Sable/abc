@@ -1,0 +1,59 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Record Pipeline: Record Structure</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="recordstreams"></a>Record Pipeline: Record Structure</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Daniel</span> <span class="surname">Parker</span></h3></div></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e7"></a></span></dt><dt><span class="section"><a href="#d4e19">The Record</a></span></dt></dl></div>
+  
+  <div class="section" lang="en"><div class="titlepage"></div>
+    <p> This article describes the structure of the records that flow through 
+      a ServingXML record stream.
+</p><div class="itemizedlist"><ul type="disc"><li><span>
+<a class="ulink" href="servingxml-1.html" target="_top">ServingXML: Pipeline Language</a>
+</span></li><li><span>
+<a class="ulink" href="flat-file-to-xml.html" target="_top">Record Pipelines: Flat File to XML</a>
+</span></li><li><span>
+<a class="ulink" href="servingxml-3.html" target="_top">ServingXML: Inversion of Control 
+  Container</a>
+</span></li></ul></div><p>
+This article discusses the structure of records.
+    </p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e19"></a>The Record</h2></div></div></div>
+    
+    <p>
+ServingXML supports the notion of records that have fields, possibly multi-valued,
+and nested subrecords, possibly repeating.
+    </p>
+    <p>
+A record may be represented in BNF as follows:
+      </p><pre class="programlisting">
+
+Record ::= name (Field+) (Record*) |
+  name (Field*) (Record+)
+
+Field:= name (value*)
+      </pre><p>
+    </p>
+    <p>Here is a sample XML representation of a record.
+    </p>
+    <pre class="programlisting">
+      
+&lt;Employee&gt;
+  &lt;Employee-No&gt;0001&lt;/Employee-No&gt;
+  &lt;Employee-Name&gt;Matthew&lt;/Employee-Name&gt;
+  &lt;Children&gt;Joe&lt;/Children&gt;
+  &lt;Children&gt;Julia&lt;/Children&gt;
+  &lt;Children&gt;Dave&lt;/Children&gt;
+&lt;/Employee&gt;
+
+    </pre>
+    <p>The record is of type "Employee" and has three fields named
+      <code class="sgmltag-element">Employee-No</code>
+,
+      <code class="sgmltag-element">Employee-Name</code>
+and
+      <code class="sgmltag-element">Children</code>
+.
+      <code class="sgmltag-element">Children</code>
+is a multivalued field.
+    </p>
+  </div>
+</div></body></html>

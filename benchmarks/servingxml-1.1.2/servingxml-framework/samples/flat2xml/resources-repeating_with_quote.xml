@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  <sx:service id="myservice">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="myContent"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  <sx:recordContent id="myContent">
+    <sx:flatFileReader>
+      <sx:flatFile ref="myCSVFile" />
+    </sx:flatFileReader>
+  </sx:recordContent>
+  <sx:flatFile id="myCSVFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="record">
+        <sx:fieldDelimiter value="," />
+        <sx:repeatDelimiter value="," />
+        <sx:delimitedField name="zipCode" />
+        <sx:delimitedField name="mailId" />
+        <sx:delimitedField name="number" />
+        <sx:repeatingGroup name="fields">
+          <sx:flatRecordType name="subRecord">
+            <sx:fieldDelimiter value="," />
+            <sx:delimitedField name="field" />
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+</sx:resources>

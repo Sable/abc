@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<inv:clients xmlns:inv="http://www.telio.be/ns/2002/invoice">
+	<inv:client id="test">
+		<inv:company>Test</inv:company>
+		<inv:contact>Mr. John Denver</inv:contact>
+		<inv:address>Address 1</inv:address>
+		<inv:address>Address 2</inv:address>
+		<inv:vat>BE 474.190.339</inv:vat>
+	</inv:client>
+</inv:clients>

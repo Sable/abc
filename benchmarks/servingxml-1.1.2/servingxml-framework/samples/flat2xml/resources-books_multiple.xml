@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                     xmlns:myns="http://mycompany.com/mynames/" >
+
+  <sx:service id="books">
+    <sx:transform>
+      <sx:content ref="books"/>
+      <sx:processSubtree path="/myns:books/myns:book">
+        <sx:parameter name="isbn" select="myns:isbn"/>
+        <sx:serialize>
+          <sx:xsltSerializer> 
+            <sx:fileSink directory="output" file="book-{$isbn}.xml"/> 
+          </sx:xsltSerializer> 
+        </sx:serialize>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+  
+  <!--
+  This sx:flatFileReader element does not specify a stream source, so 
+  the source will default to the file specified with the -i option on the command line.
+  -->
+  <sx:recordContent id="books">
+    <sx:flatFileReader>
+      <sx:flatFile ref="booksFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="booksToXmlMapping"/>
+  </sx:recordContent>
+  
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+    <sx:positionalField name="isbn" label="ISBN" start="73" width="10"/>
+  </sx:flatRecordType>
+
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books xmlns:myns="http://mycompany.com/mynames/"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="url2">
+      <sx:onRecord>
+        <myns:book>
+          <sx:fieldAttributeMap field="category" attribute="categoryCode"/>
+          <sx:fieldElementMap field="title" element="myns:title"/>
+          <sx:fieldElementMap field="author" element="myns:author"/>
+          <sx:fieldElementMap field="price" element="myns:price"/>
+          <sx:fieldElementMap field="isbn" element="myns:isbn"/>
+        </myns:book>
+      </sx:onRecord>
+    </myns:books>
+  </sx:recordMapping>
+
+</sx:resources>
+

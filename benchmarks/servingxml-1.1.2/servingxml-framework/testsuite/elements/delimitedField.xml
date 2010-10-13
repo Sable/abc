@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/delimitedField/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:read-delimited-field"/> 
+    <sx:task ref="t:write-delimited-field"/>
+  </sx:service>
+
+  <sx:transform id="t:read-delimited-field">
+    <sx:assert test="fn:deep-equal(fn:document('elements/delimitedField/file-content'),fn:document('elements/delimitedField/target-document'))">
+test-delimited-field:  Output
+      <sx:content ref="t:file-content"/>
+      does not match expected output
+      <sx:content ref="t:target-document"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:write-delimited-field">
+    <sx:parameter name="expected" value="aaa,bbb!"/>
+    <sx:parameter name="foo"><sx:recordStream ref="t:file-output"/></sx:parameter>
+    <sx:assert test="$foo = $expected"> test-delimited-field:  Output
+      <sx:toString value="[{$foo}]"/> does not match expected output
+      <sx:toString value="[{$expected}]"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:flatFile id="t:delimited-file" trimWithinQuotes="true">
+    <sx:recordDelimiter value="!"/>
+    <sx:fieldDelimiter value=","/>
+    <sx:flatFileBody>
+      <sx:flatRecordType>
+        <sx:delimitedField name="value1"/>
+        <sx:delimitedField name="value2"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordContent id="t:file-content">
+    <sx:flatFileReader>
+      <sx:inlineSource> aaa ," bbb "
+      </sx:inlineSource>
+      <sx:flatFile ref="t:delimited-file"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:recordStream id="t:file-output">
+    <sx:flatFileReader>
+      <sx:inlineSource> aaa ," bbb "
+      </sx:inlineSource>
+      <sx:flatFile ref="t:delimited-file"/>
+    </sx:flatFileReader>
+    <sx:flatFileWriter>
+      <sx:recordDelimiter value="!"/>
+      <sx:flatFile ref="t:delimited-file"/>
+    </sx:flatFileWriter>
+  </sx:recordStream>
+
+  <sx:document id="t:target-document">
+    <document><record><value1>aaa</value1><value2>bbb</value2></record></document>
+  </sx:document>
+</sx:resources>
+

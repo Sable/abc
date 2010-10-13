@@ -1,0 +1,2 @@
+ProjectID^Project_Name^Description^PLAN_IT_RESC_DAYS^PLAN_IT_COST^ANNUAL_EBIT^ACTUAL_NPV^ACTUAL_IRR 
+1234-00-0005^XOG new project insert^This is to test and verify the XOG'ing of new Project data from the ARS database.^430^59,627^100,351^3^9.2 

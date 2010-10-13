@@ -1,0 +1,177 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <!-- Contributed by Derek Adams -->
+
+  <sx:service id="unmarshaller"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="ebaf-data"/>
+      </sx:transform>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+    </sx:serialize>
+  </sx:service>
+  
+  <!-- Reads from the input stream and parses the EBAF data. Outputs to XML -->
+  <sx:recordContent id="ebaf-data">
+    <sx:flatFileReader>
+      <sx:defaultStreamSource encoding="UTF-8"/>
+      <sx:flatFile ref="ebaf-parse"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="ebaf2xml"/>
+  </sx:recordContent>
+
+  <!-- Parses an EBAF record based on the structure code -->
+  <sx:flatFile id="ebaf-parse" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:packedDecimalField name="STRUCTURECODE" start="6" digitCount="5"/>
+        <sx:when test="STRUCTURECODE='625' or STRUCTURECODE='40625'">
+          <sx:flatRecordType ref="EBAF-0625"/>
+        </sx:when>
+        <sx:when test="STRUCTURECODE='360' or STRUCTURECODE='40360'">
+          <sx:flatRecordType ref="EBAF-0360"/>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType ref="DEFAULT"/>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+  
+  <!-- Default used if no custom record definition -->
+  <sx:flatRecordType id="DEFAULT" name="DEFAULT">
+    <sx:binaryField name="RDW" start="1" width="2"/>
+    <sx:binaryField name="FILLER" width="2"/>
+    <sx:binaryField name="HEX_ID" width="1"/>
+    <sx:packedDecimalField name="STRUCTURE_CODE" digitCount="5"/>
+    <sx:packedDecimalField name="CALL_TYPE" digitCount="3"/>
+    <sx:binaryField name="UNMAPPED" width="1000"/>
+  </sx:flatRecordType>
+  
+  <!-- EBAF 0360 record -->
+  <sx:flatRecordType id="EBAF-0360" name="EBAF-0360">
+    <sx:binaryField name="RDW" start="1" width="2"/>
+    <sx:binaryField name="FILLER" width="2"/>
+    <sx:binaryField name="HEX_ID" width="1"/>
+    <sx:packedDecimalField name="STRUCTURE_CODE" digitCount="5"/>
+    <sx:packedDecimalField name="CALL_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="SENSOR_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="SENSOR_ID" digitCount="7"/>
+    <sx:packedDecimalField name="RECORDING_OFFICE_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="RECORDING_OFFICE_ID" digitCount="7"/>
+    <sx:binaryField name="DATE" width="3"/>
+    <sx:binaryField name="TIMING_IND" width="3"/>
+    <sx:binaryField name="STUDY_IND" width="4"/>
+    <sx:binaryField name="ANSWER_IND" width="1"/>
+    <sx:binaryField name="SERV_OBS_TRAF_SAMP" width="1"/>
+    <sx:binaryField name="OPERATOR_ACTION" width="1"/>
+    <sx:binaryField name="SERVICE_FEATURE" width="2"/>
+    <sx:binaryField name="ORIGINATING_NPA" width="2"/>
+    <sx:binaryField name="ORIGINATING_NUMBER" width="4"/>
+    <sx:binaryField name="OVERSEAS_IND" width="2"/>
+    <sx:binaryField name="DIALED_NPA" width="4"/>
+    <sx:binaryField name="DIALED_NUMBER" width="1"/>
+    <sx:binaryField name="DEST_OVERSEAS_IND" width="3"/>
+    <sx:binaryField name="DEST_NPA" width="4"/>
+    <sx:binaryField name="DEST_NUMBER" width="4"/>
+    <sx:binaryField name="ANSWER_TIME" width="5"/>
+    <sx:binaryField name="ELAPSED_TIME" width="6"/>
+    <sx:binaryField name="ICINC_PREFIX" width="4"/>
+    <sx:binaryField name="CARRIER_CONNECT_DATE" width="3"/>
+    <sx:binaryField name="CARRIER_CONNECT_TIME" width="3"/>
+    <sx:binaryField name="CARRIER_ELAPSED_TIME" width="3"/>
+    <sx:binaryField name="ICINC_CALL_EVT_STATUS" width="3"/>
+    <sx:binaryField name="TRUNK_GROUP_NUMBER" width="3"/>
+    <sx:binaryField name="ROUTING_IND" width="1"/>
+    <sx:binaryField name="DIALING_IND" width="1"/>
+    <sx:binaryField name="ANI_IND" width="1"/>
+    <sx:binaryField name="CUST_RAO_NUMBER" width="3"/>
+    <sx:binaryField name="ORIGINATING_LATA" width="3"/>
+    <sx:repeatingGroup name="MODULES">
+      <sx:flatRecordTypeChoice ref="modules-parse"/>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+  
+  <!-- EBAF 0625 record -->
+  <sx:flatRecordType id="EBAF-0625" name="EBAF-0625">
+    <sx:binaryField name="RDW" start="1" width="2"/>
+    <sx:binaryField name="FILLER" width="2"/>
+    <sx:binaryField name="HEX_ID" width="1"/>
+    <sx:packedDecimalField name="STRUCTURE_CODE" digitCount="5"/>
+    <sx:packedDecimalField name="CALL_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="SENSOR_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="SENSOR_ID" digitCount="7"/>
+    <sx:packedDecimalField name="RECORDING_OFFICE_TYPE" digitCount="3"/>
+    <sx:packedDecimalField name="RECORDING_OFFICE_ID" digitCount="7"/>
+    <sx:binaryField name="DATE" width="3"/>
+    <sx:binaryField name="TIMING_IND" width="3"/>
+    <sx:binaryField name="STUDY_IND" width="4"/>
+    <sx:binaryField name="ANSWER_IND" width="1"/>
+    <sx:binaryField name="SERVOBSETRAFSAMP" width="1"/>
+    <sx:binaryField name="OPERATORACT" width="1"/>
+    <sx:binaryField name="SERVICEFEAT" width="2"/>
+    <sx:binaryField name="ORIGNPA" width="2"/>
+    <sx:binaryField name="ORIGNUM" width="4"/>
+    <sx:binaryField name="OVERSEASIND" width="1"/>
+    <sx:binaryField name="TERMNPA" width="3"/>
+    <sx:binaryField name="TERMNUM" width="4"/>
+    <sx:binaryField name="CONECTTIME" width="4"/>
+    <sx:binaryField name="ELAPSEDTIME" width="5"/>
+    <sx:binaryField name="ICINCPREFEX" width="3"/>
+    <sx:binaryField name="CARRIERCONNECTDATE" width="3"/>
+    <sx:binaryField name="CARRIERCONNECTTIME" width="4"/>
+    <sx:binaryField name="ELAPSEDTIMEFROMCC" width="5"/>
+    <sx:binaryField name="ICINCCALLEVENTSTA" width="2"/>
+    <sx:binaryField name="TRUNKGROUPNUMBER" width="3"/>
+    <sx:binaryField name="ROUTINGINDICATOR" width="1"/>
+    <sx:binaryField name="DIALINGINDICATOR" width="1"/>
+    <sx:binaryField name="ANIINDICATOR" width="1"/>
+    <sx:repeatingGroup name="MODULES">
+      <sx:flatRecordTypeChoice ref="modules-parse"/>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+  
+  <!-- Parse the modules for a record -->
+  <sx:flatRecordTypeChoice id="modules-parse">
+    <sx:packedDecimalField name="MODULE_CODE" digitCount="3"/>
+    <sx:when test="MODULE_CODE='720'">
+      <sx:flatRecordType ref="MOD-0720"/>
+    </sx:when>
+    <sx:otherwise>
+      <sx:flatRecordType ref="MOD-UNKNOWN"/>
+    </sx:otherwise>
+  </sx:flatRecordTypeChoice>
+  
+  <!-- Unknown Module -->
+  <sx:flatRecordType id="MOD-UNKNOWN" name="MOD-UNKNOWN">
+    <sx:packedDecimalField name="MODULE_CODE" digitCount="3"/>
+    <sx:binaryField name="DATA" width="1000"/>
+  </sx:flatRecordType>
+  
+  <!-- Module 0720 -->
+  <sx:flatRecordType id="MOD-0720" name="MOD-0720">
+    <sx:packedDecimalField name="MODULE_CODE" digitCount="3"/>
+    <sx:binaryField name="PARTYIDENTIFIER" width="2"/>
+    <sx:binaryField name="LRN" width="6"/>
+    <sx:binaryField name="SERV_PROV_ID" width="5"/>
+    <sx:binaryField name="LOCATION" width="8"/>
+    <sx:binaryField name="SUPPORTING_INFO" width="4"/>
+  </sx:flatRecordType>
+   
+  <!-- Convert records to XML -->
+  <sx:recordMapping id="ebaf2xml">
+    <ebaf>
+      <sx:onRecord>
+        <sx:defaultFieldElementMap fields="*"/>
+        <sx:subrecordMapping repeatingGroup="MODULES">
+          <sx:onRecord>
+            <sx:defaultFieldElementMap fields="*"/>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+      </sx:onRecord>
+    </ebaf>
+  </sx:recordMapping>
+  
+</sx:resources>

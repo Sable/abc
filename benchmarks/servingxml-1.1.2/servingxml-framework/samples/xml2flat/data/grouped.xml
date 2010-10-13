@@ -1,0 +1,53 @@
+<RT_STLMT>
+  <OPERATING_DATE>03/04/2003</OPERATING_DATE>
+  <SETTLEMENT_CODE>S14</SETTLEMENT_CODE>
+  <LINE_ITEMS>
+    <CHG_TYP>
+      <CHG_TYP_ID>RT_ADMIN1</CHG_TYP_ID>
+      <CHG_TYP_NM>Market Administration Amount1</CHG_TYP_NM>
+      <TOTAL>
+        <AMT>288.81</AMT>
+        <INT>
+          <INT_NUM>1</INT_NUM>
+          <VAL>54.4</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>2</INT_NUM>
+          <VAL>31.16</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>3</INT_NUM>
+          <VAL>81.48</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>4</INT_NUM>
+          <VAL>121.77</VAL>
+        </INT>
+      </TOTAL>
+    </CHG_TYP>
+    <CHG_TYP>
+      <CHG_TYP_ID>RT_ADMIN2</CHG_TYP_ID>
+      <CHG_TYP_NM>Market Administration Amount2</CHG_TYP_NM>
+      <TOTAL>
+        <AMT>288.81</AMT>
+        <INT>
+          <INT_NUM>1</INT_NUM>
+          <VAL>54.4</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>2</INT_NUM>
+          <VAL>31.16</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>3</INT_NUM>
+          <VAL>81.48</VAL>
+        </INT>
+        <INT>
+          <INT_NUM>4</INT_NUM>
+          <VAL>121.77</VAL>
+        </INT>
+      </TOTAL>
+    </CHG_TYP>
+  </LINE_ITEMS>
+</RT_STLMT>
+

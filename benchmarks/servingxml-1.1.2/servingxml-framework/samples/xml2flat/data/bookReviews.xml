@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<myns:books xmlns:myns="http://mycompany.com/mynames/">
+  <myns:book id="002" categoryCode="F">
+    <myns:title>Kafka on the Shore</myns:title>
+    <myns:author>Haruki Murakami</myns:author>
+    <myns:price>25.17</myns:price>
+    <myns:reviews>
+      <myns:review>
+        <myns:reviewer>Curley</myns:reviewer>
+        <myns:rating>*****</myns:rating>
+      </myns:review>
+      <myns:review>
+        <myns:reviewer>Larry</myns:reviewer>
+        <myns:rating>***</myns:rating>
+      </myns:review>
+      <myns:review>
+        <myns:reviewer>Moe</myns:reviewer>
+        <myns:rating>*</myns:rating>
+      </myns:review>
+    </myns:reviews>
+  </myns:book>
+</myns:books>

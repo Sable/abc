@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:jm="http://www.servingxml.com/extensions/javamail">
+
+  <ioc:serviceComponent name="jm:sendMail" base="sx:task"
+                assemblerClass="com.servingxml.extensions.mail.task.SendMailAssembler"/>
+  <ioc:serviceComponent name="jm:message" 
+                assemblerClass="com.servingxml.extensions.mail.task.MailMessageAssembler"/>
+  <ioc:serviceComponent name="jm:mailAccount" 
+                assemblerClass="com.servingxml.extensions.mail.task.MailAccountAssembler"/>
+  <ioc:serviceComponent name="jm:attachment" 
+                assemblerClass="com.servingxml.extensions.mail.task.MessageAttachmentAppenderAssembler"/>
+  <ioc:serviceComponent name="jm:part" 
+                assemblerClass="com.servingxml.extensions.mail.task.MessagePartAppenderAssembler"/>
+  <ioc:serviceComponent name="jm:sender" 
+                assemblerClass="com.servingxml.extensions.mail.task.SenderAssembler"/>
+
+  <!-- Deprecated -->
+
+  <ioc:serviceComponent name="sx:sendMail" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.extensions.mail.task.SendMailAssembler"/>
+  <ioc:serviceComponent name="sx:message" 
+                assemblerClass="com.servingxml.extensions.mail.task.MailMessageAssembler"/>
+  <ioc:serviceComponent name="sx:mailAccount" 
+                assemblerClass="com.servingxml.extensions.mail.task.MailAccountAssembler"/>
+  <ioc:serviceComponent name="sx:attachment" 
+                assemblerClass="com.servingxml.extensions.mail.task.MessageAttachmentAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:part" 
+                assemblerClass="com.servingxml.extensions.mail.task.MessagePartAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:sender" 
+                assemblerClass="com.servingxml.extensions.mail.task.SenderAssembler"/>
+
+  //  Deprecated elements
+  <ioc:serviceComponent name="sx:mailOutput" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.extensions.mail.task.SendMailAssembler"/>
+
+</ioc:components>
+

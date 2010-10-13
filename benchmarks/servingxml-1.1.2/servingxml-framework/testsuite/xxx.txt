@@ -1,0 +1,4 @@
+25-Jan-2010 9:17:41 PM com.servingxml.util.system.DefaultLogger error
+SEVERE:  test-overpunch-field:  Output
+      [ 10} 45111110111112222}2222J0222200123!] does not match expected output
+      [ 10} 45111110111112222}2222J2222K12349!]

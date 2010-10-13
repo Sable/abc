@@ -1,0 +1,356 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader id="recordstreams">
+  <title>Serving XML: Record Streams</title>
+  <author><firstname>Daniel</firstname><surname>Parker</surname></author>
+</artheader>
+<section>
+<para>
+This is the second of three articles describing the ServingXML pipeline language.  
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">Serving XML: Pipeline Language</ulink>
+</phrase></listitem>
+<listitem><phrase>
+<ulink url="servingxml-2.html">Serving XML: Record Streams</ulink>
+</phrase></listitem>
+<listitem><phrase>
+<ulink url="servingxml-3.html">Serving XML: Inversion of Control Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+This article discusses pipelines where the input or output (or both) are sequences of records. 
+</para>
+</section>
+<section>
+<title>The Record</title>  
+<para>
+ServingXML supports the notion of records that have fields, possibly multi-valued,
+and nested subrecords, possibly repeating.
+</para>
+<para>
+A record may be represented in BNF as follows:
+<programlisting>
+
+Record ::= name (Field+) (Record*) |
+  name (Field*) (Record+)
+
+Field:= name (value*)
+</programlisting>
+</para>
+<para>Here is a sample XML representation of a record.
+</para>
+      <programlisting>
+        <![CDATA[
+<Employee>
+  <Employee-No>0001</Employee-No>
+  <Employee-Name>Matthew</Employee-Name>
+  <Children>Joe</Children>
+  <Children>Julia</Children>
+  <Children>Dave</Children>
+</Employee>
+]]>
+      </programlisting>
+<para>The record is of type "Employee" and has three fields named <sgmltag>Employee-No</sgmltag>, <sgmltag>Employee-Name</sgmltag> and <sgmltag>Children</sgmltag>.
+<sgmltag>Children</sgmltag> is a multivalued field.
+</para>
+</section>
+<section>
+<title>Record Readers and Writers</title>  
+<para>
+The example below illustrates the idea of record readers and writers with a flat file reader
+that reads a stream of records from a positional flat file, and a flat file writer that writes 
+the stream to a delimited flat file.  Here, we pair a <sgmltag>sx:flatFileReader</sgmltag> with a 
+<sgmltag>sx:flatFileWriter</sgmltag>, but we could just as easily pair a <sgmltag>sx:flatFileReader</sgmltag> 
+with a <sgmltag>sx:sqlWriter</sgmltag>, or
+a <sgmltag>sx:sqlReader</sgmltag> with a <sgmltag>sx:flatFileWriter</sgmltag>.
+</para>
+<figure id="record-readers-and-writers" xreflabel="Record readers and writers">
+  <title>Record readers and writers</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="new-books"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="oldBooksFlatFile"/>
+      </sx:flatFileReader>
+      
+      <sx:flatFileWriter>
+        <sx:flatFile ref="newBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+  
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+  
+</section>
+<section>
+<title>Adapting a Record Stream to XML Content</title>  
+<para>
+The next example shows how to use a sx:recordContent element to adapt a record stream to XML content.  
+Once we have XML content, we can apply all of the XML pipeline instructions described in
+<ulink url="servingxml-1.html">Serving XML: Pipeline Language</ulink>.
+</para>
+<figure id="record-stream-to-xml" xreflabel="Record Stream to XML">
+  <title>Adapting a record stream to XML content</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                         xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:recordContent id="books">
+    <sx:flatFileReader>
+      <sx:flatFile ref="oldBooksFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="booksToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books>
+      <sx:onRecord>
+        <myns:book>
+          <sx:fieldElementMap field="title" element="myns:title"/>  
+          <sx:fieldAttributeMap field="category" attribute="categoryCode"/>
+          <sx:fieldElementMap field="author" element="myns:author"/>
+          <sx:fieldElementMap field="price" element="myns:price"/>
+        </myns:book>  
+      </sx:onRecord>
+    </myns:books>
+  </sx:recordMapping>  
+   
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+</section>
+<section>
+<title>Adapting XML Content to a Record Stream</title>  
+<para>
+The next example shows how to use an <sgmltag>sx:subtreeRecordReader</sgmltag> element to adapt XML content 
+to a record stream.  Once we have a record stream, we can apply any record writer, including the 
+<sgmltag>sx:flatFileWriter</sgmltag> or the <sgmltag>sx:sqlWriter</sgmltag>.
+</para>
+<figure id="xml-to-records" xreflabel="XML to Records">
+  <title>Adapting XML content to a record stream</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                        xmlns:myns="http://mycompany.com/mynames/">
+   
+  <sx:service id="books2pos"> 
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[1]" field="review1"/>
+        <sx:subtreeFieldMap select="myns:reviews/myns:review[2]" field="review2"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+</section>
+<section>
+<title>Performing Tasks Repeatedly within a Record Filter</title>  
+<para>
+In the previous examples we pair a record reader and a record writer 
+inside a <sgmltag>sx:recordStream</sgmltag> element.
+The reader reads a stream of records and the writer writes out the records.
+</para>
+<para>
+A record reader can contain record filters that do some processing on the records as they pass through.  
+Normally the records go on to a writer, but a writer is optional, the processing can take place entirely
+within the filters.  The example below shows a lone record reader inside a <sgmltag>sx:recordStream</sgmltag> 
+element.  This record reader is a <sgmltag>sx:directoryReader</sgmltag>, which reads all the file names 
+in the <filename>data</filename> directory, 
+skipping any that do not match the pattern <code>"(books.*)[.]txt"</code>.  The resulting stream of 
+file names passes through another <sgmltag>sx:recordStream</sgmltag> element, which reads each books file 
+and writes out the records to a similiarly named file with a <filename>_new</filename> suffix in the 
+<filename>output</filename> directory.
+</para>
+<figure id="xml-to-records" xreflabel="XML to Records">
+  <title>Processing selected files in a directory</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="all-books"> 
+    <sx:recordStream>
+      <sx:directoryReader directory="data">
+        <sx:fileFilter pattern="books.*[.]txt"/>
+      </sx:directoryReader>
+      <sx:processRecord>
+        <sx:parameter name="output-file">
+          <sx:findAndReplace searchFor ="(books.*)[.]txt" replaceWith ="$1-new.txt"><sx:toString value="{name}"/></sx:findAndReplace>
+        </sx:parameter>   
+        <sx:recordStream>
+          <sx:flatFileReader>
+            <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+            <sx:flatFile ref="oldBooksFlatFile"/>
+          </sx:flatFileReader>
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="{$output-file}"/> 
+            <sx:flatFile ref="newBooksFlatFile"/>
+          </sx:flatFileWriter>
+        </sx:recordStream>
+      </sx:processRecord>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+</section>
+</article>
+

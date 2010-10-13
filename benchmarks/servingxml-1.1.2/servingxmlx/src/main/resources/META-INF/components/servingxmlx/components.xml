@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:sxx="servingxmlx">
+</ioc:components>
+

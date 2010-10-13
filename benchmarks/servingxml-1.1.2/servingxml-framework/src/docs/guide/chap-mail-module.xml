@@ -1,0 +1,359 @@
+<reference id="chap-mail-module"><title>Java Mail Extension</title>
+<partintro>
+<para>
+This section describes the Java Mail extension elements.
+All Java Mail extension elements require the namespace declaration 
+<sgmltag>xmlns:jm="http://www.servingxml.com/extensions/javamail"</sgmltag>
+to appear in the resources script.
+</para>
+</partintro>
+
+<refentry id="jm:attachment" xreflabel="jm:attachment">
+<refnamediv>
+  <refname>jm:attachment</refname>
+  <refpurpose>Attachment</refpurpose>
+</refnamediv>
+<indexterm><primary>attachment</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>filename</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the attached file.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:task"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A jm:attachment instruction defines a sequence of content generation, transform, filter and serialization steps
+that result in serialized output of some MIME type as an attachment to a message.</para>
+</refsection>
+</refentry>
+
+<refentry id="jm:mailAccount" xreflabel="jm:mailAccount">
+<refnamediv>
+  <refname>jm:mailAccount</refname>
+  <refpurpose>Mail account</refpurpose>
+</refnamediv>
+<indexterm><primary>mailAccount</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>smtpHost</entry>
+<entry>Yes</entry>
+<entry>host</entry>
+<entry>The smtp host.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+A <xref linkend="jm:sender"/> element.
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Defining a mail account.</title>
+<programlisting>
+<![CDATA[
+  <jm:mailAccount id="my-account" 
+                  smtpHost="changeme"> 
+    <jm:sender displayName="changeme" emailAddress="changeme"/>
+  </jm:mailAccount>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="jm:message" xreflabel="jm:message">
+<refnamediv>
+  <refname>jm:message</refname>
+  <refpurpose>Message</refpurpose>
+</refnamediv>
+<indexterm><primary>message</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>smtpHost</entry>
+<entry>Yes</entry>
+<entry>host</entry>
+<entry>The smtp host.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>Optionally, a text body.</listitem>
+<listitem>Optionally, any number of <xref linkend="jm:part"/> elements.</listitem>
+<listitem>Optionally, any number of <xref linkend="jm:attachment"/> elements.</listitem>
+</itemizedlist>itemizedlist>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="jm:part" xreflabel="jm:part">
+<refnamediv>
+  <refname>jm:part</refname>
+  <refpurpose>MIME part</refpurpose>
+</refnamediv>
+<indexterm><primary>part</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>type</entry>
+<entry>No</entry>
+<entry>type code</entry>
+<entry>The type of a part.  The only allowed value is "alternative"</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:task"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A jm:part instruction defines a sequence of content generation, transform, filter and serialization steps
+that result in serialized output of some MIME type in the body of a message.</para>
+</refsection>
+</refentry>
+
+<refentry id="jm:sender" xreflabel="jm:sender">
+<refnamediv>
+  <refname>jm:sender</refname>
+  <refpurpose>Sender</refpurpose>
+</refnamediv>
+<indexterm><primary>sender</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>displayName</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The display name for the owner of the account.</entry>
+</row>
+<row>
+<entry>emailAddess</entry>
+<entry>Yes</entry>
+<entry>address</entry>
+<entry>The email address of the sender.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="jm:sendMail" xreflabel="jm:sendMail">
+<refnamediv>
+  <refname>jm:sendMail</refname>
+  <refpurpose>Send mail</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>sendMail</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>subject</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The subject of the message.</entry>
+</row>
+<row>
+<entry>to</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A comma separated list of email addresses of recipients.</entry>
+</row>
+<row>
+<entry>cc</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A comma separated list of email addresses of recipients.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>A <xref linkend="jm:mailAccount"/> element.</listitem>
+<listitem>A <xref linkend="jm:message"/> element.</listitem>
+<listitem>A <xref linkend="sx:onError"/> element.</listitem>
+</itemizedlist>itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Mail example.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:jm="http://www.servingxml.com/extensions/javamail"> ...
+    
+  <sx:service id="pulp">                         
+      <!--  Our first action is to send an email with the pulp novel as an attachment   -->
+      <jm:sendMail subject="test" to="john@yyy.com" cc="linda@zzz.com">
+        <jm:mailAccount ref="myMailAccount"/>
+        <jm:message>
+
+          <!-- Put some HTML in the message body --> 
+          <jm:part type="alternative">
+            <sx:transform>           
+              <sx:document><xxx/></sx:document>
+              <sx:xslt ref="welcome/html"/>
+            </sx:transform>        
+          </jm:part>
+
+          <jm:attachment filename="pulp.pdf">
+            <fop:foSerializer/>
+            <sx:transform>
+               <sx:content ref="pulp"/>
+               <sx:xslt ref="novel/fo"/>
+            </sx:transform>
+          </jm:attachment>      
+        </jm:message>
+      </jm:sendMail> 
+
+  </sx:service>                                                                                                             
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+</reference>
+

@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="personsAddresses">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="persons"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:flatFile id="personsData">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="persons"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordContent id="persons">
+    <sx:recordMapping ref="personsAddressesMapping"/>
+  </sx:recordContent>
+
+  <sx:flatRecordType id="persons" name="persons">
+    <sx:positionalField name="PersonId" width="9"/>
+    <sx:positionalField name="Name" width="11"/>
+    <sx:positionalField name="FirstName" width="16"/>
+    <sx:positionalField name="Street" width="20"/>
+    <sx:positionalField name="PostCode" width="12"/>
+    <sx:positionalField name="CityTown" width="20" />
+  </sx:flatRecordType>
+
+  <sx:recordMapping id="personsAddressesMapping">
+    <Persons-Addresses>
+      <sx:nestedContent>
+        <sx:recordContent>
+          <sx:flatFileReader>
+            <sx:flatFile ref="personsData"/>
+          </sx:flatFileReader>
+          <sx:recordMapping ref="personsMapping"/>
+        </sx:recordContent>
+      </sx:nestedContent>
+      <sx:nestedContent>
+        <sx:recordContent>
+          <sx:flatFileReader>
+            <sx:flatFile ref="personsData"/>
+          </sx:flatFileReader>
+          <sx:recordMapping ref="addressesMapping"/>
+        </sx:recordContent>
+      </sx:nestedContent>
+    </Persons-Addresses>
+  </sx:recordMapping>
+
+  <sx:recordMapping id="personsMapping">
+    <Persons>
+      <sx:groupBy fields="PersonId">
+        <Person>
+          <sx:fieldElementMap field="PersonId" element="PersonId"/>
+          <sx:fieldElementMap field="Name" element="Name"/>
+          <sx:fieldElementMap field="FirstName" element="FirstName"/>
+          <sx:onRecord/>
+        </Person>
+      </sx:groupBy>
+    </Persons>
+  </sx:recordMapping>
+
+  <sx:recordMapping id="addressesMapping">
+    <Addresses>
+      <sx:onRecord>
+        <Address>
+          <sx:fieldElementMap field="PersonId" element="PersonId"/>
+          <sx:fieldElementMap field="Street" element="Street"/>
+          <sx:fieldElementMap field="PostCode" element="PostCode"/>
+          <sx:fieldElementMap field="CityTown" element="CityTown"/>
+        </Address>
+      </sx:onRecord>
+    </Addresses>
+  </sx:recordMapping>
+
+</sx:resources>
+

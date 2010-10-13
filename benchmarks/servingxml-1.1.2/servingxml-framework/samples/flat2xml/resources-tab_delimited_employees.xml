@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="employees">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="employee-data"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="employee-data" name="employees">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/tab_delimited_employees.txt"/>
+      <sx:flatFile ref="employee-file"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:flatFile id="employee-file">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:fieldDelimiter value="\t"/>
+      <!-- Another way of specifying a horizontal tab character -->
+      <!-- <sx:fieldDelimiter value="&#x09;"/> -->
+      <sx:flatRecordType name="employee">
+        <sx:delimitedField name="employee-no"/>
+        <sx:delimitedField name="employee-name"/>
+        <sx:delimitedField name="department"/>
+        <sx:delimitedField name="salary"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

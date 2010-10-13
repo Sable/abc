@@ -1,0 +1,927 @@
+<reference id="ref-string-elements"
+  xmlns:sx="http://www.servingxml.com/core">
+  <title>String Elements</title>  
+<refentry id="sx:concat" xreflabel="sx:concat">
+<refnamediv>
+  <refname>sx:concat</refname>
+  <refpurpose>Common attributes for elements</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+
+<indexterm><primary>concat</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>separator</entry>
+<entry>No</entry>
+<entry>char</entry>
+<entry>A separator to separate each string value in the content.</entry>
+</row>
+<row>
+<entry>quoteSymbol</entry>
+<entry>No</entry>
+<entry>char</entry>
+<entry>A symbol to surround each string value.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any number of <xref linkend="sx:stringable"/> elements.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:convertDate" xreflabel="sx:convertDate">
+<refnamediv>
+  <refname>sx:convertDate</refname>
+  <refpurpose>Convert date</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>convertDate</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fromFormat</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The format of the input string, which must must follow the syntax specified for the 
+<ulink url="http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html">JDK SimpleDateFormat</ulink> class.</entry>
+</row>
+<row>
+<entry>toFormat</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The format of the output string, which must must follow the syntax specified for the 
+<ulink url="http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html">JDK SimpleDateFormat</ulink> class.
+Defaults to the date format for the default locale.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+An input string in the <code>fromFormat</code>, or a <xref linkend="sx:stringable"/> element that 
+evaluates to an input string in the <code>fromFormat</code>.  If the input 
+string is empty, an empty (null) value is produced.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:convertToDateTime" xreflabel="sx:convertToDateTime">
+<refnamediv>
+  <refname>sx:convertToDateTime</refname>
+  <refpurpose>Convert to datetime</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>convertToDateTime</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>format</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The format of the input string, which must must follow the syntax specified for the 
+<ulink url="http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html">JDK SimpleDateFormat</ulink> class.
+</entry>
+</row>
+<row>
+<entry>inputTimezone</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The time zone for the input date.  Defaults to the Java default time 
+  zone.
+</entry>
+</row>
+<row>
+<entry>outputTimezone</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The time zone for the output date.  Defaults to the Java default time 
+  zone.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+Lexical representation of one the eight XML Schema date/time datatypes,
+or an <xref linkend="sx:stringable"/> element that 
+evaluates to a lexical representation.  If the input string is empty,
+an empty (null) value is produced.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:currentDate" xreflabel="sx:currentDate">
+<refnamediv>
+  <refname>sx:currentDate</refname>
+  <refpurpose>Current date</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>currentDate</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The current date is output as a string with a lexical representation as defined for <ulink url="http://www.w3.org/TR/xmlschema-2/#date">xs:date</ulink> of
+<ulink url="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</ulink>.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:currentDateTime" xreflabel="sx:currentDateTime">
+<refnamediv>
+  <refname>sx:currentDateTime</refname>
+  <refpurpose>Current datetime</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>currentDateTime</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The current date is output as a string with a lexical representation as defined for <ulink url="http://www.w3.org/TR/xmlschema-2/#dateTime">xs:dateTime</ulink> of
+<ulink url="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</ulink>.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:currentTime" xreflabel="sx:currentTime">
+<refnamediv>
+  <refname>sx:currentTime</refname>
+  <refpurpose>Current time</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>currentTime</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The current time is output as a string with a lexical representation as defined for <ulink url="http://www.w3.org/TR/xmlschema-2/#time">xs:time</ulink> of
+<ulink url="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</ulink>.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:date" xreflabel="sx:date">
+<refnamediv>
+  <refname>sx:date</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:currentDateTime"/> and <xref linkend="sx:formatDateTime"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>date</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>format</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The format of the output string, which must must follow the syntax specified for the 
+<ulink url="http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html">JDK SimpleDateFormat</ulink> class.
+Defaults to the date format for the default locale.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:escapeMarkup" xreflabel="sx:escapeMarkup">
+<refnamediv>
+  <refname>sx:escapeMarkup</refname>
+  <refpurpose>Evaluate children as a string, escaping XML tags</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>escapeMarkup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Literal text
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>
+    The <sgmltag>sx:escapeMarkup</sgmltag> element results in its content being output 
+    as a string.  The main reason for enclosing text within an 
+    <sgmltag>sx:escapeMarkup</sgmltag> element is to allow XML element tags to 
+    appear escaped in the text. 
+  </para>
+</refsection>
+</refentry>
+
+<refentry id="sx:findAndReplace" xreflabel="sx:findAndReplace">
+<refnamediv>
+  <refname>sx:findAndReplace</refname>
+  <refpurpose>Find and replace in a string using regular expressions</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>findAndReplace</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>searchFor</entry>
+<entry>Yes</entry>
+<entry><xref linkend="Regex"/></entry>
+<entry>Match sub-sequences of the input string against this pattern.</entry>
+</row>
+<row>
+<entry>replaceWith</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>Replace all matches with this expression.  Dollar signs ($) may be used as references to captured subsequences in
+the match regular expression, and backslashes (\) may be used to escape literal characters. 
+</entry>
+</row>
+<row>
+<entry>caseSensitive</entry>
+<entry>No</entry>
+<entry>true | false</entry>
+<entry>Defaults to <code>true</code> .</entry>
+</row>
+<row>
+<entry>useRegex</entry>
+<entry>No</entry>
+<entry>true | false</entry>
+<entry>Defaults to <code>true</code>.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any combination of string literals and inlined
+  <xref linkend="sx:stringable"/> substitutable elements.  The string expressions
+  will be evaluated in place, forming one string. Leading and trailing
+  whitespace will be trimmed.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <sgmltag>sx:findAndReplace</sgmltag> element applies a regular expression to its content, 
+and replaces matched content with a replacement string.  The value of the regular expression
+is defined by the <sgmltag class="attribute">searchFor</sgmltag> attribute,
+which searches for all subsequences in the content that match the pattern
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Fix date.</title>
+<para>
+In this example, you have an input record with a field <code>service_from_date</code>, which has the value
+<programlisting>
+<![CDATA[
+2005-06-28 00:00:00 
+]]></programlisting>
+You want to change it to
+<programlisting>
+<![CDATA[
+20050628
+]]></programlisting>
+You can make the replacement with the <sgmltag>sx:findAndReplace</sgmltag> 
+                                        element as follows.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:findAndReplace searchFor="([0-9]{4})-([0-9]{2})-([0-9]{2})(.*)" replaceWith="$1$2$3">      
+    <sx:toString value="{service_from_date}"/> 
+  </sx:findAndReplace> 
+]]></programlisting>
+</example>
+<example>
+<title>Remove commas from amount.</title>
+<para>
+In this example, you have an input record with a field <code>PLAN_IT_COST</code>, which has the value
+<programlisting>
+<![CDATA[
+2,500,300.00
+]]></programlisting>
+You want to change it to
+<programlisting>
+<![CDATA[
+2500300.00
+]]></programlisting>
+You can make the replacement with the <sgmltag>sx:findAndReplace</sgmltag> element as follows.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:findAndReplace searchFor="," replaceWith ="">
+    <sx:toString value="{PLAN_IT_COST}"/>
+  </sx:findAndReplace>
+]]></programlisting>
+</example>
+<example>
+<title>Literal find and replace.</title>
+<programlisting>
+<![CDATA[
+  <sx:positionalField name="price2" width="10" justify="right" label="Price">
+    <sx:defaultValue>
+      <sx:findAndReplace searchFor ="." replaceWith="," useRegex="false">
+        <sx:toString value="{price}"/>    
+      </sx:findAndReplace>
+    </sx:defaultValue>
+  </sx:positionalField>
+]]>
+  </programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:formatDateTime" xreflabel="sx:formatDateTime">
+<refnamediv>
+  <refname>sx:formatDateTime</refname>
+  <refpurpose>Format datetime</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>formatDateTime</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>format</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The format of the output string, which must must follow the syntax specified for the 
+<ulink url="http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html">JDK SimpleDateFormat</ulink> class.
+Defaults to the date format for the default locale.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+Lexical representation of one the eight XML Schema date/time datatypes,
+or an <xref linkend="sx:stringable"/> element that 
+evaluates to a lexical representation.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:lineNumber" xreflabel="sx:lineNumber">
+<refnamediv>
+  <refname>sx:lineNumber</refname>
+  <refpurpose>Output current line number</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>lineNumber</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Evaluates to the current line number of the input.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:preserveMarkup" xreflabel="sx:preserveMarkup">
+<refnamediv>
+  <refname>sx:preserveMarkup</refname>
+  <refpurpose>Evaluate children as a string, preserving XML tags without escaping them</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>preserveMarkup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Literal text
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>
+    The <sgmltag>sx:preserveMarkup</sgmltag> element results in its content being output 
+    as a string.  The main reason for enclosing text within an 
+    <sgmltag>sx:preserveMarkup</sgmltag> element is to allow XML element tags to 
+    appear unescaped in the text. 
+  </para>
+</refsection>
+</refentry>
+
+<refentry id="sx:replace" xreflabel="sx:replace">
+<refnamediv>
+  <refname>sx:replace</refname>
+  <refpurpose>Deprecated, replaced in 0.9.2 by <xref linkend="sx:findAndReplace"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>replace</primary></indexterm>
+</refentry>
+
+<refentry id="sx:string" xreflabel="sx:string">
+<refnamediv>
+  <refname>sx:string</refname>
+  <refpurpose>Abstract element standing for any string element, e.g. <xref linkend="sx:toString"/></refpurpose>
+</refnamediv>
+<indexterm><primary>string</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a string.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:stringable</sgmltag>, such as <xref linkend="sx:toString"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:date"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:convertDate"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:findAndReplace"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:toString"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:escapeMarkup"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:preserveMarkup"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:stringable" xreflabel="sx:stringable">
+<refnamediv>
+  <refname>sx:stringable</refname>
+  <refpurpose>Abstract element standing for any element that can render itself as a string, e.g. <xref linkend="sx:transform"/></refpurpose>
+</refnamediv>
+<indexterm><primary>stringable</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a string.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:stringable</sgmltag>, such as <xref linkend="sx:toString"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:date"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:convertDate"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:findAndReplace"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:toString"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:escapeMarkup"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:preserveMarkup"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:toString" xreflabel="sx:toString">
+<refnamediv>
+  <refname>sx:toString</refname>
+  <refpurpose>Ouput a string</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:string"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>toString</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>An XPath expression evaluated against an <xref linkend="sx:content"/> 
+substitutable child element, or, if none, the default XML document.
+</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string value that may contain one or more parameters enclosed in curly braces, e.g. "{$my-param}.xml".
+</entry>
+</row>
+<row>
+<entry>separator</entry>
+<entry>No</entry>
+<entry>char</entry>
+<entry>A separator to separate the pieces if the expression resolves to multiple values.</entry>
+</row>
+<row>
+<entry>quoteSymbol</entry>
+<entry>No</entry>
+<entry>char</entry>
+<entry>A symbol to surround the pieces.
+Deprecated, use a <xref linkend="sx:quoteSymbol"/> child element instead.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem><para>Optionally, a <xref linkend="sx:quoteSymbol"/> element, to specify a quote symbol to surround the pieces making up the string.</para>
+</listitem>
+<listitem><para>Optionally, if there is a <sgmltag>select</sgmltag> attribute, 
+            an <xref linkend="sx:content"/> element.  If supplied, the select 
+            expression will be evaluated against this content, otherwise it will
+            be evaluated against the default content.
+</para>
+</listitem>
+<listitem><para>Optionally, if there is no <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+</itemizedlist>
+</para>
+<para>Optionally, a <xref linkend="sx:quoteSymbol"/> element, to specify a quote symbol to surround the pieces making up the string.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+</reference>
+

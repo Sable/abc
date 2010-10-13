@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core" xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="settlements2csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:parameter name="foo">bar</sx:parameter>
+        <sx:inverseRecordMapping ref="settlementsToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="settlementsFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="settlementsFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="settlementType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="settlementType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="settlementType" name="settlementType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="OPERATING_DATE" label="OPERATING_DATE"/>
+    <sx:delimitedField name="SETTLEMENT_CODE" label="SETTLEMENT_CODE"/>
+    <sx:delimitedField name="DETERMINANT_ID" label="DETERMINANT_ID"/>
+    <sx:delimitedField name="DETERMINANT_NAME" label="DETERMINANT_NAME"/>
+    <sx:delimitedField name="TOTAL_AMT" label="TOTAL_AMT"/>
+    <sx:delimitedField name="INT01" label="INT01"/>
+    <sx:delimitedField name="INT02" label="INT02"/>
+    <sx:delimitedField name="INT03" label="INT03"/>
+    <sx:delimitedField name="INT04" label="INT04"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="settlementsToFileMapping">
+    <sx:onSubtree path="/RT_STLMT">
+      <sx:parameter name="OPERATING_DATE" select="OPERATING_DATE"/>
+      <sx:parameter name="SETTLEMENT_CODE" select="SETTLEMENT_CODE"/>
+      <sx:parameter name="id" select="@id"/>
+      <sx:onSubtree path="LINE_ITEMS/CHG_TYP">
+        <sx:flattenSubtree recordType="settlement">
+          <sx:subtreeFieldMap select="$OPERATING_DATE" field="OPERATING_DATE"/>
+          <sx:subtreeFieldMap select="$SETTLEMENT_CODE" field="SETTLEMENT_CODE"/>
+          <sx:subtreeFieldMap select="'RT'" field="STLMT_TYP"/>
+          <sx:subtreeFieldMap select="CHG_TYP_ID" field="DETERMINANT_ID"/>
+          <sx:subtreeFieldMap select="CHG_TYP_NM" field="DETERMINANT_NAME"/>
+          <sx:subtreeFieldMap select="TOTAL/AMT" field="TOTAL_AMT"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[1]/VAL" field="INT01"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[2]/VAL" field="INT02"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[3]/VAL" field="INT03"/>
+          <sx:subtreeFieldMap select="TOTAL/INT[4]/VAL" field="INT04"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+

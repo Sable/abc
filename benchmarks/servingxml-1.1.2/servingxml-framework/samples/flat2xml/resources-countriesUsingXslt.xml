@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="countries">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="countries"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="countries">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countries-file"/>
+      <sx:recordValidator>
+        <msv:schemaValidator>
+          <sx:urlSource url="data/country-record.xsd"/>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+    </sx:flatFileReader>
+    <sx:discardHandler>
+      <sx:log message="{$sx:message}"/>
+    </sx:discardHandler>
+    <sx:recordMapping ref="countries-xml-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="countries-file">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="countries-xml-mapping">
+    <countries>
+      <sx:onRecord>
+        <sx:transformRecord>
+          <sx:xslt>
+            <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <xsl:template match="country">
+                <xsl:element name="country">
+                  <xsl:attribute name="code">
+                    <xsl:value-of select="code"/>
+                  </xsl:attribute>
+                  <name>
+                    <xsl:value-of select="name"/>
+                  </name>
+                </xsl:element>
+              </xsl:template>
+            </xsl:transform>
+          </sx:xslt>
+        </sx:transformRecord>
+      </sx:onRecord>
+    </countries>
+  </sx:recordMapping>
+
+</sx:resources>
+

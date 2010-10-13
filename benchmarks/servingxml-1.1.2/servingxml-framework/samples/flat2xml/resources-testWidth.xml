@@ -1,0 +1,48 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="testWidth">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="data"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="data">
+    <sx:flatFileReader>
+      <sx:flatFile ref="flatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="segmentsToXml"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="flatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag" width="3"/>
+        <sx:when test="tag='TX#'">
+          <sx:flatRecordType name="transaction">
+            <sx:positionalField name="recordType" width="3"/>
+            <sx:positionalField name="reference" width="10"/>
+            <sx:positionalField name="remarksSize" width="4">
+              <sx:defaultValue value="0"/>
+            </sx:positionalField>
+            <sx:positionalField name="remarksText" width="{remarksSize}"/>
+            <sx:positionalField name="followingField" width="10"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="segmentsToXml">
+    <Doc>
+      <sx:innerGroup startTest="sx:current/transaction">
+        <Transaction>
+          <sx:fieldElementMap field="reference"  element="Reference"/>
+          <sx:fieldElementMap field="remarksText" element="Remarks"/>
+          <sx:fieldElementMap field="followingField" element="FollowingField"/>
+        </Transaction>
+      </sx:innerGroup>
+    </Doc>
+  </sx:recordMapping>
+</sx:resources>

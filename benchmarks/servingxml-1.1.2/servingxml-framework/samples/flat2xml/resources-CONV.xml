@@ -1,0 +1,86 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="CONV">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="CONV"/>
+        <sx:removeEmptyElements elements="*"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="CONV">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/CONV_in.dat"/>
+      <sx:flatFile ref="CONVFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="CONVToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="CONVFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record_type" width="3"/>
+        <sx:when test="record_type='901'">
+          <sx:flatRecordType name="header">
+            <sx:positionalField name="record_type" width="3"/>
+            <sx:positionalField name="trnmtr_nbr" width="8"/>
+            <sx:positionalField name="sbmt_ref_id" width="7"/>
+            <sx:positionalField name="trnmtr_tcd" width="1"/>
+            <sx:positionalField name="summ_cnt" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='100'">
+          <sx:flatRecordType name="detail">
+            <sx:positionalField name="record_type" width="3"/>
+            <sx:positionalField name="snm" width="9"/>
+            <sx:positionalField name="gvn_nm" width="7"/>
+            <sx:positionalField name="init" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='301'">
+          <sx:flatRecordType name="summary">
+            <sx:positionalField name="record_type" width="3"/>
+            <sx:positionalField name="bn" width="15"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="CONVToXmlMapping">
+    <Submission>
+      <sx:onRecord recordType="header">
+        <Header>
+          <sx:fieldElementMap field="record_type" element="record_type"/>
+          <sx:fieldElementMap field="sbmt_ref_id" element="sbmt_ref_id"/>
+          <sx:fieldElementMap field="trnmtr_tcd" element="trnmtr_tcd"/>
+          <sx:fieldElementMap field="summ_cnt" element="summ_cnt"/>
+        </Header>
+      </sx:onRecord>
+      <sx:innerGroup startTest="sx:current/detail or sx:current/summary"
+                                 endTest="not(sx:current/detail or sx:current/summary)">
+        <All>
+          <Level1>
+            <sx:onRecord recordType='detail'>
+              <Detail>
+                <sx:fieldElementMap field="snm" element="snm"/>
+                <sx:fieldElementMap field="gvn_nm" element="gvn_nm"/>
+                <sx:fieldElementMap field="init" element="init"/>
+              </Detail>
+            </sx:onRecord>
+            <sx:onRecord recordType="summary">
+              <Summary>
+                <sx:fieldElementMap field="bn" element="bn"/>
+              </Summary>
+            </sx:onRecord>
+          </Level1>
+        </All>
+      </sx:innerGroup>
+    </Submission>
+  </sx:recordMapping>
+
+</sx:resources>
+

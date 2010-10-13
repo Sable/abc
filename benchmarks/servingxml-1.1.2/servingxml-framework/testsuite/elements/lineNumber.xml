@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/lineNumber/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-lineNumber"/>
+  </sx:service>
+
+  <sx:flatFileReader id="t:csv-file-reader">
+    <sx:inlineSource>field1,field2
+      value1,value2
+      value1,value2
+      value1,value2</sx:inlineSource>
+    <sx:fieldDelimiter value=","/>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="t:output">
+    <sx:flatFileReader ref="t:csv-file-reader"/>
+    <sx:recordMapping>
+      <document>
+        <header>
+          <sx:lineNumber/>
+        </header>
+        <sx:onRecord>
+          <record>
+          <sx:fieldAttributeMap attribute="lineNumber">
+            <sx:lineNumber/>
+          </sx:fieldAttributeMap>
+          <sx:fieldElementMap field="field1" element="field1"/>
+          <sx:fieldElementMap field="field2" element="field2"/>
+          </record>
+        </sx:onRecord>
+        <trailer>
+          <sx:parameter name="lineNumber">
+            <sx:lineNumber/>
+          </sx:parameter>
+          <sx:fieldAttributeMap value="{$lineNumber}" attribute="lineNumber"/>
+        </trailer>
+      </document>
+    </sx:recordMapping>
+  </sx:recordContent>
+
+  <sx:document id="t:expected">
+    <document><header>2</header><record lineNumber="2"><field1>value1</field1><field2>value2</field2></record><record lineNumber="3"><field1>value1</field1><field2>value2</field2></record><record lineNumber="4"><field1>value1</field1><field2>value2</field2></record><trailer lineNumber="4"/></document>
+  </sx:document>
+
+  <sx:transform id="t:test-lineNumber">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/lineNumber/output'),fn:document('elements/lineNumber/expected'))">
+test-lineNumber:  Output
+      <sx:content ref="t:output"/>
+      does not match expected output
+      <sx:content ref="t:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>
+

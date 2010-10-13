@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="swap-to-xml">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="swap-xml"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="swap-xml">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="swap-flat-file"/>
+      </sx:flatFileReader>
+      <sx:modifyRecord>
+        <sx:newField name="trade_id" select="legs/child::node()[1]/trade_id"/>
+        <sx:newField name="trade_date" select="legs/child::node()[1]/trade_date"/>
+      </sx:modifyRecord>
+      <sx:recordValidator ref="swap-validator"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <sx:splitRecord recordType="swap" repeatingGroup="legs"/>
+        <sx:flatFileWriter>
+          <sx:fileSink file="output/swap-error.csv"/>
+        </sx:flatFileWriter>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="swap-to-xml-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="swap-flat-file">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:compositeFlatRecordType>
+        <sx:delimitedField name="record_type"/>
+        <sx:delimitedField name="trade_id"/>
+        <sx:combinePhysicalRecords recordType="swap"
+                              repeatingGroup="legs"
+                              endTest="sx:current//trade_id != sx:previous//trade_id">
+          <sx:flatRecordTypeChoice>
+            <sx:fieldDelimiter value=","/>
+            <sx:delimitedField name="record_type"/>
+            <sx:delimitedField name="trade_id"/>
+            <sx:delimitedField name="client_id"/>
+            <sx:delimitedField name="client_name"/>
+            <sx:delimitedField name="trade_date"/>
+            <sx:delimitedField name="pay_receive_code"/>
+            <sx:delimitedField name="fixed_float_code"/>
+            <sx:when test="record_type='SWAP' and fixed_float_code='FLOAT'">
+              <sx:flatRecordType name='swap_floating_leg'>
+                <sx:fieldDelimiter value=","/>
+                <sx:delimitedField name="record_type"/>
+                <sx:delimitedField name="trade_id"/>
+                <sx:delimitedField name="client_id"/>
+                <sx:delimitedField name="client_name"/>
+                <sx:delimitedField name="trade_date"/>
+                <sx:delimitedField name="pay_receive_code"/>
+                <sx:delimitedField name="fixed_float_code"/>
+                <sx:delimitedField name="currency"/>
+                <sx:delimitedField name="index"/>
+                <sx:delimitedField name="tenor"/>
+                <sx:delimitedField name="day_count_basis"/>
+                <sx:delimitedField name="fixed_rate"/>
+                <sx:delimitedField name="start_date"/>
+                <sx:delimitedField name="maturity_date"/>
+                <sx:delimitedField name="reset_date"/>
+                <sx:delimitedField name="payment_date"/>
+                <sx:delimitedField name="notional"/>
+                <sx:delimitedField name="calculation_period"/>
+              </sx:flatRecordType>
+            </sx:when>
+            <sx:when test="record_type='SWAP' and fixed_float_code='FIXED'">
+              <sx:flatRecordType name='swap_fixed_leg'>
+                <sx:fieldDelimiter value=","/>
+                <sx:delimitedField name="record_type"/>
+                <sx:delimitedField name="trade_id"/>
+                <sx:delimitedField name="client_id"/>
+                <sx:delimitedField name="client_name"/>
+                <sx:delimitedField name="trade_date"/>
+                <sx:delimitedField name="pay_receive_code"/>
+                <sx:delimitedField name="fixed_float_code"/>
+                <sx:delimitedField name="currency"/>
+                <sx:delimitedField name="index"/>
+                <sx:delimitedField name="tenor"/>
+                <sx:delimitedField name="day_count_basis"/>
+                <sx:delimitedField name="fixed_rate"/>
+                <sx:delimitedField name="start_date"/>
+                <sx:delimitedField name="maturity_date"/>
+                <sx:delimitedField name="reset_date"/>
+                <sx:delimitedField name="payment_date"/>
+                <sx:delimitedField name="notional"/>
+                <sx:delimitedField name="calculation_period"/>
+              </sx:flatRecordType>
+            </sx:when>
+          </sx:flatRecordTypeChoice>
+        </sx:combinePhysicalRecords>
+      </sx:compositeFlatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+  <sx:recordValidator id="swap-validator"
+                      recordType="swap"
+                      message="Error in trade {trade_id}.">
+    <sx:fieldValidator field="legs"
+                       message="">
+      <sx:recordValidator>
+        <sx:fieldValidator field="pay_receive_code"
+                           message="Invalid pay_receive_code {pay_receive_code}.">
+          <sx:or>
+            <sx:valueRestriction pattern="PAY"/>
+            <sx:valueRestriction pattern="REC"/>
+          </sx:or>
+        </sx:fieldValidator>
+        <sx:fieldValidator field="fixed_float_code"
+                           message="Invalid fixed_float_code {fixed_float_code}.">
+          <sx:or>
+            <sx:valueRestriction pattern="FIXED"/>
+            <sx:valueRestriction pattern="FLOAT"/>
+          </sx:or>
+        </sx:fieldValidator>
+        <sx:fieldValidator field="start_date"
+                           message="Invalid start_date {start_date}.">
+          <sx:valueRestriction pattern="(19|20)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+        </sx:fieldValidator>
+        <sx:fieldValidator field="maturity_date"
+                           message="Invalid maturity_date {maturity_date}.">
+          <sx:valueRestriction pattern="(20|21)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+        </sx:fieldValidator>
+      </sx:recordValidator>
+    </sx:fieldValidator>
+  </sx:recordValidator>
+
+  <sx:recordMapping id="swap-to-xml-mapping">
+    <dataDocument xmlns="http://www.fpml.org/FpML-5-0/reporting"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  fpmlVersion="5-0"
+                  xsi:schemaLocation="http://www.fpml.org/FpML-5-0/reporting ../fpml-main-5-0.xsd">
+      <sx:groupBy fields="trade_id">
+        <trade>
+          <tradeHeader>
+            <partyTradeIdentifier>
+              <sx:fieldElementMap field="trade_id" element="tradeId">
+                <sx:fieldAttributeMap value="http://www.banka.com/ird/trade-id"
+                                      attribute="tradeIdScheme"/>
+              </sx:fieldElementMap>
+            </partyTradeIdentifier>
+            <tradeDate>
+              <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                <sx:toString value="{trade_date}"/>
+              </sx:toXmlDate>
+            </tradeDate>
+          </tradeHeader>
+          <swap>
+            <sx:subrecordMapping repeatingGroup="legs">
+              <sx:groupBy fields="trade_id pay_receive_code">
+                <swapStream>
+                  <sx:choose>
+                    <sx:when test="pay_receive_code='PAY'">
+                      <payerPartyReference>
+                        <sx:fieldAttributeMap value="bankA"
+                                              attribute="href"/>
+                      </payerPartyReference>
+                    </sx:when>
+                    <sx:when test="pay_receive_code='REC'">
+                      <payerPartyReference>
+                        <sx:fieldAttributeMap field="client_id"
+                                              attribute="href"/>
+                      </payerPartyReference>
+                    </sx:when>
+                  </sx:choose>
+                  <calculationPeriodDates id="floatingCalcPeriodDates">
+                    <effectiveDate>
+                      <adjustedDate>
+                        <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                          <sx:toString value="{start_date}"/>
+                        </sx:toXmlDate>
+                      </adjustedDate>
+                    </effectiveDate>
+                    <terminationDate>
+                      <adjustedDate>
+                        <sx:toXmlDate fromFormat="yyyy/MM/dd">
+                          <sx:toString value="{maturity_date}"/>
+                        </sx:toXmlDate>
+                      </adjustedDate>
+                    </terminationDate>
+                    <calculationPeriodFrequency>
+                      <sx:parameter name="term" value="{calculation_period}"/>
+                      <sx:choose ref="expand-term"/>
+                    </calculationPeriodFrequency>
+                  </calculationPeriodDates>
+                  <calculationPeriodAmount>
+                    <calculation>
+                      <notionalSchedule>
+                        <notionalStepSchedule>
+                          <sx:fieldElementMap field="notional" element="initialValue"/>
+                          <sx:fieldElementMap field="currency" element="currency">
+                            <sx:fieldAttributeMap value="http://www.fpml.org/ext/iso4217"
+                                                  attribute="currencyScheme"/>
+                          </sx:fieldElementMap>
+                        </notionalStepSchedule>
+                      </notionalSchedule>
+                      <sx:choose>
+                        <sx:when test="fixed_float_code='FLOAT'">
+                          <floatingRateCalculation>
+                            <sx:fieldElementMap field="index"
+                                                element="floatingRateIndex"/>
+                            <indexTenor>
+                              <sx:parameter name="term" value="{tenor}"/>
+                              <sx:choose ref="expand-term"/>
+                            </indexTenor>
+                          </floatingRateCalculation>
+                        </sx:when>
+                        <sx:when test="fixed_float_code='FIXED'">
+                          <fixedRateSchedule>
+                            <sx:fieldElementMap field="fixed_rate"
+                                                element="initialValue"/>
+                          </fixedRateSchedule>
+                        </sx:when>
+                      </sx:choose>
+                      <sx:fieldElementMap field="day_count_basis"
+                                          element="dayCountFraction"/>
+                    </calculation>
+                  </calculationPeriodAmount>
+                </swapStream>
+              </sx:groupBy>
+            </sx:subrecordMapping>
+          </swap>
+        </trade>
+      </sx:groupBy>
+
+      <sx:nestedContent>
+        <sx:recordContent ref="clients"/>
+      </sx:nestedContent>
+    </dataDocument>
+  </sx:recordMapping>
+
+  <!-- Expands a parameter named "term" with a value <number><D|M|Y> as
+    <periodMultiplier>number</periodMultiplier>
+    <period>D|M|Y</period>
+  -->
+  <sx:choose id="expand-term">
+    <sx:when test="fn:ends-with($term,'D')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'D')"/>
+      </sx:fieldElementMap>
+      <period>D</period>
+    </sx:when>
+    <sx:when test="fn:ends-with($term,'M')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'M')"/>
+      </sx:fieldElementMap>
+      <period>M</period>
+    </sx:when>
+    <sx:when test="fn:ends-with($term,'Y')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'Y')"/>
+      </sx:fieldElementMap>
+      <period>Y</period>
+    </sx:when>
+  </sx:choose>
+
+  <sx:recordContent id="clients">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile>
+          <sx:flatFileHeader lineCount="1"/>
+          <sx:flatFileBody>
+            <sx:flatRecordType>
+              <sx:fieldDelimiter value=","/>
+              <sx:delimitedField name="record_type"/>
+              <sx:delimitedField name="trade_id"/>
+              <sx:delimitedField name="client_id"/>
+              <sx:delimitedField name="client_name"/>
+            </sx:flatRecordType>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileReader>
+      <sx:recordProjection fields="client_id client_name"/>
+    </sx:recordStream>
+    <sx:recordMapping>
+      <party id="bankA">
+        <partyId>Bank A</partyId>
+      </party>
+      <sx:onRecord>
+        <party>
+          <sx:fieldAttributeMap field="client_id" attribute="id"/>
+          <sx:fieldElementMap field="client_name" element="partyId"/>
+        </party>
+      </sx:onRecord>
+    </sx:recordMapping>
+  </sx:recordContent>
+
+</sx:resources>
+

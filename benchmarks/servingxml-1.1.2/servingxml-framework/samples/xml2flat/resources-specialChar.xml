@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="transaction">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="fieldsMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter >
+        <sx:flatFile ref="transactionFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="transactionFile" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:binaryField name="firstField" width="1"/>
+        <sx:when test="firstField='03'">
+          <sx:flatRecordType id="R03" name="R03">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="CLIENUM" label="CLIENUM" width="007" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="firstField='04'">
+          <sx:flatRecordType id="R04" name="R04">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="NAME" label="NAME" width="020" />
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="fieldsMapping">
+    <sx:onSubtree path="/transaction/R03">
+      <sx:flattenSubtree match="/R03" recordType="R03">
+        <sx:subtreeFieldMap select="firstField" field="firstField"/>
+        <sx:subtreeFieldMap select="CLIENUM" field="CLIENUM"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="/transaction/R04">
+      <sx:flattenSubtree match="/R04" recordType="R04">
+        <sx:subtreeFieldMap select="firstField" field="firstField"/>
+        <sx:subtreeFieldMap select="NAME" field="NAME"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+

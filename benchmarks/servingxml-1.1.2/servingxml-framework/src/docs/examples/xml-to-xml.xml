@@ -1,0 +1,1002 @@
+<section><title>XML to XML</title>
+
+<section>
+  <title>Extracting subtrees and wrapping them in containing tags</title>
+<para>
+This example shows how to extract a set of subtrees from an XML document according to some
+  criteria and wrap them in containing tags.
+  </para>
+<para>
+The input file is an XML document.
+</para>
+<figure id="books.xml" xreflabel="books.xml">
+  <title>Input XML document books.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<myns:books xmlns:myns="http://mycompany.com/mynames/" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xsi:schemaLocation="url2">
+  <myns:book categoryCode="F">
+    <myns:title>Factotum</myns:title>
+    <myns:author>Charles Bukowski</myns:author>
+    <myns:price>22.95</myns:price>
+    <myns:isbn>0876852630</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>The Night Watch</myns:title>
+    <myns:author>Sergei Lukyanenko</myns:author>
+    <myns:price>17.99</myns:price>
+    <myns:isbn>0434014125</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="F">
+    <myns:title>Mr Mee</myns:title>
+    <myns:author>Andrew Crumey</myns:author>
+    <myns:price>22.00</myns:price>
+    <myns:isbn>0312282354</myns:isbn>
+  </myns:book>
+  <myns:book categoryCode="C">
+    <myns:title>Building Parsers with Java</myns:title>
+    <myns:author>Steven John Metsker</myns:author>
+    <myns:price>39.95</myns:price>
+    <myns:isbn>0201719622</myns:isbn>
+  </myns:book>
+</myns:books>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is.
+</para>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<envelope>
+  <header mode="xml">
+    <creationDate>2007-12-03T21:39:48.265-05:00</creationDate>
+  </header>
+  <body>
+    <myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:schemaLocation="url2">
+      <myns:book categoryCode="F">
+        <myns:title>Factotum</myns:title>
+        <myns:author>Charles Bukowski</myns:author>
+        <myns:price>22.95</myns:price>
+        <myns:isbn>0876852630</myns:isbn>
+      </myns:book>
+      <myns:book categoryCode="F">
+        <myns:title>The Night Watch</myns:title>
+        <myns:author>Sergei Lukyanenko</myns:author>
+        <myns:price>17.99</myns:price>
+        <myns:isbn>0434014125</myns:isbn>
+      </myns:book>
+      <myns:book categoryCode="F">
+        <myns:title>Mr Mee</myns:title>
+        <myns:author>Andrew Crumey</myns:author>
+        <myns:price>22.00</myns:price>
+        <myns:isbn>0312282354</myns:isbn>
+      </myns:book>
+    </myns:books>
+  </body>
+  <trailer>This is a trailer element</trailer>
+</envelope>
+]]>
+</programlisting>
+<para>The resources script below does the transformation.
+</para>
+<figure id="resources-wrap.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="wrap">
+    <sx:wrap>
+      <sx:xsltSerializer/>
+      <envelope>
+        <header>
+          <sx:attribute name="mode" value="xml"/>
+          <creationDate>
+            <sx:currentDateTime/>
+          </creationDate>
+        </header>
+        <body>
+          <myns:books xmlns:myns="http://mycompany.com/mynames/"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="url2">
+            <sx:transform>
+              <sx:document/>
+              <sx:processSubtree path="/myns:books/myns:book">
+                <sx:choose>
+                  <sx:when test="@categoryCode='F'">
+                    <sx:transform/>
+                  </sx:when>
+                </sx:choose>
+              </sx:processSubtree>
+            </sx:transform>
+          </myns:books>
+        </body>
+        <trailer>This is a trailer element</trailer>
+      </envelope>
+    </sx:wrap>
+  </sx:service>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-wrap.xml -i documents/books.xml -o output/wrap.xml wrap
+]]>
+</programlisting>
+</section>
+<section>
+  <title>Unwrapping subtrees in an XML document</title>
+<para>
+Continuing from the previous example, the input file is the same, but
+you want to produce multiple files like the one shown below, with filenames
+differentiated by the isbn number.
+</para>
+<figure id="book-0876852630.xml">
+  <title>Book XML output file book-0876852630.xml.</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<myns:book xmlns:myns="http://mycompany.com/mynames/" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           categoryCode="F">
+  <myns:title>Factotum</myns:title>
+  <myns:author>Charles Bukowski</myns:author>
+  <myns:price>22.95</myns:price>
+  <myns:isbn>0876852630</myns:isbn>
+</myns:book>
+]]>
+</programlisting>
+</figure>
+<para>The resources script below does the transformation.
+</para>
+<figure id="resources-unwrap.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                     xmlns:myns="http://mycompany.com/mynames/" >
+
+  <sx:service id="unwrap">
+    <sx:transform>
+      <sx:document/>
+      <sx:processSubtree path="/myns:books/myns:book">
+        <sx:choose>
+          <sx:when test="@categoryCode='F'">
+            <sx:parameter name="isbn" select="myns:isbn"/>
+            <sx:transform>
+              <sx:xsltSerializer>
+                <sx:fileSink file="output/book-{$isbn}.xml"/>
+              </sx:xsltSerializer>
+            </sx:transform>
+          </sx:when>
+        </sx:choose>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-unwrap.xml -i documents/books.xml unwrap
+]]>
+</programlisting>
+</section>
+<section>
+  <title>Streaming a file through a pipeline</title>
+<para>
+This example shows an implementation of the SAX Pipeline example in Michael Kay's 
+<ulink url="http://www.amazon.com/exec/obidos/ASIN/0764543814/102-5652674-7751330">XSLT 2nd Edition Programmer's Reference</ulink>, Appendix F, Example 5.  
+</para>
+<figure id="resources-pipeline.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="pipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt><sx:urlSource url="styles/filter.xsl"/></sx:xslt>
+        <sx:saxFilter class="PostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+<code>PreFilter</code> and <code>PostFilter</code> are the names of Java classes that
+implement the <code>org.xml.sax.XMLFilter</code> interface.  The listings below show the
+Java code for the <code>PreFilter</code> and <code>PostFilter</code> classes
+(from Kay's book.)
+</para>
+<figure id="PreFilter">
+  <title>PreFilter class</title>
+<programlisting>
+<![CDATA[
+public class PreFilter extends XMLFilterImpl {
+
+  public void startElement (String uri, String localName, String qName,
+  Attributes atts) throws SAXException {
+        
+    String newLocalName = localName.toLowerCase();
+    String newQName = qName.toUpperCase();
+    AttributesImpl newAtts =
+      (atts.getLength()>0 ?
+       new AttributesImpl(atts) :
+       new AttributesImpl());
+    newAtts.addAttribute("", "old-local-name", "old-local-name", "CDATA", localName);
+    newAtts.addAttribute("", "old-qname", "old-qname", "CDATA", qName);
+    super.startElement(uri, newLocalName, newQName, newAtts);
+  }
+
+  public void endElement (String uri, String localName, String qName)
+  throws SAXException {
+    String newLocalName = localName.toLowerCase();
+    String newQName = qName.toUpperCase();
+    super.endElement(uri, newLocalName, newQName);
+  }
+}
+]]></programlisting>
+</figure>
+<figure id="PostFilter">
+  <title>PostFilter class</title>
+<programlisting>
+<![CDATA[
+public class PostFilter extends XMLFilterImpl {
+
+  public Stack stack;
+
+  public void startDocument() throws SAXException {
+    stack = new Stack();
+    super.startDocument();
+  }
+
+  public void startElement (String uri, String localName, String qName,
+                            Attributes atts)
+  throws SAXException {
+
+    String originalLocalName = localName;
+    String originalQName = qName;
+    AttributesImpl newAtts = new AttributesImpl();
+    for (int i=0; i<atts.getLength(); i++) {
+      String name = atts.getQName(i);
+      String val = atts.getValue(i);
+      if (name.equals("old-local-name")) {
+        originalLocalName = val;
+      } else if (name.equals("old-qname")) {
+        originalQName = val;
+      } else {
+        newAtts.addAttribute(atts.getURI(i),
+          atts.getLocalName(i),
+          name,
+          atts.getType(i),
+          val);
+      }
+    }
+    super.startElement(uri, originalLocalName, originalQName, newAtts);
+    stack.push(originalLocalName);
+    stack.push(originalQName);
+  }
+
+  public void endElement (String uri, String localName, String qName)
+  throws SAXException {
+    String originalQName = (String)stack.pop();
+    String originalLocalName = (String)stack.pop();
+    super.endElement(uri, originalLocalName, originalQName);
+  }
+}
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by
+<itemizedlist>
+<listitem>Running the sample build script at the command line, to compile
+  the pre and post Java <code>XMLFilter</code> classes and copy them into 
+  the <filename>dir/classes</filename> directory.
+</listitem>
+<listitem>Entering the following command to produce the XML output file.
+<programlisting>
+<![CDATA[
+servingxml -r resources-file.xml -i documents/mixed-up.xml 
+    -o output/original-file.html pipeline
+]]>
+</programlisting>
+</listitem>
+</itemizedlist>
+</para>
+</section>
+
+<section>
+  <title>Streaming dynamically generated SAX events through a pipeline</title>
+<titleabbrev>custom SAX reader</titleabbrev>
+<indexterm><primary>dynamic content</primary></indexterm>
+<para>
+This example produces the same output as the previous, but this time, instead of reading an
+XML document from a file, we generate the SAX events dynamically in a custom SAX reader. 
+</para>
+<figure id="resources-pipeline.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="pipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:saxReader class="MySaxReader"/>
+        </sx:document>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt><sx:urlSource url="styles/filter.xsl"/></sx:xslt>
+        <sx:saxFilter class="PostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+The Java class <code>MySaxReader</code> looks like this.
+</para>
+<programlisting>
+<![CDATA[
+public class MySaxReader implements XMLReader ...                                                             
+
+  private static final AttributesImpl NO_ATTRIBUTES = new AttributesImpl();
+
+  public void parse(String systemId)
+  throws IOException, SAXException {
+    if (contentHandler != null) {
+      contentHandler.startDocument();
+      contentHandler.startElement("","HTML","HTML",NO_ATTRIBUTES);
+      contentHandler.startElement("","Head","Head",NO_ATTRIBUTES);
+      contentHandler.startElement("","TITLE","TITLE",NO_ATTRIBUTES);
+      char[] title = "This is a mixed-case HTML-like XML document".toCharArray();
+      contentHandler.characters(title,0,title.length);
+      contentHandler.endElement("","TITLE","TITLE");
+      contentHandler.endElement("","Head","Head");
+      contentHandler.startElement("","Body","Body");
+      
+      ...
+      
+      contentHandler.endElement("","Body","Body");
+      contentHandler.endElement("","HTML","HTML");
+      contentHandler.endDocument();
+    }  
+  }
+
+
+]]>
+</programlisting>
+<para>
+You can run this example on the command line by
+<itemizedlist>
+<listitem>Run the sample build script at the command line, to compile
+  the pre and post Java <code>XMLFilter</code> classes and copy them into 
+  the <filename>dir/classes</filename> directory.
+</listitem>
+<listitem>Entering the following command to produce the XML output file.
+<programlisting>
+<![CDATA[
+servingxml -r resources-sax.xml -o output/original-sax.html pipeline
+]]>
+</programlisting>
+</listitem>
+</itemizedlist>
+</para>
+</section>
+<section id="invoices-eg" xreflabel="invoices">
+  <title>Processing document subtrees and serializing them to separate files (invoices.)</title>
+<titleabbrev>document subtrees to PDF files</titleabbrev>
+<indexterm><primary>fo</primary></indexterm>
+<indexterm><primary>pdf</primary></indexterm>
+<indexterm><primary>directory</primary><secondary>writing</secondary></indexterm>
+<indexterm><primary>tee</primary><secondary>tag</secondary></indexterm>
+<para>
+This example shows how to serialize individual document subtrees to separate html and pdf files.
+</para>
+<para>
+The input file is an XML document containing a number of invoices.
+</para>
+<figure id="invoices">
+  <title>Input XML file invoices.xml</title>                                                                                            
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="iso-8859-1"?>
+<inv:invoices xmlns:inv="http://www.telio.be/ns/2002/invoice">
+  <inv:invoice currency="EUR" id="200302-01" paid="false">
+  	<inv:client id="test">
+      <inv:email>john@abc.com</inv:email>
+    </inv:client>
+  	<inv:date>2003-02-03</inv:date>
+  	<inv:description>Test description</inv:description>
+  	<inv:item>
+  	<inv:quantity>67.5</inv:quantity>
+  	<inv:unit>h</inv:unit>
+  	<inv:description>January 2004</inv:description>
+  	<inv:unitprice>400</inv:unitprice>
+  	<inv:tax>21.00</inv:tax>
+  	</inv:item>
+  </inv:invoice>
+  <inv:invoice currency="EUR" id="200302-02" paid="true">
+    <inv:client id="test">
+      <inv:email>jane@efg.com</inv:email>
+    </inv:client>
+    <inv:date>2003-02-03</inv:date>
+    <inv:description>Test description</inv:description>
+    <inv:item>
+    <inv:quantity>67.5</inv:quantity>
+    <inv:unit>h</inv:unit>
+    <inv:description>January 2004</inv:description>
+    <inv:unitprice>400</inv:unitprice>
+    <inv:tax>21.00</inv:tax>
+    </inv:item>
+  </inv:invoice>
+</inv:invoices>
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output is a set of HTML and PDF invoice documents, 
+one pair for each inv:invoice element in the master XML document.
+</para>
+<figure id="out-invoices.txt">
+  <title>Directory listing of output files</title>
+<programlisting>
+<![CDATA[
+invoice200302-01.html
+invoice200302-01.pdf
+invoice200302-02.html
+invoice200302-02.pdf
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-invoices.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice">
+
+  <sx:service id="invoices">
+    <sx:transform>
+      <sx:document/>
+      <!-- Here we extract a document subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">
+        <!-- Main pipeline - invoice document subtree to pdf-->
+        <sx:transform>
+          <!-- We initialize a parameter with an XPATH expression
+               applied to the document subtree -->
+          <sx:parameter name="invoice-name" select="@id"/>
+          <fop:foSerializer>
+            <sx:fileSink file="output/invoice{$invoice-name}.pdf"/>
+          </fop:foSerializer>
+          <sx:transform>
+            <sx:transform ref="steps1-4"/>
+            <!-- Tee - invoice document subtree to html-->
+            <sx:tagTee>
+              <sx:xslt documentBase="documents/">
+                <sx:urlSource url="styles/invoice2html.xsl"/>
+              </sx:xslt>
+              <sx:xsltSerializer>
+                <sx:fileSink file="output/invoice{$invoice-name}.html"/>
+              </sx:xsltSerializer>
+            </sx:tagTee>
+            <sx:xslt documentBase="documents/">
+              <sx:urlSource url="styles/invoice2fo.xsl"/>
+            </sx:xslt>
+          </sx:transform>
+        </sx:transform>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt><sx:urlSource url="styles/step1.xsl"/></sx:xslt>
+    <sx:xslt><sx:urlSource url="styles/step2.xsl"/></sx:xslt>
+    <sx:xslt><sx:urlSource url="styles/step3.xsl"/></sx:xslt>
+    <sx:xslt documentBase="documents/">
+      <sx:urlSource url="styles/step4.xsl"/>
+    </sx:xslt>
+  </sx:transform>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>Not the <link xlink:href="../guide/index.html#sx:tagTee">sx:tagTee</link> element, which forks the SAX event stream, and serializes this stream as HTML.
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-invoices.xml -i documents/invoices.xml invoices
+]]>
+</programlisting>
+</para>
+</section>
+<section id="mailInvoices" xreflabel="mailInvoices">
+  <title>Processing document subtrees and serializing them as mail attachments ("mail invoices")</title>
+<titleabbrev>document subtrees to mail</titleabbrev>
+<indexterm><primary>fo</primary></indexterm>
+<indexterm><primary>pdf</primary></indexterm>
+<indexterm><primary>mail</primary><secondary>attachment</secondary></indexterm>
+<para>
+Continuing with the previous example, suppose you want to send the invoices as pdf mail attachments.
+Then you need the following resources script.
+</para>
+<figure id="resources-mailInvoices.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice"
+              xmlns:jm="http://www.servingxml.com/extensions/javamail">
+
+  <sx:service id="invoices">
+    <sx:transform>
+      <sx:document/>
+      <!-- Here we extract a document subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">                        
+        <sx:parameter name="email" select="inv:client/inv:email"/>
+
+        <!--  We want to send an email with the PDF invoice as an attachment   -->
+        <jm:sendMail subject="Invoice" to="{$email}">
+          <sx:parameter name="invoice-name" select="@id"/>
+
+          <jm:mailAccount ref="myMailAccount"/>
+          <jm:message>
+            <jm:attachment filename="{$invoice-name}.pdf">
+              <sx:serialize>
+                <!-- We initialize a parameter with an XPATH expression
+                     applied to the document subtree -->
+                <fop:foSerializer/>
+                <sx:transform>
+                  <sx:transform ref="steps1-4"/>
+                  <sx:xslt documentBase="documents/">
+                    <sx:urlSource url="styles/invoice2fo.xsl"/>
+                  </sx:xslt>
+                </sx:transform>
+              </sx:serialize>
+            </jm:attachment>
+          </jm:message>
+          <sx:onError>
+            <!-- If send mail fails (e.g. no smtp host), just proceed with the next action -->
+            <!-- (the error will still be logged) -->
+          </sx:onError>
+        </jm:sendMail>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt>
+      <sx:urlSource url="styles/step1.xsl"/>
+    </sx:xslt>
+    <sx:xslt>
+      <sx:urlSource url="styles/step2.xsl"/>
+    </sx:xslt>
+    <sx:xslt>
+      <sx:urlSource url="styles/step3.xsl"/>
+    </sx:xslt>
+    <sx:xslt documentBase="documents/">
+      <sx:urlSource url="styles/step4.xsl"/>
+    </sx:xslt>
+  </sx:transform>
+
+  <!-- Set up this mail account, substituting your smtp host, display name, and email address -->
+  <!-- You will also need to enter the 'to' and 'cc' recipient addresses in the  jm:sendMail element -->
+  <jm:mailAccount id="myMailAccount"
+                  smtpHost="smtp1.abc.ca">
+    <jm:sender displayName="Daniel"
+                 emailAddress="danielaparker@abc.ca"/>
+  </jm:mailAccount>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-mailInvoices.xml -i documents/invoices.xml invoices
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Reading dynamic content</title>
+<titleabbrev>dynamic content</titleabbrev>
+<indexterm><primary>dynamic content</primary></indexterm>
+<para>
+This example shows an implementation of dynamic content handlers.  
+</para>
+<para>
+Running this example requires the following steps:  
+<itemizedlist>
+<listitem><para>Run the sample build script at the command line, to compile
+  the DynamicContentHandler classes and copy them into 
+  the distribution classes directory. </para></listitem>
+<listitem><para>Enter the following command to produce a page of books in the fiction (F) category,
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml -o output/books.html books category=F
+]]>
+</programlisting>
+</para></listitem>
+</itemizedlist>
+</para>
+<figure id="resources-dynamic.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources>
+
+  <sx:service id="swath">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="swath"/>
+        <sx:xslt ref="swath"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:xslt id="swath">
+    <sx:urlSource url="styles/books.xsl"/>
+    <sx:parameter name="category"/>
+  </sx:xslt>
+  
+  <!-- BookCatalog is the name of a Java class used to produce dynamic content for the primary document -->
+  <sx:dynamicContent name="swath" class="dynamiccontent.BookCatalog"/>
+  
+  <!-- Categories is the name of a Java class used to produce dynamic content in a 
+        document function in the stylesheet -->
+  <sx:dynamicContent name="categories" class="dynamiccontent.Categories"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+<code>BookCatalog</code> and <code>Categories</code> are the names of Java classes that
+implement the <code>com.servingxml.components.content.dynamic.DynamicContentHandler</code> interface.
+The listing below shows the Java code for the <code>Categories</code> class.
+</para>
+<figure id="categories">
+  <title>Categories</title>
+<programlisting>
+<![CDATA[
+package dynamiccontent;
+
+public class Categories implements DynamicContentHandler {
+
+  static class Category {
+    private final String code;
+    private final String description;
+
+    public Category(String code, String description) {
+      this.code = code;
+      this.description = description;
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+  }
+
+  private final HashMap categoryMap;
+  private final String namespace = "";
+
+  public Categories() {
+    categoryMap = new HashMap();
+    categoryMap.put("S", new Category("S","Science"));
+    categoryMap.put("C", new Category("C","Computing"));
+    categoryMap.put("CHILD", new Category("CHILD","Children"));
+    categoryMap.put("F", new Category("F","Fiction"));
+    categoryMap.put("P", new Category("P","Philospohy"));
+    categoryMap.put("R", new Category("R","Religion"));
+  }
+  
+  //  The onRequest method must be reentrant
+  public void onRequest(ServiceContext context, Book parameters, 
+  ContentWriter contentWriter)  {
+
+    contentWriter.startElement(namespace,"categories");             
+      
+    String id = parameters.getCategory();
+
+    if (id != null && id.length() != 0) {
+      if (id.equals("all")) {
+        Collection values = categoryMap.values();
+        Iterator iter = values.iterator();
+        while (iter.hasNext()) {
+          Category category = (Category)iter.next();
+          writeCategory(category,contentWriter);
+        }
+      } else {
+        Category category = (Category)categoryMap.get(id);
+        writeCategory(category,contentWriter);
+      }
+    }
+
+    contentWriter.endElement(namespace,"categories");
+  }
+
+  private void writeCategory(Category category, ContentWriter contentWriter) 
+   {
+    AttributeSet attributes = contentWriter.newAttributeSet();
+    attributes.addAttribute(namespace,"code",category.getCode());
+    attributes.addAttribute(namespace,"desc",category.getDescription());
+    contentWriter.startEndElement(namespace,"category",attributes); 
+  }
+}]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by 
+<itemizedlist>
+<listitem>Running the sample build script at the command line, to compile
+  the DynamicContentHandler classes and copy them into 
+  the distribution classes directory.</listitem>
+<listitem>Entering the following command to produce a page of swath in the fiction (F) category,
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml -o output/books.html swath category=F
+]]>
+</programlisting>
+</listitem>
+</itemizedlist>
+</para>
+</section>
+<section>
+<title>XML to Mail</title>
+<titleabbrev>XML to mail</titleabbrev>
+<indexterm><primary>mail</primary><secondary>attachment</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will transform an XML document to XSL-FO,
+format it to PDF, and send the result as an attachment in a mail message.  
+</para>
+<para>
+This example requires the mail module.
+</para>
+<para>
+Once you have everything configured, rebuild the ServingXML jar file
+in the servingxml directory.  
+</para>
+<figure id="resources-mail.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:jm="http://www.servingxml.com/extensions/javamail">
+  
+  <sx:service id="pulp">                         
+      <!--  Our first action is to send an email with the pulp novel as an attachment   -->
+      <jm:sendMail subject="test" to="john@yyy.com" cc="linda@zzz.com">
+        <jm:mailAccount ref="myMailAccount"/>
+        <jm:message>
+
+          <!-- Put some HTML in the message body --> 
+          <jm:part type="alternative">
+            <sx:transform>           
+              <sx:document><xxx/></sx:document>
+              <sx:xslt ref="welcome/html"/>
+            </sx:transform>        
+          </jm:part>
+          
+          <jm:attachment filename="pulp.pdf">
+            <fop:foSerializer/>
+            <sx:transform>
+               <sx:content ref="pulp"/>
+               <sx:xslt ref="novel/fo"/>
+            </sx:transform>
+          </jm:attachment>      
+        </jm:message>
+        <sx:onError>
+            <!-- If send mail fails (e.g. no smtp host), just proceed with the next action -->
+            <!-- (the error will still be logged) -->
+        </sx:onError>
+      </jm:sendMail> 
+                                        
+      <!--  Our second action is to write the pulp novel to a file   -->
+      <sx:serialize>
+        <fop:foSerializer/>
+        <sx:transform>
+           <sx:content ref="pulp"/>
+           <sx:xslt ref="novel/fo"/>
+        </sx:transform>
+      </sx:serialize>
+    
+  </sx:service>                                                                                                             
+
+  <!-- Set up this mail account, substituting your smtp host, display name, and email address -->
+  <!-- You will also need to enter the 'to' and 'cc' recipient addresses in the  jm:sendMail element -->
+  <jm:mailAccount id="myMailAccount" 
+                           smtpHost="smtp1.abc.ca"> 
+    <jm:sender displayName="DP" 
+                     emailAddress="danielaparker@abc.ca"/>
+  </jm:mailAccount>
+
+  <sx:document id="pulp">        
+    <sx:urlSource url="data/pulp.xml"/>
+  </sx:document>
+
+  <sx:xslt id="novel/fo">
+    <sx:urlSource url="data/novel.xsl"/>
+  </sx:xslt>
+
+  <sx:xslt id="welcome/html">
+    <sx:urlSource url="data/welcome.xsl"/>
+  </sx:xslt>
+  
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+This example produces two outputs:
+<itemizedlist>
+<listitem><para>
+A mail message with an HTML body part displaying "Welcome to Presenting Books" and
+a PDF attachment.
+</para></listitem>
+<listitem><para>
+A PDF file pulp.pdf written to the output directory.
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml -o output/pulp.pdf pulp
+]]>
+</programlisting>
+</para>
+</section> 
+<section>
+<title>Writing an XML file to an FTP sink</title>
+<titleabbrev>FTP sink</titleabbrev>
+<titleabbrev>load employees</titleabbrev>
+<indexterm><primary>FTP</primary><secondary>sink</secondary></indexterm>
+<para>
+This example shows how to send stream output to an FTP host.
+</para>
+<figure id="resources-ftp.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  
+  <edt:ftpClient id="myFtpSite" host="myFtpHost" 
+                 user="anonymous" password="xxx"/>
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <edt:ftpSink remoteDirectory="incoming" remoteFile="books{$version}.xml">
+          <edt:ftpClient ref="myFtpSite"/>
+        </edt:ftpSink>
+      </sx:xsltSerializer/>
+        
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:document id="books">
+    <sx:urlSource url="documents/books.xml"/>
+  </sx:document>
+  
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by 
+<itemizedlist>
+<listitem><para>Updating the resources.xml file with a valid FTP host</para></listitem>
+<listitem><para>Entering the following command to send an XML file to the FTP host,
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml books version=1.0
+]]>
+</programlisting>
+</para></listitem>
+</itemizedlist>
+</para>
+</section>
+  <section>
+    <title>Comparing Two XML Documents with fn:deep-equal</title>
+          <para>The example below shows how to compare two XML documents for equality with
+          the XPATH fn:deep-equal function.
+          </para>
+        <programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="compare-documents">
+    <sx:task ref="test-documents-are-equal"/>
+  </sx:service>
+
+  <sx:document id="odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:document id="another-odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:serialize id="test-documents-are-equal">
+    <sx:transform>
+      <sx:choose>
+        <sx:when test="fn:deep-equal(fn:document('odd-element-document'),
+                     fn:document('another-odd-element-document'))">
+          <sx:document>
+            <result>equal</result>
+          </sx:document>
+        </sx:when>
+        <sx:otherwise>
+          <sx:document>
+            <result>unequal</result>
+          </sx:document>
+        </sx:otherwise>
+      </sx:choose>
+    </sx:transform>
+  </sx:serialize>
+
+</sx:resources>
+]]>
+        </programlisting>
+<para>
+The documents are equal, so the script produces the output  
+<![CDATA[
+<result>equal</result>
+]]>
+</para>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-compare.xml -o output/compare-documents.xml 
+  compare-documents
+]]>
+</programlisting>
+</para>
+  </section>
+</section>
+

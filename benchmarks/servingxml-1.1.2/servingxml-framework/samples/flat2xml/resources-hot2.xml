@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv"
+              xmlns:integer="java.lang.Integer" xmlns:math="java.lang.Math">
+
+  <sx:include href="flatfile-hot.xml"/>
+
+  <sx:service id="hot2">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="hot2"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="hot2">
+    <sx:flatFileReader>
+      <sx:flatFile ref="hotFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordValidator>
+      <msv:schemaValidator>
+        <sx:urlSource url="data/hot-record.xsd"/>
+      </msv:schemaValidator>
+    </sx:recordValidator>
+    <sx:discardHandler>
+      <sx:log message="{$sx:message}"/>
+    </sx:discardHandler>
+    <sx:recordMapping ref="hot2ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="hot2ToXmlMapping">
+    <hot>
+      <sx:outerGroup startTest="sx:previous//record-type='BFH01'"
+                                 endTest="sx:current//record-type='BFT99'">
+        <periods>
+          <sx:outerGroup startTest="sx:current//record-type='BCH02'"
+                                     endTest="sx:previous//record-type='BCT95'">
+            <period>
+              <sx:outerGroup startTest="sx:previous//record-type='BCH02'"
+                                         endTest="sx:current//record-type='BCT95'">
+                <agents>
+                  <sx:outerGroup startTest="sx:current//record-type='BOH03'"
+                                             endTest="sx:previous//record-type='BOT94'">
+                    <agent>
+                      <sx:groupChoice>
+                        <sx:innerGroup startTest="sx:current//record-type-prefix='BFH'"
+                                                   endTest="sx:previous//record-type-prefix='BFH'">
+                          <sx:onRecord>
+                            <sx:elementMap element="{record-type}">
+                              <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                            </sx:elementMap>
+                          </sx:onRecord>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type-prefix='BOH'"
+                                                   endTest="sx:previous//record-type-prefix='BOH'">
+                          <sx:onRecord>
+                            <sx:elementMap element="{record-type}">
+                              <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                            </sx:elementMap>
+                          </sx:onRecord>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type-prefix='BFT'"
+                                                  endTest="sx:previous//record-type-prefix='BFT'">
+                          <sx:elementMap element="{record-type}s">
+                            <sx:onRecord>
+                              <sx:elementMap element="{record-type}">
+                                <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                              </sx:elementMap>
+                            </sx:onRecord>
+                          </sx:elementMap>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type-prefix='BCT'"
+                                                   endTest="sx:previous//record-type-prefix='BCT'">
+                          <sx:elementMap element="{record-type}s">
+                            <sx:onRecord>
+                              <sx:elementMap element="{record-type}">
+                                <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                              </sx:elementMap>
+                            </sx:onRecord>
+                          </sx:elementMap>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type='BOT94'"
+                                                   endTest="sx:previous//record-type='BOT94'">
+                          <sx:elementMap element="{record-type}s">
+                            <sx:onRecord>
+                              <sx:elementMap element="{record-type}">
+                                <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                              </sx:elementMap>
+                            </sx:onRecord>
+                          </sx:elementMap>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type='BCH02'"
+                                                   endTest="sx:previous//record-type='BOH03'">
+                          <sx:elementMap element="{record-type}s">
+                            <sx:onRecord>
+                              <sx:elementMap element="{record-type}">
+                                <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                              </sx:elementMap>
+                            </sx:onRecord>
+                          </sx:elementMap>
+                        </sx:innerGroup>
+                        <sx:innerGroup startTest="sx:current//record-type='BKT06'"
+                                                  endTest="sx:previous//record-type='BOT93'">
+                          <sx:elementMap element="{type}s">
+                            <sx:groupChoice>
+                              <sx:innerGroup startTest="sx:current//record-type='BKT06'"
+                                             endTest="sx:previous//record-type='BKP84'">
+                                <sx:elementMap element="{type}">
+                                  <sx:onRecord recordType="bkt06">
+                                    <sx:elementMap element="{record-type}">
+                                      <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                                    </sx:elementMap>
+                                  </sx:onRecord>
+                                  <sx:onRecord recordType="bkp84">
+                                    <sx:elementMap element="{record-type}">
+                                      <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                                      <sx:fieldAttributeMap select="integer:valueOf(amount,16) div math:pow(10,precision)"  attribute="amount"/>
+                                      <sx:fieldAttributeMap field="currency" attribute="currency"/>
+                                    </sx:elementMap>
+                                  </sx:onRecord>
+                                </sx:elementMap>
+                              </sx:innerGroup>
+                              <sx:innerGroup startTest="sx:current//record-type-prefix='BOT'"
+                                                         endTest="sx:previous//record-type-prefix='BOT'">
+                                <sx:elementMap element="{record-type}s">
+                                  <sx:onRecord>
+                                    <sx:elementMap element="{record-type}">
+                                      <sx:fieldAttributeMap field="value" attribute="attr1"/>
+                                    </sx:elementMap>
+                                  </sx:onRecord>
+                                </sx:elementMap>
+                              </sx:innerGroup>
+                            </sx:groupChoice>
+                          </sx:elementMap>
+                        </sx:innerGroup>
+                      </sx:groupChoice>
+                    </agent>
+                  </sx:outerGroup>
+                </agents>
+              </sx:outerGroup>
+            </period>
+          </sx:outerGroup>
+        </periods>
+      </sx:outerGroup>
+    </hot>
+  </sx:recordMapping>
+
+</sx:resources>
+
+

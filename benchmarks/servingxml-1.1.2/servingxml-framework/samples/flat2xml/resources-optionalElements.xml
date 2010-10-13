@@ -1,0 +1,114 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="addCustomer">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="addCustomer"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:flatFile id="customerFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="customer">
+        <sx:fieldDelimiter value="|"/>
+        <sx:delimitedField name="rowid"/>
+        <sx:delimitedField name="forename"/>
+        <sx:delimitedField name="surname"/>
+        <sx:delimitedField name="vatnumber"/>
+        <sx:delimitedField name="ninumber"/>
+        <sx:delimitedField name="custaddr_house_nr"/>
+        <sx:delimitedField name="custaddr_street"/>
+        <sx:delimitedField name="custaddr_town"/>
+        <sx:delimitedField name="custaddr_postcode"/>
+        <sx:delimitedField name="custaddr_country"/>
+        <sx:delimitedField name="billaddr_house_nr"/>
+        <sx:delimitedField name="billaddr_street"/>
+        <sx:delimitedField name="billaddr_town"/>
+        <sx:delimitedField name="billaddr_postcode"/>
+        <sx:delimitedField name="billaddr_country"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordContent id="addCustomer">
+    <sx:flatFileReader>
+      <sx:fileSource file="data/optionalElements.txt"/>
+      <sx:flatFile ref="customerFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="addCustomerToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="addCustomerToXmlMapping">
+    <mns:Message xmlns:mns="www.abc.com/abc"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="www.abc.com/abc abc_v_1.1.xsd">
+      <sx:onRecord>
+        <sx:fieldElementMap field="rowid" element="wf_id"/>
+        <timeStamp>
+          <sx:formatDateTime format = "yyyy-MM-dd'T'HH:mm:ss">
+            <sx:currentDateTime/>
+          </sx:formatDateTime>
+        </timeStamp>
+        <sx:transformRecord>
+          <sx:xslt>
+            <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <xsl:template match="customer">
+                <MessageData>
+                  <addCustomerRequest>
+                    <xsl:element name="foreName">
+                      <xsl:value-of select="forename"/>
+                    </xsl:element>
+                    <xsl:element name="surName">
+                      <xsl:value-of select="surname"/>
+                    </xsl:element>
+                    <custAddress>
+                      <xsl:element name="houseNumber">
+                        <xsl:value-of select="custaddr_house_nr"/>
+                      </xsl:element>
+                      <xsl:element name="street">
+                        <xsl:value-of select="custaddr_street"/>
+                      </xsl:element>
+                      <xsl:element name="town">
+                        <xsl:value-of select="custaddr_town"/>
+                      </xsl:element>
+                      <xsl:element name="postCode">
+                        <xsl:value-of select="custaddr_postcode"/>
+                      </xsl:element>
+                      <xsl:element name="country">
+                        <xsl:value-of select="custaddr_country"/>
+                      </xsl:element>
+                    </custAddress>
+                    <xsl:if test="string(billaddr_house_nr) and string(billaddr_street)">
+                      <billAddress>
+                        <xsl:element name="houseNumber">
+                          <xsl:value-of select="billaddr_house_nr"/>
+                        </xsl:element>
+                        <xsl:element name="street">
+                          <xsl:value-of select="billaddr_street"/>
+                        </xsl:element>
+                        <xsl:element name="town">
+                          <xsl:value-of select="billaddr_town"/>
+                        </xsl:element>
+                        <xsl:element name="postCode">
+                          <xsl:value-of select="billaddr_postcode"/>
+                        </xsl:element>
+                        <xsl:element name="country">
+                          <xsl:value-of select="billaddr_country"/>
+                        </xsl:element>
+                      </billAddress>
+                    </xsl:if>
+                  </addCustomerRequest>
+                </MessageData>
+              </xsl:template>
+            </xsl:transform>
+          </sx:xslt>
+        </sx:transformRecord>
+      </sx:onRecord>
+    </mns:Message>
+  </sx:recordMapping>
+
+</sx:resources>

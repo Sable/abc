@@ -1,0 +1,32 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+ <xsd:annotation>
+  <xsd:documentation xml:lang="en">
+   Countries schema 
+  </xsd:documentation>
+ </xsd:annotation>
+
+ <!-- This element's name is the same as that of the root element appearing inside the px:recordMapping element. -->
+ <xsd:element name="countries" type="CountriesType"/>
+
+ <xsd:complexType name="CountriesType">
+  <xsd:sequence>
+      <xsd:element name="country" type="CountryType" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+
+ <xsd:complexType name="CountryType">
+  <xsd:sequence>
+   <xsd:element name="countryName" type="xsd:string"/>
+  </xsd:sequence>
+  <xsd:attribute name="countryCode" type="CountryCode"/>
+ </xsd:complexType>
+
+  <xsd:simpleType name='CountryCode'>
+    <xsd:restriction base='xsd:string'>
+      <xsd:length value='3' fixed='true'/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
+
+

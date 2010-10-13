@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice">
+
+  <sx:service id="invoices">
+    <sx:transform>
+      <sx:document/>
+      <!-- Here we extract a document subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">
+        <!-- Main pipeline - invoice document subtree to pdf-->
+        <sx:transform>
+          <!-- We initialize a parameter with an XPATH expression
+               applied to the document subtree -->
+          <sx:parameter name="invoice-name" select="@id"/>
+          <fop:foSerializer>
+            <sx:fileSink file="output/invoice{$invoice-name}.pdf"/>
+          </fop:foSerializer>
+          <sx:transform>
+            <sx:transform ref="steps1-4"/>
+            <!-- Tee - invoice document subtree to html-->
+            <sx:tagTee>
+              <sx:xslt documentBase="documents/">
+                <sx:urlSource url="styles/invoice2html.xsl"/>
+              </sx:xslt>
+              <sx:xsltSerializer>
+                <sx:fileSink file="output/invoice{$invoice-name}.html"/>
+              </sx:xsltSerializer>
+            </sx:tagTee>
+            <sx:xslt documentBase="documents/">
+              <sx:urlSource url="styles/invoice2fo.xsl"/>
+            </sx:xslt>
+          </sx:transform>
+        </sx:transform>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt><sx:urlSource url="styles/step1.xsl"/></sx:xslt>
+    <sx:xslt><sx:urlSource url="styles/step2.xsl"/></sx:xslt>
+    <sx:xslt><sx:urlSource url="styles/step3.xsl"/></sx:xslt>
+    <sx:xslt documentBase="documents/">
+      <sx:urlSource url="styles/step4.xsl"/>
+    </sx:xslt>
+  </sx:transform>
+
+</sx:resources>
+

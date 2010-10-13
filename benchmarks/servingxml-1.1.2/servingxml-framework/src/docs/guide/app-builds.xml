@@ -1,0 +1,56 @@
+<appendix id="app-builds"><title>Building the Source Distribution</title>
+<section>
+<title>Ant</title>
+<para>
+Ant is used for building the ServingXML source.  Ant is an open source java-based build 
+tool.  It specifies an XML format for projects.  It is cross-platform.
+</para>
+<para>
+A version of ant is included with the ServingXML distribution files, in the lib/ant
+directory.  You can obtain the latest version of Ant from the Jarkarta web site
+<ulink url="http://jakarta.apache.org/site/binindex.html">http://jakarta.apache.org/site/binindex.html</ulink>
+</para>.
+</section>
+
+<section>
+<title>Building ServingXML</title>
+<para>
+An ant build.xml file is located in the servingxml directory.  
+To build the distribution jar file servingxml.jar, enter the command
+
+<programlisting>
+build
+</programlisting>
+</para>
+<para>
+The build.xml file defines three build targets:
+<itemizedlist>
+<listitem><para>
+dist, the default, which builds the distribution jar file 
+servingxml.jar in the lib directory.
+</para></listitem>
+<listitem><para>
+tests, which builds the test suite jar file 
+tests.jar in the tests directory.
+</para></listitem>
+<listitem><para>
+javadoc, which builds the javadoc files 
+in the docs/api directory.
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+To specify a target, provide the target name as an argument to the build command,
+e.g. to build the javadoc target, enter the command
+
+<programlisting>
+build javadoc
+</programlisting>
+</para>
+<para>
+The build requires the presence of certain third party jar files in the lib directory.  
+These are described in a readme file in the lib directory.
+</para>
+</section>
+
+</appendix>

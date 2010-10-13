@@ -1,0 +1,71 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="opdef">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="opdef"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="opdef">
+    <sx:flatFileReader>
+      <sx:flatFile ref="opdefFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="opdefRecordMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="opdefFlatFile" name="opdef">
+    <sx:recordDelimiter value="\r\n"/>
+    <sx:recordDelimiter value="\n"/>
+    <sx:recordDelimiter start="{" end="}"/>
+    <sx:flatFileBody trim="true">
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag" width="1"/>
+        <sx:when test="tag='1'">
+          <sx:flatRecordType name="start">
+            <sx:positionalField name="tag" width="2"/>
+            <sx:positionalField name="opdate" width="9"/>
+            <sx:positionalField name="optime" width="7"/>
+            <sx:positionalField name="optarget" width="7"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='3'">
+          <sx:flatRecordType name="end">
+            <sx:positionalField name="tag" width="2"/>
+            <sx:positionalField name="tpdate" width="9"/>
+            <sx:positionalField name="tptime" width="7"/>
+            <sx:positionalField name="tptarget" width="7"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType name="data">
+            <sx:delimitedField name="field1"/>
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="opdefRecordMapping">
+    <opdef>
+      <sx:onRecord recordType="start">
+        <start>
+          <sx:defaultFieldElementMap fields="opdate optime optarget"/>
+        </start>  
+      </sx:onRecord>
+      <sx:onRecord recordType="end">
+        <end>
+          <sx:defaultFieldElementMap fields="tpdate tptime tptarget"/>
+        </end>  
+      </sx:onRecord>
+      <sx:onRecord recordType="data">
+        <sx:cdata>
+          <sx:toString value="{field1}"/>
+        </sx:cdata>
+      </sx:onRecord>
+    </opdef>
+  </sx:recordMapping>  
+
+</sx:resources>
+

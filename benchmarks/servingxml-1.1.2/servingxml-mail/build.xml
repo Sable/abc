@@ -1,0 +1,110 @@
+<project name="servingxml" default="dist" basedir=".">
+  <target name="init">
+    <property file="build.properties"/>
+    <property name="dist.lib" value = "${dist.bin}/lib"/>
+    <property name="dist.resources" value = "${dist.bin}/resources"/>
+    <property name="resources.base" value = "src/main/resources"/>
+    <echo message="dist.lib = ${dist.lib}"/>
+    <echo message="lib.base = ${lib.base}"/>
+     <tstamp/>
+
+     <property name="build.classes" value="${build.base}/classes"/>
+     <property name="app.jar.filename" value="${app.name}.jar"/> 
+     <property name="dist.src.resources" value="${src.base}/resources"/>
+     <property name="app.src.base" value="${src.base}/java"/>
+
+     <filter token="version" value="1.0.0" />
+     <filter token="year" value="2001" />
+  </target>
+
+  <target name="removetmpfiles">
+    <delete dir="${build.classes}" />
+  </target>
+
+  <target name="makebuildhome">
+     <mkdir dir="${build.base}" />
+     <mkdir dir="${build.classes}"/>
+  </target>
+
+  <target name="prepare" depends="init, removetmpfiles, makebuildhome">
+    <mkdir dir="${build.classes}"/>
+    <!-- <delete dir="${dist.lib}" includes="**"/> -->
+    <copy todir="${dist.lib}">
+     <fileset dir="${lib.base}"  excludes="${lib.excludes}">
+       <include name="*.jar"/>
+       <include name="*.zip"/>
+     </fileset> 
+    </copy>
+    <copy todir="${dist.resources}">
+      <fileset dir="${resources.base}" includes="**"/>
+    </copy>
+    <copy todir="${build.classes}">
+     <fileset dir="${dist.src.resources}" includes="**"/>
+    </copy>
+   <path id="dist.classpath">
+     <fileset dir="${dist.bin}">
+       <include name="*.jar"/>
+     </fileset>
+     <fileset dir="${dist.lib}">
+       <include name="*.jar"/>
+     </fileset>
+   </path>
+  </target>
+
+  <target name="compile.javadoc" depends="build.dist">
+     <javadoc windowtitle="My Site" doctitle="${app.name}" packagenames="com.*" sourcepath="${app.src.base}" destdir="${dist.javadoc}" classpathref="dist.classpath" author="false"/>
+  </target>
+
+  <target name="compile.dist" depends="prepare">
+     <javac debug="${compile.debug}" srcdir="${app.src.base}" includes="**" 
+       destdir="${build.classes}" classpathref="dist.classpath"/>
+  </target>
+
+  <target name="build.dist" depends="compile.dist">
+    <property name="dist.lib.dir" location="${dist.lib}"/>
+
+    <pathconvert pathsep=" " property="javafiles" refid="dist.classpath">
+      <map from="${dist.lib.dir}${file.separator}" to=""/>
+    </pathconvert>
+    <echo message="${basedir}"/>
+
+    <jar jarfile="${dist.lib}/${app.jar.filename}"
+              basedir="${build.classes}" includes="**" excludes="">
+        <manifest>
+          <attribute name="Manifest-Version" value="1.0"/>
+          <attribute name="ServingXML-Components" value="META-INF/components/${extension.longname}/components.xml"/>
+        </manifest>                
+     </jar>         
+
+  </target>
+  
+  <target name="dist.cleanup">
+  <delete dir="${build.classes}" />
+  </target>
+
+  <target name="dist.samples">
+    <property name="samples.base" value = "samples"/>
+    <property name="samples.extension" value = "${dist.samples.base}/${extension.name}"/>
+    <echo message="samples dest = ${samples.extension} source = ${samples.base}"/>
+    <mkdir dir="${dist.samples.base}/${extension.name}"/>
+    <mkdir dir="${dist.samples.base}/${extension.name}/output"/>
+    <copy todir="${samples.extension}">
+     <fileset dir="${samples.base}" includes="**"/>
+    </copy>
+  </target>
+
+  <target name="dist.nosamples" depends="build.dist, dist.cleanup">
+  </target>
+
+  <target name="dist" depends="dist.nosamples,dist.samples">
+  </target>
+
+  <target name="javadoc" depends="build.dist, dist.cleanup, compile.javadoc">
+  </target>
+
+  <target name="tests" depends="dist.nosamples">
+  </target>
+
+</project>
+
+

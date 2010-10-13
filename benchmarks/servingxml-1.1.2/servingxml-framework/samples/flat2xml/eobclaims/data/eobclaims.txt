@@ -1,0 +1,6 @@
+ADM2301EOBS
+HDR06/13/08200815501300101MEMBER01          BISHOP         
+ADR1234 TEST DR                                                                                       ARVADA            
+HDR06/13/08200815501300102MEMBER02          BISHOP         
+ADR5678 TEST DR                                                                                       ARVADA            
+TLRTOTAL EOBS GENERATED: 0000001000000000000010000018                                                                                                                                                                                                                                                       

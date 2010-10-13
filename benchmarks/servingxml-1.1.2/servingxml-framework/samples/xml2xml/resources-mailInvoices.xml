@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:inv="http://www.telio.be/ns/2002/invoice"
+              xmlns:jm="http://www.servingxml.com/extensions/javamail">
+
+  <sx:service id="invoices">
+    <sx:transform>
+      <!-- Here we extract a document subtree from the SAX stream -->
+      <sx:processSubtree path="/inv:invoices/inv:invoice">                        
+        <sx:parameter name="email" select="inv:client/inv:email"/>
+
+        <!--  We want to send an email with the PDF invoice as an attachment   -->
+        <jm:sendMail subject="Invoice" to="{$email}">
+          <sx:parameter name="invoice-name" select="@id"/>
+
+          <jm:mailAccount ref="myMailAccount"/>
+          <jm:message>
+            <jm:attachment filename="{$invoice-name}.pdf">
+              <sx:serialize>
+                <!-- We initialize a parameter with an XPATH expression
+                     applied to the document subtree -->
+                <fop:foSerializer/>
+                <sx:transform>
+                  <sx:transform ref="steps1-4"/>
+                  <sx:xslt documentBase="documents/">
+                    <sx:urlSource url="styles/invoice2fo.xsl"/>
+                  </sx:xslt>
+                </sx:transform>
+              </sx:serialize>
+            </jm:attachment>
+          </jm:message>
+          <sx:onError>
+            <!-- If send mail fails (e.g. no smtp host), just proceed with the next action -->
+            <!-- (the error will still be logged) -->
+          </sx:onError>
+        </jm:sendMail>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+  <sx:transform id="steps1-4">
+    <sx:xslt>
+      <sx:urlSource url="styles/step1.xsl"/>
+    </sx:xslt>
+    <sx:xslt>
+      <sx:urlSource url="styles/step2.xsl"/>
+    </sx:xslt>
+    <sx:xslt>
+      <sx:urlSource url="styles/step3.xsl"/>
+    </sx:xslt>
+    <sx:xslt documentBase="documents/">
+      <sx:urlSource url="styles/step4.xsl"/>
+    </sx:xslt>
+  </sx:transform>
+
+  <!-- Set up this mail account, substituting your smtp host, display name, and email address -->
+  <!-- You will also need to enter the 'to' and 'cc' recipient addresses in the  jm:sendMail element -->
+  <jm:mailAccount id="myMailAccount"
+                  smtpHost="smtp1.abc.ca">
+    <jm:sender displayName="Daniel"
+                 emailAddress="danielaparker@abc.ca"/>
+  </jm:mailAccount>
+
+</sx:resources>
+

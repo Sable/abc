@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv"
+              xmlns:integer="java.lang.Integer" xmlns:math="java.lang.Math">
+
+  <sx:service id="hot">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="hot"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="hot">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="hotFlatFile"/>
+      </sx:flatFileReader>
+      <sx:recordValidator>
+        <msv:schemaValidator>
+          <sx:urlSource url="data/hot-record.xsd"/>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="hotToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="hotFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="short-record-type"  width="3"/>
+        <sx:positionalField name="record-type" start="1" width="5"/>
+        <sx:when test="record-type='BKP84'">
+          <sx:flatRecordType name="bkp84">
+            <sx:positionalField name="record-type"  start="1" width="5"/>
+            <sx:positionalField name="value" width="7"/>
+            <sx:positionalField name="amount" width="2"/>
+            <sx:positionalField name="currency" width="3"/>
+            <sx:positionalField name="precision" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="short-record-type='BKT'">
+          <sx:flatRecordType name="bkt">
+            <sx:positionalField name="record-type"  start="1" width="5"/>
+            <sx:positionalField name="value" width="7"/>
+            <sx:positionalField name="type" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType name="other">
+            <sx:positionalField name="record-type" start="1" width="5"/>
+            <sx:positionalField name="value" width="7"/>
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="hotToXmlMapping">
+    <hot>
+      <sx:onRecord recordType="bkp84">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+          <sx:fieldAttributeMap field="calculatedAmount"  attribute="amount"/>
+          <sx:fieldAttributeMap field="currency" attribute="currency"/>
+        </sx:elementMap>
+      </sx:onRecord>
+      <sx:onRecord recordType="bkt">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+        </sx:elementMap>
+      </sx:onRecord>
+      <sx:onRecord recordType="other">
+        <sx:elementMap element="{record-type}">
+          <sx:fieldAttributeMap field="value" attribute="attr1"/>
+        </sx:elementMap>
+      </sx:onRecord>
+    </hot>
+  </sx:recordMapping>
+
+</sx:resources>

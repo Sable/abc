@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="employees">
+    <sx:serialize>
+      <sx:content ref="employeesDoc"/>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="employeesDoc">
+    <sx:recordStream>
+      <sx:sqlReader>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlQuery recordType = "employee">
+        SELECT DEPTNO, DNAME FROM DEPT ORDER BY DNAME
+        </sx:sqlQuery>
+      </sx:sqlReader>
+                                                                                            
+      <!-- for each row from the previous reader, run this reader -->
+      <sx:sqlReader>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB, {DEPTNO} AS DEPTNO, '{DNAME}' AS DEPT FROM EMP  WHERE DEPTNO = {DEPTNO}
+        ORDER BY ENAME
+        </sx:sqlQuery>
+      </sx:sqlReader>
+    </sx:recordStream>
+
+    <sx:recordMapping ref="employeesToXml"/>
+
+  </sx:recordContent>
+
+  <sx:recordMapping id="employeesToXml">
+    <employees>
+      <sx:groupBy fields="DEPT">
+        <department>
+          <sx:fieldAttributeMap field="DEPTNO" attribute="dept-no"/>
+          <sx:fieldAttributeMap field="DEPT" attribute="dept-name"/>
+          <sx:onRecord>
+            <employee>
+              <sx:fieldAttributeMap field="EMPNO" attribute="employee-no"/>
+              <sx:fieldElementMap field="NAME" element="name"/>
+            </employee>
+          </sx:onRecord>
+        </department>
+      </sx:groupBy>
+    </employees>
+  </sx:recordMapping>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

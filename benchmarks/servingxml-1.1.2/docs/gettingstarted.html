@@ -1,0 +1,276 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Getting Started</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0">
+<meta name="verify-v1" content="bjOlpPVOTmerzJUJNrhZOPE53CqnavEJXFi0CLe/FGw=" />
+          </head>
+<script src="http://www.google-analytics.com/urchin.js"
+type="text/javascript">
+</script>
+    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="eg-consoleapp"></a>Getting Started</h1></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e4">Download ServingXML</a></span></dt><dt><span class="section"><a href="#d4e10">Building ServingXML</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e12">Set Up Your Environment</a></span></dt><dt><span class="section"><a href="#d4e34">Run the Build Script</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e72">Installing ServingXML</a></span></dt><dt><span class="section"><a href="#d4e86">Running ServingXML</a></span></dt><dt><span class="section"><a href="#d4e124">First Example</a></span></dt><dt><span class="section"><a href="#d4e132"></a></span></dt><dt><span class="section"><a href="#d4e133">Configuring ServingXML</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e135">Configure logging</a></span></dt><dt><span class="section"><a href="#d4e153">Setting options in the configuration file</a></span></dt><dt><span class="section"><a href="#d4e165">Changing XSLT transformers</a></span></dt><dt><span class="section"><a href="#d4e183">Using the Java endorsed directory</a></span></dt><dt><span class="section"><a href="#d4e200">Add or drop extensions</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e204">Error Processing</a></span></dt></dl></div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e4"></a>Download ServingXML</h2></div></div></div>
+
+<p>
+Download the latest release from
+<a class="ulink" href="https://sourceforge.net/projects/servingxml/" target="_top">https://sourceforge.net/projects/servingxml/</a>.
+This includes the source code and build files as well as a number of third party jar files. Be sure to read the 
+<code class="filename">release-notes.txt</code> file <span class="emphasis"><em>carefully</em></span> if you are upgrading from a previous version.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e10"></a>Building ServingXML</h2></div></div></div>
+  
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e12"></a>Set Up Your Environment</h3></div></div></div>
+  
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e14"></a>Java Development Environment</h4></div></div></div>
+
+<p>
+ServingXML versions 0.8.x require <a class="ulink" href="http://java.sun.com/javase/downloads/index_jdk5.jsp" target="_top">Java SE 5</a> 
+or later (they will not work with earlier versions.)
+</p>
+<p>
+Set the <code class="code">JAVA_HOME</code> environmental variable to point to the JDK base directory: 
+</p><div class="itemizedlist"><ul type="disc"><li><span>Windows XP:  Go to Start -&gt; Control Panel -&gt; System -&gt; Advanced -&gt; Environment Variables
+and set the environment variable JAVA_HOME to c:\path\to\java</span></li><li><span>Linux/Unix/Mac:  export JAVA_HOME=/path/to/java/</span></li></ul></div><p>
+</p>
+<p>
+<a class="ulink" href="http://ant.apache.org/index.html" target="_top">Apache ANT</a> must be installed before building ServingXML.
+Download a recent binary release and unzip the download file to a directory in your system.  Set the <code class="code">ANT_HOME</code> 
+environmental variable to point to the <code class="code">ANT</code> base directory: 
+</p><div class="itemizedlist"><ul type="disc"><li><span>Windows XP:  Go to Start -&gt; Control Panel -&gt; System -&gt; Advanced -&gt; Environment Variables
+and set the environment variable ANT_HOME to c:\path\to\ant</span></li><li><span>Linux/Unix/Mac:  export ANT_HOME=/path/to/ant/</span></li></ul></div><p>
+</p>
+</div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e34"></a>Run the Build Script</h3></div></div></div>
+
+<p>
+ From the command line, in the root directory of the servingxml download,
+ build the distribution:
+</p><div class="itemizedlist"><ul type="disc"><li><span>[win32] build</span></li><li><span>[unix] ./build.sh</span></li></ul></div><p>
+</p>
+<p>
+The build command will create two subdirectories
+under the target directory <code class="filename">target</code>:
+</p>
+<div class="itemizedlist"><ul type="disc"><li><span>servingxml
+</span></li><li><span>samples
+</span></li></ul></div>
+<p>
+The <code class="filename">servingxml</code> subdirectory is a binary
+distribution, it contains all of the files required for running 
+<code class="code">ServingXML</code> applications, and you can move it to
+any location on your computer.  Under it, you will find the following 
+file and directories.
+</p>
+<div class="itemizedlist"><ul type="disc"><li><span>
+<code class="filename">servingxml.jar</code> - jar file that contains the main program
+</span></li><li><span>
+<code class="filename">config</code> - directory of configuration files
+</span></li><li><span>
+<code class="filename">lib</code> - all jar files required by the servingxml framework and included extensions
+</span></li><li><span>
+ <code class="filename">resources/META-INF/components</code> - directory of <code class="filename">components.xml</code> files (not used by console app.)
+</span></li><li><span>
+<code class="filename">classes</code> - your custom java .class files for SAX filters, dynamic content handlers, etc.
+</span></li><li><span>
+<code class="filename">testsuite</code> - tests written in the ServingXML markup language
+</span></li></ul></div>
+</div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e72"></a>Installing ServingXML</h2></div></div></div>
+  
+<p>To install, first build the distribution, then copy the <code class="filename">target/servingxml</code> directory to a convenient location 
+on your system.
+</p>
+<p>
+Set the JAVA_HOME environmental variable to point to the Java base directory (if not already set): 
+</p>
+<p>
+Add ServingXML's location to the <code class="code">PATH</code> environmental variable: 
+</p><div class="itemizedlist"><ul type="disc"><li><span>Windows XP:  Go to Start -&gt; Control Panel -&gt; System -&gt; Advanced -&gt; Environment Variables
+and append <code class="code">;c:\path\to\servingxml</code> to the system variable called <code class="code">PATH</code></span></li><li><span>Linux/Unix/Mac:  export PATH=$PATH:/path/to/servingxml/</span></li></ul></div><p>
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e86"></a>Running ServingXML</h2></div></div></div>
+  
+<p>
+You can run the <code class="code">ServingXML</code> console application by executing the batch file 
+<code class="code">servingxml.bat</code> (Windows) or the shell script <code class="code">servingxml</code> 
+(Unix/Linux).  The syntax for running the console application is 
+</p><pre class="programlisting">
+  servingxml [-options] service [param=value...]
+</pre><p>
+</p>
+<p>
+The options are as follows.
+</p><div class="glosslist"><dl><dt>-r</dt><dd><p>Identifies the resources script.</p></dd><dt>-i</dt><dd><p>Identifies the default input file (if not specified it defaults to the "standard" input stream.)</p></dd><dt>-o</dt><dd><p>Identifies the default output file (if not specified it defaults to the "standard" output stream.)</p></dd><dt>-c</dt><dd><p>Identifies an optional configuration file.
+If this option is not specified, ServingXML looks for a configuration
+file called <code class="filename">servingxml.xml</code> in the
+classpath.  If none is found, default values are used.
+</p></dd><dt>-T</dt><dd><p>Show exception stack trace.</p></dd><dt>-help</dt><dd><p>Print help.</p></dd><dt>-version</dt><dd><p>Print the version.</p></dd></dl></div><p>
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e124"></a>First Example</h2></div></div></div>
+
+<p>
+  Go to the <code class="filename">samples/flat2xml</code> directory.  From the command line, try running the
+  books-to-XML conversion,
+</p><pre class="programlisting">
+    servingxml -r resources-books.xml -i data/books.txt -o output/books.xml books
+</pre><p>    
+  Have a look at the output in the <code class="filename">output/books.xml</code> file.
+</p>
+<p>
+ Now, have a look at the resources script, the <code class="filename">resources-books.xml</code> file.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e133"></a>Configuring ServingXML</h2></div></div></div>
+  
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e135"></a>Configure logging</h3></div></div></div>
+
+<p>
+By default, ServingXML supports JDK 1.4 logging.  The default logger is named 
+<code class="code">com.servingxml.util.system.DefaultLogger</code>.  You can
+configure it by editing your <code class="filename">&lt;JRE Home&gt;/lib/logging.properties</code>
+file, and changing the property values for the handler you want to deliver the
+log record. 
+</p>
+<p>
+If you want the application to write log messages using a different logger, perhaps
+log4j, you will need to 
+</p><div class="itemizedlist"><ul type="disc"><li><span>
+Write an adaptor class <code class="code">MyLogger</code> that implements 
+<code class="code">com.servingxml.util.system.Logger</code>.
+</span></li><li><span>
+Compile the class and add it to the <code class="code">classes</code> directory.
+</span></li><li><span>
+Set the system property
+<pre class="programlisting">
+com.servingxml.util.system.Logger=com.servingxml.util.system.MyLogger
+</pre>
+(System properties may be set in the optional <code class="filename">config/servingxml.properties</code> file.)
+</span></li></ul></div><p>
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e153"></a>Setting options in the configuration file</h3></div></div></div>
+
+<p>Configuration options may be set in the <code class="filename">servingxml.xml</code> configuration
+file, either during the build step, in the file located in <code class="filename">servingxml-framework/config</code>, or in the target,
+in the file located in <code class="filename">servingxml/config</code>.
+</p>
+<p>
+ The <code class="sgmltag-element">sx:xsltConfiguration</code> section may be of interest.
+</p>
+<pre class="programlisting">
+
+  &lt;sx:xsltConfiguration version="2.0"&gt;   
+
+    &lt;sx:systemProperty name="javax.xml.transform.TransformerFactory" 
+                       value="net.sf.saxon.TransformerFactoryImpl"/&gt;
+    &lt;!-- sx:systemProperty name="jaxp.debug" value="true"/ --&gt; 
+
+    &lt;sx:outputProperty name="indent" value="no"/&gt;
+    &lt;sx:outputProperty name="{http://icl.com/saxon}omit-meta-tag" value="yes"/&gt;
+
+  &lt;/sx:xsltConfiguration&gt;
+
+</pre>
+<p>
+Here, you can set default values for output properties for all XML serializers.
+For example, you can change the default for "indent" from "no" to "yes" to 
+have XML output formatted in indented style, unless overriden in a stylesheet or an emitter.
+</p>
+<p>The system property <code class="code">jaxp.debug</code> allows you to verify that the transformer actually being used
+is the one you want.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e165"></a>Changing XSLT transformers</h3></div></div></div>
+
+<p>The default XSLT transformer supplied with <code class="code">ServingXML</code> is 
+Saxon-B 9, an XSLT 2.0 conforming transformer. You may wish to use a different
+2.0 transformer, or revert to a 1.0 transformer, such as Saxon 6.5.5. The steps
+for reverting to Saxon 6.5.5 are as follows:
+</p>
+<div class="itemizedlist"><ul type="disc"><li>Remove the Saxon-B 9 jar files from the 
+    <code class="filename">lib/endorsed</code> directory.
+  </li><li>Download the Saxon 6.5.5 jar file and copy to the <code class="filename">lib/endorsed</code> directory.
+  </li><li>Update the ServingXML configuration file <code class="filename">servingxml.xml</code>,
+   changing the <code class="sgmltag-attribute">version</code> attribute in the <code class="code">sx:xsltConfiguration</code> element to "1.0",
+   and setting the <code class="code">"javax.xml.transform.TransformerFactory"</code> system property to <code class="code">"com.icl.saxon.TransformerFactoryImpl"</code>. 
+<pre class="programlisting">
+
+  &lt;sx:xsltConfiguration version="1.0"&gt;   
+
+    &lt;sx:systemProperty name="javax.xml.transform.TransformerFactory" 
+                       value="com.icl.saxon.TransformerFactoryImpl"/&gt;
+
+    &lt;sx:outputProperty name="indent" value="no"/&gt;
+    &lt;sx:outputProperty name="{http://icl.com/saxon}omit-meta-tag" value="yes"/&gt;
+
+  &lt;/sx:xsltConfiguration&gt;
+
+</pre>
+  </li><li><p>Rebuild the ServingXML project</p>
+  </li></ul></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e183"></a>Using the Java endorsed directory</h3></div></div></div>
+  
+<p>Instead of packaging the XSLT transformer with ServingXML, you can if you wish pick up all the jar files implementing the JAXP transformer APIs
+from the standard endorsed locations. In this case you will need to you will need to copy the jar files for your preferred JAXP transformer to the 
+<code class="code">endorsed</code> directory
+</p>
+<div class="itemizedlist"><ul type="disc"><li>Remove the jar files in the ServingXML <code class="filename">lib/endorsed</code> directory.
+  </li><li>In addition, you will need to copy the jar files for your preferred JAXP transformer to the Java <code class="code">endorsed</code> directory,
+<pre class="programlisting">
+  %JAVA_HOME%\jre\lib\endorsed
+</pre>
+(you will need to create the endorsed subdirectory if it does not already exist.)
+  </li></ul></div>
+<p>
+ServingXML 1.0.0 has been tested with <a class="ulink" href="http://saxon.sourceforge.net/" target="_top">Saxon-B 9.1</a> (requires saxon9.jar and saxon9-dom.jar).
+Other versions have been tested with
+Saxon 6.5.5 (requires saxon.jar), and <a class="ulink" href="http://xml.apache.org/xalan-j/" target="_top">Xalan 1.2.6</a> (requires xalan.jar.)
+You may also want to download new versions of the Xerces jar files, including 
+<code class="filename">xercesImpl.jar</code>, <code class="filename">xml-apis.jar</code> and <code class="filename">xmlParserAPIs.jar</code>, and copy them to the 
+<code class="filename">endorsed</code> directory as well.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e200"></a>Add or drop extensions</h3></div></div></div>
+
+<p>
+  ServingXML consists of a framework and a number of extensions.
+  You can edit the root-level <code class="filename">build-extensions.xml</code> file to remove extensions you do
+  not need, if you want to create a smaller deployment package.
+</p>
+</div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e204"></a>Error Processing</h2></div></div></div>
+
+<div class="itemizedlist"><ul type="disc"><li><p>Individual records in files may be validated with an XML schema, using an <code class="sgmltag-element">msv:recordValidator</code> 
+element.  The schema validates against the canonical XML representation of the record.
+If validation fails, the record will be discarded.  If an <code class="sgmltag-element">sx:discardFilter</code> element 
+appears after the <code class="sgmltag-element">msv:recordValidator</code> element in the record pipeline, the discarded record will be handled, 
+and processing will continue.  The content of the <code class="sgmltag-element">sx:discardHandler</code> element may optionally contain a record pipeline
+for writing all discarded records to a file or a database table. Refer to the example "Converting a CSV file to XML with Record Validation" 
+in the on-line examples.
+</p></li><li><p>Custom record filters written in Java, incorporated with an <code class="sgmltag-element">sx:customRecordFilter</code> element, 
+provide another way of error checking.  Within a record filter, you can perform 
+checks on the current record, decide whether to pass the record down or
+alternatively throw an exception.  If you throw a 
+<code class="code">ServingXmlException</code> and your filter is followed by a 
+<code class="sgmltag-element">sx:discardHandler</code> later in the pipeline, the record will be discarded but processing will continue; 
+otherwise processing will be stopped.  Refer to the "hot 1" example for an example of a custom record filter.
+</p></li><li><p>XML events in XML pipelines may be validated with an XML schema, using an msv:schemaValidator
+element.  By default, if validation fails, a message will be written to the log, and processing will stop.  Again, 
+refer to the example "Converting a CSV file to XML with Record Validation" in the on-line examples.
+</p></li><li><p>Since ServingXML provides a streaming API, some output may be written before an error is detected and processing stopped.
+If you want to check the entire file for errors before writing any output, you can do so by setting up two tasks inside an 
+<code class="sgmltag-element">sx:service</code> element and processing the file twice, first with no output, then with output.  
+By default, an exception occuring in the first task will result in all processing being stopped.
+See the "mail message" example for an example with two tasks within a service.
+</p></li></ul></div>
+</div>
+
+</div></body></html>

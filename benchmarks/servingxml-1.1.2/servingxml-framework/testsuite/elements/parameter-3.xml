@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t3="elements/parameter-3/">
+
+  <sx:transform id="t3:test-parameter-3">
+    <sx:parameter name="message-2" select="/messages/message[id=2]/message">
+      <sx:content ref="t3:message-content"/>
+    </sx:parameter>
+    <sx:assert test="$message-2 = 'test message 2'">
+      <sx:toString value="{$message-2} = test message 2"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:flatFileReader id="t3:message-reader">
+    <sx:inlineSource>1|test message 1 
+2|test message 2 
+3|test message 3 
+    </sx:inlineSource>
+    <sx:flatFile>
+      <sx:fieldDelimiter value="|"/>
+      <sx:flatFileBody>
+        <sx:flatRecordType name="message">
+          <sx:delimitedField name="id"/>
+          <sx:delimitedField name="message"/>
+        </sx:flatRecordType>
+      </sx:flatFileBody>
+    </sx:flatFile>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="t3:message-content" name="messages">
+    <sx:flatFileReader ref="t3:message-reader"/>
+  </sx:recordContent>
+
+</sx:resources>
+

@@ -1,0 +1,797 @@
+<appendix id="app-deprecated"><title>Deprecated Elements and Attributes</title>
+<section>
+<para>
+</para>
+<table colsep="0"><title>Deprecated and removed elements</title>
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Element</entry>
+<entry>Change</entry>
+<entry>Version changed</entry>
+<entry>Replace with</entry>
+<entry>Comment</entry> 
+</row>
+</thead>
+<tbody> 
+  <row>
+<entry>sx:composeRecord</entry>
+<entry>Deprecated</entry>
+<entry>1.1.2</entry>
+<entry><xref linkend="sx:combineRecords"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:decomposeRecord</entry>
+<entry>Deprecated</entry>
+<entry>1.1.2</entry>
+<entry><xref linkend="sx:splitRecord"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:recordComposition</entry>
+<entry>Deprecated</entry>
+<entry>1.1.2</entry>
+<entry><xref linkend="sx:combinePhysicalRecords"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:segmentConcatenation</entry>
+<entry>Deprecated</entry>
+<entry>1.1.2</entry>
+<entry><xref linkend="sx:mergePhysicalSegments"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:repeatingSegment</entry>
+<entry>Removed</entry>
+<entry>1.2.0</entry>
+<entry><xref linkend="sx:repeatingGroup"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:replaceRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>1.0.2</entry>
+<entry><xref linkend="sx:replaceRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:defaultFieldMapping</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:defaultFieldElementMap"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:escapeVariables</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:escapeSubstitutions"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:spannedFlatRecordType</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:vbsFlatRecordType"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:xmlRecordReader</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:subtreeRecordReader"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:validateRecord</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:recordValidator"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:validateField</entry>
+<entry>Deprecated</entry>
+<entry>1.0.0</entry>
+<entry><xref linkend="sx:fieldValidator"/></entry>
+<entry></entry>
+</row>
+  <row>
+<entry>sx:insertContent</entry>
+<entry>Deprecated</entry>
+<entry>0.9.3</entry>
+<entry><xref linkend="sx:nestedContent"/></entry>
+<entry></entry>
+</row>
+  <!--row>
+<entry>sx:subtreeRecordReader</entry>
+<entry>Deprecated</entry>
+<entry>0.9.3</entry>
+<entry><xref linkend="sx:subtreeRecordReader"/></entry>
+<entry></entry>
+</row-->
+<row>
+<entry>sx:segmentMapping</entry>
+<entry>Deprecated</entry>
+<entry>0.9.3</entry>
+<entry><xref linkend="sx:subrecordMapping"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:replace</entry>
+<entry>Deprecated</entry>
+<entry>0.9.2</entry>
+<entry><xref linkend="sx:findAndReplace"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:taggedFlatRecordField</entry>
+<entry>Removed</entry>
+<entry>0.9.0</entry>
+<entry><xref linkend="sx:flatRecordField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:tagDelimiter</entry>
+<entry>Deprecated</entry>
+<entry>0.9.0</entry>
+<entry><xref linkend="sx:nameDelimiter"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:taggedDelimitedField</entry>
+<entry>Deprecated</entry>
+<entry>0.9.0</entry>
+<entry><xref linkend="sx:delimitedNamedField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:repeatingTaggedField</entry>
+<entry>Deprecated</entry>
+<entry>0.9.0</entry>
+<entry><xref linkend="sx:repeatingField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:repeatingSegment</entry>
+<entry>Deprecated</entry>
+<entry>0.8.4</entry>
+<entry><xref linkend="sx:repeatingGroup"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:aggregateRecord</entry>
+<entry>Deprecated</entry>
+<entry>0.8.3</entry>
+<entry><xref linkend="sx:combineRecords"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:recordAggregator</entry>
+<entry>Deprecated</entry>
+<entry>0.8.2</entry>
+<entry><xref linkend="sx:combineRecords"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:subtreeRecordMap</entry>
+<entry>Deprecated</entry>
+<entry>0.8.1</entry>
+<entry><xref linkend="sx:flattenSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragment</entry>
+<entry>Deprecated</entry>
+<entry>0.8.1</entry>
+<entry><xref linkend="sx:nestedContent"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:removeEmptyElementFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.8.0</entry>
+<entry><xref linkend="sx:removeEmptyElements"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:aggregate</entry>
+<entry>Deprecated</entry>
+<entry>0.8.1</entry>
+<entry><xref linkend="sx:nestedContent"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:recordTest</entry>
+<entry>Deprecated</entry>
+<entry>0.8.0</entry>
+<entry><xref linkend="sx:recordRestriction"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:regexFieldCriteria</entry>
+<entry>Deprecated</entry>
+<entry>0.8.0</entry>
+<entry><xref linkend="sx:fieldRestriction"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:startGroup</entry>
+<entry>Deprecated</entry>
+<entry>0.6.5</entry>
+<entry><sgmltag class="attribute">startTest</sgmltag></entry>
+<entry>The <sgmltag class="attribute">test</sgmltag> attribute of <sgmltag>sx:startGroup"</sgmltag> 
+has the same meaning as the <sgmltag class="attribute">startTest</sgmltag> attribute
+attribute of <xref linkend="sx:innerGroup"/> and <xref linkend="sx:outerGroup"/> .
+When converting, this value remains the same.</entry>
+</row>
+<row>
+<entry>sx:endGroup</entry>
+<entry>Deprecated</entry>
+<entry>0.6.5</entry>
+<entry><sgmltag class="attribute">endTest</sgmltag> attribute</entry>
+<entry>The <sgmltag class="attribute">test</sgmltag> attribute of <sgmltag>sx:endGroup</sgmltag> is applied to the "current" record, 
+and identifies the last record (inclusive) of a group.  Consequently, it usually needs to test the "next" record.  The <sgmltag class="attribute">endTest</sgmltag>
+attribute, by contrast, is applied to the "next" record.  When converting, a test against the "current" record must be changed 
+to a test against the "previous" record, and a test against the "next" record must be changed to a test against the "current" record.</entry>
+</row>
+<row>
+<entry>msv:msvFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.4</entry>
+<entry><xref linkend="msv:schemaValidator"/></entry>
+<entry>&nbsp;</entry>
+</row>
+<row>
+<entry>sx:discardFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.2</entry>
+<entry><xref linkend="sx:discardHandler"/></entry>
+<entry><sgmltag>sx:discardFilter</sgmltag> came before a sequence of filters and writers; 
+<sgmltag>sx:discardHandler</sgmltag> comes after a sequence of filters and writers</entry>
+</row>
+<row>
+<entry>sx:date</entry>
+<entry>Deprecated</entry>
+<entry>0.6.1</entry>
+<entry><xref linkend="sx:currentDateTime"/> and <xref linkend="sx:formatDateTime"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:xmlEmitter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.1</entry>
+<entry><xref linkend="sx:xsltSerializer"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:customEmitter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.1</entry>
+<entry><xref linkend="sx:customSerializer"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>fop:foEmitter</entry>
+<entry>Removed</entry>
+<entry>0.6.1</entry>
+<entry><xref linkend="fop:foSerializer"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:commentSymbol</entry>
+<entry>Deprecated</entry>
+<entry>0.6.0</entry>
+<entry><xref linkend="sx:commentStarter"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:restrictRecordType</entry>
+<entry>Deprecated</entry>
+<entry>0.6.0</entry>
+<entry><xref linkend="sx:recordRestriction"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:restrictField</entry>
+<entry>Deprecated</entry>
+<entry>0.6.0</entry>
+<entry><xref linkend="sx:fieldRestriction"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:subtreeFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.0</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:processRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.6.0</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:crcFlatFileSignature</entry>
+<entry>Deprecated</entry>
+<entry>0.5.5</entry>
+<entry><xref linkend="sx:flatFileSignature"/></entry> with method="crc"
+<entry></entry>
+</row>
+<row>
+<entry>sx:sizeFlatFileSignature</entry>
+<entry>Deprecated</entry>
+<entry>0.5.5</entry>
+<entry><xref linkend="sx:flatFileSignature"/></entry> with method="size"
+<entry></entry>
+</row>
+<row>
+<entry>sx:processRecords</entry>
+<entry>Deprecated</entry>
+<entry>0.5.3</entry>
+<entry><xref linkend="sx:recordStream"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:msvRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.5.2</entry>
+<entry><xref linkend="msv:recordValidator"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:recordSubtreeMap</entry>
+<entry>Deprecated</entry>
+<entry>0.5.0</entry>
+<entry><xref linkend="sx:transformRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:writeRecords</entry>
+<entry>Deprecated</entry>
+<entry>0.5.0</entry>
+<entry><xref linkend="sx:recordStream"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentSubtreeMap</entry>
+<entry>Deprecated</entry>
+<entry>0.5.0</entry>
+<entry><xref linkend="sx:onSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:style</entry>
+<entry>Deprecated</entry>
+<entry>0.5.0</entry>
+<entry><xref linkend="sx:xslt"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>Record filter children of record reader</entry>
+<entry>Removed</entry>
+<entry>0.4.2</entry>
+<entry>Record filter siblings of record reader</entry>
+<entry>Discouraged since 0.4.0.  Examples were changed except for sx:directoryReader examples (now updated.)</entry>
+</row>
+<row>
+<entry>sx:flatFileContent</entry>
+<entry>Removed</entry>
+<entry>0.4.2</entry>
+<entry><xref linkend="sx:recordContent"/> and <xref linkend="sx:flatFileReader"/></entry>
+<entry>Deprecated since 0.1.3.</entry>
+</row>
+<row>
+<entry>sx:processFragmentFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.4</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragmentContentMap</entry>
+<entry>Deprecated</entry>
+<entry>0.3.4</entry>
+<entry><xref linkend="sx:onSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragmentRecordMap</entry>
+<entry>Deprecated</entry>
+<entry>0.3.4</entry>
+<entry><xref linkend="sx:flattenSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragmentFieldMap</entry>
+<entry>Deprecated</entry>
+<entry>0.3.4</entry>
+<entry><xref linkend="sx:subtreeFieldMap"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentRecordMap</entry>
+<entry>Removed</entry>
+<entry>0.1.8</entry>
+<entry><xref linkend="sx:onSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:element</entry>
+<entry>Deprecated</entry>
+<entry>0.3.2</entry>
+<entry><xref linkend="sx:elementMap"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:fieldSetElementMap</entry>
+<entry>Deprecated</entry>
+<entry>0.3.2</entry>
+<entry><xref linkend="sx:defaultFieldElementMap"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flowFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.2</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flowRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.2</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:subrecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.0</entry>
+<entry>See the edi example</entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:taskRunnerFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.0</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:taskRunnerRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.3.0</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flatFileRecordType</entry>
+<entry>Deprecated</entry>
+<entry>0.2.5</entry>
+<entry><xref linkend="sx:flatRecordType"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:chooseGroup</entry>
+<entry>Deprecated</entry>
+<entry>0.2.5</entry>
+<entry><xref linkend="sx:groupChoice"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:transformerSettings</entry>
+<entry>Deprecated</entry>
+<entry>0.2.5</entry>
+<entry><xref linkend="sx:xsltConfiguration"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:subtaskFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.2.4</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:subtaskRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.2.4</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:processDocument</entry>
+<entry>Removed</entry>
+<entry>0.3.0</entry>
+<entry>Omit, <xref linkend="sx:transform"/> is okay.</entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:currentRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.2.0</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragmentFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.2.0</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:jaxpConfiguration</entry>
+<entry>Deprecated</entry>
+<entry>0.2.0</entry>
+<entry><xref linkend="sx:xsltConfiguration"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:documentFragmentFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.1.8</entry>
+<entry><xref linkend="sx:processSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:pathFieldMap</entry>
+<entry>Removed</entry>
+<entry>0.1.8</entry>
+<entry><xref linkend="sx:subtreeFieldMap"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:expirySettings</entry>
+<entry>Removed</entry>
+<entry>0.1.8</entry>
+<entry><xref linkend="sx:expiryOptions"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:pathRecordMap</entry>
+<entry>Removed</entry>
+<entry>0.1.8</entry>
+<entry><xref linkend="sx:onSubtree"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:customSerializer</entry>
+<entry>Removed</entry>
+<entry>0.1.7</entry>
+<entry><xref linkend="sx:customSerializer"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>fop:fopSerializer</entry>
+<entry>Removed</entry>
+<entry>0.1.7</entry>
+<entry><xref linkend="fop:foSerializer"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:customProperty</entry>
+<entry>Deprecated</entry>
+<entry>0.1.7</entry>
+<entry><xref linkend="sx:property"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:taskRecordFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.1.7</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:saxParser</entry>
+<entry>Deprecated</entry>
+<entry>0.1.7</entry>
+<entry><xref linkend="sx:saxReader"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:removeEmptyElements</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:removeEmptyElements"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:customXmlFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:saxFilter"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:emptyContent</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:emptyDocument"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flatFileLayout</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:flatFile"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry><xref linkend="sx:jdbcConnectionPool"/></entry>
+<entry>Made abstract</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:sqlConnectionPool"/></entry>
+<entry>Old version still supported.</entry>
+</row>
+<row>
+<entry>sx:mailOutput</entry>
+<entry>Removed</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="jm:sendMail"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:readerWriterRecordFilter</entry>
+<entry>Removed</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:processRecord"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:recordOutput</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:writeRecords"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:restrictFieldFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:fieldRestriction"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:streamContent</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:document"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:streamOutput</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:serialize"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:suppressEmptyElementFilter</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry><xref linkend="sx:removeEmptyElements"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:delimitedFieldType</entry>
+<entry>Deprecated</entry>
+<entry>0.1.4</entry>
+<entry><xref linkend="sx:delimitedField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flatFileRecord</entry>
+<entry>Deprecated</entry>
+<entry>0.1.4</entry>
+<entry><xref linkend="sx:flatFileBody"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:positionalFieldType</entry>
+<entry>Deprecated</entry>
+<entry>0.1.4</entry>
+<entry><xref linkend="sx:positionalField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:field</entry>
+<entry>Deprecated</entry>
+<entry>0.1.3</entry>
+<entry><xref linkend="sx:positionalField"/> or <xref linkend="sx:delimitedField"/></entry>
+<entry></entry>
+</row>
+<row>
+<entry>sx:flatFileContent</entry>
+<entry>Deprecated</entry>
+<entry>0.1.3</entry>
+<entry><xref linkend="sx:recordContent"/></entry>
+<entry>Use a <xref linkend="sx:flatFileReader"/>  child element.</entry>
+</row>
+<row>
+<entry>sx:sqlContent</entry>
+<entry>Removed</entry>
+<entry>0.1.3</entry>
+<entry><xref linkend="sx:recordContent"/></entry>
+<entry>Use a <xref linkend="sx:sqlReader"/> child element</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+<table colsep="0"><title>Deprecated and removed attributes</title>
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Element</entry>
+<entry>Attribute</entry>
+<entry>Change</entry>
+<entry>Version changed</entry>
+<entry>Replace with</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="sx:customJdbcConnectionPool"/></entry>
+<entry>className</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:customRecordFilter"/></entry>
+<entry>className</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:saxFilter"/> (saxFilter)</entry>
+<entry>className</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:dynamicContent"/></entry>
+<entry>className</entry>
+<entry>Deprecated</entry>
+<entry>0.1.6</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:customRecordFilter"/></entry>
+<entry>classHandler</entry>
+<entry>Deprecated</entry>
+<entry>0.1.5</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:saxFilter"/> (sx:saxFilter)</entry>
+<entry>classHandler</entry>
+<entry>Deprecated</entry>
+<entry>0.1.5</entry>
+<entry>class</entry>
+</row>
+<row>
+<entry><xref linkend="sx:dynamicContent"/></entry>
+<entry>classHandler</entry>
+<entry>Deprecated</entry>
+<entry>0.1.5</entry>
+<entry>class</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+</section>
+
+</appendix>
+
+

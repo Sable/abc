@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/onRecord/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-ref"/> 
+  </sx:service>
+
+  <sx:onRecord id="t:onRecordUNB" recordType="UNB"><UNB/>
+  </sx:onRecord>
+
+  <sx:recordContent id="t:edifact2xml">
+    <sx:flatFileReader>
+      <sx:inlineSource>UNB+IATA:1+CO+1P+021003:1430+000038010001+++S'UNH+1+FSPREQ:95:1:1P'ATX+C08+PK:PK:10:P'BKG+1++4+Y:1:B:0:M:0:L:1'UNT+3+1'UNZ+1+000038010001'</sx:inlineSource>
+      <sx:flatFile id="edifactFlatFile">
+        <sx:recordDelimiter value="'"/>
+        <sx:flatFileBody>
+          <sx:flatRecordTypeChoice>
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:when test="segmentType='UNB'">
+              <sx:flatRecordType name='UNB'>
+                <sx:fieldDelimiter value="+"/>
+                <sx:delimitedField name="segmentType"/>
+              </sx:flatRecordType>
+            </sx:when>
+          </sx:flatRecordTypeChoice>
+        </sx:flatFileBody>
+      </sx:flatFile>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="t:edifactToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="t:edifactToXmlMapping">
+    <sx:groupChoice>
+      <sx:onRecord ref="t:onRecordUNB"/>
+    </sx:groupChoice>
+  </sx:recordMapping>
+
+  <sx:document id="t:expected">
+<UNB/>
+  </sx:document>
+
+  <sx:transform id="t:test-ref"> 
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/onRecord/edifact2xml'),fn:document('elements/onRecord/expected'))">
+test-parameter:  Output
+      <sx:content ref="t:edifact2xml"/> 
+      does not match expected output
+      <sx:content ref="t:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>

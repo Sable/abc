@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="pulp">
+    <sx:transform>
+      <fop:foSerializer/>
+
+      <sx:content ref="myns:pulp"/>
+      <sx:xslt ref="myns:novel"/>
+    </sx:transform>
+  </sx:service>
+  
+  <sx:document id="myns:pulp">        
+    <sx:urlSource url="documents/pulp.xml"/>
+  </sx:document>
+  
+  <sx:xslt id="myns:novel">
+    <sx:urlSource url="styles/novel.xsl"/>
+  </sx:xslt>
+
+</sx:resources>

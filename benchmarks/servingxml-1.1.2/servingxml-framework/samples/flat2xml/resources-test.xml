@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="test">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="test"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="test">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/test.txt"/>
+      <sx:flatFile ref="testFlatFile"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:flatFile id="testFlatFile">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="rec">
+        <sx:fieldDelimiter value="*WSXS"/>
+        <sx:fieldDelimiter value="*"/>
+        <sx:delimitedField name="field1"/>
+        <sx:delimitedField name="field2"/>
+        <sx:delimitedField name="field3"/>
+        <sx:delimitedField name="field4"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+  
+</sx:resources>
+

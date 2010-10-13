@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="countries-to-csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="countriesToFileMapping"/>
+        <sx:transform>
+          <sx:documentSequence wrapWith="result">
+            <sx:recordStream>
+              <sx:directoryReader directory="data">
+                <sx:fileFilter pattern="countries.*[.]xml"/>
+              </sx:directoryReader>
+            </sx:recordStream>
+            <sx:transform>
+              <sx:document>
+                <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+              </sx:document> 
+              <msv:schemaValidator>
+                <sx:urlSource url="data/countries.xsd"/>
+              </msv:schemaValidator>
+            </sx:transform>
+          </sx:documentSequence>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="countryType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="countryType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType name="country" id="countryType">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="code" label="country_code"/>
+    <sx:delimitedField name="name" label="country_name"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="countriesToFileMapping">
+    <sx:onSubtree path="/result/countries/country">
+      <sx:flattenSubtree  recordType="country">
+        <sx:subtreeFieldMap select="countryName" field="name"/>
+        <sx:subtreeFieldMap select="@countryCode" field="code"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+

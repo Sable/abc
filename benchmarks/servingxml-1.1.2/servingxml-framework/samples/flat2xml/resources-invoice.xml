@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="invoice">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="invoice-content"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="invoice-content">
+    <sx:flatFileReader>
+      <sx:flatFile ref="invoice-file"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="invoice-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="invoice-file">
+    <sx:recordDelimiter value="\r\n!"/>
+    <sx:recordDelimiter value="\n!"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="invoice" omitFinalRepeatDelimiter="false">
+        <sx:repeatDelimiter value="~"/>
+        <sx:repeatingGroup name="Header" count="1">
+          <sx:flatRecordType name="Header">
+            <sx:fieldDelimiter value="|"/>
+            <sx:repeatDelimiter value="}"/>
+            <!--sx:segmentDelimiter value="~"/-->
+            <sx:repeatingGroup name="Document" count="1">
+              <sx:flatRecordType name="Doc">
+                <sx:delimitedField name="Id"/>
+                <sx:delimitedField name="DocDate"/>
+                <sx:delimitedField name="DocumentType"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+            <sx:repeatingGroup name="Sender" count="1">
+              <sx:flatRecordType name="Sender">
+                <sx:delimitedField name="SenderPassport"/>
+                <sx:delimitedField name="SenderFullName"/>
+                <sx:delimitedField name="SenderAddress"/>
+                <sx:delimitedField name="SenderZip"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+            <sx:repeatingGroup name="Recipient" count="1">
+              <sx:flatRecordType name="Recipient">
+                <sx:delimitedField name="RecipientPassport"/>
+                <sx:delimitedField name="RecipientFullName"/>
+                <sx:delimitedField name="RecipientAddress"/>
+                <sx:delimitedField name="RecipientZip"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+
+        <sx:repeatingGroup name="Detail" count="1">
+          <sx:flatRecordType name="Detail">
+            <sx:fieldDelimiter value="|"/>
+            <sx:repeatDelimiter value="}"/>
+            <!--sx:segmentDelimiter value="~"/-->
+            <sx:repeatingGroup name="Item">
+              <sx:flatRecordType name="Item">
+                <sx:delimitedField name="Item"/>
+                <sx:delimitedField name="Description"/>
+                <sx:delimitedField name="Quantity"/>
+                <sx:delimitedField name="Unit"/>
+                <sx:delimitedField name="ItemPrice"/>
+                <sx:delimitedField name="TotalPrice"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+
+        <sx:repeatingGroup name="Reference" count="1">
+          <sx:flatRecordType name="Reference">
+            <sx:fieldDelimiter value="|"/>
+            <sx:repeatDelimiter value="}"/>
+            <sx:segmentDelimiter value="~"/>
+            <sx:repeatingGroup name="Ref">
+              <sx:flatRecordType name="Ref">
+                <sx:delimitedField name="RefId"/>
+                <sx:delimitedField name="RefType"/>
+                <sx:delimitedField name="RefDoc"/>
+                <sx:delimitedField name="RefText"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+
+        <sx:repeatingGroup name="Discount" count="1">
+          <sx:flatRecordType name="Discount">
+            <sx:fieldDelimiter value="|"/>
+            <sx:repeatDelimiter value="}"/>
+            <sx:segmentDelimiter value="~"/>
+            <sx:repeatingGroup name="Disc">
+              <sx:flatRecordType name="Disc">
+                <sx:delimitedField name="DiscId"/>
+                <sx:delimitedField name="DiscDescription"/>
+                <sx:delimitedField name="DiscItem"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+
+        <sx:repeatingGroup name="Codes" count="1">
+          <sx:flatRecordType name="Codes">
+            <sx:fieldDelimiter value="|"/>
+            <sx:repeatDelimiter value="}"/>
+            <sx:segmentDelimiter value="~"/>
+            <sx:repeatingGroup name="Code">
+              <sx:flatRecordType name="Code">
+                <sx:delimitedField name="Code"/>
+                <sx:delimitedField name="Value"/>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="invoice-mapping">
+    <InvoiceDocument>
+      <sx:onRecord>
+        <sx:subrecordMapping repeatingGroup="Header">
+          <sx:onRecord>
+            <Header>
+              <sx:subrecordMapping repeatingGroup="Document">
+                <sx:onRecord>
+                  <DocId>
+                    <sx:fieldElementMap field="Id" element="Id"/>
+                    <sx:fieldElementMap field="DocDate" element="DocDate"/>
+                    <sx:fieldElementMap field="DocumentType" element="DocumentType"/>
+                  </DocId>
+                </sx:onRecord>
+              </sx:subrecordMapping>
+              <sx:subrecordMapping repeatingGroup="Sender">
+                <sx:onRecord>
+                  <Sender>
+                    <sx:fieldElementMap field="SenderPassport" element="SenderPassport"/>
+                    <sx:fieldElementMap field="SenderFullName" element="SenderFullName"/>
+                    <sx:fieldElementMap field="SenderAddress" element="SenderAddress"/>
+                    <sx:fieldElementMap field="SenderZip" element="SenderZip"/>
+                  </Sender>
+                </sx:onRecord>
+              </sx:subrecordMapping>
+              <sx:subrecordMapping repeatingGroup="Recipient">
+                <sx:onRecord>
+                  <Recipient>
+                    <sx:fieldElementMap field="RecipientPassport" element="RecipientPassport"/>
+                    <sx:fieldElementMap field="RecipientFullName" element="RecipientFullName"/>
+                    <sx:fieldElementMap field="RecipientAddress" element="RecipientAddress"/>
+                    <sx:fieldElementMap field="RecipientZip" element="RecipientZip"/>
+                  </Recipient>
+                </sx:onRecord>
+              </sx:subrecordMapping>
+            </Header>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+
+        <sx:subrecordMapping repeatingGroup="Detail">
+          <sx:onRecord>
+            <sx:subrecordMapping repeatingGroup="Item">
+              <sx:onRecord>
+                <Detail>
+                  <sx:fieldElementMap field="Item" element="Item"/>
+                  <sx:fieldElementMap field="Description" element="Description"/>
+                  <sx:fieldElementMap field="Quantity" element="Quantity"/>
+                  <sx:fieldElementMap field="Unit" element="Unit"/>
+                  <sx:fieldElementMap field="ItemPrice" element="ItemPrice"/>
+                  <sx:fieldElementMap field="TotalPrice" element="TotalPrice"/>
+                </Detail>
+              </sx:onRecord>
+            </sx:subrecordMapping>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+
+        <sx:subrecordMapping repeatingGroup="Reference">
+          <sx:onRecord>
+            <sx:subrecordMapping repeatingGroup="Ref">
+              <sx:onRecord>
+                <Reference>
+                  <sx:fieldElementMap field="RefId" element="RefId"/>
+                  <sx:fieldElementMap field="RefType" element="RefType"/>
+                  <sx:fieldElementMap field="RefDoc" element="RefDoc"/>
+                  <sx:fieldElementMap field="RefText" element="RefText"/>
+                </Reference>
+              </sx:onRecord>
+            </sx:subrecordMapping>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+
+        <sx:subrecordMapping repeatingGroup="Discount">
+          <sx:onRecord>
+            <sx:subrecordMapping repeatingGroup="Disc">
+              <sx:onRecord>
+                <Discount>
+                  <sx:fieldElementMap field="DiscId" element="DiscId"/>
+                  <sx:fieldElementMap field="DiscDescription" element="DiscDescription"/>
+                  <sx:fieldElementMap field="DiscItem" element="DiscItem"/>
+                </Discount>
+              </sx:onRecord>
+            </sx:subrecordMapping>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+
+        <sx:subrecordMapping repeatingGroup="Codes">
+          <sx:onRecord>
+            <sx:subrecordMapping repeatingGroup="Code">
+              <sx:onRecord>
+                <Code>
+                  <sx:fieldElementMap field="Code" element="Code"/>
+                  <sx:fieldElementMap field="Value" element="Value"/>
+                </Code>
+              </sx:onRecord>
+            </sx:subrecordMapping>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+      </sx:onRecord>
+    </InvoiceDocument>
+  </sx:recordMapping>
+
+</sx:resources>
+

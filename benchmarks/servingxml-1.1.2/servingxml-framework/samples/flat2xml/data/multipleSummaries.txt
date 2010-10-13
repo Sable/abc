@@ -1,0 +1,8 @@
+HEADER  
+S 001 
+S 002 
+B 001
+S 003 
+B 002
+TRAILER 
+

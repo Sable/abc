@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="no"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN"
+  "file:///C:/tools/docbook-5.0b5/dtd/docbook.dtd"[
+<!ENTITY nbsp "&#160;"> 
+<!ENTITY boxur "&#x2514;"> 
+<!-- !ENTITY % generate-reference-toc "false" -->
+                                                                   
+<!ENTITY chap-configuration SYSTEM "chap-configuration.xml">
+<!ENTITY chap-resourcesref SYSTEM "chap-resourcesref.xml">
+<!ENTITY chap-common-elements SYSTEM "chap-common-elements.xml">
+<!ENTITY chap-string-elements SYSTEM "chap-string-elements.xml">
+<!ENTITY chap-xml-elements SYSTEM "chap-xml-elements.xml">
+<!ENTITY chap-sourcesink-elements SYSTEM "chap-sourcesink-elements.xml">
+<!ENTITY chap-recordmapping SYSTEM "chap-recordmapping.xml">
+<!ENTITY chap-inverserecordmapping SYSTEM "chap-inverserecordmapping.xml">
+<!ENTITY chap-recordio SYSTEM "chap-recordio.xml">
+<!ENTITY chap-flatfile-module SYSTEM "chap-flatfilecontent.xml">
+<!ENTITY chap-sql-module SYSTEM "chap-sqlcontent.xml">
+<!ENTITY chap-msv-module SYSTEM "chap-msv-module.xml">
+<!ENTITY chap-fop-module SYSTEM "chap-fop-module.xml">
+<!ENTITY chap-mail-module SYSTEM "chap-mail-module.xml">
+<!ENTITY chap-saxon-module SYSTEM "chap-saxon.xml"> 
+<!ENTITY chap-edtftpj SYSTEM "chap-edtftpj.xml"> 
+<!ENTITY app-datatype-mappings SYSTEM "app-datatype-mappings.xml"> 
+<!ENTITY app-builds SYSTEM "app-builds.xml"> 
+<!ENTITY app-tomcat SYSTEM "app-tomcat.xml">
+<!ENTITY app-adapters SYSTEM "app-adapters.xml"> 
+<!ENTITY chap-config-elements SYSTEM "chap-config-components.xml"> 
+<!ENTITY app-deprecated SYSTEM "app-deprecated.xml"> 
+<!ENTITY app-consoleapp SYSTEM "app-consoleapp.xml">
+<!ENTITY app-glossary SYSTEM "app-glossary.xml"> 
+]
+>
+
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<bookinfo>                              
+   <title>ServingXML Element Reference</title>
+   <author><firstname>Daniel</firstname><surname>Parker</surname></author>
+<legalnotice>
+<para>
+Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License. 
+You may obtain a copy of the License at <ulink url="http://www.apache.org/licenses/LICENSE-2.0/">Apache License, Version 2.0</ulink>
+</para>
+<para>
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, 
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+See the License for the specific language governing permissions and 
+limitations under the License. 
+</para>
+</legalnotice>
+</bookinfo>
+&chap-config-elements;
+&chap-common-elements;
+&chap-resourcesref;
+&chap-string-elements;
+&chap-sourcesink-elements;
+&chap-xml-elements;
+&chap-recordio;
+&chap-recordmapping;
+&chap-inverserecordmapping;
+&chap-flatfile-module;
+&chap-sql-module;
+&chap-msv-module;
+&chap-fop-module;
+&chap-mail-module; 
+&chap-edtftpj; 
+&chap-saxon-module;
+    
+&app-glossary; 
+&app-datatype-mappings; 
+&app-deprecated;
+
+<index><title>Index</title>
+</index>
+
+</book>

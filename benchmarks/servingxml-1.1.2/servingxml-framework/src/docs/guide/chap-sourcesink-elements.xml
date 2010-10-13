@@ -1,0 +1,902 @@
+<reference id="chap-sourcesink-elements"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>Stream Source and Sink Elements</title>
+
+<refentry id="sx:command" xreflabel="sx:command">
+<refnamediv>
+  <refname>sx:command</refname>
+  <refpurpose>Command</refpurpose>
+</refnamediv>
+<indexterm><primary>command</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+  <para>
+    None
+  </para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any combination of string literals and inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:commandSink"/>
+</listitem>
+<listitem>
+<xref linkend="sx:commandSource"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:commandArg" xreflabel="sx:commandArg">
+<refnamediv>
+  <refname>sx:commandArg</refname>
+  <refpurpose>Command argument</refpurpose>
+</refnamediv>
+<indexterm><primary>commandArg</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+  <para>
+    None
+  </para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any combination of string literals and inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:commandSink"/>
+</listitem>
+<listitem>
+<xref linkend="sx:commandSource"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:commandSink" xreflabel="sx:commandSink">
+<refnamediv>
+  <refname>sx:commandSink</refname>
+  <refpurpose>Command sink</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSink"/></refclass>
+</refnamediv>
+<indexterm><primary>commandSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Optionally, the current working directory.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  Defaults to the platform's default
+<code>charset</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>One <xref linkend="sx:command"/> element. 
+            </para></listitem>
+<listitem><para>Optionally, any number of 
+                     <xref linkend="sx:commandArg"/> elements 
+            </para></listitem>
+<listitem><para>Optionally, any number of 
+                     <xref linkend="sx:envVariable"/> elements 
+            </para></listitem>
+</itemizedlist>
+</refsection>
+  <refsection>
+   <title>Description</title>
+ The <sgmltag>sx:commandSink</sgmltag> element is a 
+stream sink that allows a flat file writer or an XML serializer to send its 
+output to the
+  standard input of a shell command.  The
+                      <sgmltag>sx:commandSink</sgmltag> element executes the
+  command from the <xref linkend="sx:command"/> instruction with the arguments
+  passed in the <xref linkend="sx:commandArg"/> elements.
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of a command sink.</title>
+<programlisting>
+<![CDATA[
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSink"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:commandSource" xreflabel="sx:commandSource">
+<refnamediv>
+  <refname>sx:commandSource</refname>
+  <refpurpose>Command source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>commandSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Optionally, the current working directory.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  Defaults to the platform's default
+<code>charset</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>One <xref linkend="sx:command"/> element. 
+            </para></listitem>
+<listitem><para>Optionally, any number of 
+                     <xref linkend="sx:commandArg"/> elements 
+            </para></listitem>
+<listitem><para>Optionally, any number of 
+                     <xref linkend="sx:envVariable"/> elements 
+            </para></listitem>
+</itemizedlist>
+</refsection>
+  <refsection>
+    <title>Description</title>
+    The <sgmltag>sx:commandSource</sgmltag> element is a stream source
+    that allows a flat file reader or an XML reader to obtain its input from the
+    standard output of a shell command.  The <sgmltag>sx:commandSource</sgmltag> 
+    element executes the command from the <xref linkend="sx:command"/> 
+    instruction with the arguments passed in the <xref linkend="sx:commandArg"/> 
+    elements.
+  </refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of processing the XML output of a shell command.</title>
+  <para>
+    The example below executes the shell command <code>request.exe -request 
+                                                   request.xml</code>,
+    reads its standard output, and writes it to an XML file.
+  </para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="request">
+    <sx:serialize>
+      <sx:parameter name="request" value="trade-query.xml"/>
+      <sx:xsltSerializer>
+          <sx:outputProperty name="indent" value="yes" />
+      </sx:xsltSerializer>
+      <sx:document>
+        <sx:commandSource directory="/WorkingDirectory">
+          <sx:envVariable name="ENV_VAR" value="value1"/>
+          <sx:command>request.exe</sx:command>
+          <sx:commandArg>-request</sx:commandArg>
+          <sx:commandArg><sx:toString value="$request"/></sx:commandArg>
+        </sx:commandSource>
+      </sx:document>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:defaultStreamSink" xreflabel="sx:defaultStreamSink">
+<refnamediv>
+  <refname>sx:defaultStreamSink</refname>
+  <refpurpose>Default stream sink</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSink"/></refclass>
+</refnamediv>
+<indexterm><primary>defaultStreamSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  If a <code>charset</code> is not supplied,
+the default will be the <code>charset</code> of the default sink, e.g., the platform's
+default charset if the default sink is a flat file supplied to the command line app with the -o option.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSink"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:defaultStreamSource" xreflabel="sx:defaultStreamSource">
+<refnamediv>
+  <refname>sx:defaultStreamSource</refname>
+  <refpurpose>Default stream source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>defaultStreamSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  If an <code>charset</code> is not supplied,
+the default will be the <code>charset</code> of the default source, e.g., the platform's
+default charset if the default source is a flat file supplied to the command line app with the -i option.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:envVariable" xreflabel="sx:envVariable">
+<refnamediv>
+  <refname>sx:envVariable</refname>
+  <refpurpose>Environment variable</refpurpose>
+</refnamediv>
+<indexterm><primary>envVariable</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+  <para>
+    None
+  </para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>In-line text, or alternatively, any number of <xref linkend="sx:stringable"/> 
+elements. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:commandSink"/>
+</listitem>
+<listitem>
+<xref linkend="sx:commandSource"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fileSink" xreflabel="sx:fileSink">
+<refnamediv>
+  <refname>sx:fileSink</refname>
+  <refpurpose>File sink</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSink"/></refclass>
+</refnamediv>
+<indexterm><primary>fileSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>An optional directory name.</entry>
+</row>
+<row>
+<entry>file</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the output file, may contain parameters in the form {$myParam}.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  If the output is XML, and a <code>charset</code> is not supplied,
+the XML serializer will use the last encoding encountered in the output properties of the transformation pipeline.
+If the output is a flat file, and a <code>charset</code> is not supplied, the default will be the platform's default charset.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of file sink.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:fileSink file="books.xml"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:document id="books">
+    <sx:urlSource url="documents/books.xml"/>
+  </sx:document>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSink"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fileSource" xreflabel="sx:fileSource">
+<refnamediv>
+  <refname>sx:fileSource</refname>
+  <refpurpose>File source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>fileSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>An optional directory name.</entry>
+</row>
+<row>
+<entry>file</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the input file, may contain parameters in the form {$myParam}.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  If the input is XML, and a <code>charset</code> is not supplied,
+the XML parser will use the encoding specified by the XML declaration.  If the input is a 
+flat file, and a <code>charset</code> is not supplied, the default will be the platform's default charset.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of file source.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:fileSource file="books.xml"/>
+        </sx:document>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:inlineSource" xreflabel="sx:inlineSource">
+<refnamediv>
+  <refname>sx:inlineSource</refname>
+  <refpurpose>Inline source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>inlineSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of inline source.</title>
+<programlisting>
+<![CDATA[
+  <sx:flatFileReader id="csv-file-reader">
+    <sx:inlineSource>field1,field2
+      value1,value2
+      value1,value2</sx:inlineSource>
+    <sx:fieldDelimiter value=","/>
+  </sx:flatFileReader>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:streamSink" xreflabel="sx:streamSink">
+<refnamediv>
+  <refname>sx:streamSink</refname>
+  <refpurpose>Abstract element standing for a stream sink</refpurpose>
+</refnamediv>
+<indexterm><primary>streamSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a stream sink.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:streamSink</sgmltag>, <xref linkend="sx:fileSink"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:commandSink"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="edt:ftpSink"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:fileSink"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:defaultStreamSink"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:streamSource" xreflabel="sx:streamSource">
+<refnamediv>
+  <refname>sx:streamSource</refname>
+  <refpurpose>Abstract element standing for a stream source</refpurpose>
+</refnamediv>
+<indexterm><primary>streamSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a stream source.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:streamSource</sgmltag>, such as <xref linkend="sx:fileSource"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:commandSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="edt:ftpSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:fileSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:urlSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:defaultStreamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:stringSource" xreflabel="sx:stringSource">
+<refnamediv>
+  <refname>sx:stringSource</refname>
+  <refpurpose>String source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>stringSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="sx:inlineSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:urlSource" xreflabel="sx:urlSource">
+<refnamediv>
+  <refname>sx:urlSource</refname>
+  <refpurpose>URL source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>urlSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>url</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the input url, may contain parameters in the form {$myParam}.</entry>
+</row>
+<row>
+<entry>encoding</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>A <code>charset</code> name.  If the input is XML, and a <code>charset</code> is not supplied,
+the XML parser will use the encoding specified by the XML declaration.  If the input is a 
+flat file, and a <code>charset</code> is not supplied, the default will be the platform's default charset.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of url source.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:urlSource url="books.xml"/>
+        </sx:document>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+</reference>
+

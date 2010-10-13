@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books-pos-delim">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="posBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="delimBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="books-delim-pos">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="delimBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="posBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="delimBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="delimBookType"/>
+      <sx:flatRecordType ref="delimFlatFileSignature"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileSignature recordType="flatFileSignature" field="filecrc" method="crc"/>
+    <sx:flatFileSignature recordType="flatFileSignature" field="filesize" method="size"/>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="delimBookType" name="delimBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="invoiceno" label="InvoiceNo"/>
+    <sx:delimitedField name="invoicedate" label="InvoiceDate"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="delimFlatFileSignature" name="flatFileSignature">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="filesize"/>
+    <sx:delimitedField name="filecrc"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="posBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="posFlatFileSignature"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="posBookType"/>
+    </sx:flatFileBody>
+
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+
+    <sx:flatFileSignature recordType="flatFileSignature" field="filesize" method="size"/>
+    <sx:flatFileSignature recordType="flatFileSignature" field="filecrc" method="crc"/>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="posFlatFileSignature" name="flatFileSignature">
+    <sx:positionalField name="filesize" width="9"/>
+    <sx:positionalField name="filecrc" width="10"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="posBookType" name="posBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+    <sx:positionalField name="invoiceno" width="4" justify="right"/>
+    <sx:positionalField name="invoicedate" width="13" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+

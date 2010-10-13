@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Serving XML: Flat file to XML</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="recordstreams"></a>Serving XML: Flat file to XML</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Daniel</span> <span class="surname">Parker</span></h3></div></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e7"></a></span></dt><dt><span class="section"><a href="#d4e20">Counting Positions in Bytes and Characters</a></span></dt><dt><span class="section"><a href="#d4e22">Fixed Record Length Files</a></span></dt><dt><span class="section"><a href="#d4e34">Record Segments and Repeating Groups</a></span></dt></dl></div>
+  
+  <div class="section" lang="en"><div class="titlepage"></div>
+    <p> This article describes how to tranform flatfiles to XML with the
+  ServingXML pipeline language.
+    </p>
+<div class="itemizedlist"><ul type="disc"><li><span>
+<a class="ulink" href="servingxml-1.html" target="_top">ServingXML: Pipeline Language</a>
+</span></li><li><span>
+<a class="ulink" href="flat-file-to-xml.html" target="_top">ServingXML: Flat Files</a>
+</span></li><li><span>
+<a class="ulink" href="servingxml-3.html" target="_top">ServingXML: Inversion of Control 
+  Container</a>
+</span></li></ul></div>
+    <p>
+This article discusses pipelines where the input is a flat file and the output 
+is XML.
+    </p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e20"></a>Counting Positions in Bytes and Characters</h2></div></div></div>
+    
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e22"></a>Fixed Record Length Files</h2></div></div></div>
+    
+  <p>These include
+  </p>
+  <div class="itemizedlist"><ul type="disc"><li>
+      Flat files with no record delimiters, and the length of each type of
+      record is fixed.  Since line delimited is the default, you need to 
+      explicitly specifiy that the file has no record delimiters (with the 
+      <code class="code">lineDelimited=false</code> option).  In addition, you must either
+      <div class="itemizedlist"><ul type="circle"><li>
+          explicitly specify the length of each type of record (with the
+          <code class="sgmltag-element">recordLength</code> attribute), or
+        </li><li>
+      provide enough information about the positions and widths
+      of the fields in the record so that ServingXML can calculate the length.
+        </li></ul></div>
+    </li><li>
+      Flat files with record delimiters, but the length of each type of record
+      (including delimiters) is still fixed.  In this case you have the option
+      of either reading the file as a line delimited file (the default), or as a 
+      fixed record length file (by explicitly specifying the record length, 
+      including delimiters.)
+    </li></ul></div>
+  <p>
+    Note that it is not necessary that all records in the file have the same 
+    length, only that all records of the same type have the same length.
+  </p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e34"></a>Record Segments and Repeating Groups</h2></div></div></div>
+    
+  </div>
+</div></body></html>

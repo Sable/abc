@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books-ebcdic-packed2xml"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <!--
+  This sx:flatFileReader element does not specify a stream source, so 
+  the source will default to the file specified with the -i option on the command line.
+  -->
+  <sx:recordContent id="books">
+    <sx:flatFileReader>
+      <sx:flatFile ref="booksFile"/>
+      <sx:defaultStreamSource encoding="Cp1047"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="booksToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="booksFile" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:packedDecimalField name="price" label="Price" digitCount="10" decimalPlaces="2"/>
+  </sx:flatRecordType>
+  
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="url2">
+      <sx:onRecord>
+        <myns:book>
+          <sx:fieldAttributeMap field="category" attribute="categoryCode"/>
+          <sx:fieldElementMap field="title" element="myns:title"/>  
+          <sx:fieldElementMap field="author" element="myns:author"/>
+          <sx:fieldElementMap field="price" element="myns:price"/>
+        </myns:book>  
+      </sx:onRecord>
+    </myns:books>
+  </sx:recordMapping>  
+  
+</sx:resources>
+

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="edifact">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="edifact"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="edifact">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="edifactFlatFile"/>
+      </sx:flatFileReader>
+      <!--sx:recordValidator>
+        <sx:fieldValidator field="message" message="">
+          <sx:recordValidator recordType="UNH" message="Error in segment {segmentType}. [S009/DE0065] {S009[1]} invalid value.">
+            <sx:assert test="S009[1]='INVOIC'"/>
+          </sx:recordValidator>
+        </sx:fieldValidator>
+      </sx:recordValidator-->
+    </sx:recordStream> 
+    <!--sx:recordMapping ref="edifactToXmlMapping"/-->
+  </sx:recordContent>
+
+  <sx:flatFile id="edifactFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType>
+        <sx:repeatingGroup name="message">
+          <sx:repeatDelimiter value="'"/>
+          <sx:flatRecordTypeChoice>
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:when test="segmentType='UNH'">
+              <sx:flatRecordType name='UNH'>
+                <sx:delimitedField name="segmentType"/>
+                <sx:delimitedField name="DE0062"/>
+                <sx:delimitedField name="S009">
+                  <sx:subfieldDelimiter value=":"/>
+                </sx:delimitedField>
+                <sx:delimitedField name="DE0068"/>
+                <sx:delimitedField name="S010">
+                  <sx:subfieldDelimiter value=":"/>
+                </sx:delimitedField>
+              </sx:flatRecordType>
+            </sx:when>
+          </sx:flatRecordTypeChoice>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="edifactToXmlMapping">
+    <edifact>
+      <sx:onRecord>
+        <message>
+          <sx:subrecordMapping field="message">
+            <sx:onRecord recordType="UNH">
+              <UNH>
+                <sx:fieldElementMap field="segmentType" element="segmentType"/>
+                <sx:fieldElementMap field="DE0062" element="DE0062"/>
+                <S009>
+                  <sx:fieldElementMap select="S009[1]" element="DE0065"/>
+                  <sx:fieldElementMap select="S009[2]" element="DE0052"/>
+                  <sx:fieldElementMap select="S009[3]" element="DE0054"/>
+                  <sx:fieldElementMap select="S009[4]" element="DE0051"/>
+                  <sx:fieldElementMap select="S009[5]" element="DE0057"/>
+                </S009>
+                <sx:fieldElementMap field="DE0068" element="DE0068"/>
+                <S010>
+                  <sx:fieldElementMap select="S010[1]" element="DE0070"/>
+                  <sx:fieldElementMap select="S010[2]" element="DE0073"/>
+                </S010>
+              </UNH>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </message>
+      </sx:onRecord>
+    </edifact>
+  </sx:recordMapping>
+</sx:resources>
+

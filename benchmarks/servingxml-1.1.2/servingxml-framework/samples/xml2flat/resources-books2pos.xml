@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="books2pos">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:flatRecordType ref="trailer"/>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="trailer" name="trailer">
+    <sx:positionalField name="recordCountLabel" width="19" label="Number of records: "/>
+    <sx:positionalField name="recordCount"  width="10" label="{$sx:recordCount}"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+

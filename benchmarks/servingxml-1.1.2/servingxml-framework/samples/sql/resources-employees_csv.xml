@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="employees-to-csv">
+    <sx:recordStream>
+      <sx:recordReader ref="employees"/>
+      <sx:flatFileWriter/>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlReader id="employees">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="{$user}"
+                        password="{$password}"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

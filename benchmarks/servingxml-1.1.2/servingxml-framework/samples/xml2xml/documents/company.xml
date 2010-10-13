@@ -1,0 +1,9 @@
+<inv:company xmlns:inv="http://www.telio.be/ns/2002/invoice">
+<inv:name>My Company</inv:name>
+<inv:address>Station Road, 1</inv:address>
+<inv:address>1030 Brussels</inv:address>
+<inv:tel>+32-2-123.23.45</inv:tel>
+<inv:vat>BE 123 456 789</inv:vat>
+<inv:rc>BXL-123.456</inv:rc>
+<inv:bank>0123-123456-78</inv:bank>
+</inv:company>

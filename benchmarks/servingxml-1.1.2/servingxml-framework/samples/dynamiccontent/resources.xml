@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="books">
+    <sx:parameter name="category"><sx:defaultValue>F</sx:defaultValue></sx:parameter>
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books-content"/>            
+        <sx:xslt ref="books-stylesheet"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:xslt id="books-stylesheet">
+    <sx:withParameters parameters="category"/>
+    <sx:urlSource url="styles/books.xsl"/>
+  </sx:xslt>
+  
+  <!-- BookCatalog is the name of a Java class used to produce dynamic content for the primary document -->
+  <sx:dynamicContent id="books-content" class="dynamiccontent.BookCatalog"/>
+  
+  <!-- Categories is the name of a Java class used to produce dynamic content in a 
+        document function in the stylesheet -->
+  <sx:dynamicContent id="categories" class="dynamiccontent.Categories"/>
+
+</sx:resources>

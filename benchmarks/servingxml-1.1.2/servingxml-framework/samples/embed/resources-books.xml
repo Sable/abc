@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="books">
+    <sx:recordReader ref="myBooksReader"/> 
+    <sx:recordMapping ref="booksToXmlMapping"/>
+  </sx:recordContent>
+                                                       
+  <sx:recordMapping id="booksToXmlMapping">
+    <myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="url2">
+      <sx:onRecord>
+        <myns:book>
+          <sx:fieldAttributeMap field="category" attribute="categoryCode"/>
+          <sx:fieldElementMap field="title" element="myns:title"/>  
+          <sx:fieldElementMap field="author" element="myns:author"/>
+          <sx:fieldElementMap field="price" element="myns:price"/>
+        </myns:book>  
+      </sx:onRecord>
+    </myns:books>
+  </sx:recordMapping>  
+
+</sx:resources>
+

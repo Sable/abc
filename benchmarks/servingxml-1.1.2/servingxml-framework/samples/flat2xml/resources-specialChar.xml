@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="transaction">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="transactionDoc"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="transactionDoc" name="transaction">
+    <sx:flatFileReader>
+      <sx:flatFile ref="transactionFile"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+  <sx:flatFile id="transactionFile" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:binaryField name="firstField" width="1"/>
+        <sx:when test="firstField='03'">
+          <sx:flatRecordType id="R03" name="R03">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="CLIENUM" label="CLIENUM" width="007" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="firstField='04'">
+          <sx:flatRecordType id="R04" name="R04">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="NAME" label="NAME" width="020" />
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+</sx:resources>
+
+

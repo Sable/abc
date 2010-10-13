@@ -1,0 +1,162 @@
+rpm_mode=true
+command_line_args="$@"
+echo_command=false
+
+# Setup Java environment in rpm mode
+if $rpm_mode ; then
+  if [ -f /usr/share/java-utils/java-functions ] ; then
+    . /usr/share/java-utils/java-functions
+    set_jvm
+    set_javacmd
+  fi
+fi
+
+# OS specific support.  $var _must_ be set to either true or false.
+cygwin=false;
+darwin=false;
+case "`uname`" in
+  CYGWIN*) cygwin=true ;;
+  Darwin*) darwin=true
+           if [ -z "$JAVA_HOME" ] ; then
+             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+           fi
+           ;;
+esac
+
+if [ -z "$SERVINGXML_HOME" -o ! -d "$SERVINGXML_HOME" ] ; then
+  ## resolve links - $0 may be a link to fop's home
+  PRG="$0"
+  progname=`basename "$0"`
+
+  # need this for relative symlinks
+  while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      PRG="$link"
+    else
+      PRG=`dirname "$PRG"`"/$link"
+    fi
+  done
+
+  SERVINGXML_HOME=`dirname "$PRG"`
+
+  # make it fully qualified
+  SERVINGXML_HOME=`cd "$SERVINGXML_HOME" && pwd`
+fi
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if $cygwin ; then
+  [ -n "$SERVINGXML_HOME" ] &&
+    SERVINGXML_HOME=`cygpath --unix "$SERVINGXML_HOME"`
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+fi
+
+if [ "$OS" = "Windows_NT" ] ; then
+    pathSepChar=";"
+else
+    pathSepChar=":"
+fi
+
+if [ -z "$JAVACMD" ] ; then
+  if [ -n "$JAVA_HOME"  ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+      # IBM's JDK on AIX uses strange locations for the executables
+      JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+      JAVACMD="$JAVA_HOME/bin/java"
+    fi
+  else
+    JAVACMD=`which java 2> /dev/null `
+    if [ -z "$JAVACMD" ] ; then
+        JAVACMD=java
+    fi
+  fi
+fi
+
+if [ ! -x "$JAVACMD" ] ; then
+  echo "Error: JAVA_HOME is not defined correctly."
+  echo "  We cannot execute $JAVACMD"
+  exit 1
+fi
+
+if [ -n "$CLASSPATH" ] ; then
+  LOCALCLASSPATH=$CLASSPATH
+fi
+
+# add fop.jar, fop-sandbox and fop-hyph.jar, which reside in $SERVINGXML_HOME/build
+LOCALCLASSPATH=${SERVINGXML_HOME}/servingxml.jar${pathSepChar}${SERVINGXML_HOME}/config${pathSepChar}${SERVINGXML_HOME}/classes
+
+# add in the dependency .jar files, which reside in $SERVINGXML_HOME/lib
+DIRLIBS=${SERVINGXML_HOME}/lib/*.jar
+for i in ${DIRLIBS}
+do
+    # if the directory is empty, then it will return the input string
+    # this is stupid, so case for it
+    if [ "$i" != "${DIRLIBS}" ] ; then
+      if [ -z "$LOCALCLASSPATH" ] ; then
+        LOCALCLASSPATH=$i
+      else
+        LOCALCLASSPATH="$i"${pathSepChar}$LOCALCLASSPATH
+      fi
+    fi
+done
+
+# add in user-defined hyphenation JARs
+if [ -n "$FOP_HYPHENATION_PATH" ] ; then
+  LOCALCLASSPATH=$LOCALCLASSPATH${pathSepChar}$FOP_HYPHENATION_PATH
+fi
+
+# For Cygwin, switch paths to appropriate format before running java
+# For PATHs convert to unix format first, then to windows format to ensure
+# both formats are supported. Probably this will fail on directories with ;
+# in the name in the path. Let's assume that paths containing ; are more
+# rare than windows style paths on cygwin.
+if $cygwin; then
+  if [ "$OS" = "Windows_NT" ] && cygpath -m .>/dev/null 2>/dev/null ; then
+    format=mixed
+  else
+    format=windows
+  fi
+  SERVINGXML_HOME=`cygpath --$format "$SERVINGXML_HOME"`
+  LCP_TEMP=`cygpath --path --unix "$LOCALCLASSPATH"`
+  LOCALCLASSPATH=`cygpath --path --$format "$LCP_TEMP"`
+  if [ -n "$CLASSPATH" ] ; then
+    CP_TEMP=`cygpath --path --unix "$CLASSPATH"`
+    CLASSPATH=`cygpath --path --$format "$CP_TEMP"`
+  fi
+  CYGHOME=`cygpath --$format "$HOME"`
+fi
+
+# add a second backslash to variables terminated by a backslash under cygwin
+if $cygwin; then
+  case "$SERVINGXML_HOME" in
+    *\\ )
+    SERVINGXML_HOME="$SERVINGXML_HOME\\"
+    ;;
+  esac
+  case "$CYGHOME" in
+    *\\ )
+    CYGHOME="$CYGHOME\\"
+    ;;
+  esac
+  case "$LOCALCLASSPATH" in
+    *\\ )
+    LOCALCLASSPATH="$LOCALCLASSPATH\\"
+    ;;
+  esac
+  case "$CLASSPATH" in
+    *\\ )
+    CLASSPATH="$CLASSPATH\\"
+    ;;
+  esac
+fi
+
+# Execute ServingXML using eval/exec to preserve spaces in paths,
+# java options, and ServingXML args
+exec_command="exec \"$JAVACMD\" -classpath \"$LOCALCLASSPATH\" com.servingxml.app.consoleapp.ConsoleApp $command_line_args"
+if $echo_command ; then
+    echo $exec_command
+fi
+eval $exec_command

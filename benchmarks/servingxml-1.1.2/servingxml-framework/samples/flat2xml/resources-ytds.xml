@@ -1,0 +1,68 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="ytds">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="ytds"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="ytds">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/ytds.txt"/>
+      <sx:flatFile ref="ytdsFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="ytdsToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="ytdsFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record_type" width="1"/>
+        <sx:when test="record_type='E'">
+          <sx:flatRecordType name="ERecord">
+            <sx:positionalField name="record_type" width="1"/>
+            <sx:positionalField name="file_number" width="4"/>
+            <sx:positionalField name="efield1" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='S'">
+          <sx:flatRecordType name="SRecord">
+            <sx:positionalField name="record_type" width="1"/>
+            <sx:positionalField name="file_number" width="4"/>
+            <sx:positionalField name="sfield1" width="6"/>
+            <sx:positionalField name="sfield2" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="ytdsToXmlMapping">
+    <ytds>
+      <sx:groupBy fields="file_number">
+        <record>
+          <sx:fieldAttributeMap field="file_number" attribute="fileno"/>
+          <sx:innerGroup startTest="sx:current/ERecord">
+            <group1>
+              <sx:onRecord recordType="ERecord">
+                <sx:fieldElementMap field="efield1" element="a"/>
+              </sx:onRecord>
+              <sx:onRecord recordType="SRecord">
+                <sx:fieldElementMap field="sfield2" element="b"/>
+              </sx:onRecord>
+            </group1>
+          </sx:innerGroup>
+          <sx:innerGroup startTest="sx:current/SRecord">
+            <group2>
+              <sx:onRecord recordType="SRecord">
+                <sx:fieldElementMap field="sfield1" element="c"/>
+              </sx:onRecord>
+            </group2>
+          </sx:innerGroup>
+        </record>
+      </sx:groupBy>
+    </ytds>
+  </sx:recordMapping>
+</sx:resources>

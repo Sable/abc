@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+
+<project name="servingxml" default="dist" basedir=".">
+    
+  <target name="consoleapp.init">
+    <property file="build.properties"/> 
+    <property name="target" value="dist"/>
+    <property name="target.consoleapp" value="${target.base}/servingxml"/> 
+    <property name="target.samples" value="${target.consoleapp}/samples"/> 
+     <property name="target.consoleapp.lib" value="${target.consoleapp}/lib"/> 
+     <property name="target.consoleapp.jar.filename" value="${target.consoleapp}/${consoleapp.jar.filename}"/>
+     <property name="build.classes" value="build/classes"/>
+     <property name="build.java" value="build/java"/>
+  </target>
+    
+  <target name="init">
+     <tstamp/>
+     <property name="target.consoleapp.config" value="${target.consoleapp}/config"/> 
+     <property name="target.consoleapp.resources" value="${target.consoleapp}/resources"/> 
+     <property name="target.consoleapp.classes" value="${target.consoleapp}/classes"/> 
+     <property name="core.java" value="${core.base}/java"/>
+     <property name="framework.lib" value="servingxml-framework/lib"/>
+     <property name="framework.testsuite" value="servingxml-framework/testsuite"/>
+     <property name="lib.local" value="lib/local"/>
+     <property name="lib.endorsed" value="lib/endorsed"/>
+     <property name="core.resources" value="${core.base}/resources"/>
+     <property name="framework.config" value="servingxml-framework/config"/>
+     <property name="framework.resources" value="servingxml-framework/src/main/resources"/>
+     <filter token="version" value="1.0.0" />
+     <filter token="year" value="2001" />
+  </target>
+
+  <target name="target.consoleapp.remove">
+    <echo message="REMOVING files from ${build.classes} and ${build.java}"/>
+<!--
+    <delete dir="${build.classes}" />
+    <delete dir="${build.java}" />
+-->    
+     <echo message="REMOVING files from ${target.consoleapp}"/>
+
+     <delete dir="${target.consoleapp}/scripts"/>
+     <delete dir="${target.consoleapp}"/>
+     <delete dir="${target.samples}"/>
+     <delete dir="${target.testsuite}"/>
+  </target>
+  
+  <target name="tests.init">
+    <property file="build.properties"/> 
+    <property name="target" value="tests"/>
+    <property name="target.tests" value="${target.base}/tests"/> 
+    <property name="target.tests.lib" value="${target.tests}/lib"/> 
+    <property name="target.tests.classes" value="${target.tests}/classes"/> 
+    <property name="target.consoleapp" value="${target.base}/tests"/> 
+    <property name="target.consoleapp.lib" value="${target.tests.lib}"/> 
+    <property name="target.consoleapp.jar.filename" value="${target.tests.lib}/${consoleapp.jar.filename}"/>
+    <property name="target.tests.config" value="${target.tests}/config"/> 
+    <property name="target.tests.resources" value="${target.tests}/resources"/> 
+    <property name="test.java" value="${tests.base}/java"/>
+    <property name="tests.lib" value="${tests.base}/lib"/>
+    <property name="tests.config" value="${tests.base}/config"/>
+    <property name="tests.resources" value="${tests.base}/resources"/>
+    <property name="build.classes" value="build/classes"/>
+    <property name="build.java" value="build/java"/>
+  </target>
+  
+  <target name="build.testsuite" depends="build.framework">
+    <property name="target.testsuite" value="${target.base}/testsuite"/> 
+    <mkdir dir="${target.testsuite}"/>
+    <copy todir="${target.testsuite}">
+      <fileset dir="${framework.testsuite}" includes="**"/>
+    </copy>
+  </target>
+
+  <target name="tests.make.home" depends="framework.make.home">
+    <mkdir dir="${target.tests}"/>
+    <mkdir dir="${target.tests.lib}"/>
+    <mkdir dir="${target.tests.classes}"/>
+    <mkdir dir="${target.tests.resources}"/>
+    <mkdir dir="${target.tests.config}"/>
+  </target>
+
+  <target name="target.tests.remove">
+     <echo message="REMOVING files from ${target.tests}"/>
+     <delete dir="${target.tests}"/>
+  </target>
+
+  <target name="framework.make.home">
+    <mkdir dir="${target.base}" />
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.java}"/>
+    <mkdir dir="${target.consoleapp.classes}"/>
+    <copy todir="${target.consoleapp.lib}">
+      <fileset dir="${framework.lib}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${lib.local}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${lib.endorsed}">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${target.consoleapp.config}">
+      <fileset dir="${framework.config}">
+        <include name="*.xml"/>
+        <include name="*.properties"/>
+      </fileset>
+    </copy>
+    <copy todir="${target.consoleapp.resources}">
+      <fileset dir="${framework.resources}" includes="**"/>
+    </copy>
+    <copy todir="${target.consoleapp}">
+      <fileset dir=".">
+        <include name="*Readme.html"/>
+        <include name="*LICENSE.txt"/>
+        <include name="servingxml.bat"/>
+        <include name="servingxml"/>
+      </fileset>
+    </copy>
+    <copy todir="${target.consoleapp}/scripts">
+      <fileset dir="./scripts">
+        <include name="lcp.bat"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="consoleapp.prepare" depends="init,framework.make.home">
+    <path id="consoleapp.classpath">
+      <fileset dir="${target.consoleapp}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${target.consoleapp.lib}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+     <copy todir="${build.classes}">
+      <fileset dir="${core.resources}" includes="**"/>
+     </copy>
+     <copy todir="${build.java}">
+      <fileset dir="${core.java}" includes="**"/>
+     </copy>
+  </target>
+
+  <target name="tests.prepare" depends="tests.make.home">
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.java}"/>
+    <copy todir="${target.tests.lib}">
+     <fileset dir="${tests.lib}" includes="**"/>
+    </copy>
+    <copy todir="${target.tests}">
+     <fileset dir="${tests.resources}" includes="*.cmd"/>
+    </copy>
+    <copy todir="${target.tests}">
+     <fileset dir="${tests.base}" includes="*.xml"/>
+    </copy>
+    <copy todir="${target.tests.resources}">
+     <fileset dir="${tests.resources}" includes="**"/>
+    </copy>
+    <copy todir="${target.tests.config}">
+     <fileset dir="${tests.config}" includes="**"/>
+    </copy>
+    <path id="tests.classpath">
+        <fileset dir="${target.tests.lib}">
+          <include name="*.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <!-- rules to build the servingxml jar file -->
+
+  <target name="compile.util" depends="consoleapp.prepare">
+     <javac deprecation="true" debug="${compile.debug}"
+                srcdir="${build.java}" 
+                includes="com/servingxml/util/**" 
+                destdir="${build.classes}" 
+                classpathref="consoleapp.classpath">
+        <compilerarg value="-Xlint"/> 
+        <compilerarg value="-Xlint:deprecation"/> 
+        <compilerarg value="-Xlint:unchecked"/> 
+     <!-- <compilerarg value="-Xlint:deprecation"/> -->
+     <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="compile.io" depends="compile.util">
+     <javac  deprecation="true" debug="${compile.debug}" 
+                srcdir="${build.java}" 
+                includes="com/servingxml/io/**" 
+                destdir="${build.classes}" 
+                classpathref="consoleapp.classpath">
+       <!-- <compilerarg value="-Xlint:deprecation"/> -->
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="compile.ioc" depends="compile.util">
+     <javac  deprecation="true" debug="${compile.debug}" 
+                srcdir="${build.java}" 
+                includes="com/servingxml/ioc/**" 
+                destdir="${build.classes}" 
+                classpathref="consoleapp.classpath">
+       <!-- <compilerarg value="-Xlint:deprecation"/> -->
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="compile.expr" depends="compile.util">
+     <javac deprecation="true" debug="${compile.debug}" 
+                srcdir="${build.java}" 
+                includes="com/servingxml/expr/**" 
+                destdir="${build.classes}" 
+                classpathref="consoleapp.classpath">
+     <!-- <compilerarg value="-Xlint:deprecation"/> -->
+     <!-- <compilerarg value="-Xlint:unchecked"/> -->
+   </javac>
+  </target>
+
+  <target name="compile.app" depends="compile.ioc,compile.expr,compile.io">
+     <javac deprecation="true" debug="${compile.debug}" srcdir="${build.java}" includes="com/servingxml/app/**" destdir="${build.classes}" classpathref="consoleapp.classpath">
+       <!-- <compilerarg value="-Xlint:deprecation"/> -->
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="compile.components" depends="compile.app">
+     <javac deprecation="true" debug="${compile.debug}" srcdir="${build.java}" includes="com/servingxml/components/**" destdir="${build.classes}" classpathref="consoleapp.classpath">
+       <!-- <compilerarg value="-Xlint:deprecation"/> -->
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="compile.javadoc" depends="consoleapp.prepare">                  
+     <javadoc windowtitle="ServingXML API" doctitle="servingxml" packagenames="com.*" sourcepath="${build.java}" destdir="${javadoc.dest}" classpathref="consoleapp.classpath" author="false"/>
+  </target>
+
+  <target name="build.framework" depends="compile.components">
+    <property name="consoleapp.build.lib.dir" location="${target.consoleapp}"/>
+    
+     <jar jarfile="${target.consoleapp.jar.filename}"
+              basedir="${build.classes}" includes="**" excludes="">
+     </jar>
+
+     <ant antfile="build-extensions.xml" inheritAll="false">
+       <property name="ext.target" value="${target}"/>
+       <property name="dist.javadoc" value="${basedir}/{javadoc.dest}"/>
+       <property name="dist.base" value="${basedir}/${target.base}"/>
+       <property name="dist.bin" value="${basedir}/${target.consoleapp}"/>
+       <property name="dist.samples.base" value="${basedir}/${target.samples}"/>
+     </ant>
+     
+    <!-- rebuild jar -->
+     <pathconvert pathsep=" " property="javafiles" refid="consoleapp.classpath" dirsep="/">
+       <map from="${consoleapp.build.lib.dir}${file.separator}" to=""/>
+     </pathconvert>
+     <echo message = "${javafiles}"/>
+     <pathconvert property="classpath.windows" pathsep=";" refid="consoleapp.classpath" dirsep="\">
+       <map from="${consoleapp.build.lib.dir}${file.separator}" to="%SERVINGXML_HOME%"/>
+     </pathconvert>
+     <pathconvert property="classpath.unix" pathsep=":" refid="consoleapp.classpath" dirsep="/">
+       <map from="${consoleapp.build.lib.dir}${file.separator}" to="$SERVINGXML_HOME/"/>
+     </pathconvert>
+     
+     <jar jarfile="${target.consoleapp.jar.filename}"
+              basedir="${build.classes}" includes="**" excludes="">
+        <manifest>
+          <attribute name="Manifest-Version" value="1.0"/>
+          <attribute name="Main-Class" value="com.servingxml.app.consoleapp.ConsoleApp"/> 
+          <!-- <attribute name="Main-Class" value="com.servingxml.components.recordio.poi.PoiExcelReader"/> -->
+          <attribute name="Class-Path" value="${javafiles} ./classes/ ./config/"/>
+          <attribute name="ServingXML-Components" value="META-INF/components/com/servingxml/core/components.xml"/>
+        </manifest>                
+     </jar>
+  </target>
+
+  <target name="build.tests.cleanup">
+    <echo message="REMOVING files from ${build.classes} and ${build.java}"/>
+  </target>
+
+  <target name="compile.tests" depends="tests.prepare">
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.java}"/>
+     <javac debug="${compile.debug}" srcdir="${test.java}" includes="**" destdir="${build.classes}" classpathref="tests.classpath">
+       <!-- <compilerarg value="-Xlint:deprecation"/> -->
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+     </javac>
+  </target>
+
+  <target name="build.tests" depends="compile.tests">
+     <jar jarfile="${target.tests}/${tests.jarfilename}"
+              basedir="${build.classes}" includes="**" excludes=""/>
+     
+     <property name="tests.build.dir" location="${target.tests}"/>
+     <pathconvert pathsep=" " property="javafiles" refid="tests.classpath"  dirsep="/">
+       <map from="${tests.build.dir}${file.separator}" to=""/>
+     </pathconvert>
+
+      <jar jarfile="${target.tests}/${tests.jarfilename}"
+               basedir="${build.classes}" includes="**" excludes="">
+        <manifest>
+          <attribute name="Manifest-Version" value="${version}"/>
+          <attribute name="Main-Class" value="com.servingxml.ServingXmlTests"/> 
+          <attribute name="Class-Path" value="${javafiles} ./classes/ ./config/ ./resources/ ./resources/META-INF/components/"/>
+        </manifest>                
+      </jar>
+  </target>
+  
+  <target name="build.framework.cleanup">
+    <echo message="REMOVING files from ${build.classes} and ${build.java}"/>
+<!--
+    <delete dir="${build.classes}" />
+    <delete dir="${build.java}" />
+-->    
+  </target>
+
+  <target name="build.samples">
+    <echo message="COPYING DISTRIBUTION SAMPLES"/>
+    <property name="consoleapp.build.samples" value="${target.consoleapp}/samples"/> 
+    <property name="framework.samples" value="servingxml-framework/samples"/>
+    <copy todir="${target.samples}">
+      <fileset dir="${framework.samples}">
+        <include name="**"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="build.nosamples" depends="consoleapp.init,init,target.consoleapp.remove,framework.make.home,build.framework,build.testsuite">
+  </target>
+  
+  <target name="dist" depends="build.nosamples,build.framework.cleanup,build.samples">
+  </target>
+
+  <target name="javadoc" depends="build.nosamples, compile.javadoc, build.framework.cleanup">
+  </target>
+
+  <target name="tests" depends="tests.init,init,target.tests.remove,tests.make.home,tests.prepare,build.framework,build.framework.cleanup,build.tests, build.tests.cleanup">
+  </target>
+
+  <target name="clean" depends="consoleapp.init,init">
+    <echo message="REMOVING files from ${build.classes} and ${build.java}"/>
+    <delete dir="${build.classes}" />
+    <delete dir="${build.java}" />
+<!--
+     <echo message="REMOVING files from ${target.consoleapp}"/>
+     <delete dir="${target.consoleapp}"/>
+     <delete dir="${target.samples}"/>
+-->     
+  </target>
+
+</project>
+
+                                                                                       

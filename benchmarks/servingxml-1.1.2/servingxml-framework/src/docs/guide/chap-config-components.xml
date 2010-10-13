@@ -1,0 +1,251 @@
+<reference id="ref-config-components"
+  xmlns:sx="http://www.servingxml.com/core">
+  <title>Configuration Elements</title>  
+
+<refentry id="sx:cacheSettings" xreflabel="sx:cacheSettings">
+<refnamediv>
+  <refname>sx:cacheSettings</refname>
+  <refpurpose>Cache settings</refpurpose>
+</refnamediv>
+<indexterm><primary>cacheSettings</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, any number of <xref linkend="sx:property"/> elements.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:escapeSubstitutions" xreflabel="sx:escapeSubstitutions">
+<refnamediv>
+  <refname>sx:escapeSubstitutions</refname>
+  <refpurpose>Define escape rules for special characters in evaluations of <xref linkend="SubstitutionExpr"/></refpurpose>
+</refnamediv>
+<indexterm><primary>sx:escapeSubstitutions</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>escape</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry><code>true</code> if a character should be escaped, <code>false</code>
+  otherwise.  Defaults to <code>true</code></entry>
+</row>
+<row>
+<entry>character</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>The character to optionally enclose field values.  Defaults to the double 
+  quotation mark.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>The escape character used to escape the quote symbol, e.g. the backslash ('\') or the quote symbol itself.
+</entry>
+</row>
+<row>
+<entry>escapeSequence</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The character sequence used to replace the special character, e.g. '\"' 
+  or '""' to escape a double quote.
+</entry>
+</row>                                                                                                                 
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para> You can use this instruction to define an escape character to escape 
+  quote characters appearing in variable values, when evaluated as strings.
+</para>
+  <para>
+This element
+  is a configuration element, meaning it 
+  can appear anywhere in a resources script,
+  and will be visible to all elements 
+  belonging to its scope.  Currently, <xref linkend="sx:toString"/>, <xref linkend="sx:sqlQuery"/>, and
+  <xref linkend="sx:sqlUpdate"/> support the new                                               
+  <sgmltag>sx:escapeSubstitutions</sgmltag> element.
+  </para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>A double quote character with a backslash escape character.</title>
+<programlisting>
+<![CDATA[
+  <sx:escapeSubstitutions character='"' escapeCharacter="\"/>
+]]>
+</programlisting>
+</example>
+<example>
+<title>A single quote character escaped with "&quot;".</title>
+<programlisting>
+<![CDATA[
+  <sx:escapeSubstitutions character="'" escapeSequence="&quot;"/>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:toString"/>
+</listitem>
+<listitem>
+<xref linkend="sx:sqlQuery"/>
+</listitem>
+<listitem>
+<xref linkend="sx:sqlUpdate"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:escapeVariables" xreflabel="sx:escapeVariables">
+<refnamediv>
+  <refname>sx:escapeVariables</refname>
+  <refpurpose>Deprecated in 1.0, replaced by <xref linkend="sx:escapeSubstitutions"/></refpurpose>
+</refnamediv>
+<indexterm><primary>escapeVariables</primary></indexterm>
+</refentry>
+
+<refentry id="sx:expiryOptions" xreflabel="sx:expiryOptions">
+<refnamediv>
+  <refname>sx:expiryOptions</refname>
+  <refpurpose>Expiry options</refpurpose>
+</refnamediv>
+<indexterm><primary>expiryOptions</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>revalidate</entry>
+<entry>No</entry>
+<entry>string</entry>
+<entry>
+A list of revalidation codes with possible values "synch" or "asynch" (or both),
+or "full" or "none".
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:patternMatcher" xreflabel="sx:patternMatcher">
+<refnamediv>
+  <refname>sx:patternMatcher</refname>
+  <refpurpose>Regular expression pattern matcher</refpurpose>
+</refnamediv>
+<indexterm><primary>patternMatcher</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java class</entry>
+<entry>An implementation of the com.servingxml.components.regex.PatternMatcher interface.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:xsltConfiguration" xreflabel="sx:xsltConfiguration">
+<refnamediv>
+  <refname>sx:xsltConfiguration</refname>
+  <refpurpose>XSLT configuration</refpurpose>
+</refnamediv>
+<indexterm><primary>transformerSettings</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>version</entry>
+<entry>No</entry>
+<entry>XSLT version</entry>
+<entry>The value of the XSLT version attribute appearing in generated stylesheets.  Defaults to "1.0"</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, any number of <xref linkend="sx:outputProperty"/> elements.</para>
+<para>Optionally, any number of <xref linkend="sx:systemProperty"/> elements.</para>
+</refsection>
+</refentry>
+
+</reference>
+

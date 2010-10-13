@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="students">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="students-content"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="students-content">
+    <sx:flatFileReader>
+      <sx:flatFile ref="students-file"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="students-mapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="students-file">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="student">
+        <sx:fieldDelimiter value="^"/>                                              
+        <sx:repeatDelimiter value="~"/>
+        <sx:segmentDelimiter value="|"/>
+        <sx:delimitedField name="name"/>
+        <sx:repeatingGroup name="grades">
+          <sx:flatRecordType name="subject-grade">
+            <sx:fieldDelimiter value="^"/>                                              
+            <sx:delimitedField name="subject"/>
+            <sx:delimitedField name="grade"/>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+        <sx:delimitedField name="year-born"/>
+        <sx:delimitedField name="favorite-color"/>
+        <sx:repeatingGroup name="addresses">
+          <sx:flatRecordType name="address">
+            <sx:fieldDelimiter value="^"/>                                              
+            <sx:delimitedField name="city"/>
+            <sx:delimitedField name="state"/>
+          </sx:flatRecordType>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="students-mapping">
+    <StudentGrades>
+      <sx:onRecord>
+        <StudentGrade>
+          <sx:fieldElementMap field="name" element="Name"/>
+          <sx:subrecordMapping repeatingGroup="grades">
+            <sx:onRecord>
+              <SubjectGrade>
+                <sx:fieldElementMap field="subject" element="Subject"/>
+                <sx:fieldElementMap field="grade" element="Grade"/>
+              </SubjectGrade>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+          <sx:fieldElementMap field="year-born" element="YearBorn"/>
+          <sx:fieldElementMap field="favorite-color" element="FavoriteColor"/>
+          <sx:subrecordMapping repeatingGroup="addresses">
+            <sx:onRecord>
+              <Address>
+                <sx:fieldElementMap field="city" element="City"/>
+                <sx:fieldElementMap field="state" element="State"/>
+              </Address>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </StudentGrade>
+      </sx:onRecord>
+    </StudentGrades>
+  </sx:recordMapping>
+
+</sx:resources>
+

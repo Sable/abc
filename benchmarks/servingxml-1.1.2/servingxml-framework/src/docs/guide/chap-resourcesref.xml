@@ -1,0 +1,664 @@
+<reference id="ref-resourcesref"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>Resources, Service and Task Elements</title>
+
+<refentry id="sx:choose" xreflabel="sx:choose">
+<refnamediv>
+  <refname>sx:choose</refname>
+  <refpurpose>Choose from alternatives with XPATH test conditions</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:task"/>, <xref linkend="sx:content"/>, <xref linkend="sx:recordFilter"/>, <xref linkend="sx:mapXml"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>choose</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>One or more <xref linkend="sx:when"/> elements.</listitem>
+<listitem>
+Optionally, a <xref linkend="sx:otherwise"/> element.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>
+    An <sgmltag>sx:choose</sgmltag> element may be used in any context where any
+    of the following abstract elements are allowed:
+  </para>
+    <itemizedlist>
+      <listitem><xref linkend="sx:task"/>
+      </listitem>
+      <listitem><xref linkend="sx:content"/>
+      </listitem>
+      <listitem><xref linkend="sx:recordFilter"/>
+      </listitem>
+      <listitem><xref linkend="sx:mapXml"/>
+      </listitem>
+      <listitem><xref linkend="sx:stringable"/>
+      </listitem>
+    </itemizedlist>
+  <para>
+    The <sgmltag>sx:choose</sgmltag> element evaluates the test conditions of
+    its <xref linkend="sx:when"/> child elements, selecting the first alternative 
+    that evaluates to <code>true</code>, or if none do, then the
+    <xref linkend="sx:otherwise"/> child element, if present.  The children of
+    the selected alternative are then expanded in place of the <sgmltag>sx:choose</sgmltag>
+    element.
+  </para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Choosing content in an XML pipeline.</title>
+<programlisting>
+<![CDATA[
+  <sx:document id="odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:transform id="test-choose-odd">
+    <sx:document ref="odd-element-document"/>
+    <sx:choose>
+      <sx:when test="count(//*) mod 2 = 0">
+        <sx:document>
+          <result>even</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>odd</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text()='odd'">Expected odd number of elements.
+    </sx:assert>
+  </sx:transform>
+]]>
+</programlisting>
+  <para>
+    The output of this <sgmltag>sx:choose</sgmltag> element is the document
+  </para>
+<programlisting>
+<![CDATA[
+  <result>odd</result>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Choosing XML output in a record mapping section.</title>
+<programlisting>
+<![CDATA[
+
+  <!-- Define a choose expression with embedded parameter 
+    "term", term values having the format <number><D|M|Y>,
+    and expanding to
+
+      <periodMultiplier>number</periodMultiplier>
+      <period>D|M|Y</period>
+  -->
+
+  <sx:choose id="fpml-period-from-term">
+    <sx:when test="fn:ends-with($term,'D')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'D')"/>
+      </sx:fieldElementMap>
+      <period>D</period>
+    </sx:when>
+    <sx:when test="fn:ends-with($term,'M')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'M')"/>
+      </sx:fieldElementMap>
+      <period>M</period>
+    </sx:when>
+    <sx:when test="fn:ends-with($term,'Y')">
+      <sx:fieldElementMap element="periodMultiplier">
+        <sx:toString select="fn:substring-before($term,'Y')"/>
+      </sx:fieldElementMap>
+      <period>Y</period>
+    </sx:when>
+  </sx:choose>
+
+  <!-- Expand the "fpml-period-from-term" sx:choose element  
+    someplace in an sx:recordMapping block where literal
+    content is allowed
+
+  <calculationPeriodFrequency>
+    <sx:parameter name="term" value="{calculation_period}"/>
+    <sx:choose ref="fpml-period-from-term"/>
+  </calculationPeriodFrequency> 
+]]>
+</programlisting>
+<para>
+  The output of this <sgmltag>sx:choose</sgmltag>
+  element depends on the value of the field <code>calculation_period</code>.
+  If for a particular record the value of the field is "6M",
+  the element expands to
+<programlisting>
+<![CDATA[
+      <periodMultiplier>6</periodMultiplier>
+      <period>M</period>
+]]>
+</programlisting>
+
+</para>
+</example>
+</refsection>
+<!--refsection>
+<title>See also</title>
+<itemizedlist>
+</itemizedlist>
+</refsection-->
+  <refsection>
+<refentry id="sx:when" xreflabel="sx:when">
+<refnamediv>
+  <refname>sx:when</refname>
+  <refpurpose>When condition of an sx:choose</refpurpose>
+</refnamediv>
+<indexterm><primary>when</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>test</entry>
+<entry>Yes</entry>
+<entry>XPath Boolean Expression</entry>
+<entry>The boolean expression to evaluate.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+  <para>
+    An <sgmltag>sx:when</sgmltag> element may contain elements that are substitutable for
+    any of the following abstract elements:
+  </para>
+    <itemizedlist>
+      <listitem><xref linkend="sx:task"/>
+      </listitem>
+      <listitem><xref linkend="sx:content"/>
+      </listitem>
+      <listitem><xref linkend="sx:recordFilter"/>
+      </listitem>
+      <listitem><xref linkend="sx:mapXml"/>
+      </listitem>
+      <listitem><xref linkend="sx:stringable"/>
+      </listitem>
+    </itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:otherwise" xreflabel="sx:otherwise">
+<refnamediv>
+  <refname>sx:otherwise</refname>
+  <refpurpose>Otherwise condition of sx:choose</refpurpose>
+</refnamediv>
+<indexterm><primary>otherwise</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Content</title>
+  <para>
+    An <sgmltag>sx:when</sgmltag> element may contain elements that are substitutable for
+    any of the following abstract elements:
+  </para>
+    <itemizedlist>
+      <listitem><xref linkend="sx:task"/>
+      </listitem>
+      <listitem><xref linkend="sx:content"/>
+      </listitem>
+      <listitem><xref linkend="sx:recordFilter"/>
+      </listitem>
+      <listitem><xref linkend="sx:mapXml"/>
+      </listitem>
+      <listitem><xref linkend="sx:stringable"/>
+      </listitem>
+    </itemizedlist>
+</refsection>
+</refentry>
+    
+  </refsection>
+</refentry>
+
+<refentry id="sx:include" xreflabel="sx:include">
+<refnamediv>
+  <refname>sx:include</refname>
+  <refpurpose>Include another resources script</refpurpose>
+</refnamediv>
+<indexterm><primary>include</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>href</entry>
+<entry>Yes</entry>
+<entry>URI</entry>
+<entry>A URI identifying a resources script.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:onError" xreflabel="sx:onError">
+<refnamediv>
+  <refname>sx:onError</refname>
+  <refpurpose>Catches an exception raised by a <xref linkend="sx:task"/> element, to be revisited</refpurpose>
+</refnamediv>
+<indexterm><primary>onError</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+One or more action elements from the following list.
+<itemizedlist>
+<listitem>
+<xref linkend="sx:serialize"/>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Apply a stylesheet to a fault raised in the book-order document handler.</title>
+<programlisting>
+<![CDATA[
+  <sx:service id="post-book-order">
+    <sx:serialize>
+      <sx:transform>
+         <sx:content ref="myns:book-order"/>
+         <sx:xslt ref="myns:confirm-order"/>
+      </sx:transform>
+      <sx:onError>
+        <sx:transform>
+          <sx:xslt ref="myns:book-order"/>
+        </sx:transform>
+      </sx:onError>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:raiseError" xreflabel="sx:raiseError">
+<refnamediv>
+  <refname>sx:raiseError</refname>
+  <refpurpose>Raises an exception inside an <xref linkend="sx:onError"/>, to be revisited</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>raiseError</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>A specialized <xref linkend="sx:stringable"/> element, for example, a 
+<xref linkend="sx:toString"/> element, or a literal value.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A <sgmltag>sx:raiseError</sgmltag> element results in an exception being thrown.
+It is used inside an <xref linkend="sx:onError"/> element.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:onError"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:resources" xreflabel="sx:resources">
+<refnamediv>
+  <refname>sx:resources</refname>
+  <refpurpose>The root element of a resources script</refpurpose>
+</refnamediv>
+<indexterm><primary>resources</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ns</entry>
+<entry>No</entry>
+<entry>URI</entry>
+<entry>The default namespace for the pages, documents, styles and serializers defined in this resources script.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+The list of elements that may be defined with a qualified name at the top level of the
+resources script includes all the elements that are defined in the sx:instructions refsection
+of the servingxml.xml configuration file.  These include
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="sx:include"/> elements
+</listitem>
+<listitem>
+Any number of elements derived from <xref linkend="sx:content"/>, including
+<xref linkend="sx:document"/>, <xref linkend="sx:dynamicContent"/>,
+and <xref linkend="sx:recordContent"/> elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:service"/> elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:xslt"/> elements
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:saxSink"/> based elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:recordMapping"/> elements."/>.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:inverseRecordMapping"/> elements."/>.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:flatFile"/> elements."/>.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:runService" xreflabel="sx:runService">
+<refnamediv>
+  <refname>sx:runService</refname>
+  <refpurpose>Runs another service from within a resources script</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>runService</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>service</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>An expression that evaluates to a QName identifying a service.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>A <xref linkend="sx:service"/> element (Deprecated, use the service attribute instead)</listitem>
+<listitem>Optionally, a specialized <xref linkend="sx:streamSource"/> element, for example, a 
+<xref linkend="sx:fileSource"/> element.</listitem>
+<listitem>Optionally, a specialized <xref linkend="sx:streamSink"/> element, for example, a 
+<xref linkend="sx:fileSink"/> element.</listitem>
+<!--listitem>A <xref linkend="sx:onError"/> element.</listitem-->
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>A <sgmltag>sx:runService</sgmltag> element is a task that invokes a service.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:transform"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:service" xreflabel="sx:service">
+<refnamediv>
+  <refname>sx:service</refname>
+  <refpurpose>Service</refpurpose>
+</refnamediv>
+<indexterm><primary>service</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+One or more <xref linkend="sx:task"/> elements, including <xref linkend="sx:serialize"/>,
+<xref linkend="sx:recordStream"/> or <xref linkend="jm:sendMail"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Books page.</title>
+<programlisting>
+<![CDATA[
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="myns:books"/>
+        <sx:xslt ref="myns:books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:expiryOptions"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onError"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:task" xreflabel="sx:task">
+<refnamediv>
+  <refname>sx:task</refname>
+  <refpurpose>Abstract element standing for a task</refpurpose>
+</refnamediv>
+<indexterm><primary>task</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a task.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:task</sgmltag>, such as <xref linkend="sx:transform"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:serialize"/>
+</listitem>
+<listitem>
+<xref linkend="sx:transform"/>
+</listitem>
+<listitem>
+<xref linkend="sx:recordStream"/>
+</listitem>
+<listitem>
+<xref linkend="sx:runService"/>
+</listitem>
+<listitem>
+<xref linkend="jm:sendMail"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+</reference>
+

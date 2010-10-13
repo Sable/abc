@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="smf-xml">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="smf"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="smf">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="smfFile"/>
+        <sx:defaultStreamSource encoding="Cp1047"/>
+      </sx:flatFileReader>
+    </sx:recordStream>
+    <sx:recordMapping ref="smfToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="smfFile" lineDelimited="false" countPositionsInBytes="true">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="smfType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:vbsFlatRecordType id="smfType">
+    <sx:integerField name="recordLength" width="2"/>
+    <sx:integerField name="segmentControlCode" width="1"/>
+    <sx:integerField name="reserved" width="1"/>
+    <sx:mergePhysicalSegments startTest = "number(sx:current//segmentControlCode) = 0 
+                                          or number(sx:current//segmentControlCode) = 1"
+                             segmentLength="{recordLength}">
+      <sx:flatRecordTypeChoice>
+        <sx:integerField name="recordLength" width="2"/>
+        <sx:integerField name="segmentControlCode" width="1"/>
+        <sx:integerField name="reserved" width="1"/>
+        <sx:binaryField name="systemIndicator" width="1"/>
+        <sx:integerField name="recordType" width="1"/>
+        <sx:when test="recordType=64">
+          <sx:flatRecordType name="smfType64">
+            <sx:integerField name="recordLength" width="2"/>
+            <sx:integerField name="segmentControlCode" width="1"/>
+            <sx:integerField name="reserved" width="1"/>
+            <sx:binaryField name="systemIndicator" label="systemIndicator" width="1"/>
+            <sx:integerField name="recordType" label="recordType" width="1"/>
+            <sx:positionalField name="jobName" label="Job Name" start="19" width="8"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="recordType=42">
+          <sx:flatRecordType name="smfType42">
+            <sx:integerField name="recordLength" width="2"/>
+            <sx:integerField name="segmentControlCode" width="1"/>
+            <sx:integerField name="reserved" width="1"/>
+            <sx:binaryField name="systemIndicator" label="systemIndicator" width="1"/>
+            <sx:integerField name="recordType" label="recordType" width="1"/>
+            <sx:integerField name="subType" label="Sub Type" start="23" width="2"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="recordType=110">
+          <sx:flatRecordType name="smfType110">
+            <sx:integerField name="recordLength" width="2"/>
+            <sx:integerField name="segmentControlCode" width="1"/>
+            <sx:integerField name="reserved" width="1"/>
+            <sx:binaryField name="systemIndicator" label="systemIndicator" width="1"/>
+            <sx:integerField name="recordType" label="recordType" width="1"/>
+            <sx:binaryField name="x" label="x" start="27976" width="258"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType name="other">
+            <sx:integerField name="recordLength" width="2"/>
+            <sx:integerField name="segmentControlCode" width="1"/>
+            <sx:integerField name="reserved" width="1"/>
+            <sx:binaryField name="systemIndicator" label="systemIndicator" width="1"/>
+            <sx:integerField name="recordType" label="recordType" width="1"/>
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:mergePhysicalSegments>
+  </sx:vbsFlatRecordType>
+
+  <sx:recordMapping id="smfToXmlMapping">
+    <smf>
+      <sx:onRecord recordType="smfType64">
+        <smfRecord>
+          <sx:fieldElementMap field="systemIndicator" element="systemIndicator"/>
+          <sx:fieldElementMap field="recordType" element="type"/>
+          <sx:fieldElementMap field="jobName" element="jobName"/>
+        </smfRecord>
+      </sx:onRecord>
+      <sx:onRecord recordType="smfType42">
+        <smfRecord>
+          <sx:fieldElementMap field="systemIndicator" element="systemIndicator"/>
+          <sx:fieldElementMap field="recordType" element="type"/>
+          <sx:fieldElementMap field="subType" element="subType"/>
+        </smfRecord>
+      </sx:onRecord>
+      <sx:onRecord recordType="smfType110">
+        <smfRecord>
+          <sx:fieldElementMap field="systemIndicator" element="systemIndicator"/>
+          <sx:fieldElementMap field="recordType" element="type"/>
+          <sx:fieldElementMap field="x" element="x"/>
+        </smfRecord>
+      </sx:onRecord>
+      <sx:onRecord recordType="other">
+        <smfRecord>
+          <sx:fieldElementMap field="systemIndicator" element="systemIndicator"/>
+          <sx:fieldElementMap field="recordType" element="type"/>
+        </smfRecord>
+      </sx:onRecord>
+    </smf>
+  </sx:recordMapping>
+
+</sx:resources>
+

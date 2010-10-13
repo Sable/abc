@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="sequence-csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document>
+            <sx:fileSource file="data/sequence.xml"/>
+          </sx:document>
+          <sx:xslt ref="sequence-hierarchy"/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="sequenceToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="sequenceFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:xslt id="sequence-hierarchy">
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:template match="/root">
+        <xsl:copy>
+          <xsl:apply-templates select="first"/>
+        </xsl:copy>
+      </xsl:template>
+      <xsl:template match="first">
+        <PivotNode>
+          <first>
+            <xsl:value-of select="."/>
+          </first>
+          <second>
+            <xsl:value-of select="following-sibling::second[1]"/>
+          </second>
+          <third>
+            <xsl:value-of select="following-sibling::third[1]"/>
+          </third>
+          <fourth>
+            <xsl:value-of select="following-sibling::fourth[1]"/>
+          </fourth>
+        </PivotNode>
+      </xsl:template>
+    </xsl:stylesheet>
+  </sx:xslt>
+
+  <sx:flatFile id="sequenceFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="sequence">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="first"/>
+        <sx:delimitedField name="second"/>
+        <sx:delimitedField name="third"/>
+        <sx:delimitedField name="fourth"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="sequenceToFileMapping">
+    <sx:onSubtree path="/root/PivotNode">
+      <sx:flattenSubtree  recordType="sequence">
+        <sx:subtreeFieldMap select="first" field="first"/>
+        <sx:subtreeFieldMap select="second" field="second"/>
+        <sx:subtreeFieldMap select="third" field="third"/>
+        <sx:subtreeFieldMap select="fourth" field="fourth"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>                           
+
+</sx:resources>
+

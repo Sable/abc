@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+      <sx:recordValidator>                   
+        <msv:schemaValidator>
+          <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+            <xs:element name="employee" type="EmployeeType"/>
+            <xs:complexType name="EmployeeType">
+              <xs:sequence>
+                <xs:element name="EMPNO" type="xs:integer"/>
+                <xs:element name="NAME" type="xs:string"/>
+                <xs:element name="JOB" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:schema>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlWriter id="employeesWriter">
+    <sx:sqlConnectionPool ref="jdbcPool"/>                         
+    <sx:sqlUpdateChoice>
+      <sx:sqlQuery>
+        SELECT EMPNO FROM EMP_HISTORY WHERE EMPNO = {EMPNO}
+      </sx:sqlQuery>
+      <sx:recordNotFound>
+        <sx:sqlUpdate>
+          INSERT INTO EMP_HISTORY(EMPNO, ENAME) VALUES({EMPNO},'{NAME}')
+        </sx:sqlUpdate>
+      </sx:recordNotFound>
+      <sx:recordFound>
+        <sx:sqlUpdate>
+          UPDATE EMP_HISTORY SET ENAME = '{NAME}' WHERE EMPNO = {EMPNO}
+        </sx:sqlUpdate>
+      </sx:recordFound>
+    </sx:sqlUpdateChoice>
+  </sx:sqlWriter>
+
+  <sx:sqlReader id="employeesReader">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

@@ -1,0 +1,178 @@
+<reference id="chap-saxon"><title>Saxon XQuery Extension</title>
+<partintro>
+<para>
+This section describes the Saxon XQuery extension element. All Saxon extension
+elements require the namespace declaration 
+<sgmltag>xmlns:saxon="http://www.servingxml.com/extensions/saxon"</sgmltag> to 
+appear in the resources script.
+</para>                              
+</partintro>
+
+<refentry id="saxon:xquery" xreflabel="saxon:xquery">
+<refnamediv>
+  <refname>saxon:xquery</refname>
+  <refpurpose>Saxon 9 xquery processor</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>xquery</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>documentBase</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>This attribute is used to explicitly set the the static 
+      context of the query.  The base can be relative,
+  in which case it is resolved relative to xml:base, if in scope, or otherwise
+  the location of the resources script.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+  <itemizedlist>
+<listitem><para>
+Optionally, an <xref linkend="sx:content"/> specialization, such as a <xref linkend="sx:document"/>, <xref linkend="sx:recordContent"/> 
+or <xref linkend="sx:transform"/> element, to specify the initial context item.  
+</para></listitem>
+    <listitem>
+    <para>Either an <xref linkend="sx:streamSource"/> element to load the 
+      query, or an <xref linkend="sx:stringable"/> element to specify 
+      the query inline (usually a <xref linkend="sx:preserveMarkup"/> element.)
+    </para>
+    </listitem>
+  </itemizedlist>
+</refsection>
+  <refsection>
+    <title>Description</title>
+    <para>The <sgmltag>saxon:xquery</sgmltag> element wraps the Saxon XQuery
+      processor.
+    </para>
+    <para>
+Prefix declarations appearing in the
+      <sgmltag>saxon:xquery</sgmltag> element will form part of the static 
+      context of the query, but they will not be copied into result trees unless 
+      the prefix is actually used in an element or attribute name.  These 
+      declarations will be overridden by declarations
+that appear in the query prolog.
+    </para>
+    <para>The attribute <sgmltag>documentBase</sgmltag> can be used to set the 
+      static base URI for the query, defaults to the                                    
+      <sgmltag>xml:base</sgmltag> in scope, or if there is none, to the location 
+      of the resources file.
+    </para>
+  </refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>XQuery example.</title>
+<programlisting>
+<![CDATA[
+  <!-- This is "TestF" in the Saxon sample file XQJExamples.java -->
+
+<sx:service id="test1">
+  <sx:serialize > 
+    <sx:transform>
+      <saxon:xquery> 
+        <sx:preserveMarkup> 
+          document { <a xmlns='http://a/uri' z:in='out'
+                       xmlns:z='http://z/uri'><b>{2+2}</b></a> }
+        </sx:preserveMarkup>
+      </saxon:xquery>
+    </sx:transform>
+  </sx:serialize>
+</sx:service>
+]]>
+</programlisting>
+</example>
+<example>
+<title>XQuery example.</title>
+<programlisting>
+<![CDATA[
+<sx:service id="test2">
+  <sx:serialize> 
+    <sx:transform>
+      <saxon:xquery xmlns:myns="http://mycompany.com/mynames/"> 
+        <sx:document>
+          <sx:fileSource file="data/books.xml"/>
+        </sx:document>
+        <sx:preserveMarkup> 
+          <copy>{//myns:book[1]}</copy>
+        </sx:preserveMarkup>
+      </saxon:xquery>
+    </sx:transform>
+  </sx:serialize>
+</sx:service>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Initializing parameters from an XML file.</title>
+  <para>
+    In this example, parameter values come from an XML file,
+  </para>
+  <programlisting>
+<![CDATA[
+<parameters>
+  <validate>yes</validate>
+</parameters>
+]]>
+</programlisting>
+  <para>The parameter declaration below initializes the parameter
+    <code>validate</code> with an XQuery FLWOR expression.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:service id="countries">
+    <sx:parameter name="validate">
+      <saxon:xquery>
+        <sx:toString>doc('data/parameters.xml')/parameters/validate
+        </sx:toString>
+      </saxon:xquery>
+    </sx:parameter>
+
+    <sx:serialize>
+      <sx:choose>
+        <sx:when test="$validate='yes'">
+          <sx:transform>
+            <sx:content ref="countries"/>
+            <msv:schemaValidator>
+              <sx:urlSource url="data/countries.xsd"/>
+            </msv:schemaValidator>
+          </sx:transform>
+        </sx:when>
+        <sx:otherwise>
+          <sx:transform>
+            <sx:content ref="countries"/>
+          </sx:transform>
+        </sx:otherwise>
+      </sx:choose>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+</reference>
+

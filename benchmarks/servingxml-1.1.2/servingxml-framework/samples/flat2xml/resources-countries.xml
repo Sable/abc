@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="countries">
+
+    <sx:parameter name="validate">
+      <sx:defaultValue>yes</sx:defaultValue>
+    </sx:parameter>
+
+    <sx:serialize>
+      <sx:choose>
+        <sx:when test="$validate='yes'">
+          <sx:transform>
+            <sx:content ref="countries"/>
+            <msv:schemaValidator>
+              <sx:urlSource url="data/countries.xsd"/>
+            </msv:schemaValidator>
+          </sx:transform>
+        </sx:when>
+        <sx:otherwise>
+          <sx:transform>
+            <sx:content ref="countries"/>
+          </sx:transform>
+        </sx:otherwise>
+      </sx:choose>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="countries" name="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:urlSource url="data/countries.csv"/> 
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <sx:recordValidator>
+        <msv:schemaValidator>
+          <sx:urlSource url="data/country-record.xsd"/>
+        </msv:schemaValidator>
+      </sx:recordValidator>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="countriesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="countriesToXmlMapping">
+    <countries>
+      <sx:onRecord>
+        <country>
+          <sx:fieldElementMap field="name" element="countryName"/>
+          <sx:fieldAttributeMap field="code" attribute="countryCode"/>
+        </country>
+      </sx:onRecord>
+    </countries>
+  </sx:recordMapping>
+
+  <sx:service id="countriesMixed">
+    <sx:serialize>
+      <sx:transform>
+        <sx:recordContent id="countries">
+          <sx:recordStream>
+            <sx:flatFileReader>
+              <sx:urlSource url="data/countries.csv"/>
+              <sx:flatFile ref="countriesFile"/>
+            </sx:flatFileReader>
+            <sx:recordValidator>
+              <msv:schemaValidator>
+                <sx:urlSource url="data/country-record.xsd"/>
+              </msv:schemaValidator>
+            </sx:recordValidator>
+            <sx:discardHandler>
+              <sx:log message="{$sx:message}"/>
+            </sx:discardHandler>
+          </sx:recordStream>
+          <sx:recordMapping>
+            <countries>
+              <sx:onRecord>
+                <country>
+                  <sx:defaultFieldElementMap fields="*" exceptFields="code"/>
+                  <sx:fieldAttributeMap field="code" attribute="countryCode"/>
+                </country>
+              </sx:onRecord>
+            </countries>
+          </sx:recordMapping>
+        </sx:recordContent>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+

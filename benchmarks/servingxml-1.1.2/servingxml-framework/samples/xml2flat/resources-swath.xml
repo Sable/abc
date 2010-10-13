@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="swath">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping >
+          <sx:onSubtree  path="/Swath">
+            <sx:flattenSubtree recordType="hdrType">
+              <sx:subtreeFieldMap select="Shape" field="Shape"/>
+              <sx:subtreeFieldMap match="GeoPoint" select="concat(lat,' ',lon)" field="GeoPoint"/>
+            </sx:flattenSubtree>
+          </sx:onSubtree>
+        </sx:inverseRecordMapping>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="swathFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="swathFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="hdrType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="hdrType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="hdrType" name="hdrType">
+    <sx:delimitedField name="Shape">
+      <sx:fieldDelimiter value="|"/>
+    </sx:delimitedField>
+    <sx:delimitedField name="GeoPoint">
+      <sx:subfieldDelimiter value=";"/>
+    </sx:delimitedField>
+  </sx:flatRecordType>
+
+</sx:resources>
+
+
+
+

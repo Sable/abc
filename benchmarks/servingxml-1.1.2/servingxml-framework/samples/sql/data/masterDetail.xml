@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<masterDetail>
+  <master id="1">
+    <name>aName</name>
+    <detail id="11">
+      <date>2008-09-03</date>
+      <type>aType</type>
+    </detail>
+    <detail id="12">
+      <date>2008-09-06</date>
+      <type>aType</type>
+    </detail>
+    <detail id="13">
+      <date>2008-09-10</date>
+      <type>aType</type>
+    </detail>
+  </master>
+  <master id="2">
+    <name>anotherName</name>
+    <detail id="21">
+      <date>2008-10-03</date>
+      <type>aType</type>
+    </detail>
+    <detail id="22">
+      <date>2008-10-06</date>
+      <type>aType</type>
+    </detail>
+    <detail id="23">
+      <date>2008-10-07</date>
+      <type>anotherType</type>
+    </detail>
+  </master>
+</masterDetail>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+                                                           
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="cases">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="cases"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <!--
+  This sx:flatFileReader element does not specify a stream source, so 
+  the source will default to the file specified with the -i option on the command line.
+  -->
+  <sx:recordContent id="cases">
+    <sx:flatFileReader>
+      <sx:flatFile ref="casesFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="casesToXmlMapping"/>
+  </sx:recordContent>
+  
+  <sx:flatFile id="casesFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="caseType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordTypeChoice id="caseType" name="caseType">
+    <sx:positionalField name="tag" width="1"/>
+    <sx:when test="tag='A'">
+      <sx:flatRecordType name="A">
+        <sx:positionalField name="tag" width="1"/>
+        <sx:positionalField name="first-name" width="5"/>
+        <sx:positionalField name="last-name" width="6"/>
+        <sx:positionalField name="address" width="13"/>
+        <sx:positionalField name="city" width="14"/>
+        <sx:positionalField name="state" width="2"/>
+        <sx:positionalField name="zip" width="5"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="tag='K'">
+      <sx:flatRecordType name="K">
+        <sx:positionalField name="tag" width="1"/>
+        <sx:positionalField name="year" width="4"/>
+        <sx:positionalField name="make" width="5"/>
+        <sx:positionalField name="model" width="9"/>
+        <sx:positionalField name="value" width="8"/>
+      </sx:flatRecordType>
+    </sx:when>
+  </sx:flatRecordTypeChoice>
+  
+  <sx:recordMapping id="casesToXmlMapping">        
+    <cases>                                                                                         
+      <sx:innerGroup startTest="sx:current/A">
+        <case>
+          <sx:fieldElementMap field="first-name" element="first-name"/>
+          <sx:fieldElementMap field="last-name" element="last-name"/>
+          <sx:fieldElementMap field="address" element="address"/>
+          <sx:fieldElementMap field="city" element="city"/>
+          <sx:fieldElementMap field="state" element="state"/>
+          <sx:fieldElementMap field="zip" element="zip"/>
+          <sx:innerGroup startTest="sx:current/K">
+            <sx:fieldElementMap field="year" element="year"/>
+            <sx:fieldElementMap field="make" element="make"/>
+            <sx:fieldElementMap field="model" element="model"/>
+            <sx:fieldElementMap field="value" element="value"/>
+            <sx:onRecord/>
+          </sx:innerGroup>
+        </case>
+      </sx:innerGroup>
+    </cases>
+  </sx:recordMapping>
+
+</sx:resources>
+

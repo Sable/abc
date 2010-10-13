@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/binaryField/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-binary-field"/>
+  </sx:service>
+
+  <sx:transform id="t:test-binary-field">
+    <sx:assert test="fn:deep-equal(fn:document('elements/binaryField/file-content'),fn:document('elements/binaryField/target-document'))">
+test-binary-field:  Output
+      <sx:content ref="t:file-content"/>
+      does not match expected output
+      <sx:content ref="t:target-document"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:flatFileReader id="t:file-reader">
+    <sx:inlineSource>A233ServingXML003SAS
+    </sx:inlineSource>
+    <sx:flatFile>
+      <sx:flatFileBody>
+        <sx:flatRecordType>
+          <sx:positionalField name="recordType" width="1"/>
+          <sx:positionalField name="code" width="3"/>
+          <sx:positionalField name="book" width="10"/>
+          <sx:positionalField name="length" width="3"/>
+          <sx:binaryField name="identifier" width="{length}"/>
+        </sx:flatRecordType>
+      </sx:flatFileBody>
+    </sx:flatFile>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="t:file-content">
+    <sx:flatFileReader ref="t:file-reader"/>
+  </sx:recordContent>
+
+  <sx:document id="t:target-document">
+        <document><record><recordType>A</recordType><code>233</code><book>ServingXML</book><length>003</length><identifier>534153</identifier></record></document>
+  </sx:document> 
+</sx:resources>
+

@@ -1,0 +1,6 @@
+HDR|a|b 
+DET|a|b 
+DET|a|b 
+MSG|1|a 
+MSG|3|a 
+END 

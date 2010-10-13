@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="ascii2ebcdic"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="asciiBooksFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="ebcdicBooksFile"/>
+        <sx:defaultStreamSink encoding="Cp1047"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="ebcdic2ascii"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="ebcdicBooksFile"/>
+        <sx:defaultStreamSource encoding="Cp1047"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="asciiBooksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:flatFile id="ebcdicBooksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="ebcdicBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="ebcdicBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="ebcdicBookType" name="ebcdicBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+  
+  <sx:flatFile id="asciiBooksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="asciiBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="asciiBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="asciiBookType" name="asciiBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+

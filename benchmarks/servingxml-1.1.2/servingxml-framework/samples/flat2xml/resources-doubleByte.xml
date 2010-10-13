@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="convert">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="data"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="data">
+    <sx:flatFileReader>
+      <sx:flatFile ref="flatfile"/>
+      <sx:defaultStreamSource encoding="UTF-8"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="recordmap"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="flatfile">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="recordtype"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="recordtype">
+    <sx:positionalField name="param1" width="2"/>
+    <sx:positionalField name="param2" width="2"/>
+    <sx:positionalField name="param3" width="2"/>
+  </sx:flatRecordType>
+
+  <sx:recordMapping id="recordmap">
+    <document>
+      <sx:onRecord>
+        <documentData>
+          <sx:fieldElementMap element="param1" field="param1"/>
+          <sx:fieldElementMap element="param2" field="param2"/>
+          <sx:fieldElementMap element="param3" field="param3"/>
+        </documentData>
+      </sx:onRecord>
+    </document>
+  </sx:recordMapping>
+
+</sx:resources>

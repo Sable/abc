@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="countries2csv">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="countriesToFileMapping"/>
+        <sx:transform>
+          <sx:document>
+            <sx:fileSource file="data/countries.xml"/>
+          </sx:document>
+          <msv:schemaValidator>
+            <sx:urlSource url="data/countries.xsd"/>
+          </msv:schemaValidator>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="countriesToFileMapping">
+    <sx:onSubtree path="country">
+      <sx:flattenSubtree  recordType="country">
+        <sx:subtreeFieldMap select="countryName" field="name"/>
+        <sx:subtreeFieldMap select="@countryCode" field="code"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+

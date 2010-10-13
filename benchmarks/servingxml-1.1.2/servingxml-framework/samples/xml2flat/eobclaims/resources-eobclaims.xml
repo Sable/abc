@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:saxon="http://www.servingxml.com/extensions/saxon">
+
+  <sx:include href="resources-eobclaims-flatfile.xml"/>
+
+  <sx:service id="eobclaims-to-flat">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="eobclaims-to-flat-mapping"/>
+        <sx:transform>
+          <sx:documentSequence wrapWith="result">
+            <sx:content ref="eobclaims-document-header"/>
+            <sx:content ref="eobclaims-document-body"/>
+            <sx:content ref="eobclaims-document-trailer"/>
+          </sx:documentSequence>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+
+      <sx:flatFileWriter>
+        <sx:flatFile ref="eobclaims-file"/>
+        <sx:fileSink file="output/eobclaims.txt"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <saxon:xquery id="eobclaims-document-header">
+    <sx:preserveMarkup>
+      <header>
+          {doc('data/eobclaimshdrtlr.xml')/headertrailer/ADMIN_RECTYPE}
+      </header>
+    </sx:preserveMarkup>
+  </saxon:xquery>
+
+  <saxon:xquery id="eobclaims-document-trailer">
+    <sx:preserveMarkup>
+        <trailer>
+            {doc('data/eobclaimshdrtlr.xml')/headertrailer/TLR-REC-TYPE}
+        </trailer>
+    </sx:preserveMarkup>
+  </saxon:xquery>
+
+  <sx:documentSequence id="eobclaims-document-body">
+    <sx:directoryReader directory="data">
+      <sx:fileFilter pattern=".*[1-9].xml"/>
+    </sx:directoryReader>
+    <sx:document>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+    </sx:document>
+  </sx:documentSequence>
+
+  <sx:inverseRecordMapping id="eobclaims-to-flat-mapping">
+    <sx:onSubtree path="header/ADMIN_RECTYPE">
+      <sx:flattenSubtree recordType="ADM">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="ADM_0001_TEXT" field="ADM_0001_TEXT"/>
+        <sx:subtreeFieldMap select="ADM_0001_RUN_DATE" field="ADM_0001_RUN_DATE"/>
+        <sx:subtreeFieldMap select="FILLER" field="FILLER"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="eob/HEADER_RECTYPE">
+      <sx:flattenSubtree recordType="HDR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="HDR_STMT_DATE" field="HDR_STMT_DATE"/>
+        <sx:subtreeFieldMap select="HDR_CLAIM_NUMBER" field="HDR_CLAIM_NUMBER"/>
+        <sx:subtreeFieldMap select="HDR_PATIENT_NAME_FIRST" field="HDR_PATIENT_NAME_FIRST"/>
+        <sx:subtreeFieldMap select="HDR_PATIENT_NAME_LAST" field="HDR_PATIENT_NAME_LAST"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="eob/ADR_REC_TYPE">
+      <sx:flattenSubtree recordType="HDR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="ADR_8512_ATTN" field="ADR_8512_ATTN"/>
+        <sx:subtreeFieldMap select="HDR_CLAIM_NUMBER" field="HDR_CLAIM_NUMBER"/>
+        <sx:subtreeFieldMap select="ADR_8514_CITY" field="ADR_8514_CITY"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+    <sx:onSubtree path="trailer/TLR-REC-TYPE">
+      <sx:flattenSubtree recordType="TLR">
+        <sx:subtreeFieldMap select="@record_type" field="record_type"/>
+        <sx:subtreeFieldMap select="TLR_0001_TEXT" field="TLR_0001_TEXT"/>
+        <sx:subtreeFieldMap select="TLR_0001_COUNT" field="TLR_0001_COUNT"/>
+        <sx:subtreeFieldMap select="FILLER" field="FILLER"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+

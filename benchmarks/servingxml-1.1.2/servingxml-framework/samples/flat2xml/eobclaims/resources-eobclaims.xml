@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:include href="resources-eobclaims-flatfile.xml"/>
+
+  <sx:service id="eobclaims-to-xml">
+    <!-- Do the header/trailer first -->
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:fileSink directory="output" file="eobinputoutput.xml"/>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:recordContent>
+          <sx:flatFileReader>
+            <sx:flatFile ref="eobclaims-file"/>
+          </sx:flatFileReader>
+          <sx:recordMapping ref="eobclaims-header-trailer-mapping"/>
+        </sx:recordContent>
+      </sx:transform>
+    </sx:serialize>
+
+    <!-- Now do the body -->
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="eobclaims-file"/>
+      </sx:flatFileReader>
+      <!-- Compose a composite record out of each HDR-ADR pair -->
+      <sx:combineRecords recordType="composite" repeatingGroup="eob"
+                  startTest="sx:current/HDR"
+                  endTest="sx:previous/ADR">
+        <sx:newField name="HDR_STMT_DATE" select="eob/HDR/HDR_STMT_DATE"/>
+        <sx:newField name="HDR_CLAIM_NUMBER" select="eob/HDR/HDR_CLAIM_NUMBER"/>
+      </sx:combineRecords>
+      <!-- Discard the records that are not HDR-ADR pairs -->
+      <sx:restrictRecordFilter>
+        <sx:recordRestriction recordType="composite"/>
+      </sx:restrictRecordFilter>
+      <!-- Process each HDR-ADR composite record -->
+      <sx:processRecord>
+        <!-- Construct and store the output filename in the parameter "output-file" -->
+        <sx:parameter name="output-file">
+          <sx:findAndReplace searchFor="/" replaceWith ="">
+            <sx:toString value="eobinputoutput-{HDR_STMT_DATE}{HDR_CLAIM_NUMBER}.xml"/>
+          </sx:findAndReplace>
+        </sx:parameter>
+
+        <sx:serialize>
+          <sx:xsltSerializer>
+            <sx:fileSink directory="output" file="{$output-file}"/>
+            <sx:outputProperty name="indent" value="yes"/>
+          </sx:xsltSerializer>
+          <sx:transform>
+            <sx:recordContent>
+              <sx:recordMapping ref="eobclaims-body-mapping"/>
+            </sx:recordContent>
+          </sx:transform>
+        </sx:serialize>
+      </sx:processRecord>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:recordMapping id="eobclaims-header-trailer-mapping">
+    <eobs>
+      <sx:onRecord recordType="ADM">
+        <ADMIN_RECTYPE record_type="ADM">
+          <sx:fieldElementMap field="ADM_0001_TEXT" element="ADM_0001_TEXT"/>
+        </ADMIN_RECTYPE>
+      </sx:onRecord>
+      <sx:onRecord recordType="TLR">
+        <TLR-REC-TYPE record_type="TLR">
+          <sx:fieldElementMap field="TLR_0001_TEXT" element="TLR_0001_TEXT"/>
+          <sx:fieldElementMap field="TLR_0001_COUNT" element="TLR_0001_COUNT"/>
+          <sx:fieldElementMap field="FILLER" element="FILLER"/>
+        </TLR-REC-TYPE>
+      </sx:onRecord>
+    </eobs>
+  </sx:recordMapping>
+
+  <sx:recordMapping id="eobclaims-body-mapping">
+    <eob>
+      <!-- Our composite record has a repeating group field, "eob", 
+           that has two sub-records, "HDR" and "ADR" -->
+      <sx:onRecord recordType="composite">
+        <sx:subrecordMapping repeatingGroup="eob">
+          <sx:onRecord recordType="HDR">
+            <HEADER_RECTYPE>
+              <sx:fieldAttributeMap field="record_type" attribute="record_type"/>
+              <sx:fieldElementMap field="HDR_STMT_DATE" element="HDR_STMT_DATE"/>
+              <sx:fieldElementMap field="HDR_CLAIM_NUMBER" element="HDR_CLAIM_NUMBER"/>
+              <sx:fieldElementMap field="HDR_PATIENT_NAME_FIRST" element="HDR_PATIENT_NAME_FIRST"/>
+              <sx:fieldElementMap field="HDR_PATIENT_NAME_MIDDLE" element="HDR_PATIENT_NAME_MIDDLE"/>
+              <sx:fieldElementMap field="HDR_PATIENT_NAME_LAST" element="HDR_PATIENT_NAME_LAST"/>
+            </HEADER_RECTYPE>
+          </sx:onRecord>
+          <sx:onRecord recordType="ADR">
+            <ADR_REC_TYPE>
+              <sx:fieldAttributeMap field="record_type" attribute="record_type"/>
+              <sx:fieldElementMap field="ADR_8512_ATTN" element="ADR_8512_ATTN"/>
+              <sx:fieldElementMap field="ADR_8513_STREET1" element="ADR_8513_STREET1"/>
+              <sx:fieldElementMap field="ADR_8513_STREET2" element="ADR_8513_STREET2"/>
+              <sx:fieldElementMap field="ADR_8514_CITY" element="ADR_8514_CITY"/>
+            </ADR_REC_TYPE>
+          </sx:onRecord>
+        </sx:subrecordMapping>
+      </sx:onRecord>
+    </eob>
+  </sx:recordMapping>
+
+</sx:resources>
+

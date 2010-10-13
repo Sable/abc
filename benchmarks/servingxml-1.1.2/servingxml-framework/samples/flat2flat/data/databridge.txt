@@ -1,0 +1,13 @@
+NCO      20061022123AB                                      
+NJ12345            PA         100.00CHK                     
+PA34567            PA          25.00FEE
+ME12XF4            DE21522233440000000000EAST ART           
+NY12347            PA          15.00ADJ                     
+MO123              REBKR
+PA12345            PA         125.00CHK
+PA34567            PA         125.00NSF
+MF123X             REOTH                                    
+DE123F4            DE60944411220000000000TRENTON            
+ME12X34            DE99999999992154433345WEST ART           
+0000000010000039000
+

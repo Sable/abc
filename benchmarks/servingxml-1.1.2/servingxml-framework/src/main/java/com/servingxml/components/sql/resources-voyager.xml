@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="grep">
+    <sx:recordStream>
+      <sx:recordReader ref="grep-reader"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-Voyager16.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream>
+    <!--sx:recordStream>
+      <sx:recordReader ref="grep-reader2"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-AutomateFeedStatistics.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream>
+    <sx:recordStream>
+      <sx:recordReader ref="grep-reader3"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-Gemini.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream>
+    <sx:recordStream>
+      <sx:recordReader ref="grep-reader4"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-Odyssey.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream>
+    <sx:recordStream>
+      <sx:recordReader ref="grep-reader5"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-Voyager16Report.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream>
+    <sx:recordStream>
+      <sx:recordReader ref="grep-reader6"/>
+      <sx:flatFileWriter>
+	    <sx:fileSink file="output/grep-AutomateFeedStatistics.csv"/>
+	  </sx:flatFileWriter>
+    </sx:recordStream-->
+  </sx:service>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1" maxLength="1000" id="grep-reader">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+  </sx:sqlGrep>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1" maxLength="1000"  id="grep-reader2">
+    <sx:sqlConnectionPool ref="jdbcPool2"/>
+  </sx:sqlGrep>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1"  maxLength="1000" id="grep-reader3">
+    <sx:sqlConnectionPool ref="jdbcPool3"/>
+  </sx:sqlGrep>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1"  maxLength="1000" id="grep-reader4">
+    <sx:sqlConnectionPool ref="jdbcPool4"/>
+  </sx:sqlGrep>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1"  maxLength="1000" id="grep-reader5">
+    <sx:sqlConnectionPool ref="jdbcPool5"/>
+  </sx:sqlGrep>
+
+  <sx:sqlGrep searchString="%FCIB%" maxRowCount="1"  maxLength="1000" id="grep-reader6">
+    <sx:sqlConnectionPool ref="jdbcPool6"/>
+  </sx:sqlGrep>
+  
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=Voyager16;integratedSecurity=true;"
+                        minConnections="1"/>
+  
+  <sx:sqlConnectionPool id="jdbcPool2"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=AutomateFeedStatistics;integratedSecurity=true;"
+                        minConnections="1"/>
+
+  <sx:sqlConnectionPool id="jdbcPool3"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=Gemini;integratedSecurity=true;"
+                        minConnections="1"/>
+
+
+  <sx:sqlConnectionPool id="jdbcPool4"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=Odyssey;integratedSecurity=true;"
+                        minConnections="1"/>
+
+
+  <sx:sqlConnectionPool id="jdbcPool5"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=Voyager16Report;integratedSecurity=true;"
+                        minConnections="1"/>
+
+  <sx:sqlConnectionPool id="jdbcPool6"
+                        driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+                        databaseUrl="jdbc:sqlserver://WMMCC-C6-SQL01\SQL01;databaseName=AutomateFeedStatistics;integratedSecurity=true;"
+                        minConnections="1"/>
+
+</sx:resources>

@@ -1,0 +1,34 @@
+<ns1:BasicTariffPremiumList  xmlns:ns1="http://www.namespace.com">
+  <ns1:BasicTariffPremium>
+    <ns1:Class>611020</ns1:Class>
+    <ns1:Description>ROAD FREIGHT TR</ns1:Description>
+    <ns1:Rate>7.344</ns1:Rate>
+    <ns1:Percent>%</ns1:Percent>
+    <ns1:Wages>250000</ns1:Wages>
+    <ns1:Tariff>18360.00</ns1:Tariff>
+  </ns1:BasicTariffPremium>
+  <ns1:BasicTariffPremium>
+    <ns1:Class/>
+    <ns1:Description/>
+    <ns1:Rate/>
+    <ns1:Percent/>
+    <ns1:Wages/>
+    <ns1:Tariff/>
+  </ns1:BasicTariffPremium>
+  <ns1:BasicTariffPremium>
+    <ns1:Class/>
+    <ns1:Description/>
+    <ns1:Rate/>
+    <ns1:Percent/>
+    <ns1:Wages/>
+    <ns1:Tariff/>
+  </ns1:BasicTariffPremium>
+  <ns1:BasicTariffPremium>
+    <ns1:Class/>
+    <ns1:Description/>
+    <ns1:Rate/>
+    <ns1:Percent/>
+    <ns1:Wages/>
+    <ns1:Tariff/>
+  </ns1:BasicTariffPremium>
+</ns1:BasicTariffPremiumList>

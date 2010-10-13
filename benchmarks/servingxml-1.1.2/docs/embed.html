@@ -1,0 +1,514 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Serving XML: Embedding</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0">
+<meta name="verify-v1" content="bjOlpPVOTmerzJUJNrhZOPE53CqnavEJXFi0CLe/FGw=" />
+        </head>
+<script src="http://www.google-analytics.com/urchin.js"
+type="text/javascript">
+</script>
+  <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="basics"></a>Serving XML:  Embedding</h1></div><div><h3 class="subtitle"><i>How to embed ServingXML in a Java application</i></h3></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e5">Building the ServingXML distribution</a></span></dt><dt><span class="section"><a href="#d4e37">Java API</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e39"></a></span></dt><dt><span class="section"><a href="#d4e81">Start up</a></span></dt><dt><span class="section"><a href="#d4e96">Service Invocation</a></span></dt><dt><span class="section"><a href="#d4e103">Shut down</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e106">Class Path Configuration</a></span></dt><dt><span class="section"><a href="#d4e127">Logging Configuration</a></span></dt><dt><span class="section"><a href="#d4e145"></a></span></dt><dt><span class="section"><a href="#d4e146">Advanced Topics</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e148">Importing ServingXML components from Java code</a></span></dt></dl></dd></dl></div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e5"></a>Building the ServingXML distribution</h2></div></div></div>
+
+<p>
+ From the command line, in the root directory of the servingxml download,
+ build the distribution:
+</p><div class="itemizedlist"><ul type="disc"><li><span>[win32] build</span></li><li><span>[unix] ./build.sh</span></li></ul></div><p>
+</p>
+<p>
+The build command will create a deployment package
+in the subdirectory <code class="filename">target/servingxml</code>.
+Here, you will find the following file and directories.
+</p><div class="itemizedlist"><ul type="disc"><li><span>
+<code class="filename">servingxml.jar</code> - main ServingXML jar file
+</span></li><li><span>
+<code class="filename">config</code> - directory of configuration files (optional)
+</span></li><li><span>
+<code class="filename">lib</code> - all jar files required by the servingxml framework and included extensions
+</span></li><li><span>
+ <code class="filename">resources/META-INF/components</code> - directory of <code class="filename">components.xml</code> files
+</span></li><li><span>
+<code class="filename">classes</code> - a place to put java .class files where the command line app can find them
+</span></li></ul></div><p>
+</p>
+<p>
+  You can reduce the number of jar files that the build command places in the target 
+  <code class="filename">lib</code> directory by suppressing unneeded extensions in the 
+  <code class="filename">build-extensions.xml</code> file.  Just
+  edit the file and comment out unneeded extensions before performing the build.
+  For flat file conversion applications, the only extensions likely to be of interest
+  are the flatfile extension itself, and perhaps the msv extension (for XML schema
+  validation.)  A minimal configuration should require only
+  <code class="filename">servingxml.jar</code> and <code class="filename">concurrent.jar</code>.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e37"></a>Java API</h2></div></div></div>
+  
+  <div class="section" lang="en"><div class="titlepage"></div>
+<p>
+The code fragments below show how to embed ServingXML in a Java application.  
+For an example, have a look at the class <code class="code">com.servingxml.app.consoleapp.ConsoleApp</code>
+in the source distribution.
+</p>
+<p>
+In a server app, a servlet for example, the <code class="code">IocContainerFactory</code> and the 
+<code class="code">AppContext</code> objects, which manage access to resources,
+are intended to be held as state, and should be thread safe.  
+</p>
+<p>
+On each request, a service context is created with a user id, 
+a default <code class="code">StreamSource</code>, and a default <code class="code">StreamSink</code>. 
+The service context is intended to have a 
+short life in a single thread.
+ </p>
+<p>
+The embedding app is responsible for supplying a default <code class="code">StreamSource</code> 
+and a default
+<code class="code">StreamSink</code>.  You have a number of options.
+</p><div class="itemizedlist"><ul type="disc"><li><p>
+If your input and output take the form of files or system resources, as they do in the console app,
+you can use a <code class="code">FileSource</code> or <code class="code">UrlSource</code> object for input, and a
+<code class="code">FileSource</code> object for output.
+</p></li><li><p>
+You can adapt a Java <code class="code">InputStream</code> to a source with an <code class="code">InputStreamSourceAdaptor</code>,
+and an <code class="code">OutputStream</code> to a sink with an <code class="code">OutputStreamSinkAdaptor</code>.  
+In this case the embedding application is responsible for closing the <code class="code">InputStream</code> 
+and the <code class="code">OutputStream</code>.
+</p></li><li><p>
+If an incoming "flat file" is arriving as a parameter on an HTTP request, say, you can 
+use a <code class="code">com.servingxml.io.streamsource.StringStreamSource</code>.            
+</p></li><li><p>
+In a JBI adaptor, the incoming data will be a <code class="code">javax.xml.transform.Source</code> object. 
+You can use the helper class <code class="code">com.servingxml.io.helpers.StringStreamHelper</code> to
+create an effcient ServingXML <code class="code">StreamSource</code> object from the JAXP
+<code class="code">Source</code> object, with the static method <code class="code">fromJaxpSource</code>.
+</p></li><li><p>
+Or you can provide your own implementations of <code class="code">StreamSource</code> and 
+<code class="code">StreamSink</code>.
+Refer to the examples in the <code class="code">com.servingxml.io.streamsource</code>
+and the  <code class="code">com.servingxml.io.streamsink</code> packages.
+</p></li></ul></div><p>
+</p>
+</div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e81"></a>Start up</h3></div></div></div>
+    
+<pre class="programlisting">
+
+  import com.servingxml.app.AppContext;
+  import com.servingxml.ioc.resources.IocContainer;
+  import com.servingxml.ioc.resources.IocContainerFactory;
+  import com.servingxml.util.ServingXmlException;
+
+    IocContainerFactory iocContainerFactory = new IocContainerFactory();
+    try {
+      
+      iocContainerFactory.loadComponentDefinitions();
+
+      //  For a J2EE app, use one of the variants of loadComponentDefinitions that takes
+      //  an array of components.xml file locations.
+    } catch (ServingXmlException e) {
+      //  Handle exception
+    }
+     
+    String appName = "my-app";                      
+
+    ParameterBuilder paramBuilder = new ParameterBuilder();
+    //  Add some parameters, if any  
+    Record parameters = paramBuilder.toRecord();
+                                        
+    IocContainer resources = iocContainerFactory.createIocContainer(configUrl, parameters);
+    resources = iocContainerFactory.createIocContainer(resourcesUrl, parameters, resources);
+    
+    AppContext appContext = new DefaultAppContext(appName, resources);
+
+</pre>
+<p>
+ The call to 
+ </p><pre class="programlisting">
+  iocContainerFactory.loadComponentDefinitions();
+ </pre><p>
+results in a search of the accessible class loaders to resolve the location of 
+ServingXML jar files, and an attempt to read component definition files located in these jar files.  This will
+not work inside a J2EE container, which isolates class loaders.  To get 
+around this, use one of the variant <code class="code">loadComponentDefinitions</code> methods that
+take an array of <code class="filename">components.xml</code> file locations.
+</p>
+<p>
+The files you need to include are the ones in the <code class="filename">target/servingxml/resources/META-INF/components</code>
+directory.  You can supply them either as an array of <code class="code">URL</code> objects, or as an array of pathnames that
+resolve relative to the <code class="code">classpath</code>.  For example, if the <code class="code">classpath</code> includes the entry 
+<code class="code">./resources/META-INF/components/</code>, and you're interested in the core and msv components,
+you can supply them like this.
+</p>
+<p>
+</p><pre class="programlisting">
+
+  IocContainerFactory appDriver = new IocContainerFactory();
+  String[] componentsFiles = new String[]{"com/servingxml/core/components.xml", "com/servingxml/extensions/msv/components.xml"};
+  appDriver.loadComponentDefinitions(componentsFiles);
+</pre><p>
+</p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e96"></a>Service Invocation</h3></div></div></div>
+    
+<p>
+To obtain a service object, use <code class="code">getResource().lookupServiceComponent(...)</code> on the app context, passing a resource type of 
+<code class="code">Service.class</code> and a service uri.  To execute the service, call the 
+<code class="code">execute</code> method with the service context and the parameters.
+</p>
+<pre class="programlisting">
+
+  import com.servingxml.app.DefaultServiceContext;
+  import com.servingxml.app.Flow;
+  import com.servingxml.app.FlowImpl;
+  import com.servingxml.app.ServiceContext;
+  import com.servingxml.io.streamsink.OutputStreamSinkAdaptor;
+  import com.servingxml.io.streamsink.StreamSink;
+  import com.servingxml.io.streamsource.file.FileSource;
+  import com.servingxml.io.streamsource.StreamSource;
+  import com.servingxml.util.Name;
+  import com.servingxml.util.record.ParameterBuilder;
+  import com.servingxml.util.record.Record;
+
+    try {
+      String userName = "my-user";                                                         
+      ServiceContext serviceContext = new DefaultServiceContext(appContext, userName);
+
+      //  Create a default StreamSource, a default SaxSource, and a default StreamSink
+      StreamSource defaultStreamSource = new FileSource(myFile);
+      StreamSink defaultSink = new OutputStreamSinkAdaptor(myOutputStream);
+      
+      ParameterBuilder paramBuilder = new ParameterBuilder();
+      //  Add some parameters, if any  
+      Record parameters = paramBuilder.toRecord();
+
+      Flow flow =  new FlowImpl(parameters, defaultStreamSource, defaultStreamSink);
+        
+      String serviceUri = "myService";                                                                                                          
+      Service service = (Service)context.getResources().lookupServiceComponent(Service.class,serviceUri);
+      if (service == null) {
+        throw new ServingXmlException("Cannot find service " + serviceUri);
+      }
+      service.execute(context, flow);
+    } catch (ServingXmlException e) {
+      //  Handle exception
+    }  finally {
+      //  Close any resources created, including input streams or output streams.
+    }
+
+</pre>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e103"></a>Shut down</h3></div></div></div>
+    
+<pre class="programlisting">
+
+
+</pre>
+ </div>
+</div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e106"></a>Class Path Configuration</h2></div></div></div>
+    
+    <p>
+      The <code class="filename">target/servingxml/servingxml.jar</code> jar file and the jar files under the
+      <code class="filename">target/servingxml/lib</code> directory need to be in the classpath of the Java app.
+      You can optionally include the configuration file <code class="filename">target/servingxml/config/servingxml.xml</code> in the classpath.
+    </p>
+    <p>
+    ServingXML requires implementations of the J2SE endorsed standards for JAXP parsers
+    and transformers.  Java 1.5 includes bundled versions of Xerces and Xalan, but unfortunately
+    they are old ones, and the version of Xalan has bugs that make it unusable
+    with Serving XML.
+    </p>
+    <p>
+    ServingXML is distributed with Saxon-B 9, which provides a very good 
+    implementation of the transformer API's.  The console app includes the Saxon 
+    jar file in its class path, and  
+    the configuration file <code class="filename">servingxml.xml</code> sets Saxon to be the default transformer.
+    </p>
+    <p>
+    In a Java application, you may wish to pick up all the jar files implementing the endorsed standards
+    from the standard endorsed locations, and not have Saxon in the class path.  
+    You will then need to comment out the Saxon setting in the <code class="filename">servingxml.xml</code> file,
+    and update the endorsed directories with more current implementations of the JAXP transformer
+    API, proceeding as follows. 
+    </p><div class="itemizedlist"><ul type="disc"><li>
+            Create the directory <code class="code">%JAVA_HOME%\jre\lib\endorsed</code>. 
+            Or, if you are using Tomcat, create the directory 
+            <code class="code">%TOMCAT_HOME\common\endorsed</code> 
+            instead.
+      </li><li>
+        Add your preferred XSLT transformer jar file to the <code class="code">endorsed</code> directory.  
+        ServingXML 0.9.1 has been tested with Saxon-B 9.1 (included in the 
+        distribution.)  Various versions have been tested with Saxon 6.5.5
+        (requires saxon.jar) and Xalan 1.2.6 (requires xalan.jar).
+      </li><li>
+        You may also want to download new versions of the Xerces jar files, including 
+        <code class="filename">xercesImpl.jar</code>, <code class="filename">xml-apis.jar</code> and <code class="filename">xmlParserAPIs.jar</code>, 
+        and copy them to the endorsed directory as well.
+      </li></ul></div><p>
+    </p>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e127"></a>Logging Configuration</h2></div></div></div>
+    
+<p>
+By default, ServingXML supports JDK 1.4 logging.  The default logger is named 
+<code class="code">com.servingxml.util.system.DefaultLogger</code>.  You can
+configure it by editing your <code class="filename">&lt;JRE Home&gt;/lib/logging.properties</code>
+file, and changing the property values for the handler you want to deliver the
+log record. 
+</p>
+<p>
+If you want the application to write log messages using a different logger, perhaps
+log4j, you will need to 
+</p><div class="itemizedlist"><ul type="disc"><li><span>
+Write an adaptor class <code class="code">MyLogger</code> that implements 
+<code class="code">com.servingxml.util.system.Logger</code>.
+</span></li><li><span>
+Compile the class and add it somewhere in the <code class="code">classpath</code>.
+</span></li><li><span>
+Set the system property
+<pre class="programlisting">
+com.servingxml.util.system.Logger=com.servingxml.util.system.MyLogger
+</pre>
+System properties may be set in the optional <code class="filename">config/servingxml.properties</code> file.
+</span></li></ul></div><p>
+</p>
+  </div>
+<div class="section" lang="en"><div class="titlepage"></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e146"></a>Advanced Topics</h2></div></div></div>
+                     
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e148"></a>Importing ServingXML components from Java code</h3></div></div></div>
+
+
+<p>
+Consider the resources script shown below.  Note that in the definition of the "books" content,
+there is a reference to a record reader identified by "myBooksReader", but there is no 
+definition of this reader in the script itself.  Instead, the definition is supplied by the 
+application.
+</p>
+
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"&gt;
+
+  &lt;sx:service id="books"&gt; 
+    &lt;sx:serialize&gt;
+      &lt;sx:transform&gt;
+        &lt;sx:content ref="books"/&gt;
+      &lt;/sx:transform&gt;
+    &lt;/sx:serialize&gt;
+  &lt;/sx:service&gt;
+
+  &lt;sx:recordContent id="books"&gt;
+    &lt;sx:recordReader ref="myBooksReader"/&gt; 
+    &lt;sx:recordMapping ref="booksToXmlMapping"/&gt;
+  &lt;/sx:recordContent&gt;
+                                                       
+  &lt;sx:recordMapping id="booksToXmlMapping"&gt;
+    &lt;myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="url2"&gt;
+      &lt;sx:onRecord&gt;
+        &lt;myns:book&gt;
+          &lt;sx:fieldAttributeMap field="category" attribute="categoryCode"/&gt;
+          &lt;sx:fieldElementMap field="title" element="myns:title"/&gt;  
+          &lt;sx:fieldElementMap field="author" element="myns:author"/&gt;
+          &lt;sx:fieldElementMap field="price" element="myns:price"/&gt;
+        &lt;/myns:book&gt;  
+      &lt;/sx:onRecord&gt;
+    &lt;/myns:books&gt;
+  &lt;/sx:recordMapping&gt;  
+
+&lt;/sx:resources&gt;
+</pre>
+
+<p>The code below defines a record reader component and registers it with the <code class="code">ServingXML</code> framework 
+with the identifier "myBooksReader".  The source for this example may be found in the distribution under the <code class="filename">samples/embed</code> 
+directory.
+</p>
+
+<pre class="programlisting">
+
+import java.io.File;
+import java.net.URL;
+import java.util.Iterator;
+
+import com.servingxml.app.AppContext;
+import com.servingxml.app.Application;
+import com.servingxml.app.DefaultAppContext;
+import com.servingxml.app.DefaultServiceContext;
+import com.servingxml.app.Flow;
+import com.servingxml.app.FlowImpl;
+import com.servingxml.app.Service;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReader;
+import com.servingxml.components.recordio.AbstractRecordReaderFactory;
+import com.servingxml.components.recordio.RecordReader;
+import com.servingxml.components.recordio.RecordReaderFactory;
+import com.servingxml.components.recordio.RecordWriter;
+import com.servingxml.components.recordio.RecordWriterFilterAdaptor;
+import com.servingxml.io.streamsink.file.FileSink;
+import com.servingxml.io.streamsink.OutputStreamSinkAdaptor;
+import com.servingxml.io.streamsink.StreamSink;
+import com.servingxml.io.streamsource.file.FileSource;
+import com.servingxml.io.streamsource.StreamSource;
+import com.servingxml.ioc.resources.IocContainer;
+import com.servingxml.ioc.resources.SimpleIocContainer;
+import com.servingxml.util.CommandLine;
+import com.servingxml.util.Name;
+import com.servingxml.util.QualifiedName;
+import com.servingxml.util.record.ParameterBuilder;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.record.RecordBuilder;
+import com.servingxml.util.ServingXmlException;
+import com.servingxml.util.system.SystemConfiguration;
+
+/**
+ *
+ * 
+ * @author Daniel A. Parker (daniel.parker@servingxml.com)
+ */
+
+public class SampleRecordReaderApp {
+
+  private static final String[] columnNames = {"category", "author", "title", "price"};
+
+  private static final String[][] data = {
+    {"F", "Charles Bukowski", "Factotum", "22.95"},
+    {"F", "Sergei Lukyanenko", "The Night Watch", "17.99"},
+    {"F", "Andrew Crumey", "Mr Mee", "22.00"},
+    {"C", "Steven John Metsker", "Building Parsers with Java", "39.95"},
+  };
+
+  public SampleRecordReaderApp() {
+  }
+
+  public static void main(String[] args) {
+
+    IocContainerFactory iocContainerFactory = new IocContainerFactory();
+    File file = new File("output/books.xml");
+    StreamSink defaultStreamSink = new FileSink(file);
+    String serviceUri = "books";
+    String configHref = "";
+    String resourcesHref = "resources-books.xml";
+
+    try {
+
+      //  Locate configuration script servingxml.xml 
+      //  in the classpath
+      ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
+      URL configUrl = parentLoader.getResource("servingxml.xml");
+      configHref = configUrl.toString();
+
+      try {
+        iocContainerFactory.loadComponentDefinitions();
+      } catch (ServingXmlException e) {
+        SystemConfiguration.getSystemContext().error(e.getMessage());
+        return;
+      } catch (Exception e) {
+        SystemConfiguration.getSystemContext().error(e.getMessage());
+        e.printStackTrace(System.err);
+        return;
+      }
+      Name myRecordReaderId = new QualifiedName("myBooksReader");
+
+      IocContainer configuration = iocContainerFactory.createIocContainer(configHref);
+      SimpleIocContainer myResources = new SimpleIocContainer(configuration);
+      myResources.registerServiceComponent(
+        RecordReaderFactory.class,
+        myRecordReaderId.toUri(), new MyRecordReaderFactory(columnNames, data));
+      IocContainer resources = iocContainerFactory.createIocContainer(resourcesHref, myResources);
+
+      AppContext appContext = new DefaultAppContext("servingxml", resources);
+      final ServiceContext serviceContext = new DefaultServiceContext(appContext, "servingxml");
+
+      // Create parameters, if any
+      final ParameterBuilder paramBuilder = new ParameterBuilder();
+      Record parameters = paramBuilder.toRecord();
+
+      Flow flow = new FlowImpl(parameters, StreamSource.NULL, defaultStreamSink);
+
+      try {
+        // Invoke the service
+        Service service = (Service)appContext.getResources().lookupServiceComponent(Service.class,serviceUri);
+        if (service == null) {
+          throw new ServingXmlException("Cannot find service " + serviceUri);
+        }
+        service.execute(serviceContext, flow);
+      } catch (ServingXmlException e) {
+        serviceContext.error(e.getMessage());
+        return;
+      } catch (Exception e) {
+        serviceContext.error(e.getMessage());
+        e.printStackTrace(System.err);
+        return;
+      }
+
+    } catch (Exception e) {
+      SystemConfiguration.getSystemContext().error(e.getMessage());
+      e.printStackTrace(System.err);
+      return;
+    } finally {
+    }
+  }
+
+  static class MyRecordReaderFactory extends AbstractRecordReaderFactory {
+    private final String[] columnNames;
+    private final String[][] data;
+
+    public MyRecordReaderFactory(String[] columnNames, String[][] data) {
+      this.columnNames = columnNames;
+      this.data = data;
+    }
+
+    protected RecordReader createRecordReader(ServiceContext context, Flow flow) 
+     {
+      return new MyRecordReader(columnNames, data);
+    }
+  }
+
+  static class MyRecordReader extends AbstractRecordReader {
+    private static final Name BOOK_RECORD_TYPE = new QualifiedName("book");
+
+    private final String[] columnNames;
+    private final String[][] data;
+
+    public MyRecordReader(String[] columnNames, String[][] data) {
+      this.columnNames = columnNames;
+      this.data = data;
+    }
+
+    public void readRecords(ServiceContext context, Flow flow) 
+     {
+      RecordWriterFilterAdaptor writer = (RecordWriterFilterAdaptor)getRecordWriter();
+
+      Name[] fieldNames = new Name[columnNames.length];
+      for (int i = 0; i &lt; fieldNames.length; ++i) {
+        fieldNames[i] = new QualifiedName(columnNames[i]);
+      }
+
+      RecordBuilder recordBuilder = new RecordBuilder(BOOK_RECORD_TYPE);
+
+      try {
+        startRecordStream(context, flow);
+        for (int i = 0; i &lt; data.length; ++i) {
+          for (int j = 0; j &lt; fieldNames.length; ++j) {
+            recordBuilder.setString(fieldNames[j],data[i][j]);
+          }
+          Record record = recordBuilder.toRecord();
+          Flow newFlow = flow.replaceRecord(context, record);
+          writeRecord(context, newFlow);
+          recordBuilder.clear();
+        }
+        endRecordStream(context, flow);
+      } finally {
+        close();
+      }
+    }
+  }
+}
+</pre>
+</div>
+</div>
+</div></body></html>

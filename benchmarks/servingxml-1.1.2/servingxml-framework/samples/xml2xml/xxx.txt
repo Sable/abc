@@ -1,0 +1,116 @@
+
+C:\projects\servingxml\servingxml-framework\samples\xml2xml>servingxml -T -r resources-wrap.xml -i documents/books.xml -o output/wrap.xml wrap 
+com.servingxml.components.wrap.WrappedContent.execute enter
+com.servingxml.components.wrap.LiteralContentFilterAppender.createXmlPipeline
+XmlPipeline.setSaxSource filter = com.servingxml.io.saxsource.StreamSourceSaxSource
+XmlPipeline.addXmlFilter filter = com.servingxml.components.saxfilter.ProcessSubtree
+XmlPipeline.addXmlFilter filter = com.servingxml.components.saxfilter.ContentXmlFilter
+com.servingxml.components.wrap.WrappedContent.execute startDocument
+###startDocument
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxfilter.ContentXmlFilter
+com.servingxml.components.saxfilter.ContentXmlFilter.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.saxfilter.ContentXmlFilter.parse
+com.servingxml.components.saxfilter.ContentXmlFilter.parse contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=envelope
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement envelope
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=header
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement header
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=creationDate
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement creationDate
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+###endElement creationDate
+###endElement header
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=body
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement body
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=myns:books
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement myns:books
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+XmlPipeline.setSaxSource filter = com.servingxml.io.saxsource.StreamSourceSaxSource
+XmlPipeline.addXmlFilter filter = com.servingxml.components.saxfilter.ProcessSubtree
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler net.sf.saxon.IdentityTransformerHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxfilter.ProcessSubtree
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler net.sf.saxon.IdentityTransformerHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler net.sf.saxon.IdentityTransformerHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler net.sf.saxon.IdentityTransformerHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+###startElement myns:book
+###startElement myns:title
+###endElement myns:title
+###startElement myns:author
+###endElement myns:author
+###startElement myns:price
+###endElement myns:price
+###startElement myns:isbn
+###endElement myns:isbn
+###endElement myns:book
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+###startElement myns:book
+###startElement myns:title
+###endElement myns:title
+###startElement myns:author
+###endElement myns:author
+###startElement myns:price
+###endElement myns:price
+###startElement myns:isbn
+###endElement myns:isbn
+###endElement myns:book
+XmlPipeline.setSaxSource filter = com.servingxml.components.saxsource.SaxEventBufferSource
+com.servingxml.app.xmlpipeline.XmlPipeline.execute contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.app.xmlpipeline.XmlPipeline.execute xmlReader com.servingxml.components.saxsource.SaxEventBufferReader
+###startElement myns:book
+###startElement myns:title
+###endElement myns:title
+###startElement myns:author
+###endElement myns:author
+###startElement myns:price
+###endElement myns:price
+###startElement myns:isbn
+###endElement myns:isbn
+###endElement myns:book
+###endElement myns:books
+###endElement body
+com.servingxml.components.wrap.InlineContentReader.setContentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.parse enter contentHandler com.servingxml.util.xml.FragmentContentHandler
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent enter
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent element=trailer
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent before startElement com.servingxml.util.xml.FragmentContentHandler
+###startElement trailer
+com.servingxml.components.wrap.InlineContentReader.startLiteralContent after startElement
+###endElement trailer
+###endElement envelope
+###endDocument
+com.servingxml.components.wrap.WrappedContent.execute endDocument

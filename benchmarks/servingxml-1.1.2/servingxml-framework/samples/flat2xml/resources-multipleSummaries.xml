@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="multipleSummaries">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="multipleSummariesContent"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="multipleSummariesContent">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/multipleSummaries.txt"/>
+      <sx:flatFile ref="multipleSummariesFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="multipleSummariesMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="multipleSummariesMapping">
+    <DOCUMENT>
+      <sx:groupChoice>
+
+        <sx:innerGroup startTest="sx:current/Header" endTest="sx:previous/Header">
+          <sx:onRecord>
+            <HEADER/>
+          </sx:onRecord>
+        </sx:innerGroup>
+
+        <sx:innerGroup startTest="sx:current/Trailer" endTest="sx:previous/Trailer">
+          <sx:onRecord>
+            <TRAILER/>
+          </sx:onRecord>                                        
+        </sx:innerGroup>
+
+        <sx:innerGroup startTest="sx:current/S" endTest="sx:previous/B">
+          <!-- reorder the records in this group - move the B records to the front -->
+          <sx:reorderRecords recordTypes="B S"/>
+            <B>
+              <sx:fieldAttributeMap field="value" attribute="value"/>
+              <sx:onRecord recordType='S'>
+                <S>
+                  <sx:fieldAttributeMap field="value" attribute="value"/>
+                </S>
+              </sx:onRecord>
+            </B>
+        </sx:innerGroup>
+
+      </sx:groupChoice>
+    </DOCUMENT>
+  </sx:recordMapping>
+
+  <sx:flatFile id="multipleSummariesFile">
+    <sx:flatFileBody>
+      <sx:fieldDelimiter>                            
+        <sx:whitespaceSeparator/>
+      </sx:fieldDelimiter>
+      <sx:flatRecordTypeChoice>
+        <sx:delimitedField name="tag"/>
+        <sx:when test="tag='HEADER'">
+          <sx:flatRecordType name="Header">
+            <sx:delimitedField name="tag"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='TRAILER'">
+          <sx:flatRecordType name="Trailer">
+            <sx:delimitedField name="tag"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='S'">
+          <sx:flatRecordType name="S">
+            <sx:delimitedField name="tag"/>
+            <sx:delimitedField name="value"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='B'">
+          <sx:flatRecordType name="B">
+            <sx:delimitedField name="tag"/>
+            <sx:delimitedField name="value"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

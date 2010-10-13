@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="loadMasterDetail">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="masterDetailMapping"/>
+      </sx:subtreeRecordReader>
+      <!-- You should validate the record with an sx:recordValidator here -->
+      <sx:sqlWriter ref="masterDetailWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can set up a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="loadBatchedMasterDetail">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="masterDetailMapping"/>
+      </sx:subtreeRecordReader>
+      <!-- You should validate the record with an sx:recordValidator here -->
+      <sx:sqlWriter ref="masterDetailBatchWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can set up a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:inverseRecordMapping id="masterDetailMapping">
+    <sx:onSubtree path="/masterDetail/master">
+      <sx:flattenSubtree recordType="master">
+        <sx:subtreeFieldMap select="@id" field="masterId"/>
+        <sx:subtreeFieldMap select="name" field="name"/>
+        <sx:subtreeFieldMap match="detail" field="details">
+          <sx:flattenSubtree recordType="detail">
+            <sx:subtreeFieldMap select="@id" field="detailId"/>
+            <sx:subtreeFieldMap select="date" field="date"/>
+            <sx:subtreeFieldMap select="type" field="type"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+  <sx:sqlWriter id="masterDetailWriter">                          
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+        INSERT INTO master(master_id,name) VALUES({masterId},'{name}')
+      <sx:sqlUpdateDetail field="details">
+        <sx:sqlUpdate>
+          INSERT INTO detail(detail_id,detail_date,detail_type) 
+          VALUES({detailId},to_date('{date}','yyyy-mm-dd'),'{type}')
+        </sx:sqlUpdate>
+      </sx:sqlUpdateDetail>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>
+
+  <sx:sqlBatchWriter id="masterDetailBatchWriter" batchSize="2">                          
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+        INSERT INTO master(master_id,name) VALUES({masterId},'{name}')
+      <sx:sqlUpdateDetail field="details">
+        <sx:sqlUpdate>
+          INSERT INTO detail(detail_id,detail_date,detail_type) 
+          VALUES({detailId},to_date('{date}','yyyy-mm-dd'),'{type}')
+        </sx:sqlUpdate>
+      </sx:sqlUpdateDetail>
+    </sx:sqlUpdate>
+  </sx:sqlBatchWriter>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

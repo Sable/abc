@@ -1,0 +1,15 @@
+<Swath>
+  <Shape>Polygon</Shape>
+  <GeoPoint>
+    <lat>1</lat>
+    <lon>2</lon>
+  </GeoPoint>
+  <GeoPoint>
+    <lat>3</lat>
+    <lon>4</lon>
+  </GeoPoint>
+  <GeoPoint>
+    <lat>5</lat>
+    <lon>6</lon>
+  </GeoPoint>
+</Swath>

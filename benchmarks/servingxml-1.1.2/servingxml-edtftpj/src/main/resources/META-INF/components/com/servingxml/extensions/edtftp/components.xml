@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  <ioc:serviceComponent name="edt:ftpSource" base="sx:streamSource"
+                     assemblerClass="com.servingxml.extensions.edtftpj.ftpsource.FtpSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="edt:ftpSink" base="sx:streamSink"
+                     assemblerClass="com.servingxml.extensions.edtftpj.ftpsink.FtpSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="edt:ftpDirectoryReader" base="sx:recordReader"
+                     assemblerClass="com.servingxml.extensions.edtftpj.recordio.FtpDirectoryReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="edt:ftpClient" 
+                     assemblerClass="com.servingxml.extensions.edtftpj.connect.FtpClientAssembler"/>
+
+  <!-- Deprecated -->
+  <ioc:serviceComponent name="sx:ftpSource" base="sx:streamSource"
+                     assemblerClass="com.servingxml.extensions.edtftpj.ftpsource.FtpSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:ftpSink" base="sx:streamSink"
+                     assemblerClass="com.servingxml.extensions.edtftpj.ftpsink.FtpSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:ftpDirectoryReader" base="sx:recordReader"
+                     assemblerClass="com.servingxml.extensions.edtftpj.recordio.FtpDirectoryReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:ftpClient" 
+                     assemblerClass="com.servingxml.extensions.edtftpj.connect.FtpClientAssembler"/>
+</ioc:components>
+

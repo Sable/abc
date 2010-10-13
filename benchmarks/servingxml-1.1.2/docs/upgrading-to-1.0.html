@@ -1,0 +1,945 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Upgrading to 1.0</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0">
+<meta name="verify-v1" content="bjOlpPVOTmerzJUJNrhZOPE53CqnavEJXFi0CLe/FGw=" />
+        </head>
+<script src="http://www.google-analytics.com/urchin.js"
+type="text/javascript">
+</script>
+  <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="upgrading"></a>Upgrading to 1.0</h1></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e4">Upgrading from versions 0.8 and 0.9</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e6">Breaking Changes to Markup</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e8">sx:wrap</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e30">Non-Breaking Changes to Element and Attribute Names</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e223">Upgrading from versions 0.7</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e225">Changes to Distribution</a></span></dt><dt><span class="section"><a href="#d4e264">Changes to Markup</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e266">Breaking Changes</a></span></dt><dt><span class="section"><a href="#d4e377">Non-Breaking Changes</a></span></dt></dl></dd><dt><span class="section"><a href="#d4e497">Changes to Java Code</a></span></dt><dd><dl><dt><span class="section"><a href="#d4e527">Changes to the Embedding API</a></span></dt><dt><span class="section"><a href="#d4e552">Changes to Java Custom Record Filters</a></span></dt></dl></dd></dl></dd></dl></div>
+
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e4"></a>Upgrading from versions 0.8 and 0.9</h2></div></div></div>
+    
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e6"></a>Breaking Changes to Markup</h3></div></div></div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e8"></a>sx:wrap</h4></div></div></div>
+  
+<p>The <a class="link" href="./guide/index.html#sx:wrap" target="_top">sx:wrap</a> element 
+is used to extract a sequence of subtrees from XML documents and wrap them with
+enclosing tags.  It may, for example, be used to extract the fiction titles from 
+a book catalog file and produce the output
+</p>
+<pre class="programlisting">
+
+&lt;envelope&gt;
+  &lt;header mode="xml"&gt;
+    &lt;creationDate&gt;2008-12-29T23:42:59.168-05:00&lt;/creationDate&gt;
+  &lt;/header&gt;
+  &lt;body&gt;
+    &lt;myns:books xmlns:myns="http://mycompany.com/mynames/" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:schemaLocation="url2"&gt;
+      &lt;myns:book categoryCode="F"&gt;
+        &lt;myns:title&gt;Factotum&lt;/myns:title&gt;
+        &lt;myns:author&gt;Charles Bukowski&lt;/myns:author&gt;
+        &lt;myns:price&gt;22.95&lt;/myns:price&gt;
+        &lt;myns:isbn&gt;0876852630&lt;/myns:isbn&gt;
+      &lt;/myns:book&gt;
+      &lt;myns:book categoryCode="F"&gt;
+        &lt;myns:title&gt;The Night Watch&lt;/myns:title&gt;
+        &lt;myns:author&gt;Sergei Lukyanenko&lt;/myns:author&gt;
+        &lt;myns:price&gt;17.99&lt;/myns:price&gt;
+        &lt;myns:isbn&gt;0434014125&lt;/myns:isbn&gt;
+      &lt;/myns:book&gt;
+      &lt;myns:book categoryCode="F"&gt;
+        &lt;myns:title&gt;Mr Mee&lt;/myns:title&gt;
+        &lt;myns:author&gt;Andrew Crumey&lt;/myns:author&gt;
+        &lt;myns:price&gt;22.00&lt;/myns:price&gt;
+        &lt;myns:isbn&gt;0312282354&lt;/myns:isbn&gt;
+      &lt;/myns:book&gt;
+    &lt;/myns:books&gt;
+  &lt;/body&gt;
+  &lt;trailer&gt;This is a trailer element&lt;/trailer&gt;
+&lt;/envelope&gt;
+</pre>
+<p>
+The <code class="sgmltag-element">sx:wrap</code> instruction to produce this content is shown 
+below for earlier versions and for 1.0.
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Versions 0.8-0.9</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:wrap&gt;
+    &lt;sx:xsltSerializer/&gt;
+    &lt;sx:document/&gt;
+    &lt;envelope&gt;
+      &lt;header&gt;
+        &lt;sx:attribute name="mode" value="xml"/&gt;
+        &lt;creationDate&gt;
+          &lt;sx:currentDateTime/&gt;
+        &lt;/creationDate&gt;
+      &lt;/header&gt;
+      &lt;body&gt;
+        &lt;myns:books xmlns:myns="http://mycompany.com/mynames/"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="url2"&gt;
+
+          &lt;!-- Subtrees of sx:document declared above --&gt;
+          &lt;sx:processSubtree path="/myns:books/myns:book"&gt;
+            &lt;sx:choose&gt;
+              &lt;sx:when test="@categoryCode='F'"&gt;
+                &lt;sx:transform/&gt;
+              &lt;/sx:when&gt;
+            &lt;/sx:choose&gt;
+          &lt;/sx:processSubtree&gt;
+
+        &lt;/myns:books&gt;
+      &lt;/body&gt;
+      &lt;trailer&gt;This is a trailer element&lt;/trailer&gt;
+    &lt;/envelope&gt;
+  &lt;/sx:wrap&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:wrap&gt;
+    &lt;sx:xsltSerializer/&gt;
+    &lt;envelope&gt;
+      &lt;header&gt;
+        &lt;sx:attribute name="mode" value="xml"/&gt;
+        &lt;creationDate&gt;
+          &lt;sx:currentDateTime/&gt;
+        &lt;/creationDate&gt;
+      &lt;/header&gt;
+      &lt;body&gt;
+        &lt;myns:books xmlns:myns="http://mycompany.com/mynames/"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="url2"&gt;
+
+          &lt;!-- Content to be wrapped --&gt;
+          &lt;sx:transform&gt;
+            &lt;sx:document/&gt;
+            &lt;sx:processSubtree path="/myns:books/myns:book"&gt;
+              &lt;sx:choose&gt;
+                &lt;sx:when test="@categoryCode='F'"&gt;
+                  &lt;sx:transform/&gt;
+                &lt;/sx:when&gt;
+              &lt;/sx:choose&gt;
+            &lt;/sx:processSubtree&gt;
+          &lt;/sx:transform&gt;
+
+        &lt;/myns:books&gt;
+      &lt;/body&gt;
+      &lt;trailer&gt;This is a trailer element&lt;/trailer&gt;
+    &lt;/envelope&gt;
+  &lt;/sx:wrap&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>The earlier version is a bit mixed up, with the                                                       
+ <code class="sgmltag-element">sx:document</code> element that loads the books catalog document
+ appearing <span class="emphasis"><em>outside</em></span> the tags that will surround its 
+ subtrees.  The 1.0 version is more natural, with the enclosing tags completely
+ surrounding the content to be enclosed.  
+</p>
+</div>
+  </div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e30"></a>Non-Breaking Changes to Element and Attribute Names</h3></div></div></div>
+
+  <p>
+The names of a number of elements and attributes have changed 
+over the 0.8 and 0.9 releases, these are collected in the table below.
+Note that the old names are retained as aliases to the new names, so
+these are non-breaking changes.
+  </p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col><col><col><col></colgroup><thead><tr><th align="left">Version Changed</th><th align="left">Old Element Name</th><th align="left">Ver 1.0 Element Name</th><th align="left">Old Attribute Name</th><th align="left">Ver 1.0 Attribute Name</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">1.0.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:xmlRecordReader</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:subtreeRecordReader" target="_top">sx:subtreeRecordReader</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">1.0.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:defaultFieldMapping</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:defaultFieldElementMap" target="_top">sx:defaultFieldElementMap</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">1.0.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:spannedFlatRecordType</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:vbsFlatRecordType" target="_top">sx:vbsFlatRecordType</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">1.0.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:escapeVariables</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:escapeSubstitutions" target="_top">sx:escapeSubstitutions</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">1.0.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:runService</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:runService" target="_top">sx:runService</a>
+</td><td align="left" valign="top"><code class="sgmltag-element">service</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">serviceRef</code>
+</td></tr><tr><td align="left" valign="top">0.9.5
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:subrecordMapping</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:subrecordMapping" target="_top">sx:subrecordMapping</a>
+</td><td align="left" valign="top"><code class="sgmltag-element">field</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">repeatingGroup</code>
+</td></tr><tr><td align="left" valign="top">0.9.4
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:composeRecord</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:composeRecord" target="_top">sx:composeRecord</a>
+</td><td align="left" valign="top"><code class="sgmltag-element">compositeRecordType</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">recordType</code>
+</td></tr><tr><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top"><code class="sgmltag-element">repeatingGroupField</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">repeatingGroup</code>
+</td></tr><tr><td align="left" valign="top">0.9.4
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:decomposeRecord</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:decomposeRecord" target="_top">sx:decomposeRecord</a>
+</td><td align="left" valign="top"><code class="sgmltag-element">compositeRecordType</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">recordType</code>
+</td></tr><tr><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top"><code class="sgmltag-element">repeatingGroupField</code>
+</td><td align="left" valign="top"><code class="sgmltag-element">repeatingGroup</code>
+</td></tr><tr><td align="left" valign="top">0.9.3
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:segmentMapping</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:subrecordMapping" target="_top">sx:subrecordMapping</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.9.3
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:insertContent</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:nestedContent" target="_top">sx:nestedContent</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.9.2
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:replace</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:findAndReplace" target="_top">sx:findAndReplace</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.9.1
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:quoteSymbol</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:quoteSymbol" target="_top">sx:quoteSymbol</a>
+</td><td align="left" valign="top">value
+</td><td align="left" valign="top">character
+</td></tr><tr><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">escapedBy
+</td><td align="left" valign="top">escapeCharacter
+</td></tr><tr><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">escapeWith
+</td><td align="left" valign="top">escapeSequence
+</td></tr><tr><td align="left" valign="top">0.9.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:tagDelimiter</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:nameDelimiter" target="_top">sx:nameDelimiter</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.9.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:taggedDelimitedField</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:delimitedNamedField" target="_top">sx:delimitedNamedField</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.9.0
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:repeatingTaggedField</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:repeatingField" target="_top">sx:repeatingField</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">0.8.3
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:defaultFieldMapping</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:defaultFieldElementMap" target="_top">sx:defaultFieldElementMap</a>
+</td><td align="left" valign="top">except
+</td><td align="left" valign="top">exceptFields
+</td></tr><tr><td align="left" valign="top">0.8.3
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:removeEmptyElements</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:removeEmptyElements" target="_top">sx:removeEmptyElements</a>
+</td><td align="left" valign="top">except
+</td><td align="left" valign="top">exceptElements
+</td></tr><tr><td align="left" valign="top">0.8.3
+</td><td align="left" valign="top"><code class="sgmltag-element">sx:batchRecords</code>
+</td><td align="left" valign="top"><a class="link" href="./guide/index.html#sx:batchedRecordWriter" target="_top">sx:batchedRecordWriter</a>
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">
+</td></tr></tbody></table>
+</div>
+
+</div>
+  </div>
+  <div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e223"></a>Upgrading from versions 0.7</h2></div></div></div>
+    
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e225"></a>Changes to Distribution</h3></div></div></div>
+
+<p>
+  </p><div class="itemizedlist"><ul type="disc"><li><p><a class="ulink" href="http://java.sun.com/javase/downloads/index_jdk5.jsp" target="_top">Java SE 5.0</a> or later is now required to build 
+    <code class="code">ServingXML</code>, and a Java 5.0 or later runtime environment
+    is now required to run <code class="code">ServingXML</code>.  A number of libraries previously included to fill holes in Java 1.4, including <code class="filename">concurrent.jar</code>, 
+    <code class="filename">xercesImpl.jar</code>, and <code class="filename">xml-apis.jar</code>, are no longer required and have been dropped from the distribution.
+    </p></li><li><p>Building <code class="code">ServingXML</code> requires <a class="ulink" href="http://ant.apache.org/index.html" target="_top">Apache ANT</a>, 
+    which must now be installed separately, it is no longer included in the distribution.
+    </p></li><li><p>The default XSLT transformer accompanying the download is 
+now the XSLT 2.0 transformer <code class="code">Saxon-B 9</code>, replacing the XSLT 1.0 
+transformer 
+                         <code class="code">Saxon 6.5.5</code>. This means that all XSLT stylesheets and
+    all XPATH expressions used in ServingXML will by default be processed with an XSLT 2 transformer.  It is possible to configure ServingXML to use
+    a different transformer, in particular it is possible to revert to <code class="code">Saxon 6.5.5</code>.
+    </p></li><li><p>The servingxml-fop extension now wraps <a class="ulink" href="http://xmlgraphics.apache.org/fop/index.html" target="_top">Apache FOP</a> version 0.94.
+    </p></li><li><p>Previous documentation described running the <code class="code">ServingXML</code> console app with Java's -jar option.  While still 
+supported, it is now more convenient to use the new batch file <code class="filename">servingxml.bat</code> (Windows) or shell script 
+<code class="filename">servingxml</code> (Unix/Linux).  
+These command files are based on <code class="code">ant</code>/<code class="code">fop</code> models, and build the classpath dynamically from the lib directory.
+  </p></li><li><p>In previous versions of servingxml, the binary distribution was built in a directory named <code class="filename">deploy</code>, 
+  this has been changed to <code class="filename">target</code>.
+  </p></li><li><p>In recent versions of servingxml, the samples were placed directly under <code class="filename">deploy</code>, 
+  this has been changed to <code class="filename">target/servingxml</code>.
+  </p></li></ul></div><p>
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e264"></a>Changes to Markup</h3></div></div></div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e266"></a>Breaking Changes</h4></div></div></div>
+  
+<div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d4e268"></a>sx:fieldElementMap and sx:fieldElementSequenceMap</h5></div></div></div>
+  
+<p>In previous versions, the <code class="sgmltag-element">sx:fieldElementMap</code> element performed two functions:
+it mapped single-valued fields to a single element, and multi-valued fields to a sequence of elements.
+The problem is that the desired behaviour for mapping empty values differs in the two cases.
+When mapping a single-valued field to an element, the desired behaviour is to preserve the 
+empty element.  When mapping an empty multi-valued field to a sequence of elements, the
+desired behaviour is not to emit any elements.  For this reason, the 
+<code class="sgmltag-element">sx:fieldElementMap</code> element has been restricted to mapping to a single
+element value, and a new <code class="sgmltag-element">sx:fieldElementSequenceMap</code> element has
+been introduced to map to a sequence of elements.
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col><col></colgroup><thead><tr><th align="left">father_name</th><th align="left">mother_name</th><th align="left">children</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">Matthew
+</td><td align="left" valign="top">Sarah
+</td><td align="left" valign="top">
+</td></tr><tr><td align="left" valign="top">Scott
+</td><td align="left" valign="top">
+</td><td align="left" valign="top">Damian;Janet;Paul
+</td></tr></tbody></table>
+</div>
+<p>
+</p>
+<p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:recordMapping id="families-to-xml-mapping"&gt;
+    &lt;families&gt;
+      &lt;sx:onRecord&gt;
+        &lt;family&gt;
+          &lt;sx:fieldElementMap field="father_name" 
+                              element="father-name"/&gt;
+          &lt;sx:fieldElementMap field="mother_name" 
+                              element="mother-name"/&gt;
+          &lt;children&gt;
+            &lt;sx:fieldElementMap field="children" element="child"/&gt;
+          &lt;/children&gt;
+        &lt;/family&gt;
+      &lt;/sx:onRecord&gt;
+    &lt;/families&gt;
+  &lt;/sx:recordMapping&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:recordMapping id="families-to-xml-mapping"&gt;
+    &lt;families&gt;
+      &lt;sx:onRecord&gt;
+        &lt;family&gt;
+          &lt;sx:fieldElementMap field="father_name" 
+                              element="father-name"/&gt;
+          &lt;sx:fieldElementMap field="mother_name" element="mother-name"/&gt;
+          &lt;children&gt;
+            &lt;sx:fieldElementSequenceMap field="children" 
+                              element="child"/&gt;
+          &lt;/children&gt;
+        &lt;/family&gt;
+      &lt;/sx:onRecord&gt;
+    &lt;/families&gt;
+  &lt;/sx:recordMapping&gt;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;families&gt;
+  &lt;family&gt;
+    &lt;father&gt;Matthew&lt;/father&gt;
+    &lt;mother&gt;Sarah&lt;/mother&gt;
+    &lt;children&gt;&lt;/children&gt;
+  &lt;/family&gt;
+  &lt;family&gt;
+    &lt;father&gt;Scott&lt;/father&gt;
+    &lt;children&gt;
+      &lt;child&gt;Damian&lt;/child&gt;
+      &lt;child&gt;Janet&lt;/child&gt;
+      &lt;child&gt;Paul&lt;/child&gt;
+    &lt;/children&gt;
+  &lt;/family&gt;
+&lt;/families&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;families&gt;
+  &lt;family&gt;
+    &lt;father&gt;Matthew&lt;/father&gt;
+    &lt;mother&gt;Sarah&lt;/mother&gt;
+    &lt;children&gt;&lt;/children&gt;
+  &lt;/family&gt;
+  &lt;family&gt;
+    &lt;father&gt;Scott&lt;/father&gt;
+    &lt;mother/&gt;
+    &lt;children&gt;
+      &lt;child&gt;Damian&lt;/child&gt;
+      &lt;child&gt;Janet&lt;/child&gt;
+      &lt;child&gt;Paul&lt;/child&gt;
+    &lt;/children&gt;
+  &lt;/family&gt;
+&lt;/families&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>Note that in the older version, the element corresponding to the empty <code class="code">mother</code> field value is suppressed.
+In the 1.0 version, it is retained.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d4e311"></a>Empty sx:document element required to receive default stream source as SAX source</h5></div></div></div>
+  
+<p>In previous versions, in <code class="sgmltag-element">sx:transform</code> sections, if no content was explicitly specified, the
+content defaulted to parsing the default input stream, such as a file specified with the -i option on the console app.
+As of version 1.0, an empty <code class="sgmltag-element">sx:document</code> element must be specified to achieve this
+result, otherwise content defaults to an empty document.  In fact, almost all of the examples in previous ServingXML
+distributions already used an empty <code class="sgmltag-element">sx:document</code> element, the only exceptions being the
+invoice examples in the XML-to-XML exceptions, these needed to be modified as shown below.
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:service id="invoices"&gt;
+    &lt;sx:transform&gt;
+    
+      &lt;!-- Here we extract a document subtree from the SAX stream --&gt;
+      &lt;sx:processSubtree path="/inv:invoices/inv:invoice"&gt;
+        &lt;sx:transform&gt;
+          ...
+        &lt;/sx:transform&gt;
+      &lt;/sx:processSubtree&gt;
+    &lt;/sx:transform&gt;
+  &lt;/sx:service&gt;      
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:service id="invoices"&gt;
+    &lt;sx:transform&gt;
+      &lt;sx:document/&gt;
+      &lt;!-- Here we extract a document subtree from the SAX stream --&gt;
+      &lt;sx:processSubtree path="/inv:invoices/inv:invoice"&gt;
+        &lt;sx:transform&gt;
+          ...
+        &lt;/sx:transform&gt;
+      &lt;/sx:processSubtree&gt;
+    &lt;/sx:transform&gt;
+  &lt;/sx:service&gt;      
+</pre>
+</td></tr></tbody></table>
+</div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d4e329"></a>The output of the sx:processSubtree element is no longer the same as 
+    the input.
+    </h5></div></div></div>
+  
+<p>Like previous versions, 1.0 allows you to use an 
+<code class="sgmltag-element">sx:processSubtree</code> element to process subtrees of an XML 
+document, and to serialize the subtrees as individual XML files.  Previous 
+versions, however, allowed you to simultanously output the entire XML file 
+by enclosing the whole thing inside an <code class="sgmltag-element">sx:serialize</code> 
+element, because the original SAX events flowed through the 
+<code class="sgmltag-element">sx:processSubtree</code> element.  In 1.0, this is no longer 
+the case, and to achieve the same effect you need to wrap the 
+<code class="sgmltag-element">sx:processSubtree</code> element inside an 
+<code class="sgmltag-element">sx:tagTee</code> element, as shown below.  
+  </p> 
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:service id="books"&gt;
+  &lt;sx:serialize&gt;
+    &lt;sx:transform&gt;
+      &lt;sx:content ref="books"/&gt;
+      
+        &lt;sx:processSubtree path="/myns:books/myns:book"&gt;
+          &lt;sx:parameter name="isbn" select="myns:isbn"/&gt;
+          &lt;sx:serialize&gt;
+            &lt;sx:xsltSerializer&gt;
+              &lt;sx:fileSink directory="output" 
+                           file="book-{$isbn}.xml"/&gt;
+            &lt;/sx:xsltSerializer&gt;
+          &lt;/sx:serialize&gt;
+        &lt;/sx:processSubtree&gt;
+      
+    &lt;/sx:transform&gt;
+  &lt;/sx:serialize&gt;
+&lt;/sx:service&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:service id="books"&gt;
+  &lt;sx:serialize&gt;
+    &lt;sx:transform&gt;
+      &lt;sx:content ref="books"/&gt;
+      &lt;sx:tagTee&gt;
+        &lt;sx:processSubtree path="/myns:books/myns:book"&gt;
+          &lt;sx:parameter name="isbn" select="myns:isbn"/&gt;
+          &lt;sx:serialize&gt;
+            &lt;sx:xsltSerializer&gt;
+              &lt;sx:fileSink directory="output" 
+                           file="book-{$isbn}.xml"/&gt;
+            &lt;/sx:xsltSerializer&gt;
+          &lt;/sx:serialize&gt;
+        &lt;/sx:processSubtree&gt;
+      &lt;/sx:tagTee&gt;
+    &lt;/sx:transform&gt;
+  &lt;/sx:serialize&gt;
+&lt;/sx:service&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+  <p>
+The 1.0 behaviour is that the output of <code class="sgmltag-element">sx:processSubtree</code> 
+is whatever tags are written in its content to the default SAX sink.  In the 
+example above, that is none, because all the tags are written to explicitly 
+specified files.  But if no explicit output is specified, the subtrees 
+themselves will be written to the default SAX sink.  Then, if there is an 
+enclosing <code class="sgmltag-element">sx:wrap</code> element, the subtrees will be aggregated 
+and output as a single XML document, with new wrapping tags. See the XML-to-XML
+example "Extracting subtrees and wrapping them in containing tags" for more 
+about the new <code class="sgmltag-element">sx:wrap</code> element.
+  </p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d4e353"></a>Removal of deprecated sx:startGroup and sx:endGroup elements</h5></div></div></div>
+  
+</div>
+<p>Up to version 0.6.5, the <code class="sgmltag-element">sx:innerGroup</code> and <code class="sgmltag-element">sx:outerGroup</code> 
+elements took <code class="sgmltag-element">sx:startGroup</code> and <code class="sgmltag-element">sx:endGroup</code> child elements to 
+control breaking behaviour, these elements were deprecated in the 0.6.5 release and replaced by 
+<code class="sgmltag-attribute">startTest</code> and <code class="sgmltag-attribute">endTest</code> attributes.
+As of version 1.0, <code class="sgmltag-element">sx:startGroup</code> and <code class="sgmltag-element">sx:endGroup</code> have been
+removed altogether.
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Pre 0.6.5 versions</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:outerGroup&gt;
+  &lt;sx:startGroup test="sx:previous//record-type='BFH01'"/&gt;
+  &lt;sx:endGroup test="sx:next//record-type='BFT99'"/&gt;
+  &lt;!-- group content --&gt;
+&lt;/sx:outerGroup&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:outerGroup startTest="sx:previous//record-type='BFH01'"
+               endTest="sx:current//record-type='BFT99'"&gt;
+  &lt;!-- group content --&gt;
+&lt;/sx:outerGroup&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e377"></a>Non-Breaking Changes</h4></div></div></div>
+  
+<p>
+</p><div class="itemizedlist"><ul type="disc"><li><code class="sgmltag-element">sx:regexFieldCriteria</code> has been renamed to <code class="sgmltag-element">sx:fieldRestriction</code>,
+  and its attribute <code class="sgmltag-attribute">match</code> has been renamed to <code class="sgmltag-attribute">pattern</code>.  
+  For backwards compatability, the old names are still allowed, but deprecated..
+  </li><li><code class="sgmltag-element">sx:recordTest</code> has been renamed to <code class="sgmltag-element">sx:recordRestriction</code>.  
+  For backwards compatability, the old name is still allowed, but deprecated..
+  </li></ul></div><p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:restrictRecordFilter&gt;
+  &lt;sx:regexFieldCriteria field="name" 
+                         match="books.*[.]txt"/&gt;
+&lt;/sx:restrictRecordFilter&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:restrictRecordFilter&gt;
+  &lt;sx:fieldRestriction field="name" 
+                              pattern="books.*[.]txt"/&gt;
+&lt;/sx:restrictRecordFilter&gt;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:restrictRecordFilter&gt;
+  &lt;sx:recordTest recordType="persons"/&gt;
+&lt;/sx:restrictRecordFilter&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:restrictRecordFilter&gt;
+  &lt;sx:recordRestriction recordType="persons"/&gt;
+&lt;/sx:restrictRecordFilter&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p><div class="itemizedlist"><ul type="disc"><li><code class="sgmltag-element">sx:removeEmptyElementFilter</code> has been renamed to <code class="sgmltag-element">sx:removeEmptyElements</code>.  
+  For backwards compatability, the old name is still allowed, but deprecated..
+  </li></ul></div><p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:transform&gt;
+    &lt;sx:content ref="families"/&gt;
+    &lt;sx:removeEmptyElementFilter elements="children"/&gt;
+  &lt;/sx:transform&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:transform&gt;
+    &lt;sx:content ref="families"/&gt;
+    &lt;sx:removeEmptyElements elements="children"/&gt;
+  &lt;/sx:transform&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p><div class="itemizedlist"><ul type="disc"><li>In <code class="sgmltag-element">sx:directoryReader</code> and 
+  <code class="sgmltag-element">edt::ftpDirectoryReader</code>, the field 
+  <code class="code">parentDir</code> has been renamed to 
+                      <code class="sgmltag-element">parentDirectory</code>.  
+  For backwards compatability, the old name is still retained, but deprecated..
+  </li></ul></div><p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:recordStream&gt;
+  &lt;sx:directoryReader directory="data"/&gt;
+  &lt;sx:processRecord&gt;
+    &lt;sx:recordStream&gt;
+      &lt;sx:flatFileReader&gt;
+        &lt;sx:fileSource directory="{parentDirectory}" 
+                       file="{name}"/&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:recordStream&gt;
+  &lt;sx:directoryReader directory="data"/&gt;
+  &lt;sx:processRecord&gt;
+    &lt;sx:recordStream&gt;
+      &lt;sx:flatFileReader&gt;
+        &lt;sx:fileSource directory="{parentDirectory}" 
+                       file="{name}"/&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p><div class="itemizedlist"><ul type="disc"><li><code class="sgmltag-element">sx:wrap</code> has been renamed to 
+  <code class="sgmltag-element">sx:nestedContent</code> (since 0.8.1.)  For backwards 
+  compatability, the old name is still allowed, but deprecated.
+  </li></ul></div><p>
+</p>
+
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:recordMapping id="personsAddressesMapping"&gt;
+    &lt;Persons-Addresses&gt;
+      &lt;sx:wrap&gt;
+        &lt;sx:recordContent&gt;
+          &lt;sx:flatFileReader ref="personsReader"/&gt;
+          &lt;sx:recordMapping ref="personsMapping"/&gt;
+        &lt;/sx:recordContent&gt;
+      &lt;/sx:wrap&gt;
+      &lt;sx:wrap&gt;
+        &lt;sx:recordContent&gt;
+          &lt;sx:flatFileReader ref="personsReader"/&gt;
+          &lt;sx:recordMapping ref="addressesMapping"/&gt;
+        &lt;/sx:recordContent&gt;
+      &lt;/sx:wrap&gt;
+    &lt;/Persons-Addresses&gt;
+  &lt;/sx:recordMapping&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:recordMapping id="personsAddressesMapping"&gt;
+    &lt;Persons-Addresses&gt;
+      &lt;sx:nestedContent&gt;
+        &lt;sx:recordContent&gt;
+          &lt;sx:flatFileReader ref="personsReader"/&gt;
+          &lt;sx:recordMapping ref="personsMapping"/&gt;
+        &lt;/sx:recordContent&gt;
+        &lt;sx:recordContent&gt;
+          &lt;sx:flatFileReader ref="personsReader"/&gt;
+          &lt;sx:recordMapping ref="addressesMapping"/&gt;
+        &lt;/sx:recordContent&gt;
+      &lt;/sx:nestedContent&gt;
+    &lt;/Persons-Addresses&gt;
+  &lt;/sx:recordMapping&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p><div class="itemizedlist"><ul type="disc"><li>Boolean values appearing in ServingXML mark-up were previously specified as <code class="code">yes</code>|<code class="code">no</code>,
+  that has been changed to <code class="code">true</code>|<code class="code">false</code>.  For backwards compatability,  <code class="code">yes</code>|<code class="code">no</code>
+  are still allowed, but deprecated.
+  </li></ul></div><p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:delimitedField name="name" 
+                   trimLeading="yes"/&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+&lt;sx:delimitedField name="name" 
+                   trimLeading="true"/&gt;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;edt:ftpDirectoryReader remoteDirectory="." 
+                          recurse="yes" 
+                          maxItems="10"&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;edt:ftpDirectoryReader remoteDirectory="." 
+                          recurse="true" 
+                          maxItems="10"&gt;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:sqlQuery recordType="foo" trim="yes"&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:sqlQuery recordType="foo" trim="true"&gt;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:flatRecordType name="invoice" omitFinalRepeatDelimiter="no"&gt;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+  &lt;sx:flatRecordType name="invoice" omitFinalRepeatDelimiter="false"&gt;
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>Note that in the sx:outputProperty elements that supply output property values to the XSLT serializer,
+the XSLT names are used so it's still, for example, 
+</p><pre class="programlisting">
+
+&lt;sx:xsltSerializer&gt;
+  &lt;sx:outputProperty name="indent" value="yes"/&gt;
+&lt;/sx:xsltSerializer&gt;
+</pre><p>
+</p>
+</div>
+</div>
+
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d4e497"></a>Changes to Java Code</h3></div></div></div>
+  
+<p>
+The two most noticable changes to the source code are as follows:
+</p><div class="itemizedlist"><ul type="disc"><li><p>Methods that previously took the three arguments 
+</p><pre class="programlisting">
+
+  ServiceContext context, Record parameters, Flow flow
+</pre><p>
+now take only two
+</p><pre class="programlisting">
+
+  ServiceContext context, Flow flow
+</pre><p>
+  </p></li><li><p>
+              The <code class="code">ServingXmlException</code> now extends <code class="code">RuntimeException</code>, and method signatures no longer 
+              have explicit throw statements for <code class="code">ServingXmlException</code>.
+  </p></li></ul></div><p>
+</p>
+<p>
+Parameters are inherently associated with the <code class="code">flow</code> value, they must travel together, and passing them separately 
+means that code that buffers <code class="code">flow</code> values must really buffer the pair <code class="code">parameters, flow</code>.  This code
+becomes simpler and less error prone by moving <code class="code">parameters</code> inside <code class="code">flow</code>, 
+and making them accessible with a <code class="code">getParameters</code> method.
+</p>
+<p>Regarding the change of <code class="code">ServingXmlException</code> from a checked exception to a <code class="code">RuntimeException</code>, the author of 
+this software has become convinced by the arguments of 
+<a class="ulink" href="http://radio.weblogs.com/0122027/stories/2003/04/01/JavasCheckedExceptionsWereAMistake.html" target="_top">Java's checked exceptions were a mistake </a>,
+<a class="ulink" href="http://www.octopull.demon.co.uk/java/ExceptionalJava.html" target="_top">Exceptional Java</a>,
+<a class="ulink" href="http://www.octopull.demon.co.uk/java/ACCU-Spring-2001/img0.htm" target="_top">Exception Safe Java</a> and elsewhere
+that making <code class="code">ServingXMLException</code> a checked exception was a mistake.  The biggest problem was when <code class="code">ServingXMLException</code>
+had to be thrown from within a <code class="code">Java</code> library callback method such as <code class="code">compare</code>.
+</p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e527"></a>Changes to the Embedding API</h4></div></div></div>
+  
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+import com.servingxml.io.flow.Flow;
+import com.servingxml.io.flow.FlowImpl;
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.FlowImpl;
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+Flow flow =  new FlowImpl(defaultStreamSource, 
+                          defaultStreamSink);
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+Flow flow =  new FlowImpl(parameters, 
+                          defaultStreamSource, 
+                          defaultStreamSink);
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+service.execute(context, parameters, flow);
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+service.execute(context, flow);
+</pre>
+</td></tr></tbody></table>
+</div>
+</div>
+<p>
+</p>
+<div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d4e552"></a>Changes to Java Custom Record Filters</h4></div></div></div>
+  
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+public void startRecordStream(ServiceContext context, 
+                              Record parameters, 
+                              Flow flow) 
+throws ServingXmlException 
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+public void startRecordStream(ServiceContext context, 
+                              Flow flow) 
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+public void writeRecord(ServiceContext context, 
+                        Record parameters, 
+                        Flow flow) 
+throws ServingXmlException
+</pre>
+</td><td rowspan="2" align="left" valign="top">
+<pre class="programlisting">
+
+public void writeRecord(ServiceContext context, 
+                        Flow flow) 
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+public void writeRecord(ServiceContext context, 
+                        Record parameters, 
+                        Flow flow, 
+                        Record record) 
+throws ServingXmlException
+</pre>
+</td></tr><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+public void endRecordStream(ServiceContext context, 
+                            Record parameters, 
+                            Flow flow) 
+throws ServingXmlException 
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+public void endRecordStream(ServiceContext context, 
+                            Flow flow) 
+</pre>
+</td></tr></tbody></table>
+</div>
+<p>
+</p>
+<div class="informaltable">
+<table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Version 0.7.*</th><th align="left">Version 1.0</th></tr></thead><tbody valign="top"><tr><td align="left" valign="top">
+<pre class="programlisting">
+
+public class HotRecordFilter extends AbstractRecordFilter {
+
+  public void writeRecord(ServiceContext context, 
+                          Record parameters, 
+                          Flow flow, 
+                          Record record) 
+  throws ServingXmlException {
+  
+    ...
+    
+    super.writeRecord(context, parameters, 
+                      flow, newRecord);
+}  
+</pre>
+</td><td align="left" valign="top">
+<pre class="programlisting">
+
+public class HotRecordFilter extends AbstractRecordFilter {
+
+  public void writeRecord(ServiceContext context, 
+                          Flow flow) {
+  
+    Record record = flow.getRecord();
+    Record parameters = flow.getParameters();
+  
+    ...
+    
+    Flow newFlow = flow.replaceRecord(context, record);
+  
+    super.writeRecord(context, newFlow);
+  }  
+                          
+</pre>
+</td></tr></tbody></table>
+</div>
+</div>
+</div>
+  </div>
+</div></body></html>

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edi="edi-tests/"
+              xmlns:lineNumber="elements/lineNumber/"
+              xmlns:subtreeFilter="elements/subtreeFilter/"
+              xmlns:compositeFlatRecordType="elements/compositeFlatRecordType/"
+			  xmlns:binaryField="elements/binaryField/"
+			  xmlns:overpunchField="elements/overpunchField/"
+			  xmlns:delimitedField="elements/delimitedField/"
+              xmlns:wrap="elements/wrap/"
+              xmlns:parameter="elements/parameter/"
+              xmlns:findAndReplace="elements/findAndReplace/"
+              xmlns:withParameters="elements/withParameters/"
+              xmlns:choose="elements/choose/"
+              xmlns:onRecord="elements/onRecord/"
+              xmlns:groupBy="elements/groupBy/"
+              >
+
+  <sx:include href="saxpath-tests.xml"/> 
+  <sx:include href="flat-file-tests.xml"/>
+  <sx:include href="edi-tests.xml"/>
+  <sx:include href="elements/parameter.xml"/>
+  <sx:include href="elements/findAndReplace.xml"/>
+  <sx:include href="elements/withParameters.xml"/>
+  <sx:include href="elements/choose.xml"/>
+  <sx:include href="elements/wrap.xml"/>
+  <sx:include href="elements/subtreeFilter.xml"/>
+  <sx:include href="elements/compositeFlatRecordType.xml"/>
+  <sx:include href="elements/lineNumber.xml"/>
+  <sx:include href="elements/binaryField.xml"/>
+  <sx:include href="elements/overpunchField.xml"/>
+  <sx:include href="elements/delimitedField.xml"/>
+  <sx:include href="elements/onRecord.xml"/>
+  <sx:include href="elements/groupBy.xml"/>
+
+  <sx:service id="run-tests">
+    <sx:runService serviceRef="withParameters:run-tests"/>
+    <sx:runService serviceRef="parameter:run-tests"/>
+    <sx:runService serviceRef="findAndReplace:run-tests"/>
+    <sx:runService serviceRef="choose:run-tests"/>
+    <sx:runService serviceRef="wrap:run-tests"/>
+    <sx:runService serviceRef="run-saxpath-tests"/>
+    <sx:runService serviceRef="run-flat-file-tests"/>
+    <sx:runService serviceRef="edi:run-tests"/>
+    <sx:runService serviceRef="subtreeFilter:run-tests"/> 
+    <sx:runService serviceRef="lineNumber:run-tests"/>
+    <sx:runService serviceRef="compositeFlatRecordType:run-tests"/>
+    <sx:runService serviceRef="binaryField:run-tests"/>
+    <sx:runService serviceRef="overpunchField:run-tests"/>
+    <sx:runService serviceRef="delimitedField:run-tests"/> 
+    <sx:runService serviceRef="onRecord:run-tests"/>
+    <sx:runService serviceRef="groupBy:run-tests"/>
+  </sx:service>
+
+</sx:resources>
+

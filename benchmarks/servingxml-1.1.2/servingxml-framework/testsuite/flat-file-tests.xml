@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="flat-file-tests/">
+
+  <sx:service id="run-flat-file-tests">
+    <sx:task ref="test-flat-file"/>
+  </sx:service>
+
+  <sx:flatFileReader id="csv-file-reader">
+    <sx:inlineSource>field1,field2
+      value1,value2
+      value1,value2</sx:inlineSource>
+    <sx:fieldDelimiter value=","/>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="flat-file-content">
+    <sx:flatFileReader ref="csv-file-reader"/>
+  </sx:recordContent>
+
+  <sx:document id="target-document">
+    <document><record><field1>value1</field1><field2>value2</field2></record><record><field1>value1</field1><field2>value2</field2></record></document>
+  </sx:document>
+
+  <sx:transform id="test-flat-file">
+    <sx:assert test="fn:deep-equal(fn:document('flat-file-content'),fn:document('target-document'))"> 
+test-flat-file:
+      <sx:parameter name="document">
+        <sx:recordContent id="flat-file-content">
+          <sx:flatFileReader ref="csv-file-reader"/>
+        </sx:recordContent>
+      </sx:parameter>Documents not equal <sx:toString value="{$document}"/>.
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>
+

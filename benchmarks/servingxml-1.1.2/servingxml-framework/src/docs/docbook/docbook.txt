@@ -1,0 +1,1 @@
+Customize the template named 'toc.line' in autotoc.xsl. At the point where it uses mode="titleabbrev.markup", change it to mode="title.markup".

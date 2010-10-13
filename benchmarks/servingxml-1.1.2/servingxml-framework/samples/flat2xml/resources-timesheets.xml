@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="timesheets"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="timesheets"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:recordContent id="timesheets">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/timesheets.csv"/>
+      <sx:flatFile ref="timesheetsFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="timesheetsToXmlMapping"/>
+  </sx:recordContent>
+  
+  <sx:flatFile id="timesheetsFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="task">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="TimePeriod"/>
+        <sx:delimitedField name="Start"/>
+        <sx:delimitedField name="Finish"/>
+        <sx:delimitedField name="Resource"/>
+        <sx:delimitedField name="Task"/>
+        <sx:delimitedField name="ActualDate"/>
+        <sx:delimitedField name="Amount"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+  
+  <sx:recordMapping id="timesheetsToXmlMapping">
+    <TimePeriods>
+      <sx:groupBy fields="Start">
+          <TimePeriod>
+            <sx:fieldAttributeMap field="Start" attribute="start"/>
+            <sx:fieldAttributeMap field="Finish" attribute="finish"/>
+            <Timesheets>
+              <sx:groupBy fields="Start Resource">
+                <Timesheet>
+                  <sx:fieldAttributeMap field="Resource" attribute="resource"/>
+                  <TimesheetEntries>
+                    <sx:groupBy fields="Start Resource Task">
+                      <TimesheetEntry>
+                        <sx:fieldAttributeMap field="Task" attribute="task"/>
+                        <DailyActuals>
+                          <sx:onRecord>
+                            <Actual>
+                              <sx:fieldAttributeMap field="ActualDate" attribute="actualDate"/>
+                              <sx:fieldAttributeMap field="Amount" attribute="amount"/>
+                            </Actual>
+                          </sx:onRecord>
+                        </DailyActuals>
+                      </TimesheetEntry>
+                    </sx:groupBy>
+                  </TimesheetEntries>
+                </Timesheet>
+              </sx:groupBy>
+            </Timesheets>
+          </TimePeriod>
+      </sx:groupBy>
+    </TimePeriods>
+  </sx:recordMapping>  
+  
+</sx:resources>
+

@@ -1,0 +1,128 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+  <artheader id="recordstreams">
+    <title>Serving XML: XML to XML</title>
+    <author>
+      <firstname>Daniel</firstname>
+      <surname>Parker</surname>
+    </author>
+  </artheader>
+  <section>
+    <para> This article describes how to tranform flatfiles to XML with the
+  ServingXML pipeline language.
+    </para>
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">ServingXML: Pipeline Language</ulink>
+</phrase></listitem>
+<!--listitem>
+  <phrase>
+    <ulink url="record-structure.html">Record Pipelines: Record 
+      Structure</ulink>
+  </phrase>
+</listitem-->
+
+<listitem><phrase>
+<ulink url="flat-file-to-xml.html">ServingXML: Flat Files</ulink>
+</phrase></listitem>
+<!--listitem><phrase>
+<ulink url="xml-to-xml.html">ServingXML: XML Content</ulink>
+</phrase></listitem-->
+<listitem><phrase>
+<ulink url="servingxml-3.html">ServingXML: Inversion of Control 
+  Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+    <para>
+This article discusses processing of XML content in a <code>ServingXML</code> 
+pipeline.
+    </para>
+    <para>
+      The <code>ServingXML</code> framework allows streaming of a large volume 
+      of XML content to be combined with non-streamed processing of parts of
+      that content.
+    </para>
+  </section>
+  <section>
+    <title>Validating XML</title>
+  </section>
+  <section>
+    <title>Mutating a Subtree of an XML Document</title>
+      <figure id="countires.csv" xreflabel="countries.csv flat file">
+        <title>Input flat file countries.csv</title>
+        <programlisting>
+          <![CDATA[
+]]>
+        </programlisting>
+      </figure>
+  </section>
+  <section>
+    <title>Extracting a Selection of Subtrees, Wrapping All in Enclosing 
+      Tags</title>
+  </section>
+  <section>
+    <title>Extracting a Selection of Subtrees, Writing Each as a 
+      Separate Document</title>
+  </section>
+  <section>
+    <title>Comparing Two XML Documents with fn:deep-equal</title>
+        <programlisting>
+          <para>The example below shows how to compare two XML documents for equality with
+          the XPATH fn:deep-equal function.
+            
+          </para>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"> 
+
+  <sx:service id="test">
+    <sx:transform ref="test-documents-are-equal"/>
+  </sx:service>
+
+  <sx:document id="odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:document id="another-odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:transform id="test-documents-are-equal">
+    <sx:choose>
+      <sx:when test="fn:deep-equal(fn:document('odd-element-document'),
+                     fn:document('another-odd-element-document'))">
+        <sx:document>
+          <result>equal</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>unequal</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text()='equal'"> Expected documents are equal.
+    </sx:assert>
+  </sx:transform>
+
+</resources>
+]]>
+        </programlisting>
+<para>
+The documents are equal, so the script produces the result  
+<![CDATA[
+<result>equal</result>
+]]>
+</para>
+  </section>
+</article>
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="myChoice">
+    <sx:serialize>
+      <sx:transform>
+        <sx:choose>
+          <sx:when test="1">
+            <sx:transform>
+              <sx:document><xxx/></sx:document>
+            </sx:transform>
+          </sx:when>
+        </sx:choose>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+

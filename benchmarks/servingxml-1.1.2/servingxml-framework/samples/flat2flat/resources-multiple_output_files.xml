@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="trades">
+    <sx:recordStream>
+      <sx:customRecordReader class="flat2flat.TradeRecordReader"/>
+      <!-- Which output file is determined by the parameter "feed"
+            and the record field "record_type", which are both
+            supplied in the custom record reader.
+      -->
+      <sx:choose>
+        <sx:when test="$feed='LONDON' and record_type = 'TR'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="trades-London.txt"/>
+            <sx:flatFile ref="trades"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed = 'LONDON' and record_type = 'TN'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="transactions-London.txt"/>
+            <sx:flatFile ref="transactions"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed='TORONTO' and record_type = 'TR'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="trades-Toronto.txt"/>
+            <sx:flatFile ref="trades"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed = 'TORONTO' and record_type = 'TN'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="transactions-Toronto.txt"/>
+            <sx:flatFile ref="transactions"/>
+          </sx:flatFileWriter>
+        </sx:when>
+      </sx:choose>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="trades">
+    <sx:flatFileBody>
+          <sx:flatRecordType name="trade">
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="trade_date" width="10"/>
+            <sx:positionalField name="trade_time" width="8"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatFile id="transactions">
+    <sx:flatFileBody>
+          <sx:flatRecordType name="transaction">
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="reference" width="5"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

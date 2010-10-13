@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="tasks">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="tasks"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="tasks">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/tasks.csv"/>
+      <sx:flatFile ref="tasksFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="tasksToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="tasksFlatFile">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="task">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="project_id"/>
+        <sx:delimitedField name="task_name"/>
+        <sx:delimitedField name="task_start"/>
+        <sx:delimitedField name="task_finish"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="tasksToXmlMapping">
+    <Projects>
+      <sx:groupBy fields="project_id">
+        <Project>
+          <sx:fieldAttributeMap field="project_id" attribute="projectID"/>
+          <Tasks>
+            <sx:onRecord>
+              <Task>
+                <sx:fieldAttributeMap field="task_name" attribute="name"/>
+                <sx:fieldAttributeMap field="task_start" attribute="start"/>
+                <sx:fieldAttributeMap field="task_finish" attribute="finish"/>
+              </Task>
+            </sx:onRecord>
+          </Tasks>
+        </Project>
+      </sx:groupBy>
+    </Projects>
+  </sx:recordMapping>
+  
+</sx:resources>
+

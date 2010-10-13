@@ -1,0 +1,604 @@
+<reference id="ref-inverserecordmapping"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>Inverse Record Mapping Elements</title>
+
+<refentry id="sx:documentSubtreeMap" xreflabel="sx:documentSubtreeMap">
+<refnamediv>
+  <refname>sx:documentSubtreeMap</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:onSubtree"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:shredXml"/></refclass>
+</refnamediv>
+<indexterm><primary>documentSubtreeMap</primary></indexterm>
+</refentry>
+
+<refentry id="sx:flattenSubtree" xreflabel="sx:flattenSubtree">
+<refnamediv>
+  <refname>sx:flattenSubtree</refname>
+  <refpurpose>Flatten XML subtree</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:shredXml"/></refclass>
+</refnamediv>
+<indexterm><primary>flattenSubtree</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>match</entry>
+<entry>No</entry>
+<entry>XSLT pattern</entry>
+<entry>
+Define a condition that an element in the XML fragment must satisfy in order to be mapped to a record of the specified type.
+Defaults to &quot;/*&quot; 
+</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>
+The record type of the output record.  
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>
+Any number of <xref linkend="sx:subtreeFieldMap"/> elements.            
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:inverseRecordMapping" xreflabel="sx:inverseRecordMapping">
+<refnamediv>
+  <refname>sx:inverseRecordMapping</refname>
+  <refpurpose>Map XML to records</refpurpose>
+</refnamediv>
+<indexterm><primary>inverseRecordMapping</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem><phrase>
+Any number of <xref linkend="sx:onSubtree"/> elements.            
+</phrase></listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>The <sgmltag>sx:inverseRecordMapping</sgmltag> element takes a stream of 
+    XML tags and transforms them to a flow of records. Each record flowing 
+    through <code>ServingXML</code> must have a recordType, say "book". In the
+    content of an <sgmltag>sx:inverseRecordMapping</sgmltag>, the instructions
+<programlisting> <![CDATA[
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+      </sx:flattenSubtree>
+]]>
+</programlisting>extract the "myns:book" subtrees from the XML and map them to 
+records of type "book".
+  </para>
+  <para>
+Now, when writing the records to a flat file, you can use the recordType "book" 
+in the flat file definition to discriminate between different record types, for 
+example
+  </para> 
+<programlisting>
+<![CDATA[
+  <sx:flatRecordTypeChoice id="bookType"> 
+    <sx:delimitedField name="xxx"/> <!-- unused, used for input only --> 
+    <sx:when test="/book"> <!-- matches against record type "book" --> 
+      <sx:flatRecordType name="book">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="title" quote="always"/>
+        <sx:delimitedField name="author"/>
+      </sx:flatRecordType>
+]]>
+</programlisting> 
+ 
+  <para>
+  Note that the recordType of the record becomes the root element of the XML representation of the 
+    record, so the test is written as "/book". Also note that the discrimination 
+    is based on the test expression, it's unrelated to the <xref linkend="sx:flatRecordType"/> attribute 
+    <sgmltag>name</sgmltag>, which could just as well be "ABook".
+  </para>
+  <para>
+One restriction of referring to the recordType in the flat file definition like this is that this 
+    flat file definition can be used for XML -> flat only, for flat -> XML the 
+    discrimination has to be based on field values. But generally you'll want to
+    use the same flat file definiton for flat->XML and XML->flat.
+
+  </para>
+  <para>
+Using one flat file definition is always possible in simple cases with a single 
+recordType, but in more complex cases using 
+            <xref linkend="sx:flatRecordTypeChoice"/>, it requires that flat->XML and
+XML->flat both discriminate by field values. 
+  </para> 
+  <para>
+So suppose you have a flat file definition like 
+  </para> 
+<programlisting>
+<![CDATA[
+  <sx:flatRecordTypeChoice id="bookType"> 
+    <sx:delimitedField name="tag"/> <!-- used for input only --> 
+    <sx:when test="tag = 'B'"> <!-- matches against field "tag" --> 
+    <sx:flatRecordType name="book"> 
+    <sx:delimitedField name="tag"/> 
+    <!-- other fields --> 
+]]>
+</programlisting> 
+  <para>
+  On input, the first field of the record will be read in, and generally speaking, 
+    as many fields will be read in as appear immediately below the 
+    <xref linkend="sx:flatRecordTypeChoice"/>. These fields may then be referred to in test 
+    expressions to determine the record type. Once the type is known, the 
+    complete record is read and assigned a recordType. 
+  </para>
+ 
+  <para>
+  On output, the fields appearing immediately below the <xref linkend="sx:flatRecordTypeChoice"/> aren't used. 
+    Instead, the sx:when test expressions test against the record about to be 
+    written, and if that record has a field called tag with the value 'B', 
+<programlisting>
+<![CDATA[
+<sx:when test="tag = 'B'"
+]]>
+</programlisting>
+     will evaluate as true.  
+  </para>
+ 
+  <para>
+  So note the following: 
+  </para>
+  <itemizedlist>
+    <listitem><para>
+   In the second line of
+<programlisting>
+<![CDATA[
+<sx:flatRecordTypeChoice id="bookType"> 
+<sx:delimitedField name="tag"/> <!-- used for input only --> 
+<sx:when test="tag = 'B'"> <!-- matches against field "tag" --> 
+]]>
+</programlisting> 
+the field "tag" is used in flat->xml but not xml->flat, where it is ignored. 
+      </para></listitem>
+    <listitem><para>
+In the second line of 
+<programlisting>
+<![CDATA[
+<sx:when test="tag = 'B'"> <!-- matches against field "tag" --> 
+<sx:flatRecordType name="book"> 
+]]>
+</programlisting> 
+                the name "book" becomes the recordType of the input record in 
+                flat->XML, 
+  but is ignored in XML->flat (the recordType is thrown away, it isn't written 
+  to the flat file.) 
+      </para></listitem>
+    <listitem><para>
+In the third line of  
+<programlisting>
+<![CDATA[
+<sx:flatRecordTypeChoice id="bookType"> 
+<sx:delimitedField name="tag"/> <!-- used for input only --> 
+<sx:when test="tag = 'B'"> <!-- matches against field "tag" --> 
+]]>
+</programlisting> 
+the field tag appearing in the test expression is a field at the beginning of 
+the input record in flat->XML, and it's a field of the output record in 
+XML->flat.
+      </para></listitem>
+  </itemizedlist> 
+  </refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+<example>
+  <title>Mapping master/detail content to composite records</title>
+  <para>
+    Suppose you have a document of countries,
+  </para>
+<programlisting>
+<![CDATA[
+<countries>
+  <country countryCode="ATF">
+    <countryName>FRENCH SOUTHERN TERRITORIES, D.R. OF</countryName>
+  </country>
+  <country countryCode="VUT">
+    <countryName>VANUATU</countryName>
+  </country>
+  <country countryCode="WLF">
+    <countryName>WALLIS &amp; FUTUNA ISLANDS</countryName>
+  </country>
+</countries>
+]]>
+</programlisting>
+  <para>
+    Now suppose you want to map each "country" subtree to a corresponding 
+    "country" record containing two fields, "name" and "code". For this you can 
+    use the
+        <xref linkend="sx:inverseRecordMapping"/> instruction below.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:inverseRecordMapping id="countriesToFileMapping">
+    <sx:onSubtree path="country">
+      <sx:flattenSubtree  recordType="country">
+        <sx:subtreeFieldMap select="countryName" field="name"/>
+        <sx:subtreeFieldMap select="@countryCode" field="code"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+]]>
+</programlisting>
+  <para>Note that the <xref linkend="sx:onSubtree"/> element extracts the 
+    "country" subtrees.  The <xref linkend="sx:flattenSubtree"/> element 
+    flattens the subtree into a record.
+  </para>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:onSubtree"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flattenSubtree"/>
+</listitem>
+<listitem>
+<xref linkend="sx:subtreeFieldMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:onSubtree" xreflabel="sx:onSubtree">
+<refnamediv>
+  <refname>sx:onSubtree</refname>
+  <refpurpose>On subtree event</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:shredXml"/></refclass>
+</refnamediv>
+<indexterm><primary>onSubtree</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>path</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SAXPath"/></entry>
+<entry>
+A <xref linkend="SAXPath"/> expression.  
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>
+Any number of <xref linkend="sx:onSubtree"/> and <xref linkend="sx:flattenSubtree"/> elements.            
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:inverseRecordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flattenSubtree"/>
+</listitem>
+<listitem>
+<xref linkend="sx:subtreeFieldMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:shredXml" xreflabel="sx:shredXml">
+<refnamediv>
+  <refname>sx:shredXml</refname>
+  <refpurpose>Abstract element standing for any element that maps XML to records</refpurpose>
+</refnamediv>
+<indexterm><primary>shredXml</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that stands for any inverse record mapping element.</para> 
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:subtreeFieldMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flattenSubtree"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onSubtree"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:subtreeFieldMap" xreflabel="sx:subtreeFieldMap">
+<refnamediv>
+  <refname>sx:subtreeFieldMap</refname>
+  <refpurpose>Map from subtree to field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:shredXml"/></refclass>
+</refnamediv>
+<indexterm><primary>subtreeFieldMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>match</entry>
+<entry>No</entry>
+<entry>XSLT pattern</entry>
+<entry>
+Define a condition that an element in the XML fragment must satisfy in order to be selected by an XPath expression.
+Defaults to &quot;/*&quot;</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>
+Apply an XPath expression to the collection of elements in the XML fragment that satisfy the conditon of the <sgmltag>match</sgmltag> pattern.  
+The expression is evaluated as a string.  If the match pattern matches several elements, the XPath expression will be applied to each of them,
+evaluating to multiple field values.
+</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>
+The name of an output field.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+<example>
+  <title>Mapping master/detail content to composite records</title>
+  <para>
+    Suppose you have a master/detail XML document
+  </para>
+<programlisting>
+<![CDATA[
+<masterDetail>
+  <master id="1">
+    <name>aName</name>
+    <detail id="11">
+      <date>2008-09-03</date>
+      <type>aType</type>
+    </detail>
+    <detail id="12">
+      <date>2008-09-06</date>
+      <type>aType</type>
+    </detail>
+    <detail id="13">
+      <date>2008-09-10</date>
+      <type>aType</type>
+    </detail>
+  </master>
+  <master id="2">
+    <name>anotherName</name>
+    <detail id="21">
+      <date>2008-10-03</date>
+      <type>aType</type>
+    </detail>
+    <detail id="22">
+      <date>2008-10-06</date>
+      <type>aType</type>
+    </detail>
+    <detail id="23">
+      <date>2008-10-07</date>
+      <type>anotherType</type>
+    </detail>
+  </master>
+</masterDetail>
+]]>
+</programlisting>
+  <para>
+    Suppose also that you want to map the two "master" subtrees to two composite 
+    records, each composed of a repeating group field named "details" that 
+    contains the "detail" subrecords.  For this you can use the 
+                                                   <xref linkend="sx:inverseRecordMapping"/> 
+    instruction below.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:inverseRecordMapping id="masterDetailMapping">
+    <sx:onSubtree path="/masterDetail/master">
+      <sx:flattenSubtree recordType="master">
+        <sx:subtreeFieldMap select="@id" field="masterId"/>
+        <sx:subtreeFieldMap select="name" field="name"/>
+        <sx:subtreeFieldMap match="detail" field="details">
+          <sx:flattenSubtree recordType="detail">
+            <sx:subtreeFieldMap select="@id" field="detailId"/>
+            <sx:subtreeFieldMap select="date" field="date"/>
+            <sx:subtreeFieldMap select="type" field="type"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+]]>
+</programlisting>
+  <para>
+    Note that the instruction 
+  <![CDATA[
+    <sx:subtreeFieldMap match="detail" field="details">
+      <sx:flattenSubtree recordType="detail">
+        <sx:subtreeFieldMap select="@id" field="detailId"/>
+        <sx:subtreeFieldMap select="date" field="date"/>
+        <sx:subtreeFieldMap select="type" field="type"/>
+      </sx:flattenSubtree>
+    </sx:subtreeFieldMap>
+]]>
+    matches each "detail" child in the "master" subtree and produces the 
+    repeating group field "details" containing the "detail" subrecords.
+  </para>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:inverseRecordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onSubtree"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flattenSubtree"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:subtreeRecordMap" xreflabel="sx:subtreeRecordMap">
+<refnamediv>
+  <refname>sx:subtreeRecordMap</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:flattenSubtree"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:shredXml"/></refclass>
+</refnamediv>
+<indexterm><primary>subtreeRecordMap</primary></indexterm>
+</refentry>
+
+</reference>
+

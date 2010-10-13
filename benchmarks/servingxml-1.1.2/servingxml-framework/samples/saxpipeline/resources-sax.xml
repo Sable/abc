@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="pipeline">
+    <sx:serialize>
+      <sx:transform>
+        <sx:document>
+          <sx:saxReader class="MySaxReader"/>
+        </sx:document>
+        <sx:saxFilter class="PreFilter"/>
+        <sx:xslt><sx:urlSource url="styles/filter.xsl"/></sx:xslt>
+        <sx:saxFilter class="PostFilter"/>     
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+
+

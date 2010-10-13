@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="service1">
+    <sx:serialize ref="xxx"/>
+
+    <!-- Just to illustrate we can serialize into a parameter value -->
+    <sx:parameter name="myParam">
+      <sx:stringable ref="xxx"/>
+    </sx:parameter>
+  </sx:service>
+
+  <sx:serialize id="xxx">
+    <sx:transform>
+      <sx:content ref="flat1"/>
+      <sx:xslt> 
+        <sx:urlSource url="styles/transform1.xsl"/> 
+      </sx:xslt> 
+    </sx:transform>
+  </sx:serialize>
+
+  <sx:recordContent id="flat1">
+    <sx:flatFileReader>
+      <sx:flatFile ref="flatFile1"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="flat1ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="flatFile1">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="record1">
+        <sx:positionalField name="field1" width="10"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="flat1ToXmlMapping">
+    <elements>
+      <sx:onRecord recordType="record1">
+        <sx:fieldElementMap field="field1" element="element1" value="">
+          <sx:fieldAttributeMap field="field1" attribute="attribute1"/>
+        </sx:fieldElementMap>
+      </sx:onRecord>
+    </elements>
+  </sx:recordMapping>
+
+</sx:resources>

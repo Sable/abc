@@ -1,0 +1,3 @@
+TR000103/25/2005 1:50:00This is a trade record
+TN0002X1234A child transaction
+TN0003X1235Another child transaction

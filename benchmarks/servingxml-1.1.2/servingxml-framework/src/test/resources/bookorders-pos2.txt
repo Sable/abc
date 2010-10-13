@@ -1,0 +1,9 @@
+CAuthor                        Title                              Price InvoiceNo InvoiceDate
+
+FCharles Bukowski              Factotum                           22.95 001  12/Mar/2005
+FJonathan Lethem               Gun, with Occasional Music         17.99 002  13/Mar/2005
+"FAndrew Crumey                 Mr Mee                             
+22.00 003 14/June/2005"
+CSteven John Metsker           Building Parsers with Java         39.95 004 15/June/2005
+
+This is a trailer record

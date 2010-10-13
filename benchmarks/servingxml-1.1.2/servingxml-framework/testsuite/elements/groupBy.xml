@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/groupBy/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-dynamic-group-by"/>
+  </sx:service>
+
+  <sx:flatFile id="t:HutFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="R1">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="field1"/>
+        <sx:delimitedField name="field2"/>
+        <sx:delimitedField name="field3"/>
+        <sx:delimitedField name="field4"/>
+        <sx:delimitedField name="field5"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatFileReader id="t:HutFlatFileReader">
+    <sx:inlineSource>a,b,a,d,1
+a,b,b,d,2 
+a,b,c,e,3
+a,b,c,e,4
+a,b,d,d,5
+a,b,d,d,6
+a,b,a,d,7 
+a,b,b,d,8
+a,b,c,e,9 
+a,b,c,e,10 
+a,b,d,d,11
+a,b,d,d,12
+      </sx:inlineSource>
+    <sx:flatFile ref="t:HutFlatFile"/>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="t:hut">
+    <sx:flatFileReader ref="t:HutFlatFileReader"/>
+    <sx:recordMapping ref="t:hut2ToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:recordMapping id="t:hut2ToXmlMapping">
+    <doc>
+      <sx:choose>
+        <sx:when test="field4 ='d'">
+      <sx:groupBy fields="field1 field2">
+        <G1>
+          <sx:onRecord>
+            <record>
+              <sx:fieldElementMap field="field5" element="field5"/>
+            </record>
+          </sx:onRecord>
+        </G1>
+      </sx:groupBy>
+        </sx:when>
+        <sx:when test="field4 ='e'">
+      <sx:groupBy fields="field1 field2 field3">
+        <G2>
+          <sx:onRecord>
+            <record>
+              <sx:fieldElementMap field="field5" element="field5"/>
+            </record>
+          </sx:onRecord>
+        </G2>
+      </sx:groupBy>
+        </sx:when>
+      </sx:choose>
+    </doc>
+  </sx:recordMapping>
+
+  <sx:recordMapping id="t:hut2ToXmlMapping2">
+    <doc>
+      <sx:parameter name="temp" value="{TOTO}"/>
+      <sx:outerGroup startTest="sx:current/R2">
+        <b>
+          <sx:fieldAttributeMap value="{TATA}" attribute="attr"/>
+          <sx:onRecord recordType="R3">
+            <sx:fieldElementMap value="{$temp}" element="c">
+              <sx:fieldAttributeMap value="{TITI}" attribute="attr"/>
+            </sx:fieldElementMap>
+          </sx:onRecord>
+        </b>
+      </sx:outerGroup>
+    </doc>
+  </sx:recordMapping>
+
+  <sx:document id="t:expected">
+    <doc><G1><record><field5>1</field5></record><record><field5>2</field5></record></G1><G2><record><field5>3</field5></record><record><field5>4</field5></record></G2><G1><record><field5>5</field5></record><record><field5>6</field5></record><record><field5>7</field5></record><record><field5>8</field5></record></G1><G2><record><field5>9</field5></record><record><field5>10</field5></record></G2><G1><record><field5>11</field5></record><record><field5>12</field5></record></G1></doc>
+  </sx:document>
+
+  <sx:transform id="t:test-dynamic-group-by">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/groupBy/hut'),fn:document('elements/groupBy/expected'))">
+test-parameter:  Output
+      <sx:content ref="t:hut"/>
+      does not match expected output
+      <sx:content ref="t:expected"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>

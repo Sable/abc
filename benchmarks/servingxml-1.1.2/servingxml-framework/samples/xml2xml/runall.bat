@@ -1,0 +1,10 @@
+echo wrap2xml
+call wrap2xml
+echo unwrap2xml
+call unwrap2xml
+echo xml2invoices
+call xml2invoices
+echo invoices2mail
+call invoices2mail
+echo compare2xml
+call compare2xml

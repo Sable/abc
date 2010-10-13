@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="countries">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="countries-doc"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="countries-doc" name="countries">
+    <sx:flatFileReader>
+      <sx:commentStarter value="#"/>
+      <sx:fieldDelimiter value=","/>
+      <sx:urlSource url="data/countries.csv"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+
+</sx:resources>
+

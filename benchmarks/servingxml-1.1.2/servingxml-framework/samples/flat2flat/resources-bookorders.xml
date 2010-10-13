@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="orders-pos-delim"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="posBooksFlatFile"/>                                                                                          
+      </sx:flatFileReader>
+      <sx:replaceRecord ref="changeBookOrder"/>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="delimBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:replaceRecord id="changeBookOrder">
+    <sx:newRecord fields="*">
+      <sx:newField name="invoiceno">
+        <sx:findAndReplace searchFor="([0-9]{3})" replaceWith ="INV$1"><sx:toString value="{invoiceno}"/></sx:findAndReplace>
+      </sx:newField>
+      <sx:newField name="invoicedate">
+        <sx:convertDate fromFormat="dd/MMM/yyyy"
+                        toFormat="dd/MM/yyyy">
+          <sx:toString value="{invoicedate}"/>
+        </sx:convertDate>
+      </sx:newField>
+    </sx:newRecord>
+  </sx:replaceRecord>
+
+   <sx:flatFile id="delimBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="delimBookType" name="delimBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="invoiceno" label="InvoiceNo"/>
+    <sx:delimitedField name="invoicedate" label="InvoiceDate"/>
+  </sx:flatRecordType>
+  
+  <sx:flatFile id="posBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="posBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="posBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="posBookType" name="posBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+    <sx:positionalField name="invoiceno" width="4" justify="right"/>
+    <sx:positionalField name="invoicedate" width="13" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+

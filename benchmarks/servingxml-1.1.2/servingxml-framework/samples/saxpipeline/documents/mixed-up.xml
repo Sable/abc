@@ -1,0 +1,13 @@
+<HTML>
+<Head>
+<TITLE>This is a mixed-case HTML-like XML document</TITLE>
+</Head>
+<Body>
+  <p>Some <I>HTML</I> paragraph</p>
+  <data>
+    <record>one</record>
+    <record>two</record>
+  </data>
+  <UL><LI>alpha</LI><LI>beta</LI><Li>gamma</Li></UL>
+</Body>
+</HTML>

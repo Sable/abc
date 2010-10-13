@@ -1,0 +1,7 @@
+product,trade_id,client_id,client_name,trade_date,pay_receive_code,currency,index,tenor,day_count_basis,fixed_rate,start_date,maturity_date,reset_date,payment_date,notional,calculation_period
+SWAP,2001,party1,Party 1,2008/05/14,PAY,FIXED,CAD,BA,6M,30/360,0.04,2008/07/17,2009/01/17,2008/07/17,2009/01/17,10000000.00,6M
+SWAP,2001,party1,Party 1,2008/05/14,REC,FLOAT,CAD,BA,6M,30/360,0.04,2008/07/17,2009/01/17,2008/07/17,2009/01/17,10000000.00,6M
+SWAP,2002,party2,Party 2,2008/05/14,PAY,FIXED,CAD,BA,6M,30/360,0.04,2008/07/17,2009/01/17,2008/07/17,2009/01/17,10000000.00,6M
+SWAP,2002,party2,Party 2,2008/05/14,R,FLOAT,CAD,BA,6M,30/360,0.04,2008/07/17,2009/01/17,2008/07/17,2009/01/17,10000000.00,6M
+
+

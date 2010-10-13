@@ -1,0 +1,2094 @@
+<reference id="ref-recordmapping"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>Record Mapping Elements</title>
+
+<refentry id="record-mapping-grouping-element" xreflabel="grouping">
+<refnamediv>
+  <refname>Grouping Element</refname>
+  <refpurpose>Grouping Element</refpurpose>
+</refnamediv>
+  <refsection>
+<para>
+A <code>grouping element</code> is an element that has the effect of grouping records.  
+Any <xref linkend="sx:mapXml"/> element that contains one or more descendent <xref linkend="sx:onRecord"/> elements
+is a <code>grouping element</code>.  These include:
+<itemizedlist>
+<listitem>
+<xref linkend="sx:groupBy"/>, <xref linkend="sx:innerGroup"/>, <xref linkend="sx:outerGroup"/> and <xref linkend="sx:groupChoice"/>.
+</listitem>
+<listitem>
+Any <xref linkend="record-mapping-literal-element"/> element whose content has descendent <xref linkend="sx:onRecord"/> elements.
+</listitem>
+<listitem>
+Any <xref linkend="sx:elementMap"/> element whose content has descendent <xref linkend="sx:onRecord"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+<para>
+Consider the following record mapping:
+<programlisting>
+<![CDATA[
+  <sx:recordMapping id="tasksToXmlMapping">
+    <Projects>
+      <sx:groupBy fields="project_id">
+        <Project>
+          <sx:fieldAttributeMap field="project_id" attribute="projectID"/>
+          <Tasks>
+            <sx:onRecord>
+              <Task>
+                <sx:fieldAttributeMap field="task_name" attribute="name"/>
+                <sx:fieldAttributeMap field="task_start" attribute="start"/>
+                <sx:fieldAttributeMap field="task_finish" attribute="finish"/>
+              </Task>
+            </sx:onRecord>
+          </Tasks>
+        </Project>
+      </sx:groupBy>
+    </Projects>
+  </sx:recordMapping>
+]]>
+</programlisting>
+</para>
+<para>
+The body of this record mapping has a root <xref linkend="record-mapping-literal-element"/> element, <code>Projects</code>, which is a  <code>grouping element</code>
+because it has a descendent <xref linkend="sx:onRecord"/> element.  The <xref linkend="sx:groupBy"/> element, and the <code>Project</code>
+and <code>Task</code> <xref linkend="record-mapping-literal-element"/> elements, are also grouping elements.
+</para>
+<para>
+A <sgmltag>sx:groupChoice</sgmltag> element processes each child element until it reaches a 
+<xref linkend="record-mapping-grouping-element"/> element 
+that produces a start element but not yet an end element.  At that point it stops processing its children.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="record-mapping-literal-element" xreflabel="literal">
+<refnamediv>
+  <refname>Literal Element</refname>
+  <refpurpose>Literal Element</refpurpose>
+</refnamediv>
+  <refsection>
+<para>
+A <code>literal element</code> is any element appearing in the content of a <xref linkend="sx:recordMapping"/> refsection
+that does not belong to the <code>ServingXML</code> vocabulary.  Such elements will be mapped directly to XML.
+A <code>literal element</code> may contain other <code>literal elements</code> in its content, and in
+addition it may contain other mapping elements:
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:fieldAttributeMap"/> elements.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:stringable"/> elements.
+</listitem>
+<listitem>
+Any number of literal elements and <xref linkend="sx:mapXml"/> elements.           
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+  </refsection>
+</refentry>
+
+<refentry id="sx:cdata" xreflabel="sx:cdata">
+<refnamediv>
+  <refname>sx:cdata</refname>
+  <refpurpose>CDATA output</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>cdata</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+<para> Optionally, any combination of string literals and inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+<listitem><para>
+  Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.           
+  </para>
+</listitem>
+<listitem><para>
+  Optionally, any number of <xref linkend="sx:parameter"/> elements.
+  </para>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>The content of a <sgmltag>sx:cdata</sgmltag> element will be enclosed by a CDATA refsection, 
+</para>
+<programlisting>
+&lt;![CDATA[  ...
+  ]]&gt;
+</programlisting>
+</refsection>
+<refsection>
+<title>Remarks</title>
+<itemizedlist>
+<listitem><para>The <sgmltag>sx:cdata</sgmltag> element does not seem to work properly with saxon 6.5.5 or saxonb 8.6.1.  It has been tested successively with
+xalan 2.7.0.
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:defaultFieldAttributeMap" xreflabel="sx:defaultFieldAttributeMap">
+<refnamediv>
+  <refname>sx:defaultFieldAttributeMap</refname>
+  <refpurpose>Default field attribute map</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>defaultFieldAttributeMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>exceptFields</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+ Defaults to the empty string.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:defaultFieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry> 
+
+<refentry id="sx:defaultFieldElementMap" xreflabel="sx:defaultFieldElementMap">
+<refnamediv>
+  <refname>sx:defaultFieldElementMap</refname>
+  <refpurpose>Default field element map</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>defaultFieldElementMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>except</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>Deprecated, use <sgmltag class="attribute">exceptFields</sgmltag>                    
+  instead.</entry>
+</row>
+<row>
+<entry>exceptFields</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+ Defaults to the empty string.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:defaultFieldAttributeMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry> 
+
+<refentry id="sx:defaultFieldMapping" xreflabel="sx:defaultFieldMapping">
+<refnamediv>
+  <refname>sx:defaultFieldMapping</refname>
+  <refpurpose>Deprecated in version 1.0, aliased to <xref linkend="sx:defaultFieldElementMap"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>sx:defaultFieldMapping</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>Yes</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+</entry>
+</row>
+<row>
+<entry>except</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>Deprecated, use <sgmltag class="attribute">exceptFields</sgmltag>                    
+  instead.</entry>
+</row>
+<row>
+<entry>exceptFields</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>A space-separated list of names of fields.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+ Defaults to the empty string.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:defaultFieldAttributeMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry> 
+  
+<refentry id="sx:documentFragment" xreflabel="sx:documentFragment">
+<refnamediv>
+  <refname>sx:documentFragment</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:nestedContent"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>documentFragment</primary></indexterm>
+</refentry>
+
+<refentry id="sx:elementMap" xreflabel="sx:elementMap">
+<refnamediv>
+  <refname>sx:elementMap</refname>
+  <refpurpose>Element map</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>elementMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>element</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>
+The name of an element to insert into the output XML content. The element name may
+contain a field name within curly braces, which will
+evaluate to the value of the named field.  The result must evaluate to a 
+<xref linkend="QName"/>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+<para>Optionally, any combination of string literals and inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+<listitem><para>
+  Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+  </para>
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldAttributeMap" xreflabel="sx:fieldAttributeMap">
+<refnamediv>
+  <refname>sx:fieldAttributeMap</refname>
+  <refpurpose>Map field to attribute</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>fieldAttributeMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>attribute</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>
+The name of an attribute to insert into a parent element. The attribute name may
+contain a field name within curly braces, which will
+evaluate to the value of the field.  The result must evaluate to a <xref linkend="QName"/>.
+</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Map this field's value to the attribute value.</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>Apply an XPath expression to the elements in the XML representation of a record that satisfy the conditon of the <sgmltag>match</sgmltag> pattern.
+The expression is evaluated as a string.
+</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Express the attribute value as a literal value, which may contain 
+parameter names and field names enclosed in curly braces.
+The result must evaluate to a <xref linkend="QName"/>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, if there is no <sgmltag>field</sgmltag>, 
+                                   <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldElementMap" xreflabel="sx:fieldElementMap">
+<refnamediv>
+  <refname>sx:fieldElementMap</refname>
+  <refpurpose>Map field to element</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>fieldElementMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>element</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>
+The name of an element to insert into the output XML content. The element name may
+contain a field name within curly braces, which will
+evaluate to the value of the named field.  The result must evaluate to a 
+<xref linkend="QName"/>.
+</entry>
+</row>
+<row>
+<entry>match</entry>
+<entry>No</entry>
+<entry>XSLT pattern</entry>
+<entry>Define a condition that an element in the XML representation of a record must satisfy in order to be selected by an XPath expression.
+Defaults to &quot;/*&quot;</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>Apply an XPath expression to the collection of elements in the XML representation of a record that satisfy the conditon of the <sgmltag>match</sgmltag> pattern.
+The expression is evaluated as a string.
+</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Express the element value as a literal value, which may contain 
+parameter names and field names enclosed in curly braces.</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Map this field's value to the element value.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem><para>
+  Optionally, any number of <xref linkend="sx:fieldAttributeMap"/> elements.
+  </para>
+</listitem>
+<listitem>
+<para>Optionally, if there is no <sgmltag>field</sgmltag>, 
+                                   <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+<listitem>
+  <para>
+  Optionally, any number of <xref linkend="sx:parameter"/> elements.
+  </para>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This element maps a field value to a single element in the output.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:fieldElementSequenceMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:defaultFieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldElementSequenceMap" xreflabel="sx:fieldElementSequenceMap">
+<refnamediv>
+  <refname>sx:fieldElementSequenceMap</refname>
+  <refpurpose>Map field to element sequence</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>fieldElementSequenceMap</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>element</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>
+The name of an element to insert into the output XML content. The element name may
+contain a field name within curly braces, which will
+evaluate to the value of the named field.  The result must evaluate to a 
+<xref linkend="QName"/>.
+</entry>
+</row>
+<row>
+<entry>match</entry>
+<entry>No</entry>
+<entry>XSLT pattern</entry>
+<entry>Define a condition that an element in the XML representation of a record must satisfy in order to be selected by an XPath expression.
+Defaults to &quot;/*&quot;</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>Apply an XPath expression to the collection of elements in the XML representation of a record that satisfy the conditon of the <sgmltag>match</sgmltag> pattern.
+The expression is evaluated as a string.
+</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Express the element value as a literal value, which may contain 
+parameter names and field names enclosed in curly braces.</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Map this field's value to the element value.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem><para>
+  Optionally, any number of <xref linkend="sx:fieldAttributeMap"/> elements.
+  </para>
+</listitem>
+<para>Optionally, if there is no <sgmltag>field</sgmltag>, 
+                                   <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+<listitem><para>
+  Optionally, any number of <xref linkend="sx:parameter"/> elements.
+  </para>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This element maps a multi-valued field to a sequence of elements.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+<example>
+  <title>Mapping a multi-valued field to a sequence of elements</title>
+<para>
+The pipe delimited file below contains three fields, the third of which is multi-valued, 
+with subfields delimited by a semi-colon.
+</para>
+<programlisting>
+<![CDATA[
+father_name|mother_name|children
+Matthew|Sarah|
+Scott||Damian;Janet;Paul
+]]>
+</programlisting>
+<para>Suppose you want to map it as follows.
+</para>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<eg:families xmlns:eg="http://examples.com/">
+  <eg:family>
+    <eg:father-name>Matthew</eg:father-name>
+    <eg:mother-name>Sarah</eg:mother-name>
+    <eg:children/>
+  </eg:family>
+  <eg:family>
+    <eg:father-name>Scott</eg:father-name>
+    <eg:mother-name/>
+    <eg:children>
+      <eg:child>Damian</eg:child>
+      <eg:child>Janet</eg:child>
+      <eg:child>Paul</eg:child>
+    </eg:children>
+  </eg:family>
+</eg:families>
+]]>
+</programlisting>
+<para>
+The record mapping refsection below produces the desired output.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:recordMapping id="families-to-xml-mapping">
+    <eg:families xmlns:eg="http://examples.com/">
+      <sx:onRecord>
+        <eg:family>
+          <sx:fieldElementMap field="father_name" element="eg:father-name"/>
+          <sx:fieldElementMap field="mother_name" element="eg:mother-name"/>
+          <eg:children>
+            <sx:fieldElementSequenceMap field="children" element="eg:child"/>
+          </eg:children>
+        </eg:family>
+      </sx:onRecord>
+    </eg:families>
+  </sx:recordMapping>
+]]>
+</programlisting>
+</example>
+
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:groupBy" xreflabel="sx:groupBy">
+<refnamediv>
+  <refname>sx:groupBy</refname>
+  <refpurpose>Group by fields</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>groupBy</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Group applies to fields of this record type.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>A space separated list of fields to group by.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Any number of specializations of <xref linkend="sx:sort"/>, including <xref linkend="sx:reorderRecords"/>.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+  <title>Multiple groups</title>
+  <para>This example shows how to group the rows in a flat file into two 
+    distinct groupings.  The table below shows a list of person data and 
+    addresses.
+  </para>
+<programlisting>
+<![CDATA[
+PersonId Name       FirstName       Street              Postcode    CityTown
+1        Jones      Joe             215 Walmer Rd       M5R3P7      Toronto
+1        Jones      Joe             180 Redwood ST      94102-3280  San Francisco
+2        Davis      Ken             212 Harbord St      M5S1H6      Toronto
+3        Morris     Jane            1100 Danforth Ave   M4J1N2      Toronto
+3        Morris     Jane            6 Green St          94111-1402  San Francisco
+]]>
+</programlisting>
+  <para>Now suppose you want to group the person data and addresses separately.
+  </para>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<Persons-Addresses>
+  <Persons>
+    <Person>
+      <PersonId>1</PersonId>
+      <Name>Jones</Name>
+      <FirstName>Joe</FirstName>
+    </Person>
+    <Person ...
+    <Person ...
+  </Persons>
+  <Addresses>
+    <Address>
+      <PersonId>1</PersonId>
+      <Street>215 Walmer Rd</Street>
+      <PostCode>M5R3P7</PostCode>
+      <CityTown>Toronto</CityTown>
+    </Address>
+    <Address ...
+    <Address ...
+    <Address ...
+    <Address ...
+  </Addresses>
+</Persons-Addresses>
+]]>
+</programlisting>
+<para>This can be done with a record mapping refsection with two                                                               
+  <sgmltag>sx:groupBy</sgmltag> sections. The implementation will
+  buffer the records in memory until the first group is finished, and only then 
+  do the second.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:recordMapping id="personsAddressesMapping">
+    <Persons-Addresses>
+      <Persons>
+        <sx:groupBy fields="PersonId">
+          <Person>
+            <sx:fieldElementMap field="PersonId" element="PersonId"/>
+            <sx:fieldElementMap field="Name" element="Name"/>
+            <sx:fieldElementMap field="FirstName" element="FirstName"/>
+            <sx:onRecord/>
+          </Person>
+        </sx:groupBy>
+      </Persons>
+      <Addresses>
+        <sx:onRecord>
+          <Address>
+            <sx:fieldElementMap field="PersonId" element="PersonId"/>
+            <sx:fieldElementMap field="Street" element="Street"/>
+            <sx:fieldElementMap field="PostCode" element="PostCode"/>
+            <sx:fieldElementMap field="CityTown" element="CityTown"/>
+          </Address>
+        </sx:onRecord>
+      </Addresses>
+    </Persons-Addresses>
+  </sx:recordMapping>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:groupChoice" xreflabel="sx:groupChoice">
+<refnamediv>
+  <refname>sx:groupChoice</refname>
+  <refpurpose>Choose one of another of alternative groupings</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>groupChoice</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+A <sgmltag>sx:groupChoice</sgmltag> element can have any number of child <xref linkend="record-mapping-grouping-element"/> elements.  
+A <sgmltag>sx:groupChoice</sgmltag> element 
+processes each child element until it reaches a <xref linkend="record-mapping-grouping-element"/> element 
+that produces a "start" element but not yet an "end" element.  At that point it stops processing its children.
+</para>
+<para>
+Consider the following fragment of a record mapping (from the "hot" example):
+<programlisting>
+<![CDATA[
+  <sx:groupChoice>
+    <sx:innerGroup startTest="sx:current//record-type='BKT06'"
+                               endTest="sx:previous//record-type='BKP84'">
+      <sx:elementMap element="{type}">
+        <sx:onRecord recordType="bkt06">
+          <sx:elementMap element="{record-type}">
+            <sx:fieldAttributeMap field="value" attribute="attr1"/>
+          </sx:elementMap>
+        </sx:onRecord>
+        <sx:onRecord recordType="bkp84">
+          <sx:elementMap element="{record-type}">
+            <sx:fieldAttributeMap field="value" attribute="attr1"/>
+            <sx:fieldAttributeMap select="integer:valueOf(amount,16) div math:pow(10,precision)"  attribute="amount"/>
+            <sx:fieldAttributeMap field="currency" attribute="currency"/>
+          </sx:elementMap>
+        </sx:onRecord>
+      </sx:elementMap>
+    </sx:innerGroup>
+    <sx:innerGroup startTest="sx:current//record-type-prefix='BOT'" 
+                               endTest="sx:previous//record-type-prefix='BOT'">
+      <sx:elementMap element="{record-type}s">
+        <sx:onRecord>
+          <sx:elementMap element="{record-type}">
+            <sx:fieldAttributeMap field="value" attribute="attr1"/>
+          </sx:elementMap>
+        </sx:onRecord>
+      </sx:elementMap>
+    </sx:innerGroup>
+  </sx:groupChoice>
+]]>
+</programlisting>
+</para>
+<para>
+The <xref linkend="sx:groupChoice"/> element in this example contains two <xref linkend="sx:innerGroup"/> child grouping elements.
+These elements contain tests that indicate when the group should start (with the output of a "start" element) and when it should end (with the
+output of an "end" element.)   If the first group has started but not yet ended, the second group will not be processed (if it were, the XML
+tags would be scrambled and the result illegal.).  
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:innerGroup" xreflabel="sx:innerGroup">
+<refnamediv>
+  <refname>sx:innerGroup</refname>
+  <refpurpose>Output inner grouping elements</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>innerGroup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+</listitem>
+<listitem>
+Any number of specializations of <xref linkend="sx:sort"/>, including <xref linkend="sx:reorderRecords"/>.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>
+Grouping begins when processing a record and the <sgmltag>startTest</sgmltag> 
+expression evaluates as <code>true</code>.  Grouping ends on a succeeding record when the
+<sgmltag>endTest</sgmltag> expression evaluates as 
+<code>true</code>, or when a parent group to which this group belongs ends.  The test
+for the end of a group is exclusive, that is, if <sgmltag>endTest</sgmltag>
+evaluates as <code>true</code> when processing a record,
+    that record is 
+excluded from the group.
+  </para>
+  <para>
+    The test expressions are XPATH expressions evaluated against the XML 
+    representations of the current (sx:current) and previous (sx:previous) 
+    records.
+  </para>
+
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+  <title>Multiple record types to single XML element</title>
+<para>
+This example shows how to map map multiple record types into a single XML element.
+</para>
+<para>
+The input file contains records of type <code>A</code> (owners) and <code>K</code> (vehicles).
+</para>
+<programlisting>
+<![CDATA[
+ABill Smith 123 Main St  New York      NY10101 
+K2001Ford Explorer  5000.00 
+AKen  Jones 75 Apple Way San Francisco CA94509 
+K2005BMW  750 Il   67235.00 
+]]>
+</programlisting>
+<para>The expected output is as follows.
+</para>
+<programlisting>
+<![CDATA[
+<cases>
+  <case>
+    <first-name>Bill</first-name>
+    <last-name>Smith</last-name>
+    <address>123 Main St</address>
+    <city>New York</city>
+    <state>NY</state>
+    <zip>10101</zip>
+    <year>2001</year>
+    <make>Ford</make>
+    <model>Explorer</model>
+    <value>5000.00</value>
+  </case>
+  <case>
+    <first-name>Ken</first-name>
+    <last-name>Jones</last-name>
+    <address>75 Apple Way</address>
+    <city>San Francisco</city>
+    <state>CA</state>
+    <zip>94509</zip>
+    <year>2005</year>
+    <make>BMW</make>
+    <model>750 Il</model>
+    <value>67235.00</value>
+  </case>
+</cases>
+]]>
+</programlisting>
+<para>The flat file refsection defines separate flat record types for the 
+<code>A</code> and <code>K</code> records.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:flatRecordTypeChoice id="caseType" name="caseType">
+    <sx:positionalField name="tag" width="1"/>
+    <sx:when test="tag='A'">
+      <sx:flatRecordType name="A">
+        <sx:positionalField name="tag" width="1"/>
+        <sx:positionalField name="first-name" width="5"/>
+        <sx:positionalField name="last-name" width="6"/>
+        <sx:positionalField name="address" width="13"/>
+        <sx:positionalField name="city" width="14"/>
+        <sx:positionalField name="state" width="2"/>
+        <sx:positionalField name="zip" width="5"/>
+      </sx:flatRecordType>
+    </sx:when>
+    <sx:when test="tag='K'">
+      <sx:flatRecordType name="K">
+        <sx:positionalField name="tag" width="1"/>
+        <sx:positionalField name="year" width="4"/>
+        <sx:positionalField name="make" width="5"/>
+        <sx:positionalField name="model" width="9"/>
+        <sx:positionalField name="value" width="8"/>
+      </sx:flatRecordType>
+    </sx:when>
+  </sx:flatRecordTypeChoice>
+]]>
+</programlisting>
+<para>
+The record mapping refsection maps the fields from the <code>A</code> and <code>K</code> records into the same grouping element.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:recordMapping id="casesToXmlMapping">        
+    <cases>                                                                                         
+      <sx:innerGroup startTest="sx:current/A">
+        <case>
+          <sx:fieldElementMap field="first-name" element="first-name"/>
+          <sx:fieldElementMap field="last-name" element="last-name"/>
+          <sx:fieldElementMap field="address" element="address"/>
+          <sx:fieldElementMap field="city" element="city"/>
+          <sx:fieldElementMap field="state" element="state"/>
+          <sx:fieldElementMap field="zip" element="zip"/>
+          <sx:innerGroup startTest="sx:current/K">
+            <sx:fieldElementMap field="year" element="year"/>
+            <sx:fieldElementMap field="make" element="make"/>
+            <sx:fieldElementMap field="model" element="model"/>
+            <sx:fieldElementMap field="value" element="value"/>
+            <sx:onRecord/>
+          </sx:innerGroup>
+        </case>
+      </sx:innerGroup>
+    </cases>
+  </sx:recordMapping>
+]]>
+</programlisting>
+<para>
+In this example, all the output happens inside the grouping instructions, and <sgmltag>sx:onRecord</sgmltag> is empty. 
+</para>
+<para>
+Note that the instructions
+<programlisting>
+<![CDATA[
+  <sx:innerGroup startTest="sx:current/A"> ...
+  <sx:innerGroup startTest="sx:current/K"> ...
+]]>
+</programlisting>
+could also have been written as
+<programlisting>
+<![CDATA[
+  <sx:innerGroup startTest="sx:current//tag='A'"> ...
+  <sx:innerGroup startTest="sx:current//tag='K'"> ...
+]]>
+</programlisting>
+</para>
+</example>
+<example>
+  <title>Second grouping immediately following first</title>
+<para>
+This example illustrates two groupings of elements where the last record in the first grouping becomes the first record in the second grouping.
+</para>
+<para>
+The input file contains records of type <code>E</code> and <code>S</code>.
+</para>
+<programlisting>
+<![CDATA[
+E1001FIELD0
+S1001FIELD1FIELD2
+E1002FIELDA
+S1002FIELDBFIELDC
+]]>
+</programlisting>
+<para>The expected output is as follows.
+</para>
+<programlisting>
+<![CDATA[
+<ytds>
+  <record fileno="1001">
+    <group1>
+      <a>FIELD0</a>
+      <b>FIELD2</b>
+    </group1>
+    <group2>
+      <c>FIELD1</c>
+    </group2>
+  </record>
+  <record fileno="1002">
+    <group1>
+      <a>FIELDA</a>
+      <b>FIELDC</b>
+    </group1>
+    <group2>
+      <c>FIELDB</c>
+    </group2>
+  </record>
+</ytds>
+]]>
+</programlisting>
+<para>The flat file refsection defines separate flat record types for the 
+<code>E</code> and <code>S</code> records.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="ytdsFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record_type" width="1"/>
+        <sx:when test="record_type='E'">
+          <sx:flatRecordType name="ERecord">
+            <sx:positionalField name="record_type" width="1"/>
+            <sx:positionalField name="file_number" width="4"/>
+            <sx:positionalField name="efield1" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='S'">
+          <sx:flatRecordType name="SRecord">
+            <sx:positionalField name="record_type" width="1"/>
+            <sx:positionalField name="file_number" width="4"/>
+            <sx:positionalField name="sfield1" width="6"/>
+            <sx:positionalField name="sfield2" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+]]>
+</programlisting>
+<para>
+The record mapping refsection puts one field from the <code>E</code> record and one field from the <code>S</code> record into group 1,
+and one field from the <code>S</code> record into group 2.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:recordMapping id="ytdsToXmlMapping">
+    <ytds>
+      <sx:groupBy fields="file_number">
+        <record>
+          <sx:fieldAttributeMap field="file_number" attribute="fileno"/>
+          <sx:innerGroup startTest="sx:current/ERecord">
+            <group1>
+              <sx:onRecord recordType="ERecord">
+                <sx:fieldElementMap field="efield1" element="a"/>
+              </sx:onRecord>
+              <sx:onRecord recordType="SRecord">
+                <sx:fieldElementMap field="sfield2" element="b"/>
+              </sx:onRecord>
+            </group1>
+          </sx:innerGroup>
+          <sx:innerGroup startTest="sx:current/SRecord">
+            <group2>
+              <sx:onRecord recordType="SRecord">
+                <sx:fieldElementMap field="sfield1" element="c"/>
+              </sx:onRecord>
+            </group2>
+          </sx:innerGroup>
+        </record>
+      </sx:groupBy>
+    </ytds>
+  </sx:recordMapping>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:outerGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:groupChoice"/>
+</listitem>
+<listitem>
+<xref linkend="sx:groupBy"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+  
+<refentry id="sx:insertContent" xreflabel="sx:insertContent">
+<refnamediv>
+  <refname>sx:insertContent</refname>
+  <refpurpose>Deprecated in 0.9.3, replaced by <xref linkend="sx:nestedContent"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>insertContent</primary></indexterm>
+</refentry>
+
+<refentry id="sx:mapXml" xreflabel="sx:mapXml">
+<refnamediv>
+  <refname>sx:mapXml</refname>
+  <refpurpose>Abstract element standing for any element that maps records to XML</refpurpose>
+</refnamediv>
+<indexterm><primary>mapXml</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any record map element.</para> 
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:transformRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:defaultFieldElementMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:groupBy"/>
+</listitem>
+<listitem>
+<xref linkend="sx:innerGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:outerGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:groupChoice"/>
+</listitem>
+<listitem>
+<xref linkend="record-mapping-literal-element"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:nestedContent" xreflabel="sx:nestedContent">
+<refnamediv>
+  <refname>sx:nestedContent</refname>
+  <refpurpose>Nested XML content</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>insertContent</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+One or more <xref linkend="sx:content"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+<example>
+  <title>Inserting content into a record mapping</title>
+<para>
+This example shows how to insert a schedule of dates from a second reader in a record mapping.
+</para>
+<programlisting>
+<![CDATA[
+<sx:recordMapping id="swaption-xml-mapping" ...
+
+  <swaption ...
+
+    <sx:choose>
+      <sx:when test="option_style_type='BERMUDA'">
+        <bermudaExercise>
+          <bermudaExerciseDates>
+            <sx:nestedContent>
+              <sx:recordContent>
+                <sx:sqlReader>
+                  <sx:sqlConnectionPool ref="jdbcPool"/>
+                  <sx:sqlQuery recordType="exerciseSchedule"
+                               trim="yes">
+                    SELECT E.settlement_date
+                    FROM option_exer_schedule_dates E
+                    WHERE E.exercise_schedule_id = {sec_id}
+                  </sx:sqlQuery>
+                </sx:sqlReader>
+                <sx:recordMapping ref="exerciseScheduleMapping"/>
+              </sx:recordContent>
+            </sx:nestedContent>
+          </bermudaExerciseDates>
+        </bermudaExercise>
+      </sx:when>
+      <sx:when ...
+]]>
+</programlisting>
+</example>
+
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:onRecord" xreflabel="sx:onRecord">
+<refnamediv>
+  <refname>sx:onRecord</refname>
+  <refpurpose>On record event</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>onRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>
+Records with the specified recordType name will trigger this event processing.  If no
+recordType attribute is specified, all records will be processed.
+</entry>
+</row>
+<row>
+<entry>test</entry>
+<entry>No</entry>
+<entry>XPath</entry>
+<entry>An XPath boolean expression evaluated against the XML representation of the record.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/>.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:subrecordMapping"/> elements.
+</listitem>
+<listitem>
+Any number of <xref linkend="sx:recordMapping"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows markup to be inserted into the output for each record received event.
+It may be restricted to records of a certain record type, or, more generally, to records satisfying an XPath expression evaluated against the
+XML representation of the record (in which case the record type is the root element.)  
+Either the <sgmltag>recordType</sgmltag> or the <sgmltag>test</sgmltag> attribute, but not both, may be set to restrict 
+the instruction to selected records.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:outerGroup" xreflabel="sx:outerGroup">
+<refnamediv>
+  <refname>sx:outerGroup</refname>
+  <refpurpose>Output outer grouping elements</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>outerGroup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+</listitem>
+<listitem>
+Any number of specializations of <xref linkend="sx:sort"/>, including <xref linkend="sx:reorderRecords"/>.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Grouping begins when processing a record and the <sgmltag>startTest</sgmltag> expression 
+  evaluates as <code>true</code>.  Grouping ends on a succeeding record when the
+<sgmltag>endTest</sgmltag> expression evaluates as 
+<code>true</code>, or when a parent group to which this group belongs ends.  The test
+for the end of a group is exclusive, that is, if <sgmltag>endTest</sgmltag>
+evaluates as <code>true</code> when processing a record,
+  that record is 
+excluded from the group.
+</para>
+<para>
+  The test expressions are XPATH expressions evaluated against the XML 
+  representations of the current (sx:current) and previous (sx:previous) 
+  records.
+</para>
+<para>
+A <sgmltag>sx:outerGroup</sgmltag> element has  <sgmltag class="attribute">startTest</sgmltag> and 
+<sgmltag class="attribute">endTest</sgmltag>
+attributes to determine the beginning and end of a group.  This element, unlike 
+an <xref linkend="sx:innerGroup"/>, may allow descendant elements to be
+ produced even if a grouping at this level is not recognized.
+</para>
+<para>
+This element will not produce any immediate descendents unless a grouping at this level is recognized, 
+  it will not produce
+any content <emphasis>between</emphasis> this element and an immediate 
+descendent grouping element.  It will, however, allow content to be produced in 
+a contained grouping element, if the conditions are in effect for grouping at 
+that level.
+</para>
+<para>
+An <sgmltag>sx:outerGroup</sgmltag> checks the start/end conditions for each
+   record, and if the 
+record does not belong to the group, it still processes the child 
+elements, looking for another contained group element (innerGroup, 
+outerGroup, groupBy, etc.), and if it finds one the start/end conditions 
+for that group are checked.  If the record belongs to that contained group, 
+the content of the contained group will be output, but not the content 
+between the ancestor outerGroup and the interior group.  
+  </para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:innerGroup"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:reorderRecords" xreflabel="sx:reorderRecords">
+<refnamediv>
+  <refname>sx:reorderRecords</refname>
+  <refpurpose>Reorder records within a group</refpurpose>
+</refnamediv>
+<indexterm><primary>reorderRecords</primary></indexterm>
+<refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:sort"/></refclass>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordTypes</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>A space separated list of record types.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:innerGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:outerGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:groupBy"/>
+</listitem>
+<listitem>
+<xref linkend="record-mapping-literal-element"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordMapping" xreflabel="sx:recordMapping">
+<refnamediv>
+  <refname>sx:recordMapping</refname>
+  <refpurpose>Mapping of records to XML</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>recordMapping</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>Any number of <xref linkend="record-mapping-literal-element"/> 
+  elements.  
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordSubtreeMap" xreflabel="sx:recordSubtreeMap">
+<refnamediv>
+  <refname>sx:recordSubtreeMap</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:transformRecord"/></refpurpose>
+</refnamediv>
+<indexterm><primary>recordSubtreeMap</primary></indexterm>
+</refentry>
+
+<refentry id="sx:segmentMapping" xreflabel="sx:segmentMapping">
+<refnamediv>
+  <refname>sx:segmentMapping</refname>
+  <refpurpose>Deprecated in 0.9.3, replaced by <xref linkend="sx:subrecordMapping"/></refpurpose>
+</refnamediv>
+<indexterm><primary>segmentMapping</primary></indexterm>
+<refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refentry>
+
+<refentry id="sx:subrecordMapping" xreflabel="sx:subrecordMapping">
+<refnamediv>
+  <refname>sx:subrecordMapping</refname>
+  <refpurpose>Map subrecords of a composite record to XML</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>subrecordMapping</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of a repeating group field to map (deprecated in 0.9.5, use 
+            repeatingGroup instead.)</entry>
+</row>
+<row>
+<entry>repeatingGroup</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of a repeating group field to map.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+<itemizedlist>
+<listitem>
+Any number of <xref linkend="record-mapping-literal-element"/> elements and <xref linkend="sx:mapXml"/> elements.
+</listitem>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:sort" xreflabel="sx:sort">
+<refnamediv>
+  <refname>sx:sort</refname>
+  <refpurpose>Abstract element standing for a sort element</refpurpose>
+</refnamediv>
+<indexterm><primary>sort</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that represents sorting.</para> 
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:reorderRecords"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:transformRecord" xreflabel="sx:transformRecord">
+<refnamediv>
+  <refname>sx:transformRecord</refname>
+  <refpurpose>Transform record to XML</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:mapXml"/></refclass>
+</refnamediv>
+<indexterm><primary>transformRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</para></listitem>
+<listitem><para>
+Any number of <xref linkend="sx:content"/> elements, such as <xref linkend="sx:xslt"/> elements.
+These will be applied in document order.
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+<listitem>
+<xref linkend="sx:defaultFieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+</reference>
+

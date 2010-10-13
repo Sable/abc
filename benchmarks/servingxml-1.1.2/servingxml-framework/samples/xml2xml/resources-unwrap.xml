@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                     xmlns:myns="http://mycompany.com/mynames/" >
+
+  <sx:service id="unwrap">
+    <sx:transform>
+      <sx:document/>
+      <sx:processSubtree path="/myns:books/myns:book">
+        <sx:choose>
+          <sx:when test="@categoryCode='F'">
+            <sx:parameter name="isbn" select="myns:isbn"/>
+            <sx:transform>
+              <sx:xsltSerializer>
+                <sx:fileSink file="output/book-{$isbn}.xml"/>
+              </sx:xsltSerializer>
+            </sx:transform>
+          </sx:when>
+        </sx:choose>
+      </sx:processSubtree>
+    </sx:transform>
+  </sx:service>
+
+</sx:resources>
+

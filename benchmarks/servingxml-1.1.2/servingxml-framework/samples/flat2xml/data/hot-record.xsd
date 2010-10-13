@@ -1,0 +1,47 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+   hot record schema
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <!-- This element's name matches the value of the name attribute in the "bkp84" px:flatFileRecordType. -->
+  <xsd:element name="bkp84" type="bkp84Type"/>
+  
+  <!-- This element's name matches the value of the name attribute in the "bkt06" px:flatFileRecordType. -->
+  <xsd:element name="bkt06" type="bkt06Type"/>
+  
+  <!-- This element's name matches the value of the name attribute in the "other" px:flatFileRecordType. -->
+  <xsd:element name="other" type="otherType"/>
+
+  <xsd:complexType name="bkp84Type">
+    <xsd:sequence>
+      <xsd:element name="record-type-prefix" type="xsd:string"/>
+      <xsd:element name="record-type" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+      <xsd:element name="amount" type="xsd:hexBinary"/>
+      <xsd:element name="currency" type="xsd:string"/>
+      <xsd:element name="precision" type="xsd:nonNegativeInteger"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="bkt06Type">
+    <xsd:sequence>
+      <xsd:element name="record-type-prefix" type="xsd:string"/>
+      <xsd:element name="record-type" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+      <xsd:element name="type" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="otherType">
+    <xsd:sequence>
+      <xsd:element name="record-type-prefix" type="xsd:string"/>
+      <xsd:element name="record-type" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+
+

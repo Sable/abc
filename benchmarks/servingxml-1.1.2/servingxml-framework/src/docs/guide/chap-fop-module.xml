@@ -1,0 +1,111 @@
+<reference id="chap-fop-module"><title>Apache FOP Extension</title>
+<partintro>
+<para>
+This section describes the Apache FOP extension elements.
+All Apache FOP extension elements require the namespace declaration 
+<sgmltag>xmlns:fop="http://www.servingxml.com/extensions/fop"</sgmltag>
+to appear in the resources script.
+</para>
+</partintro>
+
+<refentry id="fop:foEmitter" xreflabel="fop:foEmitter">
+<refnamediv>
+  <refname>fop:foEmitter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="fop:foSerializer"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>foEmitter</primary></indexterm>
+</refentry>
+
+<refentry id="fop:foSerializer" xreflabel="fop:foSerializer">
+<refnamediv>
+  <refname>fop:foSerializer</refname>
+  <refpurpose>Apache FOP xsl/fo serializer</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:saxSink"/></refclass>
+</refnamediv>
+<indexterm><primary>foSerializer</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>mimeType</entry>
+<entry>No</entry>
+<entry>string</entry>
+<entry>The MIME type of the output, which must be a supported <ulink url="http://www.jeremias-maerki.ch/development/jaxg/javadocs/constant-values.html#org.xml.graphics.helpers.MimeConstants.MIME_PDF">FOP MIME type</ulink>.  Defaults to 
+  "application/pdf".</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<!--example>
+<title>Defining an Apache fop serializer.</title>
+<programlisting>
+<![CDATA[
+  <fop:foSerializer/>
+]]>
+</programlisting>
+</example-->
+<example>
+<title>Serializing xsl-fo with an Apache FOP serializer to produce pdf.</title>
+<programlisting> <![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"> ...
+              
+  <sx:service id="pulp">
+    <sx:serialize>
+      <fop:foSerializer/>
+      <sx:transform>
+        <sx:content ref="myns:pulp"/>
+        <sx:xslt ref="novel-fo"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Serializing xsl-fo with an Apache FOP serializer to produce RTF.</title>
+<programlisting> <![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fop="http://www.servingxml.com/extensions/fop"> ...
+              
+  <sx:service id="pulp">
+    <sx:serialize>
+      <fop:foSerializer mimeType="application/rtf"/>
+      <sx:transform>
+        <sx:content ref="myns:pulp"/>
+        <sx:xslt ref="novel-fo"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+</reference>
+

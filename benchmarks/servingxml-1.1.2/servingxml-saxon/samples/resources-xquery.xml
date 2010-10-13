@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:saxon="http://www.servingxml.com/extensions/saxon">
+
+  <!-- This is "TestF" in the Saxon sample file XQJExamples.java -->
+
+  <sx:service id="test1">
+    <sx:serialize > 
+      <sx:transform>
+        <saxon:xquery> 
+          <sx:preserveMarkup> 
+            document { <a xmlns='http://a/uri' z:in='out'
+                         xmlns:z='http://z/uri'><b>{2+2}</b></a> }
+          </sx:preserveMarkup>
+        </saxon:xquery>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:service id="test2">
+    <sx:serialize> 
+      <sx:transform>
+        <saxon:xquery xmlns:myns="http://mycompany.com/mynames/"> 
+          <sx:document>
+            <sx:fileSource file="data/books.xml"/>
+          </sx:document>
+          <sx:preserveMarkup> 
+            <copy>{//myns:book[1]}</copy>
+          </sx:preserveMarkup>
+        </saxon:xquery>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+</sx:resources>
+

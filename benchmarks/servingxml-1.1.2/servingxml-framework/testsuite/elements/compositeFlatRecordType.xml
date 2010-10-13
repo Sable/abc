@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/compositeFlatRecordType/">
+
+  <sx:service id="t:run-tests">
+    <sx:task ref="t:test-composite-record"/>
+  </sx:service>
+
+  <sx:transform id="t:test-composite-record">
+    <sx:assert test="fn:deep-equal(fn:document('elements/compositeFlatRecordType/file-content'),fn:document('elements/compositeFlatRecordType/target-document'))">
+test-composite-record:  Output
+      <sx:content ref="t:file-content"/>
+      does not match expected output
+      <sx:content ref="t:target-document"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:flatFileReader id="t:file-reader">
+    <sx:inlineSource>
+A233ServingXML132433SAS
+B343443DD2322ARDE02110
+B344233DD2322PREE02110
+A233ServingXML132433AGS
+B343443232300002202110
+B343313232300002202110
+    </sx:inlineSource>
+    <sx:flatFile>
+      <sx:flatFileBody>
+        <sx:compositeFlatRecordType>
+          <sx:positionalField name="recordType" width="1"/>
+          <sx:positionalField name="code" width="3"/>
+          <sx:positionalField name="book" width="10"/>
+          <sx:positionalField name="isbn" width="6"/>
+          <sx:positionalField name="identifier" width="3"/>
+          <sx:combinePhysicalRecords recordType="composite" repeatingGroup="group"
+                                startTest = "sx:current//recordType = 'A' and sx:current//identifier = 'SAS'"
+                                endTest = "sx:current//recordType = 'A'">
+            <sx:flatRecordTypeChoice>
+              <sx:positionalField name="recordType" width="1"/>
+              <sx:when test="recordType='A'">
+                <sx:flatRecordType name="A">
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:positionalField name="code" width="3"/>
+                  <sx:positionalField name="book" width="10"/>
+                  <sx:positionalField name="isbn" width="6"/>
+                  <sx:positionalField name="identifier" width="3"/>
+                </sx:flatRecordType>
+              </sx:when>
+              <sx:when test="recordType='B'">
+                <sx:flatRecordType name="B-SAS">
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:positionalField name="library" width="6"/>
+                  <sx:positionalField name="shelf" width="10"/>
+                  <sx:positionalField name="ebook" width="3"/>
+                  <sx:positionalField name="code" width="3"/>
+                </sx:flatRecordType>
+              </sx:when>
+            </sx:flatRecordTypeChoice>
+          </sx:combinePhysicalRecords>
+          <sx:combinePhysicalRecords recordType="composite" repeatingGroup="group"
+                                startTest = "sx:current//recordType = 'A' and sx:current//identifier = 'AGS'"
+                                endTest = "sx:current//recordType = 'A'">
+            <sx:flatRecordTypeChoice>
+              <sx:positionalField name="recordType" width="1"/>
+              <sx:when test="recordType='A'">
+                <sx:flatRecordType name="A">
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:positionalField name="code" width="3"/>
+                  <sx:positionalField name="book" width="10"/>
+                  <sx:positionalField name="isbn" width="6"/>
+                  <sx:positionalField name="identifier" width="3"/>
+                </sx:flatRecordType>
+              </sx:when>
+              <sx:when test="recordType='B'">
+                <sx:flatRecordType name="B-AGS">
+                  <sx:positionalField name="recordType" width="1"/>
+                  <sx:positionalField name="store" width="8"/>
+                  <sx:positionalField name="cost" width="8"/>
+                  <sx:positionalField name="code" width="3"/>
+                  <sx:positionalField name="make" width="3"/>
+                </sx:flatRecordType>
+              </sx:when>
+            </sx:flatRecordTypeChoice>
+          </sx:combinePhysicalRecords>
+        </sx:compositeFlatRecordType>
+      </sx:flatFileBody>
+    </sx:flatFile>
+  </sx:flatFileReader>
+
+  <sx:recordContent id="t:file-content">
+    <sx:flatFileReader ref="t:file-reader"/>
+  </sx:recordContent>
+
+  <sx:document id="t:target-document">
+<document><composite><group><A><recordType>A</recordType><code>233</code><book>ServingXML</book><isbn>132433</isbn><identifier>SAS</identifier></A><B-SAS><recordType>B</recordType><library>343443</library><shelf>DD2322ARDE</shelf><ebook>021</ebook><code>10</code></B-SAS><B-SAS><recordType>B</recordType><library>344233</library><shelf>DD2322PREE</shelf><ebook>021</ebook><code>10</code></B-SAS></group></composite><composite><group><A><recordType>A</recordType><code>233</code><book>ServingXML</book><isbn>132433</isbn><identifier>AGS</identifier></A><B-AGS><recordType>B</recordType><store>34344323</store><cost>23000022</cost><code>021</code><make>10</make></B-AGS><B-AGS><recordType>B</recordType><store>34331323</store><cost>23000022</cost><code>021</code><make>10</make></B-AGS></group></composite></document>
+    </sx:document>
+  </sx:resources>
+

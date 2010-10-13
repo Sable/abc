@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:saxon="http://www.servingxml.com/extensions/saxon">
+  <ioc:serviceComponent name="saxon:xquery" base="sx:content"
+                assemblerClass="com.servingxml.extensions.saxon.xquery.XQueryContentAssembler">
+  </ioc:serviceComponent>
+
+</ioc:components>
+

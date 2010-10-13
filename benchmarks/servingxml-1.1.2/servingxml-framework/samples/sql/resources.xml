@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="employees">
+    <sx:serialize>
+      <sx:content ref="employeesDoc"/>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:service id="updateEmployee">
+    <sx:recordStream>
+      <sx:parameterReader recordType="employee"/>
+      <sx:sqlWriter>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlUpdate>
+          UPDATE EMP SET JOB = '{$job}' WHERE EMPNO='{$empNo}'
+        </sx:sqlUpdate>
+      </sx:sqlWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:recordContent id="employeesDoc">
+    <sx:sqlReader>
+      <sx:sqlConnectionPool ref="jdbcPool"/>
+      
+      <sx:parameter name="jobList">
+        <sx:toString value="{$job}" separator=",">
+          <sx:quoteSymbol character="'" escapeCharacter="'"/>
+        </sx:toString>
+      </sx:parameter>
+      
+      <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1 
+        <sx:choose>
+          <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+          </sx:when>
+        </sx:choose>
+        ORDER BY JOB,ENAME
+      </sx:sqlQuery>
+        
+    </sx:sqlReader>
+    
+    <sx:recordMapping ref="employeesToXml"/>
+    
+  </sx:recordContent>
+  
+  <sx:recordMapping id="employeesToXml">
+    <employees>
+      <sx:groupBy fields="JOB">
+        <sx:elementMap element="{JOB}">
+          <sx:onRecord>
+            <employee>
+              <sx:fieldAttributeMap field="EMPNO" attribute="employee-no"/>
+              <sx:fieldElementMap field="NAME" element="name"/>
+            </employee>
+          </sx:onRecord>
+        </sx:elementMap>
+      </sx:groupBy>
+    </employees>
+  </sx:recordMapping>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="{$user}"
+                        password="{$password}"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>

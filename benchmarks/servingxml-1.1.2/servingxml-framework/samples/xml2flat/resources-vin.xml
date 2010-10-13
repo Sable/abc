@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+  
+  <sx:service id="vin">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="vinToFileMapping"/>
+        <sx:transform>
+          <sx:document>
+            <sx:urlSource url="data/3545_JH4DA3_4_H_.xml"/>
+          </sx:document>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="vinFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:flatFile id="vinFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="vehicle">
+        <sx:fieldDelimiter value=","/>
+        <sx:quoteSymbol character='"' escapeCharacter='\"'/>
+        <sx:delimitedField name="country"/>
+        <sx:delimitedField name="id"/>
+        <sx:delimitedField name="language"/>
+        <sx:delimitedField name="make"/>
+        <sx:delimitedField name="model"/>
+        <sx:delimitedField name="styleName"/>
+        <sx:delimitedField name="vinpart"/>
+        <sx:delimitedField name="year"/>
+        <sx:delimitedField name="architecture"/>
+        <sx:delimitedField name="displacement"/>
+        <sx:delimitedField name="power-steering"/>
+        <sx:delimitedField name="automatic"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:inverseRecordMapping id="vinToFileMapping">
+    <sx:onSubtree path="/vin/vindata">
+      <sx:flattenSubtree  recordType="vindata">
+        <sx:subtreeFieldMap select="@country" field="country"/>
+        <sx:subtreeFieldMap select="@id" field="id"/>
+        <sx:subtreeFieldMap select="@language" field="language"/>
+        <sx:subtreeFieldMap select="@make" field="make"/>
+        <sx:subtreeFieldMap select="@model" field="model"/>
+        <sx:subtreeFieldMap select="@styleName" field="styleName"/>
+        <sx:subtreeFieldMap select="@vinpart" field="vinpart"/>
+        <sx:subtreeFieldMap select="@year" field="year"/>
+        <sx:subtreeFieldMap select="engine/architecture" field="architecture"/>
+        <sx:subtreeFieldMap select="engine/displacement" field="displacement"/>
+        <sx:subtreeFieldMap select="vehicleAttribute[@name='powersteering']/@availability" field="power-steering"/>
+        <sx:subtreeFieldMap select="vehicleAttribute[@name='transmissionautomatic']/@availability" field="automatic"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>
+

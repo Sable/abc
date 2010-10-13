@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="new-books">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="oldBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="newBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="all-books">
+    <sx:recordStream>
+      <sx:directoryReader directory="data">
+        <sx:fileFilter pattern="books.*[.]txt"/>
+      </sx:directoryReader>
+      <sx:processRecord>
+        <sx:parameter name="output-file">
+          <sx:findAndReplace searchFor="(books.*)[.]txt" replaceWith ="$1-new.txt">
+            <sx:toString value="{name}"/>
+          </sx:findAndReplace>
+        </sx:parameter>
+        <sx:recordStream>
+          <sx:flatFileReader>
+            <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+            <sx:flatFile ref="oldBooksFlatFile"/>
+          </sx:flatFileReader>
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="{$output-file}"/>
+            <sx:flatFile ref="newBooksFlatFile"/>
+          </sx:flatFileWriter>
+        </sx:recordStream>
+      </sx:processRecord>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+

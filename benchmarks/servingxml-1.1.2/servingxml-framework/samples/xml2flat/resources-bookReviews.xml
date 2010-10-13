@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="http://mycompany.com/mynames/">
+
+  <sx:service id="bookReviews">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="book"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag"  width="1"/>
+        <sx:when test="tag='H'">
+          <sx:flatRecordType ref="book"/>
+        </sx:when>
+        <sx:when test="tag='L'">
+          <sx:flatRecordType ref="review"/>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="book" name="book">
+    <sx:positionalField name="tag" label="Tag" width="1"/>
+    <sx:positionalField name="id" label="ID" width="3"/>
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="review" name="review">
+    <sx:positionalField name="tag" label="Tag" width="1"/>
+    <sx:positionalField name="id" label="ID" width="3"/>
+    <sx:positionalField name="reviewer" label="Reviewer" width="10"/>
+    <sx:positionalField name="rating" label="Rating" width="5"/>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:parameter name="id" select="@id"/>
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="'H'" field="tag"/>
+        <sx:subtreeFieldMap select="$id" field="id"/>
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+      </sx:flattenSubtree>
+      <sx:flattenSubtree match="myns:reviews/myns:review" recordType="review">
+        <sx:subtreeFieldMap select="'L'" field="tag"/>
+        <sx:subtreeFieldMap select="$id" field="id"/>
+        <sx:subtreeFieldMap select="myns:reviewer" field="reviewer"/>
+        <sx:subtreeFieldMap select="myns:rating" field="rating"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+</sx:resources>
+

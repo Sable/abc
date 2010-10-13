@@ -1,0 +1,314 @@
+<reference id="ref-msv-module"><title>SUN Multi Schema Validator Extension</title>
+  <partintro>
+<para>
+This section describes the SUN Multi Schema Validator extension elements.
+All SUN MSV extension elements require the namespace declaration 
+<sgmltag>xmlns:msv="http://www.servingxml.com/extensions/msv"</sgmltag>
+to appear in the resources script.
+</para>
+  </partintro>
+
+<refentry id="msv:msvFilter" xreflabel="msv:msvFilter">
+<refnamediv>
+  <refname>msv:msvFilter</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="msv:schemaValidator"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/></refclass>
+</refnamediv>
+<indexterm><primary>msvFilter</primary></indexterm>
+</refentry>
+
+<refentry id="msv:msvRecordFilter" xreflabel="msv:msvRecordFilter">
+<refnamediv>
+  <refname>msv:msvRecordFilter</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="msv:recordValidator"/></refpurpose>
+</refnamediv>
+<indexterm><primary>msvRecordFilter</primary></indexterm>
+</refentry>
+
+<refentry id="msv:recordValidator" xreflabel="msv:recordValidator">
+<refnamediv>
+  <refname>msv:recordValidator</refname>
+  <refpurpose>Validate record with XML schema</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>recordValidator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><phrase>Optionally, any number of <xref linkend="sx:parameter"/> elements.</phrase></listitem>
+<listitem>
+A <xref linkend="sx:streamSource"/> element, or a <xref linkend="sx:saxSource"/> element,
+or an in-lined XML schema document.
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction validates individual records as they are read in from a flat file or SQL source, and discards
+records when errors are encountered. 
+</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+A <xref linkend="sx:streamSource"/> element, or a <xref linkend="sx:saxSource"/> element,
+or an in-lined XSLT tree.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Validating individual records in the incoming countries flat file.</title>
+<refsection>
+<title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+    <sx:discardHandler>
+      <sx:log message="{$sx:message}"/>
+      <sx:modifyRecord>
+        <sx:newField name="message" value="{$sx:message}"/>
+      </sx:modifyRecord>
+      <sx:flatFileWriter>
+        <sx:fileSink file="output/countryDiscards.csv"/>
+        <sx:flatFile ref="discardFile"/>
+      </sx:flatFileWriter>
+    </sx:discardHandler>
+  </sx:recordStream>
+  <sx:recordMapping ref="countriesToXmlMapping"/>
+</sx:recordContent>
+
+<sx:flatRecordType id="country" name="country">
+  <sx:fieldDelimiter value=","/>
+  <sx:delimitedField name="code"/>
+  <sx:delimitedField name="name"/>
+</sx:flatRecordType>
+
+<sx:flatFile id="discardFile">
+  <sx:flatFileBody>
+    <sx:flatRecordType name="countryDiscard">
+      <sx:fieldDelimiter value=","/>
+      <sx:delimitedField name="message"/>
+      <sx:flatRecordType ref="country"/>
+    </sx:flatRecordType>
+  </sx:flatFileBody>
+</sx:flatFile>
+]]>
+</programlisting>
+</refsection>
+<refsection>
+<title>Schema</title>
+<programlisting>
+<![CDATA[
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+ <!-- This element's name matches the value of the name attribute in the sx:flatRecordType element. -->
+ <xs:element name="country" type="CountryType"/>
+
+ <xs:complexType name="CountryType">
+  <xs:sequence>
+   <xs:element name="code" type="CountryCode"/>
+   <xs:element name="name" type="xs:string"/>
+  </xs:sequence>
+ </xs:complexType>
+
+  <xs:simpleType name='CountryCode'>
+    <xs:restriction base='xs:string'>
+      <xs:length value='3' fixed='true'/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+]]>
+</programlisting>
+</refsection>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:discardHandler"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="msv:schemaValidator" xreflabel="msv:schemaValidator">
+<refnamediv>
+  <refname>msv:schemaValidator</refname>
+  <refpurpose>Validate XML with schema</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:content"/>, <xref linkend="sx:validator"/></refclass>
+</refnamediv>
+<indexterm><primary>schemaValidator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A message indicating the error if validation fails, defaults to 
+  the message provided by the MSV validator.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+A <xref linkend="sx:streamSource"/> element, or a <xref linkend="sx:saxSource"/> element,
+or an in-lined XML schema document.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction validates the XML output as it is produced, and will abort processing if an error is encountered. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Validating the countries document.</title>
+<refsection>
+<title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+   
+  <sx:service id="countries">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="countries"/> 
+        <msv:schemaValidator>
+          <sx:urlSource url="data/countries.xsd"/>
+        </msv:schemaValidator>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="countries" name="countries">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="countriesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="countriesToXmlMapping">
+    <countries>
+      <sx:onRecord>
+        <country>
+          <sx:fieldElementMap field="name" element="countryName"/>
+          <sx:fieldAttributeMap field="code" attribute="countryCode"/>
+        </country>
+      </sx:onRecord>
+    </countries>
+  </sx:recordMapping>
+  
+</sx:resources>
+]]>
+</programlisting>
+</refsection>
+<refsection>
+<title>Schema</title>
+<programlisting>
+<![CDATA[
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+ <!-- This element's name is the same as that of the root element appearing inside the sx:recordMapping element. -->
+ <xs:element name="countries" type="CountriesType"/>
+
+ <xs:complexType name="CountriesType">
+  <xs:sequence>
+      <xs:element name="country" type="CountryType" minOccurs="0" maxOccurs="unbounded"/>
+  </xs:sequence>
+ </xs:complexType>
+
+ <xs:complexType name="CountryType">
+  <xs:sequence>
+   <xs:element name="countryName" type="xs:string"/>
+  </xs:sequence>
+  <xs:attribute name="countryCode" type="CountryCode"/>
+ </xs:complexType>
+
+  <xs:simpleType name='CountryCode'>
+    <xs:restriction base='xs:string'>
+      <xs:length value='3' fixed='true'/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+]]>
+</programlisting>
+</refsection>
+</example>
+</refsection>
+</refentry>
+
+</reference>
+

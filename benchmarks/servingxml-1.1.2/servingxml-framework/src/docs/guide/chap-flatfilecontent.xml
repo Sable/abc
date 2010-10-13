@@ -1,0 +1,3629 @@
+<reference id="ref-flatfile-module"><title>Flat File Elements</title>
+
+<refentry id="flat-file-option-attributes" xreflabel="flat file option attributes">
+<refnamediv>
+  <refname>Flat File Options - Attributes</refname>
+  <refpurpose>Flat file options</refpurpose>
+</refnamediv>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>flushRecordOnWrite</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to flush the output stream every time a record is written.  Defaults to <code>false</code>.
+</entry>
+</row>
+<row>
+<entry>trim</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading and trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>zeroBased</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether position indexes are zero-based, defaults to 
+  <code>false</code>, by
+  default position indexes are one-based.
+</entry>
+</row>
+<row>
+<entry>trimLeading</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of leading and trailing 
+  whitespace.  Defaults to <code>false</code>.
+</entry>
+</row>
+<row>
+<entry>trimLeadingWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of leading whitespace.  Defaults 
+  to <code>false</code> .
+</entry>
+</row>
+<row>
+<entry>trimTrailingWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of trailing whitespace.  Defaults 
+  to <code>false</code>.
+</entry>
+</row>
+<row>
+<entry>trimQuoted</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Deprecated as of version 1.1.0, use <sgmltag>trimWithinQuotes</sgmltag> 
+  instead.
+</entry>
+</row>
+<row>
+<entry>trimTrailing</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>quote</entry>
+<entry>No</entry>
+<entry>"auto" or "always" or "never"</entry>
+<entry>
+Indicates whether a value should be searched for a field delimiter, and if so enclosed in quote marks, or whether a value should
+always be enclosed in quote marks.  The default is <code>never</code> for 
+positional files, <code>auto</code> for delimited or mixed files.  Previous 
+versions supported yes/no values, which have been deprecated, but are translated 
+to "auto" and "never" respectively.
+</entry>
+</row>
+<row>
+<entry>omitFinalFieldDelimiter</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Defaults to <code>true</code>.  (For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>omitFinalRepeatDelimiter</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Defaults to <code>true</code>  (For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>padCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>
+The pad character used for formatting values into a field of fixed width, e.g., a space or zero. 
+</entry>
+</row>
+<row>
+<entry>justify</entry>
+<entry>No</entry>
+<entry>"left","right", or "center"</entry>
+<entry>Indicates how to align the data within the field.</entry>
+</row>
+<row>
+<entry>lineDelimited</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>If set to <code>true</code>, records are expected to end with end-of-line delimiters, otherwise fixed width records are assumed.  
+Defaults to <code>true</code>.  (For backwards compatability, "yes"/"no" is also supported.)</entry>
+</row>
+<row>
+<entry>countPositionsInBytes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>If set to <code>true</code>, positions between fields are counted in 
+  bytes, otherwise positons are counted in characters.  Defaults to 
+            <code>true</code> if any field is a binary field or if flat file 
+            signatures are specified, otherwise defaults to <code>false</code>. 
+            </entry>
+</row>
+<row>
+<entry>ignoreTrailingEmptyLines</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>If set to <code>true</code>, lines at the end of files that are empty (apart from space, tab and record delimiter characters) are ignored.  
+Defaults to <code>true</code>.    (For backwards compatability, "yes"/"no" is also supported.)</entry>
+</row>
+<row>
+<entry>ignoreEmptyLines</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>If set to <code>true</code>, all lines in the files that are empty (apart from space, tab and record delimiter characters) are ignored.  
+Defaults to <code>false</code>.   (For backwards compatability, "yes"/"no" is also supported.)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+</refentry>
+
+<refentry id="flat-file-option-elements" xreflabel="flat file option elements">
+<refnamediv>
+  <refname>Flat File Options - Elements</refname>
+  <refpurpose>Flat File Options</refpurpose>
+</refnamediv>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Any number of <xref linkend="sx:recordDelimiter"/> elements.
+</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:segmentDelimiter"/> elements.
+</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:repeatDelimiter"/> elements.
+</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:fieldDelimiter"/> elements.
+</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:subfieldDelimiter"/> elements.
+</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:nameDelimiter"/> elements.
+</para></listitem>
+<listitem><para>A <xref linkend="sx:quoteSymbol"/> element. 
+</para></listitem>
+<listitem><para>Zero or many <xref linkend="sx:commentStarter"/> 
+            elements.</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:annotationRecord" xreflabel="sx:annotationRecord">
+<refnamediv>
+  <refname>sx:annotationRecord</refname>
+  <refpurpose>Annotation record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:metaRecord"/></refclass>
+</refnamediv>
+<indexterm><primary>annotationRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the annotation record.</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>Yes</entry>
+<entry>number</entry>
+<entry>The width of the annotation record.
+</entry>
+</row>
+<row>
+<entry>justify</entry>
+<entry>No</entry>
+<entry>"left","right", or "center"</entry>
+<entry>Indicates how to align the data within the field.  The default is "left".</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>An input string.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:binaryField" xreflabel="sx:binaryField">
+<refnamediv>
+  <refname>sx:binaryField</refname>
+  <refpurpose>Binary field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>binaryField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The width of the field.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+  Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty 
+  string (for writing if there are missing field values.)
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>First field of each record has a special character.</title>
+<para>
+In the example below, the first two records in the file start with the hexadecimal values 03 and 04.
+These values are needed to differentiate the record type, but these valued cannot be written as 
+<![CDATA[&#x03;]]> and <![CDATA[&#x04;]]> in XML, as these are not valid XML characters.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="transactionFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:binaryField name="firstField" width="1"/>
+        <sx:when test="firstField='03'">
+          <sx:flatRecordType id="R03" name="R03">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="CLIENUM" label="CLIENUM" width="007" />
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="firstField='04'">
+          <sx:flatRecordType id="R04" name="R04">
+            <sx:binaryField name="firstField" label="firstField" width="1" />
+            <sx:positionalField name="NAME" label="NAME" width="020" />
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:combinePhysicalRecords" xreflabel="sx:combinePhysicalRecords">
+<refnamediv>
+  <refname>sx:combinePhysicalRecords</refname>
+  <refpurpose>Combine multiple physical records into a composite logical 
+    record</refpurpose>
+</refnamediv>
+<indexterm><primary>combinePhysicalRecords</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+<row>
+<entry>suppressRDW</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Suppress the 4-byte record descriptor word (RDW) from the front of 
+  the logical record, defaults to <code>false</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One <xref linkend="sx:metaRecord"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:compositeFlatRecordType"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:commentStarter" xreflabel="sx:commentStarter">
+<refnamediv>
+  <refname>sx:commentStarter</refname>
+  <refpurpose></refpurpose>
+</refnamediv>
+<indexterm><primary>commentStarter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The value of a comment symbol.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:commentSymbol" xreflabel="sx:commentSymbol">
+<refnamediv>
+  <refname>sx:commentSymbol</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:commentStarter"/></refpurpose>
+</refnamediv>
+<indexterm><primary>commentSymbol</primary></indexterm>
+</refentry>
+
+<refentry id="sx:compositeFlatRecordType" xreflabel="sx:compositeFlatRecordType">
+<refnamediv>
+  <refname>sx:compositeFlatRecordType</refname>
+  <refpurpose>Composite flat record type</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:metaRecord"/></refclass>
+</refnamediv>
+<indexterm><primary>compositeFlatRecordType</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One or more specializations of the abstract <xref linkend="sx:flatRecordField"/> element, 
+including <xref linkend="sx:positionalField"/>,
+<xref linkend="sx:binaryField"/>, <xref linkend="sx:integerField"/> and 
+  <xref linkend="sx:delimitedField"/>. If 
+positional and delimited fields are mixed, the positional fields should precede 
+the delimited fields. 
+</para>
+  </listitem>
+<listitem>
+<para>One <xref linkend="sx:combinePhysicalRecords"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFile"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:crcFlatFileSignature" xreflabel="sx:crcFlatFileSignature">
+<refnamediv>
+  <refname>sx:crcFlatFileSignature</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:flatFileSignature"/> with method="crc"</refpurpose>
+</refnamediv>
+<indexterm><primary>crcFlatFileSignature</primary></indexterm>
+</refentry>
+
+<refentry id="sx:delimitedField" xreflabel="sx:delimitedField">
+<refnamediv>
+  <refname>sx:delimitedField</refname>
+  <refpurpose>Delimited field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>delimitedField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified,
+it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>trim</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading and trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimLeading</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimTrailing</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of leading and trailing 
+  whitespace.  Defaults to the setting at the record level.
+</entry>
+</row>
+<row>
+<entry>trimLeadingWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of leading whitespace.  Defaults 
+  to the setting at the record level.
+</entry>
+</row>
+<row>
+<entry>trimTrailingWithinQuotes</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim quoted values of trailing whitespace.  Defaults 
+  to the setting at the record level.
+</entry>
+</row>
+<row>
+<entry>quote</entry>
+<entry>No</entry>
+<entry>"auto" or "always" or "never"</entry>
+<entry>
+Indicates whether a value should be searched for a field delimiter, and if so enclosed in quote marks, or whether a value should
+always be enclosed in quote marks.  The default is <code>auto</code>.  Previous versions supported yes/no values,
+which have been deprecated, but are translated to "auto" and "never" respectively.
+</entry>
+</row>
+<row>
+<entry>alwaysQuote</entry>
+<entry>No</entry>
+<entry>"yes" or "no"</entry>
+<entry>Deprecated as of version 0.6.3, use quote="always" instead.
+</entry>
+</row>
+<row>
+<entry>minLength</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>If the length of the field value is less than <code>minLength</code>, it will be padded with the <code>padCharacter</code>.
+</entry>
+</row>
+<row>
+<entry>maxLength</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>If the length of the field is greater than <code>maxValue</code>, it will be truncated.
+</entry>
+</row>
+<row>
+<entry>justify</entry>
+<entry>No</entry>
+<entry>"left","right", or "center"</entry>
+<entry>The alignment rule used for formatting values into a field of fixed width.  The default is "left".
+</entry>
+</row>
+<row>
+<entry>padCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>
+The pad character used for formatting values into a field of fixed width, e.g., 
+a space or zero.  The default is a space.
+</entry>
+</row>
+<row>
+<entry>maxWidth</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The maximum field width, <emphasis>including</emphasis> delimiter.  If the number of
+characters read exceeds the specified <code>width</code>, that will be regarded as the end of this field
+and the beginning of the next.  Defaults to the record width.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>Deprecated, use <sgmltag class="attribute">maxWidth</sgmltag> instead.
+</entry>
+</row>
+<row>
+<entry>omitFinalFieldDelimiter</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Defaults to <code>true</code>
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:fieldDelimiter"/> and <xref linkend="sx:subfieldDelimiter"/> elements.  If not specified, defaults to the field and subfield delimiters in scope, if any.element.  
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:quoteSymbol"/> element. If not specified, defaults to the quote symbol in scope, if none, defaults to <code>"</code>. 
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a field value that includes a character that is the same as the quote symbol, you must escape that
+character.  For example, if the quote symbol is the default double quotation mark, 
+escaped by a second quote symbol, and if your record data is
+<programlisting>
+"Gun, with Occaisonal Music","""SHARP, FUNNY, VISIONARY"""
+</programlisting>
+then the values become
+<programlisting>
+Gun, with Occaisonal Music
+"SHARP, FUNNY, VISIONARY"
+</programlisting>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:delimitedNamedField" xreflabel="sx:delimitedNamedField">
+<refnamediv>
+  <refname>sx:delimitedNamedField</refname>
+  <refpurpose>Delimited name/value pair</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/>,&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>delimitedNamedField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified,
+it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>trim</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading and trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimLeading</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>trimTrailing</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim trailing whitespace.  Defaults to the setting at the record level.
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+<row>
+<entry>minLength</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>If the length of the field value is less than <code>minLength</code>, it will be padded with the <code>padCharacter</code>.
+</entry>
+</row>
+<row>
+<entry>maxLength</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>If the length of the field is greater than <code>maxValue</code>, it will be truncated.
+</entry>
+</row>
+<row>
+<entry>justify</entry>
+<entry>No</entry>
+<entry>"left","right", or "center"</entry>
+<entry>The alignment rule used for formatting values into a field of fixed width.  The default is "left".
+</entry>
+</row>
+<row>
+<entry>padCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>
+The pad character used for formatting values into a field of fixed width, e.g., 
+a space or zero.  The default is a space.
+</entry>
+</row>
+<row>
+<entry>maxWidth</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The maximum field width, <emphasis>including</emphasis> delimiter.  If the number of
+characters read exceeds the specified <code>width</code>, that will be regarded as the end of this field
+and the beginning of the next.  Defaults to the record width.
+</entry>
+</row>
+<row>
+<entry>omitFinalFieldDelimiter</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Defaults to <code>true</code>
+(For backwards compatability, "yes"/"no" is also supported.)
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:fieldDelimiter"/> and <xref linkend="sx:subfieldDelimiter"/> elements.  If not specified, defaults to the field and subfield delimiters in scope, if any.  
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:quoteSymbol"/> element. If not specified, defaults to the quote symbol in scope, if none, defaults to <code>"</code>. 
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:nameDelimiter"/> element. If not specified, defaults to the tag delimiter in scope. If there is no tag
+delimiter, an error is raised.
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:repeatingField"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a field value that includes a character that is the same as the quote symbol, you must escape that
+character.  For example, if the quote symbol is the default double quotation mark, 
+escaped by a second quote symbol, and if your record data is
+<programlisting>
+"Gun, with Occaisonal Music","""SHARP, FUNNY, VISIONARY"""
+</programlisting>
+then the values become
+<programlisting>
+Gun, with Occaisonal Music
+"SHARP, FUNNY, VISIONARY"
+</programlisting>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldDelimiter" xreflabel="sx:fieldDelimiter">
+<refnamediv>
+  <refname>sx:fieldDelimiter</refname>
+  <refpurpose>Field delimiter</refpurpose>
+</refnamediv>
+<indexterm><primary>fieldDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that indicates the end of a field.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>An escape character used to escape the delimiter.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The field delimiter indicates the end of the field value.  It is excluded from the field value.
+It may be one or more characters in length.  
+</para>
+<para>
+The following special encodings may appear in a delimiter value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x09;]]> 
+is another way of specifying a tab character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a field value that includes a character that is the same as the delimiter, you must 
+define the field to have quoted field values and enclose the value of the field in quotes.
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFile" xreflabel="sx:flatFile">
+<refnamediv>
+  <refname>sx:flatFile</refname>
+  <refpurpose>Flat file</refpurpose>
+</refnamediv>
+<indexterm><primary>flatFile</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+Optionally, any number of <xref linkend="flat-file-option-elements"/>, for
+example, any number of 
+                     <xref linkend="sx:recordDelimiter"/> elements, or any 
+                     number of <xref linkend="sx:commentStarter"/> elements.
+</para></listitem>
+
+<listitem><para>Optionally, a <xref linkend="sx:flatFileTrailer"/> element.</para></listitem>
+<listitem><para>A <xref linkend="sx:flatFileBody"/> element.</para></listitem>
+<listitem><para>Optionally, any number of <xref linkend="sx:flatFileSignature"/> elements.</para></listitem>
+</itemizedlist>
+</refsection>
+  <refsection>
+    <title>Description</title>
+<para>By default there are two record delimiters:  a linefeed, or a carriage
+return followed by a linefeed. When serializing XML to a flat file, if more than
+one record delimiter has been defined, the serializer checks to see if one of
+the delimiters matches the system conventional end-of-line character. If so, it
+uses that one, otherwise it uses the first one.
+</para>
+    
+  </refsection>
+<refsection>
+<title>Examples</title>
+<para>See <xref linkend="sx:flatFileReader"/></para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><para>
+<xref linkend="sx:flatFileReader"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:flatFileWriter"/>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileBody" xreflabel="sx:flatFileBody">
+<refnamediv>
+  <refname>sx:flatFileBody</refname>
+  <refpurpose>Flat file body</refpurpose>
+</refnamediv>
+<indexterm><primary>flatFileBody</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+A <xref linkend="sx:flatRecordType"/> element, or a <xref linkend="sx:flatRecordTypeChoice"/> element.
+</para>
+</refsection>
+<refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Using a sx:flatFileBody element.</title>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="tradesFlatFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record_type" width="2"/>
+        <sx:when test="record_type='TR'">
+          <sx:flatRecordType name="trade">
+            <sx:positionalField name="record_type" width="2"/>
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="trade_date" width="10"/>
+            <sx:positionalField name="trade_time" width="8"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record_type='TN'">
+          <sx:flatRecordType name="transaction">
+            <sx:positionalField name="record_type" width="2"/>
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="reference" width="5"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+  
+  <sx:recordMapping id="tradesToXmlMapping">
+    <trades>
+      <sx:onRecord recordType="trade">
+        <trade>
+          <sx:fieldAttributeMap field="id" attribute="id"/>
+          <sx:fieldElementMap field="description" element="description"/>
+        </trade>  
+      </sx:onRecord>
+      <sx:onRecord recordType="transaction">
+        <transaction>
+          <sx:fieldAttributeMap field="id" attribute="id"/>
+          <sx:fieldElementMap field="reference" element="reference"/>
+          <sx:fieldElementMap field="description" element="description"/>
+        </transaction>  
+      </sx:onRecord>
+    </trades>
+  </sx:recordMapping>  
+]]>
+</programlisting>
+</example>
+</refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><para>
+<xref linkend="sx:flatFile"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:onRecord"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:fieldAttributeMap"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:fieldElementMap"/>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileSignature" xreflabel="sx:flatFileSignature">
+<refnamediv>
+  <refname>sx:flatFileSignature</refname>
+  <refpurpose>Flat file signature</refpurpose>
+</refnamediv>
+<indexterm><primary>flatFileSignature</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Identifies a header or trailer record.</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Identifies a field in a header or trailer record.</entry>
+</row>
+<row>
+<entry>method</entry>
+<entry>Yes</entry>
+<entry>string</entry>
+<entry>Must be one of "crc", "size, or "custom".</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>No (unless method is "custom")</entry>
+<entry>Java class name</entry>
+<entry>The name of a Java class that implements com.servingxml.components.flatfile.SignatureMethod</entry>
+</row>
+<row>
+<entry>validate</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether, when reading a file, the computed signature should be validated against the value stored in the header or trailer.
+Defaults to <code>true</code>.   (For backwards compatability, "yes"/"no" is also supported.)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Computes the size, CRC, or custom signature of the raw data from the body of the flat file (excluding header and trailer.)
+When the file is being written, the signature is stored in the header or trailer field identified by record type and field name.
+When the file is being read, the computed signature is compared to the signature from the header or trailer field,
+and an error is raised if they differ.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>See <xref linkend="sx:flatFileHeader"/> and <xref linkend="sx:flatFileTrailer"/></para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><para>
+<xref linkend="sx:flatFile"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:flatFileHeader"/>
+</para></listitem>
+<listitem><para>
+<xref linkend="sx:flatFileTrailer"/>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileHeader" xreflabel="sx:flatFileHeader">
+<refnamediv>
+  <refname>sx:flatFileHeader</refname>
+  <refpurpose>Flat file header</refpurpose>
+</refnamediv>
+<indexterm><primary>flatFileHeader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>lineCount</entry>
+<entry>No</entry>
+<entry>Number</entry>
+<entry>The number of lines in the header.</entry>
+</row>
+<row>
+<entry>recordLength</entry>
+<entry>No</entry>
+<entry>Integer</entry>
+<entry>The total length of the header records, including record delimiter, if 
+  any.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>One or more <xref linkend="sx:metaRecord"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>A flat file header which contains title headings for columns.</title>
+<para>The header declaration below will prepend a two line header to a flat file:
+</para>
+<itemizedlist>
+  <listitem><para>A list of title headings for columns.
+  </para></listitem>
+  <listitem><para>A blank line before the data section.
+  </para></listitem>
+</itemizedlist>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+]]>
+</programlisting>
+<para>
+Note the following:
+</para>
+<itemizedlist>
+  <listitem><para>In header and trailer sections, the <sgmltag class="attribute">label</sgmltag> attributes of fields are treated as data values.
+  </para></listitem>
+</itemizedlist>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFileSignature"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileReader" xreflabel="sx:flatFileReader">
+<refnamediv>
+  <refname>sx:flatFileReader</refname>
+  <refpurpose>Read flat file</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/></refclass>
+</refnamediv>
+<indexterm><primary>flatFileReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+    Optionally, any number of <xref linkend="sx:parameter"/> 
+  elements.
+  </para></listitem>
+<listitem><para>
+Optionally, any number of <xref linkend="flat-file-option-elements"/>, for
+example, any number of 
+                     <xref linkend="sx:recordDelimiter"/> elements, or any 
+                     number of <xref linkend="sx:commentStarter"/> elements.
+</para></listitem>
+<listitem><para>
+    Optionally, a <xref linkend="sx:streamSource"/> 
+  element.
+  </para></listitem>
+<listitem><para>
+    Optionally, a <xref linkend="sx:flatFile"/> element. 
+    Defaults to a file reader that examines the first row of the file for
+    delimited column headings.
+  </para>
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of a flat file record reader.</title>
+<programlisting>
+<![CDATA[
+  <sx:flatFileReader id="countries">
+    <sx:urlSource url="books/countries.csv"/>
+    
+    <sx:flatFile>
+      <sx:flatFileBody>
+        <sx:flatRecordType name="country">
+          <sx:fieldDelimiter value=","/> 
+          <sx:delimitedField name="countryCode"/>
+          <sx:delimitedField name="countryName"/>
+        </sx:flatRecordType>
+      </sx:flatFileBody>
+    </sx:flatFile>
+    
+  </sx:flatFileReader>
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordContent"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatRecordField" xreflabel="sx:flatRecordField">
+<refnamediv>
+  <refname>sx:flatRecordField</refname>
+  <refpurpose>Abstract element standing for any flat record field</refpurpose>
+</refnamediv>
+<indexterm><primary>flatRecordField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:flatRecordField</sgmltag>, such as <xref linkend="sx:delimitedField"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatRecordType"/>
+</listitem>
+<listitem>
+<xref linkend="sx:delimitedField"/>
+</listitem>
+<listitem>
+<xref linkend="sx:positionalField"/>
+</listitem>
+<listitem>
+<xref linkend="sx:binaryField"/>
+</listitem>
+<listitem>
+<xref linkend="sx:integerField"/>
+</listitem>
+<listitem>
+<xref linkend="sx:repeatingGroup"/>
+</listitem>
+<listitem>
+<xref linkend="sx:repeatingField"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatRecordType" xreflabel="sx:flatRecordType">
+<refnamediv>
+  <refname>sx:flatRecordType</refname>
+  <refpurpose>Flat record type</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:metaRecord"/>, <xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>flatRecordType</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A QName, or an expression that evaluates to a QName.  Defaults to 
+  "record"</entry>
+</row>
+<row>
+<entry>recordLength</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The total length of the record, including record delimiter, if 
+  any.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One or more specializations of the abstract <xref linkend="sx:flatRecordField"/> element, 
+including <xref linkend="sx:delimitedField"/>, <xref linkend="sx:positionalField"/>,
+<xref linkend="sx:repeatingGroup"/>, and <xref linkend="sx:flatRecordType"/> elements.  If positional
+and delimited fields are mixed, the positional fields should precede the delimited fields.
+Note that you can extend other flat record types by referring to the base <xref linkend="sx:flatRecordType"/> elements 
+in the content.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>The "country" record.</title>
+<programlisting>
+<![CDATA[
+<sx:flatRecordType id="countryRec" name="country">
+  <sx:fieldDelimiter value=","/>
+  <sx:delimitedField name="code"/>
+  <sx:delimitedField name="name"/>
+</sx:flatRecordType>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Extending the "country" record with a "message" field.</title>
+<programlisting>
+<![CDATA[
+  <sx:flatRecordType name="countryDiscard">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="message"/>
+    <sx:flatRecordType ref="countryRec"/>
+  </sx:flatRecordType>
+]]>
+</programlisting>
+<para>The reference to the "country" record above is expanded into the fields of the "country" record.
+</para>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFile"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatRecordTypeChoice" xreflabel="sx:flatRecordTypeChoice">
+<refnamediv>
+  <refname>sx:flatRecordTypeChoice</refname>
+  <refpurpose>Choose from alternative record definitions</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:metaRecord"/></refclass>
+</refnamediv>
+<indexterm><primary>flatRecordTypeChoice</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One or more specializations of the abstract <xref linkend="sx:flatRecordField"/> element, 
+including <xref linkend="sx:positionalField"/>,
+<xref linkend="sx:binaryField"/>, <xref linkend="sx:integerField"/> and 
+  <xref linkend="sx:delimitedField"/>. If 
+positional and delimited fields are mixed, the positional fields should precede 
+the delimited fields. 
+</para>
+  </listitem>
+<listitem>
+<para>One or more <sgmltag>sx:when</sgmltag> elements, optionally followed by one <sgmltag>sx:otherwise</sgmltag> element.
+The <sgmltag>sx:when</sgmltag> elements must have a <sgmltag class="attribute">test</sgmltag> attribute, an XPath expression that is evaluated
+against a document containing the above fields.  The <sgmltag>sx:when</sgmltag> and <sgmltag>sx:otherwise</sgmltag> elements must contain
+one <xref linkend="sx:flatRecordType"/> or <xref linkend="sx:flatRecordTypeChoice"/> child element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFile"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileTrailer" xreflabel="sx:flatFileTrailer">
+<refnamediv>
+  <refname>sx:flatFileTrailer</refname>
+  <refpurpose>Flat file trailer</refpurpose>
+</refnamediv>
+<indexterm><primary>flatFileTrailer</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>lineCount</entry>
+<entry>No</entry>
+<entry>Number</entry>
+<entry>The number of lines in the trailer.</entry>
+</row>
+<row>
+<entry>recordLength</entry>
+<entry>No</entry>
+<entry>Integer</entry>
+<entry>The total length of the header records, including record delimiter, if 
+  any.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>One or more <xref linkend="sx:metaRecord"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>A flat file trailer which contains a record count.</title>
+<para>The trailer declaration below will append a two line trailer to a flat file:
+</para>
+<itemizedlist>
+  <listitem><para>A blank line, followed by
+  </para></listitem>
+  <listitem><para>Number of records:  &lt;recordCount>
+  </para></listitem>
+</itemizedlist>
+<programlisting>
+<![CDATA[
+  <sx:flatFileTrailer>
+    <sx:annotationRecord></sx:annotationRecord>
+    <sx:flatRecordType ref="trailer"/>
+  </sx:flatFileTrailer>
+
+  <sx:flatRecordType id="trailer" name="trailer">
+    <sx:positionalField name="recordCountLabel" width="19" label="Number of records: "/>
+    <sx:positionalField name="recordCount"  width="10" label="{$sx:recordCount}"/>
+  </sx:flatRecordType>
+]]>
+</programlisting>
+<para>
+Note the following:
+<itemizedlist>
+  <listitem><para>In header and trailer sections, the <sgmltag class="attribute">label</sgmltag> attributes of fields are treated as data values.
+  </para></listitem>
+  <listitem><para>In a <sgmltag>sx:positionalField</sgmltag> element, the value of the <sgmltag class="attribute">label</sgmltag> 
+  attribute can contain references to parameters, in
+  particular to <code>$sx:recordCount</code>, which is a parameter that the file record writer adds after finishing writing records.
+  </para></listitem>
+</itemizedlist>
+</para>
+</example>
+<example>
+<title>A flat file trailer which contains size and CRC file signatures.</title>
+<para>The flat file declaration below will append a trailer to a flat file that contains the size in bytes of the flat file body,
+followed by the CRC value calculated for the flat file body.
+</para>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="sampleFlatFile">
+    <sx:flatFileBody> 
+      ...
+    </sx:flatFileBody>
+    
+    <sx:flatFileSignature recordType="fileSignatures" field="filecrc" method="crc"/>
+    <sx:flatFileSignature recordType="fileSignatures" field="filesize" method="size"/>
+    <sx:flatFileTrailer>
+      <sx:flatRecordType ref="sampleTrailerRecord"/>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="sampleTrailerRecord" name="fileSignatures">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="filesize"/>
+    <sx:delimitedField name="filecrc"/>
+  </sx:flatRecordType>
+]]>
+</programlisting>
+<para>
+Note the following:
+</para>
+<itemizedlist>
+  <listitem><para>The <sgmltag>sx:flatFile</sgmltag> element contains two <sgmltag>sx:flatFileSignature</sgmltag> elements,
+  which define the rules for checking the CRC and size when reading the file, and signing the header or trailer with a CRC and size when writing the file.
+  </para></listitem>
+  <listitem><para>The <sgmltag>sx:flatFileSignature</sgmltag> element has attributes 
+  <sgmltag class="attribute">recordType</sgmltag> and <sgmltag class="attribute">field</sgmltag>, which 
+  identify where in the header or trailer the signature value belongs.
+  </para></listitem>
+</itemizedlist>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFileSignature"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:flatFileWriter" xreflabel="sx:flatFileWriter">
+<refnamediv>
+  <refname>sx:flatFileWriter</refname>
+  <refpurpose>Abstract element standing for any flat file writer</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordWriter"/></refclass>
+</refnamediv>
+<indexterm><primary>flatFileWriter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Optionally, a <xref linkend="sx:streamSink"/> element.</listitem>
+<listitem>Optionally, a <xref linkend="sx:flatFile"/> element.  If omitted, the file structure defaults to a 
+  CSV file format with labels and values reflecting the names and values in the records. </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of a flat file record writer.</title>
+<programlisting>
+<![CDATA[
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordWriter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+  
+<refentry id="sx:integerField" xreflabel="sx:integerField">
+<refnamediv>
+  <refname>sx:integerField</refname>
+  <refpurpose>Integer field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>integerField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>Yes</entry>
+<entry>number</entry>
+<entry>The width of the field, which must be 1, 2, 4, or 8.
+</entry>
+</row>
+<row>
+<entry>bigEndian</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Specifies the byte order, defaults to <code>true</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+  Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty 
+  string (for writing if there are missing field values.)
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This element supports reading and writing of integer values encoded as BIG 
+  ENDIAN or LITTLE ENDIAN.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:mergePhysicalSegments" xreflabel="sx:mergePhysicalSegments">
+<refnamediv>
+  <refname>sx:mergePhysicalSegments</refname>
+  <refpurpose>Merges a number of physical segments into one logical 
+    record.</refpurpose>
+</refnamediv>
+<indexterm><primary>mergePhysicalSegments</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+<row>
+<entry>segmentLength</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The length of the segment, may be read from a field in the 
+  header.</entry>
+</row>
+<row>
+<entry>suppressRDW</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Suppress the 4-byte record descriptor word (RDW) from the front of 
+  the logical record, defaults to <code>false</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One <xref linkend="sx:metaRecord"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:vbsFlatRecordType"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:metaRecord" xreflabel="sx:metaRecord">
+<refnamediv>
+  <refname>sx:metaRecord</refname>
+  <refpurpose>Meta record</refpurpose>
+</refnamediv>
+<indexterm><primary>metaRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:metaRecord</sgmltag>, such as <xref linkend="sx:flatRecordType"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatRecordType"/>
+</listitem>
+<listitem>
+<xref linkend="sx:annotationRecord"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:nameDelimiter" xreflabel="sx:nameDelimiter">
+<refnamediv>
+  <refname>sx:nameDelimiter</refname>
+  <refpurpose>Separate a field name and value</refpurpose>
+</refnamediv>
+<indexterm><primary>nameDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The character(s) used to separate name/value pairs.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Value of the character(s) used to separate name/value pairs.  
+</para>
+<para>
+The following special encodings may appear in a delimiter value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x09;]]> 
+is another way of specifying a tab character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:packedDecimalField" xreflabel="sx:packedDecimalField">
+<refnamediv>
+  <refname>sx:packedDecimalField</refname>
+  <refpurpose>Packed decimal field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>packedDecimalField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The width of the field.  Defaults to the width corresponding to the digitCount.
+</entry>
+</row>
+<row>
+<entry>digitCount</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The total number of digits in the packed decimal number.
+</entry>
+</row>
+<row>
+<entry>decimalPlaces</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The number of places to the right of the implied decimal.  Defaults to <code>0</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:nonrepeatingGroup" xreflabel="sx:nonrepeatingGroup">
+<refnamediv>
+  <refname>sx:nonrepeatingGroup</refname>
+  <refpurpose>A nonrepeating group is a field that contains at most one group of 
+    subfields within a segment (an area of a record terminated with a segment 
+    delimiter.)
+  </refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>repeatingGroup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the nonrepeating group field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+  <listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+  </listitem>
+  <listitem>
+<para>
+A <xref linkend="sx:flatRecordType"/> element, or a <xref linkend="sx:flatRecordTypeChoice"/> element.
+</para>
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+  <para>
+The <xref linkend="sx:segmentDelimiter"/>, if not supplied, defaults to the end of the record.
+</para>
+<para>A nonrepeating group reads at most one record</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:repeatingGroup"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:overpunchField" xreflabel="sx:overpunchField">
+<refnamediv>
+  <refname>sx:overpunchField</refname>
+  <refpurpose>Overpunch field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>overpunchField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The width of the field.
+</entry>
+</row>
+<row>
+<entry>decimalPlaces</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The number of places to the right of the implied decimal.  Defaults to <code>0</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Overpunch field.</title>
+  <para>The input consists of five overpunch fields with field width 5.
+  </para>
+<programlisting>
+<![CDATA[
+11110111112222}2222J2222K12349
+ ]]>
+</programlisting>
+  <para>The flat file definition is
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:flatFile id="t:overpunch-file">
+      <sx:recordDelimiter value="!"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType>
+        <sx:overpunchField name="value1" width="5" decimalPlaces="1"/>
+        <sx:overpunchField name="value2" width="5" decimalPlaces="2"/>
+        <sx:overpunchField name="value3" width="5" decimalPlaces="3"/>
+        <sx:overpunchField name="value4" width="5" decimalPlaces="4"/>
+        <sx:overpunchField name="value5" width="5" decimalPlaces="5"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+]]>
+</programlisting>
+  <para>
+    The output with default record mapping is
+  </para>
+<programlisting>
+<![CDATA[
+<document>
+  <record>
+    <value1>1111.0</value1>
+    <value2>111.11</value2>
+    <value3>-22.220</value3>
+    <value4>-2.2221</value4>
+    <value5>-0.22222</value5>
+  </record>
+</document>
+ ]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:positionalField" xreflabel="sx:positionalField">
+<refnamediv>
+  <refname>sx:positionalField</refname>
+  <refpurpose>Positional field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>positionalField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>label</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A label for the field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry>number</entry>
+<entry>The one-based starting position of the field in the record.  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>width</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The width of the field.
+</entry>
+</row>
+<row>
+<entry>trim</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading and trailing whitespace.  The default is <code>true</code></entry>
+(For backwards compatability, "yes"/"no" is also supported.)
+</row>
+<row>
+<entry>trimLeading</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim leading whitespace.  The default is <code>true</code></entry>
+(For backwards compatability, "yes"/"no" is also supported.)
+</row>
+<row>
+<entry>trimTrailing</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Indicates whether to trim trailing whitespace.  The default is <code>true</code></entry>
+(For backwards compatability, "yes"/"no" is also supported.)
+</row>
+<row>
+<entry>justify</entry>
+<entry>No</entry>
+<entry>"left","right", or "center"</entry>
+<entry>The alignment rule used for formatting values into a field of fixed width.  The default is "left".
+</entry>
+</row>
+<row>
+<entry>padCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>
+The pad character used for formatting values into a field of fixed width, e.g., 
+a space or zero.  The default is a space.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Positional field using start attribute.</title>
+<para>
+In the example below, positions one through two are assigned to <code>short-record-type</code>,
+and positions one through five are assigned to <code>record-type</code>.  The <code>value</code>
+field starts at position six.
+</para>
+<programlisting>
+<![CDATA[
+   <sx:flatRecordType name="hot">
+     <sx:positionalField name="short-record-type"  width="2"/>
+     <sx:positionalField name="record-type" start="1" width="5"/>
+     <sx:positionalField name="value" width="7"/>
+   </sx:flatRecordType>
+]]>
+</programlisting>
+</example>
+<example>
+<title>Variable length positional field.</title>
+<para>
+In the example below, the input file contains a variable length field called 
+"remarksText".  The field width is specified using the value of its preceding
+field, called "remarksSize".
+</para>
+<programlisting>
+<![CDATA[
+  <sx:flatRecordType name="transaction">
+    <sx:positionalField name="remarksSize" width="4"/>
+    <sx:positionalField name="remarksText" width="{remarksSize}"/>
+  </sx:flatRecordType>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordComposition" xreflabel="sx:recordComposition">
+<refnamediv>
+  <refname>sx:recordComposition</refname>
+  <refpurpose>Deprecated in version 1.1.2, aliased to <xref linkend="sx:combinePhysicalRecords"/>
+    </refpurpose>
+</refnamediv>
+<indexterm><primary>combineFlatRecords</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+<row>
+<entry>suppressRDW</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Suppress the 4-byte record descriptor word (RDW) from the front of 
+  the logical record, defaults to <code>false</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One <xref linkend="sx:metaRecord"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:compositeFlatRecordType"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordDelimiter" xreflabel="sx:recordDelimiter">
+<refnamediv>
+  <refname>sx:recordDelimiter</refname>
+  <refpurpose>Separate records</refpurpose>
+</refnamediv>
+<indexterm><primary>recordDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the beginning of a record.
+If omitted, the record begins past the end of the previous record, or the beginning of the file.</entry>
+</row>
+<row>
+<entry>end</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the end of a record.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Same as <sgmltag class="attribute">end</sgmltag>.</entry>
+</row>
+<row>
+<entry>continuation</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that indicates a continuation 
+  character, which allows a record to be extended onto the next line.</entry>
+</row>
+<row>
+<entry>continuationSequence</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The continuation + delimiter.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>An escape character used to escape the delimiter.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The record delimiter indicates the end of the record.
+</para>
+<para>
+The following special encodings may appear in a record delimiter or continuation 
+value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x0A;]]> 
+is another way of specifying a line feed character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:repeatDelimiter" xreflabel="sx:repeatDelimiter">
+<refnamediv>
+  <refname>sx:repeatDelimiter</refname>
+  <refpurpose>Separate repeating groups within a segment</refpurpose>
+</refnamediv>
+<indexterm><primary>repeatDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the beginning of a segment separated by start-end delimiters.</entry>
+</row>
+<row>
+<entry>end</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the end of a segment separated by start-end delimiters.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that indicates the end of a segment within a repeating group.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>An escape character used to escape the delimiter.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The repeat delimiter separates segments within a repeating group.
+It may be one or more characters in length.  
+</para>
+<para>
+The following special encodings may appear in a delimiter value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x09;]]> 
+is another way of specifying a tab character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a value that includes a character that is the same as the delimiter, the value must be enclosed in quotes.
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:repeatingField" xreflabel="sx:repeatingField">
+<refnamediv>
+  <refname>sx:repeatingField</refname>
+  <refpurpose>Field repeats</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>repeatingField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>count</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A fixed number of repeating tagged fields.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para></listitem>
+<listitem><para>Optionally, a <xref linkend="sx:defaultValue"/> element, defaults to the empty string (for writing if there are missing field values.)
+</para></listitem>
+<listitem><para>One <xref linkend="sx:flatRecordField"/> element.
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordMapping"/>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a field value that includes a character that is the same as the quote symbol, you must escape that
+character.  For example, if the quote symbol is the default double quotation mark, 
+escaped by a second quote symbol, and if your record data is
+<programlisting>
+"Gun, with Occaisonal Music","""SHARP, FUNNY, VISIONARY"""
+</programlisting>
+then the values become
+<programlisting>
+Gun, with Occaisonal Music
+"SHARP, FUNNY, VISIONARY"
+</programlisting>
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:repeatingNamedField" xreflabel="sx:repeatingNamedField">
+<refnamediv>
+  <refname>sx:repeatingNamedField</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:repeatingField"/></refpurpose>
+</refnamediv>
+<indexterm><primary>repeatingField</primary></indexterm>
+</refentry>
+
+<refentry id="sx:repeatingGroup" xreflabel="sx:repeatingGroup">
+<refnamediv>
+  <refname>sx:repeatingGroup</refname>
+  <refpurpose>A repeating group is a field that contains zero or more groups of 
+    subfields within a segment (an area of a record terminated with a segment
+    delimiter.)  The groups may be separated by <xref linkend="sx:repeatDelimiter"/>s,
+    or may be of fixed length.
+  </refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:flatRecordField"/></refclass>
+</refnamediv>
+<indexterm><primary>repeatingGroup</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the repeating group field.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The (by default) one-based starting position of the field in the record.  
+  If it is not specified, it defaults to the end of the previous field.
+</entry>
+</row>
+<row>
+<entry>count</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A fixed number of repeating records.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+  <listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+  </listitem>
+  <listitem>
+<para>
+A <xref linkend="sx:flatRecordType"/> element, or a <xref linkend="sx:flatRecordTypeChoice"/> element.
+</para>
+  </listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>If an <xref linkend="sx:repeatDelimiter"/> is supplied in the content, or is inherited from an ancestor element 
+of the record type, each member of the repeating group is assumed to be separated by the repeat delimiter, and terminated
+either by the <xref linkend="sx:segmentDelimiter"/>, or earlier by the value of the <sgmltag class="attribute">count</sgmltag> 
+attribute (if supplied.)   The <xref linkend="sx:segmentDelimiter"/>, if not supplied, defaults to the end of the record.
+</para>
+<para>If an <xref linkend="sx:repeatDelimiter"/> is neither supplied in the content nor inherited from an ancestor element, 
+each member of the repeating group is assumed to follow sequentially, and is read according, up to the value of the
+<sgmltag class="attribute">count</sgmltag> attribute.
+</para>
+<para>
+The difference between a repeating group and a repeating segment is that only a specific composite of fields is repeated, not an entire segment. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:repeatingField"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:segmentComposition" xreflabel="sx:segmentComposition">
+<refnamediv>
+  <refname>sx:segmentComposition</refname>
+  <refpurpose>Deprecated in 1.1.2, aliased to <xref linkend="sx:mergePhysicalSegments"/></refpurpose>
+</refnamediv>
+<indexterm><primary>segmentComposition</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+<row>
+<entry>suppressRDW</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Suppress the 4-byte record descriptor word (RDW) from the front of 
+  the logical record, defaults to <code>false</code>.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One <xref linkend="sx:metaRecord"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:vbsFlatRecordType"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:segmentDelimiter" xreflabel="sx:segmentDelimiter">
+<refnamediv>
+  <refname>sx:segmentDelimiter</refname>
+  <refpurpose>Separate a record into segments containing repeating groups</refpurpose>
+</refnamediv>
+<indexterm><primary>segmentDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>start</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the beginning of a segment separated by start-end delimiters.</entry>
+</row>
+<row>
+<entry>end</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that identifies the end of a segment separated by start-end delimiters.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that indicates the end of a segment.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>An escape character used to escape the delimiter.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The segment delimiter indicates the end of a repeating group of segments within a record.  
+It may be one or more characters in length.  
+</para>
+<para>
+The following special encodings may appear in a delimiter value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x09;]]> 
+is another way of specifying a tab character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+<refsection>
+<title>Notes</title>
+<itemizedlist>
+<listitem><para>
+If you have a value that includes a character that is the same as the delimiter, the value must be enclosed in quotes.
+</para></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:separator" xreflabel="sx:separator">
+<refnamediv>
+  <refname>sx:separator</refname>
+  <refpurpose>Abstract element standing for any separator</refpurpose>
+</refnamediv>
+<indexterm><primary>separator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of 
+<sgmltag>sx:separator</sgmltag>, such as <xref linkend="sx:whitespaceSeparator"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:whitespaceSeparator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:sizeFlatFileSignature" xreflabel="sx:sizeFlatFileSignature">
+<refnamediv>
+  <refname>sx:sizeFlatFileSignature</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:flatFileSignature"/> with method="size"</refpurpose>
+</refnamediv>
+<indexterm><primary>sizeFlatFileSignature</primary></indexterm>
+</refentry>
+
+<refentry id="sx:subfieldDelimiter" xreflabel="sx:subfieldDelimiter">
+<refnamediv>
+  <refname>sx:subfieldDelimiter</refname>
+  <refpurpose>Separate values within a field</refpurpose>
+</refnamediv>
+<indexterm><primary>subfieldDelimiter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string of one or more characters that indicates the end of a value in a multivalued field.</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>An escape character used to escape the delimiter.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, a <xref linkend="sx:separator"/> element.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The subfield delimiter indicates the end of a value in a multivalued delimiter separated field.
+</para>
+<para>
+The following special encodings may appear in a delimiter value.
+<itemizedlist>
+<listitem>\t, to indicate a tab.
+</listitem>
+<listitem>\r, to indicate a carriage return.
+</listitem>
+<listitem>\n, to indicate a line feed.
+</listitem>
+</itemizedlist>
+</para>
+<para>You can also use numerical entity references to specify delimiter values, e.g. <![CDATA[&#x09;]]> 
+is another way of specifying a tab character.
+</para>
+<para>
+The value of the delimiter may be specified either by a <code>value</code> attribute
+or by the <xref linkend="sx:separator"/> content. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:tagDelimiter" xreflabel="sx:tagDelimiter">
+<refnamediv>
+  <refname>sx:tagDelimiter</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:nameDelimiter"/></refpurpose>
+</refnamediv>
+<indexterm><primary>tagDelimiter</primary></indexterm>
+</refentry>
+
+<refentry id="sx:taggedDelimitedField" xreflabel="sx:taggedDelimitedField">
+<refnamediv>
+  <refname>sx:taggedDelimitedField</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:delimitedNamedField"/></refpurpose>
+</refnamediv>
+</refentry> 
+  
+  <refentry id="sx:taggedFlatRecordField" xreflabel="sx:taggedFlatRecordField">
+<refnamediv>
+  <refname>sx:taggedFlatRecordField</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:flatRecordField"/></refpurpose>
+</refnamediv>
+  </refentry>
+
+<refentry id="sx:vbsFlatRecordType" xreflabel="sx:vbsFlatRecordType">
+<refnamediv>
+  <refname>sx:vbsFlatRecordType</refname>
+  <refpurpose>Variable Block Segment (VBS) record type</refpurpose>
+</refnamediv>
+<indexterm><primary>vbsFlatRecordType</primary></indexterm>
+<refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:metaRecord"/></refclass>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry><xref linkend="flat-file-option-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Standard flat file options, may be overriden in a descendent</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+<para>
+Optionally, <xref linkend="flat-file-option-elements"/>.  These apply to the current and descendent elements, if applicable they may be overriden in descendent elements 
+</para>
+</listitem>
+<listitem>
+<para>One or more specializations of the abstract <xref linkend="sx:flatRecordField"/> element, 
+including <xref linkend="sx:positionalField"/>,
+<xref linkend="sx:binaryField"/>, <xref linkend="sx:integerField"/> and 
+  <xref linkend="sx:delimitedField"/>. If 
+positional and delimited fields are mixed, the positional fields should precede 
+the delimited fields. 
+</para>
+  </listitem>
+<listitem>
+<para>One <xref linkend="sx:mergePhysicalSegments"/> element.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatFile"/>
+</listitem>
+<listitem>
+<xref linkend="sx:onRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldAttributeMap"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldElementMap"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:whitespaceSeparator" xreflabel="sx:whitespaceSeparator">
+<refnamediv>
+  <refname>sx:whitespaceSeparator</refname>
+  <refpurpose>Separate fields with whitespace</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:separator"/></refclass>
+</refnamediv>
+<indexterm><primary>whitespaceSeparator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The whitespace separator permits fields or records to be separated by one or more whitespace characters.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordDelimiter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldDelimiter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:subfieldDelimiter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+</reference>
+

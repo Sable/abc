@@ -1,0 +1,657 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core">
+
+  <!--  Configuration Components -->
+  <ioc:configurationComponent name="sx:expiryOptions"
+    assemblerClass="com.servingxml.components.cache.ExpiryOptionsAssembler"/>
+  <ioc:configurationComponent name="sx:xsltConfiguration"
+    assemblerClass="com.servingxml.components.xsltconfig.XsltConfigurationAssembler"/>
+  <ioc:configurationComponent name="sx:patternMatcher"
+    assemblerClass="com.servingxml.components.regex.PatternMatcherFactoryAssembler"/>
+  <ioc:configurationComponent name="sx:escapeSubstitutions"
+                assemblerClass="com.servingxml.components.string.EscapeSubstitutionVariablesAssembler"/>
+
+  <!--  Abstract Components -->
+  <ioc:abstractComponent name="sx:flatRecordField"
+                        interface="com.servingxml.components.flatfile.recordtype.FlatRecordFieldFactory"/>
+  <ioc:abstractComponent name="sx:metaRecord"
+                        interface="com.servingxml.components.flatfile.recordtype.FlatRecordTypeFactory"/>
+  <ioc:abstractComponent name="sx:restriction"
+                        interface="com.servingxml.components.recordio.Restriction"/>
+  <ioc:abstractComponent name="sx:recordFilter"
+                        interface="com.servingxml.components.recordio.RecordFilterAppender"/>
+  <ioc:abstractComponent name="sx:validator"
+                        interface="com.servingxml.components.common.Validator"/>
+  <ioc:abstractComponent name="sx:recordReader"
+                        interface="com.servingxml.components.recordio.RecordReaderFactory"/>
+  <ioc:abstractComponent name="sx:recordWriter"
+                        interface="com.servingxml.components.recordio.RecordWriterFactory"/>
+  <ioc:abstractComponent name="sx:streamSource"
+                        interface="com.servingxml.components.streamsource.StreamSourceFactory"/>
+  <ioc:abstractComponent name="sx:streamSink"
+                        interface="com.servingxml.components.streamsink.StreamSinkFactory"/>
+  <ioc:abstractComponent name="sx:content"
+                        interface="com.servingxml.components.content.Content"/>
+  <ioc:abstractComponent name="sx:stringable"
+                        interface="com.servingxml.components.string.StringFactory"/>
+  <ioc:abstractComponent name="sx:string"
+                        interface="com.servingxml.components.string.StringFactory"/>
+  <ioc:abstractComponent name="sx:filter"
+                        interface="com.servingxml.components.content.Content"/>
+  <ioc:abstractComponent name="sx:task"
+                        interface="com.servingxml.components.task.Task">
+  </ioc:abstractComponent>
+  <ioc:abstractComponent name="sx:saxSink"
+                        interface="com.servingxml.io.saxsink.SaxSink"/>
+  <ioc:abstractComponent name="sx:jdbcConnectionPool"
+                        interface="com.servingxml.components.sql.JdbcConnectionPool"/>
+  <ioc:abstractComponent name="sx:sqlUpdateDatabase"
+                        interface="com.servingxml.components.sql.SqlUpdateDatabaseFactory"/>
+  <ioc:abstractComponent name="sx:saxSource"
+                        interface="com.servingxml.components.saxsource.SaxSourceFactory"/>
+  <ioc:abstractComponent name="sx:mapXml"
+                        interface="com.servingxml.components.recordmapping.MapXmlFactory"/>
+  <ioc:abstractComponent name="sx:order"
+                        interface="com.servingxml.components.recordmapping.Sort"/>
+  <ioc:abstractComponent name="sx:shredXml"
+                         interface="com.servingxml.components.inverserecordmapping.ShredXmlFactory"/>
+                  
+  <!--  Service Components -->
+  <ioc:serviceComponent name="sx:resources"
+                assemblerClass="com.servingxml.components.application.ApplicationAssembler"/>
+  <ioc:serviceComponent name="sx:emptyDocument" base="sx:content"
+                assemblerClass="com.servingxml.components.content.EmptyDocumentAssembler"/>
+  <ioc:serviceComponent name="sx:parameterReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.recordio.ParameterReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:defaultValue"
+                assemblerClass="com.servingxml.components.parameter.DefaultValueAssembler"/>
+  <ioc:serviceComponent name="sx:fileFilter"
+                assemblerClass="com.servingxml.components.directoryreader.FileFilterAssembler"/>
+  <ioc:serviceComponent name="sx:directoryReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.directoryreader.DirectoryReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:defaultStreamSink" base="sx:streamSink"
+                assemblerClass="com.servingxml.components.streamsink.DefaultStreamSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:fileSink" base="sx:streamSink"
+                assemblerClass="com.servingxml.components.streamsink.file.FileSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:urlSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.streamsource.url.UrlSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:urlSink" base="sx:streamSink"
+               assemblerClass="com.servingxml.components.streamsink.url.UrlSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:fileSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.streamsource.file.FileSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:commandSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.command.CommandSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:commandSink" base="sx:streamSink"
+                assemblerClass="com.servingxml.components.command.CommandSinkFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:envVariable"
+                assemblerClass="com.servingxml.components.command.EnvVariableFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:command"
+                assemblerClass="com.servingxml.components.command.CommandAssembler"/>
+  <ioc:serviceComponent name="sx:commandArg"
+                assemblerClass="com.servingxml.components.command.CommandArgAssembler"/>
+  <ioc:serviceComponent name="sx:saxReader" base="sx:saxSource"
+                assemblerClass="com.servingxml.components.saxsource.SaxReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:stringSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.streamsource.string.StringStreamSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:inlineSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.streamsource.string.InlineStreamSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:defaultStreamSource" base="sx:streamSource"
+                assemblerClass="com.servingxml.components.streamsource.DefaultStreamSourceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:parameter"
+                assemblerClass="com.servingxml.components.parameter.ParameterDescriptorAssembler"/>
+  <ioc:serviceComponent name="sx:withParameters"
+                assemblerClass="com.servingxml.components.parameter.WithParametersAssembler"/>
+  <ioc:serviceComponent name="sx:toString" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ToStringAssembler"/>
+  <ioc:serviceComponent name="sx:preserveMarkup" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.PreserveMarkupAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:escapeMarkup" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.EscapeMarkupAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:concat" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ConcatAssembler"/>
+  <ioc:serviceComponent name="sx:label"
+                        assemblerClass="com.servingxml.components.label.LabelAssembler"/>
+  <ioc:serviceComponent name="sx:onError"
+                assemblerClass="com.servingxml.components.error.CatchErrorAssembler"/>
+  <ioc:serviceComponent name="sx:raiseError"
+                assemblerClass="com.servingxml.components.error.ThrowErrorAssembler"/>
+  <ioc:serviceComponent name="sx:findAndReplace" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.regex.FindAndReplaceAssembler"/>
+  <ioc:serviceComponent name="sx:convertDate" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ConvertDateAssembler"/>
+  <ioc:serviceComponent name="sx:convertToDateTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ConvertToDateTimeAssembler"/>
+  <ioc:serviceComponent name="sx:toXmlDateTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ToXmlDateTimeAssembler"/>
+  <ioc:serviceComponent name="sx:toXmlDate" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ToXmlDateAssembler"/>
+  <ioc:serviceComponent name="sx:toXmlTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.ToXmlTimeAssembler"/>
+  <ioc:serviceComponent name="sx:formatDateTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.FormatDateTimeAssembler"/>
+  <ioc:serviceComponent name="sx:currentTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.CurrentTimeAssembler"/>
+  <ioc:serviceComponent name="sx:currentDate" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.CurrentDateAssembler"/>
+  <ioc:serviceComponent name="sx:lineNumber" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.LineNumberAssembler"/>
+  <ioc:serviceComponent name="sx:currentDateTime" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.CurrentDateTimeAssembler"/>
+  <ioc:serviceComponent name="sx:xslt" base="sx:content"
+                assemblerClass="com.servingxml.components.xslt.XsltFilterFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:saxFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.CustomSaxFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:domFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.DomXmlFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:processSubtree" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:attribute"
+                assemblerClass="com.servingxml.components.wrap.ElementAttributeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:wrap" base="sx:task sx:content sx:stringable"
+                assemblerClass="com.servingxml.components.wrap.WrappedContentAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.wrap.LiteralContentFilterAppenderAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:tagTee" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.TagTeeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:removeEmptyElements" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.RemoveEmptyElementsAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:assert" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.AssertAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:removeEmptyAttributes" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.RemoveEmptyAttributesAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:customSerializer" base="sx:saxSink"
+                assemblerClass="com.servingxml.components.serializer.CustomSerializerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:xsltSerializer" base="sx:saxSink"
+                assemblerClass="com.servingxml.components.serializer.XsltSerializerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:batchedSerializer" base="sx:saxSink"
+                assemblerClass="com.servingxml.components.serializer.BatchedSerializerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:serialize" base="sx:task sx:content sx:stringable"
+                assemblerClass="com.servingxml.components.transform.SerializedContentAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:runService" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.components.service.RunServiceAssembler"/>
+  <ioc:serviceComponent name="sx:recordStream" base="sx:task sx:stringable sx:recordReader sx:recordFilter sx:recordWriter"
+                assemblerClass="com.servingxml.components.recordio.RecordStreamBuilderAssembler"/>
+  <ioc:serviceComponent name="sx:transform" base="sx:task sx:content sx:stringable"
+                assemblerClass="com.servingxml.components.transform.TransformedContentAssembler"/>
+  <ioc:serviceComponent name="sx:service"
+                assemblerClass="com.servingxml.components.service.ServiceAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:choose" base="sx:task sx:content sx:recordFilter sx:mapXml sx:stringable"
+                        assemblerClass="com.servingxml.components.choose.ChooseAssembler">
+    <ioc:serviceComponent name="sx:when"
+                          assemblerClass="com.servingxml.components.choose.WhenAlternativeAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+    </ioc:serviceComponent>
+    <ioc:serviceComponent name="sx:otherwise"
+                          assemblerClass="com.servingxml.components.choose.OtherwiseAlternativeAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:documentSequence" base="sx:content"
+                assemblerClass="com.servingxml.components.content.DocumentSequenceAssembler"/>
+  <ioc:serviceComponent name="sx:document" base="sx:content"
+                assemblerClass="com.servingxml.components.content.DocumentAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+
+  <ioc:serviceComponent name="sx:cachedContent" base="sx:content"
+                assemblerClass="com.servingxml.components.content.CachedContentAssembler"/>
+
+  <ioc:serviceComponent name="sx:recordContent" base="sx:content"
+                assemblerClass="com.servingxml.components.recordmapping.RecordContentAssembler"/>
+  <ioc:serviceComponent name="sx:dynamicContent" base="sx:content"
+                assemblerClass="com.servingxml.components.content.dynamic.DynamicContentAssembler"/>
+  <ioc:serviceComponent name="sx:subtreeRecordReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeRecordReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:inverseRecordMapping"
+                assemblerClass="com.servingxml.components.inverserecordmapping.InverseRecordMappingAssembler"/>
+  <ioc:serviceComponent name="sx:onSubtree" base="sx:shredXml"
+                assemblerClass="com.servingxml.components.inverserecordmapping.OnSubtreeAssembler"/>
+  <ioc:serviceComponent name="sx:flattenSubtree" base="sx:shredXml"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeFlattenerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:subtreeFieldMap" base="sx:shredXml"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeFieldMapAssembler"/>
+  <ioc:serviceComponent name="sx:nestedContent"
+                assemblerClass="com.servingxml.components.recordmapping.NestedContentAssembler"/>
+  <ioc:serviceComponent name="sx:recordMapping"
+                assemblerClass="com.servingxml.components.recordmapping.RecordMappingFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:groupBy" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.GroupByFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:outerGroup" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.OuterGroupFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:innerGroup"  base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.InnerGroupFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:onRecord" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.OnRecordFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:subrecordMapping" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.RepeatingGroupMapFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:fieldElementMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.FieldElementMapFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:fieldElementSequenceMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.FieldElementSequenceMapFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:transformRecord" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.RecordSubtreeMapFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:valueMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.ValueMapFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:elementMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.ElementMapFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:cdata" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.GenerateCDataFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:groupChoice" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.GroupChoiceFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:defaultFieldElementMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.DefaultFieldElementMapFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:fieldAttributeMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.FieldAttributeMapFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:customRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.CustomRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:batchRecords" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.BatchRecordsAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:recordSorter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.RecordSorterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:sortOn"
+                assemblerClass="com.servingxml.components.recordio.SortOnAssembler"/>
+  <ioc:serviceComponent name="sx:rank"
+                assemblerClass="com.servingxml.components.recordio.RankAssembler"/>
+  <ioc:serviceComponent name="sx:customRecordReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.recordio.CustomRecordReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:discard" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.DiscardAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:log" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.LogAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:recordTee" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.RecordTeeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:fieldRestriction"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.FieldRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:and"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.AndRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:or"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.OrRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:recordRestriction"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.RecordRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:restrictRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.RestrictRecordFilterAppenderAssembler">
+    <ioc:serviceComponent name="sx:unmatchedRecord"
+                  assemblerClass="com.servingxml.components.recordio.UnmatchedRecordAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:recordProjection" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.RecordProjectionAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:fieldValidator" base="sx:validator"
+                assemblerClass="com.servingxml.components.recordio.FieldValidatorAssembler"/>
+  <ioc:serviceComponent name="sx:valueRestriction"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.ValueRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:recordValidator" base="sx:recordFilter sx:validator"
+                assemblerClass="com.servingxml.components.recordio.RecordValidatorAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:combineRecords"
+                assemblerClass="com.servingxml.components.recordio.ComposeRecordAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:splitRecord"
+                assemblerClass="com.servingxml.components.recordio.DecomposeRecordAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:discardHandler"
+                assemblerClass="com.servingxml.components.recordio.DiscardFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:replaceRecord" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ReplaceRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:newRecord"
+                assemblerClass="com.servingxml.components.recordio.NewRecordAssembler"/>
+  <ioc:serviceComponent name="sx:modifyRecord" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ModifyRecordAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:newField"
+                assemblerClass="com.servingxml.components.recordio.NewFieldAssembler"/>
+  <ioc:serviceComponent name="sx:property"
+                assemblerClass="com.servingxml.components.property.PropertyAssembler"/>
+  <ioc:serviceComponent name="sx:systemProperty"
+                assemblerClass="com.servingxml.components.property.SystemPropertyAssembler"/>
+  <ioc:serviceComponent name="sx:outputProperty"
+                assemblerClass="com.servingxml.components.property.OutputPropertyFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:processRecord" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:sort" base="sx:order"
+                assemblerClass="com.servingxml.components.recordmapping.OrderByAssembler"/>
+  <ioc:serviceComponent name="sx:reorderRecords" base="sx:order"
+                assemblerClass="com.servingxml.components.recordmapping.ReorderRecordsAssembler"/>
+
+  <!-- Flat file components -->
+ 
+  <ioc:serviceComponent name="sx:flatFileReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:flatFileWriter" base="sx:recordWriter"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileWriterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:batchedRecordWriter" base="sx:recordWriter"
+                assemblerClass="com.servingxml.components.recordio.BatchedRecordWriterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:flatFile"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileAssembler"/>
+  <ioc:serviceComponent name="sx:flatFileSignature"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileSignatureFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:crcFlatFileSignature"
+                assemblerClass="com.servingxml.components.flatfile.layout.CrcFlatFileSignatureFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sizeFlatFileSignature"
+                assemblerClass="com.servingxml.components.flatfile.layout.SizeFlatFileSignatureFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:recordDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.RecordDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:fieldDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.FieldDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:nameDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.NameDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:repeatDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.RepeatDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:segmentDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.SegmentDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:whitespaceSeparator"
+                assemblerClass="com.servingxml.components.flatfile.options.WhitespaceSeparatorFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:subfieldDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.SubfieldDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:quoteSymbol"
+                assemblerClass="com.servingxml.components.quotesymbol.QuoteSymbolAssembler"/>
+  <ioc:serviceComponent name="sx:commentStarter"
+                assemblerClass="com.servingxml.components.flatfile.options.CommentStarterAssembler"/>
+  <ioc:serviceComponent name="sx:flatRecordType" base="sx:metaRecord sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.FlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:vbsFlatRecordType" base="sx:metaRecord sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.VbsFlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:compositeFlatRecordType" base="sx:metaRecord sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.VbsFlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:mergePhysicalSegments" 
+                assemblerClass="com.servingxml.components.flatfile.recordtype.MergeSegmentsFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:combinePhysicalRecords" 
+                assemblerClass="com.servingxml.components.flatfile.recordtype.CombineFlatRecordsFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:flatRecordTypeChoice" base="sx:metaRecord"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.FlatRecordTypeChoiceFactoryAssembler">
+    <ioc:serviceComponent name="sx:when"
+                  assemblerClass="com.servingxml.components.flatfile.recordtype.WhenFlatRecordTypeFactoryAssembler"/>
+    <ioc:serviceComponent name="sx:otherwise"
+                  assemblerClass="com.servingxml.components.flatfile.recordtype.OtherwiseFlatRecordTypeFactoryAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:repeatingGroup" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.RepeatingGroupFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:nonrepeatingGroup" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.NonrepeatingGroupFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:delimitedField"  base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.DelimitedFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:repeatingField"  base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.RepeatingFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:delimitedNamedField"  base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.DelimitedNamedFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:positionalField" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.PositionalFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:overpunchField" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.OverpunchFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:binaryField" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.BinaryFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:integerField" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.IntegerFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:packedDecimalField" base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.PackedDecimalFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:flatFileHeader"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileHeaderAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:flatFileTrailer"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileTrailerAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:flatFileBody"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileBodyFactoryAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:annotationRecord"  base="sx:metaRecord"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.AnnotationRecordFactoryAssembler"/>
+  
+  <!-- SQL components -->
+  <ioc:serviceComponent name="sx:sqlConnectionPool" base="sx:jdbcConnectionPool"
+                assemblerClass="com.servingxml.components.sql.JdbcConnectionPoolAssembler"/>
+  <ioc:serviceComponent name="sx:sqlQuery"
+                assemblerClass="com.servingxml.components.sql.SqlQueryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlCommand"
+                assemblerClass="com.servingxml.components.sql.SqlCommandAssembler"/>
+  <ioc:serviceComponent name="sx:sqlUpdate" base="sx:sqlUpdateDatabase"
+                assemblerClass="com.servingxml.components.sql.SqlUpdateFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlUpdateDetail" base="sx:sqlUpdateDatabase"
+                assemblerClass="com.servingxml.components.sql.SqlUpdateDetailFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlPrepare"
+                assemblerClass="com.servingxml.components.sql.SqlPrepareAssembler"/>
+  <ioc:serviceComponent name="sx:sqlUpdateChoice" base="sx:sqlUpdateDatabase"
+                assemblerClass="com.servingxml.components.sql.SqlUpdateChoiceFactoryAssembler">
+    <ioc:serviceComponent name="sx:recordFound"
+                  assemblerClass="com.servingxml.components.sql.RecordFoundAssembler"/>
+    <ioc:serviceComponent name="sx:recordNotFound"
+                  assemblerClass="com.servingxml.components.sql.RecordNotFoundAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:sqlReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.sql.SqlReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlGrep" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.sql.SqlGrepFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlWriter" base="sx:recordWriter"
+                assemblerClass="com.servingxml.components.sql.SqlWriterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:sqlBatchWriter" base="sx:recordWriter"
+                assemblerClass="com.servingxml.components.sql.SqlBatchWriterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:customJdbcConnectionPool" base="sx:jdbcConnectionPool"
+                assemblerClass="com.servingxml.components.sql.CustomJdbcConnectionPoolAssembler"/>
+
+  <!--  Deprecated -->
+  <ioc:serviceComponent name="sx:documentFragmentContentMap"
+                assemblerClass="com.servingxml.components.inverserecordmapping.OnSubtreeAssembler"/>
+  <ioc:serviceComponent name="sx:documentFragmentRecordMap"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeFlattenerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:subtreeRecordMap"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeFlattenerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:documentFragmentFieldMap"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeFieldMapAssembler"/>
+  <ioc:serviceComponent name="sx:processFragmentFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:subtaskFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:subtaskRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+
+  <ioc:serviceComponent name="sx:documentFragmentFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:documentFragmentFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:customProperty"
+                assemblerClass="com.servingxml.components.property.PropertyAssembler"/>
+  <ioc:serviceComponent name="sx:emptyContent" base="sx:content"
+                assemblerClass="com.servingxml.components.content.EmptyDocumentAssembler"/>
+  <ioc:serviceComponent name="sx:delimitedFieldType"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.DelimitedFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:positionalFieldType"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.PositionalFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:flatFileRecord"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileBodyFactoryAssembler">
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:customXmlFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.CustomSaxFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:removeEmptyElementsFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.RemoveEmptyElementsAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:suppressEmptyElementFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.RemoveEmptyElementsAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:jdbcConnectionPool" base="sx:jdbcConnectionPool"
+                assemblerClass="com.servingxml.components.sql.JdbcConnectionPoolAssembler"/>
+  <ioc:serviceComponent name="sx:flatFileLayout"
+                assemblerClass="com.servingxml.components.flatfile.layout.FlatFileAssembler"/>
+  <ioc:serviceComponent name="sx:recordOutput" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.components.recordio.RecordStreamBuilderAssembler"/>
+  <ioc:serviceComponent name="sx:streamOutput" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.components.transform.SerializedContentAssembler"/>
+  <ioc:serviceComponent name="sx:streamContent" base="sx:content"
+                assemblerClass="com.servingxml.components.content.DocumentAssembler"/>
+  <ioc:serviceComponent name="sx:currentRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:taskRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:saxParser" base="sx:saxSource"
+                assemblerClass="com.servingxml.components.saxsource.SaxReaderFactoryAssembler"/>
+
+  <ioc:configurationComponent name="sx:jaxpConfiguration"
+    assemblerClass="com.servingxml.components.xsltconfig.XsltConfigurationAssembler"/>
+
+  <ioc:serviceComponent name="sx:chooseGroup"
+                assemblerClass="com.servingxml.components.recordmapping.GroupChoiceFactoryAssembler"/>
+  <ioc:configurationComponent name="sx:transformerSettings"
+    assemblerClass="com.servingxml.components.xsltconfig.XsltConfigurationAssembler"/>
+
+  <ioc:serviceComponent name="sx:flatFileRecordType"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.FlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:subtasktFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:subtaskRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:flowFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:flowRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:taskRunnerRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:taskRunnerFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.ProcessSubtreeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:element" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.GenerateElementFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.recordmapping.LiteralContentAssembler"/>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:fieldSetElementMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.DefaultFieldElementMapFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:style" base="sx:content"
+                assemblerClass="com.servingxml.components.xslt.XsltFilterFactoryAssembler">
+    <ioc:serviceComponent name="*"
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="sx:documentSubtreeMap"
+                assemblerClass="com.servingxml.components.inverserecordmapping.OnSubtreeAssembler"/>
+  <ioc:serviceComponent name="sx:currentRecordReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.recordio.CurrentRecordReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:writeRecords" base="sx:task sx:stringable"
+                assemblerClass="com.servingxml.components.recordio.RecordStreamBuilderAssembler"/>
+  <ioc:serviceComponent name="sx:xmlTee" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.TagTeeAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:processRecords" base="sx:task sx:stringable sx:recordReader sx:recordWriter"
+                assemblerClass="com.servingxml.components.recordio.RecordStreamBuilderAssembler"/>
+
+  <ioc:serviceComponent name="sx:restrictRecordType"
+                assemblerClass="com.servingxml.components.recordio.RecordRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:restrictField"
+                assemblerClass="com.servingxml.components.recordio.FieldRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:subtreeFilter" base="sx:content"
+                assemblerClass="com.servingxml.components.saxfilter.SubtreeFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:processRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ProcessRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:commentSymbol"
+                assemblerClass="com.servingxml.components.flatfile.options.CommentStarterAssembler"/>
+
+  <ioc:serviceComponent name="sx:customEmitter" base="sx:saxSink"
+                assemblerClass="com.servingxml.components.serializer.CustomSerializerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:xmlEmitter" base="sx:saxSink"
+                assemblerClass="com.servingxml.components.serializer.XsltSerializerFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:date" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.string.CreateDateAssembler"/>
+  <ioc:serviceComponent name="sx:discardFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.DiscardFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:regexFieldCriteria"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.FieldRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:recordTest"  base="sx:restriction"
+                assemblerClass="com.servingxml.components.recordio.RecordRestrictionAssembler"/>
+  <ioc:serviceComponent name="sx:documentFragment"
+                assemblerClass="com.servingxml.components.recordmapping.NestedContentAssembler"/>
+  <ioc:serviceComponent name="sx:recordAggregator"
+                assemblerClass="com.servingxml.components.recordio.ComposeRecordAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:aggregateRecords"
+                assemblerClass="com.servingxml.components.recordio.ComposeRecordAppenderAssembler"/>
+  <ioc:abstractComponent name="sx:taggedFlatRecordField"
+                        interface="com.servingxml.components.flatfile.recordtype.FlatRecordFieldFactory"/>
+  <ioc:serviceComponent name="sx:tagDelimiter"
+                assemblerClass="com.servingxml.components.flatfile.options.NameDelimiterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:taggedDelimitedField"  base="sx:taggedFlatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.DelimitedNamedFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:repeatingTaggedField"  base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.RepeatingFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:repeatingNamedField"  base="sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.RepeatingFieldFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:replace" base="sx:string sx:stringable"
+                assemblerClass="com.servingxml.components.regex.ReplaceAssembler"/>
+  <ioc:serviceComponent name="sx:segmentMapping" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.RepeatingGroupMapFactoryAssembler"/>
+  <!--ioc:serviceComponent name="sx:subtreeRecordReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeRecordReaderFactoryAssembler"/-->
+  <ioc:serviceComponent name="sx:insertContent"
+                assemblerClass="com.servingxml.components.recordmapping.NestedContentAssembler"/>
+  <ioc:serviceComponent name="sx:validateRecord"
+                assemblerClass="com.servingxml.components.recordio.ValidateRecordAssembler"/>
+  <ioc:serviceComponent name="sx:validateField"
+                assemblerClass="com.servingxml.components.recordio.FieldValidatorAssembler"/>
+  <ioc:serviceComponent name="sx:xmlRecordReader" base="sx:recordReader"
+                assemblerClass="com.servingxml.components.inverserecordmapping.SubtreeRecordReaderFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:spannedFlatRecordType" base="sx:metaRecord sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.VbsFlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:recordSubtreeMap" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.RecordSubtreeMapFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:defaultFieldMapping" base="sx:mapXml"
+                assemblerClass="com.servingxml.components.recordmapping.DefaultFieldElementMapFactoryAssembler"/>
+  <ioc:configurationComponent name="sx:escapeVariables"
+                assemblerClass="com.servingxml.components.string.EscapeSubstitutionVariablesAssembler"/>
+  <ioc:serviceComponent name="sx:replaceRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.components.recordio.ReplaceRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:segmentConcatenation" 
+                assemblerClass="com.servingxml.components.flatfile.recordtype.MergeSegmentsFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:vbsFlatRecordType" base="sx:metaRecord sx:flatRecordField"
+                assemblerClass="com.servingxml.components.flatfile.recordtype.VbsFlatRecordTypeFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:recordComposition" 
+                assemblerClass="com.servingxml.components.flatfile.recordtype.CombineFlatRecordsFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:composeRecord"
+                assemblerClass="com.servingxml.components.recordio.ComposeRecordAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:decomposeRecord"
+                assemblerClass="com.servingxml.components.recordio.DecomposeRecordAppenderAssembler"/>
+</ioc:components>
+

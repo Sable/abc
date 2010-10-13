@@ -1,0 +1,16 @@
+<reference id="chap-configuration"><title>Configuration</title>
+<refsection>
+<title>Initialization Task</title>
+<para>
+The default configuration file servingxml.xml is found in the src/resources directory (it can be overriden.)
+It contains a number of sections:
+<itemizedlist>
+<listitem><para>The transformer section species the JAXP transformer
+factory that is used. 
+A jaxp transformer factory is any Java class that implements the 
+javax.xml.transform.TransformerFactory interface.
+</para></listitem>
+</itemizedlist>
+</para>
+</refsection>
+</reference>

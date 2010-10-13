@@ -1,0 +1,1488 @@
+<section><title>Flat File to Flat File</title>
+
+<section>
+<title>Converting a positional file to a pipe delimited file with header (positional to delimited)</title>
+<titleabbrev>books (positional) to books (delimited)</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert the 
+positional flat file <filename>books.txt</filename> into the delimited flat file 
+<filename>new-books.txt</filename>.  
+</para>
+<para>
+The input file is a positional file.
+</para>
+<figure id="books-positional.txt" xreflabel="books.txt">
+  <title>Input positional flat file books.txt</title>
+<programlisting>
+<![CDATA[
+CAuthor                        Title                              Price
+
+FCharles Bukowski              Factotum                           22.95
+FSergei Lukyanenko             The Night Watch                    17.99
+FAndrew Crumey                 Mr Mee                             22.00
+CSteven John Metsker           Building Parsers with Java         39.95
+
+This is a trailer record
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output file is a pipe delimited flat file.
+</para>
+<figure id="books-output.txt">
+  <title>Output pipe delimited flat file new-books.txt</title>
+<programlisting>
+<![CDATA[
+Author|Category|Title|Price
+Charles Bukowski|F|Factotum|22.95
+Sergei Lukyanenko|F|The Night Watch|17.99
+Andrew Crumey|F|Mr Mee|22.00
+Steven John Metsker|C|Building Parsers with Java|39.95
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-conversion.xml">
+  <title>Resources script resources-conversion.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="new-books"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="oldBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="newBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-conversion.xml  -i data/books.txt 
+    -o output/new-books.txt new-books
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Converting a positional file to a new positional file with default field values (positional defaults)</title>
+<titleabbrev>books (positional) to books (positional)</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary><secondary>default values</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert the 
+positional flat file <filename>books.txt</filename> into the new positional flat file 
+<filename>book-defaults.txt</filename>.  
+</para>
+<para>
+The input file is a positional file.
+</para>
+<figure id="books.txt-def">
+  <title>Input positional flat file books.txt</title>
+<programlisting>
+<![CDATA[
+CAuthor                        Title                              Price
+
+FCharles Bukowski              Factotum                           22.95
+FSergei Lukyanenko             The Night Watch                    17.99
+FAndrew Crumey                 Mr Mee                             22.00
+CSteven John Metsker           Building Parsers with Java         39.95
+
+This is a trailer record
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output file is a new positional flat file with a different field ordering,
+a comma instead of a period in "Price", a new "Pub Date" field initialized to
+spaces, and a new Publisher field initialized to "Acme".
+</para>
+<figure id="book-defaults.txt">
+  <title>Output positional flat file books-defaults.txt</title>
+<programlisting>
+<![CDATA[
+Author                        Title                         CPub Date  Publisher           Price
+Charles Bukowski              Factotum                      F          Acme                22,95
+Sergei Lukyanenko             The Night Watch               F          Acme                17,99
+Andrew Crumey                 Mr Mee                        F          Acme                22,00
+Steven John Metsker           Building Parsers with Java    C          Acme                39,95
+]]>
+</programlisting>
+</figure>
+<para>
+This can be accomplished with the following resources script..
+</para>
+<figure id="resources-bookDefaults.xml">
+  <title>Resources script resources-bookDefaults.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="book-defaults">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="oldBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="newBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="newBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="newBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="newBookType" name="newBookType">
+    <sx:positionalField name="author" width="30" label="Author"/>
+    <sx:positionalField name="title" width="30" label="Title"/>
+    <sx:positionalField name="category" width="1" label="C"/>
+    <sx:positionalField name="pubDate" width="10" label="Pub Date"/>
+    <sx:positionalField name="publisher" width="15" label="Publisher">
+      <sx:defaultValue>Acme</sx:defaultValue>
+    </sx:positionalField>
+    <sx:positionalField name="price2" width="10" justify="right" label="Price">
+      <sx:defaultValue>
+        <sx:findAndReplace searchFor ="." replaceWith="," useRegex="false">
+          <sx:toString value="{price}"/>    
+        </sx:findAndReplace>
+      </sx:defaultValue>
+    </sx:positionalField>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources-bookDefaults.xml  -i data/books.txt 
+    -o output/book-defaults.txt book-defaults
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Converting an ASCII Positional File to an EBCDIC Delimited File, and Vice Versa (ASCII-EBCDIC)</title>
+<titleabbrev>ascii-ebcidc</titleabbrev>
+<indexterm><primary>encoding</primary><secondary>ebcdic</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert the 
+ASCII <xref linkend="books-positional.txt"/> file of the last example to an EBCDIC file, and vice versa.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-ascii-ebcdic.xml">
+  <title>Resources script resources-ascii-ebcdic.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="ascii2ebcdic"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="asciiBooksFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="ebcdicBooksFile"/>
+        <sx:defaultStreamSink encoding="Cp1047"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="ebcdic2ascii"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="ebcdicBooksFile"/>
+        <sx:defaultStreamSource encoding="Cp1047"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="asciiBooksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:flatFile id="ebcdicBooksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="ebcdicBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="ebcdicBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="ebcdicBookType" name="ebcdicBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+  
+  <sx:flatFile id="asciiBooksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="asciiBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="asciiBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="asciiBookType" name="asciiBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run convert the ASCII file books.txt to the EBCDIC file books-ebcdic.dat with the command
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-ascii-ebcdic.xml -i data/books.txt 
+    -o output/books-ebcdic.dat ascii2ebcdic
+]]>
+</programlisting>
+<para>
+You can run convert the EBCDIC file books-ebcdic.dat to the ASCII file books-ascii.txt with the command
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-ascii-ebcdic.xml -i data/books-ebcdic.dat 
+    -o output/books-ascii.txt ebcdic2ascii
+]]>
+</programlisting>
+</section>
+
+<section>
+<title>Converting an ASCII Positional File to an EBCDIC Positional File with a Cobol Packed Decimal Field, and Vice Versa (ASCII-Packed)</title>
+<titleabbrev>ascii-packed</titleabbrev>
+<indexterm><primary>encoding</primary><secondary>ebcdic</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert the 
+ASCII <xref linkend="books-positional.txt"/> file to an EBCDIC positional file with a Cobol packed decimal field, and vice versa.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-ascii-ebcdic.xml">
+  <title>Resources script resources-ascii-ebcdic.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books2ebcdic-packed"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile2"/>
+        <sx:defaultStreamSink encoding="Cp1047"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:service id="ebcdic-packed2books"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="booksFile2"/>
+        <sx:defaultStreamSource encoding="Cp1047"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatFile id="booksFile2" lineDelimited="false">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType2"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="bookType2" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:packedDecimalField name="price" label="Price" digitCount="10" decimalPlaces="2"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run convert the ASCII file, books.txt, to the EBCDIC file with the packed decimal price field, books-ebcdic.dat, with the command
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-books_ebcdic_packed.xml -i data/books.txt 
+    -o output/books_ebcdic_packed.dat   books2ebcdic-packed
+]]>
+</programlisting>
+<para>
+You can run convert the EBCDIC file with the packed decimal price field, books_ebcdic_packed.dat,
+ to the ASCII file, books-ascii_unpacked.txt, with the command
+</para>
+<programlisting>
+<![CDATA[
+servingxml -r resources-books_ebcdic_packed.xml -i data/books_ebcdic_packed.dat 
+    -o output/books_ascii_unpacked.txt   ebcdic-packed2books
+]]>
+</programlisting>
+</section>
+
+<section>
+<title>Converting a positional file to a pipe delimited file with record filtering (book orders)</title>
+<titleabbrev>declarative record filter</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<indexterm><primary>record filter</primary><secondary>sx:replaceRecord</secondary></indexterm>
+<indexterm><primary>regular expressions</primary><secondary>match and replace</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will convert the 
+positional flat file <filename>bookorders-pos.txt</filename> into the pipe-delimited flat file 
+<filename>bookorders-delim.txt</filename>.  
+</para>
+<para>
+The input file is a positional file.
+</para>
+<figure id="bookorders-pos.xml">
+  <title>Input positional flat file bookorders-pos.txt</title>
+<programlisting>
+<![CDATA[
+CAuthor                        Title                              Price InvoiceNo InvoiceDate
+
+FCharles Bukowski              Factotum                           22.95 001  12/Mar/2005
+FSergei Lukyanenko             The Night Watch                    17.99 002  13/Mar/2005
+FAndrew Crumey                 Mr Mee                             22.00 003 14/June/2005
+CSteven John Metsker           Building Parsers with Java         39.95 004 15/June/2005
+
+This is a trailer record
+]]>
+</programlisting>
+</figure>
+<para>
+The desired output file is a pipe delimited flat file.
+</para>
+<figure id="bookorders-delim.txt">
+  <title>Output pipe delimited flat file bookorders-delim.txt</title>
+<programlisting>
+<![CDATA[
+Author|Category|Title|Price|InvoiceNo|InvoiceDate
+Charles Bukowski|F|Factotum|22.95|INV001|12/03/2005
+Sergei Lukyanenko|F|The Night Watch|17.99|INV002|13/03/2005
+Andrew Crumey|F|Mr Mee|22.00|INV003|14/06/2005
+Steven John Metsker|C|Building Parsers with Java|39.95|INV004|15/06/2005
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following:
+<itemizedlist>
+<listitem><para>The invoice number has the text "INV" prepended, e.g. "001" becomes "INV001"
+</para></listitem>
+<listitem><para>The month labels Mar, June etc. have been converted to numbers.
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-bookorders.xml">
+  <title>Resources script resources-bookorders.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="orders-pos-delim"> 
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="posBooksFlatFile"/>                                                                                          
+      </sx:flatFileReader>
+      <sx:replaceRecord ref="changeBookOrder"/>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="delimBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:replaceRecord id="changeBookOrder">
+    <sx:newRecord fields="*">
+      <sx:newField name="invoiceno">
+        <sx:findAndReplace searchFor ="([0-9]{3})" replaceWith ="INV$1"><sx:toString value="{invoiceno}"/></sx:findAndReplace>
+      </sx:newField>
+      <sx:newField name="invoicedate">
+        <sx:convertDate fromFormat="dd/MMM/yyyy"
+                        toFormat="dd/MM/yyyy">
+          <sx:toString value="{invoicedate}"/>
+        </sx:convertDate>
+      </sx:newField>
+    </sx:newRecord>
+  </sx:replaceRecord>
+
+   <sx:flatFile id="delimBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="delimBookType" name="delimBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="invoiceno" label="InvoiceNo"/>
+    <sx:delimitedField name="invoicedate" label="InvoiceDate"/>
+  </sx:flatRecordType>
+  
+  <sx:flatFile id="posBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="posBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="posBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="posBookType" name="posBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+    <sx:positionalField name="invoiceno" width="4" justify="right"/>
+    <sx:positionalField name="invoicedate" width="13" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+</para>
+<programlisting>
+<![CDATA[
+servingxml  -i data/bookorders-pos.txt -r resources-bookorders.xml 
+    -o output/bookorders-delim.txt orders-pos-delim 
+]]>
+</programlisting>
+</section>
+<section>
+<title>Checking the Integrity of a Flat File ("checked books")</title>
+<titleabbrev>checked books</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<indexterm><primary>file integrity</primary><secondary>crc</secondary></indexterm>
+<indexterm><primary>file integrity</primary><secondary>size</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script for checking and signing flat files
+with CRC values and byte counts.  Here, the input file is the 
+positional flat file <filename>checkedBooks.txt</filename>, to be converted into the pipe-delimited flat file 
+<filename>signedBooks.txt</filename>.  
+</para>
+<para>
+The input file is a positional file.
+</para>
+<figure id="checkedBooks.txt">
+  <title>Input positional flat file checkedBooks.txt</title>
+<programlisting>
+<![CDATA[
+356      2360012630
+
+FCharles Bukowski              Factotum                           22.95 001  12/Mar/2005
+FSergei Lukyanenko             The Night Watch                    17.99 002  13/Mar/2005
+FAndrew Crumey                 Mr Mee                             22.00 003  14/Jun/2005
+CSteven John Metsker           Building Parsers with Java         39.95 004  15/Jun/2005
+
+This is a trailer record
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following.
+</para>
+<itemizedlist>
+  <listitem><para>The file has a two line header section, followed by a data section, followed by a two line trailer section.
+  </para></listitem>
+  <listitem><para>The first line of the header contains two positional fields, the size of the data section in bytes, 
+  followed by the CRC for the data section.
+  </para></listitem>
+</itemizedlist>
+<para>
+The desired output file is a pipe delimited flat file.
+</para>
+<figure id="signedBooks.txt">
+  <title>Output pipe delimited flat file signedBooks.txt</title>
+<programlisting>
+<![CDATA[
+Author|Category|Title|Price|InvoiceNo|InvoiceDate
+237|1661800843
+Charles Bukowski|F|Factotum|22.95|001|12/Mar/2005
+Sergei Lukyanenko|F|The Night Watch|17.99|002|13/Mar/2005
+Andrew Crumey|F|Mr Mee|22.00|003|14/Jun/2005
+Steven John Metsker|C|Building Parsers with Java|39.95|004|15/Jun/2005
+]]>
+</programlisting>
+</figure>
+<para>The output file has a two line header section.  The two delimited fields 
+in the second line store the size and CRC of the data section below.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-checkedBooks.xml">
+  <title>Resources script resources-checkedBooks.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="books-pos-delim">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="posBooksFlatFile"/>
+      </sx:flatFileReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="delimBooksFlatFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="delimBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="delimBookType"/>
+      <sx:flatRecordType ref="delimBookHeaderType"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="delimBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileSignature recordType="bookHeaderType" field="filecrc" method="crc"/>
+    <sx:flatFileSignature recordType="bookHeaderType" field="filesize" method="size"/>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="delimBookType" name="delimBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+    <sx:delimitedField name="invoiceno" label="InvoiceNo"/>
+    <sx:delimitedField name="invoicedate" label="InvoiceDate"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="delimBookHeaderType" name="bookHeaderType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="filesize"/>
+    <sx:delimitedField name="filecrc"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="posBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="posBookHeaderType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="posBookType"/>
+    </sx:flatFileBody>
+
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+
+    <sx:flatFileSignature recordType="bookHeaderType" field="filesize" method="size"/>
+    <sx:flatFileSignature recordType="bookHeaderType" field="filecrc" method="crc"/>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="posBookHeaderType" name="bookHeaderType">
+    <sx:positionalField name="filesize" width="9"/>
+    <sx:positionalField name="filecrc" width="10"/>
+  </sx:flatRecordType>
+
+  <sx:flatRecordType id="posBookType" name="posBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+    <sx:positionalField name="invoiceno" width="4" justify="right"/>
+    <sx:positionalField name="invoicedate" width="13" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>Note the following.
+</para>
+<itemizedlist>
+  <listitem><para>The <link xlink:href="../guide/index.html#sx:recordContent">sx:recordContent</link> element contains two <link xlink:href="../guide/index.html#sx:flatFileSignature">sx:flatFileSignature</link> elements,
+  which define the rules for checking the CRC and size when reading the file, and signing the header or trailer with a CRC and size when writing the file.
+  </para></listitem>
+  <listitem><para>The <link xlink:href="../guide/index.html#sx:flatFileSignature">sx:flatFileSignature</link> element has attributes 
+  <sgmltag class="attribute">recordType</sgmltag> and <sgmltag class="attribute">field</sgmltag>, which 
+  identify where in the header or trailer the signature value belongs.
+  </para></listitem>
+</itemizedlist>
+<para>
+You can run this example on the command line by entering
+</para>
+<programlisting>
+<![CDATA[
+servingxml  -i data/checkedBooks.txt -r resources-checkedBooks.xml 
+    -o output/checkedBooks-delim.txt books-pos-delim 
+]]>
+</programlisting>
+<para>If the CRC value in the header does not match the computed CRC value for the data, processing will be stopped
+and a message will be written to the log:
+</para>
+<programlisting>
+<![CDATA[
+CRC integrity check failed.  Expected 2360012630, found 252430032.
+]]>
+</programlisting>
+</section>
+<section>
+<title>Converting a directory of book positional files to pipe delimited files (new format)</title>
+<titleabbrev>book directory to new format</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<indexterm><primary>directory</primary><secondary>reading</secondary></indexterm>
+<indexterm><primary>directory</primary><secondary>writing</secondary></indexterm>
+<indexterm><primary>regular expressions</primary><secondary>match and replace</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that will process
+all the files in the <filename>data</filename> directory matching the regular expression "books.*[.]txt",
+convert them from positional flat file formats to pipe delimited formats, and write them out to the 
+<filename>output</filename> directory.
+</para>
+<para>
+This time the input is a directory of files.
+</para>
+<figure id="books.xml">
+  <title>Directory containing books fixed record length input files</title>
+<programlisting>
+<![CDATA[
+[.]                     countries.csv           multivalued-field.csv
+[..]                    countries.xsd           plans.txt
+3545_JH4DA3_4_H_.xml    country-record.xsd      tasks.csv
+bad-countries.csv       exotics.txt             timesheets.csv
+books.20040613.txt      hot-record.xsd          trades.txt
+books.20040802.txt      hot-record.xsx
+books.txt               hot.txt
+books.xml               messages.properties]]>
+</programlisting>
+</figure>
+<para>
+We want to take the positional files whose names match the regular expression <code>"(books.*)[.]txt"</code>
+and convert them all into pipe delimited files.
+</para>
+
+<figure id="books.txt">
+  <title>Books pipe delimited output files.</title>
+<programlisting>
+<![CDATA[
+books-new.txt            books.20040802-new.txt
+books.20040613-new.txt
+]]>
+</programlisting>
+</figure>
+
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-books2csv.xml">
+  <title>Resources script resources-books2csv.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="all-books"> 
+    <sx:recordStream>
+      <sx:directoryReader directory="data">
+        <sx:fileFilter pattern="books.*[.]txt"/>
+      </sx:directoryReader>
+      <sx:processRecord>
+        <sx:parameter name="output-file">
+          <sx:findAndReplace searchFor ="(books.*)[.]txt" replaceWith ="$1-new.txt"><sx:toString value="{name}"/></sx:findAndReplace>
+        </sx:parameter>   
+        <sx:recordStream>
+          <sx:flatFileReader>
+            <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+            <sx:flatFile ref="oldBooksFlatFile"/>
+          </sx:flatFileReader>
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="{$output-file}"/> 
+            <sx:flatFile ref="newBooksFlatFile"/>
+          </sx:flatFileWriter>
+        </sx:recordStream>
+      </sx:processRecord>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType name="newBookType">
+    <sx:fieldDelimiter value="|"/>
+    <sx:delimitedField name="author" label="Author"/>
+    <sx:delimitedField name="category" label="Category"/>
+    <sx:delimitedField name="title" label= "Title"/>
+    <sx:delimitedField name="price" label="Price"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="oldBooksFlatFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="oldBookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="oldBookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="oldBookType" name="oldBookType">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+  </sx:flatRecordType>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -r resources-conversion.xml all-books
+]]>
+</programlisting>
+</para>
+</section>
+
+<section id="multiple_output_files" xreflabel="multiple_output_files">
+<title>Generated records to multiple files (multiple_output_files)</title>
+<titleabbrev>multiple output files</titleabbrev>
+<indexterm><primary>record reader</primary><secondary>custom</secondary></indexterm>
+<indexterm><primary>record writer</primary><secondary>multiple output files</secondary></indexterm>
+<para>                     
+The example below illustrates how to prepare a resources script that will send the
+the output of a custom record reader to multiple output files, depending on
+parameter and record field values supplied by the custom record reader. 
+</para>
+<para>
+The input records are generated by the following Java class.
+</para>
+<figure id="TradeRecordReader.java">
+  <title>TradeRecordReader Java class</title>
+<programlisting>
+<![CDATA[
+package flat2flat;
+
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReader;
+import com.servingxml.app.Flow;
+import com.servingxml.util.Name;
+import com.servingxml.util.QualifiedName;
+import com.servingxml.util.ServingXmlException;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.record.RecordBuilder;
+import com.servingxml.util.record.ParameterBuilder;
+
+public class TradeRecordReader extends AbstractRecordReader {
+  private static final Name FEED_NAME = new QualifiedName("feed");
+  private static final Name TRADE_RECORD_TYPE = new QualifiedName("trade");
+  private static final Name TRANSACTION_RECORD_TYPE = new QualifiedName("transaction");
+  private static final Name RECORD_TYPE_NAME = new QualifiedName("record_type");
+  private static final Name ID_NAME = new QualifiedName("id");
+  private static final Name TRADE_DATE_NAME = new QualifiedName("trade_date");
+  private static final Name TRADE_TIME_NAME = new QualifiedName("trade_time");
+  private static final Name DESCRIPTION_NAME = new QualifiedName("description");
+  private static final Name REFERENCE_NAME = new QualifiedName("reference");
+  
+  public void readRecords(ServiceContext context, Flow flow) 
+   {
+
+    //  Start the record stream
+    startRecordStream(context, flow);
+
+    ParameterBuilder parameterBuilder = new ParameterBuilder(flow.getParameters());
+
+    RecordBuilder trRecordBuilder = new RecordBuilder(TRADE_RECORD_TYPE);
+    RecordBuilder tnRecordBuilder = new RecordBuilder(TRANSACTION_RECORD_TYPE);
+
+    Record newParameters;
+    Record record;
+
+    //  Load London trades
+    //  Set the parameter feed=LONDON
+    parameterBuilder.setString(FEED_NAME,"LONDON");
+    newParameters = parameterBuilder.toRecord();
+
+    trRecordBuilder.setString(RECORD_TYPE_NAME,"TR");
+    trRecordBuilder.setString(ID_NAME,"0001");
+    trRecordBuilder.setString(TRADE_DATE_NAME,"03/25/2005");
+    trRecordBuilder.setString(TRADE_TIME_NAME,"01:50:00");
+    trRecordBuilder.setString(DESCRIPTION_NAME,"This is a trade record");
+    record = trRecordBuilder.toRecord();
+    trRecordBuilder.clear();
+
+    //  Write the London "trade" record
+    Flow newFlow = flow.replaceParameters(context, newParameters).replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0002");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1234");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"A child transaction");
+    record = tnRecordBuilder.toRecord();   
+    tnRecordBuilder.clear();
+
+    //  Write the first London "transaction" record
+    newFlow = flow.replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0003");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1235");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"Another child transaction");
+    record = tnRecordBuilder.toRecord();
+    tnRecordBuilder.clear();
+
+    //  Write the second London "transaction" record
+    newFlow = flow.replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    //  Load Toronto trades
+    //  Set the parameter feed=TORONTO
+    parameterBuilder.setString(FEED_NAME,"TORONTO");
+    newParameters = parameterBuilder.toRecord();
+
+    trRecordBuilder.setString(RECORD_TYPE_NAME,"TR");
+    trRecordBuilder.setString(ID_NAME,"0004");
+    trRecordBuilder.setString(TRADE_DATE_NAME,"03/25/2005");
+    trRecordBuilder.setString(TRADE_TIME_NAME,"04:50:00");
+    trRecordBuilder.setString(DESCRIPTION_NAME,"This is a trade record");
+    record = trRecordBuilder.toRecord();
+    trRecordBuilder.clear();
+
+    //  Write the Toronto "trade" record
+    newFlow = flow.replaceParameters(context, newParameters).replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0005");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1236");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"A child transaction");
+    record = tnRecordBuilder.toRecord();   
+    tnRecordBuilder.clear();
+
+    //  Write the first Tronto "transaction" record
+    newFlow = flow.replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0006");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1237");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"Another child transaction");
+    record = tnRecordBuilder.toRecord();
+    tnRecordBuilder.clear();
+
+    //  Write the second Toronto "transaction" record
+    newFlow = flow.replaceRecord(context, record);
+    writeRecord(context, newFlow);
+
+    //  End the record stream
+    endRecordStream(context, flow);
+  }
+}
+]]>
+</programlisting>
+</figure>
+<para>With parameter <varname>feed</varname>=<code>LONDON</code>,
+the <code>TradeRecordReader</code> class will generate the following stream of records.
+</para>
+<informaltable colsep="0">
+<tgroup cols="5" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>record_type</entry>
+<entry>id</entry>
+<entry></entry>
+<entry></entry>
+<entry></entry>
+</row>
+</thead>
+<tbody>
+  <row>
+<entry>TR</entry>
+<entry>0001</entry>
+<entry>03/25/2005</entry> 
+<entry> 1:50:00</entry>
+<entry>This is a trade record</entry>
+  </row>
+<row>
+<entry>TN</entry>
+<entry>0002</entry>
+<entry>X1234</entry>
+<entry>A child transaction</entry>
+<entry></entry>
+  </row>
+  <row>
+<entry>TN</entry>
+<entry>0003</entry>
+<entry>X1235</entry>
+<entry>Another child transaction</entry>
+<entry></entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>With parameter <varname>feed</varname>=<code>TORONTO</code>,
+the <code>TradeRecordReader</code> class will generate the following stream of records.
+</para>
+<informaltable colsep="0">
+<tgroup cols="5" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>record_type</entry>
+<entry>id</entry>
+<entry></entry>
+<entry></entry>
+<entry></entry>
+</row>
+</thead>
+<tbody>
+  <row>
+<entry>TR</entry>
+<entry>0004</entry>
+<entry>03/25/2005</entry> 
+<entry> 4:50:00</entry>
+<entry>This is a trade record</entry>
+  </row>
+<row>
+<entry>TN</entry>
+<entry>0005</entry>
+<entry>X1236</entry>
+<entry>A child transaction</entry>
+<entry></entry>
+  </row>
+  <row>
+<entry>TN</entry>
+<entry>0006</entry>
+<entry>X1237</entry>
+<entry>Another child transaction</entry>
+<entry></entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+The LONDON master trades need to be written to the file <filename>trades-London.txt</filename>.
+</para>
+<figure id="trades-London.txt">
+  <title>Output flat file trades-London.txt</title>
+<programlisting>
+<![CDATA[
+000103/25/200501:50:00This is a trade record        
+]]>
+</programlisting>
+<para>
+The LONDON transaction details need to be written to the file <filename>transaction-London.txt</filename>.
+</para>
+
+</figure>
+<figure id="transactions-London.txt">
+  <title>Output flat file transactions-London.txt</title>
+<programlisting>
+<![CDATA[
+0002X1234A child transaction           
+0003X1235Another child transaction     
+]]>
+</programlisting>
+</figure>
+
+<para>
+The TORONTO master trades need to be written to the file <filename>trades-Toronto.txt</filename>.
+</para>
+<figure id="trades-Toronto.txt">
+  <title>Output flat file trades-Toronto.txt</title>
+<programlisting>
+<![CDATA[
+000403/25/200504:50:00This is a trade record        
+]]>
+</programlisting>
+<para>
+The TORONTO transaction details need to be written to the file <filename>transaction-Toronto.txt</filename>.
+</para>
+
+</figure>
+<figure id="transactions-Toronto.txt">
+  <title>Output flat file transactions-Toronto.txt</title>
+<programlisting>
+<![CDATA[
+0005X1236A child transaction           
+0006X1237Another child transaction     
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-multiple_output_files.xml">
+  <title>Resources script resources-multiple_output_files.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="trades">
+    <sx:recordStream>
+      <sx:customRecordReader class="flat2flat.TradeRecordReader"/>
+      <!-- Which output file is determined by the parameter "feed"
+            and the record field "record_type", which are both
+            supplied in the custom record reader.
+      -->
+      <sx:choose>
+        <sx:when test="$feed='LONDON' and record_type = 'TR'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="trades-London.txt"/>
+            <sx:flatFile ref="trades"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed = 'LONDON' and record_type = 'TN'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="transactions-London.txt"/>
+            <sx:flatFile ref="transactions"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed='TORONTO' and record_type = 'TR'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="trades-Toronto.txt"/>
+            <sx:flatFile ref="trades"/>
+          </sx:flatFileWriter>
+        </sx:when>
+        <sx:when test="$feed = 'TORONTO' and record_type = 'TN'">
+          <sx:flatFileWriter>
+            <sx:fileSink directory="output" file="transactions-Toronto.txt"/>
+            <sx:flatFile ref="transactions"/>
+          </sx:flatFileWriter>
+        </sx:when>
+      </sx:choose>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="trades">
+    <sx:flatFileBody>
+          <sx:flatRecordType name="trade">
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="trade_date" width="10"/>
+            <sx:positionalField name="trade_time" width="8"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatFile id="transactions">
+    <sx:flatFileBody>
+          <sx:flatRecordType name="transaction">
+            <sx:positionalField name="id" width="4"/>
+            <sx:positionalField name="reference" width="5"/>
+            <sx:positionalField name="description" width="30"/>
+          </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+Note the following points.
+<itemizedlist>
+<listitem>
+The record content is defined by a custom record reader, implemented in the Java class <code>TradeRecordReader</code>.
+</listitem>
+</itemizedlist>
+</para>
+<para>
+You can run this example on the command line by 
+<itemizedlist>
+<listitem>
+Compiling the Java class <code>TradeRecordReader</code> and copying 
+the resulting <filename>.class</filename> file into the <filename>dir/classes</filename> directory
+</listitem>
+<listitem>
+Entering the command
+<programlisting>
+<![CDATA[
+servingxml -r resources-multiple_output_files.xml trades
+]]>
+</programlisting>
+</listitem>
+</itemizedlist>
+</para>
+</section>
+
+<section>
+<title>Reading remote directories</title>
+<titleabbrev>remote directories</titleabbrev>
+<indexterm><primary>directory</primary><secondary>reading</secondary></indexterm>
+<indexterm><primary>FTP</primary><secondary>source</secondary></indexterm>
+<para>
+This example shows how to read a remote directory and write a listing of its contents to a flat file.
+</para>
+<para>
+The desired output is a positional flat file showing a remote directory listing.
+</para>
+<figure id="out-ftp.txt">
+  <title>Output flat file with directory listing</title>
+<programlisting>
+<![CDATA[
+Parent                        Name                          Size      Date Modified                 
+
+/                             incoming                      28672     Mon Dec 20 03:27:00 PST 2004  
+/                             lost+found                    16384     Wed Feb 07 00:00:00 PST 2001  
+/                             pub                           4096      Sun Oct 17 23:45:00 PDT 2004  
+/pub                          sf-overflow                   17        Sun Oct 17 23:45:00 PDT 2004  
+/pub                          sourceforge                   581632    Mon Nov 15 18:34:00 PST 2004  
+/pub/sourceforge              a                             28672     Fri Mar 19 00:00:00 PST 2004  
+/pub/sourceforge/a            a-                            4096      Wed Oct 06 18:36:00 PDT 2004  
+/pub/sourceforge/a/a-         a-4                           4096      Tue Dec 16 00:00:00 PST 2003  
+/pub/sourceforge/a/a-/a-4     a4-0.01777.tar.gz             173990    Thu Feb 13 00:00:00 PST 2003  
+/pub/sourceforge/a/a-/a-4     a4-0.03109.tar.gz             175327    Tue May 06 00:00:00 PDT 2003  
+]]></programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-ftp.xml">
+  <title>Resources script</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  
+  <edt:ftpClient id="sourceforge" host="upload.sourceforge.net" 
+                 user="anonymous" password="xxx"/>
+
+  <sx:service id="remote-dir-listing">
+    <sx:recordStream>
+      <edt:ftpDirectoryReader remoteDirectory="." recurse="true" maxItems="10">
+        <edt:ftpClient ref="sourceforge"/>
+      </edt:ftpDirectoryReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="directory-flat-file"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="directory-record-type" name="directory-record-type">
+    <sx:positionalField name="parentDirectory" label="Parent" width="30"/>
+    <sx:positionalField name="name" label="Name" width="30"/>
+    <sx:positionalField name="size" label="Size" width="10"/>
+    <sx:positionalField name="lastModified" label="Date Modified" width="30"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="directory-flat-file">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="directory-record-type"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="directory-record-type"/>
+    </sx:flatFileBody>
+  </sx:flatFile>      
+  
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml -o output/remote-dir-listing.txt remote-dir-listing
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Converting a sequential stream of records into multiple batch files</title>
+<titleabbrev>batch records</titleabbrev>
+<indexterm><primary>flat file</primary><secondary>positional</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that wil break up a stream of records into
+multiple batches.
+</para>
+<para>
+We want to read the CSV file countries.csv containing 245 country records and produce five files containing 
+50, 50, 50, 50 and 45 country records.
+</para>
+
+<figure id="countries-d.csv">
+  <title>Batched countries files.</title>
+<programlisting>
+<![CDATA[
+06/12/2007  07:24 PM    <DIR>          .
+06/12/2007  07:24 PM    <DIR>          ..
+06/12/2007  07:24 PM               814 countries-1.csv
+06/12/2007  07:24 PM               795 countries-2.csv
+06/12/2007  07:24 PM               786 countries-3.csv
+06/12/2007  07:24 PM               784 countries-4.csv
+06/12/2007  07:24 PM               793 countries-5.csv
+]]>
+</programlisting>
+</figure>
+
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-batchRecords.xml">
+  <title>Resources script resources-batchRecords.xml</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:fileSource file="data/{$rootName}.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <sx:batchedRecordWriter batchSize="50">
+        <sx:flatFileWriter>
+          <sx:fileSink file="output/{$rootName}-{$sx:batchSequenceNumber}.csv"/>
+          <sx:flatFile ref="countriesFile"/>
+        </sx:flatFileWriter>
+      </sx:batchedRecordWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+]]>
+</programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -r resources-batchRecords.xml countries 
+  rootName=countries
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+  <title>Batched Flat Files</title>
+<section>
+<title>Batched sequences of records</title>
+<titleabbrev>batched flat file</titleabbrev>
+<indexterm><primary>batch</primary><secondary>records</secondary></indexterm>
+<para>
+The example below illustrates how to prepare a resources script that wil break up a flat file into
+smaller batches.
+</para>
+<para>Suppose you want to read the CSV file countries.csv containing 245 country 
+records and write it out as five files containing 50, 50, 50, 50 and 45 records.
+</para>
+<figure id="countries-d.csv">
+  <title>Batched CSV files.</title>
+<programlisting>
+<![CDATA[
+06/12/2007  07:24 PM    <DIR>          .
+06/12/2007  07:24 PM    <DIR>          ..
+06/12/2007  07:24 PM               814 countries-1.csv
+06/12/2007  07:24 PM               795 countries-2.csv
+06/12/2007  07:24 PM               786 countries-3.csv
+06/12/2007  07:24 PM               784 countries-4.csv
+06/12/2007  07:24 PM               793 countries-5.csv
+]]>
+</programlisting>
+</figure>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:fileSource file="data/{$rootName}.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <sx:batchedRecordWriter batchSize="50">
+        <sx:flatFileWriter>
+          <sx:fileSink file="intermediate/{$rootName}-{$sx:batchSequenceNumber}.csv"/>
+          <sx:flatFile ref="countriesFile"/>
+        </sx:flatFileWriter>
+      </sx:batchedRecordWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:recordContent id="countries">
+    <sx:flatFileReader>
+      <sx:fileSource directory="{parentDirectory}" file="{name}"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="countriesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+]]>
+</programlisting>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml  -r resources-batchRecords.xml countries 
+  rootName=countries
+]]>
+</programlisting>
+</para>
+</section>
+</section>
+
+</section>
+

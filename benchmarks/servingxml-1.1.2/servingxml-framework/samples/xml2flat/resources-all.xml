@@ -1,0 +1,65 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="all2flat">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="allToFileMapping"/>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="allFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="allFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="allType"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatRecordType id="allType" name="allType">
+    <sx:positionalField name="f1" label="F1" width="10"/>
+    <sx:positionalField name="f2" label="F2" width="10"/>
+    <sx:positionalField name="f3" label="F3" width="10"/>
+    <sx:repeatingGroup name="compA">
+      <sx:flatRecordType name="compARecord">
+        <sx:positionalField name="ca1"  width="5"/>
+        <sx:positionalField name="ca2"  width="5"/>
+        <sx:positionalField name="ca3"  width="5"/>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+    <sx:repeatingGroup name="compB">
+      <sx:flatRecordType name="compBRecord">
+        <sx:positionalField name="cb1"  width="5"/>
+        <sx:positionalField name="cb2"  width="5"/>
+      </sx:flatRecordType>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="allToFileMapping">
+    <sx:onSubtree path="/all">
+      <sx:flattenSubtree recordType="allType">
+        <sx:subtreeFieldMap select="field1" field="f1"/>
+        <sx:subtreeFieldMap select="field2" field="f2"/>
+        <sx:subtreeFieldMap select="field3" field="f3"/>
+        <sx:subtreeFieldMap match="compositeA" field="compA">
+          <sx:flattenSubtree  recordType="compARecord">
+            <sx:subtreeFieldMap select="@attr1" field="ca1"/>
+            <sx:subtreeFieldMap select="@attr2" field="ca2"/>
+            <sx:subtreeFieldMap select="@attr3" field="ca3"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+        <sx:subtreeFieldMap match="compositeB" field="compB">
+          <sx:flattenSubtree  recordType="compBRecord">
+            <sx:subtreeFieldMap select="@attrx" field="cb1"/>
+            <sx:subtreeFieldMap select="@attry" field="cb2"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>

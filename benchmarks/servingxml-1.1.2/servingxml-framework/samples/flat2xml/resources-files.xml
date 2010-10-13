@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="files">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="filesContent"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="filesContent">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="fileFlatFile"/>
+      </sx:flatFileReader>
+      <sx:combineRecords recordType="header" repeatingGroup="headerRecords"
+                  startTest="sx:current/header1"
+                  endTest="sx:previous/header2">
+      </sx:combineRecords>
+    </sx:recordStream>
+    <sx:recordMapping ref="fileToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="fileFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag" width="1"/>
+        <sx:positionalField name="tag2" width="2"/>
+        <sx:when test="tag='D' and tag2='P1'">
+          <sx:flatRecordType name="header1">
+            <sx:positionalField name="reference" start="5" width="13"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='*'">
+          <sx:flatRecordType name="header2">
+            <sx:positionalField name="date" start="10" width="8"/>
+            <sx:positionalField name="sequence" width="2"/>
+            <sx:positionalField name="code" start="21" width="3"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='E'">
+          <sx:flatRecordType name="E">
+            <sx:positionalField name="filenumber" start="2" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='D'">
+          <sx:flatRecordType name="D">
+            <sx:positionalField name="filenumber" start="2" width="6"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="fileToXmlMapping">
+    <output>
+      <sx:fieldAttributeMap select="headerRecords/header2/date" attribute="date"/>
+      <sx:fieldAttributeMap select="headerRecords/header2/sequence" attribute="sequence"/>
+      <sx:fieldAttributeMap select="headerRecords/header2/code" attribute="code"/>
+      <sx:fieldAttributeMap select="headerRecords/header1/reference" attribute="reference"/>
+      <sx:groupChoice>
+        <sx:innerGroup startTest="sx:current/D" endTest="sx:current/D">
+          <file>
+            <sx:fieldAttributeMap field="filenumber" attribute="filenumber"/>
+          </file>
+        </sx:innerGroup>
+        <sx:innerGroup startTest="sx:current/E" endTest="sx:current/D or sx:current/E">
+          <file>
+            <sx:fieldAttributeMap field="filenumber" attribute="filenumber"/>
+          </file>
+        </sx:innerGroup>
+      </sx:groupChoice>
+    </output>
+  </sx:recordMapping>
+
+</sx:resources>
+

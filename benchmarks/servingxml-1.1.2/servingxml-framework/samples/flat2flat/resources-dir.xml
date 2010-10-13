@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="directory-file">
+    <sx:recordStream>
+      <sx:directoryReader directory="data">
+        <sx:fileFilter pattern=".*[.]txt"/>
+      </sx:directoryReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="directory-flat-file"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="directory-record-type" name="directory-record-type">
+    <sx:positionalField name="parentDirectory" label="Folder" width="70"/>
+    <sx:positionalField name="name" label="File" width="30"/>
+    <sx:positionalField name="lastModified" label="Date Modified" width="30"/>
+    <sx:positionalField name="size" label="Size" width="10"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="directory-flat-file">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="directory-record-type"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="directory-record-type"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

@@ -1,0 +1,8 @@
+CAuthor                        Title                              Price
+
+FCharles Bukowski              Factotum                           22.95
+FJonathan Lethem               Gun, with Occasional Music         17.99
+FAndrew Crumey                 Mr Mee                             22.00
+CSteven John Metsker           Building Parsers with Java         39.95
+
+This is a trailer record

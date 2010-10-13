@@ -1,0 +1,7 @@
+DataType PersonId Name       FirstName       Street              Postcode    CityTown
+P        1        Jones      Joe             215 Walmer Rd       M5R3P7      Toronto
+P        1        Jones      Joe             180 Redwood ST      94102-3280  San Francisco
+P        2        Davis      Ken             212 Harbord St      M5S1H6      Toronto
+C        3        Morris                     1100 Danforth Ave   M4J1N2      Toronto
+C        3        Morris                     6 Green St          94111-1402  San Francisco
+

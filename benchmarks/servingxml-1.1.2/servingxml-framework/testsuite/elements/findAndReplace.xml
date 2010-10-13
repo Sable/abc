@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/findAndReplace/">
+
+  <sx:service id="t:run-tests">
+    <sx:transform ref="t:test-findAndReplace"/>
+  </sx:service>
+
+  <sx:transform id="t:test-findAndReplace">
+    <sx:document ref="t:odd-element-document"/>
+    <sx:parameter name="date">
+      <sx:findAndReplace searchFor="([0-9]{2})([0-9]{2})([0-9]{4})" replaceWith="$1/$2/$3">
+        <sx:toString value="05/02/2009"/>
+      </sx:findAndReplace>
+    </sx:parameter> 
+    <sx:assert test="$date='05/02/2009'"><sx:toString value="{$date}"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:document id="t:odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+</sx:resources>
+

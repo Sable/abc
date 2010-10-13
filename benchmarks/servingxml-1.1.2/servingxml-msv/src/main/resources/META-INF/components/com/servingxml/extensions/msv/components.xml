@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+  <ioc:serviceComponent name="msv:schemaValidator" base="sx:content sx:validator"
+                assemblerClass="com.servingxml.extensions.msv.xmlpipeline.saxfilter.MultiSchemaValidatorAppenderAssembler">
+    <ioc:serviceComponent name="*" 
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+
+  <!-- Deprecated -->
+  <ioc:serviceComponent name="msv:msvRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.extensions.msv.recordio.MsvRecordFilterAppenderAssembler">
+    <ioc:serviceComponent name="*" 
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+
+  <ioc:serviceComponent name="sx:msvFilter" base="sx:content"
+                assemblerClass="com.servingxml.extensions.msv.xmlpipeline.saxfilter.MultiSchemaValidatorAppenderAssembler"/>
+  <ioc:serviceComponent name="sx:msvRecordFilter" base="sx:recordFilter"
+                assemblerClass="com.servingxml.extensions.msv.recordio.MsvRecordFilterAppenderAssembler"/>
+  <ioc:serviceComponent name="msv:msvFilter" base="sx:content"
+                assemblerClass="com.servingxml.extensions.msv.xmlpipeline.saxfilter.MultiSchemaValidatorAppenderAssembler">
+    <ioc:serviceComponent name="*" 
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+            <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+  <ioc:serviceComponent name="msv:recordValidator" base="sx:recordFilter"
+                assemblerClass="com.servingxml.extensions.msv.recordio.RecordValidatorAppenderAssembler">
+    <ioc:serviceComponent name="*" 
+                  assemblerClass="com.servingxml.components.content.InlineSaxSourceFactoryAssembler">
+      <ioc:serviceComponent name="*"
+                    assemblerClass="com.servingxml.components.NullAssembler"/>
+    </ioc:serviceComponent>
+  </ioc:serviceComponent>
+
+</ioc:components>
+

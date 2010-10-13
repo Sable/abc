@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/withParameters/">
+
+  <sx:service id="t:run-tests">
+    <sx:transform ref="t:test-withParameters1"/>
+    <sx:transform ref="t:test-withParameters2"/>
+    <sx:transform ref="t:test-withParameters3"/>
+  </sx:service>
+
+  <sx:document id="t:transaction">
+    <R04><firstField>04</firstField><NAME>John Smith</NAME></R04>
+  </sx:document>
+
+  <sx:document id="t:expected1">
+    <R04><firstField>04</firstField><NAME>Jane Smith</NAME></R04>
+  </sx:document>
+
+  <sx:document id="t:expected2">
+    <R04><firstField>04</firstField><NAME>Jane Smith</NAME></R04>
+  </sx:document>
+
+  <sx:document id="t:expected3">
+    <R04><firstField>04</firstField><NAME>DUMMY</NAME></R04>
+  </sx:document>
+
+  <sx:transform id="t:output1">
+    <sx:parameter name="person-name" value="Jane Smith"/>
+    <sx:document ref="t:transaction"/>
+    <sx:xslt>
+      <sx:withParameters parameters="person-name"/>
+      <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:param name="person-name" select="'DUMMY'"/>
+        <xsl:template match="/R04">
+          <R04>
+            <firstField>04</firstField>
+            <NAME><xsl:value-of select="$person-name"/></NAME>
+          </R04>
+        </xsl:template>
+      </xsl:transform>
+    </sx:xslt>
+  </sx:transform>
+
+  <!-- backwards compatability -->
+  <sx:transform id="t:output2">
+    <sx:parameter name="person-name" value="Jane Smith"/>
+    <sx:document ref="t:transaction"/>
+    <sx:xslt>
+      <sx:parameter name="person-name" value="{$person-name}"/>
+      <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:param name="person-name" select="'DUMMY'"/>
+        <xsl:template match="/R04">
+          <R04>
+            <firstField>04</firstField>
+            <NAME><xsl:value-of select="$person-name"/></NAME>
+          </R04>
+        </xsl:template>
+      </xsl:transform>
+    </sx:xslt>
+  </sx:transform>
+
+  <!-- no parameter passed -->
+  <sx:transform id="t:output3">
+    <sx:parameter name="person-name" value="Jane Smith"/>
+    <sx:document ref="t:transaction"/>
+    <sx:xslt>
+      <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:param name="person-name" select="'DUMMY'"/>
+        <xsl:template match="/R04">
+          <R04>
+            <firstField>04</firstField>
+            <NAME><xsl:value-of select="$person-name"/></NAME>
+          </R04>
+        </xsl:template>
+      </xsl:transform>
+    </sx:xslt>
+  </sx:transform>
+
+  <sx:transform id="t:test-withParameters1">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/withParameters/output1'),fn:document('elements/withParameters/expected1'))">
+test-withParameters1:  Output
+      <sx:content ref="t:output1"/>
+      does not match expected output
+      <sx:content ref="t:expected1"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:test-withParameters2">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/withParameters/output2'),fn:document('elements/withParameters/expected2'))">
+test-withParameters2:  Output
+      <sx:content ref="t:output2"/>
+      does not match expected output
+      <sx:content ref="t:expected2"/>
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:test-withParameters3">
+    <sx:assert
+      test="fn:deep-equal(fn:document('elements/withParameters/output3'),fn:document('elements/withParameters/expected3'))">
+test-withParameters3:  Output
+      <sx:content ref="t:output3"/>
+      does not match expected output
+      <sx:content ref="t:expected3"/>
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>
+

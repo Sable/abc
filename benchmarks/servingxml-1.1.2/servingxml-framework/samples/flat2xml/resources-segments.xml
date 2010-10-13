@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="segments">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="data"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="data">
+    <sx:flatFileReader>
+      <sx:urlSource url="data/segments.txt"/>
+      <sx:flatFile ref="flatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="segmentsToXml"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="flatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="rec">
+        <sx:repeatingGroup name="segments">
+          <sx:flatRecordTypeChoice>
+            <sx:positionalField name="tag" width="3"/>
+            <sx:when test="tag='Z01'">
+              <sx:flatRecordType name="Z01">
+                <sx:positionalField name="tag" width="3"/>
+                <sx:positionalField name="xxx" width="3"/>
+                <sx:positionalField name="yyy" width="3"/>
+              </sx:flatRecordType>
+            </sx:when>
+            <sx:otherwise>
+              <sx:flatRecordType name="Z02">
+                <sx:positionalField name="tag" width="3"/>
+                <sx:positionalField name="aaaa" width="4"/>
+                <sx:positionalField name="bb" width="2"/>
+                <sx:positionalField name="cc" width="2"/>
+              </sx:flatRecordType>
+            </sx:otherwise>
+          </sx:flatRecordTypeChoice>
+        </sx:repeatingGroup>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="segmentsToXml">
+    <Recs>
+      <sx:onRecord>
+        <Rec>
+          <sx:subrecordMapping repeatingGroup="segments">
+            <sx:onRecord recordType="Z01">
+              <Z01>
+                <sx:fieldElementMap field="xxx" element="xxx"/>
+                <sx:fieldElementMap field="yyy"  element="yyy"/>
+              </Z01>
+            </sx:onRecord>
+            <sx:onRecord recordType="Z02">
+              <Z02>
+                <sx:fieldElementMap field="aaaa" element="aaaa"/>
+                <sx:fieldElementMap field="bb" element="bb"/>
+                <sx:fieldElementMap field="cc" element="cc"/>
+              </Z02>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </Rec>
+      </sx:onRecord>
+    </Recs>
+  </sx:recordMapping>
+
+</sx:resources>
+

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                    xmlns:eg="http://examples.com/">
+
+  <sx:service id="families">                               
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="families"/>
+        <!-- sx:removeEmptyElements elements="eg:children"/ -->
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="families">
+    <sx:flatFileReader>
+      <sx:flatFile ref="family-records"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="families-to-xml-mapping"/>
+  </sx:recordContent>
+  
+  <sx:flatFile id="family-records">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="family">
+        <sx:fieldDelimiter value="|"/>
+        <sx:delimitedField name="father_name"/>
+        <sx:delimitedField name="mother_name"/>
+        <sx:delimitedField name="children">
+          <sx:subfieldDelimiter value=";"/>
+        </sx:delimitedField>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+  
+  <sx:recordMapping id="families-to-xml-mapping">
+    <eg:families xmlns:eg="http://examples.com/">
+      <sx:onRecord>
+        <eg:family>
+          <sx:fieldElementMap field="father_name" element="eg:father-name"/>
+          <sx:fieldElementMap field="mother_name" element="eg:mother-name"/>
+          <eg:children>
+            <sx:fieldElementSequenceMap field="children" element="eg:child"/>
+          </eg:children>
+        </eg:family>
+      </sx:onRecord>
+    </eg:families>
+  </sx:recordMapping>
+  
+</sx:resources>
+

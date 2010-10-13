@@ -1,0 +1,272 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader>
+   <title>Flat/XML Resources</title>
+</artheader>
+
+<section>
+<title>Flat File Formats</title>
+<section>
+<title>CSV</title>
+<itemizedlist>
+<listitem><para>Wikapedia
+<ulink url="http://en.wikipedia.org/wiki/Comma-separated_values">Comma-separated values</ulink>
+</para></listitem>
+<listitem><para>Wikapedia
+<ulink url="http://en.wikipedia.org/wiki/Delimiter-separated_values">Delimiter-separated values</ulink>
+</para></listitem>
+<listitem><para>RFC 4180
+<ulink url="http://tools.ietf.org/html/rfc4180">Common Format and MIME Type for Comma-Separated Values (CSV) Files</ulink>
+</para></listitem>
+<listitem><para>Creativyst Software
+<ulink url="http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm">The Comma Separated Value (CSV) File Format</ulink>
+</para></listitem>
+<listitem><para>Kasper B. Graversen
+<ulink url="http://supercsv.sourceforge.net/csvSpecification.html">The CSV format specification</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+  <section>
+    <title>Legacy File Formats</title>
+<itemizedlist>
+  <listitem><para>Michael C. Rawlins
+  <ulink url="http://www.idealliance.org/papers/dx_xml03/papers/04-02-03/04-02-03.pdf">Processing Legacy File Formats with XML and the DOM</ulink>
+  </para></listitem>
+  <listitem><para>Michael C. Rawlins
+  <ulink url="http://www.awprofessional.com/bookstore/product.asp?isbn=0321154940&amp;rl=1">Using XML with Legacy Business Applications</ulink>
+  </para></listitem>
+<listitem><para>Jean-Yves MENGANT
+<ulink url="http://jymengant.ifrance.com/jymengant/jurassicfaq.html">JURASSIC FAQS</ulink>
+</para></listitem>
+<listitem><para>IBM
+<ulink url="http://jymengant.ifrance.com/jymengant/jurassicfaq.html">SMF records</ulink>
+</para></listitem>
+  <listitem><para>IBM WebSphere Business Integration Adapters documentation
+  <ulink url="http://publib.boulder.ibm.com/infocenter/wbihelp/v6rxmx/index.jsp?topic=/com.ibm.wbia_adapters.doc/doc/swift/swift70.htm">SWIFT message structure</ulink>
+  </para></listitem>
+    </itemizedlist>
+  </section>
+  <section>
+    <title>Tools</title>
+    <itemizedlist>
+<listitem><para><ulink url="http://servingxml.sourceforge.net/">ServingXML</ulink>
+</para></listitem>
+<listitem><para><ulink url="http://www.unidex.com/xflat.htm">XML Convert</ulink>
+</para></listitem>
+<listitem><para><ulink url="http://www.rawlinsecconsulting.com/babelblaster/">Babel Blaster</ulink>
+</para></listitem>
+<listitem><para><ulink url="http://www.jaspersoft.com/JasperSoft_JasperETL.html">Jasper ETL</ulink>
+</para></listitem>
+<listitem><para><ulink url="http://static.springframework.org/spring-batch/">Spring Batch</ulink>
+</para></listitem>
+<listitem><para><ulink url="http://reflex.gforge.inria.fr/">RefleX</ulink>
+</para></listitem>
+    </itemizedlist>
+  </section>
+
+</section>
+
+<section>
+<title>Character Encoding</title>
+<itemizedlist>
+<listitem><para>
+<ulink url="http://www.unicode.org/">Unicode</ulink>
+</para></listitem>
+<listitem><para>Addison P. Phillips
+<ulink url="http://www.inter-locale.com/whitepaper/IUC27-a303.html">Are We Counting Bytes Yet?</ulink>
+</para></listitem>
+<listitem><para>ICU
+<ulink url="http://www.icu-project.org/">International Components for Unicode</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Flat/XML Markup</title>
+<itemizedlist>
+<listitem><para>Bob Lyons
+<ulink url="http://www.infoloom.com/gcaconfs/WEB/TOC/t0413_.HTM">Converting Flat File Content into XML and Vice Versa</ulink>
+</para></listitem>
+<listitem><para>Daniel Parker
+<ulink url="http://xtech06.usefulinc.com/schedule/paper/155">Markup for Flat-XML Processing</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Flat/XML Conversion with XSLT</title>
+<itemizedlist>
+<listitem><para>XSLT FAQ
+<ulink url="http://www.dpawson.co.uk/xsl/sect2/flatfile.html">Flat file transformation</ulink>
+</para></listitem>
+<listitem><para>Michael Kay
+<ulink url="http://www.saxonica.com/papers/ideadb-1.1/mhk-paper.xml">Up-conversion using XSLT 2.0</ulink>
+</para></listitem>
+<listitem><para>Jeni Tennison
+<ulink url="http://www.jenitennison.com/xslt/hierarchies-in.xml">Flattening Input</ulink>
+</para></listitem>
+<listitem><para>Andrew Welch
+<ulink url="http://andrewjwelch.com/code/xslt/csv/csv-to-xml_v2.html">A CSV to XML converter in XSLT 2.0 (version 2)</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Grouping XML Tags with XSLT</title>
+<itemizedlist>
+<listitem><para>Jeni Tennison
+<ulink url="http://www.jenitennison.com/xslt/grouping/index.xml">Grouping</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Streaming XML</title>
+<itemizedlist>
+<listitem><para>
+<ulink url="http://stx.sourceforge.net/">Streaming Transformations for XML (STX)</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+  <section>
+    <title>Standards Related to Flat/XML Transformation
+    </title>
+<section>
+<title>ISO</title>
+<itemizedlist>
+<listitem><para>
+<ulink url="http://www.iso.ch/iso/en/CatalogueDetailPage.CatalogueDetail?CSNUMBER=35341&amp;ICS1=35">SQL/XML</ulink>
+</para></listitem>
+<listitem><para>
+<ulink url="http://www.schematron.com/">Schematron</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Oasis</title>
+<itemizedlist>
+<listitem><para>
+<ulink url="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsbpel">WS BPEL 2.0</ulink>
+</para></listitem>
+<listitem><para>
+<ulink url="http://relaxng.org/">RELAX NG</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>W3C</title>
+<itemizedlist>
+<listitem><para><ulink url="http://www.w3.org/TR/xpath20/">XML Path Language (XPath) 2.0</ulink></para></listitem>
+<listitem><para><ulink url="http://www.w3.org/TR/xslt20/">XSL Transformations (XSLT) Version 2.0</ulink></para></listitem>
+<listitem><para><ulink url="http://www.w3.org/TR/xquery/">XQuery 1.0: An XML Query Language</ulink></para></listitem>
+<listitem><para><ulink url="http://www.w3.org/TR/xquery/">XML Schema</ulink>
+<itemizedlist>
+<listitem><ulink url="http://www.w3.org/TR/XMLSchema-0">XML Schema: Primer</ulink></listitem>
+<listitem><ulink url="http://www.w3.org/TR/XMLSchema-1">XML Schema: Structures</ulink></listitem>
+<listitem><ulink url="http://www.w3.org/TR/XMLSchema-2">XML Schema: Datatypes</ulink></listitem>
+</itemizedlist>
+</para></listitem>
+</itemizedlist>
+</section>
+    
+  </section>
+
+<section>
+<title>Tutorials</title>
+<itemizedlist>
+<listitem><para>XQUERY
+<itemizedlist>
+<listitem><para>Michael Kay
+<ulink url="http://www.stylusstudio.com/whitepapers/Learn_XQuery_10.pdf">Learn XQuery in 10 Minutes</ulink>
+</para></listitem>
+<listitem><para>Michael Kay
+<ulink url="http://www.stylusstudio.com/whitepapers/blooming_flwor.pdf">Blooming FLWOR - An Introduction to the XQuery FLWOR Expression</ulink>
+</para></listitem>
+<listitem><para>Michael Kay
+<ulink url="http://www.stylusstudio.com/whitepapers/schema-aware.pdf">Schema-Aware Queries and Stylesheets</ulink>
+</para></listitem>
+</itemizedlist>
+</para></listitem>
+<listitem><para>XML Schema
+<itemizedlist>
+<listitem><para>W3Schools
+<ulink url="http://www.w3schools.com/schema/schema_intro.asp">Introduction to XML Schema</ulink>
+</para></listitem>
+<listitem><para>ZVON
+<ulink url="http://www.zvon.org/xxl/XMLSchemaTutorial/Output/index.html">W3Schools.com XML Schema Tutorial</ulink>
+</para></listitem>
+</itemizedlist>
+</para></listitem>
+<listitem><para>XPATH
+<itemizedlist>
+<listitem><para>W3Schools
+<ulink url="http://www.w3schools.com/xpath/default.asp">W3Schools.com XPATH Tutorial</ulink>
+</para></listitem>
+<listitem><para>ZVON
+<ulink url="http://www.zvon.org/xxl/XPathTutorial/General/examples.html">ZVON XPath Tutorial</ulink>
+</para></listitem>
+</itemizedlist>
+</para></listitem>
+<listitem><para>XSLT
+<itemizedlist>
+<listitem><para>W3Schools
+<ulink url="http://www.w3schools.com/xsl/default.asp">W3Schools.com XSL Tutorial</ulink>
+</para></listitem>
+<listitem><para>ZVON
+<ulink url="http://www.zvon.org/xxl/XSLTutorial/Output/index.html">ZVON XSLT Tutorial</ulink>
+</para></listitem>
+</itemizedlist>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Datatype Mappings</title>
+<itemizedlist>
+<listitem><para>IBM
+<ulink url="http://publib.boulder.ibm.com/infocenter/db2luw/v9/index.jsp?topic=/com.ibm.db2.udb.apdv.embed.doc/doc/r0022556.htm">XML schema to SQL types compatibility for annotated schema decomposition</ulink>
+</para></listitem>
+<listitem><para>CASTOR
+<ulink url="http://www.castor.org/types.html">Type Support</ulink>
+</para></listitem>
+<listitem><para>Hibernate
+<ulink url="http://www.hibernate.org/hib_docs/tools/reference/en/html/reverseengineering.html">Controlling reverse engineering</ulink>
+</para></listitem>
+<listitem><para>Oracle
+<ulink url="http://www.lc.leidenuniv.nl/awcourse/oracle/appdev.920/a96616/arxml22.htm">Oracle XML DB API for Java Beans</ulink>
+</para></listitem>
+<listitem><para>SUN
+<ulink url="http://docs.sun.com/app/docs/doc/819-3659/6n5s6m599?a=view">Automatic Schema Generation</ulink>
+</para></listitem>
+<listitem><para>Elliotte Rusty Harold
+<ulink url="http://www.cafeconleche.org/books/xmljava/references/ch08s05.html">Parsing non-XML Documents</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Regular Expressions</title>
+<para>
+<itemizedlist>
+<listitem><para>stevesoft
+<ulink url="http://www.javaregex.com/">Regular Expressions</ulink>
+</para></listitem>
+</itemizedlist>
+</para>
+</section>
+
+<section>
+<title>File Verification</title>
+<itemizedlist>
+<listitem><para>Mark Nelson
+<ulink url="http://www.dogma.net/markn/articles/crcman/crcman.htm">File Verification Using CRC</ulink>
+</para></listitem>
+</itemizedlist>
+</section>
+
+</article>
+

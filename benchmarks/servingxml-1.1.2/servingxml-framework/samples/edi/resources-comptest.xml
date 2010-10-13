@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- comptest - test parsing repeating composite fields. -->
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="edifact">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="edifact"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="edifact">
+    <sx:flatFileReader>
+      <sx:flatFile ref="edifactFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="edifactToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="edifactFlatFile">
+    <sx:recordDelimiter value="'"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:fieldDelimiter value="+"/>
+        <sx:delimitedField name="segmentType"/>
+        <!-- edifact3 - Body Segments.-->
+        <!-- BKG BOOKING CODE DATA .-->
+        <sx:when test="segmentType='BKG'">
+          <sx:flatRecordType name='BKG'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="flightSegmentNumber"/>
+            <sx:delimitedField name="accessID"/>
+            <sx:delimitedField name="bookingCodeCount"/>
+            <sx:repeatingGroup name="booking" count="{bookingCodeCount}">
+              <sx:flatRecordType name="C704">
+                <sx:fieldDelimiter value=":"/>
+                <sx:delimitedField name="bookingCode">
+                </sx:delimitedField>
+                <sx:delimitedField name="seatAvailabilityCount">
+                </sx:delimitedField>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="edifactToXmlMapping">
+    <edifact>
+      <!-- edifact3 - Body Segments.-->
+      <!-- BKG BOOKING CODE DATA.-->
+      <sx:onRecord recordType="BKG">
+        <sx:elementMap element="segment">
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="flightSegmentNumber" element="flightSegmentNumber"/>
+          <sx:fieldElementMap field="accessID" element="accessID"/>
+          <sx:fieldElementMap field="bookingCodeCount" element="bookingCodeCount"/>
+          <sx:subrecordMapping repeatingGroup="booking">
+            <sx:onRecord recordType="C704">
+              <C704>
+                <sx:fieldElementMap field="bookingCode" element="bookingCode"/>
+                <sx:fieldElementMap field="seatAvailabilityCount" element="seatAvailabilityCount"/>
+              </C704>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </sx:elementMap>
+      </sx:onRecord>
+    </edifact>
+  </sx:recordMapping>
+
+</sx:resources>
+

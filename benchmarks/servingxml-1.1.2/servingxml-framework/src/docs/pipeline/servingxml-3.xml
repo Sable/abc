@@ -1,0 +1,495 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader id="inversion-of-control-container">
+  <title>Serving XML: Inversion of Control Container</title>
+  <author><firstname>Daniel</firstname><surname>Parker</surname></author>
+</artheader>
+<section>
+<para>
+This is the fourth of four articles describing the ServingXML pipeline language.  
+</para>
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">ServingXML: Pipeline Language</ulink>
+</phrase></listitem>
+<!--listitem>
+  <phrase>
+    <ulink url="record-structure.html">Record Pipelines: Record 
+      Structure</ulink>
+  </phrase>
+</listitem-->
+
+<listitem><phrase>
+<ulink url="flat-file-to-xml.html">ServingXML: Flat Files</ulink>
+</phrase></listitem>
+<!--listitem><phrase>
+<ulink url="xml-to-xml.html">ServingXML: XML Content</ulink>
+</phrase></listitem-->
+<listitem><phrase>
+<ulink url="servingxml-3.html">ServingXML: Inversion of Control 
+  Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+  <para>
+This article looks at <code>ServingXML</code> as an "inversion of control" (IoC) container
+that allows us to assemble components from a variety of projects - the Apache FOP project,
+the Sun MSV project and others - and make them work together to process records and XML. 
+The term "inversion" conveys the idea that the <code>ServingXML</code> container does not instantiate 
+components directly, but rather supports an extensible component assembler module
+that allows user defined components to be injected into the container.
+</para>
+</section>
+<section>
+<title>Configuration and Service Components</title>
+<para>
+The <code>ServingXML</code> container supports two types of components:
+<itemizedlist>
+<listitem><phrase>
+configuration components
+</phrase></listitem>
+<listitem><phrase>
+service components
+</phrase></listitem>
+</itemizedlist>
+</para>
+<para>
+The difference between the two is in how they are identified.
+<itemizedlist>
+<listitem><phrase>
+Configuration components are identified by object type and scope within an XML document.
+</phrase></listitem>
+<listitem><phrase>
+Service components are identified by object type and instance name.
+</phrase></listitem>
+</itemizedlist>
+</para>
+<para>
+In Java code, we can see the difference in how we look up component instances in the IoC
+container.  This is how we look up a configuration component, passing only an object type to the lookup method:
+<programlisting>
+<![CDATA[
+  XsltConfiguration config = (XsltConfiguration)resources.lookupConfigurationComponent(JaxpConfiguration.class);
+]]>
+</programlisting>
+This is how we look up a service component, passing both an object type and an instance name to the lookup method:
+<programlisting>
+<![CDATA[
+  Service service = (Service)resources.lookupServiceComponent(Service.class, "books");
+]]>
+</programlisting>
+</para>
+<para>
+The example below shows a resources script that declares some configuration and service
+components, in particular, the <sgmltag>sx:xsltConfiguration</sgmltag> configuration component 
+and the <sgmltag>sx:service</sgmltag> service component named "books".
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <!-- A configuration component -->                  
+  <sx:xsltConfiguration>           
+    <sx:systemProperty name="javax.xml.transform.TransformerFactory" 
+                       value="com.icl.saxon.TransformerFactoryImpl"/>
+    <sx:outputProperty name="indent" value="no"/>
+    <sx:outputProperty name="{http://icl.com/saxon}omit-meta-tag" value="yes"/>
+  </sx:xsltConfiguration>
+
+  <!-- A service component -->                 
+  <sx:service id="books"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="style1"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:xslt id="style1"><sx:urlSource url="styles/catalog.xsl"/></sx:xslt>
+  <sx:xslt id="style2"><sx:urlSource url="styles/brochure.xsl"/></sx:xslt>
+                        
+   ...
+]]></programlisting>
+<para>
+The components declared in a resources script are assembled by the IoC container, using
+assemblers that are defined in a components file.  The assemblers for the components
+shown above are defined as follows.
+</para>
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core">
+
+  <!--  Configuration Components -->
+  <ioc:configurationComponent name="sx:xsltConfiguration"
+    assemblerClass="com.servingxml.components.xsltconfig.XsltConfigurationAssembler"/>
+
+  <!--  Abstract Components -->
+  <ioc:abstractComponent name="sx:content" 
+    interface="com.servingxml.app.xmlpipeline.Content"/>
+  <ioc:abstractComponent name="sx:stringable" 
+    interface="com.servingxml.components.string.StringFactory"/>
+  <ioc:abstractComponent name="sx:task" 
+    interface="com.servingxml.components.task.Task"/>
+
+  <!--  Service Components -->
+  <ioc:serviceComponent name="sx:outputProperty" 
+    assemblerClass="com.servingxml.components.property.OutputPropertyFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:serialize" base="sx:task sx:stringable"
+    assemblerClass="com.servingxml.components.transform.SerializedContentAssembler"/>
+  <ioc:serviceComponent name="sx:xslt" base="sx:content"
+    assemblerClass="com.servingxml.components.xslt.XsltFilterFactoryAssembler"/>
+  <ioc:serviceComponent name="sx:systemProperty" 
+    assemblerClass="com.servingxml.components.property.SystemPropertyAssembler"/>
+  <ioc:serviceComponent name="sx:transform" 
+    interface="com.servingxml.app.xmlpipeline.XmlPipelineFactory"
+    assemblerClass="com.servingxml.components.transform.TransformedContentAssembler"/>
+
+  ...  
+                        
+]]>
+</programlisting>
+<para>
+The code fragment below shows the <code>injectComponent</code> 
+methods on the serialize assembler that receive configuration and
+service component instances.  It is the IoC container's responsibility to call these 
+methods.
+
+<programlisting>
+<![CDATA[
+public class SerializedContentAssembler ...
+
+  public void injectComponent(XsltConfiguration jaxpConfig) {
+    this.jaxpConfig = jaxpConfig;
+  }
+
+  public void injectComponent(XmlFilterAppender pipelineFactory) {
+    this.pipelineFactory = pipelineFactory;
+  }
+]]>
+</programlisting>
+</para>
+<para>
+Each assembler has a method <code>assemble</code> that the IoC container, after it calls the
+<code>injectXXX</code> methods, calls to instantiate the component.
+
+<programlisting>
+<![CDATA[
+public class SerializedContentAssembler ...
+
+  public Task assemble(ConfigurationContext context) 
+   { ...
+
+    //  Instantiate and return task using the configuration and service
+    //  component instances injected into the component.
+
+]]>
+</programlisting>
+</para>
+</section>
+<section>
+<title>Creating a Custom Service Component</title>  
+<section>
+<title>Creating an Extension Package</title>
+<para>
+The ServingXML distribution includes a template extension package <filename>servingxmlx</filename> under the 
+<filename>extensions</filename> directory.  In the <filename>servingxmlx</filename> directory you will find
+the following files and directories.
+<itemizedlist>
+<listitem><phrase>
+build.properties - This is where the extension jar file is named.
+</phrase></listitem>
+<listitem><phrase>
+build.xml - Ant build file (called by the main build.)
+</phrase></listitem>
+<listitem><phrase>
+build - Empty directory.
+</phrase></listitem>
+<listitem><phrase>
+lib - Put your extension specific jar files here.
+</phrase></listitem>
+<listitem><phrase>
+samples -  Samples go here.
+</phrase></listitem>
+<listitem><phrase>
+src/java/servingxmlx - Component source code goes here.
+</phrase></listitem>
+<listitem><phrase>
+src/resources/components.xml - Register your extension components here.
+</phrase></listitem>
+</itemizedlist>
+</para>
+<para>
+You can place any extension to the system in the <filename>servingxmlx</filename> package.
+Alternatively, you can create a custom package name, using the <filename>servingxmlx</filename>
+package as a template, and place your extension in your own package.  If you create a custom
+package name, you will also need to go to the root directory of the <filename>servingxml</filename> download
+and add an entry to the <filename>build-extensions.xml</filename> file.
+</para>
+<para>
+The components supplied by an extension are registered in the extension's <filename>components.xml</filename> 
+file.  This file is included in the component's jar file.  An entry in the jar's manifest named 
+"ServingXML-Components" tells the <code>ServingXML</code> implementation where to find the 
+components.
+</para>
+<para>
+To build your package and make it part of the <code>ServingXML</code> distribution
+<itemizedlist>
+<listitem><phrase>
+Edit the root-level <filename>build-extensions.xml</filename> file to include your extension in the main build.
+</phrase></listitem>
+<listitem><phrase>
+Build the distribution from the command line in the root directory of the servingxml download.
+</phrase></listitem>
+</itemizedlist>
+
+</para>
+</section>
+<section>
+  <title>Creating a Custom FTP Sink Component</title>
+<para>
+In the example below, we show a resources script that transforms a document with a style sheet
+and writes the result to the local file <filename>output.xml</filename>.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="myService">
+    <sx:transform>
+      <sx:document><sx:urlSource url="document.xml"/></sx:document>
+      <sx:xslt><sx:urlSource url="style.xsl"/></sx:xslt>
+      <sx:xsltSerializer>
+        <sx:fileSink file="output.xml"/>
+      </sx:xsltSerializer>
+    </sx:transform>
+  </sx:service>
+  
+</sx:resources>
+]]>
+</programlisting>
+<para>
+Now, suppose that instead of writing the output to a local file, we want to send it
+to a remote host using our favourite third party FTP tool.  In particular, we want
+to define a new element, say <code>ftpSink</code>, that we can use anywhere
+in a resources script where an element of the <sgmltag>sx:streamSink</sgmltag> family 
+is currently allowed.  We want to write something like this.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:sxx="servingxmlx"> ...
+              
+  <sx:service id="service">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sxx:ftpSink remoteFile="output.xml">
+          <sxx:ftpClient host="xxx" user="xxx" password="xxx"/>
+        </sxx:ftpSink>
+      <sx:xsltSerializer>  
+]]>
+</programlisting>
+<para>
+Note that we've put our proposed new elements <code>ftpSink</code> 
+and <code>ftpClient</code> in a separate namespace, to distinguish them
+from the built-in <code>ServingXML</code> elements.
+</para>
+
+<para>
+We'll start by examining the framework <filename>components.xml</filename> file, 
+which is where the <sgmltag>sx:fileSink</sgmltag> element is registered.  We see that it has an assembler class that
+creates <code>StreamSinkFactory</code> instances.
+</para>
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"> ...
+
+  <ioc:abstractComponent name="sx:streamSink" 
+    interface="com.servingxml.components.streamsink.StreamSinkFactory"/>
+  
+  <ioc:serviceComponent name="sx:fileSink" base="sx:streamSink"
+    assemblerClass="com.servingxml.components.streamsink.file.FileSinkFactoryAssembler"/>
+      
+]]>
+</programlisting>
+<para>
+The <code>StreamSinkFactory</code> interface is defined as follows.
+</para>
+<programlisting>
+<![CDATA[
+public interface StreamSinkFactory {
+  StreamSink createStreamSink(ServiceContext context,  Flow flow) 
+  ;
+}
+]]>
+</programlisting>
+<programlisting>
+<![CDATA[
+public interface StreamSink {
+  
+  OutputStream openStream() throws IOException;
+  
+  void closeStream(OutputStream os) throws IOException; 
+}
+]]>
+</programlisting>
+<para>
+We'll need <code>StreamSinkFactory</code> and <code>StreamSink</code> implementations.
+Ultimatelty, the framework will call <code>openStream</code> on a <code>StreamSink</code> object,
+and we'll want the content that is written to the output stream to be sent to a file on a remote host.
+There are different ways of implementing this, for example, we could stream the content to the remote
+file as it is written, or alternatively we could stream it to a local file, and then send the local file 
+to the remote host when the framework calls <code>closeStream</code>.
+</para>
+
+We'll need to register our new elements with the <code>ServingXML</code> container, which we'll do
+by adding some entries to the local <filename>components.xml</filename> file for the 
+<code>servingxmlx</code> extension.
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+               xmlns:sx="http://www.servingxml.com/core"
+               xmlns:sxx="servingxmlx">...
+               
+  <ioc:serviceComponent name="sxx:ftpSink" base="sx:streamSink"
+    assemblerClass="servingxmlx.components.streamsink.edtftpj.FtpSinkFactoryAssembler"/>
+    
+  <ioc:serviceComponent name="sxx:ftpClient" 
+    interface="servingxmlx.components.streamsink.FtpClient"
+    assemblerClass="servingxmlx.components.connect.edtftpj.FtpClientAssembler"/>
+
+]]>
+</programlisting>
+<para>
+We need an assembler class for building a <code>StreamSinkFactory</code>.
+</para>
+<programlisting>
+<![CDATA[
+public class FtpSinkFactoryAssembler ...
+
+  public StreamSinkFactory assemble(ConfigurationContext context)
+   {
+    
+    return new FtpSinkFactory(ftpClient,remoteFile);
+  }
+}
+]]>
+</programlisting>
+<para>
+We define setter methods to allow the <code>ServingXML</code> container to inject the attribute values
+of the <sgmltag>edt:ftpSink</sgmltag> element into the builder object. 
+</para>
+<programlisting>
+<![CDATA[
+public class FtpSinkFactoryAssembler ...
+  
+  public void setRemoteFile(String remoteFile) {
+    this.remoteFile = remoteFile;
+  }
+  
+]]>
+</programlisting>
+<para>
+We define an <code>injectComponent</code> method to allow the <code>ServingXML</code> container
+to inject an <code>FtpClient</code> object into the builder object. 
+</para>
+<programlisting>
+<![CDATA[
+public class FtpSinkFactoryAssembler ...
+
+  public void injectComponent(FtpClient ftpClient) {
+    this.ftpClient = ftpClient;
+  }
+]]>
+</programlisting>
+<para>
+We need another builder for the ftpClient.  This builder class only requires setter methods.
+</para>
+<programlisting>
+<![CDATA[
+public class FtpClientAssembler ...
+  
+  private int port = 21;
+                    
+  public void setHost(String host) {
+    this.host = host;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
+  }
+  
+  public void setUser(String user) {
+    this.user = user;
+  }
+  
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public FtpClient assemble(ConfigurationContext context)
+   {
+    
+    return new FtpClient(host,port,user,password);
+  }
+}
+]]>
+</programlisting>
+<para>
+We can now rewite the resources script as proposed above, or alternatively, we
+can rewirte it using references like this.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:sxx="servingxmlx">
+
+  <sxx:ftpClient name="myFtpClient" host="xxx" user="xxx" password="xxx"/>
+              
+  <sx:service id="service">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:streamSink ref="myFtpSink"/>
+      </sx:xsltSerializer>  
+      <sx:transform>
+        <sx:document><sx:urlSource url="document.xml"/></sx:document>
+        <sx:xslt><sx:urlSource url="style.xsl"/></sx:xslt>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sxx:ftpSink name="myFtpSink" remoteFile="output.xml">
+    <sxx:ftpClient ref="myFtpClient"/>
+  </sxx:ftpSink>
+
+  
+</sx:resources>
+]]>
+</programlisting>
+<para>
+Note that the <code>ServingXML</code> container is responsible for resolving dependencies,
+so we don't need to worry about the precise order of the <sgmltag>sxx:ftpSink</sgmltag> and 
+<sgmltag>sxx:ftpClient</sgmltag> elements, or references to them, in the script. 
+</para>
+<para>
+If we wanted to access the objects we've just defined in Java code, we could do so as follows.
+<programlisting>
+<![CDATA[
+
+Name myFtpClient = new QualifiedName("myFtpClient");
+Name myFtpSink = new QualifiedName("myFtpSink");
+
+IocContainer resources = appContext.getResources();
+                                          
+FtpClient ftpClient = (FtpClient)resources.lookupResource(FtpClient.class,myFtpClient);
+
+StreamSinkFactory streamSinkFactory = (StreamSinkFactory)resources.lookupResource(
+    StreamSinkFactory.class,myFtpSink);
+]]>
+</programlisting>
+</para>
+</section>
+</section>
+</article>
+

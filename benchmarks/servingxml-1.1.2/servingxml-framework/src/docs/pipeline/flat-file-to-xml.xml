@@ -1,0 +1,85 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+  <artheader id="recordstreams">
+    <title>Serving XML: Flat file to XML</title>
+    <author>
+      <firstname>Daniel</firstname>
+      <surname>Parker</surname>
+    </author>
+  </artheader>
+  <section>
+    <para> This article describes how to tranform flatfiles to XML with the
+  ServingXML pipeline language.
+    </para>
+<itemizedlist>
+<listitem><phrase>
+<ulink url="servingxml-1.html">ServingXML: Pipeline Language</ulink>
+</phrase></listitem>
+<!--listitem>
+  <phrase>
+    <ulink url="record-structure.html">Record Pipelines: Record 
+      Structure</ulink>
+  </phrase>
+</listitem-->
+
+<listitem><phrase>
+<ulink url="flat-file-to-xml.html">ServingXML: Flat Files</ulink>
+</phrase></listitem>
+<!--listitem><phrase>
+<ulink url="xml-to-xml.html">ServingXML: XML Content</ulink>
+</phrase></listitem-->
+<listitem><phrase>
+<ulink url="servingxml-3.html">ServingXML: Inversion of Control 
+  Container</ulink>
+</phrase></listitem>
+</itemizedlist>
+    <para>
+This article discusses pipelines where the input is a flat file and the output 
+is XML.
+    </para>
+  </section>
+  <section>
+    <title>Counting Positions in Bytes and Characters</title>
+  </section>
+  <section>
+    <title>Fixed Record Length Files</title>
+  <para>These include
+  </para>
+  <itemizedlist>
+    <listitem>
+      Flat files with no record delimiters, and the length of each type of
+      record is fixed.  Since line delimited is the default, you need to 
+      explicitly specifiy that the file has no record delimiters (with the 
+      <code>lineDelimited=false</code> option).  In addition, you must either
+      <itemizedlist>
+        <listitem>
+          explicitly specify the length of each type of record (with the
+          <sgmltag>recordLength</sgmltag> attribute), or
+        </listitem>
+        <listitem>
+      provide enough information about the positions and widths
+      of the fields in the record so that ServingXML can calculate the length.
+        </listitem>
+      </itemizedlist>
+    </listitem>
+    <listitem>
+      Flat files with record delimiters, but the length of each type of record
+      (including delimiters) is still fixed.  In this case you have the option
+      of either reading the file as a line delimited file (the default), or as a 
+      fixed record length file (by explicitly specifying the record length, 
+      including delimiters.)
+    </listitem>
+  </itemizedlist>
+  <para>
+    Note that it is not necessary that all records in the file have the same 
+    length, only that all records of the same type have the same length.
+  </para>
+  </section>
+  <section>
+    <title>Record Segments and Repeating Groups</title>
+  </section>
+</article>
+
+
+

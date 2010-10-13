@@ -1,0 +1,15 @@
+define ip 1.2.3.4 
+ 
+Spec mySpec 
+{
+    os   linux 
+     
+    # 
+    # Install the hardware 
+     
+    interface Ethernet    0/0 
+    { 
+        ip         10.0.0.1 
+        vlan   34 
+    }
+}

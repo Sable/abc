@@ -1,0 +1,353 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Serving XML: Record Streams</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2">
+<meta name="verify-v1" content="bjOlpPVOTmerzJUJNrhZOPE53CqnavEJXFi0CLe/FGw=" />
+          </head>
+<script src="http://www.google-analytics.com/urchin.js"
+type="text/javascript">
+</script>
+    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="recordstreams"></a>Serving XML: Record Streams</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Daniel</span> <span class="surname">Parker</span></h3></div></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d62e15"></a></span></dt><dt><span class="section"><a href="#d62e45">The Record</a></span></dt><dt><span class="section"><a href="#d62e82">Record Readers and Writers</a></span></dt><dt><span class="section"><a href="#d62e119">Adapting a Record Stream to XML Content</a></span></dt><dt><span class="section"><a href="#d62e141">Adapting XML Content to a Record Stream</a></span></dt><dt><span class="section"><a href="#d62e168">Performing Tasks Repeatedly within a Record Filter</a></span></dt></dl></div>
+
+<div class="section" lang="en"><div class="titlepage"></div>
+<p>
+This is the second of three articles describing the ServingXML pipeline language.  
+</p><div class="itemizedlist"><ul type="disc"><li><span>
+<a class="ulink" href="servingxml-1.html" target="_top">Serving XML: Pipeline Language</a>
+</span></li><li><span>
+<a class="ulink" href="servingxml-2.html" target="_top">Serving XML: Record Streams</a>
+</span></li><li><span>
+<a class="ulink" href="servingxml-3.html" target="_top">Serving XML: Inversion of Control Container</a>
+</span></li></ul></div><p>
+This article discusses pipelines where the input or output (or both) are sequences of records. 
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d62e45"></a>The Record</h2></div></div></div>
+  
+<p>
+ServingXML supports the notion of records that have fields, possibly multi-valued,
+and nested subrecords, possibly repeating.
+</p>
+<p>
+A record may be represented in BNF as follows:
+</p><pre class="programlisting">
+
+Record ::= name (Field+) (Record*) |
+  name (Field*) (Record+)
+
+Field:= name (value*)
+</pre><p>
+</p>
+<p>Here is a sample XML representation of a record.
+</p>
+      <pre class="programlisting">
+        
+&lt;Employee&gt;
+  &lt;Employee-No&gt;0001&lt;/Employee-No&gt;
+  &lt;Employee-Name&gt;Matthew&lt;/Employee-Name&gt;
+  &lt;Children&gt;Joe&lt;/Children&gt;
+  &lt;Children&gt;Julia&lt;/Children&gt;
+  &lt;Children&gt;Dave&lt;/Children&gt;
+&lt;/Employee&gt;
+
+      </pre>
+<p>The record is of type "Employee" and has three fields named <code class="sgmltag-element">Employee-No</code>, <code class="sgmltag-element">Employee-Name</code> and <code class="sgmltag-element">Children</code>.
+<code class="sgmltag-element">Children</code> is a multivalued field.
+</p>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d62e82"></a>Record Readers and Writers</h2></div></div></div>
+  
+<p>
+The example below illustrates the idea of record readers and writers with a flat file reader
+that reads a stream of records from a positional flat file, and a flat file writer that writes 
+the stream to a delimited flat file.  Here, we pair a <code class="sgmltag-element">sx:flatFileReader</code> with a 
+<code class="sgmltag-element">sx:flatFileWriter</code>, but we could just as easily pair a <code class="sgmltag-element">sx:flatFileReader</code> 
+with a <code class="sgmltag-element">sx:sqlWriter</code>, or
+a <code class="sgmltag-element">sx:sqlReader</code> with a <code class="sgmltag-element">sx:flatFileWriter</code>.
+</p>
+<div class="figure"><a name="record-readers-and-writers"></a><p class="title"><b>Figure&nbsp;1.&nbsp;Record readers and writers</b></p><div class="figure-contents">
+  
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"&gt;
+   
+  &lt;sx:service id="new-books"&gt; 
+    &lt;sx:recordStream&gt;
+      &lt;sx:flatFileReader&gt;
+        &lt;sx:flatFile ref="oldBooksFlatFile"/&gt;
+      &lt;/sx:flatFileReader&gt;
+      
+      &lt;sx:flatFileWriter&gt;
+        &lt;sx:flatFile ref="newBooksFlatFile"/&gt;
+      &lt;/sx:flatFileWriter&gt;
+    &lt;/sx:recordStream&gt;
+  &lt;/sx:service&gt;
+  
+  &lt;sx:flatFile id="newBooksFlatFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="newBookType"/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="newBookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="newBookType" name="newBookType"&gt;
+    &lt;sx:fieldDelimiter value="|"/&gt;
+    &lt;sx:delimitedField name="author" label="Author"/&gt;
+    &lt;sx:delimitedField name="category" label="Category"/&gt;
+    &lt;sx:delimitedField name="title" label= "Title"/&gt;
+    &lt;sx:delimitedField name="price" label="Price"/&gt;
+  &lt;/sx:flatRecordType&gt;
+  
+  &lt;sx:flatFile id="oldBooksFlatFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+      &lt;sx:annotationRecord/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+    &lt;sx:flatFileTrailer&gt;
+      &lt;sx:annotationRecord&gt;&lt;/sx:annotationRecord&gt;
+      &lt;sx:annotationRecord&gt;This is a trailer record&lt;/sx:annotationRecord&gt;
+    &lt;/sx:flatFileTrailer&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="oldBookType" name="oldBookType"&gt;
+    &lt;sx:positionalField name="category" width="1"/&gt;
+    &lt;sx:positionalField name="author" width="30"/&gt;
+    &lt;sx:positionalField name="title" width="30"/&gt;
+    &lt;sx:positionalField name="price" width="10" justify="right"/&gt;
+  &lt;/sx:flatRecordType&gt;
+  
+&lt;/sx:resources&gt;
+
+</pre>
+</div></div><br class="figure-break">
+  
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d62e119"></a>Adapting a Record Stream to XML Content</h2></div></div></div>
+  
+<p>
+The next example shows how to use a sx:recordContent element to adapt a record stream to XML content.  
+Once we have XML content, we can apply all of the XML pipeline instructions described in
+<a class="ulink" href="servingxml-1.html" target="_top">Serving XML: Pipeline Language</a>.
+</p>
+<div class="figure"><a name="record-stream-to-xml"></a><p class="title"><b>Figure&nbsp;2.&nbsp;Adapting a record stream to XML content</b></p><div class="figure-contents">
+  
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"
+                         xmlns:myns="http://mycompany.com/mynames/"&gt;
+
+  &lt;sx:service id="books"&gt; 
+    &lt;sx:serialize&gt;
+      &lt;sx:transform&gt;
+        &lt;sx:content ref="books"/&gt;
+      &lt;/sx:transform&gt;
+    &lt;/sx:serialize&gt;
+  &lt;/sx:service&gt;
+  
+  &lt;sx:recordContent id="books"&gt;
+    &lt;sx:flatFileReader&gt;
+      &lt;sx:flatFile ref="oldBooksFlatFile"/&gt;
+    &lt;/sx:flatFileReader&gt;
+    &lt;sx:recordMapping ref="booksToXmlMapping"/&gt;
+  &lt;/sx:recordContent&gt;
+
+  &lt;sx:recordMapping id="booksToXmlMapping"&gt;
+    &lt;myns:books&gt;
+      &lt;sx:onRecord&gt;
+        &lt;myns:book&gt;
+          &lt;sx:fieldElementMap field="title" element="myns:title"/&gt;  
+          &lt;sx:fieldAttributeMap field="category" attribute="categoryCode"/&gt;
+          &lt;sx:fieldElementMap field="author" element="myns:author"/&gt;
+          &lt;sx:fieldElementMap field="price" element="myns:price"/&gt;
+        &lt;/myns:book&gt;  
+      &lt;/sx:onRecord&gt;
+    &lt;/myns:books&gt;
+  &lt;/sx:recordMapping&gt;  
+   
+  &lt;sx:flatFile id="oldBooksFlatFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+      &lt;sx:annotationRecord/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+    &lt;sx:flatFileTrailer&gt;
+      &lt;sx:annotationRecord&gt;&lt;/sx:annotationRecord&gt;
+      &lt;sx:annotationRecord&gt;This is a trailer record&lt;/sx:annotationRecord&gt;
+    &lt;/sx:flatFileTrailer&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="oldBookType" name="oldBookType"&gt;
+    &lt;sx:positionalField name="category" width="1"/&gt;
+    &lt;sx:positionalField name="author" width="30"/&gt;
+    &lt;sx:positionalField name="title" width="30"/&gt;
+    &lt;sx:positionalField name="price" width="10" justify="right"/&gt;
+  &lt;/sx:flatRecordType&gt;
+  
+&lt;/sx:resources&gt;
+
+</pre>
+</div></div><br class="figure-break">
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d62e141"></a>Adapting XML Content to a Record Stream</h2></div></div></div>
+  
+<p>
+The next example shows how to use an <code class="sgmltag-element">sx:xmlRecordReader</code> element to adapt XML content 
+to a record stream.  Once we have a record stream, we can apply any record writer, including the 
+<code class="sgmltag-element">sx:flatFileWriter</code> or the <code class="sgmltag-element">sx:sqlWriter</code>.
+</p>
+<div class="figure"><a name="xml-to-records"></a><p class="title"><b>Figure&nbsp;3.&nbsp;Adapting XML content to a record stream</b></p><div class="figure-contents">
+  
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"
+                        xmlns:myns="http://mycompany.com/mynames/"&gt;
+   
+  &lt;sx:service id="books2pos"&gt; 
+    &lt;sx:recordStream&gt;
+      &lt;sx:xmlRecordReader&gt;
+        &lt;sx:inverseRecordMapping ref="booksToFileMapping"/&gt;
+        &lt;sx:transform&gt;
+          &lt;sx:document/&gt;
+        &lt;/sx:transform&gt;
+      &lt;/sx:xmlRecordReader&gt;
+      &lt;sx:flatFileWriter&gt;
+        &lt;sx:flatFile ref="booksFile"/&gt;
+      &lt;/sx:flatFileWriter&gt;
+    &lt;/sx:recordStream&gt;
+  &lt;/sx:service&gt;
+
+  &lt;sx:inverseRecordMapping id="booksToFileMapping"&gt;
+    &lt;sx:onSubtree path="/myns:books/myns:book"&gt;
+      &lt;sx:flattenSubtree recordType="book"&gt;
+        &lt;sx:subtreeFieldMap select="myns:title" field="title"/&gt;
+        &lt;sx:subtreeFieldMap select="@categoryCode" field="category"/&gt;
+        &lt;sx:subtreeFieldMap select="myns:author" field="author"/&gt;
+        &lt;sx:subtreeFieldMap select="myns:price" field="price"/&gt;
+        &lt;sx:subtreeFieldMap select="myns:reviews/myns:review[1]" field="review1"/&gt;
+        &lt;sx:subtreeFieldMap select="myns:reviews/myns:review[2]" field="review2"/&gt;
+      &lt;/sx:flattenSubtree&gt;
+    &lt;/sx:onSubtree&gt;
+  &lt;/sx:inverseRecordMapping&gt;
+
+  &lt;sx:flatFile id="booksFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="bookType"/&gt;
+      &lt;sx:annotationRecord/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="bookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+    &lt;sx:flatFileTrailer&gt;
+      &lt;sx:annotationRecord&gt;&lt;/sx:annotationRecord&gt;
+      &lt;sx:annotationRecord&gt;This is a trailer record&lt;/sx:annotationRecord&gt;
+    &lt;/sx:flatFileTrailer&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="bookType" name="bookType"&gt;
+    &lt;sx:positionalField name="category" label="Category" width="1"/&gt;
+    &lt;sx:positionalField name="author" label="Author" width="30"/&gt;
+    &lt;sx:positionalField name="title" label="Title" width="30"/&gt;
+    &lt;sx:positionalField name="price" label="Price" width="10" justify="right"/&gt;
+  &lt;/sx:flatRecordType&gt;
+  
+&lt;/sx:resources&gt;
+
+</pre>
+</div></div><br class="figure-break">
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d62e168"></a>Performing Tasks Repeatedly within a Record Filter</h2></div></div></div>
+  
+<p>
+In the previous examples we pair a record reader and a record writer 
+inside a <code class="sgmltag-element">sx:recordStream</code> element.
+The reader reads a stream of records and the writer writes out the records.
+</p>
+<p>
+A record reader can contain record filters that do some processing on the records as they pass through.  
+Normally the records go on to a writer, but a writer is optional, the processing can take place entirely
+within the filters.  The example below shows a lone record reader inside a <code class="sgmltag-element">sx:recordStream</code> 
+element.  This record reader is a <code class="sgmltag-element">sx:directoryReader</code>, which reads all the file names 
+in the <code class="filename">data</code> directory, 
+skipping any that do not match the pattern <code class="code">"(books.*)[.]txt"</code>.  The resulting stream of 
+file names passes through another <code class="sgmltag-element">sx:recordStream</code> element, which reads each books file 
+and writes out the records to a similiarly named file with a <code class="filename">_new</code> suffix in the 
+<code class="filename">output</code> directory.
+</p>
+<div class="figure"><a name="xml-to-records"></a><p class="title"><b>Figure&nbsp;4.&nbsp;Processing selected files in a directory</b></p><div class="figure-contents">
+  
+<pre class="programlisting">
+
+&lt;sx:resources xmlns:sx="http://www.servingxml.com/core"&gt;
+
+  &lt;sx:service id="all-books"&gt; 
+    &lt;sx:recordStream&gt;
+      &lt;sx:directoryReader directory="data"/&gt;
+      &lt;sx:restrictRecordFilter&gt;
+        &lt;sx:fieldRestriction field="name" pattern="books.*[.]txt"/&gt;
+      &lt;/sx:restrictRecordFilter&gt;
+      &lt;sx:processRecord&gt;
+        &lt;sx:parameter name="output-file"&gt;
+          &lt;sx:replace match="(books.*)[.]txt" replaceWith ="$1-new.txt"&gt;&lt;sx:toString value="{name}"/&gt;&lt;/sx:replace&gt;
+        &lt;/sx:parameter&gt;   
+        &lt;sx:recordStream&gt;
+          &lt;sx:flatFileReader&gt;
+            &lt;sx:fileSource directory="{parentDirectory}" file="{name}"/&gt;
+            &lt;sx:flatFile ref="oldBooksFlatFile"/&gt;
+          &lt;/sx:flatFileReader&gt;
+          &lt;sx:flatFileWriter&gt;
+            &lt;sx:fileSink directory="output" file="{$output-file}"/&gt; 
+            &lt;sx:flatFile ref="newBooksFlatFile"/&gt;
+          &lt;/sx:flatFileWriter&gt;
+        &lt;/sx:recordStream&gt;
+      &lt;/sx:processRecord&gt;
+    &lt;/sx:recordStream&gt;
+  &lt;/sx:service&gt;
+
+  &lt;sx:flatFile id="newBooksFlatFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="newBookType"/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="newBookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="newBookType" name="newBookType"&gt;
+    &lt;sx:fieldDelimiter value="|"/&gt;
+    &lt;sx:delimitedField name="author" label="Author"/&gt;
+    &lt;sx:delimitedField name="category" label="Category"/&gt;
+    &lt;sx:delimitedField name="title" label= "Title"/&gt;
+    &lt;sx:delimitedField name="price" label="Price"/&gt;
+  &lt;/sx:flatRecordType&gt;
+
+  &lt;sx:flatFile id="oldBooksFlatFile"&gt;
+    &lt;sx:flatFileHeader&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+      &lt;sx:annotationRecord/&gt;
+    &lt;/sx:flatFileHeader&gt;
+    &lt;sx:flatFileBody&gt;
+      &lt;sx:flatRecordType ref="oldBookType"/&gt;
+    &lt;/sx:flatFileBody&gt;
+    &lt;sx:flatFileTrailer&gt;
+      &lt;sx:annotationRecord&gt;&lt;/sx:annotationRecord&gt;
+      &lt;sx:annotationRecord&gt;This is a trailer record&lt;/sx:annotationRecord&gt;
+    &lt;/sx:flatFileTrailer&gt;
+  &lt;/sx:flatFile&gt;      
+
+  &lt;sx:flatRecordType id="oldBookType" name="oldBookType"&gt;
+    &lt;sx:positionalField name="category" width="1"/&gt;
+    &lt;sx:positionalField name="author" width="30"/&gt;
+    &lt;sx:positionalField name="title" width="30"/&gt;
+    &lt;sx:positionalField name="price" width="10" justify="right"/&gt;
+  &lt;/sx:flatRecordType&gt;
+  
+&lt;/sx:resources&gt;
+
+</pre>
+</div></div><br class="figure-break">
+</div>
+</div></body></html>

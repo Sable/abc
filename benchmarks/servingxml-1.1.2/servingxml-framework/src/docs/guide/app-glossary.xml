@@ -1,0 +1,155 @@
+
+<glossary>
+<title>Glossary</title>
+
+<glossentry id="csv" xreflabel="csv">
+<glossterm>CSV</glossterm>
+<glossdef><para>
+Comma separated values (CSV).
+</para></glossdef>
+</glossentry>
+
+<glossentry id="mimeType" xreflabel="MIME type">
+<glossterm>Mime Type</glossterm>
+<glossdef><para>
+The Multipurpose Internet Mail Extension (MIME) type, which identifies the type of document.
+</para></glossdef>
+</glossentry>
+
+<glossentry id="NameTest"  xreflabel="NameTest">
+<glossterm>NameTest</glossterm>
+<glossdef><para>
+A qName, or a wildcard (*),or a space separated list of qNames. 
+</para></glossdef>
+</glossentry>
+
+<glossentry id="NCName" xreflabel="NCName">
+<glossterm>NCName</glossterm>
+<glossdef><para>
+NCName stands for "no colon name."  An example is "books."
+</para></glossdef>
+</glossentry>
+
+<glossentry id="QName"  xreflabel="QName">
+<glossterm>QName</glossterm>
+<glossdef><para>
+QName stands for "qualified name."  An example is "myns:books."
+</para></glossdef>
+</glossentry>
+
+<glossentry id="Regex"  xreflabel="Regex">
+<glossterm>Regex</glossterm>
+<glossdef><para>
+Regular expression.
+</para></glossdef>
+</glossentry>
+
+<glossentry id="SAXPath" xreflabel="SAXPath">
+<glossterm>SAXPath</glossterm>
+<glossdef><para>
+A <code>SAXPath</code> pattern is an expression that matches on a stack of SAX events as they flow through a SAX filter.
+The syntax for a <code>SAXPath</code> is a restricted XSLT match pattern, 
+including the parts that make sense for filtering on the SAX <code>startElement</code> event.
+The match pattern is evaluated against the path of elements leading to the current element, 
+the attributes of the elements, and any parameters in scope.
+</para>
+<para>
+A SAXPath pattern consists of a series of one or more elements separated by "/" or  "//".
+An absolute SAXPath pattern begins with a "/" or "//", and is matched against the entire path of elements.  
+A relative SAXPath pattern is matched against a portion of the path that ends at the current element.
+Each matched path is assigned a position, starting with 1.
+</para>
+<para>
+A "//" expands to match any series of elements separating two matched path entries.  The wildcard "*" may be used to match against any element.  
+</para>
+<para>
+Examples of <xref linkend="SAXPath"/> expressions.
+</para>
+<itemizedlist>
+<listitem><para><code>/myns:books/myns:book</code> matches on all <sgmltag>myns:book</sgmltag> child elements of
+the root element <sgmltag>myns:books</sgmltag>.
+</para></listitem>
+<listitem><para><code>/myns:books/myns:book[1]</code> matches on the first <sgmltag>myns:book</sgmltag> child element of
+the root element <sgmltag>myns:books</sgmltag>.
+</para></listitem>
+<listitem><para><code>/myns:books/myns:book[2]</code> matches on the second <sgmltag>myns:book</sgmltag> child element of
+the root element <sgmltag>myns:books</sgmltag>.
+</para></listitem>
+<listitem><para><code>myns:book[@price=10.50]</code> matches on all <sgmltag>myns:book</sgmltag> elements that
+have an attribute <sgmltag class="attribute">price</sgmltag> with value <code>10.5</code>.
+</para></listitem>
+<listitem><para><sgmltag>myns:title</sgmltag> matches on all <sgmltag>myns:title</sgmltag> elements</para></listitem>
+<listitem><para><sgmltag>//myns:title</sgmltag> matches on all <sgmltag>myns:title</sgmltag> elements</para></listitem>
+<listitem><para><sgmltag>/myns:books/*/myns:author</sgmltag> matches on all <sgmltag>myns:author</sgmltag> grandchild elements
+of the root element <sgmltag>myns:books</sgmltag></para></listitem>
+<listitem><para><code>product[@type='SWAP']/leg</code> matches on all <sgmltag>leg</sgmltag> child elements
+of <sgmltag>product</sgmltag> parent elements that have an attribute <sgmltag  class="attribute">type</sgmltag> with value <code>SWAP</code>.
+</para></listitem>
+<listitem><para><code>product[@type='SWAP']/leg[@side="PAY"]</code> matches on all <sgmltag>leg</sgmltag> elements
+that have an attribute <sgmltag  class="attribute">side</sgmltag> with value <code>PAY</code> 
+and a parent element <sgmltag>product</sgmltag> that has an attribute <sgmltag  class="attribute">type</sgmltag> with value <code>SWAP</code>.
+</para></listitem>
+</itemizedlist>
+<para>
+Predicates that a path entry must satisfy are appended to the entry with square brackets, for example,
+<programlisting>
+  product[@type='SWAP' and $selection='SWAP']
+</programlisting>
+Predicates may refer to attributes of the associated element, any parameters in scope, string literals, or numerical constants.
+The supported binary operators are as follows.
+</para>
+<table>
+  <title>Binary operators.</title>
+<tgroup cols="2">
+<thead>
+<row>
+<entry>Precedence</entry>
+<entry>Operator</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>0
+</entry>
+<entry>or
+</entry>
+</row>
+<row>
+<entry>1
+</entry>
+<entry>and
+</entry>
+</row>
+<row>
+<entry>2
+</entry>
+<entry>=,!=,&lt;,&lt;,=,>,>=
+</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<para>
+Expressions may be grouped inside parenthesis to override the default operator precedence, for example
+</para>
+<programlisting>
+  product[(@type='SWAP' or @type='CDS' or @type='TRS') and $selection='SWAP']
+</programlisting>
+</glossdef>
+</glossentry>
+
+<glossentry id="SubstitutionExpr"  xreflabel="SubstitutionExpr">
+<glossterm>SubstitutionExpr</glossterm>
+<glossdef><para>
+A string value that may contain one or more parameters enclosed in curly braces, e.g. "{$my-param}.xml"
+and in contexts allowing a record, one or more fields in curly braces, e.g. "{my-field}"</para></glossdef>
+</glossentry>
+
+<glossentry id="URI"  xreflabel="URI">
+<glossterm>Uniform Resource Identifier</glossterm>
+<glossdef><para>
+A short string that stands for the name or address of a resource.
+</para></glossdef>
+</glossentry>
+</glossary>
+

@@ -1,0 +1,16 @@
+{TRAN:trantype=PRIN#origin=Toronto#
+{TRANREF:reftype=TREF#ref=1234567890123456B#}
+{TRANREF:reftype=FOTR#ref=1234567890123456#}
+{DRIVER:drivertype=OPER#drivercode=SELL#}
+{DRIVER:drivertype=STRM#drivercode=FOP#}
+{INSTR:instrtype=PINS#instrreftype=INT#instrref=PTEQTY1#qty=1000000#}
+{INSTR:instrtype=TCCY#instrreftype=ISO#instrref=USD#}
+{INSTR:instrtype=SINS#instrreftype=ISO#instrref=USD#}
+{PARTY:partytype=COMP#partyreftype=X3#partyref=CMP1#}
+{PARTY:partytype=SECP#partyreftype=X3#partyref=PTSECP1#}
+{DATE:datetype=TDAT#date=01-Jan-2007#}
+{DATE:datetype=VDAT#date=01-Jan-2007#}
+{CHARGE:chargetype=COMM#calctype=NONE#chargeamount=50.00#instrreftype=ISO#instrref=USD}
+{PRICE:ratetype=TPRC#price=4.9#multdiv=X1#pricetype=YP#}
+}
+

@@ -1,0 +1,558 @@
+<?xml version="1.0" standalone="no"?>
+
+<article xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
+<artheader id="basics">
+  <title>ServingXML:  Extending</title>
+  <subtitle>How to Extend the ServingXML Mark-Up Vocabulary</subtitle>
+  </artheader>
+<section>
+<para>
+<code>ServingXML</code> works as an "inversion of control" container for assembling components 
+and making them work together to process records and XML.
+New elements may be added by implementing the contracts in the extension API's.
+See <ulink url="servingxml-3.html">Serving XML: Inversion of Control Container</ulink> for an overview.
+</para>
+</section>
+<section>
+<title>Record Readers, Writers, and Filters</title>
+<para>This section provides templates for custom record reader, filter, and writer elements that 
+can be used in ServingXML resources scripts, as illustrated below.
+ </para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:myns="myurl">
+
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:recordReader ref="myFileReader"/>
+      <myns:myRecordFilter myAttribute="xxx"/>
+      <myns:myRecordWriter myAttribute="xxx"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+      </sx:discardHandler>
+    </sx:recordStream>      
+  </sx:service>
+
+  <sx:flatFileReader id="myFileReader">
+    <sx:flatFile ref="countriesFile"/>
+  </sx:flatFileReader>
+
+</sx:resources>  
+]]>
+</programlisting>
+<section>
+<title>Record Readers</title>
+<para>
+ </para>
+<section><title>Assembler</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordReaderFactory;
+import com.servingxml.components.recordio.RecordReaderFactoryPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordReaderFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordReaderFactory assemble(ConfigurationContext context) {
+    RecordReaderFactory readerFactory = new MyRecordReaderFactory(/* args */);
+    if (parameterDescriptors.length > 0) {
+      readerFactory = new RecordReaderFactoryPrefilter(readerFactory,parameterDescriptors);
+    }
+
+    return readerFactory;
+  }
+}  
+]]>
+</programlisting>
+</section>
+
+<section><title>RecordReaderFactory</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReaderFactory;
+import com.servingxml.components.recordio.RecordReader;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyReaderFactory extends AbstractRecordReaderFactory
+implements RecordReaderFactory  {     
+
+  public MyReaderFactory(/* args */) {
+  }
+  
+  protected RecordReader createRecordReader(ServiceContext context, Flow flow) {
+
+    RecordReader recordReader = new MyRecordReader(/* args */);
+    return recordReader;
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>RecordReader</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReader;
+import com.servingxml.components.recordio.RecordReader;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyReaderReader extends AbstractRecordReader
+implements RecordReader  {
+
+  //  Per pipeline execution state
+
+  public MyReaderReader(/* args */) {
+  }
+
+  public void readRecords(final ServiceContext context, final Flow flow) {
+    try {
+      startRecordStream(context, flow);
+      //  For each record
+      {
+        RecordBuilder recordBuilder = new RecordBuilder();
+        //  Build record
+        Record newRecord = recordBuilder.toRecord();                                                                                         
+        Flow newFlow = flow.replaceRecord(context, newRecord, ++lineNumber);
+        try {
+          writeRecord(context, newFlow);
+        } catch (ServingXmlException e) {
+          super.discardRecord(context, newFlow, e);
+        }
+      }
+      endRecordStream(context, flow);
+    } finally {
+      close();
+    }
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>components.xml</title>
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core">
+                xmlns:myns="myurl">
+               
+  <ioc:serviceComponent name="myns:myRecordReader" base="sx:recordReader"
+                assemblerClass="mypackage.MyRecordReaderFactoryAssembler"/>
+  ...
+                  
+</ioc:components>                
+]]>
+</programlisting>
+</section>
+  </section>
+<section>
+<title>Record Writers</title>
+<para>
+ </para>
+<section><title>Assembler</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordWriterFactory;
+import com.servingxml.components.recordio.RecordWriterFactoryPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriterFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordWriterFactory assemble(ConfigurationContext context)  {
+
+    RecordWriterFactory recordWriterFactory = new MyRecordWriterFactory(/* args */);
+    if (parameterDescriptors.length > 0) {
+      recordWriterFactory = new RecordWriterFactoryPrefilter(recordWriterFactory,parameterDescriptors);
+    }
+    return recordWriterFactory;
+  }
+}  
+]]>
+</programlisting>
+</section>
+<section><title>RecordWriterFactory</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordWriterFactory;
+import com.servingxml.components.recordio.RecordWriter;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriterFactory extends AbstractRecordWriterFactory
+implements RecordWriterFactory {     
+
+  public MyRecordWriterFactory(/* args */) {
+  }
+
+  public RecordWriter createRecordWriter(ServiceContext context, Flow flow) 
+   {
+    RecordWriter recordWriter = new MyRecordWriter();
+    return recordWriter;
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>RecordWriter</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordWriter;
+import com.servingxml.components.recordio.RecordWriter;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordWriter extends AbstractRecordWriter 
+implements RecordWriter {
+
+  //  Per pipeline execution state
+
+  public MyRecordWriter(/* args */) {
+  }
+
+  public void startRecordStream(ServiceContext context, Flow flow)  {
+    //  Set up state
+  }
+
+  public void writeRecord(ServiceContext context, Flow flow) {
+
+    Record record = flow.getRecord();
+
+    //  Write the record 
+  }  
+
+  public void endRecordStream(ServiceContext context, Flow flow) {
+    //  Tear down state
+  }
+
+  public void close()  {
+  // Close all remaining open resources.  The framework will call close() 
+  // even if there is a fault, so close() may be called even if startRecordStream() 
+  // has not been called,  or in the successful case, after resources have already 
+  // been disposed of in endRecordStream().
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>components.xml</title>
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core"
+                xmlns:myns="myurl">
+               
+  <ioc:serviceComponent name="myns:myRecordWriter" base="sx:recordWriter"
+                assemblerClass="mypackage.MyRecordWriterFactoryAssembler"/>
+  ...
+                  
+</ioc:components>                
+]]>
+</programlisting>
+</section>
+</section>
+
+<section>
+<title>Record Filters</title>
+<para>
+ </para>
+<section><title>Assembler</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.recordio.RecordFilterAppender;
+import com.servingxml.components.recordio.RecordFilterAppenderPrefilter;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilterAppenderAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private String myAttribute = "myDefault";
+
+  public void setMyAttribute(String myAttribute) {
+    this.myAttribute = myAttribute;
+  }
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public RecordFilterAppender assemble(ConfigurationContext context) {
+    RecordFilterAppender recordFilterAppender = new MyRecordFilterAppender(/* args */);
+    if (parameterDescriptors.length > 0) {
+      recordFilterAppender = new RecordFilterAppenderPrefilter(recordFilterAppender,parameterDescriptors);
+    }
+    return recordFilterAppender;
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>RecordFilterAppender</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordFilterAppender;
+import com.servingxml.components.recordio.RecordFilterAppender;
+import com.servingxml.components.recordio.RecordPipeline;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilterAppender extends AbstractRecordFilterAppender    
+implements RecordFilterAppender {
+
+  public MyRecordFilterAppender(/* args */) {
+  }
+
+  public void appendToRecordPipeline(ServiceContext context, Flow flow, RecordPipeline pipeline) {
+    RecordFilter filter = new MyRecordFilter();
+    pipeline.addRecordFilter(filter);
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>RecordFilter</title>
+
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordFilter;
+import com.servingxml.util.RecordBuilder;
+import com.servingxml.util.ServingXmlException;
+
+public class MyRecordFilter extends AbstractRecordFilter
+implements RecordFilter  {
+
+  //  Per pipeline execution state
+
+  public MyRecordFilter(/* args */) {
+  }
+
+  public void startRecordStream(ServiceContext context, Flow flow) {
+    //  Acquire resources (input streams, SQL connections, etc.)
+    super.startRecordStream(context, flow);
+  }
+
+  public void writeRecord(ServiceContext context, Flow flow) {
+
+    try {                                       
+      Record record = flow.getRecord();
+
+      RecordBuilder recordBuilder = new RecordBuilder(record);
+      //  Modify record
+      Record newRecord = recordBuilder.toRecord();                                                                                         
+      Flow newFlow = flow.replaceRecord(context, newRecord);
+
+      super.writeRecord(context, newFlow);
+    } catch (Exception e) {
+      ServingXmlException reason = new ServingXmlException(e.getMessage(), e);
+      super.discardRecord(context, flow, reason);
+    }
+  }  
+
+  public void endRecordStream(ServiceContext context, Flow flow) {
+    //  Finish up
+    super.endRecordStream(context, flow);
+  }
+  
+  public void close()  {
+    // Close all remaining open resources.  The framework will call close() 
+    // even if there is a fault, so close() may be called even if startRecordStream() 
+    // has not been called,  or in the successful case, after resources have already 
+    // been disposed of in endRecordStream().
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>components.xml</title>
+
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core">
+                xmlns:myns="myurl">
+               
+  <ioc:serviceComponent name="myns:myRecordFilter" base="sx:recordFilter"
+                assemblerClass="mypackage.MyRecordFilterFactoryAssembler"/>
+  ...
+                  
+</ioc:components>                
+]]>
+</programlisting>
+</section>
+
+  </section>
+  </section>
+<section>
+<title>XML Serializers</title>
+<para>This section provides templates for custom serializer elements that 
+can be used in ServingXML resources scripts.
+ </para>
+<section><title>Assembler</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import com.servingxml.app.ParameterDescriptor;
+import com.servingxml.components.property.OutputProperty;
+import com.servingxml.app.xmlpipeline.SerializerFactory;
+import com.servingxml.app.xmlpipeline.SerializerFactoryPrefilter;
+import com.servingxml.ioc.components.ConfigurationContext;
+import com.servingxml.util.ServingXmlException;
+
+public class MySerializerFactoryAssembler {
+  private ParameterDescriptor[] parameterDescriptors = ParameterDescriptor.EMPTY_ARRAY;
+  private OutputProperty[] outputProperties = new OutputProperty[0];
+
+  public void injectComponent(ParameterDescriptor[] parameterDescriptors) {
+    this.parameterDescriptors = parameterDescriptors;
+  }
+
+  public void injectComponent(OutputProperty[] outputProperties) {
+    this.outputProperties = outputProperties;      
+  }
+
+  public SaxSinkFactory assemble(ConfigurationContext context)  {
+
+    SaxSinkFactory saxSinkFactory = new MySerializerFactory(outputProperties);
+    if (parameterDescriptors.length > 0) {
+      saxSinkFactory = new SerializerFactoryPrefilter(saxSinkFactory, parameterDescriptors); 
+    }
+
+    return saxSinkFactory;
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>SaxSinkFactory</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import java.util.Properties;
+import org.xml.sax.ContentHandler;
+
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.io.saxsink.SaxSink;
+import com.servingxml.app.xmlpipeline.SerializerFactory;
+import com.servingxml.util.ServingXmlException;
+
+public class MySerializerFactory implements SaxSinkFactory {
+
+  public MySerializerFactory(/* args */) {
+  }
+
+  public Serializer createSerializer(ServiceContext context, Flow flow, Properties outputProperties) {
+
+    ContentHandler handler = new MyContentHandler(/* args */);                    
+    Serializer serializer = new MySerializer(handler, /* other args */);
+    return serializer;
+  }                        
+}
+]]>
+</programlisting>
+</section>
+<section><title>Serializer</title>
+<programlisting>
+<![CDATA[
+package mypackage;
+
+import org.xml.sax.ContentHandler;
+
+import com.servingxml.io.saxsink.SaxSink;
+
+public class MySerializer implements SaxSink {
+  private final ContentHandler handler;
+
+  public MySerializer(ContentHandler handler, /* other args */) {
+    this.handler = handler;
+  }
+
+  public ContentHandler getContentHandler() {
+    return handler;
+  }
+
+  public void setOutputProperties(Properties outputProperties) {
+    //  Called by the framework to set output properties on the SAX sink
+  }
+
+  public void close() {
+    //  Close output streams
+  }
+}
+]]>
+</programlisting>
+</section>
+<section><title>components.xml</title>
+
+<programlisting>
+<![CDATA[
+<ioc:components xmlns:ioc="http://www.servingxml.com/ioc"
+                xmlns:sx="http://www.servingxml.com/core">
+                xmlns:myns="myurl">
+               
+  <ioc:serviceComponent name="myns:mySerializer" base="sx:saxSink"
+                assemblerClass="mypackage.MySerializerFactoryAssembler"/>
+  ...
+                  
+</ioc:components>                
+]]>
+</programlisting>
+</section>
+
+</section>
+</article>
+

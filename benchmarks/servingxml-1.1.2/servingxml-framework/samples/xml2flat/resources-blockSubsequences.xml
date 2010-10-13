@@ -1,0 +1,69 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="blocks">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="blocksToFileMapping"/>
+      </sx:subtreeRecordReader>
+      <sx:composeRecord recordType="BLOCKS" repeatingGroup="blocks" 
+                        beginTest="sx:current/BLOCK1"
+                        endTest="sx:current/BLOCK1">
+      </sx:composeRecord>
+      <sx:flatFileWriter>
+        <sx:flatFile>
+          <sx:flatFileBody>
+            <sx:flatRecordType ref="blockType"/>
+          </sx:flatFileBody>
+        </sx:flatFile>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatRecordType id="blockType" name="blockType">
+    <sx:repeatingGroup name="blocks">
+      <sx:flatRecordTypeChoice>
+        <sx:when test="/BLOCK1">
+          <sx:flatRecordType name="BLOCK1">
+            <sx:positionalField name="Field1" width="5"/>
+            <sx:positionalField name="Field2" width="5"/>
+            <sx:positionalField name="Field3" width="5"/>
+            <sx:positionalField name="Field4" width="5"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="/BLOCK2">
+          <sx:flatRecordType name="BLOCK2">
+            <sx:positionalField name="Text1" width="5"/>
+            <sx:positionalField name="Text2" width="5"/>
+            <sx:positionalField name="Text3" width="5"/>
+            <sx:positionalField name="Text4" width="5"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:repeatingGroup>
+  </sx:flatRecordType>
+
+  <sx:inverseRecordMapping id="blocksToFileMapping">
+    <sx:onSubtree path="/BLOCKS">
+      <sx:onSubtree path="BLOCK1">
+        <sx:flattenSubtree recordType="BLOCK1">
+          <sx:subtreeFieldMap select="FIELD1" field="Field1"/>
+          <sx:subtreeFieldMap select="FIELD2" field="Field2"/>
+          <sx:subtreeFieldMap select="FIELD3" field="Field3"/>
+          <sx:subtreeFieldMap select="FIELD4" field="Field4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+      <sx:onSubtree path="BLOCK2">
+        <sx:flattenSubtree recordType="BLOCK2">
+          <sx:subtreeFieldMap select="TEXT1" field="Text1"/>
+          <sx:subtreeFieldMap select="TEXT2" field="Text2"/>
+          <sx:subtreeFieldMap select="TEXT3" field="Text3"/>
+          <sx:subtreeFieldMap select="TEXT4" field="Text4"/>
+        </sx:flattenSubtree>
+      </sx:onSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+</sx:resources>

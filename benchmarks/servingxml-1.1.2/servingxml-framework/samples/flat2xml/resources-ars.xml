@@ -1,0 +1,77 @@
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="ars">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="ars"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="ars">
+    <sx:flatFileReader>
+      <sx:flatFile ref="arsFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="arsToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="arsFlatFile">
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="detail">
+        <sx:fieldDelimiter value="^"/>
+        <sx:delimitedField name="ProjectID"/>
+        <sx:delimitedField name="Project_Name"/>
+        <sx:delimitedField name="Description"/>
+        <sx:delimitedField name="PLAN_IT_RESC_DAYS"/>
+        <sx:delimitedField name="PLAN_IT_COST"/>
+        <sx:delimitedField name="ANNUAL_EBIT"/>
+        <sx:delimitedField name="ACTUAL_NPV"/>
+        <sx:delimitedField name="ACTUAL_IRR"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="arsToXmlMapping">
+    <NikuDataBus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+      <Header version="6.0.11" action="write" objectType="project" externalSource="NIKU"/>
+      <Projects>
+        <sx:groupBy fields="ProjectID">
+          <Project>
+            <sx:fieldAttributeMap field="Project_Name" attribute="name"/>
+            <sx:fieldAttributeMap field="ProjectID" attribute="projectID"/>
+            <sx:fieldAttributeMap field="Description" attribute="description"/>
+            <sx:onRecord>
+              <CustomInformation>
+                <sx:fieldElementMap field="PLAN_IT_RESC_DAYS" element="PLAN_IT_RESOURCE_DAYS"/>
+                <sx:elementMap element="PLAN_IT_COST">
+                  <sx:findAndReplace searchFor="," replaceWith ="">
+                    <sx:toString value="{PLAN_IT_COST}"/>
+                  </sx:findAndReplace>
+                </sx:elementMap>
+                <sx:elementMap element="ANNUAL_EBIT">
+                  <sx:findAndReplace searchFor="," replaceWith ="">
+                    <sx:toString value="{ANNUAL_EBIT}"/>
+                  </sx:findAndReplace>
+                </sx:elementMap>
+                <sx:fieldElementMap field="ACTUAL_NPV" element="ACTUAL_NPV"/>
+                <sx:fieldElementMap field="ACTUAL_IRR" element="ACTUAL_IRR"/>
+              </CustomInformation>
+              <General addedBy="XOG">
+                <sx:fieldAttributeMap attribute="addedDate">
+                  <sx:formatDateTime format="MM/dd/yyyy h:mm:ss a">
+                    <sx:currentDateTime/>
+                  </sx:formatDateTime>
+                </sx:fieldAttributeMap>
+              </General>
+            </sx:onRecord>
+          </Project>
+        </sx:groupBy>
+      </Projects>
+    </NikuDataBus>
+  </sx:recordMapping>
+
+</sx:resources>
+

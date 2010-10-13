@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+   
+  <sx:service id="book-orders"> 
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="book-orders"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="book-orders" name="book-orders">
+    <sx:flatFileReader>
+      <sx:flatFile ref="books-flatfile"/>
+    </sx:flatFileReader>
+  </sx:recordContent>
+  
+  <sx:flatFile id="books-flatfile" lineDelimited="false">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="book-type"/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="book-type"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord width="100">This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="book-type" name="book-type">
+    <sx:positionalField name="category" width="1"/>
+    <sx:positionalField name="author" width="30"/>
+    <sx:positionalField name="title" width="30"/>
+    <sx:positionalField name="price" width="10" justify="right"/>
+    <sx:positionalField name="invoiceno" width="4" justify="right"/>
+    <sx:positionalField name="invoicedate" width="13" justify="right"/>
+    <sx:positionalField name="filler" width="12"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+

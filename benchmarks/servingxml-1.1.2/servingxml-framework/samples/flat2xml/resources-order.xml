@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions">
+
+  <sx:service id="Order">
+
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="Order"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="Order" name="Order">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="OrderFile"/>
+      </sx:flatFileReader>
+      <sx:combineRecords recordType="composite" repeatingGroup="detail"
+                  startTest="sx:current/orderRemarks"
+                  endTest="not(sx:current/orderRemarks)">
+        <sx:newField name="remarks" select="detail/orderRemarks/REM"/>
+      </sx:combineRecords>
+    </sx:recordStream>
+    <sx:recordMapping ref="OrderToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="OrderFile">
+    <sx:commentStarter value="#"/>
+    <sx:fieldDelimiter value="/"/>
+    <sx:flatFileHeader lineCount="1"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="tag" width="3"/>
+        <sx:when test="tag='ORD'">
+          <sx:flatRecordType name="orderHeader">
+            <sx:delimitedField name="CMD" label="Command Code"/>
+            <sx:delimitedField name="CUS" label="Customer"/>
+            <sx:delimitedField name="CON" label="Contractor"/>
+            <sx:delimitedField name="CUR" label="Currency Code"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='REM'">
+          <sx:flatRecordType name="orderRemarks">
+            <sx:positionalField name="REMTEI" label="Remark" width="3"/>
+            <sx:delimitedField name="REM" label="Remark"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='TRA'">
+          <sx:flatRecordType name="orderTrailer">
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:otherwise>
+          <sx:flatRecordType name="orderPosition">
+            <sx:delimitedField name="ORN" label="Order Number"/>
+            <sx:delimitedField name="PAR" label="Part Number"/>
+            <sx:delimitedField name="MFRTEI" maxWidth="3"/>
+            <sx:delimitedField name="MFR" label="Manufacturer"/>
+            <sx:delimitedField name="QTY" label="Order Quantity"/>
+          </sx:flatRecordType>
+        </sx:otherwise>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="OrderToXmlMapping">
+    <Order>
+      <sx:innerGroup startTest="sx:current/orderHeader">
+        <OrderHeader>
+          <sx:fieldElementMap field="CUS" element="CUS"/>
+          <sx:fieldElementMap field="CON" element="CON"/>
+          <sx:fieldElementMap field="CUR" element="CUR"/>
+        </OrderHeader>
+
+        <sx:innerGroup startTest="sx:current/orderPosition">
+          <OrderPosition>
+            <sx:fieldElementMap field="ORN" element="ORN" minOccurs="1"/>
+            <sx:fieldElementMap field="PAR" element="PAR"/>
+            <sx:fieldElementMap field="QTY" element="QTY"/>
+            <sx:fieldElementMap field="MFR" element="MFR" minOccurs="0"/>
+            <sx:onRecord recordType="composite">
+              <sx:choose>
+                <sx:when test="remarks != ''">
+                  <sx:fieldElementMap select="remarks" element="REM"/>
+                </sx:when>
+              </sx:choose>
+            </sx:onRecord>
+          </OrderPosition>
+        </sx:innerGroup>
+      </sx:innerGroup>
+    </Order>
+  </sx:recordMapping>
+</sx:resources>
+

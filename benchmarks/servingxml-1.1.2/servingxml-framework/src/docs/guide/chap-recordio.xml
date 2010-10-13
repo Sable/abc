@@ -1,0 +1,3389 @@
+<reference id="ref-recordio"
+  xmlns:sx="http://www.servingxml.com/core">
+<title>Record Readers, Writers and Filters</title>
+
+<refentry id="sx:aggregateRecords" xreflabel="sx:aggregateRecords">
+<refnamediv>
+  <refname>sx:aggregateRecords</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:combineRecords"/></refpurpose>
+</refnamediv>
+<indexterm><primary>aggregateRecords</primary></indexterm>
+</refentry>
+
+<refentry id="sx:and" xreflabel="sx:and">
+<refnamediv>
+  <refname>sx:and</refname>
+  <refpurpose>And operator</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:restriction"/></refclass>
+</refnamediv>
+<indexterm><primary>and</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<para>None</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any number of <xref linkend="sx:restriction"/> elements.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows record criteria to be grouped in an "and" relationship. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>(a or b)</title>
+<programlisting>
+<![CDATA[
+<sx:restrictRecordFilter>  
+  <sx:and>
+    <sx:recordRestriction recordType="claim_detail"/>  
+    <sx:fieldRestriction field="valid" pattern="y"/>  
+  </sx:and>
+</sx:restrictRecordFilter> 
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:restrictRecordFilter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:or"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:batchRecords" xreflabel="sx:batchRecords">
+<refnamediv>
+  <refname>sx:batchRecords</refname>
+  <refpurpose>Batch records</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>batchRecords</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>batchSize</entry>
+<entry>Yes</entry>
+<entry>Number</entry>
+<entry><para>The batch size.</para>
+</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/></entry>
+<entry>Count records whose record types match the record type name test.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows a sequential stream of records to be broken up into batches.  As each batch is begun,
+the parameter <varname>sx:batchSequenceNumber</varname> is set, just before the record
+writer initializes its ouput stream.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Breaking up a sequential stream of records into batches.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:fileSource file="data/countries.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <sx:batchRecords batchSize="50"/>
+      <sx:flatFileWriter>
+        <sx:fileSink file="output/countries-{$sx:batchSequenceNumber}.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType name="country">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="code"/>
+        <sx:delimitedField name="name" trimLeading="true"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:batchedRecordWriter" xreflabel="sx:batchedRecordWriter">
+<refnamediv>
+  <refname>sx:batchedRecordWriter</refname>
+  <refpurpose>Write records in batches</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordWriter"/></refclass>
+</refnamediv>
+<indexterm><primary>batchedRecordWriter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>batchSize</entry>
+<entry>Yes</entry>
+<entry>Number</entry>
+<entry><para>The batch size.</para>
+</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/></entry>
+<entry>Count records whose record types match the record type name test.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows a sequential stream of records to be broken up into batches.  As each batch is begun,
+the parameter <varname>sx:batchSequenceNumber</varname> is set, just before the record
+writer initializes its ouput stream.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Breaking up a sequential stream of records into batches.</title>
+<programlisting>
+<![CDATA[
+  <sx:service id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:fileSource file="data/{$rootName}.csv"/>
+        <sx:flatFile ref="my-input-file-layout"/>
+      </sx:flatFileReader>
+      <sx:batchedRecordWriter batchSize="50">
+        <sx:flatFileWriter>
+          <sx:fileSink file="output/{$rootName}-{$sx:batchSequenceNumber}.csv"/>
+          <sx:flatFile ref="my-output-file-layout"/>
+        </sx:flatFileWriter>
+      </sx:batchedRecordWriter>
+    </sx:recordStream>
+  </sx:service>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:combineRecords" xreflabel="sx:combineRecords">
+<refnamediv>
+  <refname>sx:combineRecords</refname>
+  <refpurpose>Compose a composite record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>combineRecords</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the composite record type.
+</entry>
+</row>
+<row>
+<entry>repeatingGroup</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field containing a list of records.
+</entry>
+</row>
+<row>
+<entry>startTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for start of grouping. Defaults to
+  <code>true</code></entry>.
+</row>
+<row>
+<entry>endTest</entry>
+<entry>No</entry>
+<entry>XPath Boolean Expr</entry>
+<entry>XPath boolean expression to test for end of grouping.  Defaults to 
+  <sgmltag>startTest</sgmltag>.
+</entry>
+</row>
+<row>
+<entry>compositeRecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated in version 0.9.5 - replaced by recordType attribute.</entry>
+</row>
+<row>
+<entry>repeatingGroupField</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated in version 0.9.5 - replaced by repeatingGroup attribute.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:parameter"/> elements.</para></listitem>
+<listitem>Any number of <xref linkend="sx:newField"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to compose a composite record from a group of 
+adjacent records.
+</para>
+<para>
+Grouping begins when processing a record and the <sgmltag>startTest</sgmltag> expression 
+evaluates as <code>true</code>.  Grouping ends on a succeeding record when the 
+<sgmltag>endTest</sgmltag> expression evaluates as 
+<code>true</code>, or when a parent group to which this group belongs ends.  The test
+for the end of a group is exclusive, that is, if <sgmltag>endTest</sgmltag>
+evaluates as <code>true</code> when processing a record,
+  that record is 
+excluded from the group.
+</para>
+  <para>
+    The test expressions are XPATH expressions evaluated against the XML 
+    representations of the current (sx:current) and previous (sx:previous) 
+    records.
+  </para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Grouping records into a composite record.</title>
+  <para>
+    The input is three records of record type "orderRemarks", 
+  </para>
+<informaltable colsep="0">
+<tgroup cols="2" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>REMTEI</entry>
+<entry>REM</entry>
+</row>
+</thead>
+<tbody>
+  <row>
+<entry>REM</entry>
+<entry>AAAA</entry>
+  </row>
+  <row>
+<entry>REM</entry>
+<entry>BBB</entry>
+  </row>
+  <row>
+<entry>REM</entry>
+<entry>CCC</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+  <para>
+    The XML representation of the "orderRemarks" records is 
+  </para>
+
+
+<programlisting>
+<![CDATA[
+<orderRemarks><REMTEI>REM</REMTEI><REM>AAAA</REM></orderRemarks> 
+<orderRemarks><REMTEI>REM</REMTEI><REM>BBBB</REM></orderRemarks> 
+<orderRemarks><REMTEI>REM</REMTEI><REM>CCCC</REM></orderRemarks> 
+]]>
+</programlisting>
+  <para>
+    The <sgmltag>sx:combineRecords</sgmltag> element below composes the three 
+    input records into a composite record with record type "composite", and with 
+    a repeating group field "detail" that contains the three original records.  
+    It creates a new field "remarks" whose value is calculated from the original 
+    records.
+  </para>
+<programlisting>
+<![CDATA[
+    <sx:combineRecords recordType="composite" repeatingGroup="detail"
+                startTest="sx:current/orderRemarks"
+                endTest="not(sx:current/orderRemarks)">
+      <sx:newField name="remarks" select="detail/orderRemarks/REM"/>
+    </sx:combineRecords>
+]]>
+</programlisting>
+  <para>
+    The output is the composite record.
+  </para>
+<programlisting>
+<![CDATA[
+<composite> 
+  <detail> 
+    <orderRemarks><REMTEI>REM</REMTEI><REM>AAAA</REM></orderRemarks> 
+    <orderRemarks><REMTEI>REM</REMTEI><REM>BBBB</REM></orderRemarks> 
+    <orderRemarks><REMTEI>REM</REMTEI><REM>CCCC</REM></orderRemarks> 
+  </detail> 
+  <remarks>AAAA BBBB CCCC</remarks> 
+</composite> 
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:splitRecord"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:composeRecord" xreflabel="sx:composeRecord">
+<refnamediv>
+  <refname>sx:composeRecord</refname>
+  <refpurpose>Deprecated in version 1.1.2, aliased to <xref linkend="sx:combineRecords"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>composeRecord</primary></indexterm>
+</refentry>
+             
+<refentry id="sx:customRecordFilter" xreflabel="sx:customRecordFilter">
+<refnamediv>
+  <refname>sx:customRecordFilter</refname>
+  <refpurpose>Custom record filter</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>customRecordFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements com.servingxml.components.recordio.RecordFilter</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:property"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Writing a custom record filter.</title>
+<para>
+The example below shows a fragment of a resources script that uses a record filter.
+<code>HotRecordFilter</code> is the names of a Java class that
+extends the <code>com.servingxml.components.recordio.AbstractRecordFilter</code> class,
+which provides a default implementation of the <code>com.servingxml.components.recordio.RecordFilter</code>
+interface.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:recordContent id="hot">
+    <sx:flatFileReader>
+      <sx:flatFile ref="hotFlatFile"/>
+      <sx:customRecordFilter class="HotRecordFilter"/>
+    </sx:flatFileReader> ...
+    
+  </sx:recordContent> 
+
+  <sx:flatFile id="hotFlatFile">
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:positionalField name="record-type" width="5"/>
+        <sx:when  test="record-type='BKP84'">
+          <sx:flatRecordType name="bkp84">
+            <sx:positionalField name="record-type-prefix"  width="3"/>
+            <sx:positionalField name="record-type"  start="1" width="5"/>
+            <sx:positionalField name="value" width="7"/>
+            <sx:positionalField name="amount" width="2"/>
+            <sx:positionalField name="currency" width="3"/>
+            <sx:positionalField name="precision" width="1"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="record-type='BKT06'"> ...
+        
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile> ...
+
+</sx:resources>  
+]]></programlisting>
+<para>
+The <code>HotRecordFilter</code> class is implemented as shown below.  The class needs to be compiled 
+and put in the classpath where the framework can find it, for example, by adding it to the
+<filename>target\servingxml\classes</filename> directory.
+</para>
+<programlisting>
+<![CDATA[
+import com.servingxml.app.Flow;
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordFilter;
+import com.servingxml.util.Name;
+import com.servingxml.util.QualifiedName;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.record.RecordBuilder;
+import com.servingxml.util.ServingXmlException;
+
+public class HotRecordFilter extends AbstractRecordFilter {
+  private static final Name BKP84_RECORD_TYPE = new QualifiedName("bkp84");
+  private static final Name AMOUNT_NAME = new QualifiedName("amount");
+  private static final Name PRECISION_NAME = new QualifiedName("precision");
+  private static final Name CALCULATED_AMOUNT_NAME = new QualifiedName("calculatedAmount");
+  
+  public void writeRecord(ServiceContext context, Flow flow) 
+   {
+
+    Record record = flow.getRecord();
+    Flow newFlow = flow;
+    if (record.getRecordType().getName().equals(BKP84_RECORD_TYPE)) {
+      RecordBuilder recordBuilder = new RecordBuilder(record);
+      String amountString = record.getString(AMOUNT_NAME);
+      if (amountString == null) {
+        throw new ServingXmlException("amount is NULL");
+      }
+      String precisionString = record.getString(PRECISION_NAME);
+      if (precisionString == null) {
+        throw new ServingXmlException("precision is NULL");
+      }
+      int amount = Integer.parseInt(amountString,16);
+      int precision = Integer.parseInt(precisionString);
+      double calculatedAmount = (double)amount/Math.pow(10.0,(double)precision);
+      recordBuilder.setDouble(CALCULATED_AMOUNT_NAME,calculatedAmount);
+      record = recordBuilder.toRecord();
+      newFlow = flow.replaceRecord(context, record);
+    }
+
+    super.writeRecord(context, newFlow);
+  }
+}
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:customRecordReader"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:customRecordReader" xreflabel="sx:customRecordReader">
+<refnamediv>
+  <refname>sx:customRecordReader</refname>
+  <refpurpose>Custom record reader</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>customRecordReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>class</entry>
+<entry>Yes</entry>
+<entry>Java Class</entry>
+<entry>The name of a Java class that implements com.servingxml.components.recordio.RecordFilter</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:property"/> elements.
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Writing a custom record reader.</title>
+<para>
+The example below shows a resources script that uses a record reader.
+<code>TradeRecordFilter</code> is the names of a Java class that
+extends the <code>com.servingxml.components.recordio.AbstractRecordReader</code> class,
+which provides a default implementation of the <code>com.servingxml.components.recordio.RecordReader</code>
+interface.
+</para>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="trades">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="trades"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="trades">
+    <sx:customRecordReader class="TradeRecordReader"/>
+    <sx:recordMapping ...
+  </sx:recordContent>
+
+</sx:resources>
+]]>
+</programlisting>
+<para>
+The <code>TradeRecordReader</code> class is implemented as shown below.  The class needs to be compiled 
+and put in the classpath where the framework can find it, for example, by adding it to the
+<filename>target\servingxml\classes</filename> directory.
+</para>
+<programlisting>
+<![CDATA[
+import com.servingxml.app.ServiceContext;
+import com.servingxml.components.recordio.AbstractRecordReader;
+import com.servingxml.app.Flow;
+import com.servingxml.util.Name;
+import com.servingxml.util.QualifiedName;
+import com.servingxml.util.ServingXmlException;
+import com.servingxml.util.record.Record;
+import com.servingxml.util.record.RecordBuilder;
+
+public class TradeRecordReader extends AbstractRecordReader {
+  private static final Name TRADE_RECORD_TYPE = new QualifiedName("trade");
+  private static final Name TRANSACTION_RECORD_TYPE = new QualifiedName("transaction");
+  private static final Name RECORD_TYPE_NAME = new QualifiedName("record_type");
+  private static final Name ID_NAME = new QualifiedName("id");
+  private static final Name TRADE_DATE_NAME = new QualifiedName("trade_date");
+  private static final Name TRADE_TIME_NAME = new QualifiedName("trade_time");
+  private static final Name DESCRIPTION_NAME = new QualifiedName("description");
+  private static final Name REFERENCE_NAME = new QualifiedName("reference");
+  
+  public void readRecords(ServiceContext context, Flow flow) 
+   {
+
+    //  Start the record stream
+    startRecordStream(context, flow);
+
+    RecordBuilder trRecordBuilder = new RecordBuilder(TRADE_RECORD_TYPE);
+    RecordBuilder tnRecordBuilder = new RecordBuilder(TRANSACTION_RECORD_TYPE);
+
+    Record record;
+
+    trRecordBuilder.setString(RECORD_TYPE_NAME,"TR");
+    trRecordBuilder.setString(ID_NAME,"0001");
+    trRecordBuilder.setString(TRADE_DATE_NAME,"03/25/2005");
+    trRecordBuilder.setString(TRADE_TIME_NAME,"01:50:00");
+    trRecordBuilder.setString(DESCRIPTION_NAME,"This is a trade record");
+    record = trRecordBuilder.toRecord();
+    trRecordBuilder.clear();
+
+    //  Write the "trade" record
+    writeRecord(context, flow, record);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0002");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1234");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"A child transaction");
+    record = tnRecordBuilder.toRecord();   
+    tnRecordBuilder.clear();
+
+    //  Write the first "transaction" record
+    writeRecord(context, flow, record);
+
+    tnRecordBuilder.setString(RECORD_TYPE_NAME,"TN");
+    tnRecordBuilder.setString(ID_NAME,"0003");
+    tnRecordBuilder.setString(REFERENCE_NAME,"X1235");
+    tnRecordBuilder.setString(DESCRIPTION_NAME,"Another child transaction");
+    record = tnRecordBuilder.toRecord();
+    tnRecordBuilder.clear();
+
+    //  Write the second "transaction" record
+    writeRecord(context, flow, record);
+
+    //  End the record stream
+    endRecordStream(context, flow);
+  }
+}                              
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:customRecordFilter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:decomposeRecord" xreflabel="sx:decomposeRecord">
+<refnamediv>
+  <refname>sx:decomposeRecord</refname>
+  <refpurpose>Deprecated in version 1.1.2, aliased to <xref linkend="sx:decomposeRecord"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>decomposeRecord</primary></indexterm>
+</refentry>
+
+<refentry id="sx:discard" xreflabel="sx:discard">
+<refnamediv>
+  <refname>sx:discard</refname>
+  <refpurpose>Discard a record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>discard</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>A message explaining the reason for discarding the record.</para>.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction results in the current record being discarded.  One place it can be used is in
+the <xref linkend="sx:unmatchedRecord"/> section of a <xref linkend="sx:restrictRecordFilter"/> element.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:restrictRecordFilter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:discardFilter" xreflabel="sx:discardFilter">
+<refnamediv>
+  <refname>sx:discardFilter</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:discardHandler"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>discardFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Apply discard handling to records of this type.  Defaults to records of any type.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:recordReader"/> and <xref linkend="sx:recordFilter"/> elements, followed by</listitem>
+<listitem>Optionally, one  <xref linkend="sx:recordWriter"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to write discarded records to file or database. 
+</para>
+<refsection>
+<title>Examples</title>
+<example>
+<title>No discard filter.</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countries-file"/>
+    </sx:flatFileReader>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+  <sx:recordStream>
+  <sx:recordMapping ref="countries-xml-mapping"/>
+</sx:recordContent>
+]]>
+</programlisting>
+<para>
+In this example, if the record validator throws an exception, 
+the <code>ServingXML</code> implementation logs an error message and aborts.
+</para>
+</example>
+<example>
+<title>An empty discard filter.</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countries-file"/>
+    </sx:flatFileReader>
+    <sx:discardFilter/>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+  </sx:recordStream>
+  <sx:recordMapping ref="countries-xml-mapping"/>
+</sx:recordContent>
+]]>
+</programlisting>
+<para>
+In this example, the record flows through the discard filter before reaching the record validator.
+If the record validator throws an exception, the exception is caught in the discard handler.
+The discard filter logs the error and discards the bad record.  The next record is then read.
+</para>
+</example>
+<example id="sx:discardFilter#example">
+<title>A discard filter that writes the bad record with a message to a discard file.</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <sx:discardFilter>
+      <sx:modifyRecord>
+        <sx:newField name="message" value="{$sx:message}"/>
+      </sx:modifyRecord>
+      <sx:flatFileWriter>
+        <sx:fileSink file="output/countryDiscards.csv"/>
+        <sx:flatFile ref="discardFile"/>
+      </sx:flatFileWriter>
+    </sx:discardFilter>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+  </sx:recordStream>
+  <sx:recordMapping ref="countriesToXmlMapping"/>
+</sx:recordContent>
+
+<sx:flatRecordType id="country" name="country">
+  <sx:fieldDelimiter value=","/>
+  <sx:delimitedField name="code"/>
+  <sx:delimitedField name="name"/>
+</sx:flatRecordType>
+
+<sx:flatFile id="discardFile">
+  <sx:flatFileBody>
+    <sx:flatRecordType name="countryDiscard">
+      <sx:fieldDelimiter value=","/>
+      <sx:delimitedField name="message"/>
+      <sx:flatRecordType ref="country"/>
+    </sx:flatRecordType>
+  </sx:flatFileBody>
+</sx:flatFile>
+]]>
+</programlisting>
+<para>
+In this example, the record flows through the discard filter before reaching the record validator.
+If the record validator throws an exception, the exception is caught in the discard handler.
+The discard filter logs the error and writes the bad record along with the error message to a discard file.  The next record is then read.
+</para>
+</example>
+</refsection>
+</refsection>
+</refentry>
+
+<refentry id="sx:discardHandler" xreflabel="sx:discardHandler">
+<refnamediv>
+  <refname>sx:discardHandler</refname>
+  <refpurpose>Discard record handler</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>discardHandler</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Apply discard handling to records of this type.  Defaults to records of any type.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:recordReader"/> and <xref linkend="sx:recordFilter"/> elements, followed by</listitem>
+<listitem>Optionally, one  <xref linkend="sx:recordWriter"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to write discarded records to file or database. 
+</para>
+<refsection>
+<title>Examples</title>
+<example>
+<title>No discard handler.</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:flatFileReader>
+    <sx:urlSource url="data/countries.csv"/>
+    <sx:flatFile ref="countries-file"/>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+  </sx:flatFileReader>
+  <sx:recordMapping ref="countries-xml-mapping"/>
+</sx:recordContent>
+]]>
+</programlisting>
+<para>
+In this example, if the record validator discards a record, the record reaches the default handler, which logs an error message and aborts.
+</para>
+</example>
+<example>
+<title>A logging discard handler.</title>
+<programlisting>
+<![CDATA[
+<sx:recordContent id="countries">
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countries.csv"/>
+      <sx:flatFile ref="countries-file"/>
+    </sx:flatFileReader>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+    <sx:discardHandler>
+      <sx:log message="{$sx:message}"/>
+    </sx:discardHandler>
+  </sx:recordStream>
+  <sx:recordMapping ref="countries-xml-mapping"/>
+</sx:recordContent>
+]]>
+</programlisting>
+<para>
+If the record validator discards the record, the record is passed down the pipeline to the discard handler.
+The discard handler logs the error and throws the discarded record away.  The next record is then read.
+</para>
+</example>
+<example id="sx:discardHandler#example">
+<title>A discard handler that writes the discarded record with a message to a discard file.</title>
+<programlisting>
+<![CDATA[
+  <sx:recordContent id="countries">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:urlSource url="data/countriesWithDiscards.csv"/>
+        <sx:flatFile ref="countriesFile"/>
+      </sx:flatFileReader>
+      <msv:recordValidator>
+        <sx:urlSource url="data/country-record.xsd"/>
+      </msv:recordValidator>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <sx:modifyRecord>
+          <sx:newField name="message" value="{$sx:message}"/>
+        </sx:modifyRecord>
+        <sx:flatFileWriter>
+          <sx:fileSink file="output/countryDiscards.csv"/>
+          <sx:flatFile ref="discardFile"/>
+        </sx:flatFileWriter>
+      </sx:discardHandler>
+    </sx:recordStream>
+    <sx:recordMapping ref="countriesToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatRecordType id="countryRecord" name="country">
+    <sx:fieldDelimiter value=","/>
+    <sx:delimitedField name="code"/>
+    <sx:delimitedField name="name"/>
+  </sx:flatRecordType>
+
+  <sx:flatFile id="countriesFile">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="country"/>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:flatFile id="discardFile">
+    <sx:flatFileBody>
+      <sx:flatRecordType name="countryDiscard">
+        <sx:fieldDelimiter value=","/>
+        <sx:delimitedField name="message"/>
+        <sx:flatRecordType ref="countryRecord"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+]]>
+</programlisting>
+<para>
+If the record validator discards the record, the record is passed down the pipeline to the discard handler.
+The discard handler logs the error and writes the discarded record along with the error message to a discard file.  The next record is then read.
+</para>
+</example>
+</refsection>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldRestriction" xreflabel="sx:fieldRestriction">
+<refnamediv>
+  <refname>sx:fieldRestriction</refname>
+  <refpurpose>Restrict field</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:restriction"/></refclass>
+</refnamediv>
+<indexterm><primary>fieldRestriction</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>field</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>pattern</entry>
+<entry>Yes</entry>
+<entry><xref linkend="Regex"/></entry>
+<entry>The regular expression to be tested against the value of the field.</entry>
+</row>
+<row>
+<entry>negate</entry>
+<entry>No</entry>
+<entry>true/false</entry>
+<entry>Reverses the restriction.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be filtered by applying a regular expression to the value of a field. 
+</para>
+<para>The <sgmltag>negate</sgmltag> attribute reverses the restriction.  By setting the <sgmltag>negate</sgmltag> attribute to <code>true</code>, 
+  the restriction applies only if the records don't match the condition.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:fieldValidator" xreflabel="sx:fieldValidator">
+<refnamediv>
+  <refname>sx:fieldValidator</refname>
+  <refpurpose>Field validator</refpurpose>
+</refnamediv>
+<indexterm><primary>fieldValidator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fieldName</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field to validate.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A message indicating the error if validation fails.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Any number of <xref linkend="sx:valueRestriction"/> 
+                                elements.</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:validator"/> elements 
+                                (in particular, <xref linkend="sx:recordValidator"/> 
+                                elements for validating subrecords)
+          </para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+  </para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:fileFilter" xreflabel="sx:fileFilter">
+<refnamediv>
+  <refname>sx:fileFilter</refname>
+  <refpurpose>File filter</refpurpose>
+</refnamediv>
+<indexterm><primary>fileFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>pattern</entry>
+<entry>Yes</entry>
+<entry><xref linkend="Regex"/></entry>
+<entry>The regular expression to be tested against the file name.</entry>
+</row>
+<row>
+<entry>negate</entry>
+<entry>No</entry>
+<entry>true/false</entry>
+<entry>Reverses the restriction.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to filter the files returned by a directory reader,
+ by applying a regular expression to each file name. 
+</para>
+<para>The <sgmltag>negate</sgmltag> attribute reverses the restriction.  By setting the <sgmltag>negate</sgmltag> attribute to <code>true</code>, 
+  the restriction applies only if the filename does not match the condition.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:directoryReader"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:log" xreflabel="sx:log">
+<refnamediv>
+  <refname>sx:log</refname>
+  <refpurpose>Log</refpurpose>
+</refnamediv>
+<indexterm><primary>log</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string value that may contain parameters inside curly braces, e.g. "{$message}".</entry>
+</row>
+<row>
+<entry>level</entry>
+<entry>No</entry>
+<entry>error/warning/notice/trace</entry>
+<entry>Defaults to "error".</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Optionally, if there is no <sgmltag>message</sgmltag> attribute, 
+  any combination of string literals and inlined <xref linkend="sx:stringable"/>
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+The <sgmltag>sx:log</sgmltag> element is used in a record stream to write a message to the log.
+</para>
+<para>
+The message may be specified either by a <sgmltag class="attribute">message</sgmltag> attribute
+or by the content. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of logging a message in a discard handler.</title>
+<programlisting>
+<![CDATA[
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:urlSource url="data/countriesWithDiscards.csv"/>
+      <sx:flatFile ref="countriesFile"/>
+    </sx:flatFileReader>
+    <msv:recordValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:recordValidator>
+    <sx:discardHandler>
+      <sx:log message="{$sx:message}"/>
+      <sx:modifyRecord>
+        <sx:newField name="message" value="{$sx:message}"/>
+      </sx:modifyRecord>
+      <sx:flatFileWriter>
+        <sx:fileSink file="output/countryDiscards.csv"/>
+        <sx:flatFile ref="discardFile"/>
+      </sx:flatFileWriter>
+    </sx:discardHandler>
+  </sx:recordStream>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordStream"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:modifyRecord" xreflabel="sx:modifyRecord">
+<refnamediv>
+  <refname>sx:modifyRecord</refname>
+  <refpurpose>Modify a record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>modifyRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>newRecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The record type name of the modified record.  Defaults to the record type name of the original record.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:newField"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction modifies the current record in a record stream. Each <xref linkend="sx:newField"/> child element adds a new
+field if none currently exists with the same name, or else replaces the existing field.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>See <xref linkend="sx:discardHandler#example"/></para>
+</refsection>
+</refentry>
+
+<refentry id="sx:newField" xreflabel="sx:newField">
+<refnamediv>
+  <refname>sx:newField</refname>
+  <refpurpose>Add a field to a record</refpurpose>
+</refnamediv>
+<indexterm><primary>newField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>name</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A string value that may reference a parameter or field inside curly braces, e.g. "{$my-param}.xml".</entry>
+</row>
+<row>
+<entry>select</entry>
+<entry>No</entry>
+<entry>XPath expression</entry>
+<entry>An XPath expression evaluated against an <xref linkend="sx:content"/> 
+substitutable child element, or, if none, the XML representation of 
+  the record.</entry>
+</row>
+<row>
+<entry>match</entry>
+<entry>Yes</entry>
+<entry><xref linkend="Regex"/></entry>
+<entry>The regular expression to be tested against the value of the field.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, if there is a <sgmltag>select</sgmltag> attribute, 
+            an <xref linkend="sx:content"/> element.  If supplied, the select 
+            expression will be evaluated against this content, otherwise it will
+            be evaluated against the XML representation of the record.
+</para>
+</listitem>
+<listitem><para>Optionally, if there is no <sgmltag>value</sgmltag> or 
+  <sgmltag>select</sgmltag> attribute, any combination of string literals and 
+  inlined <xref linkend="sx:stringable"/> 
+  substitutable elements.  The string expressions will be evaluated in place, 
+  forming one string. Leading and trailing whitespace will be trimmed.
+</para>
+</listitem>
+</itemizedlist>
+</refsection>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows a new field to be added to a record. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:modifyRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:newRecord"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:newRecord" xreflabel="sx:newRecord">
+<refnamediv>
+  <refname>sx:newRecord</refname>
+  <refpurpose>Create a new record</refpurpose>
+</refnamediv>
+<indexterm><primary>newRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The type of the new record.  Defaults to the type of the original record.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of names of fields to be copied to the new record.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+Defaults to "*".
+</entry>
+</row>
+<row>
+<entry>except</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>(deprecated, use exceptFields instead)
+</entry>
+</row>
+<row>
+<entry>exceptFields</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>A space-separated list of names of fields <emphasis>not</emphasis> to be copied to the new record.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. Defaults to the empty string.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:newField"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be changed in a record stream. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:replaceRecord"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:or" xreflabel="sx:or">
+<refnamediv>
+  <refname>sx:or</refname>
+  <refpurpose>Or condition</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:restriction"/></refclass>
+</refnamediv>
+<indexterm><primary>or</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<para>None</para>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>Any number of <xref linkend="sx:restriction"/> elements.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows record criteria to be grouped in an "or" relationship. 
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>(a or b) and c</title>
+<programlisting>
+<![CDATA[
+<sx:restrictRecordFilter>  
+  <sx:and>
+    <sx:or>
+      <sx:recordRestriction recordType="claim_detail"/>  
+      <sx:recordRestriction recordType="expense_detail"/>  
+    </sx:or>
+    <sx:fieldRestriction field="valid" match="y"/>  
+  </sx:and>
+</sx:restrictRecordFilter> 
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:restrictRecordFilter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:and"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:parameterReader" xreflabel="sx:parameterReader">
+<refnamediv>
+  <refname>sx:parameterReader</refname>
+  <refpurpose>Read parameters as record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/></refclass>
+</refnamediv>
+<indexterm><primary>parameterReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the record type given to the parameters.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>Reads a single record of parameter values.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Updating a database record with passed parameter values.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="updateEmployee">
+    <sx:recordStream>
+      <sx:parameterReader recordType="employee"/>
+      <sx:sqlWriter>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlUpdate>
+          UPDATE EMP SET JOB = '{$job}' WHERE EMPNO='{$empNo}'
+        </sx:sqlUpdate>
+      </sx:sqlWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:processRecord" xreflabel="sx:processRecord">
+<refnamediv>
+  <refname>sx:processRecord</refname>
+  <refpurpose>Perform tasks on individual record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>processRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Task records of this type.  Defaults to records of any type.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:task"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+A <sgmltag>sx:processRecord</sgmltag> instruction processes the current record,
+executing one or more tasks applied to the current record or its XML representation.
+</para>
+<para>
+Note that any elements that may appear as children of <xref linkend="sx:service"/> 
+may also appear as child elements of <sgmltag>sx:processSubtree</sgmltag>, the only difference being that for 
+the subservice, the default XML content is the XML representation of the current record. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:processRecordFilter" xreflabel="sx:processRecordFilter">
+<refnamediv>
+  <refname>sx:processRecordFilter</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:processRecord"/></refpurpose>
+</refnamediv>
+<indexterm><primary>processRecordFilter</primary></indexterm>
+</refentry>
+
+<refentry id="sx:processRecords" xreflabel="sx:processRecords">
+<refnamediv>
+  <refname>sx:processRecords</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:recordStream"/></refpurpose>
+</refnamediv>
+<indexterm><primary>processRecords</primary></indexterm>
+</refentry>
+
+<refentry id="sx:regexFieldCriteria" xreflabel="sx:regexFieldCriteria">
+<refnamediv>
+  <refname>sx:regexFieldCriteria</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:fieldRestriction"/></refpurpose>
+</refnamediv>
+<indexterm><primary>regexFieldCriteria</primary></indexterm>
+</refentry>
+
+<refentry id="sx:quoteSymbol" xreflabel="sx:quoteSymbol">
+<refnamediv>
+  <refname>sx:quoteSymbol</refname>
+  <refpurpose>Quote symbol</refpurpose>
+</refnamediv>
+<indexterm><primary>quoteSymbol</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>value</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>Deprecated - replaced by <sgmltag class="attribute">character</sgmltag>  
+  in 0.9.1.</entry>
+</row>
+<row>
+<entry>character</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>The character to optionally enclose field values.  Defaults to the double 
+  quotation mark.</entry>
+</row>
+<row>
+<entry>escapedBy</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>Deprecated - replaced by <sgmltag class="attribute">escapeCharacter</sgmltag>  
+  in 0.9.1.
+</entry>
+</row>
+<row>
+<entry>escapeCharacter</entry>
+<entry>No</entry>
+<entry>Character</entry>
+<entry>The escape character used to escape the quote symbol, e.g. the backslash ('\') or the quote symbol itself.
+</entry>
+</row>
+<row>
+<entry>escapeWith</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>Deprecated - replaced by <sgmltag class="attribute">escapeSequence</sgmltag>  
+  in 0.9.1.
+</entry>
+</row>                                                                                                                 
+<row>
+<entry>escapeSequence</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The character sequence used to replace the special character, e.g. '\"' 
+  or '""' to escape a double quote.
+</entry>
+</row>                                                                                                                 
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction defines the quote character that is used to enclose field values, and the 
+escape sequence used to escape quote characters in field values.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>A double quote character with a backslash escape character.</title>
+<programlisting>
+<![CDATA[
+  <sx:quoteSymbol character='"' escapeCharacter="\"/>
+]]>
+</programlisting>
+</example>
+<example>
+<title>A single quote character escaped with "&quot;".</title>
+<programlisting>
+<![CDATA[
+  <sx:quoteSymbol character="'" escapeSequence="&quot;"/>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:flatRecordType"/>
+</listitem>
+<listitem>
+<xref linkend="sx:delimitedField"/>
+</listitem>
+<listitem>
+<xref linkend="sx:sqlQuery"/>
+</listitem>
+<listitem>
+<xref linkend="sx:sqlUpdate"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordAggregator" xreflabel="sx:recordAggregator">
+<refnamediv>
+  <refname>sx:recordAggregator</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:combineRecords"/></refpurpose>
+</refnamediv>
+<indexterm><primary>recordAggregator</primary></indexterm>
+</refentry>
+
+<refentry id="sx:recordProjection" xreflabel="sx:recordProjection">
+<refnamediv>
+  <refname>sx:recordProjection</refname>
+  <refpurpose>Project a subset of fields</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>recordProjection</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Produce a subset of fields for records of this type, or for all 
+  records if no type specified.</entry>
+</row>
+<row>
+<entry>newRecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The type of the new record.  Defaults to the type of the 
+  input record.</entry>
+</row>
+<row>
+<entry>fields</entry>
+<entry>No</entry>
+<entry><xref linkend="NameTest"/> list</entry>
+<entry>A space-separated list of names of fields to be copied to the new record.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. 
+Defaults to "*".
+</entry>
+</row>
+<row>
+<entry>exceptFields</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/> list</entry>
+<entry>A space-separated list of names of fields <emphasis>not</emphasis> to be copied to the new record.  The value '*' means "all fields."
+A namespace prefix followed by a colon followed by the value '*' means all fields belonging to the namespace. Defaults to the empty string.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:parameter"/> elements.</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction produces a new stream of records that contains all the records 
+from the original stream but only a subset of the fields for records of the 
+specified record type, eliminating duplicates in the vertically sliced records 
+(if any.) 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:discard"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordFilter" xreflabel="sx:recordFilter">
+<refnamediv>
+  <refname>sx:recordFilter</refname>
+  <refpurpose>Abstract element standing for a record filter</refpurpose>
+</refnamediv>
+<indexterm><primary>recordFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any 
+<sgmltag>sx:recordFilter</sgmltag> specialization, such as <xref linkend="sx:restrictRecordFilter"/>,
+<xref linkend="sx:discardHandler"/>, or <xref linkend="msv:recordValidator"/>.  
+Note that the list includes record readers.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:customRecordFilter"/>
+</listitem>
+<listitem>
+<xref linkend="msv:recordValidator"/>
+</listitem>
+<listitem>
+<xref linkend="sx:restrictRecordFilter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:replaceRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:processRecord"/>
+</listitem>
+<listitem>
+<xref linkend="sx:recordStream"/>
+</listitem>
+<listitem>
+<xref linkend="sx:log"/>
+</listitem>
+<listitem>
+<xref linkend="sx:discardHandler"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordReader" xreflabel="sx:recordReader">
+<refnamediv>
+  <refname>sx:recordReader</refname>
+  <refpurpose>Abstract element standing for a record reader</refpurpose>
+</refnamediv>
+<indexterm><primary>recordReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any 
+<sgmltag>sx:recordReader</sgmltag> specialization, such as <xref linkend="sx:flatFileReader"/>
+or <xref linkend="sx:recordStream"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:sqlReader"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flatFileReader"/>
+</listitem>
+<listitem>
+<xref linkend="sx:recordStream"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordRestriction" xreflabel="sx:recordRestriction">
+<refnamediv>
+  <refname>sx:recordRestriction</refname>
+  <refpurpose>Restriction on a record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:restriction"/></refclass>
+</refnamediv>
+<indexterm><primary>recordRestriction</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the record type.</entry>
+</row>
+<row>
+<entry>test</entry>
+<entry>No</entry>
+<entry>XPath</entry>
+<entry>An XPath boolean expression evaluated against the XML representation of the record.</entry>
+</row>
+<row>
+<entry>negate</entry>
+<entry>No</entry>
+<entry>true/false</entry>
+<entry>Reverses the restriction.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be filtered by record type or, more generally, an XPath expression evaluated against the
+XML representation of the record (in which case the record type is the root element.)  
+Either the <sgmltag>recordType</sgmltag> or the <sgmltag>test</sgmltag> attribute, but not both, must be set.
+</para>
+  <para>The <sgmltag>negate</sgmltag> attribute reverses the restriction.  By setting the <sgmltag>negate</sgmltag> attribute to 
+    <code>true</code>, the restriction applies only if the records don't match 
+    the condition.
+  </para>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordWriter" xreflabel="sx:recordWriter">
+<refnamediv>
+  <refname>sx:recordWriter</refname>
+  <refpurpose>Abstract element standing for a record writer</refpurpose>
+</refnamediv>
+<indexterm><primary>recordWriter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference the id of a record writer.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of  
+<sgmltag>sx:recordWriter</sgmltag>, such as <xref linkend="sx:flatFileWriter"/>.</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:sqlWriter"/>
+</listitem>
+<listitem>
+<xref linkend="sx:flatFileWriter"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordStream" xreflabel="sx:recordStream">
+<refnamediv>
+  <refname>sx:recordStream</refname>
+  <refpurpose>A record stream</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/>, <xref linkend="sx:recordFilter"/>, <xref linkend="sx:recordWriter"/>, <xref linkend="sx:task"/>, <xref linkend="sx:stringable"/></refclass>
+</refnamediv>
+<indexterm><primary>recordStream</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:recordReader"/> and <xref linkend="sx:recordFilter"/> elements, followed by</listitem>
+<listitem>Optionally, one  <xref linkend="sx:recordWriter"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+If you want to have additional record writers in a <sgmltag>sx:recordStream</sgmltag> element, 
+use one or more <xref linkend="sx:recordTee"/> elements.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordTee" xreflabel="sx:recordTee">
+<refnamediv>
+  <refname>sx:recordTee</refname>
+  <refpurpose>Split record stream</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>recordTee</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:recordReader"/> and <xref linkend="sx:recordFilter"/> elements, followed by</listitem>
+<listitem>Optionally, one  <xref linkend="sx:recordWriter"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows a tee to be inserted in the record stream. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:recordTest" xreflabel="sx:recordTest">
+<refnamediv>
+  <refname>sx:recordTest</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:recordRestriction"/></refpurpose>
+</refnamediv>
+<indexterm><primary>recordTest</primary></indexterm>
+</refentry>
+
+<refentry id="sx:recordValidator" xreflabel="sx:recordValidator">
+<refnamediv>
+  <refname>sx:recordValidator</refname>
+  <refpurpose>Validate record</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/>, <xref linkend="sx:validator"/></refclass>
+</refnamediv>
+<indexterm><primary>recordValidator</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Validate records of this type.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A message indicating the error if validation fails.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:parameter"/> elements.</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:validator"/> substitutable
+                                elements, such as <xref linkend="sx:fieldValidator"/>,
+                                <xref linkend="sx:assert"/> or <xref linkend="msv:schemaValidator"/>, for 
+                                validating the fields of the record.
+          </para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction supports validation of records.
+</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Validating fields of a record with regular expressions</title>
+<programlisting>
+<![CDATA[
+<sx:recordStream>
+  <sx:flatFileReader>
+    <sx:flatFile ref="fra-flat-file"/>
+  </sx:flatFileReader>
+  <sx:recordValidator message="Error in trade {trade_id}.">
+    <sx:fieldValidator field="buy_sell_code"
+                      message="Invalid buy_sell_code {buy_sell_code}.">
+      <sx:or>
+        <sx:valueRestriction pattern="BUY"/>
+        <sx:valueRestriction pattern="SELL"/>
+      </sx:or>
+    </sx:fieldValidator>
+    <sx:fieldValidator field="start_date"
+                       message="Invalid start_date {start_date}.">
+      <sx:valueRestriction pattern="(19|20)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+    </sx:fieldValidator>
+    <sx:fieldValidator field="maturity_date"
+                       message="Invalid maturity_date {maturity_date}.">
+      <sx:valueRestriction pattern="(20|21)\d\d[/](0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])"/>
+    </sx:fieldValidator>
+  </sx:recordValidator>
+  <sx:discardHandler>
+    <sx:log message="{$sx:message}"/>
+    <sx:modifyRecord>
+      <sx:newField name="message" value="{$sx:message}"/>
+    </sx:modifyRecord>
+    <sx:flatFileWriter>
+      <sx:fileSink file="output/fra-error.csv"/>
+    </sx:flatFileWriter>
+  </sx:discardHandler>
+</sx:recordStream>
+]]></programlisting>
+</example>
+<example>
+<title>Validating fields of a record with XPATH boolean expressions</title>
+<programlisting>
+<![CDATA[
+<sx:recordStream>
+  <sx:flatFileReader>
+    <sx:flatFile ref="fra-flat-file"/>
+  </sx:flatFileReader>
+  <sx:recordValidator message="Error in trade {trade_id}.">
+    <sx:assert test="buy_sell_code = 'BUY' or buy_sell_code = 'SELL'">
+      Invalid buy_sell_code <sx:toString value="{buy_sell_code}"/>.
+    </sx:assert>
+  </sx:recordValidator>
+  <sx:discardHandler>
+    <sx:log message="{$sx:message}"/>
+    <sx:modifyRecord>
+      <sx:newField name="message" value="{$sx:message}"/>
+    </sx:modifyRecord>
+    <sx:flatFileWriter>
+      <sx:fileSink file="output/fra-error.csv"/>
+    </sx:flatFileWriter>
+  </sx:discardHandler>
+</sx:recordStream>
+]]></programlisting>
+</example>
+<example>
+<title>Validating a record with an XML schema</title>
+<programlisting>
+<![CDATA[
+<sx:recordStream>
+  <sx:flatFileReader>
+    <sx:flatFile ref="countriesFile"/>
+  </sx:flatFileReader>
+  <sx:recordValidator>
+    <msv:schemaValidator>
+      <sx:urlSource url="data/country-record.xsd"/>
+    </msv:schemaValidator>
+  </sx:recordValidator>
+  <sx:discardHandler>
+    <sx:log message="{$sx:message}"/>
+  </sx:discardHandler>
+</sx:recordStream>
+]]></programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:fieldValidator"/>
+</listitem>
+<listitem>
+<xref linkend="sx:assert"/>
+</listitem>
+<listitem>
+<xref linkend="msv:schemaValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:replaceRecord" xreflabel="sx:replaceRecord">
+<refnamediv>
+  <refname>sx:replaceRecord</refname>
+  <refpurpose>Replace record with one or more other records</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>replaceRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Apply changes to records of this type.  Defaults to records of any type.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:newRecord"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be changed in a record stream. 
+</para>
+</refsection>
+<example>
+<title>Splitting a record into multiple records.</title>
+  <para>This example shows how to split a single record containing both customer
+    and order information into separate customer and order records.
+  </para>
+<programlisting>
+<![CDATA[
+  <sx:recordStream>
+    <sx:flatFileReader>
+      <sx:flatFile>
+        <sx:flatFileBody>
+          <sx:flatRecordType name="order">
+            <sx:positionalField name="customer-name" width="20"/>
+            <sx:positionalField name="customer-id" width="10"/>
+            <sx:positionalField name="order-id" width="10"/>
+            <sx:positionalField name="op-code" width="7"/>
+          </sx:flatRecordType>
+        </sx:flatFileBody>
+      </sx:flatFile>
+    </sx:flatFileReader>
+    <sx:replaceRecord recordType="order"> 
+      <sx:newRecord recordType="customer" fields="customer-name customer-id"/>
+      <sx:newRecord recordType="order" fields="order-id op-code"/>
+    </sx:replaceRecord> 
+
+    ...
+
+  </sx:recordStream>
+]]>
+</programlisting>
+</example>
+</refentry>
+
+<refentry id="sx:replaceRecordFilter" xreflabel="sx:replaceRecordFilter">
+<refnamediv>
+  <refname>sx:replaceRecordFilter</refname>
+  <refpurpose>Deprecated in version 1.0.2, replaced by <xref linkend="sx:replaceRecord"/></refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>replaceRecordFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Apply changes to records of this type.  Defaults to records of any type.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:newRecord"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be changed in a record stream. 
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:restrictRecordType" xreflabel="sx:restrictRecordType">
+<refnamediv>
+  <refname>sx:restrictRecordType</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:recordRestriction"/></refpurpose>
+</refnamediv>
+<indexterm><primary>restrictRecordType</primary></indexterm>
+</refentry>
+
+<refentry id="sx:restriction" xreflabel="sx:restriction">
+<refnamediv>
+  <refname>sx:restriction</refname>
+  <refpurpose>Abstract element standing for a restriction</refpurpose>
+</refnamediv>
+<indexterm><primary>restriction</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>ref</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>This attribute is used to reference an id.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>This is an abstract element that allows us to refer generically to any specialization of
+<sgmltag>sx:recordFilter</sgmltag>, such as <xref linkend="sx:fieldRestriction"/>.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<para>
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordRestriction"/>
+</listitem>
+<listitem>
+<xref linkend="sx:fieldRestriction"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:restrictField" xreflabel="sx:restrictField">
+<refnamediv>
+  <refname>sx:restrictField</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:fieldRestriction"/></refpurpose>
+</refnamediv>
+<indexterm><primary>restrictField</primary></indexterm>
+</refentry>
+
+<refentry id="sx:restrictRecordFilter" xreflabel="sx:restrictRecordFilter">
+<refnamediv>
+  <refname>sx:restrictRecordFilter</refname>
+  <refpurpose>Restrict records</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>restrictRecordFilter</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>operator</entry>
+<entry>No</entry>
+<entry>and/or</entry>
+<entry>Deprecated.  As of version 0.6.2, replaced by <xref linkend="sx:or"/> and <xref linkend="sx:and"/> child elements.  
+<para>The boolean operator to apply to the <xref linkend="sx:restriction"/> child elements, "and" or "or".  Defaults to "or".</para>
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:parameter"/> elements.</para></listitem>
+<listitem><para>Any number of specializations of the abstract element <xref linkend="sx:restriction"/>, 
+in particular, any number of <xref linkend="sx:recordRestriction"/> and <xref linkend="sx:fieldRestriction"/>  elements.</para></listitem>
+<listitem><para>Optionally, an <xref linkend="sx:unmatchedRecord"/> element, containing
+a record pipeline that will be executed if the record does not match the restrictions.  This record pipeline may
+contain any number of <xref linkend="sx:recordFilter"/> and <xref linkend="sx:recordWriter"/> elements,
+and in particular may end with an <xref linkend="sx:discard"/> element if you wish to discard an unmatched record.
+</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows records to be filtered by applying a regular expression to the value of a field. 
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:discard"/>
+</listitem>
+</itemizedlist>
+</refsection>
+  <refsection>
+<refentry id="sx:unmatchedRecord" xreflabel="sx:unmatchedRecord">
+<refnamediv>
+  <refname>sx:unmatchedRecord</refname>
+  <refpurpose>A record stream</refpurpose>
+</refnamediv>
+<indexterm><primary>unmatchedRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+  <para>
+    None
+  </para>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+<listitem>Any number of <xref linkend="sx:recordReader"/> and <xref linkend="sx:recordFilter"/> elements, followed by</listitem>
+<listitem>Optionally, one  <xref linkend="sx:recordWriter"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Handles unmatched records.
+</para>
+</refsection>
+</refentry>
+  </refsection>
+</refentry>
+
+<refentry id="sx:restrictRecordType" xreflabel="sx:restrictRecordType">
+<refnamediv>
+  <refname>sx:restrictRecordType</refname>
+  <refpurpose>Deprecated, aliased to <xref linkend="sx:recordRestriction"/></refpurpose>
+</refnamediv>
+<indexterm><primary>restrictRecordType</primary></indexterm>
+</refentry>
+
+<refentry id="sx:splitRecord" xreflabel="sx:splitRecord">
+<refnamediv>
+  <refname>sx:splitRecord</refname>
+  <refpurpose>Decompose a composite record into its constituent subrecords</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordFilter"/></refclass>
+</refnamediv>
+<indexterm><primary>decomposeRecords</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Decompose records of this type.
+</entry>
+</row>
+<row>
+<entry>repeatingGroup</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Decompose records of the specified type on this repeating group field.
+</entry>
+</row> 
+  <row>
+<entry>subrecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The type of the decomposed records.  Defaults to the record type of the 
+  subrecords in the repeating group.
+</entry>
+</row>
+<row>
+<entry>compositeRecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated in version 0.9.5 - replaced by recordType attribute.</entry>
+</row>
+<row>
+<entry>repeatingGroupField</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated in version 0.9.5 - replaced by repeatingGroup attribute.
+</entry>
+</row>
+<row>
+<entry>ofRecordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated - use <sgmltag class="attribute">recordType</sgmltag> 
+                          instead.
+</entry>
+</row>
+<row>
+<entry>onField</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Deprecated - use <sgmltag class="attribute">repeatingGroup</sgmltag> 
+                          instead.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Optionally, any number of <xref linkend="sx:parameter"/> elements.</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows you to decompose a composite record into multiple 
+records, one for each record in a repeating group.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:combineRecords"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:directoryReader" xreflabel="sx:directoryReader">
+<refnamediv>
+  <refname>sx:directoryReader</refname>
+  <refpurpose>Read a directory</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/></refclass>
+</refnamediv>
+<indexterm><primary>directoryReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recurse</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Set to "true" to recurse through a directory tree, "false" otherwise.  Defaults to "false."
+(For backwards compatability, yes/no is also supported.)</entry>
+</row>
+<row>
+<entry>maxItems</entry>
+<entry>No</entry>
+<entry>Number</entry>
+<entry>The maximum number of directory items to read.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The root directory.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>
+    Optionally, any number of <xref linkend="sx:parameter"/> elements.
+  </para>
+</listitem>
+<listitem><para>
+    Optionally, a <xref linkend="sx:fileFilter"/> element.
+  </para>
+</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Each record will have type  
+<itemizedlist>
+<listitem>directory - if the entry is a directory</listitem>
+<listitem>file - if the entry is a file.</listitem>
+</itemizedlist>
+</para>
+<para>
+Each record will contain the following fields:
+<itemizedlist>
+<listitem><phrase>parentDir - the parent directory, if any (deprecated, use 
+            parentDirectory instead)</phrase></listitem>
+<listitem><phrase>parentDirectory - the parent directory, if any 
+            </phrase></listitem>
+<listitem>pathname - the pathname of the file or directory.</listitem>
+<listitem>name - the name of the file or directory.</listitem>
+<listitem>lastModified -  the time the file was last modified,
+with a lexical representation as defined for <ulink url="http://www.w3.org/TR/xmlschema-2/#dateTime">xs:dateTime</ulink> of
+<ulink url="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</ulink>.
+</listitem>
+<listitem>size - the file size, in bytes</listitem>
+</itemizedlist>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="sx:subtreeRecordReader" xreflabel="sx:subtreeRecordReader">
+<refnamediv>
+  <refname>sx:subtreeRecordReader</refname>
+  <refpurpose>Read subtrees of XML document as records</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/></refclass>
+</refnamediv>
+<indexterm><primary>subtreeRecordReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>
+Optionally, any number of <xref linkend="sx:parameter"/> elements.
+</listitem>
+<listitem>
+Optionally, a <xref linkend="sx:content"/> specialization, such as a <xref linkend="sx:document"/>, <xref linkend="sx:recordContent"/> 
+or <xref linkend="sx:transform"/> element.  If omitted, defaults to the default stream of SAX events.
+</listitem>
+<listitem>An <xref linkend="sx:inverseRecordMapping"/> element.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>Adapts XML to a record stream.</para>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Adapting the "books" XML file to a record stream.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+                        xmlns:myns="http://mycompany.com/mynames/">
+   
+  <sx:service id="books2pos"> 
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:inverseRecordMapping ref="booksToFileMapping"/>
+        <sx:transform>
+          <sx:document><sx:urlSource url="data/books.xml"/></document>
+        </sx:transform>
+      </sx:subtreeRecordReader>
+      <sx:flatFileWriter>
+        <sx:flatFile ref="booksFile"/>
+      </sx:flatFileWriter>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:inverseRecordMapping id="booksToFileMapping">
+    <sx:onSubtree path="/myns:books/myns:book">
+      <sx:flattenSubtree recordType="book">
+        <sx:subtreeFieldMap select="myns:title" field="title"/>
+        <sx:subtreeFieldMap select="@categoryCode" field="category"/>
+        <sx:subtreeFieldMap select="myns:author" field="author"/>
+        <sx:subtreeFieldMap select="myns:price" field="price"/>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+  <sx:flatFile id="booksFile">
+    <sx:flatFileHeader>
+      <sx:flatRecordType ref="bookType"/>
+      <sx:annotationRecord/>
+    </sx:flatFileHeader>
+    <sx:flatFileBody>
+      <sx:flatRecordType ref="bookType"/>
+    </sx:flatFileBody>
+    <sx:flatFileTrailer>
+      <sx:annotationRecord></sx:annotationRecord>
+      <sx:annotationRecord>This is a trailer record</sx:annotationRecord>
+    </sx:flatFileTrailer>
+  </sx:flatFile>      
+
+  <sx:flatRecordType id="bookType" name="bookType">
+    <sx:positionalField name="category" label="Category" width="1"/>
+    <sx:positionalField name="author" label="Author" width="30"/>
+    <sx:positionalField name="title" label="Title" width="30"/>
+    <sx:positionalField name="price" label="Price" width="10" justify="right"/>
+  </sx:flatRecordType>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+</refentry>
+
+<refentry id="sx:validateField" xreflabel="sx:validateField">
+<refnamediv>
+  <refname>sx:validateField</refname>
+  <refpurpose>Deprecated in version 1.0, replaced by <xref linkend="sx:fieldValidator"/></refpurpose>
+</refnamediv>
+<indexterm><primary>validateField</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>fieldName</entry>
+<entry>Yes</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>The name of the field to validate.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A message indicating the error if validation fails.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Any number of <xref linkend="sx:valueRestriction"/> 
+                                elements.</para></listitem>
+<listitem><para>Any number of <xref linkend="sx:validateRecord"/> 
+                                elements (for validating 
+                                subrecords)</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+  </para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:validateRecord" xreflabel="sx:validateRecord">
+<refnamediv>
+  <refname>sx:validateRecord</refname>
+  <refpurpose>Deprecated in version 1.0, replaced by <xref linkend="sx:recordValidator"/></refpurpose>
+</refnamediv>
+<indexterm><primary>validateRecord</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recordType</entry>
+<entry>No</entry>
+<entry><xref linkend="QName"/></entry>
+<entry>Validate records of this type.</entry>
+</row>
+<row>
+<entry>message</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>A message indicating the error if validation fails.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><para>Any number of <xref linkend="sx:validateField"/> elements.</para></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+  </para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:valueRestriction" xreflabel="sx:valueRestriction">
+<refnamediv>
+  <refname>sx:valueRestriction</refname>
+  <refpurpose>Restrict value</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:restriction"/></refclass>
+</refnamediv>
+<indexterm><primary>valueRestriction</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>pattern</entry>
+<entry>Yes</entry>
+<entry><xref linkend="Regex"/></entry>
+<entry>The regular expression to be tested against the value of the field.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>None.</para>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+This instruction allows a field value to be tested with a regular expression.
+</para>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem>
+<xref linkend="sx:recordValidator"/>
+</listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="sx:writeRecords" xreflabel="sx:writeRecords">
+<refnamediv>
+  <refname>sx:writeRecords</refname>
+  <refpurpose>Deprecated, replaced by <xref linkend="sx:recordStream"/></refpurpose>
+</refnamediv>
+<indexterm><primary>writeRecords</primary></indexterm>
+</refentry>
+
+<refentry id="sx:xmlRecordReader" xreflabel="sx:xmlRecordReader">
+<refnamediv>
+  <refname>sx:xmlRecordReader</refname>
+  <refpurpose>Deprecated in version 1.0, replaced by <xref linkend="sx:subtreeRecordReader"/></refpurpose>
+</refnamediv>
+<indexterm><primary>xmlRecordReader</primary></indexterm>
+</refentry>
+
+</reference>
+

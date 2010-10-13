@@ -1,0 +1,410 @@
+<reference id="chap-edtftpj"><title>EDT FTP Extension</title>
+<partintro>
+<para>
+This section describes the EDT FTP extension elements.
+All EDT FTP extension elements require the namespace declaration 
+<sgmltag>xmlns:edt="http://www.servingxml.com/extensions/edtftp"</sgmltag>
+to appear in the resources script.
+</para>                              
+</partintro>
+
+<refentry id="edt:ftpClient" xreflabel="edt:ftpClient">
+<refnamediv>
+  <refname>edt:ftpClient</refname>
+  <refpurpose>FTP client</refpurpose>
+</refnamediv>
+<indexterm><primary>ftpClient</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>host</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>Host name.</entry>
+</row>
+<row>
+<entry>port</entry>
+<entry>No</entry>
+<entry>Number</entry>
+<entry>The port number, defaults to 21.</entry>
+</row>
+<row>
+<entry>user</entry>
+<entry>Yes</entry>
+<entry>String</entry>
+<entry>The user name.</entry>
+</row>
+<row>
+<entry>password</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>The password.</entry>
+</row>
+<row>
+<entry>remoteSiteCommand</entry>
+<entry>No</entry>
+<entry>String</entry>
+<entry>Optional remote site command.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<para>
+None.
+</para>
+</refsection>
+</refentry>
+
+<refentry id="edt:ftpDirectoryReader" xreflabel="edt:ftpDirectoryReader">
+<refnamediv>
+  <refname>edt:ftpDirectoryReader</refname>
+  <refpurpose>FTP directory reader</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:recordReader"/></refclass>
+</refnamediv>
+<indexterm><primary>ftpDirectoryReader</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="1">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>recurse</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Set to <code>true</code> to recurse through a directory tree, <code>false</code> otherwise.  Defaults to "false."
+(For backwards compatability, yes/no is also supported.)</entry>
+</row>
+<row>
+<entry>maxItems</entry>
+<entry>No</entry>
+<entry>Number</entry>
+<entry>The maximum number of directory items to read.</entry>
+</row>
+<row>
+<entry>directory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The remote directory.  Defaults to the current directory on the remote server.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem>Optionally, any number of <xref linkend="sx:parameter"/> elements.</listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Description</title>
+<para>
+Each record will have type  
+<itemizedlist>
+<listitem><phrase>directory - if the entry is a directory</phrase></listitem>
+<listitem><phrase>file - if the entry is a file.</phrase></listitem>
+</itemizedlist>
+</para>
+<para>
+Each record will contain the following fields:
+<itemizedlist>
+<listitem><phrase>parentDir - the parent directory, if any (deprecated, use 
+            parentDirectory instead)</phrase></listitem>
+<listitem><phrase>parentDirectory - the parent directory, if any 
+            </phrase></listitem>
+<listitem><phrase>name - the name of the file or directory.</phrase></listitem>
+<listitem><phrase>lastModified -  the time the file was last modified,
+with a lexical representation as defined for <ulink url="http://www.w3.org/TR/xmlschema-2/#dateTime">xs:dateTime</ulink> of
+<ulink url="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</ulink>.
+</phrase></listitem>
+<listitem><phrase>size - the file size, in bytes</phrase></listitem>
+<listitem><phrase>permissions</phrase></listitem>
+<listitem><phrase>owner</phrase></listitem>
+<listitem><phrase>isLink - "yes" or "no"</phrase></listitem>
+</itemizedlist>
+</para>
+</refsection>
+</refentry>
+
+<refentry id="edt:ftpSink" xreflabel="edt:ftpSink">
+<refnamediv>
+  <refname>edt:ftpSink</refname>
+  <refpurpose>FTP sink</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSink"/></refclass>
+</refnamediv>
+<indexterm><primary>ftpSink</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>transferType</entry>
+<entry>No</entry>
+<entry>binary or ascii</entry>
+<entry>The transfer type, defaults to ascii.</entry>
+</row>
+<row>
+<entry>remoteDir</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Deprecated - use <sgmltag>remoteDirectory</sgmltag> instead.</entry>
+</row>
+<row>
+<entry>remoteDirectory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The remote directory.</entry>
+</row>
+<row>
+<entry>remoteFile</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>String</entry>
+<entry>The name of the remote output file, may contain parameters in the form {$myParam}.</entry>
+</row>
+<row>
+<entry>localDir</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The local directory.</entry>
+</row>
+<row>
+<entry>localFile</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The local file to write to before sending it to the remote directory.  Defaults to a timestamped temporary file.</entry>
+</row>
+<row>
+<entry>deleteLocalFile</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Delete the local file after processing the remote file.  Defaults to <code>false</code>.
+(For backwards compatability, yes/no is also supported.)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><phrase>A <xref linkend="edt:ftpClient"/> element.</phrase></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of FTP file sink.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  
+  <edt:ftpClient  id="myhost" host="myhost.com" 
+          user="anonymous" password="xxx"/>
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <edt:ftpSink remoteDirectory="incoming" remoteFile="books.xml">
+          <edt:ftpClient ref="myhost"/>
+        </edt:ftpSink>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:document id="books" href="documents/books.xml"/>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSink"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="edt:ftpClient"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+
+<refentry id="edt:ftpSource" xreflabel="edt:ftpSource">
+<refnamediv>
+  <refname>edt:ftpSource</refname>
+  <refpurpose>FTP source</refpurpose>
+  <refclass>&nbsp;&nbsp;&boxur;&nbsp;<xref linkend="sx:streamSource"/></refclass>
+</refnamediv>
+<indexterm><primary>ftpSource</primary></indexterm>
+<refsection>
+<title>Attributes</title>
+<informaltable colsep="0">
+<tgroup cols="4" align="left" colsep="0" rowsep="0">
+<thead>
+<row>
+<entry>Name</entry>
+<entry>Required</entry>
+<entry>Value</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><xref linkend="idref-attributes"/></entry>
+<entry>No</entry>
+<entry>&nbsp;</entry>
+<entry>Common id ref attributes.</entry>
+</row>
+<row>
+<entry>transferType</entry>
+<entry>No</entry>
+<entry>binary or ascii</entry>
+<entry>The transfer type, defaults to ascii.</entry>
+</row>
+<row>
+<entry>remoteDir</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>Deprecated - use <sgmltag>remoteDirectory</sgmltag> instead.</entry>
+</row>
+<row>
+<entry>remoteDirectory</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The remote directory.</entry>
+</row>
+<row>
+<entry>remoteFile</entry>
+<entry>Yes</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The name of the remote input file, may contain parameters in the form {$myParam}.</entry>
+</row>
+<row>
+<entry>localDir</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The local directory.</entry>
+</row>
+<row>
+<entry>localFile</entry>
+<entry>No</entry>
+<entry><xref linkend="SubstitutionExpr"/></entry>
+<entry>The local file to write to before reading its content.  Defaults to a timestamped temporary file.</entry>
+</row>
+<row>
+<entry>deleteLocalFile</entry>
+<entry>No</entry>
+<entry>true|false</entry>
+<entry>Delete the local file after processing the remote file.  Defaults to <code>false</code>.
+(For backwards compatability, yes/no is also supported.)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsection>
+<refsection>
+<title>Content</title>
+<itemizedlist>
+<listitem><phrase>A <xref linkend="edt:ftpClient"/> element.</phrase></listitem>
+</itemizedlist>
+</refsection>
+<refsection>
+<title>Examples</title>
+<example>
+<title>Example of FTP file source.</title>
+<programlisting>
+<![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:edt="http://www.servingxml.com/extensions/edtftp">
+  
+  <edt:ftpClient  id="myhost" host="myhost.com" 
+          user="anonymous" password="xxx"/>
+  
+  <sx:service id="books">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="books"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+  
+  <sx:document id="books" href="documents/books.xml">
+      <edt:ftpSource remoteDirectory="incoming" remoteFile="books.xml">
+          <edt:ftpClient ref="myhost"/>
+      </edt:ftpSource>
+</sx:document>
+  
+</sx:resources>
+]]>
+</programlisting>
+</example>
+</refsection>
+<refsection>
+<title>See also</title>
+<itemizedlist>
+<listitem><phrase>
+<xref linkend="sx:streamSource"/>
+</phrase></listitem>
+<listitem><phrase>
+<xref linkend="edt:ftpClient"/>
+</phrase></listitem>
+</itemizedlist>
+</refsection>
+</refentry>
+</reference>
+

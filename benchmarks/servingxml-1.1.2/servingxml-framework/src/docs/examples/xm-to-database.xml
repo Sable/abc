@@ -1,0 +1,811 @@
+<section><title>XML to Database</title>
+<section>
+<para>
+The java run time needs to be able to find the database driver.  
+The examples in this section are set up for the Oracle driver, 
+oracle.jdbc.driver.OracleDriver.  To configure ServingXML to recognize 
+this driver, copy the Oracle classes12.jar file (not distributed) to 
+the <filename>lib/local</filename> directory, and then rebuild.  Of course, you can specify a different driver, 
+making the appropriate changes in the sample resources script and copying the right
+jar file to the <filename>lib/local</filename> directory.
+</para>
+</section>
+<section>
+<title>Master Detail</title>
+<titleabbrev>Master Detail</titleabbrev>
+<indexterm><primary>SQL</primary><secondary>INSERT</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from one database table
+and write them to another.
+</para>
+<para>
+The input file is an XML file.
+</para>
+<figure id="masterDetail.xml">
+  <title>Input XML file masterDetail.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<masterDetail>
+  <master id="1">
+    <name>aName</name>
+    <detail id="11">
+      <date>2008/09/03</date>
+      <type>A</type>
+    </detail>
+    <detail id="12">
+      <date>2008/09/03</date>
+      <type>B</type>
+    </detail>
+    <detail id="13">
+      <date>2008/09/03</date>
+      <type>C</type>
+    </detail>
+  </master>
+  <master id="2">
+    <name>aName</name>
+    <detail id="21">
+      <date>2008/09/03</date>
+      <type>A</type>
+    </detail>
+    <detail id="22">
+      <date>2008/09/03</date>
+      <type>B</type>
+    </detail>
+    <detail id="23">
+      <date>2008/09/03</date>
+      <type>C</type>
+    </detail>
+  </master>
+</masterDetail>
+]]>
+</programlisting>
+</figure>
+<para>
+The following resources script performs the update.
+</para>
+<figure id="resources-masterDetail.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="loadMasterDetail">
+    <sx:recordStream>
+      <sx:subtreeRecordReader>
+        <sx:transform>
+          <sx:document/>
+        </sx:transform>
+        <sx:inverseRecordMapping ref="masterDetailMapping"/>
+      </sx:subtreeRecordReader>
+
+      <sx:sqlWriter ref="masterDetailWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:inverseRecordMapping id="masterDetailMapping">
+    <sx:onSubtree path="/masterDetail/master">
+      <sx:flattenSubtree recordType="master">
+        <sx:subtreeFieldMap select="@id" field="masterId"/>
+        <sx:subtreeFieldMap select="name" field="name"/>
+        <sx:subtreeFieldMap match="detail" field="detail">
+          <sx:flattenSubtree recordType="detail">
+            <sx:subtreeFieldMap select="@id" field="detailId"/>
+            <sx:subtreeFieldMap select="date" field="date"/>
+            <sx:subtreeFieldMap select="type" field="type"/>
+          </sx:flattenSubtree>
+        </sx:subtreeFieldMap>
+      </sx:flattenSubtree>
+    </sx:onSubtree>
+  </sx:inverseRecordMapping>
+
+  <sx:sqlWriter id="masterDetailWriter">                          
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+        INSERT INTO master(master_id,name) VALUES({masterId},'{name}')
+      <sx:sqlUpdateDetail field="detail">
+        <sx:sqlUpdate>
+          INSERT INTO detail(detail_id,detail_date,detail_type) 
+          VALUES({detailId},to_date('{date}','yyyy/mm/dd'),'{type}')
+        </sx:sqlUpdate>
+      </sx:sqlUpdateDetail>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Executing the <code>loadEmployees</code> service with two <code>job</code> parameters, like this
+<programlisting>
+<![CDATA[
+    servingxml -r resources-insert_employees.xml loadEmployees 
+        job=ANALYST job=CLERK
+]]>
+</programlisting>
+results in the following SQL statement being sent to the Oracle server:
+<programlisting>
+<![CDATA[
+SELECT EMPNO, ENAME AS NAME,JOB 
+  FROM EMP 
+  WHERE 1=1 AND JOB IN ('ANALYST','CLERK') 
+  ORDER BY JOB,ENAME
+]]></programlisting>
+</para>
+<para>
+These results are then written to the database table <code>EMP_HISTORY</code>.
+</para>
+</section>
+
+<section>
+<title>Batched SQL inserts</title>
+<titleabbrev>Batched inserts</titleabbrev>
+<indexterm><primary>SQL</primary><secondary>INSERT</secondary></indexterm>
+<indexterm><primary>SQL</primary><secondary>batch</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from one database table
+and write them in batches to another.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-batch_insert_employees.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+      <msv:recordValidator>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+          <xsd:element name="employee" type="EmployeeType"/>
+          <xsd:complexType name="EmployeeType">
+            <xsd:sequence>
+              <xsd:element name="EMPNO" type="xsd:integer"/>
+              <xsd:element name="NAME" type="xsd:string"/>
+              <xsd:element name="JOB" type="xsd:string"/>              
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:schema>
+      </msv:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlBatchWriter id="employeesWriter" batchSize="4">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+        INSERT INTO EMP_HISTORY(EMPNO, ENAME) VALUES( {EMPNO}, '{NAME}')
+    </sx:sqlUpdate>
+  </sx:sqlBatchWriter>
+
+  <sx:sqlReader id="employeesReader">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Executing the <code>loadEmployees</code> service with two <code>job</code> parameters, like this
+<programlisting>
+<![CDATA[
+    servingxml -r resources-batch_insert_employees.xml loadEmployees 
+        job=ANALYST job=CLERK
+]]>
+</programlisting>
+results in the following SQL statement being sent to the Oracle server:
+<programlisting>
+<![CDATA[
+SELECT EMPNO, ENAME AS NAME,JOB 
+  FROM EMP 
+  WHERE 1=1 AND JOB IN ('ANALYST','CLERK') 
+  ORDER BY JOB,ENAME
+]]></programlisting>
+</para>
+<para>
+These results are then written in batches of 4 to the database table <code>EMP_HISTORY</code>.
+</para>
+</section>
+<section>
+<title>Prepared SQL inserts</title>
+<titleabbrev>SQL prepare</titleabbrev>
+<indexterm><primary>SQL</primary><secondary>INSERT</secondary></indexterm>
+<indexterm><primary>SQL</primary><secondary>PREPARE</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from one database table
+and write them using a prepared SQL statement to another.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-prepare_insert_employees.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+
+      <msv:recordValidator>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+          <xs:element name="employee" type="EmployeeType"/>
+          <xs:complexType name="EmployeeType">
+            <xs:sequence>
+              <xs:element name="EMPNO" type="xs:integer"/>
+              <xs:element name="NAME" type="xs:string"/>
+              <xs:element name="JOB" type="xs:string"/>
+              <xs:element name="MGR" type="xs:integer"/>
+              <xs:element name="HIREDATE" type="xs:date"/>
+              <xs:element name="SAL" type="xs:decimal"/>
+              <xs:element name="COMM" type="xs:decimal" minOccurs="0"/> 
+              <xs:element name="DEPTNO" type="xs:integer"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:schema>
+      </msv:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a database table -->
+        <sx:sqlWriter ref="discardWriter"/> 
+        <sx:discardHandler>
+          <sx:log message="{$sx:message}"/>
+        </sx:discardHandler>
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlWriter id="employeesWriter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>                                                                                                                        
+      <!-- Because the SQL insert executes a prepared statement, values must be
+            associated with appropriate types.  In this example, because these values are 
+            coming from a SQL query source, they will already be associated with SQL types, 
+            and no further action is really necessary.  In the case of other data sources, however,
+            values by default will be associated with string types, and may need
+            to be recast in parameter assignments, as shown below.
+      -->
+      <sx:parameter name="employee-no" value="{EMPNO}" type="xs:long"/>
+      <sx:parameter name="mgr" value="{MGR}" type="xs:long"/>
+      <sx:parameter name="hiredate" value="{HIREDATE}" type="xs:date"/>              
+      <sx:parameter name="salary" value="{SAL}" type="xs:decimal"/>              
+      <sx:parameter name="commission" value="{COMM}" type="xs:decimal"/>              
+      <sx:sqlPrepare>
+        INSERT INTO EMP_HISTORY(EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM) 
+        VALUES({$employee-no},{NAME},{JOB}, {$mgr}, {$hiredate},  {$salary}, {$commission})
+      </sx:sqlPrepare>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>                                                                              
+
+  <sx:sqlWriter id="discardWriter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+      <sx:parameter name="employee-no" value="{EMPNO}" type="xs:long"/>
+      <sx:parameter name="mgr" value="{MGR}" type="xs:long"/>
+      <sx:parameter name="hiredate" value="{HIREDATE}" type="xs:date"/>              
+      <sx:parameter name="salary" value="{SAL}" type="xs:decimal"/>              
+      <sx:parameter name="commission" value="{COMM}" type="xs:decimal"/>              
+      <sx:sqlPrepare>
+        INSERT INTO EMP_DISCARD(MESSAGE, EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, 
+                                COMM) 
+        VALUES({$message}, {$employee-no}, {NAME}, {JOB}, {$mgr}, {$hiredate},
+               {$salary}, {$commission})
+      </sx:sqlPrepare>
+    </sx:sqlUpdate>
+  </sx:sqlWriter>                                                                              
+                                                              
+  <sx:sqlReader id="employeesReader">                         
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Executing the <code>loadEmployees</code> service with two <code>job</code> parameters, like this
+<programlisting>
+<![CDATA[
+    servingxml -r resources-prepare_insert_employees.xml loadEmployees 
+        job=SALESMAN job=MANAGER
+]]>
+</programlisting>
+results in the following SQL statement being sent to the Oracle server:
+<programlisting>
+<![CDATA[
+SELECT EMPNO, ENAME AS NAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO 
+  FROM EMP 
+  WHERE 1=1 AND JOB IN ('SALESMAN','MANAGER') 
+  ORDER BY JOB,ENAME
+]]></programlisting>
+</para>
+<para>
+These results are then written in batches of 4 to the database table <code>EMP_HISTORY</code>.
+</para>
+</section>
+<section>
+<title>Batched prepared SQL inserts</title>
+<titleabbrev>Batched prepared inserts</titleabbrev>
+<indexterm><primary>SQL</primary><secondary>INSERT</secondary></indexterm>
+<indexterm><primary>SQL</primary><secondary>prepare</secondary></indexterm>
+<indexterm><primary>SQL</primary><secondary>batch</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from one database table
+and write them in batches, using a prepared SQL statement, to another.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-batch_prepare_insert_employees.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+      <msv:recordValidator>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+          <xs:element name="employee" type="EmployeeType"/>
+          <xs:complexType name="EmployeeType">
+            <xs:sequence>
+              <xs:element name="EMPNO" type="xs:integer"/>
+              <xs:element name="NAME" type="xs:string"/>
+              <xs:element name="JOB" type="xs:string"/>
+              <xs:element name="MGR" type="xs:integer"/>
+              <xs:element name="HIREDATE" type="xs:date"/>
+              <xs:element name="SAL" type="xs:decimal"/>
+              <xs:element name="COMM" type="xs:decimal" minOccurs="0"/> 
+              <xs:element name="DEPTNO" type="xs:integer"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:schema>
+      </msv:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlBatchWriter id="employeesWriter" xmlns:xs="http://www.w3.org/2001/XMLSchema" batchSize="4">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdate>
+      <!-- Because the SQL insert executes a prepared statement, values must be
+           associated with appropriate types.  In this example, because these values are 
+           coming from a SQL query source, they will already be associated with SQL types, 
+           and no further action is really necessary.  In the case of other data sources, however,
+           values by default will be associated with string types, and may need
+           to be recast in parameter assignments, as shown below.
+      -->
+      <sx:parameter name="employee-no" value="{EMPNO}" type="xs:long"/>
+      <sx:parameter name="mgr" value="{MGR}" type="xs:long"/>
+      <sx:parameter name="hiredate" value="{HIREDATE}" type="xs:date"/>              
+      <sx:parameter name="salary" value="{SAL}" type="xs:decimal"/>              
+      <sx:parameter name="commission" value="{COMM}" type="xs:decimal"/>              
+      <sx:sqlPrepare>                                                                                                            
+        INSERT INTO EMP_HISTORY(EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM) 
+        VALUES({$employee-no},{NAME},{JOB}, {$mgr}, {$hiredate},  {$salary}, {$commission})
+      </sx:sqlPrepare>
+    </sx:sqlUpdate>
+  </sx:sqlBatchWriter>
+
+  <sx:sqlReader id="employeesReader">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Executing the <code>loadEmployees</code> service with two <code>job</code> parameters, like this
+<programlisting>
+<![CDATA[
+    servingxml -r resources-batch_prepare_insert_employees.xml loadEmployees 
+        job=SALESMAN job=MANAGER
+]]>
+</programlisting>
+results in the following SQL statement being sent to the Oracle server:
+<programlisting>
+<![CDATA[
+SELECT EMPNO, ENAME AS NAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO 
+  FROM EMP 
+  WHERE 1=1 AND JOB IN ('SALESMAN','MANAGER') 
+  ORDER BY JOB,ENAME
+]]></programlisting>
+</para>
+<para>
+These results are then written in batches of 4 to the database table <code>EMP_HISTORY</code>, using prepared SQL statements.
+</para>
+</section>
+<section>
+<title>Updating an employee record using command-line parameters (employee update)</title>
+<para>
+The example below illustrates how to prepare a resources script that will change an employee
+job categorization using command line parameters.  
+</para>
+<figure id="sql-resources.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="updateEmployee">
+    <sx:recordStream>
+      <sx:parameterReader recordType="employee"/>
+      <sx:sqlWriter>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlUpdate>
+          UPDATE EMP SET JOB = '{$job}' WHERE EMPNO='{$empNo}'
+        </sx:sqlUpdate>
+      </sx:sqlWriter>
+    </sx:recordStream>
+  </sx:service>
+  
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+You can run this example on the command line by entering
+<programlisting>
+<![CDATA[
+servingxml -r resources.xml -o updateEmployee 
+    empNo=7499 job=ANALYST
+]]>
+</programlisting>
+</para>
+</section>
+
+<section>
+<title>Insert if record does not exist, update otherwise (insert/update).</title>
+<titleabbrev>insert/update</titleabbrev>
+<indexterm><primary>SQL</primary><secondary>INSERT/UPDATE</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from one database table
+and write them to another, inserting if the record does not already exist, updating otherwise.
+</para>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources-loadEmployees.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+               xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="loadEmployees">
+    <sx:recordStream>
+      <sx:sqlReader ref="employeesReader"/>
+      <msv:recordValidator>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <!-- This element's name matches the value of the name attribute in the sx:sqlQuery element. -->
+          <xs:element name="employee" type="EmployeeType"/>
+          <xs:complexType name="EmployeeType">
+            <xs:sequence>
+              <xs:element name="EMPNO" type="xs:integer"/>
+              <xs:element name="NAME" type="xs:string"/>
+              <xs:element name="JOB" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:schema>
+      </msv:recordValidator>
+
+      <sx:sqlWriter ref="employeesWriter"/>
+      <sx:discardHandler>
+        <sx:log message="{$sx:message}"/>
+        <!-- You can include a record pipeline here to write bad records to a file or database table -->
+      </sx:discardHandler>
+    </sx:recordStream>
+  </sx:service>
+
+  <sx:sqlWriter id="employeesWriter">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+    <sx:sqlUpdateChoice>
+      <sx:sqlQuery>
+        SELECT EMPNO FROM EMP_HISTORY WHERE EMPNO = {EMPNO}
+      </sx:sqlQuery>
+      <sx:recordNotFound>
+        <sx:sqlUpdate>
+          INSERT INTO EMP_HISTORY(EMPNO, ENAME) VALUES({EMPNO},'{NAME}')
+        </sx:sqlUpdate>
+      </sx:recordNotFound>
+      <sx:recordFound>
+        <sx:sqlUpdate>
+          UPDATE EMP_HISTORY SET ENAME = '{NAME}' WHERE EMPNO = {EMPNO}
+        </sx:sqlUpdate>
+      </sx:recordFound>
+    </sx:sqlUpdateChoice>
+  </sx:sqlWriter>
+
+  <sx:sqlReader id="employeesReader">
+    <sx:sqlConnectionPool ref="jdbcPool"/>
+
+    <sx:parameter name="jobList">
+      <sx:toString value="{$job}" separator=",">
+        <sx:quoteSymbol character="'" escapeCharacter="'"/>
+      </sx:toString>
+    </sx:parameter>
+
+    <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1
+      <sx:choose>
+        <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+        </sx:when>
+      </sx:choose>
+        ORDER BY JOB,ENAME
+    </sx:sqlQuery>
+
+  </sx:sqlReader>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Execute the <code>loadEmployees</code> service with two <code>job</code> parameters, like this
+</para>
+<programlisting>
+<![CDATA[
+    servingxml -r resources-insertUpdate.xml loadEmployees 
+        job=ANALYST job=CLERK
+]]>
+</programlisting>
+</section>
+
+<section>
+<title>Writing rows to a database table as they pass through a pipe, to an XML file (employees-tee)</title>
+<titleabbrev>employees tee</titleabbrev>
+<indexterm><primary>tee</primary><secondary>record</secondary></indexterm>
+<para>
+This example shows how to prepare a resources script that will read rows from an RDBMS,
+write them to a database table as they pass through the pipe, and finally produce an XML file.
+</para>
+<para>
+The desired XML file is shown below.
+</para>
+
+<figure id="employees.xml">
+  <title>Output XML file employees.xml</title>
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<employees>
+   <ANALYST>
+      <employee employee-no="7902">
+         <name>FORD</name>
+      </employee>
+      <employee employee-no="7788">
+         <name>SCOTT</name>
+      </employee>
+   </ANALYST>
+   <CLERK>
+      <employee employee-no="7876">
+         <name>ADAMS</name>
+      </employee>
+      <employee employee-no="7900">
+         <name>JAMES</name>
+      </employee>
+      <employee employee-no="7934">
+         <name>MILLER</name>
+      </employee>
+      <employee employee-no="7369">
+         <name>SMITH</name>
+      </employee>
+   </CLERK>
+</employees>
+]]></programlisting>
+</figure>
+<para>
+The following resources script does the transformation.
+</para>
+<figure id="resources.xml">
+  <title>Resources script</title>
+<programlisting><![CDATA[
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="employees">
+    <sx:serialize>
+      <sx:content ref="employeesDoc"/>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="employeesDoc">
+    <sx:sqlReader>
+      <sx:sqlConnectionPool ref="jdbcPool"/>
+
+      <sx:parameter name="jobList">
+        <sx:toString value="{$job}" separator=",">
+          <sx:quoteSymbol character="'" escapeCharacter="'"/>
+        </sx:toString>
+      </sx:parameter>
+
+      <sx:sqlQuery recordType = "employee">
+        SELECT EMPNO, ENAME AS NAME,JOB FROM EMP WHERE 1=1
+        <sx:choose>
+          <sx:when test="$jobList">
+            AND JOB IN ({$jobList})
+          </sx:when>
+        </sx:choose>
+        ORDER BY JOB,ENAME
+      </sx:sqlQuery>
+    </sx:sqlReader>
+
+    <sx:recordTee>
+      <sx:sqlWriter>
+        <sx:sqlConnectionPool ref="jdbcPool"/>
+        <sx:sqlUpdate>
+            INSERT INTO EMP_LOG(EMPNO, ENAME) VALUES({EMPNO},'{NAME}')
+        </sx:sqlUpdate>
+      </sx:sqlWriter>
+    </sx:recordTee>
+
+    <sx:recordMapping ref="employeesToXml"/>
+  </sx:recordContent>
+                           
+  <sx:recordMapping id="employeesToXml">
+    <employees>
+      <sx:groupBy fields="JOB">
+        <sx:elementMap element="{JOB}">
+          <sx:onRecord>
+            <employee>
+              <sx:fieldAttributeMap field="EMPNO" attribute="employee-no"/>
+              <sx:fieldElementMap field="NAME" element="name"/>
+            </employee>
+          </sx:onRecord>
+        </sx:elementMap>
+      </sx:groupBy>
+    </employees>
+  </sx:recordMapping>
+
+  <sx:sqlConnectionPool id="jdbcPool"
+                        driver="oracle.jdbc.driver.OracleDriver"
+                        databaseUrl="jdbc:oracle:thin:@127.0.0.1:1521:dev"
+                        user="scott"
+                        password="spring"
+                        minConnections="2"
+                        testStatement="SELECT * FROM DUAL"/>
+
+</sx:resources>
+]]></programlisting>
+</figure>
+<para>
+Executing the <code>employees</code> service with two <code>job</code> parameters, like this
+<programlisting>
+<![CDATA[
+    servingxml -r resources-employeesTee.xml employees -o output/employees.xml employees 
+        job=ANALYST job=CLERK
+]]>
+</programlisting>
+results in the following SQL statement being sent to the Oracle server:
+<programlisting>
+<![CDATA[
+SELECT EMPNO, ENAME AS NAME,JOB 
+  FROM EMP 
+  WHERE 1=1 AND JOB IN ('ANALYST','CLERK') 
+  ORDER BY JOB,ENAME
+]]></programlisting>
+</para>
+<para>
+Each <code>EMPNO</code> and <code>ENAME</code> pair is written to the database table <code>EMP_LOG</code>, and all rows are 
+ultimately mapped to the XML file <filename>employees.xml</filename>.
+</para>
+</section>
+</section>
+

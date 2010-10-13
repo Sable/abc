@@ -1,0 +1,44 @@
+<appendix id="app-adapters"><title>Adapters</title>
+<section>
+<title>Transformer Adapters</title>
+<section>
+<title>Changing between Saxon and Xalan</title>
+<para>
+The steps to switch from the saxon
+transformer to the xalan transformer are as follows:
+<itemizedlist>
+<listitem><para>
+Open the servingxml.xml file.  
+Locate the sx:transformer element shown below.
+
+<informalfigure>
+<programlisting>
+<![CDATA[
+  <sx:transformer class="com.icl.saxon.TransformerFactoryImpl">
+    <sx:outputProperties>
+      <sx:property name="indent" value="no"/>
+      <sx:property name="{http://icl.com/saxon}omit-meta-tag" value="yes"/>
+    </sx:outputProperties>
+  </sx:transformer>
+]]>
+</programlisting>
+</informalfigure>
+
+Comment out the sx:transformer defined for
+saxon (shown above) and uncomment the sx:transformer defined for xalan.
+</para></listitem>
+<listitem><para>
+In the build subdirectory, edit the build.properties file.  Comment out the line below
+<code># saxon lib list</code>
+and uncomment the line below
+<code># xalan lib list</code>.
+</para></listitem>
+<listitem><para>
+Rebuild the application by entering build at the command prompt.
+</para></listitem>
+</itemizedlist>
+</para>
+</section>
+</section>
+
+</appendix>

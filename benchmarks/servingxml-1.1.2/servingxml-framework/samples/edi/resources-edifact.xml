@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<!-- edifact2 Use Real EDIFACT tag names, not that they are very readable. -->
+<!-- edifact3 Try a real message body, FSPREQ, Itinerary Pricing Request. -->
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core">
+
+  <sx:service id="edifact">
+    <sx:serialize>
+      <sx:transform>
+        <sx:content ref="edifact"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="edifact">
+    <sx:flatFileReader>
+      <sx:fileSource file="data/edifact1.txt"/>
+      <sx:flatFile ref="edifactFlatFile"/>
+    </sx:flatFileReader>
+    <sx:recordMapping ref="edifactToXmlMapping"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="edifactFlatFile">
+    <sx:recordDelimiter value="'"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:fieldDelimiter value="+"/>
+        <sx:delimitedField name="segmentType"/>
+
+        <!-- edifact3 - Header segments.-->
+        <sx:when test="segmentType='UNB'">
+          <sx:flatRecordType name='UNB'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:fieldDelimiter value=":"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F0001"/>
+            <sx:delimitedField name="F0002"/>
+            <sx:delimitedField name="F0004"/>
+            <sx:delimitedField name="F0010"/>
+            <sx:delimitedField name="F0017"/>
+            <sx:delimitedField name="F0019"/>
+            <sx:delimitedField name="F0020"/>
+            <sx:delimitedField name="F0022"/>
+            <sx:delimitedField name="F0026"/>
+            <sx:delimitedField name="F0029"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='UNH'">
+          <sx:flatRecordType name='UNH'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:fieldDelimiter value=":"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F0062"/>
+            <sx:delimitedField name="F0065"/>
+            <sx:delimitedField name="F0052"/>
+            <sx:delimitedField name="F0054"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <!-- edifact3 - Body Segments.-->
+        <!-- ATX ADD TAX DATA.-->
+        <sx:when test="segmentType='ATX'">
+          <sx:flatRecordType name='ATX'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:fieldDelimiter value=":"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F5112"/>
+            <sx:delimitedField name="F5113"/>
+            <sx:delimitedField name="F5114"/>
+            <sx:delimitedField name="F5115"/>
+            <sx:delimitedField name="F5116"/>
+            <sx:delimitedField name="F5117"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <!-- BKG BOOKING CODE DATA.-->
+        <sx:when test="segmentType='BKG'">
+          <sx:flatRecordType name='BKG' >
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="flightSegmentNumber"/>
+            <sx:delimitedField name="accessID"/>
+            <sx:delimitedField name="bookingCodeCount"/>
+            <sx:repeatingGroup name="booking" count="{bookingCodeCount}">
+              <sx:flatRecordType name="C704">
+                <sx:fieldDelimiter value=":"/>
+                <sx:delimitedField name="bookingCode">
+                </sx:delimitedField>
+                <sx:delimitedField name="seatAvailabilityCount">
+                </sx:delimitedField>
+              </sx:flatRecordType>
+            </sx:repeatingGroup>
+          </sx:flatRecordType>
+        </sx:when>
+        <!-- edifact3 - Trailer segments.-->
+        <sx:when test="segmentType='UNT'">
+          <sx:flatRecordType name='UNT'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F0074"/>
+            <sx:delimitedField name="F0062"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="segmentType='UNZ'">
+          <sx:flatRecordType name='UNZ'>
+            <sx:fieldDelimiter value="+"/>
+            <sx:delimitedField name="segmentType"/>
+            <sx:delimitedField name="F0036"/>
+            <sx:delimitedField name="F0020"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="edifactToXmlMapping">
+    <edifact>
+      <!-- edifact3 - Header segments.-->
+      <sx:onRecord recordType="UNB">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <S001>
+            <sx:fieldElementMap field="F0001" element="F0001"/>
+            <sx:fieldElementMap field="F0002" element="F0002"/>
+          </S001>
+          <S002>
+            <sx:fieldElementMap field="F0004" element="F0004"/>
+          </S002>
+          <S003>
+            <sx:fieldElementMap field="F0010" element="F0010"/>
+          </S003>
+          <S004>
+            <sx:fieldElementMap field="F0017" element="F0017"/>
+            <sx:fieldElementMap field="F0019" element="F0019"/>
+          </S004>
+          <sx:fieldElementMap field="F0020" element="F0020"/>
+          <sx:fieldElementMap field="F0022" element="F0022"/>
+          <sx:fieldElementMap field="F0026" element="F0026"/>
+          <sx:fieldElementMap field="F0029" element="F0029"/>
+        </segment>
+      </sx:onRecord>
+      <sx:onRecord recordType="UNH">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="F0062" element="F0062"/>
+          <S009>
+            <sx:fieldElementMap field="F0065" element="F0065"/>
+            <sx:fieldElementMap field="F0052" element="F0052"/>
+            <sx:fieldElementMap field="F0054" element="F0054"/>
+          </S009>
+        </segment>
+      </sx:onRecord>
+      <!-- edifact3 - Body Segments.-->
+      <!-- ATX ADD TAX DATA.-->
+      <sx:onRecord recordType="ATX">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="F5112" element="F5112"/>
+          <C113>
+            <sx:fieldElementMap field="F5113" element="F5113"/>
+            <sx:fieldElementMap field="F5114" element="F5114"/>
+            <sx:fieldElementMap field="F5115" element="F5115"/>
+            <sx:fieldElementMap field="F5116" element="F5116"/>
+            <sx:fieldElementMap field="F5117" element="F5117"/>
+          </C113>
+        </segment>
+      </sx:onRecord>
+      <!-- BKG BOOKING CODE DATA.-->
+      <sx:onRecord recordType="BKG">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="flightSegmentNumber" element="flightSegmentNumber"/>
+          <sx:fieldElementMap field="accessID" element="accessID"/>
+          <sx:fieldElementMap field="bookingCodeCount" element="bookingCodeCount"/>
+          <sx:subrecordMapping repeatingGroup="booking">
+            <sx:onRecord recordType="C704">
+              <C704>
+                <sx:fieldElementMap field="bookingCode" element="bookingCode"/>
+                <sx:fieldElementMap field="seatAvailabilityCount" element="seatAvailabilityCount"/>
+              </C704>
+            </sx:onRecord>
+          </sx:subrecordMapping>
+        </segment>
+      </sx:onRecord>
+      <!-- edifact3 - Trailer segments.-->
+      <sx:onRecord recordType="UNT">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="F0074" element="F0074"/>
+          <sx:fieldElementMap field="F0062" element="F0062"/>
+        </segment>
+      </sx:onRecord>
+      <sx:onRecord recordType="UNZ">
+        <segment>
+          <sx:fieldAttributeMap field="segmentType" attribute="segmentType"/>
+          <sx:fieldElementMap field="F0036" element="F0036"/>
+          <sx:fieldElementMap field="F0020" element="F0020"/>
+        </segment>
+      </sx:onRecord>
+    </edifact>
+  </sx:recordMapping>
+
+</sx:resources>
+

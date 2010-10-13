@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:msv="http://www.servingxml.com/extensions/msv">
+
+  <sx:service id="multiple-reader-test">
+    <sx:serialize>
+      <sx:xsltSerializer>
+        <sx:outputProperty name="indent" value="yes"/>
+      </sx:xsltSerializer>
+      <sx:transform>
+        <sx:content ref="multiple-reader-content"/>
+      </sx:transform>
+    </sx:serialize>
+  </sx:service>
+
+  <sx:recordContent id="multiple-reader-content">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:flatFile ref="primary-file"/>
+      </sx:flatFileReader>
+    </sx:recordStream>
+    <sx:recordMapping ref="primary-file-to-xml"/>
+  </sx:recordContent>
+
+  <sx:flatFile id="primary-file">
+    <sx:commentStarter value="#"/>
+    <sx:flatFileBody>
+      <sx:flatRecordTypeChoice>
+        <sx:fieldDelimiter value="|"/>
+        <sx:delimitedField name="tag"/>
+        <sx:when test="tag='HDR'">
+          <sx:flatRecordType name="header">
+            <sx:delimitedField name="tag"/>
+            <sx:delimitedField name="field1"/>
+            <sx:delimitedField name="field2"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='DET'">
+          <sx:flatRecordType name="detail">
+            <sx:delimitedField name="tag"/>
+            <sx:delimitedField name="field1"/>
+            <sx:delimitedField name="field2"/>
+          </sx:flatRecordType>
+        </sx:when>
+        <sx:when test="tag='MSG'">
+          <sx:flatRecordType name="message">
+            <sx:delimitedField name="tag"/>
+            <sx:delimitedField name="field1"/>
+            <sx:delimitedField name="field2"/>
+          </sx:flatRecordType>
+        </sx:when>
+      </sx:flatRecordTypeChoice>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+  <sx:recordMapping id="primary-file-to-xml">
+    <mytest>
+      <sx:onRecord recordType="header">
+        <sx:fieldElementMap field="field1" element="field1"/>
+        <sx:fieldElementMap field="field2" element="field2"/>
+      </sx:onRecord>
+      <sx:onRecord recordType="detail">
+        <detail>
+          <sx:fieldElementMap field="field1" element="field1"/>
+          <sx:fieldElementMap field="field2" element="field2"/>
+        </detail>
+      </sx:onRecord>
+      <sx:onRecord recordType="message">
+        <message>
+          <sx:parameter name="my-id" value="{field1}"/>
+          <sx:fieldElementMap select="document('messageContent')/messages/message[id=$my-id]/description" element="message"/>
+          <sx:fieldElementMap field="field2" element="field2"/>
+        </message>
+      </sx:onRecord>
+    </mytest>
+  </sx:recordMapping>
+
+  <sx:recordContent id="messageContent" name="messages">
+    <sx:recordStream>
+      <sx:flatFileReader>
+        <sx:urlSource url="messages.txt"/>
+        <sx:flatFile ref="messagesFile"/>
+      </sx:flatFileReader>
+    </sx:recordStream>
+  </sx:recordContent>
+
+  <sx:flatFile id="messagesFile" name="messages">
+    <sx:flatFileBody>
+      <sx:fieldDelimiter value="|"/>
+      <sx:flatRecordType name="message">
+        <sx:delimitedField name="id"/>
+        <sx:delimitedField name="description"/>
+      </sx:flatRecordType>
+    </sx:flatFileBody>
+  </sx:flatFile>
+
+</sx:resources>
+

@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<sx:resources xmlns:sx="http://www.servingxml.com/core"
+              xmlns:fn="http://www.w3.org/2005/xpath-functions"
+              xmlns:t="elements/choose/">
+
+  <sx:service id="t:run-tests">
+    <sx:transform ref="t:test-choose-odd"/>
+    <sx:transform ref="t:test-choose-even"/>
+    <sx:transform ref="t:test-equal"/>
+    <sx:transform ref="t:test-unequal"/>
+  </sx:service>
+
+  <sx:document id="t:odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:document id="t:another-odd-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:document id="t:even-element-document">
+    <document>
+      <title>Title</title>
+      <para>First paragraph.</para>
+      <para>Second paragraph.</para>
+    </document>
+  </sx:document>
+
+  <sx:transform id="t:test-choose-odd">
+    <sx:document ref="t:odd-element-document"/>
+    <sx:choose>
+      <sx:when test="count(//*) mod 2 = 0">
+        <sx:document>
+          <result>even</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>odd</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text()='odd'"> Expected odd number of elements.
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:test-choose-even">
+    <sx:document ref="t:even-element-document"/>
+    <sx:choose>
+      <sx:when test="count(//*) mod 2 = 0">
+        <sx:document>
+          <result>even</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>odd</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text()='even'"> Expected even number of elements.
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:test-equal">
+    <sx:choose>
+      <sx:when test="fn:deep-equal(fn:document('elements/choose/odd-element-document'),
+                     fn:document('elements/choose/another-odd-element-document'))">
+        <sx:document>
+          <result>equal</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>unequal</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text()='equal'"> Expected documents are equal.
+    </sx:assert>
+  </sx:transform>
+
+  <sx:transform id="t:test-unequal">
+    <sx:choose>
+      <sx:when test="fn:deep-equal(fn:document('elements/choose/odd-element-document'),
+                     fn:document('elements/choose/even-element-document'))">
+        <sx:document>
+          <result>equal</result>
+        </sx:document>
+      </sx:when>
+      <sx:otherwise>
+        <sx:document>
+          <result>unequal</result>
+        </sx:document>
+      </sx:otherwise>
+    </sx:choose>
+    <sx:assert test="text() != 'equal'"> Expected documents are unequal.
+    </sx:assert>
+  </sx:transform>
+
+</sx:resources>
+

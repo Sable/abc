@@ -1,0 +1,307 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>FAQ</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="d4e1"></a>FAQ</h2></div></div><hr></div><div class="toc"><dl><dt><span class="section"><a href="#d4e3">ServingXML Basics</a></span></dt><dt><span class="section"><a href="#d4e62">ServingXML Console App</a></span></dt><dt><span class="section"><a href="#d4e71">ServingXML Markup</a></span></dt><dt><span class="section"><a href="#d4e121">ServingXML Embedding</a></span></dt><dt><span class="section"><a href="#d4e179">Troubleshooting</a></span></dt></dl></div>
+  
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e3"></a>ServingXML Basics</h2></div></div></div>
+
+<div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody>
+  <tr class="question"><td align="left" valign="top"><a name="d4e6"></a><a name="d4e7"></a><p><b>1.</b></p></td><td align="left" valign="top"><p>Which platforms are supported?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p><code class="code">ServingXML</code> should run on any platform with a Java Virtual Machine version 1.5 or higher.  Users have reported running
+  various versions of the software on Windows NT/2000/XP, Linux, and Solaris.</p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e12"></a><a name="d4e13"></a><p><b>2.</b></p></td><td align="left" valign="top"><p>Can I use the software in a commercial product?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, <code class="code">ServingXML</code> is Apache 2 licensed, which permits free commercial use of the software.
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e18"></a><a name="d4e19"></a><p><b>3.</b></p></td><td align="left" valign="top"><p>Can <code class="code">ServingXML</code> handle COBOL packed-decimal fields?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, <code class="code">ServingXML</code> can read COBOL packed-decimal values and render them as numeric strings,
+  and read numeric strings and render them as packed-decimal values.
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e25"></a><a name="d4e26"></a><p><b>4.</b></p></td><td align="left" valign="top"><p>Can <code class="code">ServingXML</code> handle binary fields?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, <code class="code">ServingXML</code> can read binary fields and render them as hexadecimal strings,
+  and read hexadecimal strings and render them as binary values.
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e32"></a><a name="d4e33"></a><p><b>5.</b></p></td><td align="left" valign="top"><p>Can <code class="code">ServingXML</code> handle repeating groups?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, <code class="code">ServingXML</code> can read 
+  </p><div class="itemizedlist"><ul type="disc"><li><p>Repeating groups separated by repeat delimiters, and terminated by a segment delimiter or end of record.
+     </p></li><li><p>Repeating groups of elements of fixed count.
+     </p></li><li><p>Repeating groups of elements of variable count, where the count is read from a field in the record.
+     </p></li></ul></div><p>
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e46"></a><a name="d4e47"></a><p><b>6.</b></p></td><td align="left" valign="top"><p>Can <code class="code">ServingXML</code> process large files?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes.  Flat-to-XML mappings are done one record at a time, and XML-to-flat mappings take a streaming approach to minimize
+  the amount of data held in memory at any one time.  Current users are processing flat files with hundreds of thousands of records
+  without a problem.
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e52"></a><a name="d4e53"></a><p><b>7.</b></p></td><td align="left" valign="top"><p>Is XPATH 2/XSLT 2.0 supported?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes.  All XPATH expressions and XSLT stylesheets referred to in <code class="code">ServingXML</code> pipelines are evaluated using the
+  configured JAXP XSLT transformer.  By default, the <code class="code">ServingXML</code> 
+  console application uses <code class="code">Saxon-B 9</code>, which implements XSLT 2.0 It
+  is possible to configure 
+                                                         <code class="code">ServingXML</code> to use a different transformer, even an older XSLT 1.0 
+  tranformer such as <code class="code">Saxon 6.5</code>.
+  </p></td></tr>
+</tbody></table></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e62"></a>ServingXML Console App</h2></div></div></div>
+
+<div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody>
+  <tr class="question"><td align="left" valign="top"><a name="d4e65"></a><a name="d4e66"></a><p><b>1.</b></p></td><td align="left" valign="top"><p>How can I pass a multi-valued parameter, say <code class="code">price</code> with three values, from the command line?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><pre class="programlisting">
+
+  java -jar servingxml.jar -i input.csv -o output.xml -r resources.xml myService price=3.0 price=2.0 price=4.0
+
+</pre></td></tr>
+</tbody></table></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e71"></a>ServingXML Markup</h2></div></div></div>
+  
+  <div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody>
+  <tr class="question"><td align="left" valign="top"><a name="d4e74"></a><a name="d4e75"></a><p><b>1.</b></p></td><td align="left" valign="top"><p>If I have a <code class="code">ServingXML</code> resources script that defines a pipeline containing an XSLT stylesheet,
+  and I have XML content defined in the resources script, can I refer to that content inside the document function of the stylesheet?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes.  Use a URI obtained by concatenating the namespace URI and the local name of the content defined in the resources script.
+  If the <code class="code">ServingXML</code> content requires parameters, append the "?" character to the <code class="code">URI</code>, followed by <code class="code">name=value</code>
+  entries separated by a ";" or an escaped ampersand character (&amp;amp;).
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e83"></a><a name="d4e84"></a><p><b>2.</b></p></td><td align="left" valign="top"><p>My XML output is one long line.  How can I tell the serializer to indent it for readability?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Change the default default <code class="code">indent</code> output property in the <code class="filename">servingxml.xml</code> configuration file.
+</p><pre class="programlisting">
+
+&lt;sx:xsltConfiguration version="1.0" ...
+ 
+  &lt;sx:outputProperty name="indent" value="yes"/&gt;  
+
+</pre><p>Or, use the <code class="sgmltag-element">sx:outputProperty</code> element inside a <code class="sgmltag-element">sx:xsltSerializer</code> 
+  to override the default <code class="code">indent</code> output property of the <code class="code">XSLT</code> serializer.
+  </p><pre class="programlisting">
+
+  &lt;sx:serialize ...  
+
+    &lt;sx:xsltSerializer&gt;
+      &lt;sx:outputProperty name="indent" value="yes"/&gt;
+    &lt;/sx:xsltSerializer&gt;
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e97"></a><a name="d4e98"></a><p><b>3.</b></p></td><td align="left" valign="top"><p>How can I change the encoding charset of output xml?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Use the <code class="sgmltag-element">sx:outputProperty</code> element inside a <code class="sgmltag-element">sx:xsltSerializer</code> 
+  to set the <code class="code">encoding</code> output property of the <code class="code">XSLT</code> serializer, e.g.
+  </p><pre class="programlisting">
+
+  &lt;sx:serialize ...
+  
+    &lt;sx:xsltSerializer&gt;
+      &lt;sx:outputProperty name="encoding" value="ISO-8859-1"/&gt;
+    &lt;/sx:xsltSerializer&gt;
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e107"></a><a name="d4e108"></a><p><b>4.</b></p></td><td align="left" valign="top"><p>How can I set the the "cdata-section-elements" XSLT output property, with a qualified name in the value?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
+Give the value as a two-part string, the namespace URI enclosed in curly braces ({}), followed by the local name.</p><pre class="programlisting">
+
+  &lt;sx:serialize ...
+
+    &lt;sx:xsltSerializer&gt;
+      &lt;sx:outputProperty name="cdata-section-elements" value="{namespaceUrl}tag"/&gt;
+    &lt;/sx:xsltSerializer&gt;
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e113"></a><a name="d4e114"></a><p><b>5.</b></p></td><td align="left" valign="top"><p>How do I set <code class="sgmltag-attribute">xsi:nil</code> ="true" for elements with empty values?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Use <code class="sgmltag-element">sx:choose</code> in the record mapping section.</p><pre class="programlisting">
+
+&lt;sx:recordMapping id="countriesToXmlMapping"&gt;
+  &lt;countries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+    &lt;sx:onRecord&gt;
+      &lt;country&gt;
+        &lt;sx:choose&gt;
+          &lt;sx:when test="code = ''"&gt;
+            &lt;countryCode xsi:nil="true"/&gt;
+          &lt;/sx:when&gt;
+          &lt;sx:otherwise&gt;
+            &lt;sx:fieldElementMap field="code" element="countryCode"/&gt;
+          &lt;/sx:otherwise&gt;
+        &lt;/sx:choose&gt;
+
+</pre></td></tr>
+</tbody></table></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e121"></a>ServingXML Embedding</h2></div></div></div>
+  
+  <div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody>
+  <tr class="question"><td align="left" valign="top"><a name="d4e124"></a><a name="d4e125"></a><p><b>1.</b></p></td><td align="left" valign="top"><p>What is the minimal number of jar files required in a <code class="code">ServingXML</code> distribution?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p><code class="code">ServingXML</code> versions 0.8.x, which minimally require Java 5, need <code class="filename">servingxml.jar</code>
+  and a conforming XSLT implementation (the versions of Xalan currently shipping with Java 5.x and 6.x will not work,
+  because of bugs in these versions.)  Earlier <code class="code">ServingXML</code> versions, which minimally require Java 1.4, need additional jar files, including 
+  <code class="filename">concurrent.jar</code>, <code class="filename">xml-apis.jar</code>, and <code class="filename">xercesImpl.jar</code>.
+  Extensions such as Fop need more jar files.
+  </p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e136"></a><a name="d4e137"></a><p><b>2.</b></p></td><td align="left" valign="top"><p>Using <code class="code">ServingXML</code> within a Spring framework, how do I pass a Spring ApplicationContext
+  object down to a custom record filter?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Pass it through the parameters.  In the application code, add it to the parameters before 
+  executing a service.</p><pre class="programlisting">
+
+  ApplicationContext appContext ...
+
+  ParameterBuilder paramBuilder = new ParameterBuilder();
+  Name contextName = new QualifiedName("appContext");
+  paramBuilder.setObject(contextName, appContext);
+  Record parameters = paramBuilder.toRecord();
+  
+  Flow flow = new FlowImpl(parameters, defaultStreamSource, defaultStreamSink);
+
+  service.execute(context, flow);
+
+</pre><p>In the custom record filter, access the ApplicationContext object from the parameters.</p><pre class="programlisting">
+
+public class MyRecordFilter extends AbstractRecordFilter
+implements RecordFilter  {
+  private static final Name contextName = new QualifiedName("appContext");
+  private ApplicationContext  appContext;
+  
+  public void startRecordStream(ServiceContext context, Flow flow) {
+    super.startRecordStream(context, flow);
+    this.appContext = (ApplicationContext)parameters.getObject(contextName);
+  }
+
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e145"></a><a name="d4e146"></a><p><b>3.</b></p></td><td align="left" valign="top"><p>When creating the <code class="code">Flow</code>, what can I use as a
+              default (empty) <code class="code">StreamSource</code>? 
+</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><code class="code">StreamSource.NULL</code></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e152"></a><a name="d4e153"></a><p><b>4.</b></p></td><td align="left" valign="top"><p>Is it possible to pass the input file as a 
+              String?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, by passing a StringStreamSource when creating a Flow,
+    </p><pre class="programlisting"> 
+  import com.servingxml.io.streamsource.StreamSource;
+  import com.servingxml.io.streamsource.StringStreamSource;
+
+  ..
+
+  StreamSource streamSource = new StringStreamSource(str);
+
+  Flow flow = new FlowImpl(parameters, streamSource, streamSink);
+
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e158"></a><a name="d4e159"></a><p><b>5.</b></p></td><td align="left" valign="top"><p>Is it possible to pass the resource file as an 
+              InputStream?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, using the <code class="code">createIocContainer</code> method that takes 
+  an InputStream,
+    </p><pre class="programlisting"> 
+ IocContainerFactory iocContainerFactory = new IocContainerFactory();
+ iocContainerFactory.loadComponentDefinitions();
+
+ InputStream is; 
+ //Initialize input stream
+ 
+ IocContainer resources =
+    iocContainerFactory.createIocContainer(is, parameters);
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e165"></a><a name="d4e166"></a><p><b>6.</b></p></td><td align="left" valign="top"><p>Is it possible to pass the resource file as a 
+              String?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Yes, using the <code class="code">createIocContainer</code> method that takes 
+  a Reader,
+    </p><pre class="programlisting"> 
+  import java.io.Reader;
+  import java.io.StringReader;
+
+  IocContainerFactory iocContainerFactory = new IocContainerFactory();
+  iocContainerFactory.loadComponentDefinitions();
+
+  Reader reader = new StringReader(str); 
+ 
+  IocContainer resources =
+    iocContainerFactory.createIocContainer(reader, parameters);
+
+</pre></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e172"></a><a name="d4e173"></a><p><b>7.</b></p></td><td align="left" valign="top"><p>How do I get the ouput XML as a string?</p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>Use a <code class="code">StringStreamSink</code>,</p><pre class="programlisting"> 
+import com.servingxml.io.streamsink.StringStreamSink;
+
+...
+
+StreamSink streamSink = new StringStreamSink(); 
+Flow flow =  new FlowImpl(parameters, streamSource, streamSink);
+
+ ...
+ 
+String s = streamSink.toString(); 
+
+</pre></td></tr>
+</tbody></table></div>
+</div>
+<div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d4e179"></a>Troubleshooting</h2></div></div></div>
+  
+  <div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody>
+  <tr class="question"><td align="left" valign="top"><a name="d4e182"></a><a name="d4e183"></a><p><b>1.</b></p></td><td align="left" valign="top"><p>
+When I try to build ServingXML, I get the following error message: 
+            </p><pre class="programlisting">
+
+[javac]servingxml-0.8.0.1a\build\java\com\servingxml\util\ChildDictionary.java:32: '{' expected 
+[javac] public class ChildDictionary&lt;K,V&gt; implements MutableDictionary&lt;K,V&gt; { 
+
+</pre></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>This error message means that your version of the Java Development Kit 
+    (JDK) does not support generics, which were introduced in Java 1.5. 
+    ServingXML versions beginning with 0.8.0 require a JDK version 1.5 or later. 
+    See the <a class="ulink" href="gettingstarted.html" target="_top">Getting Started</a> guide for 
+    instructions on installing a recent JDK. If you've followed the instructions, and you type
+  </p><pre class="programlisting">
+
+echo %JAVA_HOME% 
+
+</pre><p>
+you should see something like 
+    </p><pre class="programlisting">
+
+C:\Program Files\Java\jdk1.5.0_11 
+
+</pre><p>Later versions are fine.</p></td></tr>
+
+  <tr class="question"><td align="left" valign="top"><a name="d4e193"></a><a name="d4e194"></a><p><b>2.</b></p></td><td align="left" valign="top"><p>
+When I try to run the command for ServingXML below: 
+            </p><pre class="programlisting">
+
+java -jar c:\servingxml\servingxml.jar -r resources-APFile.xml -i LoadPayable.xml -o output\APFile.txt AP 
+
+</pre><p>
+I get the following error message: 
+ 
+Exception in thread "main" java.lang.NoClassDefFoundError: java/lang/CharSequence at com.servingxml.app.consoleapp.ConsoleApp.main(ConsoleApp.java:58)               
+            </p></td></tr>
+  <tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
+    <code class="code">CharSequence</code> was new to Java 1.4, so it looks like your Java
+     Runtime Environment (JRE) predates 1.4.  ServingXML versions before 0.8.0 
+     require Java runtime 1.4 or later; subsequent versions require Java runtime 
+     1.5 or later. See the <a class="ulink" href="gettingstarted.html" target="_top">Getting 
+     Started</a> guide for instructions on installing a recent JRE.
+    If you've followed the instructions, and you type
+    </p><pre class="programlisting">
+
+java -version 
+
+</pre><p>
+you should see something like 
+    </p><pre class="programlisting">
+
+java version "1.5.0_11"  
+
+</pre><p>Later versions are fine.</p></td></tr>
+</tbody></table></div>
+</div>
+</div></body></html>
