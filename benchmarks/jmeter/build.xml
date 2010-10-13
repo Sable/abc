@@ -1,0 +1,476 @@
+<?xml version="1.0"?>
+<project name="JMeter" default="all" basedir=".">
+  <description>
+    To build JMeter from source and install:
+      ./build.sh
+    To rebuild and install:
+      ./build.sh install
+    For more info:
+      ./build.sh -projecthelp
+
+    To diagnose usage of deprecated APIs:
+      ./build.sh -Ddeprecation=on clean compile
+  </description>
+
+  
+
+  <!-- Where the Sources live -->
+  <property name="src.dir" value="src"/>
+  <property name="src.core" value="src/core"/>
+  <property name="src.http" value="src/protocol/http"/>
+  <property name="src.ftp" value="src/protocol/ftp"/>
+  <property name="src.jdbc" value="src/protocol/jdbc"/>
+  <property name="src.java" value="src/protocol/java"/>
+  <property name="src.components" value="src/components"/>
+  <property name="src.functions" value="src/functions"/>
+  <property name="src.jorphan" value="src/jorphan"/>
+  <property name="src.ldap" value="src/protocol/ldap"/>
+
+  <!-- Javadoc sources -->
+  <path id="srcpaths">
+    <pathelement location="${src.core}"/>
+    <pathelement location="${src.components}"/>
+    <pathelement location="${src.functions}"/>
+    <pathelement location="${src.http}"/>
+    <pathelement location="${src.ftp}"/>
+    <pathelement location="${src.jdbc}"/>
+    <pathelement location="${src.java}"/>
+    <pathelement location="${src.jorphan}"/>
+    <pathelement location="${src.ldap}"/>
+  </path>
+
+  <!-- Temporary build directories: where the .class live -->
+  <property name="build.dir" value="build"/>
+  <property name="build.core" value="build/core"/>
+  <property name="build.http" value="build/protocol/http"/>
+  <property name="build.ftp" value="build/protocol/ftp"/>
+  <property name="build.jdbc" value="build/protocol/jdbc"/>
+  <property name="build.java" value="build/protocol/java"/>
+  <property name="build.components" value="build/components"/>
+  <property name="build.functions" value="build/functions"/>
+  <property name="build.jorphan" value="build/jorphan"/>
+  <property name="build.ldap" location="build/protocol/ldap"/>
+  
+  <!-- Path prefix to allow Anakia to find stylesheets if running under Eclipse -->
+  <!--
+  Anakia looks for stylesheets relative to the java launch directory.
+  Use the External Tools properties page to define the variable 
+  as the relative path to the directory where this build file is found.
+  -->
+  <property name="eclipse.anakia" value="."/>
+
+  <!-- Where the build result .jars will be placed -->
+  <property name="jar.dest" value="lib/ext"/>
+  <property name="jorphan.jar.dest" value="lib"/>
+
+  <!-- Where the API documentation lives -->
+  <property name="docs.api.dest" value="docs/api"/>
+
+  <!-- Where the doc sources and results live -->
+  <property name="docs.src" value="xdocs"/>
+  <property name="docs.dest" value="docs"/>
+  <property name="extras.dir" value="extras"/>
+  <property name="printable_docs.dest" value="printable_docs"/>
+
+  <!-- Where the distribution packages will be created -->
+  <property name="dist.dir" value="dist"/>
+
+  <!-- Compilation parameters -->
+  <property name="optimize" value="on"/>
+  <property name="deprecation" value="off"/>
+  <property name="target.java.version" value="1.2"/>
+  <property name="encoding" value="UTF-8"/>
+
+  <!-- List of Unix executable files in the binary distribution -->
+  <property name="dist.executables" value="bin/jmeter bin/jmeter-server"/>
+
+  <!-- 3rd party libraries to be included in the binary distribution -->
+  <property name="avalon-excalibur.jar" value="lib/avalon-excalibur-4.1.jar"/>
+  <property name="avalon-framework.jar" value="lib/avalon-framework-4.1.4.jar"/>
+  <property name="jakarta-oro.jar" value="lib/jakarta-oro-2.0.7.jar"/>
+  <property name="commons-collections.jar" value="lib/commons-collections.jar"/>
+  <property name="junit.jar" value="lib/junit.jar"/>
+  <property name="logkit.jar" value="lib/logkit-1.2.jar"/>
+  <property name="xalan.jar" value="lib/xalan.jar"/>
+  <property name="xerces.jar" value="lib/xercesImpl.jar"/>
+  <property name="xml-apis.jar" value="lib/xml-apis.jar"/>
+  <property name="jdom.jar" value="lib/jdom-b8.jar"/>
+  <property name="js.jar" value="lib/js.jar"/>
+  <property name="soap.jar" value="lib/soap.jar"/>
+  <property name="tidy.jar" value="lib/Tidy.jar"/>
+
+  <patternset id="external.jars">
+    <include name="${avalon-excalibur.jar}"/>
+    <include name="${avalon-framework.jar}"/>
+    <include name="${jakarta-oro.jar}"/>
+    <include name="${junit.jar}"/>
+    <include name="${logkit.jar}"/>
+    <include name="${xalan.jar}"/>
+    <include name="${xerces.jar}"/>
+    <include name="${xml-apis.jar}"/>
+    <include name="${js.jar}"/>
+    <include name="${soap.jar}"/>
+    <include name="${tidy.jar}"/>
+    <include name="${commons-collections.jar}"/>
+    <include name="lib/*.html"/>
+  </patternset>
+
+  <!-- Directory where these 3rd party libraries will live -->
+  <property name="lib.dir" value="lib"/>
+
+  <!-- Build classpath -->
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="*.jar"/>
+  </path>
+
+  <target name="init" depends="check-libs,report-missing-libs">
+  	<tstamp/>
+  	<!-- JMeter version -->
+  <property name="version" value="1.9"/>
+  </target>
+
+  	<!-- JMeter Javadoc version (keep in line with above) -->
+  <property name="docversion" value="1.9"/>
+  
+  <target name="init-docs" depends="check-anakia,report-anakia-missing"/>
+
+  <!--
+    - Check for optional libraries.
+    -->
+  <target name="check-libs" description="Check availability of optional libraries." unless="assuming.libs.present">
+    <available classname="com.sun.net.ssl.internal.ssl.Provider" property="jsse.present">
+      <classpath refid="classpath"/>
+    </available>
+    <available classname="javax.mail.Transport" property="javamail.present">
+      <classpath refid="classpath"/>
+    </available>
+    <available classname="javax.activation.DataHandler" property="javamail.complete">
+      <classpath refid="classpath"/>
+    </available>
+    <available classname="iaik.protocol.https.Handler" property="isasilk.present">
+      <classpath refid="classpath"/>
+    </available>
+  </target>
+
+  <!--
+    - Messages for missing libraries
+    -->
+  <target name="ssl-message" depends="check-libs" unless="jsse.present">
+    <echo message="Classes for SSL not found in classpath"/>
+  </target>
+
+  <target name="iaik-message" depends="check-libs" unless="isasilk.present">
+    <echo message="Classes for IAIK iSaSiLk not found in classpath"/>
+  </target>
+
+  <target name="mail-message" depends="check-libs" unless="javamail.complete">
+    <echo message="Classes for Mail support not found in classpath"/>
+  </target>
+
+  <target name="report-missing-libs" depends="ssl-message,iaik-message,mail-message"/>
+
+  <!--
+    - Check for anakia task
+    -->
+  <target name="check-anakia">
+    <available classname="org.apache.velocity.anakia.AnakiaTask" property="AnakiaTask.present"/>
+  </target>
+  <target name="report-anakia-missing" depends="check-anakia" unless="AnakiaTask.present">
+    <echo>
+      AnakiaTask is not present, documentation will not be generated.
+    </echo>
+  </target>
+
+  <target name="compile-core" depends="compile-jorphan" description="Compile JMeter core classes.">
+    <mkdir dir="${build.core}"/>
+    <replaceregexp file="${src.core}/org/apache/jmeter/util/JMeterUtils.java"
+    	match="VERSION = &quot;.*?&quot;"
+	replace="VERSION = &quot;${version}&quot;"/>
+    <javac srcdir="${src.core}" destdir="${build.core}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <exclude name="org/apache/jmeter/util/JsseSSLManager.java" unless="jsse.present"/>
+      <exclude name="org/apache/jmeter/util/keystore/PKCS12KeyStore.java" unless="isasilk.present"/>
+      <exclude name="org/apache/jmeter/util/keystore/DefaultKeyStore.java" unless="jsse.present"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-components" depends="compile-jorphan,compile-core" description="Compile generic (protocol-independent) components.">
+    <mkdir dir="${build.components}"/>
+    <javac srcdir="${src.components}" destdir="${build.components}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <exclude name="org/apache/jmeter/visualizers/MailerVisualizer.java" unless="javamail.complete"/>
+      <exclude name="org/apache/jmeter/reporters/MailerModel.java" unless="javamail.complete"/>
+      <exclude name="org/apache/jmeter/reporters/MailerResultCollector.java" unless="javamail.complete"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-functions" depends="compile-jorphan,compile-core" description="Compile functions.">
+    <mkdir dir="${build.functions}"/>
+    <javac srcdir="${src.functions}" destdir="${build.functions}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-http" depends="compile-jorphan,compile-core" description="Compile components specific to HTTP sampling.">
+    <mkdir dir="${build.http}"/>
+    <javac srcdir="${src.http}" destdir="${build.http}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-ftp" depends="compile-jorphan,compile-core" description="Compile components specific to FTP sampling.">
+    <mkdir dir="${build.ftp}"/>
+    <javac srcdir="${src.ftp}" destdir="${build.ftp}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-jdbc" depends="compile-jorphan,compile-core" description="Compile components specific to JDBC sampling.">
+    <mkdir dir="${build.jdbc}"/>
+    <javac srcdir="${src.jdbc}" destdir="${build.jdbc}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+  
+    <target name="compile-ldap" depends="compile-jorphan,compile-core" 
+    description="Compile components specific to LDAP sampling.">
+    <mkdir dir="${build.ldap}"/>
+    <javac srcdir="${src.ldap}" destdir="${build.ldap}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-java" depends="compile-jorphan,compile-core" description="Compile components specific to Java sampling.">
+    <mkdir dir="${build.java}"/>
+    <javac srcdir="${src.java}" destdir="${build.java}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement location="${build.core}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-protocols" depends="compile-http,compile-ftp,compile-jdbc,compile-java,compile-ldap" description="Compile all protocol-specific components."/>
+
+  <target name="compile-jorphan" depends="init" description="Compile JOrphan utility classes.">
+    <mkdir dir="${build.jorphan}"/>
+    <javac srcdir="${src.jorphan}" destdir="${build.jorphan}" optimize="${optimize}" debug="on" target="${target.java.version}" deprecation="${deprecation}" encoding="${encoding}">
+      <include name="**/*.java"/>
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-rmi" depends="compile-jorphan,compile-core" description="Compile RMI stubs and skeletons.">
+    <rmic base="${build.core}" classname="org.apache.jmeter.engine.RemoteJMeterEngineImpl">
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${build.jorphan}"/>
+        <pathelement path="${build.core}"/>
+      </classpath>
+    </rmic>
+    <rmic base="${build.core}" classname="org.apache.jmeter.samplers.RemoteSampleListenerImpl">
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement path="${build.core}"/>
+      </classpath>
+    </rmic>
+  </target>
+
+  <target name="compile" depends="compile-core,compile-components,compile-functions,compile-protocols,compile-rmi" description="Compile everything."/>
+
+  <target name="api-docs" description="Generate the API documentation.">
+    <mkdir dir="${docs.api.dest}"/>
+    <javadoc sourcepathref="srcpaths" 
+    additionalparam="-breakiterator" 
+    destdir="${docs.api.dest}" 
+    Protected="yes" author="yes" version="yes" 
+       doctitle="Apache JMeter API Specification" 
+    windowtitle="Apache JMeter API Specification" 
+    header="&lt;b&gt;Apache JMeter&lt;/b&gt;&lt;br&gt;&lt;font size='-1'&gt;${docversion}&lt;/font&gt;" bottom="Copyright &#xA9; 1998-2003 Apache Software Foundation. All Rights Reserved."
+    packagenames="org.apache.jmeter.*">
+      <classpath refid="classpath"/>
+      <link href="http://java.sun.com/products/jdk/1.3/docs/api/"/>
+    </javadoc>
+  </target>
+
+  <target name="package" depends="compile">
+    <mkdir dir="${jar.dest}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_core.jar" excludes="**/NewDriver*" manifest="${src.core}/MANIFEST">
+      <fileset dir="${build.core}"/>
+      <fileset dir="${src.core}" includes="org/apache/jmeter/images/"/>
+      <fileset dir="${src.core}" includes="org/apache/jmeter/resources/">
+        <exclude name="*eucJP*"/>
+      </fileset>
+      <fileset dir="${src.core}" includes="org/apache/jmeter/help.txt"/>
+    </jar>
+    <jar jarfile="bin/ApacheJMeter.jar" includes="**/NewDriver*" manifest="${src.core}/MANIFEST" basedir="${build.core}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_components.jar" basedir="${build.components}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_functions.jar" basedir="${build.functions}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_http.jar" basedir="${build.http}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_ftp.jar" basedir="${build.ftp}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_jdbc.jar" basedir="${build.jdbc}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_java.jar" basedir="${build.java}"/>
+    <jar jarfile="${jar.dest}/ApacheJMeter_ldap.jar" basedir="${build.ldap}"/>
+    <jar jarfile="${jorphan.jar.dest}/jorphan.jar" basedir="${build.jorphan}"/>
+  </target>
+
+  <target name="install" depends="package" description="Install JMeter.">
+    <fixcrlf srcdir="." eol="lf" includes="**/jmeter,**/jmeter-server"/>
+  </target>
+
+  <target name="all" depends="clean,install" description="Default target: build from source and install."/>
+
+  <target name="assume-libs-present">
+    <property name="assuming.libs.present" value="true"/>
+
+    <property name="jsse.present" value="assume"/>
+    <property name="javamail.present" value="assume"/>
+    <property name="javamail.complete" value="assume"/>
+  </target>
+
+  <patternset id="dist.binaries">
+    <include name="bin/*.jar"/>
+    <include name="bin/jmeter*"/>
+    <include name="bin/upgrade.properties"/>
+    <include name="bin/users.*"/>
+    <include name="${jar.dest}/"/> <!-- redundant but future-proof -->
+    <include name="${docs.dest}/"/>
+    <include name="${printable_docs.dest}/**"/>
+    <include name="${extras.dir}/**"/>
+    <include name="${lib.dir}/jorphan.jar"/>
+      <exclude name="${docs.api.dest}/"/>
+    <include name="README"/>
+    <include name="LICENSE"/>
+  </patternset>
+  
+  <patternset id="dist.sources">
+    <include name="${src.dir}/"/>
+    <include name="${docs.src}/"/>
+    <include name="*"/>
+  </patternset>
+
+  <target name="dist" depends="assume-libs-present,clean,install,all-docs,test" description="Create the distribution packages.">
+    <property name="dist.name" value="jakarta-jmeter-${version}"/>
+    <mkdir dir="${dist.dir}"/>
+
+    <tar destfile="${dist.dir}/${dist.name}.tar" longfile="gnu">
+      <tarfileset dir="." prefix="${dist.name}" excludes="${dist.executables}" defaultexcludes="yes">
+        <patternset refid="dist.binaries"/>
+        <patternset refid="external.jars"/>
+      </tarfileset>
+      <tarfileset mode="755" includes="${dist.executables}" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </tar>
+    <gzip zipfile="${dist.dir}/${dist.name}.tgz" src="${dist.dir}/${dist.name}.tar" />
+    <zip zipfile="${dist.dir}/${dist.name}.zip">
+      <zipfileset dir="." prefix="${dist.name}" defaultexcludes="yes">
+        <patternset refid="dist.binaries"/>
+        <patternset refid="external.jars"/>
+      </zipfileset>
+    </zip>
+    <tar destfile="${dist.dir}/${dist.name}-javadoc.tar" longfile="gnu">
+      <tarfileset includes="${docs.api.dest}/" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </tar>
+    <gzip zipfile="${dist.dir}/${dist.name}-javadoc.tgz" src="${dist.dir}/${dist.name}-javadoc.tar" />
+    <zip zipfile="${dist.dir}/${dist.name}-javadoc.zip">
+      <zipfileset includes="${docs.api.dest}/" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </zip>
+  </target>
+  
+  <target name="src_dist" depends="assume-libs-present,clean,install,all-docs,test" description="Create the distribution packages.">
+    <property name="dist.name" value="jakarta-jmeter-${version}"/>
+    <mkdir dir="${dist.dir}"/>
+
+    <tar destfile="${dist.dir}/${dist.name}.src.tar" longfile="gnu">
+      <tarfileset dir="." prefix="${dist.name}" excludes="${dist.executables}" defaultexcludes="yes">
+        <patternset refid="dist.binaries"/>
+        <patternset refid="dist.sources"/>
+      </tarfileset>
+      <tarfileset mode="755" includes="${dist.executables}" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </tar>
+    <gzip zipfile="${dist.dir}/${dist.name}.src.tgz" src="${dist.dir}/${dist.name}.src.tar" />
+    <zip zipfile="${dist.dir}/${dist.name}.src.zip">
+      <zipfileset dir="." prefix="${dist.name}" defaultexcludes="yes">
+        <patternset refid="dist.binaries"/>
+        <patternset refid="dist.sources"/>
+      </zipfileset>
+    </zip>
+    <tar destfile="${dist.dir}/${dist.name}-javadoc.tar" longfile="gnu">
+      <tarfileset includes="${docs.api.dest}/" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </tar>
+    <gzip zipfile="${dist.dir}/${dist.name}-javadoc.tgz" src="${dist.dir}/${dist.name}-javadoc.tar" />
+    <zip zipfile="${dist.dir}/${dist.name}-javadoc.zip">
+      <zipfileset includes="${docs.api.dest}/" dir="." prefix="${dist.name}" defaultexcludes="yes"/>
+    </zip>
+  </target>
+
+  <target name="clean" description="Clean up to force a build from source.">
+    <delete file="bin/ApacheJMeter.jar"/>
+    <delete file="lib/jorphan.jar"/>
+    <delete dir="${jar.dest}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <target name="docs" depends="init-docs" if="AnakiaTask.present" description="Generate browsable HTML documentation.">
+    <taskdef name="anakia" classname="org.apache.velocity.anakia.AnakiaTask"/>
+    <anakia basedir="${docs.src}" destdir="${docs.dest}/" extension=".html" style="${eclipse.anakia}/xdocs/stylesheets/site.vsl" projectFile="./stylesheets/project.xml" excludes="**/stylesheets/**" includes="**/*.xml" lastModifiedCheck="true" velocityPropertiesFile="${docs.src}/velocity.properties"/>
+  </target>
+
+  <target name="printable-docs" depends="init-docs" if="AnakiaTask.present" description="Generate printable HTML documentation.">
+    <taskdef name="anakia" classname="org.apache.velocity.anakia.AnakiaTask"/>
+    <anakia basedir="${docs.src}" destdir="${printable_docs.dest}/" extension=".html" style="${eclipse.anakia}/xdocs/stylesheets/site_printable.vsl" projectFile="./stylesheets/printable_project.xml" excludes="**/stylesheets/**" includes="**/*.xml" lastModifiedCheck="true" velocityPropertiesFile="${docs.src}/velocity.properties"/>
+  </target>
+
+  <target name="all-docs" depends="docs,printable-docs,api-docs" description="Generate documentation."/>
+
+  <target name="test" depends="install" description="Run tests">
+    <java classname="org.apache.jorphan.test.AllTests" fork="yes" dir="${basedir}/bin">
+      <classpath>
+	<path refid="classpath"/>
+	<fileset dir="${jar.dest}" includes="*.jar"/>
+      </classpath>
+
+      <arg value="../lib/ext"/>
+      <arg value="./jmeter.properties"/>
+      <arg value="org.apache.jmeter.util.JMeterUtils"/>
+    </java>
+  </target>
+</project>

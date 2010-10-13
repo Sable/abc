@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<document next="intro.html" date="$Date: 2008/02/13 23:32:34 $">
+<properties>
+<title>User's Manual</title>
+</properties>
+
+<body>
+<section name="User's Manual">
+
+<ul>
+  <li><a href="intro.html">1. Introduction</a></li>
+  <ul>
+	 <li><a href="intro.html#history">1.1 History</a></li>
+	 <li><a href="intro.html#future">1.2 The Future</a></li>
+  </ul>
+  <li><a href="get-started.html">2. Getting Started</a></li>
+  <ul>
+	 <li><a href="get-started.html#requirements">2.1 Requirements</a></li>
+	 <ul>
+		<li><a href="get-started.html#java_versions">2.1.1 Java Version</a></li>
+		<li><a href="get-started.html#os">2.1.2 Operating Systems</a></li>
+	 </ul>
+	 <li><a href="get-started.html#optional">2.2 Optional</a></li>
+	 <ul>
+		<li><a href="get-started.html#opt_compiler">2.2.1 Java Compiler</a></li>
+		<li><a href="get-started.html#opt_sax">2.2.2 SAX XML Parser</a></li>
+		<li><a href="get-started.html#opt_email">2.2.3 Email Support</a></li>
+		<li><a href="get-started.html#opt_ssl">2.2.4 SSL Encryption</a></li>
+		<li><a href="get-started.html#opt_jdbc">2.2.5 JDBC Driver</a></li>
+	 </ul>
+	 <li><a href="get-started.html#install">2.3 Installation</a></li>
+	 <ul>
+		<li><a href="get-started.html#download_release">2.3.1 Downloading the Latest Release</a></li>
+		<li><a href="get-started.html#download_nightly">2.3.2 Downloading Nightly Builds</a></li>
+	 </ul>
+	 <li><a href="get-started.html#running">2.4 Running JMeter</a></li>
+	 <ul>
+		<li><a href="get-started.html#classpath">2.4.1 JMeter's Classpath</a></li>
+		<li><a href="get-started.html#proxy_server">2.4.2 Using a Proxy Server</a></li>
+		<li><a href="get-started.html#non_gui">2.4.3 Non-GUI Mode</a></li>
+		<li><a href="get-started.html#server">2.4.4 Distributed Mode</a></li>
+		<li><a href="get-started.html#override">2.4.5 Overriding Properties Via The Command Line</a></li>
+	 </ul>
+	 <li><a href="get-started.html#configuring_jmeter">2.5 Configuring JMeter</a></li>
+  </ul>
+  <li><a href="build-test-plan.html">3. Building a Test Plan</a></li>
+  <ul>
+	 <li><a href="build-test-plan.html#add_remove">3.1 Adding and Removing Elements</a></li>
+	 <li><a href="build-test-plan.html#load_save">3.2 Loading and Saving Elements</a></li>
+	 <li><a href="build-test-plan.html#config_element">3.3 Configuring Tree Elements</a></li>
+	 <li><a href="build-test-plan.html#run">3.3 Running a Test Plan</a></li>
+  </ul>
+  <li><a href="test_plan.html">4. Elements of a Test Plan</a></li>
+  <ul>
+	 <li><a href="test_plan.html#thread_group">4.1 Thread Group</a></li>
+	 <li><a href="test_plan.html#controllers">4.2 Controllers</a></li>
+	 <ul>
+		<li><a href="test_plan.html#samplers">4.2.1 Samplers</a></li>
+		<li><a href="test_plan.html#logic_controller">4.2.2 Logic Controllers</a></li>
+	 </ul>
+	 <li><a href="test_plan.html#listeners">4.3 Listeners</a></li>
+	 <li><a href="test_plan.html#timers">4.4 Timers</a></li>
+	 <li><a href="test_plan.html#assertions">4.5 Assertions</a></li>
+	 <li><a href="test_plan.html#config_elements">4.6 Configuration Elements</a></li>
+	 <li><a href="test_plan.html#preprocessors">4.7 Pre-Processor Elements</a></li>
+	 <li><a href="test_plan.html#postprocessors">4.8 Post-Processor Elements</a></li>
+	</ul>
+  <li><a href="build-web-test-plan.html">5. Building a Web Test Plan</a></li>
+	 <ul>
+		<li><a href="build-web-test-plan.html#adding_users">5.1 Adding Users</a></li>
+		<li><a href="build-web-test-plan.html#adding_defaults">5.2 Adding Default HTTP Request Properties</a></li>
+		<li><a href="build-web-test-plan.html#adding_cookie_support">5.3 Adding Cookie Support</a></li>
+		<li><a href="build-web-test-plan.html#adding_requests">5.4 Adding HTTP Requests</a></li>
+		<li><a href="build-web-test-plan.html#adding_listener">5.5 Adding a Listener to View/Store the Test Results</a></li>
+		<li><a href="build-web-test-plan.html#saving">5.6 Saving the Test Plan</a></li>
+		<li><a href="build-web-test-plan.html#running">5.7 Running the Test Plan</a></li>
+	 </ul>
+  <li><a href="build-adv-web-test-plan.html">6. Building an Advanced Web Test Plan</a></li>
+	 <ul>
+		<li><a href="build-adv-web-test-plan.html#session_url_rewriting">6.1 Handling User Sessions With URL Rewriting</a></li>
+		<li><a href="build-adv-web-test-plan.html#header_manager">6.2 Using a Header Manager</a></li>
+	 </ul>
+  <li><a href="build-db-test-plan.html">7. Building a Database Test Plan</a></li>
+	 <ul>
+		<li><a href="build-db-test-plan.html#adding_users">7.1 Adding Users</a></li>
+		<li><a href="build-db-test-plan.html#adding_requests">7.2 Adding JDBC Requests</a></li>
+		<li><a href="build-db-test-plan.html#adding_listener">7.3 Adding a Listener to View/Store the Test Results</a></li>
+		<li><a href="build-db-test-plan.html#saving">7.4 Saving the Test Plan</a></li>
+		<li><a href="build-db-test-plan.html#running">7.5 Running the Test Plan</a></li>
+	 </ul>
+  <li><a href="build-ftp-test-plan.html">8. Building an FTP Test Plan</a></li>
+	 <ul>
+		<li><a href="build-ftp-test-plan.html#adding_users">8.1 Adding Users</a></li>
+		<li><a href="build-ftp-test-plan.html#adding_defaults">8.2 Adding Default FTP Request Properties</a></li>
+		<li><a href="build-ftp-test-plan.html#adding_requests">8.3 Adding FTP Requests</a></li>
+		<li><a href="build-ftp-test-plan.html#adding_listener">8.4 Adding a Listener to View/Store the Test Results</a></li>
+		<li><a href="build-ftp-test-plan.html#saving">8.5 Saving the Test Plan</a></li>
+		<li><a href="build-ftp-test-plan.html#running">8.6 Running the Test Plan</a></li>
+  <ul>
+    <li><a href="build-ldap-test-plan.html#adding_users">9.1 Adding Users</a></li>
+    <li><a href="build-ldap-test-plan.html#add_login">9.2 Adding Login Config Element</a></li>
+    <li><a href="build-ldap-test-plan.html#add_defaults">9.3 Adding LDAP Request Defaults</a></li>
+    <li><a href="build-ldap-test-plan.html#add_requests">9.4 Adding LDAP Requests</a></li>
+    <li><a href="build-ldap-test-plan.html#add_listener">9.5 Adding a Listener to View/Store the Test Results</a></li>
+    <li><a href="build-ldap-test-plan.html#saving">9.6 Saving the Test Plan</a></li>
+    <li><a href="build-ldap-test-plan.html#running">9.7 Running the Test Plan</a></li>
+  </ul>
+
+	 </ul>
+  <li><a href="build-ldap-test-plan.html">9. Building an LDAP Test Plan</a></li>
+  <li><a href="remote-test.html">10. Remote Testing</a></li>
+  <li><a href="best-practices.html">11. Best Practices</a></li>
+  <ul>
+	 <li><a href="best-practices.html#limit_threads">11.1 [ALL] Limit the Number of Threads</a></li>
+	 <li><a href="best-practices.html#put_cookie_manager">11.2 [HTTP] Where to Put the Cookie Manager</a></li>
+	 <li><a href="best-practices.html#put_auth_manager">11.3 [HTTP] Where to Put the Authorization Manager</a></li>
+	 <li><a href="best-practices.html#proxy_server">11.4 Using the Proxy Server to record test scripts</a></li>
+  </ul>
+  <li><a href="boss.html">12. Help! My boss wants me to load test our web app!</a></li>
+
+  <li><a href="component_reference.html">13. Component Reference</a></li>
+  <li><a href="functions.html">14. Functions</a></li>
+  <li><a href="glossary.html">15. Glossary</a></li>
+</ul>
+
+</section>
+</body>
+</document>
+

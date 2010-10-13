@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<document prev="build-web-test-plan.html" next="build-db-test-plan.html" date="$Date: 2008/02/13 23:32:34 $">
+
+<properties>
+  <title>User's Manual: Building an Advanced Web Test Plan</title>
+</properties>
+
+<body>
+
+<section name="6. Building an Advanced Web Test Plan" anchor="building">
+<p>In this section, you will learn how to create advanced
+<a href="build-test-plan.html">Test Plans</a> to test a Web site.</p>
+
+<p>For an example of a basic Test Plan, see
+<a href="build-web-test-plan.html">Building a Web Test Plan</a>.</p></section>
+
+<section name="6.1 Handling User Sessions With URL Rewriting" anchor="session_url_rewriting">
+<p>If your web application uses URL rewriting rather than cookies to save session information,
+then you'll need to do a bit of extra work to test your site.</p>
+<p>To respond correctly to URL rewriting, JMeter needs to parse the HTML
+received from the server and retrieve the unique session ID.  Use the appropriate <complink name="HTTP URL Rewriting Modifier"/>
+to accomplish this.  Simply enter the name of your session ID parameter into the modifier, and it
+will find it and add it to each request.  If the request already has a value, it will be replaced.</p>
+
+<example title="URL Rewriting Example">
+<p>Download <a href="../demos/URLRewritingExample.jmx">this example</a>. In Figure 1 is shown a 
+test plan using URL rewriting.  Note that the URL Re-writing modifier is attached to the ThreadGroup,
+thus assuring that it will affect every request in that ThreadGroup.</p>
+<figure image="url_rewrite_example_a.png">Figure 1 - Test Tree</figure>
+<p>In Figure 2, we see the URL Re-writing modifier GUI, which just has a field for the user to specify
+the name of the session ID parameter.  There is also a checkbox for indicating that the session ID should
+be part of the path (separated by a ";"), rather than a request parameter</p>
+<figure image="url_rewrite_example_b.gif">Figure 2 - Request parameters</figure>
+</example>
+</section>
+
+<section name="6.2 Using a Header Manager" anchor="header_manager">
+<p>The <complink name="HTTP Header Manager"/> lets you customize what information
+JMeter sends in the HTTP request header.  This header includes properties like "User-Agent",
+"Pragma", "Referer", etc.</p>
+<p>The <complink name="HTTP Header Manager"/>, like the <complink name="HTTP Cookie Manager"/>,
+should probably be added at the Thread Group level, unless for some reason you wish to
+specify different headers for the different <complink name="HTTP Request"/> objects in
+your test.</p>
+
+</section>
+
+</body>
+</document>
