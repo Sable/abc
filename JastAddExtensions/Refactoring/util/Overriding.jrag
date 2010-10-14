@@ -165,6 +165,26 @@ aspect Overriding {
 		return res;
 	}
 	
+	syn lazy Collection<TypeDecl> TypeDecl.supertypestransitive() {
+		java.util.Set<TypeDecl> supertypestransitive = new HashSet<TypeDecl>();
+		for (TypeDecl supertype : supertypes()) {
+			supertypestransitive.addAll(supertype.supertypestransitive());
+			supertypestransitive.add(supertype);
+		} 
+		if(supertypes().size() == 0 && isInterfaceDecl())
+			supertypestransitive.add(programRoot().findType("java.lang.Object"));
+		return supertypestransitive;
+	}
+	
+	syn lazy Collection<TypeDecl> TypeDecl.childtypestransitive() {
+		java.util.Set<TypeDecl> childtypestransitive = new HashSet<TypeDecl>();
+		for (TypeDecl childtype : childTypes()) {
+			childtypestransitive.addAll(childtype.childtypestransitive());
+			childtypestransitive.add(childtype);
+		} 
+		return childtypestransitive;
+	}
+		
 	syn lazy Collection<TypeDecl> TypeDecl.supertypes() = Collections.emptySet();
 	eq ClassDecl.supertypes() {
 		Collection<TypeDecl> res = new LinkedList<TypeDecl>();
