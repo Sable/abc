@@ -64,7 +64,7 @@ public class CompileHelper {
 				continue;
 			String path_value = n.getAttributes().getNamedItem("path").getNodeValue();
 			if (kind_value.equals("src")) {
-				if(!path_value.startsWith(File.separator))
+				if(!path_value.startsWith(File.separator) && !path_value.contains(":"))
 					path_value = classpath.getParentFile().getPath() + File.separator + path_value; 
 				File f = new File(path_value);
 				if(!f.exists())
@@ -72,7 +72,7 @@ public class CompileHelper {
 				sources.addAll(findAllJavaFiles(f));
 				srcdirs.add(path_value);
 			} else if (kind_value.equals("lib")) {
-				if(!path_value.startsWith(File.separator))
+				if(!path_value.startsWith(File.separator) && !path_value.contains(":"))
 					path_value = classpath.getParentFile().getPath() + File.separator + path_value; 
 				File f = new File(path_value);
 				if(!f.exists())
