@@ -46,7 +46,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 				System.out.print("extracting interface "+anUnlikelyPackageName+"."+anUnlikelyInterfaceName+" with method set {");
 				for(MethodDecl method : methodSet)
 					System.out.print(method.getName() + ", ");
-				System.out.print("} from " + classDecl.packageName() + "." + classDecl.getName());
+				System.out.print("} from " + classDecl.packageName() + "." + classDecl.name());
 				newRun();
 				try {						
 					Program.startRecordingASTChangesAndFlush();
@@ -79,12 +79,12 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		for(ClassDecl classDecl : mostReferencedClassDecls(prog,10)) {
 			for (ClassDecl classDecl2 : prog.sourceClassDecls()) {
 				System.out.println("extracting interface "
-						+ anUnlikelyPackageName + "." + classDecl2.getName() + " containing all public non inherited methods from "
-						+ classDecl.getName());
+						+ anUnlikelyPackageName + "." + classDecl2.name() + " containing all public non inherited methods from "
+						+ classDecl.name());
 				newRun();
 				try {
 					Program.startRecordingASTChangesAndFlush();
-					classDecl.doExtractInterface(anUnlikelyPackageName, classDecl2.getName(), allPublicNonInheritedMethods(classDecl));
+					classDecl.doExtractInterface(anUnlikelyPackageName, classDecl2.name(), allPublicNonInheritedMethods(classDecl));
 					runFinished();
 					success();
 					LinkedList errors = new LinkedList();
@@ -110,7 +110,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		}
 		
 		for(ClassDecl classDecl : mostReferencedClassDecls(prog, 5)){
-			System.out.println(classDecl.getName());
+			System.out.println(classDecl.name());
 		}
 	}
 
@@ -141,17 +141,6 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 			MethodDecl method = methodIterator.next();
 			if(method.isPublic() && method.getParent(2) == typeDecl)
 				res.add(method);
-		}
-		return res;
-	}
-	
-	private Collection<String[]> computeInterfaceNameCandidates(Program prog) {
-		LinkedList<String[]> res = new LinkedList<String[]>();
-		for(String packageName : prog.sourcePackageDecls()){
-			for(TypeDecl type : prog.sourceClassDecls()) {
-				String[] candidate = {packageName,type.getName()};
-				res.add(candidate);
-			}
 		}
 		return res;
 	}
