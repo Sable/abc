@@ -45,7 +45,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 				System.out.println();
 				System.out.print("extracting interface "+anUnlikelyPackageName+"."+anUnlikelyInterfaceName+" with method set {");
 				for(MethodDecl method : methodSet)
-					System.out.print(method.getName() + ", ");
+					System.out.print(method.name() + ", ");
 				System.out.print("} from " + classDecl.packageName() + "." + classDecl.name());
 				newRun();
 				try {						
