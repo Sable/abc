@@ -34,6 +34,7 @@ public class AllTests {
 		suite.addTestSuite(MakeMethodAbstract.class);
 		suite.addTestSuite(ChangeParameterTypeTests.class);
 		suite.addTestSuite(ExtractInterfaceTests.class);
+		suite.addTestSuite(UtilTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
