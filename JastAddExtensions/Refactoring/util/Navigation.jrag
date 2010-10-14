@@ -168,4 +168,43 @@ aspect Navigation {
 		res.add(this);
 		super.collectSourceMethods(res);
 	}
+	
+	// find all source class declarations in a program
+	syn lazy Collection<ClassDecl> Program.sourceClassDecls() {
+		Collection<ClassDecl> res = new LinkedList<ClassDecl>();
+		collectSourceClassDecls(res);
+		return res;
+	}
+	
+	protected void ASTNode.collectSourceClassDecls(Collection<ClassDecl> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectSourceClassDecls(res);
+	}
+	
+	protected void CompilationUnit.collectSourceClassDecls(Collection<ClassDecl> res) {
+		if(fromSource())
+			super.collectSourceClassDecls(res);
+	}
+	
+	protected void ClassDecl.collectSourceClassDecls(Collection<ClassDecl> res) {
+		res.add(this);
+		super.collectSourceClassDecls(res);
+	}
+	
+	// find all source packages in a program
+	syn lazy Collection<String> Program.sourcePackageDecls() {
+		Collection<String> res = new HashSet<String>();
+		collectPackageDecls(res);
+		return res;
+	}
+
+	protected void ASTNode.collectPackageDecls(Collection<String> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectPackageDecls(res);
+	}
+	
+	protected void CompilationUnit.collectPackageDecls(Collection<String> res) {
+		if(fromSource())
+			res.add(packageName());
+	}
 }
