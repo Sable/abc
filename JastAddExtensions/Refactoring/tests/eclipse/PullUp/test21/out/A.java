@@ -3,7 +3,8 @@ package p;
 class A {
 
 	void m() {
-		super.toString();
+		///super.
+		toString();
 	}
 }
 

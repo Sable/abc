@@ -142,9 +142,51 @@ public class PullUpMethodTests extends TestCase {
     }
     
     public void test10() {
-    	testFail(
+    	testSucc(
     		Program.fromCompilationUnits(
     		new RawCU("Super.java", "package p; public class Super { }"),
-    		new RawCU("A.java", "package q; class A extends p.Super { int m() { return 23; } int x = m(); }")));
+    		new RawCU("A.java", "package q; class A extends p.Super { int m() { return 23; } int x = m(); }")),
+    		Program.fromCompilationUnits(
+    		new RawCU("Super.java", "package p; public class Super { protected int m() { return 23; } }"),
+    		new RawCU("A.java", "package q; class A extends p.Super { int x = m(); }")));
+    }
+    
+    public void test11() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  A m() { return this; }" +
+    			"}"));
+    }
+    
+    public void test12() {
+    	testSucc(
+    		Program.fromClasses(
+    			"class SuperSuper { }",
+    			"class Super extends SuperSuper { }",
+    			"class A extends Super {" +
+    			"  private static void n(Super p) { }" +
+    			"  public void m(SuperSuper q) {" +
+    			"    n(this);" +
+    			"  }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  private static void m(String r) { }" +
+    			"  void f() { m(null); }" +
+    			"}"),
+    		Program.fromClasses(
+       			"class SuperSuper { }",
+       			"class Super extends SuperSuper {" +
+       			"  public void m(SuperSuper q) {" +
+       			"    A.n(this);" +
+       			"  }" +
+       			"}",
+       			"class A extends Super {" +
+       			"  static void n(Super p) { }" +
+       			"}",
+       			"class B extends Super {" +
+       			"  private static void m(String r) { }" +
+       			"  void f() { m((String)null); }" +
+       			"}"));
     }
 }

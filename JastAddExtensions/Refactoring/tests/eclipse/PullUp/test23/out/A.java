@@ -7,7 +7,8 @@ class SuperA{
 class A extends SuperA{
 
 	public void m() { 
-		super.x();
+		///super.
+		x();
 	}
 }
 class B extends A {

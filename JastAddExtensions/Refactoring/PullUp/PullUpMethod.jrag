@@ -6,6 +6,7 @@ aspect PullUpMethod {
 		ClassDecl sup = host.superclass();
 		MethodDecl md = this;
 		lockAllNames();
+		removeSuper();
 		translateTypeVars(host, sup);
 		MethodDecl md_copy = (MethodDecl)fullCopyAndDetach();
 		md.replaceWith(md_copy);
@@ -15,6 +16,10 @@ aspect PullUpMethod {
 		if(!md.isAbstract() || md_copy.isAbstract())
 			host.removeBodyDecl(md_copy);
 		programRoot().flushCaches();
+		// check that everything went OK wrt types
+		for(TypeConstraint typeConstraint : this.typeConstraints(Predicate.TRUE))
+			if(!typeConstraint.solved())
+				throw new RefactoringException("type constraint violated: " + typeConstraint);
 	}
 	
 	public void MethodDecl.doPullUp(boolean onlyAbstract) {
@@ -24,5 +29,21 @@ aspect PullUpMethod {
 	
 	public void MethodDecl.doPullUp() {
 		doPullUp(false);
-	}	
+	}
+	
+	public void ASTNode.removeSuper() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).removeSuper();
+	}
+	
+	public void TypeDecl.removeSuper() { }
+	
+	public void AbstractDot.removeSuper() {
+		if(isSuperAccess())
+			replaceWith(lastAccess());
+		else if(getLeft().isSuperAccess())
+			replaceWith(getRight());
+		else
+			super.removeSuper();
+	}
 }

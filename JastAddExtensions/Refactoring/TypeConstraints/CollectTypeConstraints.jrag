@@ -100,7 +100,7 @@ aspect CollectTypeConstraints {
 	
 	protected void ClassInstanceExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "constructor invocation", this, Operator.EQ, type()));
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "constructor invocation", this, Operator.EQ, getAccess()));
+		//addConstraint(constraints, pred, new SimpleTypeConstraint(this, "constructor invocation", this, Operator.EQ, getAccess()));
 		collectArgumentTypeConstraints(pred, constraints);
 		if(isQualified())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "constructor invocation", qualifier(), Operator.EQ, qualifier().type()));
