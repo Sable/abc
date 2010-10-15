@@ -1,0 +1,231 @@
+aspect CollectNecessaryAccessibilityConstraintsOnly {
+	
+	public Collection<AccessibilityConstraint> Program.accessibilityConstraints(
+			Collection<Visible> startValues) {
+
+		Collection<AccessibilityConstraint> res = new LinkedList<AccessibilityConstraint>();
+		
+		Collection<Visible> todo = new HashSet<Visible>();
+		todo.addAll(startValues);
+
+		Collection<Visible> done = new LinkedList<Visible>();
+		
+		while (!todo.isEmpty()) {	
+			Visible v = todo.iterator().next();
+			done.add(v);
+			todo.remove(v);
+			// Find all accessibility constraints applying to v
+			for (AccessibilityConstraint constraint : constraintsApplyingTo(v)) {
+				for (Visible visible : constraint.referencedVisibles()) {
+					//TODO think of a terminating condition and set visible's value to vo if appropriate (perhaps a set N as outlined in Friedrich's algorithm?)
+					if(!done.contains(visible))
+						todo.add(visible);
+				}		
+				res.add(constraint);
+			}
+		}
+		return res;
+	}
+
+	private Collection<AccessibilityConstraint> Program.constraintsApplyingTo(Visible v) {
+		Collection<AccessibilityConstraint> res = new ArrayList<AccessibilityConstraint>();
+
+		if (v instanceof MethodDecl) {
+			MethodDecl decl = (MethodDecl) v;
+			for (MethodAccess access : decl.uses()) {
+				// acc-1
+				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+				// acc-2
+				if(access.isQualified() &&
+			   		!decl.isStatic() &&
+			   		decl.minAccess(access.hostPackage(), access.hostType()) == ASTNode.VIS_PROTECTED &&
+			   		!access.qualifier().isSuperAccess() &&
+	                access.hostType().withinBodyThatSubclasses(decl.hostType()) != null &&
+	                !access.qualifier().type().instanceOf(access.hostType().withinBodyThatSubclasses(decl.hostType()))){
+	            		res.add(new AccessibilityConstraint(access, decl, Operator.EQ, AccessModifierConstant.PUBLIC));    
+	                }				
+				// inh-1
+				if(access.isQualified()) {
+					res.add(new AccessibilityConstraint(access, decl.minAccess(access.qualifier().hostPackage(), access.qualifier().hostType()),
+			                                                                   Operator.LE, decl));
+				}
+			}
+			// sub-1, sub-2, dyn-1, dyn-2
+			res.addAll(decl.accessibilityConstraintsFromOverridingAndHidingBothDirections());
+
+			// methods in interfaces have to be public
+			if (decl.hostType().isInterfaceDecl()) {
+				res.add(new AccessibilityConstraint(decl, decl, Operator.EQ,
+						AccessModifierConstant.PUBLIC));
+			}
+			// main has to be public
+			if (decl.isMainMethod()) {
+				res.add(new AccessibilityConstraint(decl, decl, Operator.EQ,
+						AccessModifierConstant.PUBLIC));
+			}
+		}
+		
+		if(v instanceof TypeDecl) {
+			TypeDecl decl = (TypeDecl) v;
+			//acc-1
+			for (Access access : decl.uses()) {
+				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+			}
+			// constraints for top-level types
+			if(decl.fromSource() && decl.isTopLevelType()){
+				res.add(new AccessibilityConstraint(decl, decl, Operator.NE, AccessModifierConstant.PRIVATE));
+				res.add(new AccessibilityConstraint(decl, decl, Operator.NE, AccessModifierConstant.PROTECTED));
+			}
+			if(decl.fromSource() && decl.isTopLevelType() && !decl.isTypeVariable() && !decl.compilationUnit().getID().equals(decl.name())){
+					// for some reason, JastAddJ considers type variables to be toplevel
+				res.add(new AccessibilityConstraint(decl, decl, Operator.NE, AccessModifierConstant.PUBLIC));
+			}
+			// constraints for local classes
+			if(decl.isLocalClass()){
+				res.add(new AccessibilityConstraint(decl, decl, Operator.EQ, AccessModifierConstant.PACKAGE));
+			}
+		}
+		
+		if(v instanceof FieldDeclaration) {
+			FieldDeclaration decl = (FieldDeclaration) v;
+			
+			for (VarAccess access : decl.uses()) {
+				//acc-1
+				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+				
+				//acc-2
+				if(access.isQualified() &&
+		                !(access instanceof BoundFieldAccess) &&
+		                !decl.isStatic() &&
+		                decl.minAccess(access.hostPackage(), access.hostType()) == ASTNode.VIS_PROTECTED &&
+		                !access.qualifier().isSuperAccess() &&
+		                access.hostType().withinBodyThatSubclasses(decl.hostType()) != null &&
+		                !access.qualifier().type().instanceOf(access.hostType().withinBodyThatSubclasses(decl.hostType()))){
+					res.add(new AccessibilityConstraint(access, decl, Operator.EQ, AccessModifierConstant.PUBLIC));
+				}
+				
+				// inh-1
+				if(access.isQualified() && !(access instanceof BoundFieldAccess)){
+					res.add(new AccessibilityConstraint(access, decl.minAccess(access.qualifier().type().hostPackage(), access.qualifier().type()),
+							Operator.LE, decl));
+				}
+			}
+			// fields in interfaces have to be public
+			if(decl.hostType().isInterfaceDecl()){
+				res.add(new AccessibilityConstraint(decl, decl, Operator.EQ, AccessModifierConstant.PUBLIC));
+			}
+		}
+
+		if(v instanceof ConstructorDecl) {
+			ConstructorDecl decl = (ConstructorDecl) v;
+			
+			for (Access access : decl.uses()) { // ConstructorAccess or ClassInstanceExpr
+				//acc-1
+				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+				//acc-2
+				if (access instanceof ClassInstanceExpr) {
+					ClassInstanceExpr expr = (ClassInstanceExpr) access;
+					if (!expr.hasTypeDecl() && !expr.hostType().hostPackage().equals(decl.hostType().hostPackage())) {
+						res.add(new AccessibilityConstraint(expr, decl, Operator.EQ, AccessModifierConstant.PUBLIC));
+					}
+				}
+			}
+			// constructors in enums have to be private
+			if(decl.hostType().isEnumDecl()){
+				res.add(new AccessibilityConstraint(decl, decl, Operator.EQ, AccessModifierConstant.PRIVATE));
+			}
+		}
+		return res;
+	}
+	
+	// TODO: might intoduce retundand constraints (when called for overriding and overridden method)
+	Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverridingAndHidingBothDirections() {
+		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
+		// (sub-1), (sub-2), (dyn-1)
+		for(MethodDecl that : overriddenMethods()) {
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+			constrs.add(new AccessibilityConstraint(this, that.minAccess(hostType().hostPackage(), hostType()), Operator.LE, that));
+		}
+		
+		for(MethodDecl that: overridingMethods()) {
+			constrs.add(new AccessibilityConstraint(this, this, Operator.LE, that));
+			constrs.add(new AccessibilityConstraint(this, this.minAccess(that.hostType().hostPackage(), that.hostType()), Operator.LE, this));
+		}
+		
+		for(MethodDecl that : indirectlyOverriddenMethods()) {
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+			// TODO: add corresponding second constraint; see above
+		}
+		// We do not need to look for indirectly overriding methods because they are interface mathods 
+		// forced to be public anyway by other constraints
+		
+		// (sub-1)
+		for(MethodDecl that : hiddenMethods()) {
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+		}
+		for(MethodDecl that : hidingMethods()) {
+			constrs.add(new AccessibilityConstraint(this, this, Operator.LE, that));
+		}
+		
+		// (dyn-2)
+		if(!isStatic()) {
+			for(MethodDecl that : possiblyOverriddenAncestors()) {
+				if(!this.overrides(that)) {
+					// we want to avoid "this" overriding "that"
+					// note that we never need to require for the visibility of "that" to be less than private, hence the Math.max
+					int alpha = Math.max(VIS_PACKAGE, that.minAccess(hostType().hostPackage(), hostType()));
+					constrs.add(new AccessibilityConstraint(this, that, Operator.LT, alpha));
+				}
+			}
+			for(MethodDecl that : possiblyOverriddenDescendants()) {
+				if(!that.overrides(this)) {
+					int alpha = Math.max(VIS_PACKAGE, this.minAccess(that.hostType().hostPackage(), that.hostType()));
+					constrs.add(new AccessibilityConstraint(this, this, Operator.LT, alpha));
+				}
+			}
+		}
+		return constrs;
+	}
+	
+	// TODO: Move to Overriding.jrag or LockedOverriding.jrag?
+	public HashSet<MethodDecl> MethodDecl.hidingMethods() {
+		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
+		if(!this.isStatic())
+			return ret;
+		for(Iterator<MethodDecl> iter=possiblyOverriddenDescendants().iterator();
+			iter.hasNext();) {
+			MethodDecl md = iter.next();
+			if(md.hides(this))
+				ret.add(md);
+		}
+		return ret;		
+	}
+	
+	
+	// TODO: Move to Overriding.jrag or LockedOverriding.jrag?
+	// TODO: Max might know better ways to implement this
+	public Collection<MethodDecl> MethodDecl.possiblyOverriddenDescendants() {
+		HashSet<MethodDecl> res = new HashSet<MethodDecl>();
+		for(TypeDecl childType : hostType().childtypestransitive()){
+			for(Iterator<MethodDecl> it = childType.methodsIterator(); it.hasNext();){
+				MethodDecl childMethod = it.next();
+				if(childMethod.possiblyOverriddenAncestors().contains(this)){
+					res.add(childMethod);
+				}
+			}
+		}
+		return res;
+	}
+	
+	// TODO: Move to AccessibilityConstraints?
+	public Collection<Visible> AccessibilityConstraint.referencedVisibles(){
+		LinkedList<Visible> res = new LinkedList<Visible>();
+		if(left instanceof AccessModifierVariable){
+			res.add(((AccessModifierVariable)left).getElement());
+		}
+		if(right instanceof AccessModifierVariable){
+			res.add(((AccessModifierVariable)right).getElement());
+		}
+		return res;
+	}
+}
