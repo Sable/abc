@@ -1,9 +1,12 @@
 package tests.constraints;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import junit.framework.TestCase;
 import AST.ASTNode;
+import AST.AccessibilityConstraint;
 import AST.Program;
 import AST.RawCU;
 import AST.RefactoringException;
@@ -16,11 +19,25 @@ public class AccessibilityTests extends TestCase {
 		Program prog = ((ASTNode)element).programRoot();
 		char[] is = { '-', '-', '-', '-' };
 		int orig = element.getVisibility();
+		
+		// Generate all constraints
 		for(Map<Visible, Integer> vismap : prog.allPossibleSolutions()) {
 			Integer vis = vismap.get(element);
 			is[vis == null ? orig : vis] = '+';
 		}
 		assertEquals(should, new String(is));
+
+		// Generate necessary constraints, only
+		for(Map<Visible, Integer> vismap : allPossibleSolutions(prog, Collections.singleton(element))) {
+			Integer vis = vismap.get(element);
+			is[vis == null ? orig : vis] = '+';
+		}
+		assertEquals(should, new String(is));
+}
+	
+	private Collection<Map<Visible, Integer>> allPossibleSolutions(Program prog, Collection<Visible> startValues) {
+		Collection<AccessibilityConstraint> constraints = prog.accessibilityConstraints(startValues);
+		return prog.allPossibleSolutions(prog.generateNetwork(constraints, false), constraints);
 	}
 	
 	public void testSucc(String tp, int vis, Program in, Program out) {
@@ -138,7 +155,7 @@ public class AccessibilityTests extends TestCase {
 	public void test13() {
 		Program prog = Program.fromClasses(
 				"class A { private void m() { } }" +
-				"class B extends A { private void m() { } }");
+				"class B extends A { private void m() { m(); } }");
 		testPossibleVisibilities(prog.findType("B").findMethod("m"), "++++");
 		testPossibleVisibilities(prog.findType("A").findMethod("m"), "+---");
 	}
@@ -154,17 +171,9 @@ public class AccessibilityTests extends TestCase {
 	public void test15() {
 		Program prog = Program.fromCompilationUnits(
 				new RawCU("A.java", "package p; public class A { void m() { } }"),
-				new RawCU("B.java", "package q; public class B extends p.A { protected void m() { } }"));
+				new RawCU("B.java", "package q; public class B extends p.A { protected void m() { m(); } }"));
 		testPossibleVisibilities(prog.findType("B").findMethod("m"), "++++");
 		testPossibleVisibilities(prog.findType("A").findMethod("m"), "++--");
-	}
-	
-	public void test17() {
-		Program prog = Program.fromClasses(
-				"class A { private class Inner { } }",
-				"interface I { class Inner { } }",
-				"class B extends A implements I { Inner x; }");
-		testPossibleVisibilities(prog.findType("A").findSimpleType("Inner"), "++++");
 	}
 	
 	public void test16() {
@@ -174,4 +183,13 @@ public class AccessibilityTests extends TestCase {
 				"class B extends A { public void m() { } }");
 		testPossibleVisibilities(prog.findType("B").findMethod("m"), "---+");
 	}
+	
+	public void test17() {
+		Program prog = Program.fromClasses(
+				"class A { private class Inner { Inner inner; } }",
+				"interface I { class Inner { } }",
+				"class B extends A implements I { Inner x; }");
+		testPossibleVisibilities(prog.findType("A").findSimpleType("Inner"), "++++");
+	}
+
 }
