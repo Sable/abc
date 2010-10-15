@@ -13,6 +13,8 @@
 
 aspect AccessibilityGlue {
 	public void Program.eliminateLockedNames() {
+		// check naming constraints first; if that fails we don't have to solve constraints
+		checkNamingConstraints();
 		adjustAccessibility();
 		flushCaches();
 		super.eliminateLockedNames();

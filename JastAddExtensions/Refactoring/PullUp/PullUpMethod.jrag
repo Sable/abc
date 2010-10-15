@@ -10,11 +10,16 @@ aspect PullUpMethod {
 		translateTypeVars(host, sup);
 		MethodDecl md_copy = (MethodDecl)fullCopyAndDetach();
 		md.replaceWith(md_copy);
+		programRoot().flushCaches();
 		sup.insertUnusedMethod(md);
 		if(onlyAbstract)
 			md.makeAbstract();
-		if(!md.isAbstract() || md_copy.isAbstract())
+		if(!md.isAbstract() || md_copy.isAbstract()) {
+			// reroute uses of old method to new method
+			for(MethodAccess ma : md_copy.uses())
+				ma.lock(md);
 			host.removeBodyDecl(md_copy);
+		}
 		programRoot().flushCaches();
 		// check that everything went OK wrt types
 		for(TypeConstraint typeConstraint : this.typeConstraints(Predicate.TRUE))

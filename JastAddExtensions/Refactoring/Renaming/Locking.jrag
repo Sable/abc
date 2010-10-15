@@ -49,8 +49,23 @@ aspect Locking {
 			return res.lockAllNames();
 	}
 	
-	public void TypeDecl.eliminateLockedNames() {
-		super.eliminateLockedNames();
+	public void AbstractDot.eliminateLockedNames() {
+		if(getRight() instanceof AbstractDot)
+			rotateLeft();
+		if(getRight() instanceof LockableName && ((LockableName)getRight()).isLocked()) {
+			getLeft().eliminateLockedNames();
+			((LockableName)getRight()).unlock().eliminateLockedNames();
+		} else {
+			super.eliminateLockedNames();	
+		}
+	}
+	
+	// check coarse-grained naming constraints
+	public void ASTNode.checkNamingConstraints() {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).checkNamingConstraints();
+	}
+	public void TypeDecl.checkNamingConstraints() {
 		if(fromSource() && !this.isEnumDecl() && this.sourceTypeDecl()==this) {
 			// check whether there are conflicting body declarations
 			Collection<String> constructorSigs = new HashSet<String>(),
@@ -81,18 +96,10 @@ aspect Locking {
 				}
 			}
 		}
+		super.checkNamingConstraints();
 	}
 	
-	public void AbstractDot.eliminateLockedNames() {
-		if(getRight() instanceof AbstractDot)
-			rotateLeft();
-		if(getRight() instanceof LockableName && ((LockableName)getRight()).isLocked()) {
-			getLeft().eliminateLockedNames();
-			((LockableName)getRight()).unlock().eliminateLockedNames();
-		} else {
-			super.eliminateLockedNames();	
-		}
-	}
+	
 	
 	// locked copy of a subtree
 	public ASTNode ASTNode.lockedCopy() {
