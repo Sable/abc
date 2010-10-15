@@ -61,8 +61,8 @@ aspect Cream {
 		Network network = new Network();
 		IntVariable w = setObjective ? new IntVariable(network, 0) : null;
 		int i = 0;
-		// make sure we have variables for all visible elements that come from source
-		for(Visible sourceVis : sourceVisibles()) {
+		// make sure we have variables for all visible elements references by a constraint
+		for(Visible sourceVis : referencedVisibles(accessibilityConstraints)) {
 			IntVariable var = sourceVis.creamVariable(network);
 			if(setObjective) {
 				IntVariable x = new IntVariable(network, 0, 4*i);
@@ -111,12 +111,22 @@ aspect Cream {
 	
 	private Map<Visible, Integer> Program.generateAccessibilityMap(Network network, Solution solution, Collection<AccessibilityConstraint> constraints) {
 		Map<Visible, Integer> map = new HashMap<Visible, Integer>();
-		for(Visible element : sourceVisibles()) {
+		for(Visible element : referencedVisibles(constraints)) {
 			IntVariable var = element.creamVariable(network);
 			int val = solution.getIntValue(var);
 			if(val != element.getVisibility())
 				map.put(element, val);
 		}
 		return map;
+	}
+	
+	private Collection<Visible> Program.referencedVisibles(Collection<AccessibilityConstraint> constraints) {
+		HashSet<Visible> res = new HashSet<Visible>();
+		for(AccessibilityConstraint constraint : constraints) {
+			for (Visible visible : constraint.referencedVisibles()) {
+				res.add(visible);
+			}
+		}
+		return res;
 	}
 }
