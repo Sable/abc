@@ -22,6 +22,7 @@ aspect Visibility {
 		public Modifiers getModifiers();
 		public boolean fromSource();
 		public Program programRoot();
+		public String name();
 	}
 	TypeDecl implements Visible;
 	MethodDecl implements Visible;
