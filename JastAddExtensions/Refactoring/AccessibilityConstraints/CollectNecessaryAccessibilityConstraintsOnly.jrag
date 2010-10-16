@@ -3,7 +3,7 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 	public Collection<AccessibilityConstraint> Program.accessibilityConstraints(
 			Collection<Visible> startValues) {
 
-		Collection<AccessibilityConstraint> res = new LinkedList<AccessibilityConstraint>();
+		Collection<AccessibilityConstraint> res = new HashSet<AccessibilityConstraint>();
 		
 		Collection<Visible> todo = new HashSet<Visible>();
 		todo.addAll(startValues);
