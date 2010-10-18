@@ -123,7 +123,7 @@ public class CompileHelper {
 		StringBuffer classpath = new StringBuffer();
 		for(String j : jars) {
 			classpath.append(j);
-			classpath.append(':');
+			classpath.append(File.pathSeparatorChar);
 		}
 		classpath.append(".");
 		args.add(0, "-classpath");
