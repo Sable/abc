@@ -1,3 +1,7 @@
+import java.util.HashSet;
+
+import org.eclipse.ltk.core.refactoring.CompositeChange;
+
 aspect ChangeAccumulator {
 	
 
@@ -10,67 +14,15 @@ aspect ChangeAccumulator {
 		
 		private String name;
 		private CompositeChange changes;
-		private Map<IFile, TextFileChange> changemap;
+		private HashSet<CompilationUnit> changed;
 		
 		public ChangeAccumulator(String name) {
 			this.name = name;
 			changes = new CompositeChange(name);
-			changemap = new HashMap<IFile, TextFileChange>();
+			changed = new HashSet<CompilationUnit>();;
 		}
 
-		// retrieve the text file change object for file
-		private TextFileChange changeForFile(IFile file) {
-			TextFileChange tfc;
-			if(!changemap.containsKey(file)) {
-				// create a new one
-				tfc = new TextFileChange(name, file);
-				tfc.setEdit(new MultiTextEdit());
-				changes.add(tfc);
-				changemap.put(file, tfc);
-			}
-			else {
-				tfc = changemap.get(file);
-			}
-			return tfc;
-		}
-		
-		/**
-		 * copied from TextEdit as ReplaceEdit is final and we want to be able to replace zero length edits,
-		 * e.g. for new CompilationUnits
-		 */
-		private boolean covers(TextEdit thiss, TextEdit other) {
-			int thisOffset= thiss.getOffset();
-			int otherOffset= other.getOffset();
-			return thisOffset <= otherOffset && otherOffset + other.getLength() <= thisOffset + thiss.getLength();
-		}
-		
-		public void addEdit(IFile file, TextEdit te) {
-			TextFileChange tfc = changeForFile(file);
-			/* we need to avoid overlaping changes
-			 * new changes added here should cover the old ones or not conflict
-			 */
-			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
-			java.util.Set covered = new java.util.HashSet();
-			for(int i=0; i<mte.getChildren().length; ++i) {
-				TextEdit te2 = mte.getChildren()[i];
-				if(covers(te, te2))
-						covered.add(te2);
-			}
-			for(Iterator iter=covered.iterator();iter.hasNext();) {
-				TextEdit te2 = (TextEdit)iter.next();
-				mte.removeChild(te2);
-			}
-			tfc.addEdit(te);
-		}
-
-		public void addEdit(IFile file, int offset, int length, String contents) {
-			addEdit(file, new ReplaceEdit(offset, length, contents));
-		}
-
-		// creates the TextChanges corresponding to the ASTModification
-		// and adds them to the accumulator
 		public void addAllEdits(Collection<ASTModification> col) {
-			
 			// we need original paths for changes
 			Iterator<ASTModification> iter = col.iterator();
 			while(iter.hasNext()) {
@@ -85,8 +37,19 @@ aspect ChangeAccumulator {
 			while(iter.hasNext()) {
 				ASTModification m = iter.next();
 				if (DEBUG) System.out.print(m.toString() + " :: ");
-				m.redo();
-				m.createTextEdit(this);
+				CompilationUnit cu = m.getCompilationUnit();
+				if(cu == null || !cu.fromSource() || changed.contains(cu))
+					continue;
+				changed.add(cu);
+				IFile file = FileUtil.getFile(getPathName(cu));
+				TextFileChange tfc = new TextFileChange(name, file);
+				tfc.setEdit(new MultiTextEdit());
+				File osfile = new File(cu.pathName());
+				if(!osfile.exists())
+					throw new Error("File for compilation unit does not exist.");
+				long length = osfile.length();
+				tfc.addEdit(new ReplaceEdit(0, (int)length, cu.toString()));
+				changes.add(tfc);
 			}
 		}
 		
@@ -107,36 +70,6 @@ aspect ChangeAccumulator {
 				return this.compilationUnitOriginalPath.get(cu);
 			else
 				return cu.pathName();
-		}
-		
-		
-		private java.util.Set<ASTNode> printed = new HashSet<ASTNode>();
-		public void addPrinted(ASTNode node) {
-			printed.add(node);
-		}
-		// returns topmost parent that was already printed or the node
-		public ASTNode printedParent(ASTNode node) {
-			ASTNode ret = node;
-			while (!(node instanceof Program) && node != null) {
-				if (printed.contains(node))
-					ret = node;
-				node = node.getParent();
-			}
-			return ret;
-		}
-		
-		/**
-		 * nodes that changed parent during the refactoring, i.e. their location info is bad
-		 */
-		public java.util.Set<ASTNode> moved = new HashSet<ASTNode>();
-		public ASTNode getMovedAncestor(ASTNode node) {
-			ASTNode ret = null;
-			while (!(node instanceof Program) && node != null) {
-				if (moved.contains(node))
-					ret = node;
-				node = node.getParent();
-			}
-			return ret;
 		}
 	}
 	

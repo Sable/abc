@@ -45,236 +45,156 @@ aspect CreateTextEdit {
 			refined(s);
 	}
 	
-	
-	public void ASTModification.createTextEdit(ChangeAccumulator accu) {
-		//throw new UnsupportedOperationException("ASTModification.createTextEdit()");
-		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " undefined");
+	public CompilationUnit ASTModification.getCompilationUnit() {
+		return null;
 	}
 	
-	public void ASTModificationReplaceEdit.createTextEdit(ChangeAccumulator accu) {
-		if (!isInTree)
-			return;
-		ASTNode printedParent = accu.printedParent(node);
-		if (node != null && !printedParent.equals(node)) {
-			reprintNode(accu, printedParent);
-			return;
-		}
-		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource())
-			return;
-		int offset = node.createOffset(start);
-		int length = node.createOffset(end) - offset + 1;
-		if (offset < 0 || length < 0) {
-			reprintNode(accu, node.getParent());
-			return;
-		}
-		IFile file = FileUtil.getFile(accu.getPathName(node));
-		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + node.getClass().getName() + " " + file.getName() + " " + offset + " " + length + " " + oldValue + " " + newValue);
-		accu.addPrinted(node);
-		accu.addEdit(file, offset, length, newValue);
+	public CompilationUnit ASTModificationInsertChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
 	}
 	
-	public void ASTModificationCompilationUnitSetId.createTextEdit(ChangeAccumulator accu) {
-		if (!isInTree)
-			throw new Error("Compilation unit should be in the tree.");
-		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + node.getClass().getName() + " " + accu.getPathName(node) + " " + oldValue + " " + newValue);
-		accu.addChange(new RenameCompilationUnitChange(org.jastadd.plugin.jastaddj.util.FileUtil.getFile(accu.getPathName(node)).getFullPath(), oldValue, newValue));
+	public CompilationUnit ASTModificationRemoveChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
 	}
 	
-	public void ASTModificationSetChild.createTextEdit(ChangeAccumulator accu) {
-
-		if (!isInTree)
-			return;
-
-		if (!(newChild instanceof CompilationUnit && ((CompilationUnit) newChild).fromSource()) &&
-				(parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource()))
-			return;
-		
-		if (parent != newChild_oldParent && !(newChild instanceof CompilationUnit))
-				accu.moved.add(newChild);
-		
-		ASTNode replace = oldChild;
-		ASTNode<ASTNode> with = newChild;
-		
-		/*
-		 * special handling if we are setting a child (CompialtionUnit) to a Program
-		 * 
-		 * by changing a child we can add, remove, replace a compilation unit,
-		 * ant it should be handled here
-		 * 
-		 * FIXME: not implemented
-		 */
-		if (newChild instanceof CompilationUnit) {
-			if (replace == null)
-				replace = with;
-			try {
-				final Path path = new Path(((CompilationUnit) newChild).destinationPath());
-				String defaultCharset = ResourcesPlugin.getWorkspace().getRoot().getDefaultCharset();
-				/*
-				 * I have expected CreateFileChange to create a compilation unit and delete it on undo,
-				 * but it was checking for existence of the new file,
-				 * so I tried to override it, with not much success, and it sometimes also broke the eclipse undo.
-				 */
-				Change ch = new CreateFileChange(path, "", defaultCharset) {
-
-					@Override
-					public RefactoringStatus isValid(IProgressMonitor pm) throws CoreException {
-						return new RefactoringStatus();
-					}
-
-					@Override
-					public Change perform(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-						// the action does not create the file, so create it here, it however provides an undo action
-
-//						boolean fileCreated = false;
-//						try {
-//							fileCreated = path.toFile().createNewFile();
-//						} catch (IOException e) {
-//						}
-//						ResourcesPlugin.getWorkspace().getRoot().getFile(path.removeLastSegments(1)).refreshLocal(1, new SubProgressMonitor(pm, 1));
-//						if (fileCreated)
-							return new DeleteResourceChange(path, true); // FIXME: false??
-//						else
-//							return new NullChange();
-					}
-
-				};
-				accu.addChange(ch);
-			} catch (CoreException e) {
-				throw new RuntimeException(e);
-			}
-			// TODO: handle remove/replace of CU
-		}
-
-		if (replace == null && with == null)
-			return;
-		if (replace == null || with == null) {
-			replace = parent;
-			with = replace;
-		}
-
-		ASTNode printedParent = accu.printedParent(replace);
-		if (replace != null && !printedParent.equals(replace)) {
-			replace = with = printedParent;
-		}
-
-		// reprint parent if 
-		if (replace instanceof List || replace instanceof Opt)
-			replace = with;
-		while (replace instanceof List /*equiv to: replace instanceof Opt*/) {
-			replace = replace.getParent();
-			with = replace;
-		}
-		
-		
-		int offset = replace.createOffset(replace.getStart());
-		int length = replace.createOffset(replace.getEnd()) - offset + 1;
-		
-		// special offset and length for CompilationUnit
-		if (replace instanceof CompilationUnit) {
-			offset = 0;
-			length = 0; // used if file !exists, e.g. when adding new compilation unit
-			try {
-				length = FileUtil.readTextFile(accu.getPathName(replace)).length();
-			} catch (IOException e) {
-			}
-		}
-	
-		// if the localtion info are bad
-		if (offset < 0 || length < 0 || accu.getMovedAncestor(replace) != null) {
-			reprintNode(accu, replace.getParent());
-			return;
-		}
-		
-		IFile file = FileUtil.getFile(accu.getPathName(replace));
-		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length);
-		
-		/*
-		 * this looks like a hack but it is not
-		 * 
-		 * sometimes the tree is not in good state to generate the toString,
-		 * e.g. some descendant is null,
-		 * but in the end there should not be any of these left in the output.
-		 */
-		String with_ = "!!!ERROR!!!";
-		try {
-			with_ = with.toString();
-		} catch (NullPointerException e) { }
-		
-		accu.addPrinted(replace);
-		accu.addEdit(file, offset, length, with_);
+	public CompilationUnit ASTModificationReplaceEdit.getCompilationUnit() {
+		return isInTree ? node.compilationUnit() : null;
 	}
 	
-	protected void ASTModification.reprintNode(ChangeAccumulator accu, ASTNode node) {
-
-		if (node == null)
-			return;
-		if (node.getCompilationUnit() == null || !node.getCompilationUnit().fromSource())
-			return;
-		
-		
-		// if we would overlap previous edit of parent*() node, reprint the parent insted
-		ASTNode printedParent = accu.printedParent(node);
-		if (node != null && !printedParent.equals(node)) {
-			node = printedParent;
-		}
-		
-		while (node instanceof List || node instanceof Opt)
-			node = node.getParent();
-		
-		int offset = node.createOffset(node.getStart());
-		int length = node.createOffset(node.getEnd()) - offset + 1;
-		
-		// special handling for CompilationUnit (when we are reprinting it
-		if (node instanceof CompilationUnit) {
-			offset = 0;
-			length = 0; // used when the file !exists, e.g. when we added new CompilationUnit
-			try {
-				length = FileUtil.readTextFile(accu.getPathName(node)).length();
-			} catch (IOException e) {
-			}
-		}
-		
-		// if the localtion info are bad
-		if (offset < 0 || length < 0 || accu.getMovedAncestor(node) != null) {
-			reprintNode(accu, node.getParent());
-			return;
-		}
-		
-		IFile file = FileUtil.getFile(accu.getPathName(node));
-		if (accu.DEBUG) System.out.println("Changes : reprintNode : " + node.getClass().getName() + " " + file.getName() + " " + offset + " " + length);
-		
-		/*
-		 * this looks like a hack but it is not
-		 * 
-		 * sometimes the tree is not in good state to generate the toString,
-		 * e.g. some descendant is null,
-		 * but in the end there should not be any of these left in the output.
-		 */
-		String node_ = "!!!ERROR!!!";
-		try {
-			node_ = node.toString();
-		} catch (NullPointerException e) { }
-		
-		accu.addPrinted(node);
-		accu.addEdit(file, offset, length, node_);
+	public CompilationUnit ASTModificationSetChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
 	}
 	
-	public void ASTModificationInsertChild.createTextEdit(ChangeAccumulator accu) {
-		if (!isInTree)
-			return;
-		accu.moved.add(newChild);
-		// TODO: if we have concrete syntax of the child use it
-		reprintNode(accu, parent);
-	}
-	
-	public void ASTModificationRemoveChild.createTextEdit(ChangeAccumulator accu) {
-		if (!isInTree)
-			return;
-		accu.moved.add(child);
-		reprintNode(accu, parent);
-	}
-	
-	
+//	public void ASTModificationCompilationUnitSetId.createTextEdit(ChangeAccumulator accu) {
+//		if (!isInTree)
+//			throw new Error("Compilation unit should be in the tree.");
+//		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + node.getClass().getName() + " " + accu.getPathName(node) + " " + oldValue + " " + newValue);
+//		accu.addChange(new RenameCompilationUnitChange(org.jastadd.plugin.jastaddj.util.FileUtil.getFile(accu.getPathName(node)).getFullPath(), oldValue, newValue));
+//	}
+//	
+//	public void ASTModificationSetChild.createTextEdit(ChangeAccumulator accu) {
+//
+//		if (!isInTree)
+//			return;
+//
+//		if (!(newChild instanceof CompilationUnit && ((CompilationUnit) newChild).fromSource()) &&
+//				(parent.getCompilationUnit() == null || !parent.getCompilationUnit().fromSource()))
+//			return;
+//		
+//		if (parent != newChild_oldParent && !(newChild instanceof CompilationUnit))
+//				accu.moved.add(newChild);
+//		
+//		ASTNode replace = oldChild;
+//		ASTNode<ASTNode> with = newChild;
+//		
+//		/*
+//		 * special handling if we are setting a child (CompilationUnit) to a Program
+//		 * 
+//		 * by changing a child we can add, remove, replace a compilation unit,
+//		 * ant it should be handled here
+//		 * 
+//		 * FIXME: not implemented
+//		 */
+//		if (newChild instanceof CompilationUnit) {
+//			if (replace == null)
+//				replace = with;
+//			try {
+//				final Path path = new Path(((CompilationUnit) newChild).destinationPath());
+//				String defaultCharset = ResourcesPlugin.getWorkspace().getRoot().getDefaultCharset();
+//				/*
+//				 * I have expected CreateFileChange to create a compilation unit and delete it on undo,
+//				 * but it was checking for existence of the new file,
+//				 * so I tried to override it, with not much success, and it sometimes also broke the eclipse undo.
+//				 */
+//				Change ch = new CreateFileChange(path, "", defaultCharset) {
+//
+//					@Override
+//					public RefactoringStatus isValid(IProgressMonitor pm) throws CoreException {
+//						return new RefactoringStatus();
+//					}
+//
+//					@Override
+//					public Change perform(IProgressMonitor pm) throws CoreException, OperationCanceledException {
+//						// the action does not create the file, so create it here, it however provides an undo action
+//
+////						boolean fileCreated = false;
+////						try {
+////							fileCreated = path.toFile().createNewFile();
+////						} catch (IOException e) {
+////						}
+////						ResourcesPlugin.getWorkspace().getRoot().getFile(path.removeLastSegments(1)).refreshLocal(1, new SubProgressMonitor(pm, 1));
+////						if (fileCreated)
+//							return new DeleteResourceChange(path, true); // FIXME: false??
+////						else
+////							return new NullChange();
+//					}
+//
+//				};
+//				accu.addChange(ch);
+//			} catch (CoreException e) {
+//				throw new RuntimeException(e);
+//			}
+//			// TODO: handle remove/replace of CU
+//		}
+//
+//		if (replace == null && with == null)
+//			return;
+//		if (replace == null || with == null) {
+//			replace = parent;
+//			with = replace;
+//		}
+//
+//		ASTNode printedParent = accu.printedParent(replace);
+//		if (replace != null && !printedParent.equals(replace)) {
+//			replace = with = printedParent;
+//		}
+//
+//		// reprint parent if 
+//		if (replace instanceof List || replace instanceof Opt)
+//			replace = with;
+//		while (replace instanceof List /*equiv to: replace instanceof Opt*/) {
+//			replace = replace.getParent();
+//			with = replace;
+//		}
+//		
+//		
+//		int offset = replace.createOffset(replace.getStart());
+//		int length = replace.createOffset(replace.getEnd()) - offset + 1;
+//		
+//		// special offset and length for CompilationUnit
+//		if (replace instanceof CompilationUnit) {
+//			offset = 0;
+//			length = 0; // used if file !exists, e.g. when adding new compilation unit
+//			try {
+//				length = FileUtil.readTextFile(accu.getPathName(replace)).length();
+//			} catch (IOException e) {
+//			}
+//		}
+//	
+//		// if the localtion info are bad
+//		if (offset < 0 || length < 0 || accu.getMovedAncestor(replace) != null) {
+//			reprintNode(accu, replace.getParent());
+//			return;
+//		}
+//		
+//		IFile file = FileUtil.getFile(accu.getPathName(replace));
+//		if (accu.DEBUG) System.out.println("Changes : " + this.toString() + " " + replace.getClass().getName() + " " + file.getName() + " " + offset + " " + length);
+//		
+//		/*
+//		 * this looks like a hack but it is not
+//		 * 
+//		 * sometimes the tree is not in good state to generate the toString,
+//		 * e.g. some descendant is null,
+//		 * but in the end there should not be any of these left in the output.
+//		 */
+//		String with_ = "!!!ERROR!!!";
+//		try {
+//			with_ = with.toString();
+//		} catch (NullPointerException e) { }
+//		
+//		accu.addPrinted(replace);
+//		accu.addEdit(file, offset, length, with_);
+//	}
 	
 	class RenameCompilationUnitChange extends ResourceChange {
 		private final IPath path;
