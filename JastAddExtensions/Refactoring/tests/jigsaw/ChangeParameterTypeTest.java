@@ -1,10 +1,13 @@
 package tests.jigsaw;
 
-import java.util.Collection;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import tests.jigsaw.AbstractRealProgramTest;
+
 import AST.MethodDecl;
+import AST.Problem;
 import AST.Program;
 import AST.RefactoringException;
 import AST.TypeDecl;
@@ -12,44 +15,61 @@ import AST.TypeDecl;
 public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 
 	@Override
-	protected void performChanges(Program prog) {
-		Collection<MethodDecl> meths = prog.sourceMethods();
-		System.out.println(meths.size()+" source methods");
-		for(MethodDecl md : meths) {
+	protected void performChanges(final Program prog, final Log log) throws IOException {
+		final String orig = CHECK_UNDO ? prog.toString() : null;
+		for(final MethodDecl md : prog.sourceMethods()) {
 			for(int i=0;i<md.getNumParameter();++i) {
+				final int i_ = i;
 				TypeDecl tp = md.getParameter(i).type();
 				HashSet<TypeDecl> substitutiontypes = new HashSet<TypeDecl>();
 				substitutiontypes.addAll(tp.supertypestransitive());
-				//substitutiontypes.addAll(tp.childtypestransitive());
-				for(TypeDecl stp : substitutiontypes) {
-					System.out.println("refactoring parameter #" + i + " of method " + md.hostType().typeName() + "." + md.signature() + " to " + stp.fullName() + "... ");
-					newRun();
-					try {						
-						Program.startRecordingASTChangesAndFlush();
-						md.getParameter(i).changeType(stp);
-						runFinished();
-						success(); 
-						LinkedList errors = new LinkedList();
-						prog.errorCheck(errors);
-						if(!errors.isEmpty()){
-							error();
-							System.out.print("\n Refactoring introduced errors: " + errors);
+				for(final TypeDecl stp : substitutiontypes) {
+					final LogEntry entry = new LogEntry(name());
+					entry.addParameter("method", md.fullName());
+					entry.addParameter("parameter #", i+"");
+					entry.addParameter("substitution type", stp.fullName());	
+					Thread job = new Thread() {
+						@Override
+						public void run() {
+							entry.startsNow();
+							try{
+								Program.startRecordingASTChangesAndFlush();
+								md.getParameter(i_).changeType(stp);
+								entry.finished();
+								LinkedList<Problem> errors = new LinkedList<Problem>();
+								prog.errorCheck(errors);
+								entry.logErrors(errors);
+							} catch(RefactoringException rfe){
+								entry.finished(rfe);
+							} catch(ThreadDeath td) {
+								// might occur in case of timeout
+							} catch(Throwable t) {
+								entry.finished(t);
+							}				
 						}
-					} catch(RefactoringException rfe) {
-						runFinished();
-						System.out.println("  failed (" + rfe.getMessage() + "); ");
-					} catch(Error e) {
+					};
+					job.start();
+					try {
+						job.join(TIMEOUT);
+						if(job.isAlive()) {
+							entry.logTimeout();
+							job.stop();
+						}
+					} catch (InterruptedException e) {
 						e.printStackTrace();
-						throw e;
-					} finally {
-						runFinished();
-						Program.undoAll();
-						prog.flushCaches();
-						checkUndo();
 					}
+					log.add(entry);
+					Program.undoAll();
+					prog.flushCaches();
+					if(CHECK_UNDO)
+						assertEquals("Undo did not succeed",orig, prog.toString());
 				}
 			}
 		}	
 	}
 
+	@Override
+	protected String name() {
+		return "change parameter type";
+	}
 }

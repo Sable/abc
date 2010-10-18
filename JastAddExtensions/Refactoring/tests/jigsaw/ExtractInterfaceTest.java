@@ -1,12 +1,16 @@
 package tests.jigsaw;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import tests.jigsaw.AbstractRealProgramTest;
+
 import AST.ClassDecl;
 import AST.MethodDecl;
+import AST.Problem;
 import AST.Program;
 import AST.RefactoringException;
 import AST.TypeDecl;
@@ -34,78 +38,19 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	 */
 	
 	@Override
-	protected void performChanges(Program prog) {
+	protected void performChanges(Program prog, Log log) throws IOException {
 		//Run1
-		final String anUnlikelyInterfaceName = "RTT_NEW_INTERFACE";
-		final String anUnlikelyPackageName = "RTT_NEW_PACKAGE";
-		
+		final String freshInterface = "RTT_NEW_INTERFACE";
+		final String freshPackage = "RTT_NEW_PACKAGE";
 		for(ClassDecl classDecl : prog.sourceClassDecls()) {
 			for(Collection<MethodDecl> methodSet : computeMethodSets(classDecl)) {
-				
-				System.out.println();
-				System.out.print("extracting interface "+anUnlikelyPackageName+"."+anUnlikelyInterfaceName+" with method set {");
-				for(MethodDecl method : methodSet)
-					System.out.print(method.name() + ", ");
-				System.out.print("} from " + classDecl.packageName() + "." + classDecl.name());
-				newRun();
-				try {						
-					Program.startRecordingASTChangesAndFlush();
-					classDecl.doExtractInterface(anUnlikelyPackageName, anUnlikelyInterfaceName, methodSet);
-					runFinished();
-					success(); 
-					LinkedList errors = new LinkedList();
-					prog.errorCheck(errors);
-					if(!errors.isEmpty()){
-						error();
-						System.out.print("\n Refactoring introduced errors: " + errors);
-					}
-				} catch(RefactoringException rfe) {
-					runFinished();
-					System.out.println("  failed (" + rfe.getMessage() + "); ");
-				} catch(Error e) {
-					e.printStackTrace();
-					throw e;
-				} finally {
-					runFinished();
-					Program.undoAll();
-					prog.flushCaches();
-					checkUndo();
-				}
-				
+				log.add(performChanges(prog, classDecl, freshPackage, freshInterface, methodSet));				
 			}
 		}
-		
 		//Run2
 		for(ClassDecl classDecl : mostReferencedClassDecls(prog,10)) {
 			for (ClassDecl classDecl2 : prog.sourceClassDecls()) {
-				System.out.println("extracting interface "
-						+ anUnlikelyPackageName + "." + classDecl2.name() + " containing all public non inherited methods from "
-						+ classDecl.name());
-				newRun();
-				try {
-					Program.startRecordingASTChangesAndFlush();
-					classDecl.doExtractInterface(anUnlikelyPackageName, classDecl2.name(), allPublicNonInheritedMethods(classDecl));
-					runFinished();
-					success();
-					LinkedList errors = new LinkedList();
-					prog.errorCheck(errors);
-					if (!errors.isEmpty()) {
-						error();
-						System.out.print("\n Refactoring introduced errors: "
-								+ errors);
-					}
-				} catch (RefactoringException rfe) {
-					runFinished();
-					System.out.println("  failed (" + rfe.getMessage() + "); ");
-				} catch (Error e) {
-					e.printStackTrace();
-					throw e;
-				} finally {
-					runFinished();
-					Program.undoAll();
-					prog.flushCaches();
-					checkUndo();
-				}
+				log.add(performChanges(prog, classDecl, freshPackage, classDecl2.name(), allPublicNonInheritedMethods(classDecl)));
 			}
 		}
 		
@@ -113,7 +58,61 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 			System.out.println(classDecl.name());
 		}
 	}
+	
+	private LogEntry performChanges(final Program prog, final ClassDecl clazz, final String pkg, final String name, final Collection<MethodDecl> methods) {
+		final LogEntry entry = new LogEntry(name());
+		entry.addParameter("class", clazz.fullName());
+		entry.addParameter("interface package", pkg);
+		entry.addParameter("interface name", name);
+		StringBuilder methodsList = new StringBuilder();
+		for(MethodDecl method : methods)
+			methodsList.append(method.name()).append(", ");
+		entry.addParameter("methods", methodsList.toString());
+		
+		final String orig = CHECK_UNDO ? prog.toString() : null;
+		
+		Thread job = new Thread() {
+			@Override
+			public void run() {
+				entry.startsNow();
+				try{
+					Program.startRecordingASTChangesAndFlush();
+					clazz.doExtractInterface(pkg, name, methods);
+					entry.finished();
+					LinkedList<Problem> errors = new LinkedList<Problem>();
+					prog.errorCheck(errors);
+					entry.logErrors(errors);
+				} catch(RefactoringException rfe){
+					entry.finished(rfe);
+				} catch(ThreadDeath td) {
+					// might occur in case of timeout
+				} catch(Throwable t) {
+					entry.finished(t);
+				}				
+			}
+		};
+		job.start();
+		try {
+			job.join(TIMEOUT);
+			if(job.isAlive()) {
+				entry.logTimeout();
+				job.stop();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Program.undoAll();
+		prog.flushCaches();
+		if(CHECK_UNDO)
+			assertEquals("Undo did not succeed",orig, prog.toString());
+		return entry;
+	}
 
+	@Override
+	protected String name() {
+		return "extract interface";
+	}
+	
 	private Collection<Collection<MethodDecl>> computeMethodSets(TypeDecl typeDecl) {
 		Collection<Collection<MethodDecl>> res = new LinkedList<Collection<MethodDecl>>();
 		
