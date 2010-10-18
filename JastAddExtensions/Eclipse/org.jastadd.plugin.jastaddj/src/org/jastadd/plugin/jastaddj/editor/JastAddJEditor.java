@@ -65,6 +65,8 @@ import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpointAdapter;
+import org.jastadd.plugin.jastaddj.refactor.Refactorings;
+import org.jastadd.plugin.jastaddj.refactor.Refactorings.RefactoringInfo;
 import org.jastadd.plugin.registry.ASTRegistry;
 import org.jastadd.plugin.registry.IASTRegistryListener;
 import org.jastadd.plugin.ui.popup.AbstractBaseInformationPresenter;
@@ -513,55 +515,9 @@ public class JastAddJEditor extends AbstractDecoratedTextEditor implements IASTR
 	}
 
 	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu) {
-		// NEW REFACTORING HOOK
-
-		addContextMenuItem(refactorMenu, "En&capsulate Field",
-				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
-				new EncapsulateFieldRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "E&xtract Class",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
-				new ExtractClassRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Extract &Interface",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
-				new ExtractInterfaceRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Extract Temp",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
-				new ExtractTempRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Inline Temp",
-				"org.jastadd.plugin.jastaddj.refactor.InlineTemp",
-				new InlineTempRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Extract Method",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
-				new ExtractMethodRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Inline Method",
-				"org.jastadd.plugin.jastaddj.refactor.InlineMethod",
-				new InlineMethodRefactoringHandler());
-		
-		addContextMenuItem(refactorMenu, "Re&name",
-				"org.jastadd.plugin.jastaddj.refactor.Rename",
-				new RenameRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Pull Up Method",
-				"org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
-				new PullUpMethodRefactoringHandler());
-
-		addContextMenuItem(refactorMenu, "Push Down Method",
-				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				new PushDownMethodRefactoringHandler());
-		
-		addContextMenuItem(refactorMenu, "Change Parameter Type",
-				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterType",
-				new ChangeParameterTypeRefactoringHandler());
-		
-		addContextMenuItem(refactorMenu, "Add Parameter",
-				"org.jastadd.plugin.jastaddj.refactor.AddParameter",
-				new AddParameterRefactoringHandler());
+		for(RefactoringInfo<?> info : Refactorings.refactorings)
+			addContextMenuItem(refactorMenu, info.getMenuText(), 
+							   info.getId(), info.newHandler());
 	}
 		
 	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {

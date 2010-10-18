@@ -7,9 +7,4 @@ and a code for doing the refactoring + generating the changes
 
 2. Add FooRefactoringHandler to package org.jastadd.plugin.jastaddj.editor.actions
 
-3. Add menu items to:
-	org.jastadd.plugin.jastaddj.editor.
-		JastAddJEditor.populateRefactorContextMenuItems(..)
-		JastAddJEditorContributor.populateRefactorTopMenuItems(..)
-		JastAddJEditorContributor.populateCommands(..) [with key bindings]
-	
+3. Add RefactoringInfo object to array org.jastadd.plugin.jastaddj.refactor.Refactorings.refactorings

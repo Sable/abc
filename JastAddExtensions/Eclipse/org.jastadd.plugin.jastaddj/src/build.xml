@@ -101,8 +101,14 @@
 			<exclude name="JRRT.java"/>
 			<exclude name="Locks/*"/>
 			<exclude name="undo/NoUndo.jrag"/>
-			<exclude name="AccessibilityConstraints/Choco.jrag"/>
+			<exclude name="AccessibilityConstraints/SolverChoco.jrag"/>
+			<exclude name="TypeConstraints/TypeConstraintSolving.jrag"/>
+			<exclude name="TypeConstraints/CollectTypeConstraints.jrag"/>
 		</fileset>
+  		<fileset dir="${Refactoring}">
+  			<include name="TypeConstraints/TypeConstraintSolving.jrag"/>
+			<include name="TypeConstraints/CollectTypeConstraints.jrag"/>
+  		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>

@@ -50,6 +50,8 @@ import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
+import org.jastadd.plugin.jastaddj.refactor.Refactorings;
+import org.jastadd.plugin.jastaddj.refactor.Refactorings.RefactoringInfo;
 
 public class JastAddJEditorContributor extends BasicTextEditorActionContributor {
 
@@ -143,55 +145,9 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 				"Quick Outline", "JastAddJ Quick Outline", "Ctrl+O",
 				new QuickContentOutlineHandler());
 		
-		// NEW REFACTORING HOOK
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
-				"Encapsulate Field", "JastAddJ Encapsulate Field", null,
-				new EncapsulateFieldRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractClass",
-				"Extract Class", "JastAddJ Extract Class", null,
-				new ExtractClassRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
-				"Extract Interfacce", "JastAddJ Extract Interface", null,
-				new ExtractInterfaceRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
-				"Extract Temp", "JastAddJ Extract Temp", "Shift+Alt+L",
-				new ExtractTempRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineTemp",
-				"Inline Temp", "JastAddJ Inline Temp", "Shift+Alt+I",
-				new InlineTempRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
-				"Extract Method", "JastAddJ Extract Method", "Shift+Alt+M",
-				new ExtractMethodRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InlineMethod",
-				"Inline Method", "JastAddJ Inline Method", null,
-				new InlineMethodRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
-				"Rename", "JastAddJ Rename", "Shift+Alt+R",
-				new RenameRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
-				"Pull Up Method", "JastAddJ Pull Up Method", null,
-				new PullUpMethodRefactoringHandler());
-		
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				"Push Down Method", "JastAddJ Push Down Method", null,
-				new PushDownMethodRefactoringHandler());
-
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.ChangeParameterType",
-				"Change Parameter Type", "JastAddJ Change Parameter Type", "Shift+Alt+C",
-				new ChangeParameterTypeRefactoringHandler());
-
-		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.AddParameter",
-				"Add Parameter", "JastAddJ Add Parameter", "Shift+Alt+A",
-				new AddParameterRefactoringHandler());
+		for(RefactoringInfo<?> info : Refactorings.refactorings)
+			installSourceCommand(info.getId(), info.getName(), info.getDescription(),
+								 info.getKeyBinding(), info.newHandler());
 		
 		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
@@ -435,83 +391,10 @@ public class JastAddJEditorContributor extends BasicTextEditorActionContributor 
 
 	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
 			ITopMenuActionBuilder actionBuilder) {
-		// NEW REFACTORING HOOK (opt)
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.EncapsulateFieldTopMenuItem",
-				"En&capsulate Field",
-				"org.jastadd.plugin.jastaddj.refactor.EncapsulateField",
-				new EncapsulateFieldRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractClassTopMenuItem",
-				"E&xtract Class",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractClass",
-				new ExtractClassRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractInterfaceTopMenuItem",
-				"Extract &Interface",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractInterface",
-				new ExtractInterfaceRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractTempTopMenuItem",
-				"Extract Temp",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractTemp",
-				new ExtractTempRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.InlineTempTopMenuItem",
-				"Inline Temp",
-				"org.jastadd.plugin.jastaddj.refactor.InlineTemp",
-				new ExtractTempRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.ExtractMethodTopMenuItem",
-				"Extract Method",
-				"org.jastadd.plugin.jastaddj.refactor.ExtractMethod",
-				new ExtractMethodRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.InlineMethodTopMenuItem",
-				"Inline Method",
-				"org.jastadd.plugin.jastaddj.refactor.InlineMethod",
-				new InlineMethodRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
-				"Re&name",
-				"org.jastadd.plugin.jastaddj.refactor.Rename",
-				new RenameRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.PullUpMethodTopMenuItem",
-				"Pull Up Method",
-				"org.jastadd.plugin.jastaddj.refactor.PullUpMethod",
-				new PullUpMethodRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
-				"org.jastadd.plugin.jastaddj.refactor.PushDownMethodTopMenuItem",
-				"Push Down Method",
-				"org.jastadd.plugin.jastaddj.refactor.PushDownMethod",
-				new PushDownMethodRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder, 
-				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterTypeTopMenuItem", 
-				"Change Parameter Type", 
-				"org.jastadd.plugin.jastaddj.refactor.ChangeParameterType", 
-				new ChangeParameterTypeRefactoringHandler());
-		
-		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder, 
-				"org.jastadd.plugin.jastaddj.refactor.AddParameterTopMenuItem", 
-				"Add Parameter", 
-				"org.jastadd.plugin.jastaddj.refactor.AddParameter", 
-				new AddParameterRefactoringHandler());
-	}
-
-	
-	
+		for(RefactoringInfo<?> info : Refactorings.refactorings)
+			addOrEnhanceTopMenuItem(refactorMenu, actionBuilder, 
+				info.getTopMenuId(), info.getMenuText(), info.getId(), info.newHandler());
+	}	
 
 	private static class MenuActionConf {
 		public String text;
