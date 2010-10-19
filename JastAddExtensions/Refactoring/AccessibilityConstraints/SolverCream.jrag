@@ -62,14 +62,14 @@ aspect Cream {
 		IntVariable w = setObjective ? new IntVariable(network, 0) : null;
 		int i = 0;
 		// make sure we have variables for all visible elements references by a constraint
-		for(Visible sourceVis : referencedVisibles(accessibilityConstraints)) {
-			IntVariable var = sourceVis.creamVariable(network);
+		for(Visible vis : referencedVisibles(accessibilityConstraints)) {
+			IntVariable var = vis.creamVariable(network);
 			if(setObjective) {
+				++i;
 				IntVariable x = new IntVariable(network, 0, 4*i);
 				// x = w + v
-				new IntArith(network, IntArith.ADD, x, w, var.subtract(sourceVis.getVisibility()).abs());
+				new IntArith(network, IntArith.ADD, x, w, var.subtract(vis.getVisibility()).abs());
 				w = x;
-				++i;
 			}
 		}
 		for(AccessibilityConstraint constr : accessibilityConstraints)
