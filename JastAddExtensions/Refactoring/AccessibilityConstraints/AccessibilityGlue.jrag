@@ -21,17 +21,22 @@ aspect AccessibilityGlue {
 	}
 	
 	private void Program.adjustAccessibility() {
-		Collection<AccessibilityConstraint> accessibilityConstraints = accessibilityConstraints();
-		// if all constraints are already solved, we do not need to build a constraint network, which makes things faster
-		boolean all_solved = true;
+		Collection<AccessibilityConstraint> accessibilityConstraints = accessibilityConstraints();	
+		Collection<AccessibilityConstraint> notSolved = new LinkedList<AccessibilityConstraint>();
 		for(AccessibilityConstraint ac : accessibilityConstraints) {
 			if(!ac.isSolved()) {
-				all_solved = false;
-				break;
+				notSolved.add(ac);
 			}
 		}
-		if(all_solved)
+		// if all constraints are already solved, we do not need to build a constraint network, which makes things faster
+		if(notSolved.isEmpty())
 			return;
+		Collection<Visible> startValues = new ArrayList<Visible>();
+		//TODO: it might be better to delete unnecessary constraints instead of rebuilding the constraint network
+		for(AccessibilityConstraint constraint : notSolved){
+			startValues.addAll(constraint.referencedVisibles());
+		}
+		accessibilityConstraints = accessibilityConstraints(startValues);
 		Map<Visible, Integer> acc_map = solve(accessibilityConstraints);
 		if(acc_map == null)
 			throw new RefactoringException("cannot adjust accessibilities");
