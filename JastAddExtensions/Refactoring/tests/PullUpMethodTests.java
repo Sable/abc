@@ -189,4 +189,20 @@ public class PullUpMethodTests extends TestCase {
        			"  void f() { m((String)null); }" +
        			"}"));
     }
+    
+    /* rtt test 2010_10_19 11_39: org.w3c.jigadmin.RemoteResourceWrapper.getChildResource(java.lang.String) */
+    //FIXME
+    public void test13() {
+    	testFail(Program.fromClasses(
+    			"class X { public X(A a){} } ",
+				"class Super { }",
+				"class A extends Super { void m(){new X(this);} }"));
+    }
+    
+    public void test14() {
+    	testFail(Program.fromClasses(
+    			"class X { public void n(A a){} } ",
+    			"class Super { }",
+    			"class A extends Super { void m(){new X().n(this);} }"));
+    }
 }
