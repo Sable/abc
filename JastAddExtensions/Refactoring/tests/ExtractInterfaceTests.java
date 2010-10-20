@@ -164,4 +164,16 @@ public class ExtractInterfaceTests extends TestCase {
 						  "  public static void m() { }" +
 						  "}")));
 	}
+	
+	/* rtt test 2010_10_19 12_36: methods:firePropertyChange, firePropertyChange, addPropertyChangeListener, removePropertyChangeListener, addPropertyChangeListener, firePropertyChange, hasListeners, removePropertyChangeListener, firePropertyChange, , interface package:RTT_NEW_PACKAGE, class:org.w3c.tools.jdbc.JdbcPropertyChangeSupport, interface name:RTT_NEW_INTERFACE, */
+	public void test4() {
+		testSucc("A", new String[]{"m()"}, "", "I", 
+			Program.fromCompilationUnits(
+					new RawCU("A.java", "class A { public synchronized void m() {} } "),
+					new RawCU("B.java", "class B { A a; void n(){a.m();}}")),
+			Program.fromCompilationUnits(
+					new RawCU("A.java","class A implements I { public synchronized void m() {} } "),
+					new RawCU("B.java","class B { I a; void n(){a.m();}}"),
+					new RawCU("I.java","interface I {abstract public void m();}")));
+	}
 }

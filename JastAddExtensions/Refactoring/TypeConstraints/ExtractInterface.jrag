@@ -27,6 +27,7 @@ aspect ExtractInterface {
 			// for Eclipse compatibility
 			new_md.getModifiers().addModifier("abstract");
 			new_md.getModifiers().removeModifier("final");	
+			new_md.getModifiers().removeModifier("synchronized");
 			body.add(new_md);
 		}
 		
