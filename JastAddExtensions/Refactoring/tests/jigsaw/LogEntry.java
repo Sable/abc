@@ -106,7 +106,7 @@ public class LogEntry {
 		   .append(timeout()).append("; ")
 		   .append(hasErrors()).append("; ");
 		for(Problem problem : errors)
-			res.append(problem.toString()).append(", ");
+			res.append(problem.toString().replaceAll(";",",").replaceAll(System.getProperty("line.separator"), "  ")).append(", ");
 		res.append("; ")
 		   .append(duration()).append("; ")
 		   .append(accessibilityIssues).append("; ")
