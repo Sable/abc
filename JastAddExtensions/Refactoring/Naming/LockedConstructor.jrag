@@ -84,13 +84,20 @@ aspect LockedConstructor {
 	
 	public ConstructorAccess ConstructorAccess.lock(ConstructorDecl ctor) {
 		assert ctor != null && ctor != unknownConstructor();
-		setTarget(ctor.sourceConstructorDecl());
+		setTarget(ctor);
 		return this;
 	}
 	public ClassInstanceExpr ClassInstanceExpr.lock(ConstructorDecl ctor) {
 		assert ctor != null && ctor != unknownConstructor();
-		setTarget(ctor.sourceConstructorDecl());
+		setTarget(ctor);
 		return this;
+	}
+	
+	public boolean ConstructorAccess.isLocked() {
+		return targetConstructor != null;
+	}
+	public boolean ClassInstanceExpr.isLocked() {
+		return targetConstructor != null;
 	}
 	
 	public void ConstructorAccess.eliminateLockedNames() {
@@ -99,16 +106,16 @@ aspect LockedConstructor {
 		else
 			super.eliminateLockedNames();
 	}
-	private ConstructorAccess ConstructorAccess.unlock() {
-		ConstructorDecl targetConstructor = this.targetConstructor;
+	public ConstructorAccess ConstructorAccess.unlock() {
+		ConstructorDecl targetConstructor = this.targetConstructor.refresh();
 		setTarget(null);
 		flushCache();
-		if(decl() != targetConstructor) {
+		if(!decl().equals(targetConstructor)) {
 			if(!fromSource())
 				throw new RefactoringException("cannot adjust constructor access in library code");
 			setArgList(MethodAccessInfo.insertCasts(targetConstructor, getArgList()));
 			flushCache();
-			if(decl() != targetConstructor)
+			if(!decl().equals(targetConstructor.refresh()))
 				throw new RefactoringException("cannot disambiguate constructor access");
 		}
 		return this;
@@ -119,18 +126,18 @@ aspect LockedConstructor {
 		else
 			super.eliminateLockedNames();
 	}
-	private ClassInstanceExpr ClassInstanceExpr.unlock() {
-		ConstructorDecl targetConstructor = this.targetConstructor;
+	public ClassInstanceExpr ClassInstanceExpr.unlock() {
+		ConstructorDecl targetConstructor = this.targetConstructor.refresh();
 		setTarget(null);
 		if(fromSource() && getAccess().type() != targetConstructor.hostType())
 			setAccess(targetConstructor.hostType().createLockedAccess());
 		flushCache();
-		if(decl() != targetConstructor) {
+		if(!decl().equals(targetConstructor)) {
 			if(!fromSource())
 				throw new RefactoringException("cannot adjust constructor access in library code");
 			setArgList(MethodAccessInfo.insertCasts(targetConstructor, getArgList()));
 			flushCache();
-			if(decl() != targetConstructor)
+			if(!decl().equals(targetConstructor))
 				throw new RefactoringException("cannot disambiguate constructor access");
 		}
 		return this;

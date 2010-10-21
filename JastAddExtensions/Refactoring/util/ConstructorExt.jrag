@@ -2,7 +2,52 @@ aspect ConstructorExt {
 	syn lazy ConstructorAccess ConstructorDecl.getConstructorAccess() = 
 		(ConstructorAccess)((ExprStmt)getConstructorInvocation()).getExpr();
 	
-	syn boolean ConstructorDecl.isChained() = getConstructorAccess() != null && !(getConstructorAccess() instanceof SuperConstructorAccess); 
+	syn boolean ConstructorDecl.isChained() = getConstructorAccess() != null && !(getConstructorAccess() instanceof SuperConstructorAccess);
+	
+	// fill in some missing methods
+	syn ConstructorDecl GenericConstructorDecl.rawConstructor() = lookupParConstructorDecl(new ArrayList());
+	
+	syn lazy ConstructorDecl GenericConstructorDecl.lookupParConstructorDecl(ArrayList<TypeDecl> list) {
+        for(int i = 0; i < getNumParConstructorDecl(); i++) {
+	        ParConstructorDecl decl = (ParConstructorDecl)getParConstructorDecl(i);
+	        if(decl.isRawConstructor() ? list.isEmpty() : (!list.isEmpty() && decl.sameSignature(list)))
+	            return decl;
+	    }
+        throw new Error("not implemented yet");
+	}
+
+	syn lazy boolean ParConstructorDecl.sameSignature(ArrayList<TypeDecl> list) circular [true] {
+	    if(getNumTypeArgument() != list.size())
+	        return false;
+		for(int i = 0; i < list.size(); i++)
+		    if(getTypeArgument(i).type() != list.get(i))
+		        return false;
+		return true;
+    }
+	
+	syn boolean ConstructorDecl.isRawConstructor() = false;
+	eq RawConstructorDecl.isRawConstructor() = true;
+
+	inh ConstructorDecl TypeDecl.unknownConstructor();
+	syn lazy ConstructorDecl TypeDecl.constructorSignature(ArrayList<TypeDecl> parmTypes, boolean isVariableArity) {
+		outer:
+		for(ConstructorDecl ctor : (Collection<ConstructorDecl>)constructors()) {
+			if(ctor.isVariableArity() != isVariableArity || ctor.getNumParameter() != parmTypes.size())
+				continue;
+			for(int i=0;i<parmTypes.size();++i)
+				if(ctor.getParameter(i).type() != parmTypes.get(i))
+					continue outer;
+			return ctor;
+		}
+		return unknownConstructor();
+	}
+	
+	public boolean ConstructorDecl.equals(Object o) {
+		if(!(o instanceof ConstructorDecl))
+			return false;
+		ConstructorDecl that = (ConstructorDecl)o;
+		return this.hostType().equals(that.hostType()) && this.signature().equals(that.signature());
+	}
 		
 	// uses of a constructor, including its substituted and parameterised copies
 	public Collection<Access> ConstructorDecl.usesOfAllCopies() {

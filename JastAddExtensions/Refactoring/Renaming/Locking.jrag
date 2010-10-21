@@ -10,6 +10,16 @@ aspect Locking {
 			getChild(i).lockNames(endangered);
 		return this;
 	}
+	public ASTNode ClassInstanceExpr.lockNames(Collection<String> endangered) {
+		if(isLocked()) {
+			// skip over type access
+			for(int i=1;i<getNumChild();++i)
+				getChild(i).lockNames(endangered);
+			return this;
+		} else {
+			return super.lockNames(endangered);
+		}
+	}
 	
 	public ASTNode ASTNode.lockMethodNames(String... endangered) {
 		return lockMethodNames(Arrays.asList(endangered));
@@ -40,6 +50,8 @@ aspect Locking {
 	TypeAccess implements LockableName;
 	VarAccess implements LockableName;
 	MethodAccess implements LockableName;
+	ClassInstanceExpr implements LockableName;
+	ConstructorAccess implements LockableName;
 	
 	public ASTNode LockableName.lockAllNames() {
 		ASTNode res = lock();
@@ -47,6 +59,15 @@ aspect Locking {
 			return super.lockAllNames();
 		else
 			return res.lockAllNames();
+	}
+	
+	public ASTNode ClassInstanceExpr.lockAllNames() {
+		// if this instance expression creates an anonymous class, we don't need
+		// to lock: the constructor is auto-generated anyway
+		if(!hasTypeDecl())
+			lock();
+		getArgList().lockAllNames();
+		return this;
 	}
 	
 	public void AbstractDot.eliminateLockedNames() {

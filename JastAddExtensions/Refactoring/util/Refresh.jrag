@@ -21,6 +21,24 @@ aspect Refresh {
 	public TypeDecl TypeDecl.refresh() { return refreshType(); }
 	public TypeDecl ParTypeDecl.refresh() { return refreshType(); }
 	
+	syn ConstructorDecl ConstructorDecl.refreshConstructor() = this;
+	eq ParConstructorDecl.refreshConstructor() {
+		ArrayList<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(int i=0;i<getNumTypeArgument();++i)
+			types.add(getTypeArgument(i).type().refresh());
+		return ((GenericConstructorDecl)((ConstructorDecl)getParent().getParent()).refresh()).lookupParConstructorDecl(types);
+	}
+	eq RawConstructorDecl.refreshConstructor() = ((GenericConstructorDecl)((ConstructorDecl)getParent().getParent()).refresh()).rawConstructor();
+	eq ConstructorDeclSubstituted.refreshConstructor() {
+		TypeDecl encl = hostType().refreshType();
+		ArrayList<TypeDecl> parmTypes = new ArrayList<TypeDecl>();
+		for(int i=0;i<getNumParameter();++i)
+			parmTypes.add(getParameter(i).type().refresh());
+		return encl.constructorSignature(parmTypes, isVariableArity());
+	}
+	
+	public ConstructorDecl ConstructorDecl.refresh() { return refreshConstructor(); }
+	
 	syn TypeDecl TypeDecl.refreshType() = this;
 	eq ArrayDecl.refreshType() = componentType().refresh().arrayType();
 	eq ParTypeDecl.refreshType() {
