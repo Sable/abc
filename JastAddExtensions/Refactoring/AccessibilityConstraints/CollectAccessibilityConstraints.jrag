@@ -31,6 +31,11 @@ aspect CollectConstraints {
 	   		   to Program.accessibilityConstraints()
 	   		   for programRoot();
 	
+	// Acc-1 variant: When referencing a method, the method's host type must be accessible
+	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().hostType().minAccess(this), decl().hostType()))
+               to Program.accessibilityConstraints()
+               for programRoot();
+	
 	// Acc-2
 	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.EQ, AccessModifierConstant.PUBLIC))
 	           when isQualified() &&

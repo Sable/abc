@@ -5,6 +5,8 @@ aspect ChangeAccessibility {
 		// TODO: array decls are fromSource(); maybe that should be changed in general?
 		if(!fromSource())
 			throw new RefactoringException("cannot change accessibility of non-source type");
+		if(isAnonymousType())
+			throw new RefactoringException("cannot change accessibility of anonymous type");
 		Collection<AccessibilityConstraint> constraints = programRoot().accessibilityConstraints(Collections.singleton((Visible)this));
 		constraints.add(new AccessibilityConstraint(this, this, Operator.EQ, v));
 		Map<Visible, Integer> acc_map = programRoot().solve(constraints);
@@ -29,4 +31,9 @@ aspect ChangeAccessibility {
 			programRoot().eliminate(LOCKED_NAMES);
 		}
 	}
+	public boolean Visible.isAnonymousType();
+	public boolean ConstructorDecl.isAnonymousType(){return false;}
+	public boolean FieldDeclaration.isAnonymousType(){return false;}
+	public boolean MethodDecl.isAnonymousType(){return false;}
+	public boolean TypeDecl.isAnonymousType(){return isAnonymous();}
 }

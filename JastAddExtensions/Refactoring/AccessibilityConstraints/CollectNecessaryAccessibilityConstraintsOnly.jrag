@@ -71,6 +71,13 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 			for (Access access : decl.uses()) {
 				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
 			}
+			//acc-1 variant: When referencing a method, the method's host type must be accessible
+			Iterator methodsIterator = decl.methodsIterator();
+			while(methodsIterator.hasNext()){
+				MethodDecl method = (MethodDecl) methodsIterator.next();
+				for(Access access : method.uses())
+					res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+			}
 			// constraints for top-level types
 			if(decl.fromSource() && decl.isTopLevelType()){
 				res.add(new AccessibilityConstraint(decl, decl, Operator.NE, AccessModifierConstant.PRIVATE));

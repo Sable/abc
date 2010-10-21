@@ -7,6 +7,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.AccessibilityConstraint;
+import AST.Modifier;
 import AST.Program;
 import AST.RawCU;
 import AST.RefactoringException;
@@ -191,5 +192,17 @@ public class AccessibilityTests extends TestCase {
 				"class B extends A implements I { Inner x; }");
 		testPossibleVisibilities(prog.findType("A").findSimpleType("Inner"), "++++");
 	}
-
+	
+	public void test18() {
+		testFail("Anonymous0", Modifier.VIS_PROTECTED, Program.fromClasses(
+				"class A { void n() { A a = new A(){}; } } "));
+	}
+	
+	public void test19() {
+		Program prog = Program.fromCompilationUnits(
+				new RawCU("A.java", "package p; public class A { public void m(){}}"),
+				new RawCU("B.java", "package p; public class B { public A getA(){return null;}}"),
+				new RawCU("C.jvav", "package q; public class C { void n(){new p.B().getA().m();}}"));
+		testFail("A", Modifier.VIS_PACKAGE, prog);
+	}
 }
