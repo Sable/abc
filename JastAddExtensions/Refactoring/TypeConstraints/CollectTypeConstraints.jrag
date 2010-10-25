@@ -182,6 +182,11 @@ aspect CollectTypeConstraints {
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
+	protected void ThrowStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "throw statement", getExpr(), Operator.LE, programRoot().findType("java.lang", "Throwable")));
+		super.collectTypeConstraints(pred, constraints);
+	}
+	
 	syn lazy boolean CastExpr.isDownCast() {
 		TypeDecl exprtp = getExpr().type(),
 		         restp = getTypeAccess().type();

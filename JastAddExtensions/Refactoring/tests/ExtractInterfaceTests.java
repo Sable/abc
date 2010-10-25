@@ -207,4 +207,31 @@ public class ExtractInterfaceTests extends TestCase {
 						  "package p;"+
 						  "interface I {}")));
     }
+	
+	public void test6() {
+		testSucc("A", new String[]{}, "p", "I", 
+			Program.fromCompilationUnits(
+				new RawCU("A.java",
+						  "package p;" +
+						  "class A extends Exception {}"),
+				new RawCU("B.java",
+						  "package p;" +
+						  "class B {" +
+						  "   A a; " +
+						  "   void m() throws A { throw a; }" + 
+						  "}")),
+			Program.fromCompilationUnits(
+				new RawCU("A.java",
+						  "package p;" +
+						  "class A extends Exception implements I {}"),
+				new RawCU("B.java",
+						  "package p;" +
+						  "class B {" +
+						  "   A a; " +
+						  "   void m() throws A { throw a; }" + 
+						  "}"),
+				new RawCU("I.java",
+						  "package p;"+
+						  "interface I {}")));
+    }
 }
