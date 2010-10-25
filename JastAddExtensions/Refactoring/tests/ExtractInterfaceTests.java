@@ -209,7 +209,7 @@ public class ExtractInterfaceTests extends TestCase {
     }
 	
 	public void test6() {
-		testSucc("A", new String[]{}, "p", "I", 
+		testFail("A", new String[]{}, "p", "I", 
 			Program.fromCompilationUnits(
 				new RawCU("A.java",
 						  "package p;" +
@@ -219,19 +219,6 @@ public class ExtractInterfaceTests extends TestCase {
 						  "class B {" +
 						  "   A a; " +
 						  "   void m() throws A { throw a; }" + 
-						  "}")),
-			Program.fromCompilationUnits(
-				new RawCU("A.java",
-						  "package p;" +
-						  "class A extends Exception implements I {}"),
-				new RawCU("B.java",
-						  "package p;" +
-						  "class B {" +
-						  "   A a; " +
-						  "   void m() throws A { throw a; }" + 
-						  "}"),
-				new RawCU("I.java",
-						  "package p;"+
-						  "interface I {}")));
+						  "}")));
     }
 }

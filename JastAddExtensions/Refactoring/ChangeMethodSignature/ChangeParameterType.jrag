@@ -1,11 +1,14 @@
 aspect ChangeParameterType {
+	inh TypeDecl ParameterDeclaration.typeThrowable();
+	
 	public void ParameterDeclaration.changeType(TypeDecl newType) {
 		if(getParameterisedCallable() != null && 
 				(!getParameterisedCallable().fromSource() || getParameterisedCallable().isNative()))
 			throw new RefactoringException("cannot change this parameter declaration");
 		if(!type().subtype(newType))
 			throw new RefactoringException("unsupported type change");
-		
+		if(type().subtype(typeThrowable())) 
+			throw new RefactoringException("cannot change throwable types");
 		Program root = programRoot();
 		Collection<TypeConstraint> constraints = root.typeConstraints(type());
 		

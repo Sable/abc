@@ -390,4 +390,11 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void n() { }" +
 				"}"));
 	}
+	
+	public void test20() {
+		testFail("A", "m", 0, "java.lang.Throwable",
+				Program.fromClasses(
+				"class A { void m(java.lang.Throwable t){} }",
+				"class B extends java.lang.Throwable {}"));
+	}
 }
