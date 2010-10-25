@@ -63,10 +63,15 @@ aspect Locking {
 	
 	public ASTNode ClassInstanceExpr.lockAllNames() {
 		// if this instance expression creates an anonymous class, we don't need
-		// to lock: the constructor is auto-generated anyway
-		if(!hasTypeDecl())
+		// to lock the constructor invocation: the constructor is auto-generated anyway
+		if(hasTypeDecl()) {
+			getAccess().lockAllNames();
+		} else {
 			lock();
-		getArgList().lockAllNames();
+		}
+		// skip over type access
+		for(int i=1;i<getNumChild();++i)
+			getChild(i).lockAllNames();
 		return this;
 	}
 	
