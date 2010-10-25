@@ -50,6 +50,10 @@ aspect CollectTypeConstraints {
 																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
 		}
+		for(MethodDecl that : hiddenMethods()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "hiding return type for method " + that.fullName(),
+																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
