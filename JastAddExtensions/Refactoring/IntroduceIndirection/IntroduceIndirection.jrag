@@ -1,3 +1,4 @@
+// TODO: needs serious rewrite
 aspect IntroduceIndirection {
 	public void MethodDeclSubstituted.introduceIndirection(String indname, String parmname, TypeDecl targetType) {
 		sourceMethodDecl().introduceIndirection(indname, parmname, targetType);

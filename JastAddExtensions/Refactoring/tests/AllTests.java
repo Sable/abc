@@ -46,7 +46,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.ConvertAnonymousToNested.ConvertAnonymousToNestedTests.class);
 		suite.addTestSuite(tests.eclipse.SelfEncapsulateField.SelfEncapsulateFieldTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceParameterObject.IntroduceParameterObjectTests.class);
-		suite.addTestSuite(tests.eclipse.IntroduceIndirection.IntroduceIndirectionTests.class);
+		//suite.addTestSuite(tests.eclipse.IntroduceIndirection.IntroduceIndirectionTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractClass.ExtractClassTests.class);
 		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);

@@ -149,7 +149,7 @@ aspect AccessMethod {
 	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
 		for(Iterator<MethodDecl> iter=localMethodsIterator();iter.hasNext();) {
 			MethodDecl md2 = iter.next();
-			if(md2.sameSourceDeclAs(md)) {
+			if(md2.equals(md)) {
 				Collection competitors = memberMethods(md.name());
 				competitors.remove(md);
 				return new MethodAccessInfo(md, this, competitors);

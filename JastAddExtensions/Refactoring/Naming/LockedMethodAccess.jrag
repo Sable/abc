@@ -98,13 +98,9 @@ aspect LockedMethodAccess {
 	
 	public ASTNode MethodAccess.lock(MethodDecl md) {
 		assert md != null && !md.isUnknown();
-		MethodDecl target = md.isSubstituted() ? md.sourceMethodDecl() : md;
-		setTargetMethod(target.save());
+		setTargetMethod(md.save());
 		return this;
 	}
-	
-	public boolean MethodDecl.isSubstituted() { return false; }
-	public boolean MethodDeclSubstituted.isSubstituted() { return false; }
 	
 	public boolean MethodAccess.isLocked() { return targetMethod != null; }
 	
@@ -125,7 +121,7 @@ aspect LockedMethodAccess {
 		flushCache();
 		if(fromSource())
 			setID(target.name());
-		if(decl().sameSourceDeclAs(target)) {
+		if(decl().equals(target)) {
 			return this;
 		} else if(fromSource()) {
 			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
@@ -250,13 +246,13 @@ aspect LockedMethodAccess {
 			if(!target.isStatic())
 				throw new RefactoringException("cannot access method");
 			if(inStaticCtxt)
-				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
+				if(qualifier.isTypeAccess() && qualifier.type().equals(source))
 					return ma.parentDot();
 				else
 					throw new RefactoringException("cannot access method");
-			if(source == bend && source.sameSourceDeclAs(qualifier.type()))
+			if(source == bend && source.equals(qualifier.type()))
 				return ma.parentDot();
-			else if(!qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(bend)) {
+			else if(!qualifier.isTypeAccess() && qualifier.type().equals(bend)) {
 				ma.parentDot().flushCaches();
 				return (Access) ma.parentDot().replace(ma.parentDot()).with(
 						new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma));

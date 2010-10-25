@@ -71,7 +71,7 @@ aspect LockedVariableAccess {
 		flushCache();
 		if(fromSource())
 			setID(target.name());
-		if(decl().sameSourceDeclAs(target)) {
+		if(decl().equals(target)) {
 			return this;
 		} else if(fromSource()) {
 			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && target.isField() && !target.isStatic())
@@ -119,7 +119,7 @@ aspect LockedVariableAccess {
 				access = va;
 			} else {
 				if(qualifier == null) {
-					if(source.sameSourceDeclAs(bend)) {
+					if(source.equals(bend)) {
 						if(bend.equals(enclosing)) {                                             // this.f
 							access = new ThisAccess("this").qualifiesAccess(va);
 						} else {                                                                       // B.this.f

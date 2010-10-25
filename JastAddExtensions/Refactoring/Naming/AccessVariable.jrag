@@ -122,15 +122,6 @@ aspect AccessVariable {
 	inh UnknownVarAccess Variable.unknownVarAccess();
 	inh UnknownVarAccess CatchClause.unknownVarAccess();
 	
-	// a coarser form of equality that considers, for example, a method from a generic
-	// class and its counterpart from a parameterised instance of the class to be the same
-	syn boolean TypeDecl.sameSourceDeclAs(TypeDecl decl) 
-		= sourceTypeDecl().equals(decl.sourceTypeDecl());
-	syn boolean MethodDecl.sameSourceDeclAs(MethodDecl decl) 
-		= sourceMethodDecl().equals(decl.sourceMethodDecl());
-	syn boolean Variable.sameSourceDeclAs(Variable decl) 
-		= sourceVariableDecl().equals(decl.sourceVariableDecl());
-	
 	// a field name is ambiguous in a type if it is inherited from more than one ancestor (e.g., both from a superclass and
 	// a superinterface)
 	syn boolean TypeDecl.ambiguousFieldName(String name) = memberFields(name).size() > 1;
@@ -295,7 +286,7 @@ aspect AccessVariable {
 	syn SymbolicFieldAccess TypeDecl.accessLocalField(Variable decl) {
 		for(Iterator iter = localFields(decl.name()).iterator(); iter.hasNext(); ) {
 			FieldDeclaration f = (FieldDeclaration)iter.next();
-			if(f.sameSourceDeclAs(decl))
+			if(f.equals(decl))
 				return new SymbolicFieldAccess(f);
 		}
 		return unknownVarAccess();
