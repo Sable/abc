@@ -3,6 +3,7 @@ package tests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import tests.RelativesTests.RelativesTests;
+import tests.constraints.AccessibilityTests;
 
 public class AllTests {
 	public static boolean TEST_UNDO = true;
@@ -35,6 +36,7 @@ public class AllTests {
 		suite.addTestSuite(ChangeParameterTypeTests.class);
 		suite.addTestSuite(ExtractInterfaceTests.class);
 		suite.addTestSuite(UtilTests.class);
+		suite.addTestSuite(AccessibilityTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
@@ -49,7 +51,6 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.MoveMembers.MoveMembersTests.class);
 		suite.addTestSuite(tests.eclipse.ExtractConstant.ExtractConstantTests.class);
 		suite.addTestSuite(tests.eclipse.InlineConstant.InlineConstantTests.class);
-		//suite.addTestSuite(tests.eclipse.ChangeSignature.ChangeSignatureTests.class);
 		suite.addTestSuite(tests.eclipse.IntroduceParameter.IntroduceParameterTests.class);
 		suite.addTestSuite(tests.eclipse.PromoteTempToField.PromoteTempToFieldTests.class);
 		suite.addTestSuite(tests.eclipse.InlineTemp.InlineTempTests.class);

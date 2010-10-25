@@ -1,3 +1,4 @@
+// TODO: this should be reorganised and eventually merged with CollectAccessibilityConstraints.jrag
 aspect CollectNecessaryAccessibilityConstraintsOnly {
 	
 	public Collection<AccessibilityConstraint> Program.accessibilityConstraints(
@@ -71,12 +72,16 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 			for (Access access : decl.uses()) {
 				res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
 			}
-			//acc-1 variant: When referencing a method, the method's host type must be accessible
+			//acc-1 variant: when calling a method, the receiver type has to be accessible
 			Iterator methodsIterator = decl.methodsIterator();
 			while(methodsIterator.hasNext()){
 				MethodDecl method = (MethodDecl) methodsIterator.next();
-				for(Access access : method.uses())
-					res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+				for(Access access : method.uses()) {
+					if(access.isQualified()) {
+						TypeDecl qualtp = access.qualifier().type();
+						res.add(new AccessibilityConstraint(access, qualtp.minAccess(access), qualtp));
+					}
+				}
 			}
 			// constraints for top-level types
 			if(decl.fromSource() && decl.isTopLevelType()){
@@ -145,7 +150,7 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 		return res;
 	}
 	
-	// TODO: might intoduce retundand constraints (when called for overriding and overridden method)
+	// TODO: might intoduce redundant constraints (when called for overriding and overridden method)
 	Collection<AccessibilityConstraint> MethodDecl.accessibilityConstraintsFromOverridingAndHidingBothDirections() {
 		Collection<AccessibilityConstraint> constrs = new HashSet<AccessibilityConstraint>();
 		// (sub-1), (sub-2), (dyn-1)
@@ -163,7 +168,7 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
 			// TODO: add corresponding second constraint; see above
 		}
-		// We do not need to look for indirectly overriding methods because they are interface mathods 
+		// We do not need to look for indirectly overriding methods because they are interface methods 
 		// forced to be public anyway by other constraints
 		
 		// (sub-1)
