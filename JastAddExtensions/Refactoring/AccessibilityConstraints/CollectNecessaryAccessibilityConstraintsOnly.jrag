@@ -180,20 +180,18 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 		}
 		
 		// (dyn-2)
-		if(!isStatic()) {
-			for(MethodDecl that : possiblyOverriddenAncestors()) {
-				if(!this.overrides(that)) {
-					// we want to avoid "this" overriding "that"
-					// note that we never need to require for the visibility of "that" to be less than private, hence the Math.max
-					int alpha = Math.max(VIS_PACKAGE, that.minAccess(hostType().hostPackage(), hostType()));
-					constrs.add(new AccessibilityConstraint(this, that, Operator.LT, alpha));
-				}
+		for(MethodDecl that : possiblyOverriddenAncestors()) {
+			if(this.isStatic() ? !that.isStatic() : !this.overrides(that)) {
+				// we want to avoid "this" overriding "that"
+				// note that we never need to require for the visibility of "that" to be less than private, hence the Math.max
+				int alpha = Math.max(VIS_PACKAGE, that.minAccess(hostType().hostPackage(), hostType()));
+				constrs.add(new AccessibilityConstraint(this, that, Operator.LT, alpha));
 			}
-			for(MethodDecl that : possiblyOverriddenDescendants()) {
-				if(!that.overrides(this)) {
-					int alpha = Math.max(VIS_PACKAGE, this.minAccess(that.hostType().hostPackage(), that.hostType()));
-					constrs.add(new AccessibilityConstraint(this, this, Operator.LT, alpha));
-				}
+		}
+		for(MethodDecl that : possiblyOverridingDescendants()) {
+			if(this.isStatic() ? !that.isStatic() : !that.overrides(this)) {
+				int alpha = Math.max(VIS_PACKAGE, this.minAccess(that.hostType().hostPackage(), that.hostType()));
+				constrs.add(new AccessibilityConstraint(this, this, Operator.LT, alpha));
 			}
 		}
 		return constrs;
@@ -204,7 +202,7 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
 		if(!this.isStatic())
 			return ret;
-		for(Iterator<MethodDecl> iter=possiblyOverriddenDescendants().iterator();
+		for(Iterator<MethodDecl> iter=possiblyOverridingDescendants().iterator();
 			iter.hasNext();) {
 			MethodDecl md = iter.next();
 			if(md.hides(this))
@@ -216,7 +214,7 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 	
 	// TODO: Move to Overriding.jrag or LockedOverriding.jrag?
 	// TODO: Max might know better ways to implement this
-	public Collection<MethodDecl> MethodDecl.possiblyOverriddenDescendants() {
+	public Collection<MethodDecl> MethodDecl.possiblyOverridingDescendants() {
 		HashSet<MethodDecl> res = new HashSet<MethodDecl>();
 		for(TypeDecl childType : hostType().childtypestransitive()){
 			for(Iterator<MethodDecl> it = childType.methodsIterator(); it.hasNext();){

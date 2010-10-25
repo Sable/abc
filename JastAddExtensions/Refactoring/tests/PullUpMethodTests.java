@@ -230,4 +230,16 @@ public class PullUpMethodTests extends TestCase {
     			"  class B { }" +
     			"}"));
     }
+    
+    public void test16() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  private static void m() { }" +
+    			"  { m(); }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  void m() { }" +
+    			"}"));
+    }
 }
