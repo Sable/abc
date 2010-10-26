@@ -31,9 +31,12 @@ aspect ChangeAccessibility {
 			programRoot().eliminate(LOCKED_NAMES);
 		}
 	}
+	
 	public boolean Visible.isAnonymousType();
 	public boolean ConstructorDecl.isAnonymousType(){return false;}
 	public boolean FieldDeclaration.isAnonymousType(){return false;}
 	public boolean MethodDecl.isAnonymousType(){return false;}
 	public boolean TypeDecl.isAnonymousType(){return isAnonymous();}
+	
+	
 }

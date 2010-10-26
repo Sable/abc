@@ -76,7 +76,7 @@ aspect Visibility {
 	
 	public void ClassDecl.setVisibility(int v) {
 		getModifiers().setVisibility(v);
-		setVisibilityOfDefaultConstructor(v);
+		setVisibilityOfImplicitConstructor(v);
 	}
 	
 	// collect all visible elements that are from source

@@ -8,7 +8,7 @@ aspect TypeExt {
 		Modifiers m = getModifiers();
 		m.setVisibility(visibility);
 		ClassDecl cd = new ClassDecl(m, name, new Opt<Access>(), new List<Access>(), getBodyDecls());
-		cd.setVisibilityOfDefaultConstructor(visibility);
+		cd.setVisibilityOfImplicitConstructor(visibility);
 		if(superType().isClassDecl() && !superType().isObject())
 			cd.setSuperClassAccess(superType().createLockedAccess());
 		for(Access iface : getImplementss())
@@ -42,22 +42,15 @@ aspect TypeExt {
 		}
 		return cd;
 	}
-	public void ClassDecl.inheritVisibilityToDefaultConstructor() { setVisibilityOfDefaultConstructor(getVisibility()); }
-	public void ClassDecl.setVisibilityOfDefaultConstructor(int visibility) {
-		for (Iterator i = constructors().iterator(); i.hasNext();) {
-			ConstructorDecl c = (ConstructorDecl) i.next();
-			if (c.invokesSuperConstructor() && c.getBlock().getNumStmt() == 0)
-				c.getModifiers().setVisibility(visibility);
-		}
+	public void ClassDecl.inheritVisibilityToDefaultConstructor() { setVisibilityOfImplicitConstructor(getVisibility()); }
+	public void ClassDecl.setVisibilityOfImplicitConstructor(int visibility) {
+		for(ConstructorDecl cd : (Collection<ConstructorDecl>)constructors())
+			if(cd.isImplicitConstructor())
+				cd.setVisibility(visibility);
 	}
 	
-	/*public void ClassDecl.inheritVisibilityToAllConstructors() { setVisibilityOfAllConstructors(getVisibility()); }
-	public void ClassDecl.setVisibilityOfAllConstructors(int visibility) {
-		for (Iterator i = constructors().iterator(); i.hasNext();) {
-			ConstructorDecl c = (ConstructorDecl) i.next();
-			c.getModifiers().setVisibility(getVisibility());
-		}
-	}*/
+	syn lazy boolean ConstructorDecl.isImplicitConstructor() 
+	  = getStart() == 0 && invokesSuperConstructor() && getBlock().getNumStmt() == 0;
 	
 	// the effective type of an expression is a best-effort approximation to the type of an expression
 	syn TypeDecl Expr.effectiveType() {

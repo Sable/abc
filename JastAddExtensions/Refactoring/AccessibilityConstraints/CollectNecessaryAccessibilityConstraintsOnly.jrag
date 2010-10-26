@@ -83,6 +83,12 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 					}
 				}
 			}
+			//acc-1 variant: when calling a constructor, its host type has to be accessible
+			for(ConstructorDecl cd : (Collection<ConstructorDecl>)decl.constructors()) {
+				for(Access access : cd.uses()) {
+					res.add(new AccessibilityConstraint(access, decl.minAccess(access), decl));
+				}
+			}
 			// constraints for top-level types
 			if(decl.fromSource() && decl.isTopLevelType()){
 				res.add(new AccessibilityConstraint(decl, decl, Operator.NE, AccessModifierConstant.PRIVATE));

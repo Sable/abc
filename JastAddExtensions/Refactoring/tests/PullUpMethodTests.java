@@ -242,4 +242,28 @@ public class PullUpMethodTests extends TestCase {
     			"  void m() { }" +
     			"}"));
     }
+    
+    public void test17() {
+    	testSucc(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  private static class Inner {" +
+    			"    public Inner() { }" +
+    			"  }" +
+    			"  void m() {" +
+    			"    new Inner();" +
+    			"  }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  void m() {" +
+    			"    new A.Inner();" +
+    			"  }" +
+    			"}" +
+    			"class A extends Super {" +
+    			"  static class Inner {" +
+    			"    public Inner() { }" +
+    			"  }" +
+    			"}"));
+    }
 }
