@@ -44,9 +44,8 @@ aspect PullUpMethod {
 	public void TypeDecl.removeSuper() { }
 	
 	public void AbstractDot.removeSuper() {
-		if(isSuperAccess())
-			replaceWith(lastAccess());
-		else if(getLeft().isSuperAccess())
+		rotateLeft();
+		if(getLeft().isSuperAccess() && !getRight().isMethodAccess())
 			replaceWith(getRight());
 		else
 			super.removeSuper();

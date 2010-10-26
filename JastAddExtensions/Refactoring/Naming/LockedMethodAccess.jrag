@@ -1,3 +1,4 @@
+// TODO: rewrite this, using refreshMethod() instead of SavedMethodDecls
 aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
 	 * rules, but instead immediately binds to its target. */

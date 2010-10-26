@@ -253,9 +253,10 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
+	/* disabled: test case changes super call into normal call; we don't do that
 	public void test9() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
-	}
+	}*/
 
 	public void test10() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
@@ -753,6 +754,7 @@ public class PullUpTests extends TestCase {
 		helper1(selectedMethodNames, selectedMethodSignatures, false, false, 0);
 	}*/
 
+	/* disabled: test case changes super call into normal call; we don't do that
 	public void test49() throws Exception{
 		// for bug 228950
 
@@ -769,7 +771,7 @@ public class PullUpTests extends TestCase {
 
 
 		helper1(selectedMethodNames, selectedMethodSignatures, true, true, 0);
-	}
+	}*/
 
 	public void testFail0() throws Exception{
 //		printTestDisabledMessage("6538: searchDeclarationsOf* incorrect");
@@ -1508,9 +1510,10 @@ public class PullUpTests extends TestCase {
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
 	}
 
+	/* disabled: test case changes super call into normal call; we don't do that
 	public void testGenerics9() throws Exception{
 			helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);
-	}
+	}*/
 
 	public void testGenerics10() throws Exception{
 		helper1(new String[]{"m"}, new String[][]{new String[0]}, true, false, 0);

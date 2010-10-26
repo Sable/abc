@@ -266,4 +266,75 @@ public class PullUpMethodTests extends TestCase {
     			"  }" +
     			"}"));
     }
+    
+    public void test18() {
+    	testSucc(Program.fromClasses(
+    			"class SuperSuper {" +
+    			"  int n() { return 23; }" +
+    			"}",
+    			"class Super extends SuperSuper {" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int n() { return 42; }" +
+    			"  int m() { return super.n(); }" +
+    			"}",
+    			"class Main {" +
+    			"  public static void main(String[] args) {" +
+    			"    System.out.println(new A().m());" +
+    			"  }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class SuperSuper {" +
+    			"  int n() { return 23; }" +
+    			"}",
+    			"class Super extends SuperSuper {" +
+    			"  int m() { return super.n(); }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int n() { return 42; }" +
+    			"}",
+    			"class Main {" +
+    			"  public static void main(String[] args) {" +
+    			"    System.out.println(new A().m());" +
+    			"  }" +
+    			"}"));
+    }
+    
+    public void test19() {
+    	testSucc(Program.fromClasses(
+    			"class Super {" +
+    			"  int x;" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int x;" +
+    			"  int m() { return super.x; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  int x;" +
+    			"  int m() { return x; }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int x;" +
+    			"}"));
+    }
+    
+    public void test20() {
+    	testSucc(Program.fromClasses(
+    			"class Super {" +
+    			"  int x;" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int x;" +
+    			"  int m() { return A.super.x; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  int x;" +
+    			"  int m() { return x; }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int x;" +
+    			"}"));
+    }
 }

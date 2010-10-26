@@ -57,7 +57,7 @@ aspect InlineMethodAccess {
 		super.expatiateQualifiers();
 	}
 	
-	// remove or simply "this" or "super" qualifiers marked "synthetic"
+	// remove or simplify "this" or "super" qualifiers marked "synthetic"
 	private boolean ThisAccess.synthetic = false;
 	private boolean SuperAccess.synthetic = false;
 	public ThisAccess.ThisAccess(boolean synthetic) {
