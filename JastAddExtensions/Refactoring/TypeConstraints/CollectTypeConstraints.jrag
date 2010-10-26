@@ -170,25 +170,56 @@ aspect CollectTypeConstraints {
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
-	protected void ConditionalExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.EQ, getFalseExpr()));
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, getTrueExpr()));
-		super.collectTypeConstraints(pred, constraints);
-	}
-	
 	protected void AbstractDot.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		if(!isTypeAccess())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "abstract dot", this, Operator.EQ, getRight()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
-	// actually, we do not allow Extract Interface and Change Parameter Type 
-	// for subclasses of java.lang.Throwable so we do not need this constraint
-	//protected void ThrowStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-	//	addConstraint(constraints, pred, new SimpleTypeConstraint(this, "throw statement", getExpr(), Operator.LE, typeThrowable()));
-	//	super.collectTypeConstraints(pred, constraints);
-	//}
+	protected void Binary.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		// Our tools do not substitute primitive types so luckily there is no need for conditional constraints here.
+ 		if(!getLeftOperand().type().isNull() && !getRightOperand().type().isNull()){
+ 			if(!getLeftOperand().type().isPrimitiveType())
+ 				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "binary operation", getLeftOperand(), Operator.EQ, getLeftOperand().type()));
+ 			if(!getRightOperand().type().isPrimitiveType())
+ 				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "binary operation", getRightOperand(), Operator.EQ, getRightOperand().type()));
+ 			}
+ 		super.collectTypeConstraints(pred, constraints);
+	}
+ 	
+  	protected void Unary.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		if(!getOperand().type().isPrimitiveType())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "unary operation", getOperand(), Operator.EQ, getOperand().type()));
+		super.collectTypeConstraints(pred, constraints);
+	}
+  	
+	protected void ConditionalExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.EQ, getFalseExpr()));
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, getTrueExpr()));		
+		if(!getCondition().type().isPrimitiveType())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getCondition(), Operator.EQ, getCondition().type()));
+		super.collectTypeConstraints(pred, constraints);
+	}
 	
+	protected void EqualityExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		collectTypeConstraints(pred, constraints, getLeftOperand(), getRightOperand());
+    	collectTypeConstraints(pred, constraints, getRightOperand(), getLeftOperand());
+		super.collectTypeConstraints(pred, constraints);
+	}
+    
+    private void EqualityExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints, Expr oneside, Expr otherside){
+		if(oneside.type().isNull())
+    		return;
+    	if(oneside.type().isPrimitive() && oneside.type().isPrimitiveType() && !otherside.type().isPrimitiveType())
+    		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "equality expression", otherside, Operator.EQ, otherside.type()));    	
+    }
+
+ 	protected void IfStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		if(!getCondition().type().isPrimitiveType())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "if statement", getCondition(), Operator.EQ, getCondition().type()));
+		super.collectTypeConstraints(pred, constraints);
+	}
+
 	syn lazy boolean CastExpr.isDownCast() {
 		TypeDecl exprtp = getExpr().type(),
 		         restp = getTypeAccess().type();

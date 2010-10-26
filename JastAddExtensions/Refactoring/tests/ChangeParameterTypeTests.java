@@ -397,4 +397,42 @@ public class ChangeParameterTypeTests extends TestCase {
 				"class A { void m(java.lang.Throwable t){} }",
 				"class B extends java.lang.Throwable {}"));
 	}
+	
+	public void test21() { 
+		testFail("A", "m", 0, "java.lang.CharSequence",
+				Program.fromClasses( 
+				"class A { void m(java.lang.String s){String t = \"abc\" + s;} }"));
+	}
+	
+	public void test22() {
+		testFail("A", "m", 0, "java.lang.Number",
+				Program.fromClasses( 
+				"class A { void m(java.lang.Integer i){int j = 1 + i;} }"));		
+	}
+
+	public void test23() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses( 
+				"class A { void m(Boolean b){if(b){b = false;}else{}} }"));		
+	}
+	
+	public void test24() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses( 
+				"class A { void m(Boolean b){ b = (b==true) ? false : true; }}"));		
+	}
+	
+	public void test25() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses( 
+				"class A { void m(Integer i){ i++; }}"));
+	}
+	
+	public void test26() {
+		testSucc("A", "m", 0, "java.lang.Object",
+				Program.fromClasses( 
+				"class A { void m(Integer i){ System.out.print(i == null);}}"),
+				Program.fromClasses(
+				"class A { void m(Object i){ System.out.print(i == null);}}"));
+	}
 }
