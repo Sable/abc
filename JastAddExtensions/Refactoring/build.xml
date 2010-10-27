@@ -8,23 +8,21 @@
 -->
 <project name="Refactoring" default="gen">
 
-<target name="defaultsettings">
+<target name="configurablesettings">
+	<property file="ant.settings"/>
+</target>
+	
+<target name="defaultsettings" depends="configurablesettings">
 	<!-- location of Java1.4Frontend -->
 	<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
 	<!-- location of Java1.5Frontend -->
 	<property name="Java1.5Frontend" value="../Java1.5Frontend"/>
 	<!-- location of ControlFlowGraph -->
 	<property name="ControlFlowGraph" value="../ControlFlowGraph"/>
+	<echo message="Java1.4Frontend = ${Java1.4Frontend}, Java1.5Frontend = ${Java1.5Frontend}, ControlFlowGraph = ${ControlFlowGraph}"/>
 </target>
-	
-<target name="configurablesettings" depends="defaultsettings">
-	<property file="ant.settings"/>
-	<fail message="Please fix ant.settings" unless="Java1.4Frontend"/>
-	<fail message="Please fix ant.settings" unless="Java1.5Frontend"/>
-	<fail message="Please fix ant.settings" unless="ControlFlowGraph"/>
-</target>
-	
-<target name="settings" depends="configurablesettings">
+		
+<target name="settings" depends="defaultsettings">
 	<!-- location of self -->
 	<property name="Refactoring" value="."/>
 	<!-- "package" is the directory where generated files will be stored -->
