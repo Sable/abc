@@ -41,7 +41,7 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar:${lib}/cream106.jar">
+	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${lib}/junit.jar:${lib}/cream106.jar">
 	  <include name="**/*.java"/>
 	  <exclude name="tests/eclipse/**/*.java"/>
 	  <exclude name="tests/RelativesTests/**/*.java"/>
