@@ -19,10 +19,9 @@ aspect MoveMembers {
 	}
 	
 	public void FieldDeclaration.moveTo(TypeDecl target) {
-		if(hasInit()) {
-			getInit().lockAllNames();
+		lockAllNames();
+		if(hasInit())
 			getInit().lockDataFlow();
-		}
 		programRoot().lockNames(name());
 		hostType().removeBodyDecl(this);
 		target.insertField(this);

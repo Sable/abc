@@ -83,6 +83,6 @@ internal tests), use tests.eclipse.EclipseTests instead.
 If you have junit.jar on your classpath, you can also run the test
 cases from the command line by issuing a command like
 
-  java -classpath .:/path/to/junit.jar:lib/cream106.jar -Xmx2G junit.awtui.TestRunner tests.AllTests
+  java -classpath .:lib/junit.jar:lib/cream106.jar -Xmx2G junit.awtui.TestRunner tests.AllTests
 
 from the Refactoring/ directory.

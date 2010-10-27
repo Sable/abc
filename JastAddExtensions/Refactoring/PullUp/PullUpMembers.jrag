@@ -16,4 +16,17 @@ aspect PullUpMembers {
 		pullUpMembers(meths, makeAbstract, fields, membertypes);
 		programRoot().eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
 	}
+	
+	public void MethodDecl.doPullUpWithRequired() {
+		java.util.Set<MethodDecl> requiredMethods = new HashSet<MethodDecl>();
+		java.util.Set<FieldDeclaration> requiredFields = new HashSet<FieldDeclaration>();
+		java.util.Set<MemberTypeDecl> requiredTypes = new HashSet<MemberTypeDecl>();
+		requiredMethods.add(this);
+		TypeDecl host = hostType();
+		host.addRequiredMembers(requiredMethods, requiredFields, requiredTypes);
+		host.doPullUpMembers(requiredMethods.toArray(new MethodDecl[]{}),
+							 new boolean[requiredMethods.size()],
+							 requiredFields.toArray(new FieldDeclaration[]{}),
+							 requiredTypes.toArray(new MemberTypeDecl[]{}));
+	}
 }

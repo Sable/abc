@@ -24,6 +24,7 @@ aspect InsertUnusedMethod {
 		for(MethodDecl mm : m.relatives())
 			for(MethodAccess ma : mm.uses())
 				ma.flushCaches();
+		m.flushCaches();
 		if(!canIntroduceMethod(m))
 			throw new RefactoringException("cannot insert method here");
 		if(m.isDynamicallyCallable())
