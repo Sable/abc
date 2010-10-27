@@ -337,4 +337,39 @@ public class PullUpMethodTests extends TestCase {
     			"  int x;" +
     			"}"));
     }
+
+    public void test21() {
+       	testSucc(
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {}"),
+    				new RawCU("A.java","package q; public class A extends p.Super {static int i; static void m(){i++;}}")),
+    				
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {static void m(){q.A.i++;}}"),
+    				new RawCU("A.java","package q; public class A extends p.Super {public static int i;}")));
+    }
+
+    public void test22() {
+    	testSucc(
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {}"),
+    				new RawCU("A.java","package q; public class A extends p.Super {static void m(){} void n(){m();}}"),
+    				new RawCU("Sub.java","package q; public class Sub extends A {static void m(){}}")),
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {protected static void m(){} }"),
+    				new RawCU("A.java","package q; public class A extends p.Super {void n(){m();}}"),
+    				new RawCU("Sub.java","package q; public class Sub extends A {protected static void m(){}}")));
+    }
+
+    public void test23() {
+    	testSucc(
+    			Program.fromCompilationUnits(
+    				new RawCU("SuperSuper.java","package p; public class SuperSuper {static void m(){}}"),
+    				new RawCU("Super.java","package q; public class Super extends p.SuperSuper {}"),
+    				new RawCU("A.java","package p; public class A extends q.Super {static void m(){} void n(){m();}}")),
+    			Program.fromCompilationUnits(
+        				new RawCU("SuperSuper.java","package p; public class SuperSuper {static void m(){}}"),
+        				new RawCU("Super.java","package q; public class Super extends p.SuperSuper {protected static void m(){}}"),
+        				new RawCU("A.java","package p; public class A extends q.Super {void n(){m();}}")));
+    }
 }
