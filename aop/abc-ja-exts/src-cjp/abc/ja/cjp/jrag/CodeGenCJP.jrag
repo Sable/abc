@@ -32,7 +32,8 @@ aspect CodeGenCJP {
 		Pointcut cjpCall = new abc.ja.cjp.weaving.CJPCall(joinpointTypeDeclReferencedByAdvice().getQualifiedName(),pos());
 		java.util.List args = new LinkedList();
 		for(ParameterDeclaration p: paramDecls()) {
-			args.add(new ArgVar(new Var(p.getID(), pos()), pos()));
+			if(!p.getID().equals("thisJoinPoint") && !p.getID().equals("thisJoinPointStaticPart"))
+				args.add(new ArgVar(new Var(p.getID(), pos()), pos()));
 		}
 		if(args.isEmpty())
 			return cjpCall;
