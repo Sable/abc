@@ -586,7 +586,11 @@
   <jar destfile="${abc.loc}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
   <jar destfile="${basedir}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
   <copy file="${abc-ja.loc}/lib/abc-ja-complete.jar" tofile="${basedir}/lib/abc-ja-exts-complete.jar"/>
-  <jar destfile="${basedir}/lib/abc-ja-exts-complete.jar" update="true" basedir="${basedir}/classes" includes="**/*.class"/>
+  <jar destfile="${basedir}/lib/abc-ja-exts-complete.jar" update="true" basedir="${basedir}/classes" includes="**/*.class">
+    <zipfileset src="${tools}/beaver-rt.jar"/>
+    <zipfileset src="${Refactoring}/lib/junit.jar"/>
+    <zipfileset src="${Refactoring}/lib/cream106.jar"/>
+  </jar>
 </target>
 
 <target name="om-jars" depends="om-build,om-libs">
