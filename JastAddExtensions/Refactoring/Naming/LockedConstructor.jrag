@@ -40,6 +40,7 @@ aspect LockedConstructor {
 	
 	refine LookupConstructor eq ConstructorAccess.decl() = targetConstructor == null ? refined() : targetConstructor;
 	refine LookupConstructor eq ClassInstanceExpr.decl() = targetConstructor == null ? refined() : targetConstructor;
+	refine TypeAnalysis eq ClassInstanceExpr.type() = targetConstructor == null ? refined() : targetConstructor.hostType();
 	
 	refine PrettyPrint public void ConstructorAccess.toString(StringBuffer s) {
 		if(targetConstructor == null) {

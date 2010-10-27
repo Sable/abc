@@ -19,9 +19,11 @@ aspect MoveMembers {
 	}
 	
 	public void FieldDeclaration.moveTo(TypeDecl target) {
-		lockAllNames();
 		if(hasInit())
 			getInit().lockDataFlow();
+		else if(isFinal())
+			throw new RefactoringException("cannot move uninitialised final field");
+		lockAllNames();
 		programRoot().lockNames(name());
 		hostType().removeBodyDecl(this);
 		target.insertField(this);
