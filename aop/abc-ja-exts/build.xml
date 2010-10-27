@@ -32,7 +32,9 @@
 
   <!-- "tools" is the directory where generators and libraries are located. -->
   <property name="tools" value="${frontend}/tools"/>
-  
+
+  <property name="Refactoring" value="${jastadd.ext}/Refactoring"/>
+
   <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
   <taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
            classpath="${tools}/JFlex.jar"/>
@@ -52,7 +54,7 @@
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
                fork="true" memoryMaximumSize="512M" destdir="classes">
-	<classpath>
+			<classpath>
               <pathelement location="${polyglot.loc}"/>
               <pathelement location="${abc.loc}/classes"/>
               <pathelement location="${polyglot.cupclasses.loc}"/>
@@ -60,9 +62,14 @@
               <pathelement location="${jasmin.loc}"/>
               <pathelement location="${xact.loc}"/>
               <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+			  <!--necessary for abc.ja.cjp -->
+		      <pathelement location="${tools}/beaver-rt.jar"/>
+		      <pathelement location="${Refactoring}/lib/junit.jar"/>
+		      <pathelement location="${Refactoring}/lib/cream106.jar"/>
+			  <!--/necessary for abc.ja.cjp -->
               <pathelement location="${abc.loc}/testing-classes"/>
               <pathelement location="${abc-ja.loc}/classes"/>
-	      <pathelement location="${basedir}"/>
+	    	  <pathelement location="${basedir}"/>
             </classpath>
                 <src path="${basedir}/src-tm"/>
                 <src path="${basedir}/src-eaj"/>
@@ -110,6 +117,11 @@
               <pathelement location="${jasmin.loc}"/>
               <pathelement location="${xact.loc}"/>
               <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+			  <!--necessary for abc.ja.cjp -->
+		      <pathelement location="${tools}/beaver-rt.jar"/>
+		      <pathelement location="${Refactoring}/lib/junit.jar"/>
+		      <pathelement location="${Refactoring}/lib/cream106.jar"/>
+			  <!--/necessary for abc.ja.cjp -->
               <pathelement location="${abc.loc}/testing-classes"/>
               <pathelement location="${abc-ja.loc}/classes"/>
 	          <pathelement location="${basedir}"/>
@@ -262,8 +274,8 @@
 	
 <target name="cjp-jrag" depends="settings">
   <!-- create AST node types and weave aspect modules -->
-        <echo message="Generating to ${basedir}/generated..."/>
-        <mkdir dir="${basedir}/generated"/>
+    <echo message="Generating to ${basedir}/generated..."/>
+    <mkdir dir="${basedir}/generated"/>
 	<jastadd package="abc.ja.cjp.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
                 noCacheCycle="true" noComponentCheck="true"
@@ -311,6 +323,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+  	        <exclude name="**/FlushCaches.jrag"/>
 		</fileset>
 		<fileset dir="${basedir}/src-cjp/abc/ja/cjp/jrag">
 			<include name="**/*.ast"/>
@@ -324,22 +337,35 @@
 			<exclude name="ASTReplace.jrag"/>
 		</fileset>	
 		<fileset dir="${jastadd.ext}/ControlFlowGraph">
-				    <include name="Nodes.ast"/>
-					<include name="ControlFlowGraph.jrag"/>
-					<include name="Sets.jrag"/>
-					<include name="Exceptions.jrag"/>
-					<include name="Alias.jrag"/>
-					<include name="ReachingDefinitions.jrag"/>
-					<include name="DotGeneration.jrag"/>
+		    <include name="Nodes.ast"/>
+			<include name="ControlFlowGraph.jrag"/>
+			<include name="Sets.jrag"/>
+			<include name="Exceptions.jrag"/>
+			<include name="Alias.jrag"/>
+			<include name="ReachingDefinitions.jrag"/>
+			<include name="DotGeneration.jrag"/>
 		</fileset>
-		<fileset dir="${jastadd.ext}/Refactoring">
-		    <include name="**/*.ast"/>
+		<fileset dir="${Refactoring}/util">
+	        <include name="**/*.ast"/>
+	        <include name="**/*.jrag"/>
+	        <include name="**/*.jadd"/>
+  	        <exclude name="**/ASTReplace.jrag"/>
+		</fileset>
+		<fileset dir="${Refactoring}">
+		        <include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-			<exclude name="Locks/**"/>
 			<exclude name="util/**"/>
-			<exclude name="tests/**"/>
+			<exclude name="undo/NoUndo.jrag"/>
+			<exclude name="AccessibilityConstraints/SolverChoco.jrag"/>
+			<exclude name="TypeConstraints/TypeConstraintSolving.jrag"/>
+			<exclude name="TypeConstraints/CollectTypeConstraints.jrag"/>
+  	        <exclude name="tests/**/*.jrag"/>
 		</fileset>
+  		<fileset dir="${Refactoring}">
+  			<include name="TypeConstraints/TypeConstraintSolving.jrag"/>
+			<include name="TypeConstraints/CollectTypeConstraints.jrag"/>
+  		</fileset>
 	</jastadd>
 </target>	
 	
