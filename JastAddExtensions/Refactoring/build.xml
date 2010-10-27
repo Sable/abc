@@ -8,29 +8,38 @@
 -->
 <project name="Refactoring" default="gen">
 
-<!-- location of Java1.4Frontend -->
-<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
-<!-- location of Java1.5Frontend -->
-<property name="Java1.5Frontend" value="../Java1.5Frontend"/>
-<!-- location of ControlFlowGraph -->
-<property name="ControlFlowGraph" value="../ControlFlowGraph"/>
-<!-- location of self -->
-<property name="Refactoring" value="."/>
-
-<!-- "package" is the directory where generated files will be stored -->
-<property name="package" value="AST"/>
-
-<!-- "tools" is the directory where generators and libraries are located. -->
-<property name="tools" value="${Java1.4Frontend}/tools"/>
+<target name="defaultsettings">
+	<!-- location of Java1.4Frontend -->
+	<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
+	<!-- location of Java1.5Frontend -->
+	<property name="Java1.5Frontend" value="../Java1.5Frontend"/>
+	<!-- location of ControlFlowGraph -->
+	<property name="ControlFlowGraph" value="../ControlFlowGraph"/>
+</target>
 	
-<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
-<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
-<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
-<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
-<!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
-<!-- "lib" is the directory where additional libraries are located -->
-<property name="lib" value="${Refactoring}/lib"/>
+<target name="configurablesettings" depends="defaultsettings">
+	<property file="ant.settings"/>
+	<fail message="Please fix ant.settings" unless="Java1.4Frontend"/>
+	<fail message="Please fix ant.settings" unless="Java1.5Frontend"/>
+	<fail message="Please fix ant.settings" unless="ControlFlowGraph"/>
+</target>
+	
+<target name="settings" depends="configurablesettings">
+	<!-- location of self -->
+	<property name="Refactoring" value="."/>
+	<!-- "package" is the directory where generated files will be stored -->
+	<property name="package" value="AST"/>
+	<!-- "tools" is the directory where generators and libraries are located. -->
+	<property name="tools" value="${Java1.4Frontend}/tools"/>
+	<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+	<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
+	<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+	<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
+	<!-- "jastadd" is an ant task class in jastadd2.jar -->
+	<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
+	<!-- "lib" is the directory where additional libraries are located -->
+	<property name="lib" value="${Refactoring}/lib"/>
+</target>
 
 <!-- compile sources -->
 <target name="build" depends="gen">
@@ -44,7 +53,7 @@
 <!-- generate compiler source files and compile sources; change
      to scanner1.4 and parser1.4 to build a compiler that accepts Java 1.4 as
      input language -->
-<target name="gen" depends="scanner1.5,parser1.5">
+<target name="gen" depends="settings,scanner1.5,parser1.5">
   <!-- create AST node types and weave aspect modules -->
   <jastadd package="${package}" rewrite="true" beaver="true" novisitcheck="true" noCacheCycle="true"
   	       outdir="${basedir}" debug="false">
