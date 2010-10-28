@@ -18,7 +18,11 @@ aspect LockedOverriding {
 	}
 	
 	public void MethodDecl.lockOverriding() {
-		HashSet<SavedMethodDecl> deps = new HashSet<SavedMethodDecl>();
+		HashSet<SavedMethodDecl> deps;
+		if (lockedOverridingDependencies == null)
+			deps = new HashSet<SavedMethodDecl>();
+		else
+			deps = lockedOverridingDependencies;
 		for(MethodDecl md : overriddenMethods())
 			deps.add(md.save());
 		setOverridingDependencies(deps);
@@ -50,6 +54,8 @@ aspect LockedOverriding {
 		setOverridingDependencies(null);
 	}
 	public void MethodDecl.addOverriddenMethod(MethodDecl md) {
+		if(lockedOverridingDependencies == null)
+			lockedOverridingDependencies = new HashSet<SavedMethodDecl>();
 		lockedOverridingDependencies.add(md.save());
 	}
 	
