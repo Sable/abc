@@ -11,7 +11,6 @@ class R {
 		void f(){
 			int d= CONSTANT;	
 		}
-		private static final int CONSTANT= ///p.
-						   R.rG();
+		private static final int CONSTANT= p.R.rG();
 	}	
 }

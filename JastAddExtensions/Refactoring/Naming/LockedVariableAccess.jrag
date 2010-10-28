@@ -73,28 +73,32 @@ aspect LockedVariableAccess {
 			setID(target.name());
 		if(decl().equals(target)) {
 			return this;
-		} else if(fromSource()) {
-			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && target.isField() && !target.isStatic())
-				throw new RefactoringException("cannot access instance variable in static context");
-			SymbolicVarAccess acc = accessVariable(target);
-			if(acc.isUnknownVarAccess()) {
-				if((qual == null || qual.isPure()) && target.isStatic()) {
-					TypeDecl host = target.hostType();
-					if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target)) {
-						this.flushCache();
-						return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this)); //??
-					}
-				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
-					acc = parentDot().accessVariable(target);
-					if(acc != null && !acc.isUnknownVarAccess())
-						return acc.accessByModifyingAccess(this);
-				}
-				throw new RefactoringException("cannot access variable "+target.name());
-			}
-			return acc.accessByModifyingAccess(this);
+		} else if(!fromSource()) {
+			throw new RefactoringException("cannot fix variable access in compiled code");
 		} else {
+			return unlock(qual, target);
+		}
+	}
+	
+	public Access VarAccess.unlock(Expr qual, Variable target) {
+		if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && target.isField() && !target.isStatic())
+			throw new RefactoringException("cannot access instance variable in static context");
+		SymbolicVarAccess acc = accessVariable(target);
+		if(acc.isUnknownVarAccess()) {
+			if((qual == null || qual.isPure()) && target.isStatic()) {
+				TypeDecl host = target.hostType();
+				if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target)) {
+					this.flushCache();
+					return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this)); //??
+				}
+			} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
+				acc = parentDot().accessVariable(target);
+				if(acc != null && !acc.isUnknownVarAccess())
+					return acc.accessByModifyingAccess(this);
+			}
 			throw new RefactoringException("cannot access variable "+target.name());
 		}
+		return acc.accessByModifyingAccess(this);
 	}
 	
 	// eliminating locked variable accesses

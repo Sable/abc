@@ -133,39 +133,43 @@ aspect LockedMethodAccess {
 			setID(target.name());
 		if(decl().equals(target)) {
 			return this;
-		} else if(fromSource()) {
-			if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
-				throw new RefactoringException("cannot access instance method in static context");
-			MethodAccessInfo acc = accessMethod(target);
-			if(acc == null) {
-				if((qual == null || qual.isPure()) && target.isStatic()) {
-					TypeDecl host = target.hostType();
-					// since the target is static, we can access it through the raw type
-					if(host.isGenericType())
-						host = ((GenericTypeDecl)host).rawType();
-					if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
-						if (qual == null || (qual!=null && qual.type() != host)) {
-							this.flushCaches();
-							return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this));
-						} else
-							return qual!=null ? parentDot() : this;
-				} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
-					acc = parentDot().accessMethod(target);
-					if(acc != null) {
-						this.flushCaches();
-						return (Access) replace(parentDot()).with(acc.eliminate(this, null, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
-					}
-				}
-				throw new RefactoringException("cannot access method "+target.name());
-			}
-			this.flushCaches();
-			Access res = acc.eliminate(this, qual, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
-			if(res == null)
-				throw new RefactoringException("cannot access method "+target.name());
-			return res;
+		} else if(!fromSource()) {
+			throw new RefactoringException("cannot adjust method access in compiled code");
 		} else {
+			return unlock(qual, target, isMonoCall);
+		}
+	}
+	
+	public Access MethodAccess.unlock(Expr qual, MethodDecl target, boolean isMonoCall) {
+		if((qual == null ? inStaticContext() : qual.staticContextQualifier()) && !target.isStatic())
+			throw new RefactoringException("cannot access instance method in static context");
+		MethodAccessInfo acc = accessMethod(target);
+		if(acc == null) {
+			if((qual == null || qual.isPure()) && target.isStatic()) {
+				TypeDecl host = target.hostType();
+				// since the target is static, we can access it through the raw type
+				if(host.isGenericType())
+					host = ((GenericTypeDecl)host).rawType();
+				if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
+					if (qual == null || (qual!=null && qual.type() != host)) {
+						this.flushCaches();
+						return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this));
+					} else
+						return qual!=null ? parentDot() : this;
+			} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
+				acc = parentDot().accessMethod(target);
+				if(acc != null) {
+					this.flushCaches();
+					return (Access) replace(parentDot()).with(acc.eliminate(this, null, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
+				}
+			}
 			throw new RefactoringException("cannot access method "+target.name());
 		}
+		this.flushCaches();
+		Access res = acc.eliminate(this, qual, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
+		if(res == null)
+			throw new RefactoringException("cannot access method "+target.name());
+		return res;
 	}
 	
 	// eliminating locked method accesses

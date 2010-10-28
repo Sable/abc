@@ -156,34 +156,46 @@ aspect LockedTypeAccess {
 		if(!target.hasName())
 			throw new RefactoringException("cannot unlock access to nameless type");
 		try {
-			if(hostType() == null && !target.accessibleFromPackage(hostPackage())
-					|| hostType() != null && !target.accessibleFrom(hostType()))
-				throw new RefactoringException("inaccessible type");
-			if(!fromSource() || hostBodyDecl() instanceof MethodDecl && ((MethodDecl)hostBodyDecl()).isNative()) {
-				if(!decl().equals(target))
-					throw new RefactoringException("cannot fix access in library");
+			if(!isObscured() && decl().equals(target))
 				return this;
-			}
-			if(target.isRawType())
-				target = target.erasure();
-			if(target.isParameterizedType())
-				return unlockParTypeAccess((ParTypeDecl)target, qual);
-			if(target.isTypeVariable())
-				return unlockTypeVariableAccess((TypeVariable)target, qual);
-			if(target instanceof PrimitiveType || target instanceof VoidType)
-				return unlockPrimitiveTypeAccess(target, qual);
-			if(target.isArrayDecl())
-				return unlockArrayTypeAccess((ArrayDecl)target, qual);
-			if(target.isLocalClass())
-				return unlockLocalClassAccess((ClassDecl)target, qual);
-			if(target.isMemberType())
-				return unlockMemberTypeAccess(target, qual);
-			if(target.isTopLevelType())
-				return unlockTopLevelTypeAccess(target, qual);
-			throw new Error("cannot fix access to this kind of type");
+			return unlock(qual, target);
 		} finally {
 			setTargetType(null);
 		}
+	}
+	
+	public boolean TypeAccess.isObscured() {
+		if(!fromSource())
+			return false;
+		String tlpkg = getTopLevelPackage();
+		if(tlpkg != null)
+			return !(lookupName(tlpkg) instanceof PackageDecl);
+		return !(lookupName(name()) instanceof TypeDecl);
+	}
+	
+	public Access TypeAccess.unlock(Expr qual, TypeDecl target) {
+		if(hostType() == null && !target.accessibleFromPackage(hostPackage())
+				|| hostType() != null && !target.accessibleFrom(hostType()))
+			throw new RefactoringException("inaccessible type");
+		if(!fromSource() || hostBodyDecl() instanceof MethodDecl && ((MethodDecl)hostBodyDecl()).isNative())
+			throw new RefactoringException("cannot fix access in library");
+		if(target.isRawType())
+			target = target.erasure();
+		if(target.isParameterizedType())
+			return unlockParTypeAccess((ParTypeDecl)target, qual);
+		if(target.isTypeVariable())
+			return unlockTypeVariableAccess((TypeVariable)target, qual);
+		if(target instanceof PrimitiveType || target instanceof VoidType)
+			return unlockPrimitiveTypeAccess(target, qual);
+		if(target.isArrayDecl())
+			return unlockArrayTypeAccess((ArrayDecl)target, qual);
+		if(target.isLocalClass())
+			return unlockLocalClassAccess((ClassDecl)target, qual);
+		if(target.isMemberType())
+			return unlockMemberTypeAccess(target, qual);
+		if(target.isTopLevelType())
+			return unlockTopLevelTypeAccess(target, qual);
+		throw new Error("cannot fix access to this kind of type");		
 	}
 	
 	protected Access TypeAccess.unlockPrimitiveTypeAccess(TypeDecl target, Expr qual) {
