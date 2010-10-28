@@ -168,7 +168,7 @@ aspect LockedTypeAccess {
 		if(!fromSource())
 			return false;
 		String tlpkg = getTopLevelPackage();
-		if(tlpkg != null)
+		if(tlpkg != null && !tlpkg.equals(""))
 			return !(lookupName(tlpkg) instanceof PackageDecl);
 		return !(lookupName(name()) instanceof TypeDecl);
 	}
