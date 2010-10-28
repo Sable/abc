@@ -26,6 +26,31 @@ aspect UndoLocking {
 		}
 	}
 	
+	// unfortunately we have to duplicate the definition of the refined method here due to reasons of object identity
+	refine LockedOverriding public void MethodDecl.addOverriddenMethod(MethodDecl md) {
+		final SavedMethodDecl smd = md.save();
+		lockedOverridingDependencies.add(smd);
+		if (Program.isRecordingASTChanges()) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
+				@Override
+				public void undo() {
+					lockedOverridingDependencies.remove(smd);
+				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					lockedOverridingDependencies.add(smd);
+				}
+			
+				@Override
+				public String toString() {
+					return "MethodDecl.addOverriddenMethod";
+				}
+			});
+		}
+	}
+
 	// Locked constructor access
 	
 	refine LockedConstructor private void ConstructorAccess.setTarget(final ConstructorDecl targetConstructor) {
