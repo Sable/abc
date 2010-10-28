@@ -233,7 +233,7 @@
 </target>
 
 <!-- remove generated source files and .class files -->
-<target name="cleanGen">
+<target name="cleanGen" depends="settings">
     <delete dir="${package}"/>
     <delete dir="beaver"/>
     <delete>

@@ -372,4 +372,52 @@ public class PullUpMethodTests extends TestCase {
         				new RawCU("Super.java","package q; public class Super extends p.SuperSuper {protected static void m(){}}"),
         				new RawCU("A.java","package p; public class A extends q.Super {void n(){m();}}")));
     }
+    
+    public void test24() {
+    	testSucc(
+    			Program.fromClasses(
+    			"interface I { void m(); }",
+    			"abstract class Super implements I {" +
+    			"  void n() {" +
+    			"    m();" +
+    			"  }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  public void m() { }" +
+    			"}"),
+    			Program.fromClasses(
+    			"interface I { void m(); }",
+    			"abstract class Super implements I {" +
+    			"  void n() {" +
+    			"    m();" +
+    			"  }" +
+    			"  public void m() { }" +
+    			"}",
+    			"class A extends Super { }"));
+    }
+    
+    public void test25() {
+    	testSucc(
+    			Program.fromClasses(
+    			"interface I { void m(); }",
+    			"abstract class SuperSuper implements I { }",
+    			"abstract class Super extends SuperSuper {" +
+    			"  void n() {" +
+    			"    m();" +
+    			"  }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  public void m() { }" +
+    			"}"),
+    			Program.fromClasses(
+    			"interface I { void m(); }",
+    			"abstract class SuperSuper implements I { }",
+    			"abstract class Super extends SuperSuper {" +
+    			"  void n() {" +
+    			"    m();" +
+    			"  }" +
+    			"  public void m() { }" +
+    			"}",
+    			"class A extends Super { }"));
+    }
 }

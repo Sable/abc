@@ -74,7 +74,7 @@ aspect PushDownMethod {
 			List<Expr> args = new List<Expr>();
 			for(ParameterDeclaration pd : new_md.getParameters())
 				args.add(new VarAccess(pd.name()));
-			lockedAccess = new MethodAccess(md, args);
+			lockedAccess = new MethodAccess(md, args, true);
 			ReturnStmt ret = new ReturnStmt(new AbstractDot(new SuperAccess("super"), lockedAccess));
 			new_md.setBlock(new Block(new List<Stmt>().add(ret)));
 		}

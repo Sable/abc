@@ -1,18 +1,26 @@
 // TODO: rewrite this, using refreshMethod() instead of SavedMethodDecls
 aspect LockedMethodAccess {
 	/* A locked method access is a method access that does not obey the normal method lookup
-	 * rules, but instead immediately binds to its target. */
+	 * rules, but instead immediately binds to its target. For every locked method access,
+	 * we also cache whether or not it is a monomorphic call. */
 	private SavedMethodDecl MethodAccess.targetMethod = null;
-	private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd) { return targetMethod = smd; }
-	
-	
-	public MethodAccess.MethodAccess(MethodDecl target, List<Expr> args) {
-		this(target.name(), args);
-		setTargetMethod(target.save());
+	private boolean MethodAccess.isMonoCall = false;
+	private SavedMethodDecl MethodAccess.setTargetMethod(SavedMethodDecl smd, boolean isMonoCall) { 
+		this.targetMethod = smd;
+		this.isMonoCall = isMonoCall;
+		return smd;
 	}
 	
+	public MethodAccess.MethodAccess(MethodDecl target, List<Expr> args, boolean isMonoCall) {
+		this(target.name(), args);
+		setTargetMethod(target.save(), isMonoCall);
+	}
+	
+	public MethodAccess MethodDecl.createLockedAccess(List<Expr> args, boolean isMonoCall) {
+		return new MethodAccess(this, args, isMonoCall);
+	}
 	public MethodAccess MethodDecl.createLockedAccess(List<Expr> args) {
-		return new MethodAccess(this, args);
+		return createLockedAccess(args, false);
 	}
 	
 	/* If we just store the method declaration an access should bind to, we get into trouble with
@@ -99,7 +107,7 @@ aspect LockedMethodAccess {
 	
 	public ASTNode MethodAccess.lock(MethodDecl md) {
 		assert md != null && !md.isUnknown();
-		setTargetMethod(md.save());
+		setTargetMethod(md.save(), isMonoCall());
 		return this;
 	}
 	
@@ -118,7 +126,8 @@ aspect LockedMethodAccess {
 	public Access MethodAccess.unlock() {
 		Expr qual = getQualifier();
 		MethodDecl target = targetMethod.getDecl();
-		setTargetMethod(null);
+		boolean isMonoCall = this.isMonoCall;
+		setTargetMethod(null, false);
 		flushCache();
 		if(fromSource())
 			setID(target.name());
@@ -144,13 +153,13 @@ aspect LockedMethodAccess {
 					acc = parentDot().accessMethod(target);
 					if(acc != null) {
 						this.flushCaches();
-						return (Access) replace(parentDot()).with(acc.eliminate(this, qual=null/*!!*/, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
+						return (Access) replace(parentDot()).with(acc.eliminate(this, null, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach()));
 					}
 				}
 				throw new RefactoringException("cannot access method "+target.name());
 			}
 			this.flushCaches();
-			Access res = acc.eliminate(this, qual, enclosingType(), inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
+			Access res = acc.eliminate(this, qual, enclosingType(), isMonoCall, inStaticContext(), (List<Expr>) getArgs().fullCopyAndDetach());
 			if(res == null)
 				throw new RefactoringException("cannot access method "+target.name());
 			return res;
@@ -160,31 +169,47 @@ aspect LockedMethodAccess {
 	}
 	
 	// eliminating locked method accesses
-	public Access MethodAccessInfo.eliminate(MethodAccess original, Expr qualifier, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
+	public Access MethodAccessInfo.eliminate(MethodAccess original, Expr qualifier, TypeDecl enclosing, boolean isMonoCall, boolean inStaticCtxt, List<Expr> args) {
 		if(qualifier == null)
-			return eliminate(original, enclosing, inStaticCtxt, args);
+			return eliminate(original, enclosing, isMonoCall, inStaticCtxt, args);
 		else
-			return eliminateQualified(original, qualifier, enclosing, inStaticCtxt, args);
+			return eliminateQualified(original, qualifier, enclosing, isMonoCall, inStaticCtxt, args);
 	}
 	
-	public Access MethodAccessInfo.eliminate(MethodAccess original, TypeDecl enclosing, boolean inStaticCtxt, List<Expr> args) {
+	public Access MethodAccessInfo.eliminate(MethodAccess original, TypeDecl enclosing, boolean isMonoCall, boolean inStaticCtxt, List<Expr> args) {
 		if(!directlyVisible) {
 			if(target.isStatic())
 				return (Access) original.replace(original).with(
 						computeStaticAccess(original, enclosing, args));
 			if(inStaticCtxt)
 				throw new RefactoringException("cannot access non-static method in static context");
-			if(source == bend) {
-				return (Access) original.replace(original).with(
-						computeThisAccess(original, enclosing, args));
-			} else if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
-				return (Access) original.replace(original).with(
-						computeSuperAccess(original, enclosing, args));
+			MethodAccess ma = constructAccess(original, args);
+			ma.flushCaches();
+			if(isMonoCall && !target.isPrivate()) {
+				// need to construct a super call
+				if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
+					if(bend == enclosing)
+						return (Access)original.replace(original).with(new SuperAccess("super").qualifiesAccess(ma));
+					else {
+						return (Access)original.replace(original).with(bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma)));
+					}
+				}
+				throw new RefactoringException("cannot construct monomorphic call");
 			} else {
-				throw new RefactoringException("cannot access method");
+				if(source != bend && target.isPrivate())
+					throw new RefactoringException("cannot access private method here");
+				if(bend == enclosing)
+					return (Access)original.replace(original).with(ma);
+				else
+					return (Access)original.replace(original).with(bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma)));						
+				/* Note: We do not distiguish whether source == bend or not, but since we are constructing a virtuall call
+				 *       there is no semantic difference between ((A)this).m() and this.m(), and ((A)B.this).m() and 
+				 *       B.this.m() anyway.
+				 *        
+				 * TODO: this might lead to problems with overloading*/
 			}
 		} else {
-			return constructAccess(original, args);
+			return (Access)original.replace(original).with(constructAccess(original, args));
 		}
 	}
 	
@@ -192,26 +217,6 @@ aspect LockedMethodAccess {
 		return source.createLockedAccess().qualifiesAccess(constructAccess(original, args));
 	}
 	
-	public Access MethodAccessInfo.computeThisAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
-		MethodAccess ma = constructAccess(original, args);
-		if(source == enclosing)
-			return ma;
-		else {
-			ma.flushCaches();
-			return bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
-		}
-	}
-	
-	public Access MethodAccessInfo.computeSuperAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
-		MethodAccess ma = constructAccess(original, args);
-		if(bend == enclosing)
-			return new SuperAccess("super").qualifiesAccess(ma);
-		else {
-			ma.flushCaches();
-			return bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
-		}
-	}
-
 	protected MethodAccess MethodAccessInfo.constructAccess(MethodAccess original, List<Expr> args) {
 		// check if any of the competitors is more specific than the target for
 		// this argument list; then we need casts
@@ -241,7 +246,7 @@ aspect LockedMethodAccess {
 	}
 
 	public Access MethodAccessInfo.eliminateQualified(MethodAccess original, Expr qualifier, TypeDecl enclosing,
-			boolean inStaticCtxt, List<Expr> args) {
+			boolean isMonoCall, boolean inStaticCtxt, List<Expr> args) {
 		MethodAccess ma = constructAccess(original, args);
 		if(!directlyVisible) {
 			if(!target.isStatic())

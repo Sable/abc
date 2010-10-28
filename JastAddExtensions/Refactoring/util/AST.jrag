@@ -104,8 +104,8 @@ aspect AST {
 		super.flushCaches();
 	}
 	
-	protected void ASTNode.replaceWith(ASTNode newnode) {
-		replace(this).with(newnode);
+	protected ASTNode ASTNode.replaceWith(ASTNode newnode) {
+		return replace(this).with(newnode);
 	}
 	
 	protected void Access.qualifyWith(Expr qual) {

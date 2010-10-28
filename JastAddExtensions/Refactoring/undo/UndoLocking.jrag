@@ -78,21 +78,23 @@ aspect UndoLocking {
 
 	// Locked Method Access
 	
-	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(final SavedMethodDecl smd) {
+	refine LockedMethodAccess private SavedMethodDecl MethodAccess.setTargetMethod(final SavedMethodDecl smd, final boolean isMonoCall) {
 		final SavedMethodDecl saved = targetMethod;
-		SavedMethodDecl res = refined(smd);
+		final boolean saved_isMonoCall = this.isMonoCall;
+		SavedMethodDecl res = refined(smd, isMonoCall);
 		if (Program.isRecordingASTChanges()) {
 			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
 				
 				@Override
 				public void undo() {
 					targetMethod = saved;
+					MethodAccess.this.isMonoCall = saved_isMonoCall;
 				}
 
 				@Override
 				public void redo() {
 					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
-					refined(smd);
+					refined(smd, isMonoCall);
 				}
 				
 				@Override
