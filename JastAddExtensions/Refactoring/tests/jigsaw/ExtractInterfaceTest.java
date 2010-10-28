@@ -61,7 +61,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	
 	private LogEntry performChanges(final Program prog, final ClassDecl clazz, final String pkg, final String name, final Collection<MethodDecl> methods) {
 		final LogEntry entry = new LogEntry(name());
-		//prog.setLogEntry(entry);
+//		prog.setLogEntry(entry);
 		entry.addParameter("class", clazz.fullName());
 		entry.addParameter("interface package", pkg);
 		entry.addParameter("interface name", name);
@@ -72,9 +72,9 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		
-//		Thread job = new Thread() {
-//			@Override
-//			public void run() {
+		Thread job = new Thread() {
+			@Override
+			public void run() {
 				entry.startsNow();
 				try{
 					Program.startRecordingASTChangesAndFlush();
@@ -91,18 +91,18 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 					t.printStackTrace();
 					entry.finished(t);
 				}				
-//			}
-//		};
-//		job.start();
-//		try {
-//			job.join(TIMEOUT);
-//			if(job.isAlive()) {
-//				entry.logTimeout();
-//				job.stop();
-//			}
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+			}
+		};
+		job.start();
+		try {
+			job.join(TIMEOUT);
+			if(job.isAlive()) {
+				entry.logTimeout();
+				job.stop();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		Program.undoAll();
 		prog.flushCaches();
 		if(CHECK_UNDO)
