@@ -449,4 +449,39 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void n(Object a) {}"+
 				"}"));
 	}
+	
+	//FIXME
+	public void test28() {
+		testSucc("B", "l", 0, "J",
+				Program.fromClasses( 
+				"class X {}",
+				"class Y extends X {}",
+				"interface I {X m(X x);}",
+				"interface J {Y n(Y y);}",
+				"class A implements I, J {" +
+				"  public X m(X x) {return null;}" +
+				"  public Y n(Y y) {return null;}" +
+				"}",
+				"class B {" +
+				"  void k(I i) {i = new A();}" +
+				"  void l(A a) {k(a);}"+
+				"  I ii;"+
+				"  void m() {k(ii);}"+
+				"}"),
+				Program.fromClasses(
+				"class X {}",
+				"class Y extends X {}",
+				"interface I {X m(X x);}",
+				"interface J {Y n(Y y);}",
+				"class A implements I, J {" +
+				"  public X m(X x) {return null;}" +
+				"  public Y n(Y y) {return null;}" +
+				"}",
+				"class B {" +
+				"  void k(J i) {i = new A();}" +
+				"  void l(J a) {k(a);}"+
+				"  J ii;"+
+				"  void m() {k(ii);}"+
+				"}"));
+	}
 }
