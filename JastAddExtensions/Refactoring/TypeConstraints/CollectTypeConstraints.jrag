@@ -84,6 +84,7 @@ aspect CollectTypeConstraints {
 
 	protected void AssignSimpleExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()));
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "simple assignment expression", this, Operator.EQ, getDest()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
@@ -124,7 +125,7 @@ aspect CollectTypeConstraints {
 			}
 		}
 	}
-
+	
 	protected void VarAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "variable access", this, Operator.EQ, decl().getTypeAccess()));
 		if(isQualified())

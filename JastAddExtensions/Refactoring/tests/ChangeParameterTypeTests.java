@@ -435,4 +435,18 @@ public class ChangeParameterTypeTests extends TestCase {
 				Program.fromClasses(
 				"class A { void m(Object i){ System.out.print(i == null);}}"));
 	}
+
+	public void test27() {
+		testSucc("A", "m", 0, "java.lang.Object",
+				Program.fromClasses( 
+				"class A {"+
+				"  void m(A a) {n(a = new A());}"+
+				"  void n(A a) {}"+
+				"}"),
+				Program.fromClasses( 
+				"class A {"+
+				"  void m(Object a) {n(a = new A());}"+
+				"  void n(Object a) {}"+
+				"}"));
+	}
 }
