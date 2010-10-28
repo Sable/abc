@@ -16,6 +16,7 @@ public class PullUpTest extends AbstractRealProgramTest {
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		for(final MethodDecl method : prog.sourceMethods()){
 			final LogEntry entry = new LogEntry(name());
+			//prog.setLogEntry(entry);
 			Thread job = new Thread() {
 				@Override
 				public void run() {

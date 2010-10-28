@@ -29,7 +29,7 @@ public class ChangeAccessibilityTest extends AbstractRealProgramTest {
 	
 	private LogEntry run(final Program prog, final Visible visible, final int accessModifier) {
 		final LogEntry entry = new LogEntry(name());
-		
+		//prog.setLogEntry(entry);
 		entry.addParameter("declaration", visible.name());
 		entry.addParameter("accessibility", Modifier.visibilityToString(accessModifier));
 		

@@ -25,6 +25,7 @@ public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 				substitutiontypes.addAll(tp.supertypestransitive());
 				for(final TypeDecl stp : substitutiontypes) {
 					final LogEntry entry = new LogEntry(name());
+					//prog.setLogEntry(entry);
 					entry.addParameter("method", md.fullName());
 					entry.addParameter("parameter #", i+"");
 					entry.addParameter("substitution type", stp.fullName());	

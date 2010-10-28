@@ -10,17 +10,22 @@ import AST.Problem;
 import AST.RefactoringException;
 
 public class LogEntry {
+	
 	private String refactoring;
-	private long start;
-	private long end;
 	private Map<String, String> parameters = new HashMap<String, String>();
-	private RefactoringException rfe = null;
-	private Throwable throwable;
-	private Collection<Problem> errors = Collections.emptyList();
-	private boolean timeout;
-	private boolean accessibilityIssues;
-	private boolean nameIssues;
-	private boolean typeIssues;
+	volatile private long start;
+	volatile private long end;
+	volatile private RefactoringException rfe = null;
+	volatile private Throwable throwable;
+	volatile private Collection<Problem> errors = Collections.emptyList();
+	volatile private boolean timeout;
+	volatile private int typeAccess;
+	volatile private int methodAccess;
+	volatile private int variableAccess;
+	volatile private int insertedCasts;
+	volatile private int accessibilityIssues;
+	volatile private int typeIssues;
+	
 	public LogEntry(String refactoring) {
 		this.refactoring = refactoring;
 	}
@@ -70,16 +75,28 @@ public class LogEntry {
 		System.out.println(toString());
 	}
 	
-	public void typeIssues(boolean typeIssues) {
-		this.typeIssues = typeIssues;
+	public void logTypeIssue() {
+		this.typeIssues++;
 	}
 
-	public void accessibilityIssues(boolean accessibilityIssues) {
-		this.accessibilityIssues = accessibilityIssues;
+	public void logAdjustedTypeAccess() {
+		typeAccess++;
 	}
 
-	public void nameIssues(boolean nameIssues) {
-		this.nameIssues = nameIssues;
+	public void logAdjustedMethodAccess() {
+		methodAccess++;
+	}
+
+	public void logAdjustedVariableAccess() {
+		variableAccess++;
+	}
+	
+	public void logCastInserted() {
+		insertedCasts++;
+	}
+
+	public void logAccessibilityIssues(int i) {
+		accessibilityIssues = i;
 	}
 
 	public boolean wasSuccess() {
@@ -102,33 +119,39 @@ public class LogEntry {
 		res.append("; ")
 		   .append(wasSuccess()).append("; ")
 		   .append(rfe == null ? "" : rfe.getMessage()).append("; ")
-		   .append(hasException() ? throwable.getMessage() : "").append("; ")
+		   .append(hasException() ? "Exception: " + throwable.getMessage() : "").append("; ")
 		   .append(timeout()).append("; ")
 		   .append(hasErrors()).append("; ");
 		for(Problem problem : errors)
 			res.append(problem.toString().replaceAll(";",",").replaceAll(System.getProperty("line.separator"), "  ")).append(", ");
 		res.append("; ")
 		   .append(duration()).append("; ")
+		   .append(typeAccess).append("; ")
+		   .append(methodAccess).append("; ")
+		   .append(variableAccess).append("; ")
+		   .append(insertedCasts).append("; ")
 		   .append(accessibilityIssues).append("; ")
-		   .append(nameIssues).append("; ")
 		   .append(typeIssues).append("; ");
 		return res.toString();
 	}
 
 	public static String header() {
 		StringBuilder res = new StringBuilder();
-		res.append("refactoring; ")
-		   .append("parameters; ")
-		   .append("success; ")
-		   .append("refactoring message; ")
-		   .append("exception message; ")
-		   .append("timeout; ")
-		   .append("errors; ")
-		   .append("error messages; ")
-		   .append("duration ;")
-		   .append("accessibility issues ;")
-		   .append("naming issues ;")
-		   .append("type issues ;");
+		res.append("refactoring;")
+		   .append("parameters;")
+		   .append("success;")
+		   .append("refactoring message;")
+		   .append("exception message;")
+		   .append("timeout;")
+		   .append("errors;")
+		   .append("error messages;")
+		   .append("duration;")
+		   .append("adjusted type accesses;")
+		   .append("adjusted method accesses;")
+		   .append("adjusted variable accesses;")
+		   .append("casts inserted;")
+		   .append("accessibility adjustments;")
+		   .append("type adjustments;");
 		return res.toString();
 	}
 }

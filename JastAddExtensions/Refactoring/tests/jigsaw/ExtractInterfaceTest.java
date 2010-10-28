@@ -39,9 +39,9 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	
 	@Override
 	protected void performChanges(Program prog, Log log) throws IOException {
-		//Run1
 		final String freshInterface = "RTT_NEW_INTERFACE";
 		final String freshPackage = "RTT_NEW_PACKAGE";
+		//Run1
 		for(ClassDecl classDecl : prog.sourceClassDecls()) {
 			for(Collection<MethodDecl> methodSet : computeMethodSets(classDecl)) {
 				log.add(performChanges(prog, classDecl, freshPackage, freshInterface, methodSet));				
@@ -50,7 +50,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		//Run2
 		for(ClassDecl classDecl : mostReferencedClassDecls(prog,10)) {
 			for (ClassDecl classDecl2 : prog.sourceClassDecls()) {
-				log.add(performChanges(prog, classDecl, freshPackage, classDecl2.name(), allPublicNonInheritedMethods(classDecl)));
+				log.add(performChanges(prog, classDecl, freshPackage, classDecl2.name(), allNonInheritedMethods(classDecl)));
 			}
 		}
 		
@@ -61,6 +61,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	
 	private LogEntry performChanges(final Program prog, final ClassDecl clazz, final String pkg, final String name, final Collection<MethodDecl> methods) {
 		final LogEntry entry = new LogEntry(name());
+		//prog.setLogEntry(entry);
 		entry.addParameter("class", clazz.fullName());
 		entry.addParameter("interface package", pkg);
 		entry.addParameter("interface name", name);
@@ -71,9 +72,9 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		
-		Thread job = new Thread() {
-			@Override
-			public void run() {
+//		Thread job = new Thread() {
+//			@Override
+//			public void run() {
 				entry.startsNow();
 				try{
 					Program.startRecordingASTChangesAndFlush();
@@ -87,20 +88,21 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 				} catch(ThreadDeath td) {
 					// might occur in case of timeout
 				} catch(Throwable t) {
+					t.printStackTrace();
 					entry.finished(t);
 				}				
-			}
-		};
-		job.start();
-		try {
-			job.join(TIMEOUT);
-			if(job.isAlive()) {
-				entry.logTimeout();
-				job.stop();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//			}
+//		};
+//		job.start();
+//		try {
+//			job.join(TIMEOUT);
+//			if(job.isAlive()) {
+//				entry.logTimeout();
+//				job.stop();
+//			}
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		Program.undoAll();
 		prog.flushCaches();
 		if(CHECK_UNDO)
@@ -116,7 +118,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	private Collection<Collection<MethodDecl>> computeMethodSets(TypeDecl typeDecl) {
 		Collection<Collection<MethodDecl>> res = new LinkedList<Collection<MethodDecl>>();
 		
-		Collection<MethodDecl> publicNonInheritedMethods = allPublicNonInheritedMethods(typeDecl);
+		Collection<MethodDecl> publicNonInheritedMethods = allNonInheritedMethods(typeDecl);
 		
 		// empty methods set
 		res.add(new LinkedList<MethodDecl>());
@@ -133,12 +135,12 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		return res;
 	}
 	
-	private Collection<MethodDecl> allPublicNonInheritedMethods(TypeDecl typeDecl) {
+	private Collection<MethodDecl> allNonInheritedMethods(TypeDecl typeDecl) {
 		Collection<MethodDecl> res = new LinkedList<MethodDecl>();
 		Iterator<MethodDecl> methodIterator = typeDecl.methodsIterator();
 		while(methodIterator.hasNext()){
 			MethodDecl method = methodIterator.next();
-			if(method.isPublic() && method.getParent(2) == typeDecl)
+			if(method.getParent(2) == typeDecl)
 				res.add(method);
 		}
 		return res;
