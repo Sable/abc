@@ -49,7 +49,7 @@ public class Log {
 			if(entry.timeout())  
 				timeouts++;
 			else
-				duration = entry.duration();
+				duration = duration + entry.duration();
 			if(entry.hasErrors())
 				errors++;
 		}
