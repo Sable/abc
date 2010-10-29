@@ -48,4 +48,27 @@ aspect AccessibilityGlue {
 		}
 	}
 
+	// undo support for caching accessibility constraints that reference a certain Visible
+	refine AccessibilityConstraints public void Visible.referencedBy(final AccessibilityConstraint c) {
+		refined(c);
+		if (Program.isRecordingASTChanges()) {
+			Program.addUndoAction(new ASTModificationReplaceEdit(this.isInTree(), this, IDstart, IDend, getID(), getID()) {
+				@Override
+				public void undo() {
+					referencingAccessibilityConstraints.remove(c);
+				}
+
+				@Override
+				public void redo() {
+					if (Program.isRecordingASTChanges()) Program.addUndoAction(this);
+					refined(c);
+				}
+			
+				@Override
+				public String toString() {
+					return "Visible.referencedBy";
+				}
+			});
+		}
+	}
 }

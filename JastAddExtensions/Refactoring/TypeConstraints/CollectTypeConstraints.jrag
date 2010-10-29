@@ -46,12 +46,10 @@ aspect CollectTypeConstraints {
 				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type for method " + that.fullName(), 
 																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type for method " + that.fullName(),
-																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
 		}
-		for(MethodDecl that : hiddenMethods()) {
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "hiding return type for method " + that.fullName(),
+		for(MethodDecl that : possiblyOverriddenAncestors()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding/hiding return type for method " + that.fullName(),
 																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
@@ -258,5 +256,20 @@ aspect CollectTypeConstraints {
 	}
 	public boolean IsArrayTypeConstraint.relevantForGeneralisation(TypeDecl C) {
 		return var instanceof Expr && C.subtype(((Expr)var).type());
+	}
+	
+	public abstract boolean TypeConstraint.relevantForSubtree(ASTNode nd);
+	public boolean SimpleTypeConstraint.relevantForSubtree(ASTNode nd) {
+		return left instanceof Expr && ((Expr)left).isDescendantTo(nd)
+		    || right instanceof Expr && ((Expr)right).isDescendantTo(nd);
+	}
+	public boolean DisjunctiveTypeConstraint.relevantForSubtree(ASTNode nd) {
+		for(TypeConstraint constr : constraints)
+			if(constr.relevantForSubtree(nd))
+				return true;
+		return false;		
+	}
+	public boolean IsArrayTypeConstraint.relevantForSubtree(ASTNode nd) {
+		return var instanceof Expr && ((Expr)var).isDescendantTo(nd);
 	}
 }

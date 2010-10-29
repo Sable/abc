@@ -22,7 +22,13 @@ aspect PullUpMethod {
 		}
 		programRoot().flushCaches();
 		// check that everything went OK wrt types
-		for(TypeConstraint typeConstraint : this.typeConstraints(Predicate.TRUE))
+		Collection<TypeConstraint> typeConstraints =
+			programRoot().typeConstraints(new Predicate<TypeConstraint>() {
+				public boolean holds(TypeConstraint constr) {
+					return constr.relevantForSubtree(MethodDecl.this);
+				}
+			});
+		for(TypeConstraint typeConstraint : typeConstraints)
 			if(!typeConstraint.solved())
 				throw new RefactoringException("type constraint violated: " + typeConstraint);
 	}
