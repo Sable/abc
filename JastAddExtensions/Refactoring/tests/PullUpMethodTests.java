@@ -420,4 +420,28 @@ public class PullUpMethodTests extends TestCase {
     			"}",
     			"class A extends Super { }"));
     }
+    
+    public void test26() {
+    	testSucc(
+    			Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  private static int m() { return 23; }" +
+    			"  int n() { return m()+19; }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  private static int m() { return 56; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  static int m() { return 23; }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int n() { return m()+19; }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  static int m() { return 56; }" +
+    			"}"));
+    			
+    }
 }

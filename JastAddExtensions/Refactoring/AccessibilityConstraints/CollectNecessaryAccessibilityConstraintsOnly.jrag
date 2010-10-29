@@ -207,19 +207,13 @@ aspect CollectNecessaryAccessibilityConstraintsOnly {
 		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
 		if(!this.isStatic())
 			return ret;
-		for(Iterator<MethodDecl> iter=possiblyOverridingDescendants().iterator();
-			iter.hasNext();) {
-			MethodDecl md = iter.next();
-			if(!md.isPrivate()&&md.signature().equals(signature()))
-				// hides() would also check accessibility which we just try to adjust. So we check equality of signatures, only. 
-				ret.add(md);
-		}
+		ret.addAll(possiblyOverridingDescendants());
 		return ret;		
 	}
 	
 	
 	// TODO: Max might know better ways to implement this
-	private Collection<MethodDecl> MethodDecl.possiblyOverridingDescendants() {
+	syn lazy Collection<MethodDecl> MethodDecl.possiblyOverridingDescendants() {
 		HashSet<MethodDecl> res = new HashSet<MethodDecl>();
 		for(TypeDecl childType : hostType().childtypestransitive()){
 			for(Iterator<MethodDecl> it = childType.methodsIterator(); it.hasNext();){

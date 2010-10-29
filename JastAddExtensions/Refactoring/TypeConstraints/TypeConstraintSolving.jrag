@@ -29,6 +29,8 @@ aspect TypeConstraintSolving {
 			}
 		} else if(op == Operator.LE) {
 			if(update.contains(left) && !newType.subtype(right.getConstrainedType())) {
+				if(!right.getConstrainedType().subtype(newType))
+					throw new RefactoringException("cannot change to unrelated type");
 				addConstraintVar(update, right);
 			}
 		} else if(op == Operator.LT) {

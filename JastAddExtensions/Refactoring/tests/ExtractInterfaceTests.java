@@ -68,10 +68,10 @@ public class ExtractInterfaceTests extends TestCase {
 				"    public void foo(B b){}" +
 				"    public void bar(){}" +
 				"  }" +
-				"}",
+				"}" +
 				"interface Y {" +
 				"  public class B { }" +
-				"}",
+				"}" +
 				"class Z extends X implements Y {" +
 				"  Z(X.C p, X.C q){ q.bar(); }" +
 				"  Z(X.C r, Object s){" +
@@ -83,17 +83,17 @@ public class ExtractInterfaceTests extends TestCase {
 				Program.fromClasses(
 				"interface I {" +
 				"  abstract public void foo(X.B b);" +
-				"}",
+				"}" +
 				"class X {" +
 				"  class B { }" +
 				"  static class C implements I {" +
 				"    public void foo(B b){}" +
 				"    public void bar(){}" +
 				"  }" +
-				"}",
+				"}" +
 				"interface Y {" +
 				"  public class B { }" +
-				"}",
+				"}" +
 				"class Z extends X implements Y {" +
 				"  Z(I p, X.C q){ q.bar(); }" +
 				"  Z(X.C r, Object s){" +
@@ -109,7 +109,6 @@ public class ExtractInterfaceTests extends TestCase {
 				Program.fromCompilationUnits(
 				new RawCU("X.java",
 				"package p;" +
-				"" +
 				"class X {" +
 				"  private class B { }" +
 				"  static class C {" +
@@ -244,4 +243,41 @@ public class ExtractInterfaceTests extends TestCase {
 						  "package q;"+
 						  "public interface I {abstract public void m();}")));
     }
+	
+	public void test8() {
+		testSucc("p.A", new String[]{"n(p.Y)"}, "p", "J",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class X {}" +
+				"class Y extends X {}" +
+				"interface I {X m(X x);}" +
+				"class A implements I {" +
+				"  public X m(X x) {return null;}" +
+				"  public Y n(Y y) {return null;}" +
+				"}" +
+				"class B {" +
+				"  void k(I i) {i = new A();}" +
+				"  void l(A a) {k(a);}"+
+				"  I ii;"+
+				"  void m() {k(ii);}"+
+				"}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class X {}" +
+				"class Y extends X {}" +
+				"interface I {X m(X x);}" +
+				"class A implements I, J {" +
+				"  public X m(X x) {return null;}" +
+				"  public Y n(Y y) {return null;}" +
+				"}" +
+				"class B {" +
+				"  void k(I i) {i = new A();}" +
+				"  void l(A a) {k(a);}"+
+				"  I ii;"+
+				"  void m() {k(ii);}"+
+				"}"),
+				new RawCU("J.java",
+				"package p;" +
+				"interface J {abstract public Y n(Y y);}")));
+	}
 }
