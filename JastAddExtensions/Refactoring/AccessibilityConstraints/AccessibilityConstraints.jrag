@@ -17,6 +17,8 @@ aspect AccessibilityConstraints {
 			this.left = left;
 			this.op = op;
 			this.right = right;
+			left.referencedBy(this);
+			right.referencedBy(this);
 		}
 		
 		// several convenience constructors
@@ -65,6 +67,17 @@ aspect AccessibilityConstraints {
 			return toString(node) + ": " + left + " " + op + " " + right;
 		}
 		
+		public Collection<Visible> referencedVisibles(){
+			LinkedList<Visible> res = new LinkedList<Visible>();
+			if(left instanceof AccessModifierVariable){
+				res.add(((AccessModifierVariable)left).getElement());
+			}
+			if(right instanceof AccessModifierVariable){
+				res.add(((AccessModifierVariable)right).getElement());
+			}
+			return res;
+		}
+
 		// special-purpose pretty printing method for AST nodes that occur in constraints
 		public static String toString(ASTNode nd) {
 			if(nd instanceof TypeDecl) {
@@ -78,10 +91,11 @@ aspect AccessibilityConstraints {
 		}
 	}
 	
+	
 	// abstract supertype for representing both access modifier constants and variables
 	abstract class WithAccessModifier {
 		public abstract int getAccessModifier();
-		
+		public void referencedBy(AccessibilityConstraint constraint){};
 		// factory method: a declaration element occurring in a library gives rise to an access modifier
 		// constant, otherwise a variable
 		public static WithAccessModifier forVisible(Visible vis) {
@@ -140,5 +154,19 @@ aspect AccessibilityConstraints {
 		public String toString() {
 			return "visibility(" + AccessibilityConstraint.toString((ASTNode)element) + ")";
 		}
+		public void referencedBy(AccessibilityConstraint constraint){
+			element.referencedBy(constraint);
+		}
+	}
+	
+	private Collection<AccessibilityConstraint> ConstructorDecl.referencingAccessibilityConstraints = new HashSet<AccessibilityConstraint>();
+	private Collection<AccessibilityConstraint> FieldDeclaration.referencingAccessibilityConstraints = new HashSet<AccessibilityConstraint>();
+	private Collection<AccessibilityConstraint> MethodDecl.referencingAccessibilityConstraints = new HashSet<AccessibilityConstraint>();
+	private Collection<AccessibilityConstraint> TypeDecl.referencingAccessibilityConstraints = new HashSet<AccessibilityConstraint>();
+	public Collection<AccessibilityConstraint> Visible.referencingAccessibilityConstraints(){
+		return referencingAccessibilityConstraints;
+	}
+	public void Visible.referencedBy(AccessibilityConstraint c){
+		referencingAccessibilityConstraints.add(c);
 	}
 }

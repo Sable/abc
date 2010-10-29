@@ -106,7 +106,7 @@ aspect CollectConstraints {
 			// TODO: add corresponding second constraint; see above
 		}
 		// (Sub-1)
-		for(MethodDecl that : hiddenMethods()) {
+		for(MethodDecl that : hiddenIfAccessibleMethods()) {
 			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
 		}
 		// (Dyn-2)
@@ -120,6 +120,26 @@ aspect CollectConstraints {
 		}
 		return constrs;
 	}
+	
+	syn lazy Collection<MethodDecl> MethodDecl.hiddenIfAccessibleMethods() {
+		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
+		if(!this.isStatic())
+			return ret;
+		for(Iterator<MethodDecl> iter=possiblyOverriddenAncestors().iterator();
+			iter.hasNext();) {
+			MethodDecl md = iter.next();
+			if(hidesIfAccessible(md))
+				ret.add(md);
+	    }
+	return ret;
+	}
+	
+	syn lazy boolean MethodDecl.hidesIfAccessible(MethodDecl m) {
+		return isStatic() && !m.isPrivate() 
+				&& hostType().instanceOf(m.hostType())
+				&& m.signature().equals(signature());
+	}
+
 	
 	// constraints for top-level types
 	TypeDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.NE, AccessModifierConstant.PRIVATE))
@@ -166,4 +186,30 @@ aspect CollectConstraints {
 	MethodDecl contributes Collections.singleton(new AccessibilityConstraint(this, this, Operator.EQ, AccessModifierConstant.PUBLIC))
 	           when isMainMethod()
 	           to Program.accessibilityConstraints() for programRoot();
+	
+
+	syn lazy Collection<AccessibilityConstraint> Program.assortedAccessibilityConstraints() {
+		java.util.Set<AccessibilityConstraint> accessibilityConstraints = new HashSet<AccessibilityConstraint>();
+		java.util.Set<Visible> visiblesToDo = new HashSet<Visible>();
+		java.util.Set<Visible> visiblesDone = new HashSet<Visible>();
+		
+		for(AccessibilityConstraint ac : accessibilityConstraints())
+			if(!ac.isSolved())
+				visiblesToDo.addAll(ac.referencedVisibles());
+		
+		while (!visiblesToDo.isEmpty()) {
+			Visible actual = visiblesToDo.iterator().next();
+			visiblesDone.add(actual);
+			for (AccessibilityConstraint ac : actual.referencingAccessibilityConstraints()) {
+				if(accessibilityConstraints.contains(ac))
+					continue;
+				accessibilityConstraints.add(ac);
+				for (Visible v : ac.referencedVisibles())
+					if (!visiblesDone.contains(v))
+						visiblesToDo.add(v);
+			}
+			visiblesToDo.remove(actual);
+		}
+		return accessibilityConstraints;
+	}
 }

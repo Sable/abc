@@ -37,7 +37,7 @@ public class AccessibilityTests extends TestCase {
 }
 	
 	private Collection<Map<Visible, Integer>> allPossibleSolutions(Program prog, Collection<Visible> startValues) {
-		Collection<AccessibilityConstraint> constraints = prog.accessibilityConstraints(startValues);
+		Collection<AccessibilityConstraint> constraints = prog.accessibilityConstraints();
 		return prog.allPossibleSolutions(prog.generateNetwork(constraints, false), constraints);
 	}
 	
