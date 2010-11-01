@@ -176,14 +176,32 @@ aspect CollectTypeConstraints {
 	}
 	
 	protected void Binary.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		// Our tools do not substitute primitive types so luckily there is no need for conditional constraints here.
- 		if(!getLeftOperand().type().isNull() && !getRightOperand().type().isNull()){
+		// we conservatively require all non-primitive operands to have the same type after the refactoring
+ 		if(!getLeftOperand().type().isNull() && !getRightOperand().type().isNull()) {
  			if(!getLeftOperand().type().isPrimitiveType())
  				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "binary operation", getLeftOperand(), Operator.EQ, getLeftOperand().type()));
  			if(!getRightOperand().type().isPrimitiveType())
  				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "binary operation", getRightOperand(), Operator.EQ, getRightOperand().type()));
- 			}
+		}
  		super.collectTypeConstraints(pred, constraints);
+	}
+	
+	protected void AddExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		// slightly more relaxed rules: if one operand is a String, we require it to remain a String, but don't put any conditions
+		// on the other operand
+	    TypeDecl left = getLeftOperand().type();
+	    TypeDecl right = getRightOperand().type();
+	    if(left.isString()) {
+	    	addConstraint(constraints, pred, new SimpleTypeConstraint(this, "string addition", getLeftOperand(), Operator.EQ, left));
+			for(int i=0;i<getNumChild();++i)
+				getChild(i).collectTypeConstraints(pred, constraints);
+	    } else if(right.isString()) {
+	    	addConstraint(constraints, pred, new SimpleTypeConstraint(this, "string addition", getRightOperand(), Operator.EQ, right));
+			for(int i=0;i<getNumChild();++i)
+				getChild(i).collectTypeConstraints(pred, constraints);
+	    } else {
+	    	super.collectTypeConstraints(pred, constraints);
+	    }
 	}
  	
   	protected void Unary.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
