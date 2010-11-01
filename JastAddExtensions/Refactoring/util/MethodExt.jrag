@@ -348,4 +348,49 @@ aspect MethodExt {
 				return false;
 		return true;
 	}
+	
+	// reroute all uses of "this" to "that"
+	public void MethodDecl.rerouteUsesTo(MethodDecl that) {
+		for(MethodAccess ma : uses())
+			ma.lock(that);
+	}
+	
+	public void MethodDeclSubstituted.rerouteUsesTo(MethodDecl that) {
+		if(that instanceof MethodDeclSubstituted)
+			getOriginal().rerouteUsesTo(((MethodDeclSubstituted)that).getOriginal());
+		else
+			getOriginal().rerouteUsesTo(that);
+	}
+	
+	public void GenericMethodDecl.rerouteUsesTo(MethodDecl that) {
+		if(that instanceof GenericMethodDecl) {
+			GenericMethodDecl gthat = (GenericMethodDecl)that;
+			for(MethodAccess ma : usesOfAllCopies()) {
+				if(ma.decl() == this) {
+					ma.lock(that);
+				} else {
+					// must be call to parameterised instance of that, lock onto corresponding instance for this
+					ParMethodDecl pmd = (ParMethodDecl)ma.decl();
+					if(pmd instanceof RawMethodDecl) {
+						ma.lock(gthat.lookupParMethodDecl(new ArrayList()));
+					} else {
+						ArrayList typeArgs = new ArrayList();
+						for(int i=0;i<pmd.getNumTypeArgument();++i)
+							typeArgs.add(pmd.getTypeArgument(i).type());
+						ma.lock(gthat.lookupParMethodDecl(typeArgs));
+					}
+				}
+			}
+		} else {
+			throw new Error("cannot reroute generic method to non-generic method");
+		}
+	}
+	
+	public void ParMethodDecl.rerouteUsesTo(MethodDecl that) {
+		if(that instanceof ParMethodDecl)
+			genericMethodDecl().rerouteUsesTo(((ParMethodDecl)that).genericMethodDecl());
+		else
+			genericMethodDecl().rerouteUsesTo(that);
+	}
+
 }

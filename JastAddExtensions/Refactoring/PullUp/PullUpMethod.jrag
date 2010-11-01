@@ -15,9 +15,7 @@ aspect PullUpMethod {
 		if(onlyAbstract)
 			md.makeAbstract();
 		if(!md.isAbstract() || md_copy.isAbstract()) {
-			// reroute uses of old method to new method
-			for(MethodAccess ma : md_copy.uses())
-				ma.lock(md);
+			md_copy.rerouteUsesTo(md);
 			host.removeBodyDecl(md_copy);
 		}
 		programRoot().flushCaches();

@@ -4,12 +4,12 @@ aspect PullUpMembers {
 	}
 	
 	public void ClassDecl.pullUpMembers(MethodDecl[] meths, boolean[] makeAbstract, FieldDeclaration[] fields, MemberTypeDecl[] membertypes) {
-		for(int i=0;i<meths.length;++i)
-			meths[i].pullUp(makeAbstract[i]);
-		for(int i=0;i<fields.length;++i)
-			fields[i].moveTo(superclass());
 		for(int i=0;i<membertypes.length;++i)
 			membertypes[i].moveTo(superclass());
+		for(int i=0;i<fields.length;++i)
+			fields[i].moveTo(superclass());
+		for(int i=0;i<meths.length;++i)
+			meths[i].pullUp(makeAbstract[i]);
 	}
 	
 	public void TypeDecl.doPullUpMembers(MethodDecl[] meths, boolean[] makeAbstract, FieldDeclaration[] fields, MemberTypeDecl[] membertypes) {
