@@ -19,6 +19,8 @@ aspect MoveMembers {
 	}
 	
 	public void FieldDeclaration.moveTo(TypeDecl target) {
+		if(!target.fromSource())
+			throw new RefactoringException("cannot insert field into library class");
 		if(hasInit())
 			getInit().lockDataFlow();
 		else if(isFinal())
@@ -30,6 +32,8 @@ aspect MoveMembers {
 	}
 	
 	public void MethodDecl.moveTo(TypeDecl target) {
+		if(!target.fromSource())
+			throw new RefactoringException("cannot insert method into library class");
 		if(!isStatic())
 			throw new RefactoringException("cannot move instance methods");
 		lockAllNames();
@@ -43,6 +47,8 @@ aspect MoveMembers {
 	}
 	
 	public void MemberTypeDecl.moveTo(TypeDecl target) {
+		if(!target.fromSource())
+			throw new RefactoringException("cannot insert type into library class");
 		typeDecl().lockAllNames();
 		programRoot().lockNames(typeDecl().name());
 		hostType().removeBodyDecl(this);
