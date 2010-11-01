@@ -32,7 +32,7 @@ aspect Choco {
 		model.addConstraint(Choco.lt(left, right));
 	}
 	
-	public abstract IntegerVariable WithAccessModifier.chocoVariable(Model model);
+	public abstract IntegerVariable AccessibilityConstraintVariable.chocoVariable(Model model);
 	
 	public IntegerVariable AccessModifierConstant.chocoVariable(Model model) {
 		return Choco.constant(vis);

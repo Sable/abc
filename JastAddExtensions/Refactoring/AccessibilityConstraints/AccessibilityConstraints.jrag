@@ -1,6 +1,8 @@
+import java.util.Collections;
+
 /*
  * This aspect defines classes representing accessibility constraints (AccessibilityConstraint) and the constraint
- * variables/constants that occur in them (AccessModifierConstant, AccessModifierVariable, WithAccessModifier).
+ * variables/constants that occur in them (AccessModifierConstant, AccessModifierVariable, AccessibilityConstraintVariable).
  */
 
 aspect AccessibilityConstraints {
@@ -9,10 +11,10 @@ aspect AccessibilityConstraints {
 		private ASTNode node;
 		
 		// the two sides of the constraint and the operator connecting them
-		private WithAccessModifier left, right;
+		private AccessibilityConstraintVariable left, right;
 		private Operator op;
 		
-		public AccessibilityConstraint(ASTNode node, WithAccessModifier left, Operator op, WithAccessModifier right) {
+		public AccessibilityConstraint(ASTNode node, AccessibilityConstraintVariable left, Operator op, AccessibilityConstraintVariable right) {
 			this.node = node;
 			this.left = left;
 			this.op = op;
@@ -34,7 +36,7 @@ aspect AccessibilityConstraints {
 			this(node, AccessModifierConstant.fromVisibility(left), op, AccessModifierVariable.forVisible(right));
 		}
 		
-		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, WithAccessModifier right) {
+		public AccessibilityConstraint(ASTNode node, Visible left, Operator op, AccessibilityConstraintVariable right) {
 			this(node, AccessModifierVariable.forVisible(left), op, right);
 		}
 		
@@ -51,11 +53,11 @@ aspect AccessibilityConstraints {
 			return node;
 		}
 		
-		public WithAccessModifier getLeft() {
+		public AccessibilityConstraintVariable getLeft() {
 			return left;
 		}
 		
-		public WithAccessModifier getRight() {
+		public AccessibilityConstraintVariable getRight() {
 			return right;
 		}
 		
@@ -67,45 +69,40 @@ aspect AccessibilityConstraints {
 			return toString(node) + ": " + left + " " + op + " " + right;
 		}
 		
-		public Collection<Visible> referencedVisibles(){
+		public Collection<Visible> referencedVisibles() {
 			LinkedList<Visible> res = new LinkedList<Visible>();
-			if(left instanceof AccessModifierVariable){
-				res.add(((AccessModifierVariable)left).getElement());
-			}
-			if(right instanceof AccessModifierVariable){
-				res.add(((AccessModifierVariable)right).getElement());
-			}
+			res.addAll(left.referencedVisibles());
+			res.addAll(right.referencedVisibles());
 			return res;
 		}
 
 		// special-purpose pretty printing method for AST nodes that occur in constraints
 		public static String toString(ASTNode nd) {
-			if(nd instanceof TypeDecl) {
+			if(nd instanceof TypeDecl)
 				return ((TypeDecl)nd).fullName();
-			}
-			if(nd instanceof MethodDecl) {
-				MethodDecl md = (MethodDecl)nd;
-				return md.hostType().fullName() + "." + md.signature();
-			}
+			if(nd instanceof MethodDecl)
+				return ((MethodDecl)nd).fullName();
 			return nd.toString();
 		}
 	}
 	
 	
-	// abstract supertype for representing both access modifier constants and variables
-	abstract class WithAccessModifier {
+	// abstract supertype for representing access modifier constants, variables, and expressions
+	abstract class AccessibilityConstraintVariable {
 		public abstract int getAccessModifier();
-		public void referencedBy(AccessibilityConstraint constraint){};
+		public abstract Collection<Visible> referencedVisibles();
+		public abstract void referencedBy(AccessibilityConstraint constraint);
+		
 		// factory method: a declaration element occurring in a library gives rise to an access modifier
 		// constant, otherwise a variable
-		public static WithAccessModifier forVisible(Visible vis) {
+		public static AccessibilityConstraintVariable forVisible(Visible vis) {
 			if(vis.fromSource())
 				return new AccessModifierVariable(vis);
 			return AccessModifierConstant.fromVisibility(vis.getVisibility());
 		}
 	}
 	
-	class AccessModifierConstant extends WithAccessModifier {
+	class AccessModifierConstant extends AccessibilityConstraintVariable {
 		private int vis;
 		
 		private AccessModifierConstant(int vis) {
@@ -115,6 +112,12 @@ aspect AccessibilityConstraints {
 		public int getAccessModifier() {
 			return vis;
 		}
+
+		public Collection<Visible> referencedVisibles() {
+			return Collections.EMPTY_LIST;
+		}
+		
+		public void referencedBy(AccessibilityConstraint constraint) {}
 		
 		public static final AccessModifierConstant PRIVATE = new AccessModifierConstant(ASTNode.VIS_PRIVATE);
 		public static final AccessModifierConstant PACKAGE = new AccessModifierConstant(ASTNode.VIS_PACKAGE);
@@ -136,7 +139,7 @@ aspect AccessibilityConstraints {
 		}
 	}
 	
-	class AccessModifierVariable extends WithAccessModifier {
+	class AccessModifierVariable extends AccessibilityConstraintVariable {
 		private Visible element;
 		
 		public AccessModifierVariable(Visible element) {
@@ -147,6 +150,10 @@ aspect AccessibilityConstraints {
 			return element.getVisibility();
 		}
 		
+		public Collection<Visible> referencedVisibles() {
+			return Collections.singletonList(element);
+		}
+		
 		public Visible getElement() {
 			return element;
 		}
@@ -154,8 +161,42 @@ aspect AccessibilityConstraints {
 		public String toString() {
 			return "visibility(" + AccessibilityConstraint.toString((ASTNode)element) + ")";
 		}
-		public void referencedBy(AccessibilityConstraint constraint){
+		
+		public void referencedBy(AccessibilityConstraint constraint) {
 			element.referencedBy(constraint);
+		}
+	}
+	
+	class MaxAccessibility extends AccessibilityConstraintVariable {
+		private AccessibilityConstraintVariable left, right;
+		
+		public MaxAccessibility(AccessibilityConstraintVariable left, AccessibilityConstraintVariable right) {
+			this.left = left;
+			this.right = right;
+		}
+		
+		public MaxAccessibility(int left, Visible right) {
+			this(AccessModifierConstant.fromVisibility(left), new AccessModifierVariable(right));
+		}
+		
+		public int getAccessModifier() {
+			return Math.max(left.getAccessModifier(), right.getAccessModifier());
+		}
+		
+		public Collection<Visible> referencedVisibles() {
+			Collection<Visible> res = new HashSet<Visible>();
+			res.addAll(left.referencedVisibles());
+			res.addAll(right.referencedVisibles());
+			return res;
+		}
+		
+		public void referencedBy(AccessibilityConstraint constraint) {
+			left.referencedBy(constraint);
+			right.referencedBy(constraint);
+		}
+		
+		public String toString() {
+			return "max(" + left.toString() + ", " + right.toString() + ")";
 		}
 	}
 	

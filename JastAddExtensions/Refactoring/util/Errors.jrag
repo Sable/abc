@@ -1,0 +1,11 @@
+aspect Errors {
+	public void CompilationUnit.clearErrors() {
+		errors.clear();
+	}
+	
+	public void Program.clearErrors() {
+		for(CompilationUnit cu : getCompilationUnits())
+			if(cu.fromSource())
+				cu.clearErrors();
+	}
+}

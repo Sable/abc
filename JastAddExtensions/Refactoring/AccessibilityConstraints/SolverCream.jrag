@@ -12,27 +12,14 @@ import jp.ac.kobe_u.cs.cream.IntArith;
 aspect Cream {
 	syn lazy IntVariable Visible.creamVariable(Network network) = new IntVariable(network, VIS_PRIVATE, VIS_PUBLIC, name());
 	
-	public Constraint AccessibilityConstraint.generateCreamConstraint(Network network) {
-		return op.generateCreamConstraint(left.creamVariable(network), right.creamVariable(network));
+	public void AccessibilityConstraint.generateCreamConstraint(Network network) {
+		left.generateCreamConstraint(network);
+		right.generateCreamConstraint(network);
+		op.generateCreamConstraint(left.creamVariable(network), right.creamVariable(network));
 	}
 	
-	public Constraint Operator.generateCreamConstraint(IntVariable left, IntVariable right) {
-		return new IntComparison(left.getNetwork(), getComparisonOperator(), left, right);
-	}
-	
-	public Constraint EQOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
-		return new Equals(left.getNetwork(), left, right);
-	}
-	
-	public Constraint NEOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
-		return new NotEquals(left.getNetwork(), left, right);
-	}
-	
-	protected int Operator.getComparisonOperator() { return -1; }
-	protected int LEOperator.getComparisonOperator() { return IntComparison.LE; }
-	protected int LTOperator.getComparisonOperator() { return IntComparison.LT; }
-	
-	public abstract IntVariable WithAccessModifier.creamVariable(Network network);
+	// assign a constraint solver variable to every AccessibilityConstraintVariable
+	public abstract IntVariable AccessibilityConstraintVariable.creamVariable(Network network);
 	
 	// cache IntVariables for the visibilities
 	private static Network AccessModifierConstant.network_cached = null;
@@ -56,6 +43,37 @@ aspect Cream {
 	public IntVariable AccessModifierVariable.creamVariable(Network network) {
 		return element.creamVariable(network);
 	}
+	
+	private IntVariable MaxAccessibility.creamVariable = null;
+	public IntVariable MaxAccessibility.creamVariable(Network network) {
+		if(creamVariable == null)
+			creamVariable = new IntVariable(network, ASTNode.VIS_PRIVATE, ASTNode.VIS_PUBLIC, toString());
+		return creamVariable;
+	}
+	
+	// most AccessibilityConstraintVariables do not themselves generate constraints, but MaxAccessibility does
+	public void AccessibilityConstraintVariable.generateCreamConstraint(Network network) { }
+	
+	public void MaxAccessibility.generateCreamConstraint(Network network) {
+		new IntArith(network, IntArith.MAX, this.creamVariable(network), left.creamVariable(network), right.creamVariable(network));
+	}
+
+	// generating constraints for individual operators
+	public void Operator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		new IntComparison(left.getNetwork(), getComparisonOperator(), left, right);
+	}
+	
+	public void EQOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		new Equals(left.getNetwork(), left, right);
+	}
+	
+	public void NEOperator.generateCreamConstraint(IntVariable left, IntVariable right) {
+		new NotEquals(left.getNetwork(), left, right);
+	}
+	
+	protected int Operator.getComparisonOperator() { return -1; }
+	protected int LEOperator.getComparisonOperator() { return IntComparison.LE; }
+	protected int LTOperator.getComparisonOperator() { return IntComparison.LT; }
 	
 	public Network Program.generateNetwork(Collection<AccessibilityConstraint> accessibilityConstraints, boolean setObjective) {
 		Network network = new Network();

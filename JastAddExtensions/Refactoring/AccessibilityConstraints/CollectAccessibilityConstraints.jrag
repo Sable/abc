@@ -103,11 +103,23 @@ aspect CollectConstraints {
 		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
 			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
-			// TODO: add corresponding second constraint; see above
+			// we don't need to generate a second constraint as above: "that" is an interface method, which must be public
 		}
 		// (Sub-1)
 		for(MethodDecl that : possiblyHiddenMethods()) {
-			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, this));
+			/* We want to encode the conditional constraint
+			 *
+			 *   this.hides(that) -> accessibility(that) <= accessibility(this)
+			 *
+			 * Note that whether or not this.hides(that) is itself determined by the result of the constraint solving process.
+			 * Fortunately, we can encode this conditional constraint as the unconditional constraint
+			 * 
+			 *   accessibility(that) <= max(a-1, accessibility(this))
+			 *   
+			 * where a is the minimum accessibility of "that" from within the host type of "this". 
+			 */
+			int alpha = Math.max(VIS_PACKAGE, that.minAccess(hostType().hostPackage(), hostType()));
+			constrs.add(new AccessibilityConstraint(this, that, Operator.LE, new MaxAccessibility(alpha-1, this)));
 		}
 		// (Dyn-2)
 		for(MethodDecl that : possiblyOverriddenAncestors()) {

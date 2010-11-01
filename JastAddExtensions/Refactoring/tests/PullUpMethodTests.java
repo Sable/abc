@@ -455,4 +455,16 @@ public class PullUpMethodTests extends TestCase {
     			"  private static B m() { return null; }" +
     			"}"));
     }
+    	
+    public void test28() {
+    	testSucc(
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {}"),
+    				new RawCU("A.java","package q; public class A extends p.Super {static void m(){}}"),
+    				new RawCU("Sub.java","package q; public class Sub extends A {static void m(){}}")),
+    			Program.fromCompilationUnits(
+    				new RawCU("Super.java","package p; public class Super {static void m(){} }"),
+    				new RawCU("A.java","package q; public class A extends p.Super {}"),
+    				new RawCU("Sub.java","package q; public class Sub extends A {static void m(){}}")));
+    }
 }
