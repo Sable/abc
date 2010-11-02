@@ -38,11 +38,19 @@ aspect MethodExt {
 	}
 	
 	// whether this method could be called through dynamic dispatch
+	// we do not, however, count locked calls to this method
 	syn lazy boolean MethodDecl.isDynamicallyCallable() {
 		if(isStatic() || isPrivate())
 			return false;
 		// not if neither this method nor a method it overrides is ever called
-		if(polyUses().isEmpty())
+		boolean found_non_locked = false;
+		for(MethodAccess ma : polyUses()) {
+			if(!ma.isLocked() || ma.decl() != this) {
+				found_non_locked = true;
+				break;
+			}
+		}
+		if(!found_non_locked)
 			return false;
 		// not if no object of a type that inherits this method is ever constructed
 		for(TypeDecl td : inheritingTypes())

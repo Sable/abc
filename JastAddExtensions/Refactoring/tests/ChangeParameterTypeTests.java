@@ -399,9 +399,9 @@ public class ChangeParameterTypeTests extends TestCase {
 	}
 	
 	public void test21() { 
-		testFail("A", "m", 0, "java.lang.CharSequence",
-				Program.fromClasses( 
-				"class A { void m(java.lang.String s){String t = \"abc\" + s;} }"));
+		testSucc("A", "m", 0, "java.lang.CharSequence",
+				Program.fromClasses("class A { void m(java.lang.String s){String t = \"abc\" + s;} }"),
+				Program.fromClasses("class A { void m(CharSequence s){String t = \"abc\" + s;} }"));
 	}
 	
 	public void test22() {
