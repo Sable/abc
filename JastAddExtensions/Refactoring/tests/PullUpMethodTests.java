@@ -467,4 +467,69 @@ public class PullUpMethodTests extends TestCase {
     				new RawCU("A.java","package q; public class A extends p.Super {}"),
     				new RawCU("Sub.java","package q; public class Sub extends A {static void m(){}}")));
     }
+    
+    public void test29() {
+    	testFail(Program.fromClasses(
+    			"class SuperSuper { Object m() { return null; } }",
+    			"class Super extends SuperSuper { }",
+    			"class A extends Super { String m() { return \"\"; } }",
+    			"class B extends Super { Object m() { return null; } }"));
+    }
+    
+    public void test30() {
+    	testFail(Program.fromClasses(
+    			"abstract class SuperSuper<T> { abstract T m(); }",
+    			"abstract class Super<T> extends SuperSuper<T> { }",
+    			"class A extends Super<String> { String m() { return \"23\"; } }"));
+    }
+    
+    public void test31() {
+    	testFail(Program.fromClasses(
+    			"class Super {" +
+    			"  int n(Super s) { return 23; }" +
+    			"  int n(A a) { return 42; }" +
+    			"}",
+    			"class A extends Super {" +
+    			"  int m() { return n(this); }" +
+    			"}"));
+    }
+    
+    public void test32() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class Outer {" +
+    			"  int x;" +
+    			"  class A extends Super {" +
+    			"    int m() { return Outer.this.x; }" +
+    			"  }" +
+    			"}"));
+    }
+    
+    public void test33() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class Outer {" +
+    			"  int x;" +
+    			"  class A extends Super {" +
+    			"    Outer m() { return Outer.this; }" +
+    			"  }" +
+    			"}"));
+    }
+    
+    public void test34() {
+    	testSucc(Program.fromClasses(
+    			"class Super { }",
+    			"class Outer {" +
+    			"  class A extends Super {" +
+    			"    Super m() { return this; }" +
+    			"  }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  Super m() { return this; }" +
+    			"}",
+    			"class Outer {" +
+    			"  class A extends Super { }" +
+    			"}"));
+    }
 }

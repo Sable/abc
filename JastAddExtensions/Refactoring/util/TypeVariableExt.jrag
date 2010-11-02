@@ -99,7 +99,7 @@ aspect TypeVariableExt {
 	}
 	
 	// translate type variables in a method from sup to sub
-	private void MethodDecl.translateTypeVars(TypeDecl sub, TypeDecl sup) {
+	public void MethodDecl.translateTypeVars(TypeDecl sub, TypeDecl sup) {
 		if(!sub.isGenericType() || !sup.isParameterizedType())
 			return;
 		GenericTypeDecl gsub = (GenericTypeDecl)sub;

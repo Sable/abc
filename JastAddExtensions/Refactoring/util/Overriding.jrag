@@ -59,9 +59,9 @@ aspect Overriding {
 	 * don't work as expected
 	 */
 	
-	public HashSet<MethodDecl> MethodDecl.overridingMethods() {
+	public Collection<MethodDecl> MethodDecl.overridingMethods() {
 		if(this.isFinal() || this.isPrivate() || this.isStatic())
-			return new HashSet<MethodDecl>();
+			return Collections.EMPTY_SET;
 		return coll_overridingMethods();
 	}
 	

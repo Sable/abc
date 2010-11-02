@@ -54,4 +54,10 @@ aspect PullUpMethod {
 		else
 			super.removeSuper();
 	}
+	
+	public void ThisAccess.removeSuper() {
+		if(isQualified())
+			throw new RefactoringException("pull up cannot preserve qualified this");
+		super.removeSuper();
+	}
 }

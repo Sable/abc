@@ -86,4 +86,8 @@ aspect ExprExt {
 	eq AbstractDot.convertThisToSuper() = new AbstractDot((Expr)getLeft().fullCopyAndDetach(), (Access)getRight().convertThisToSuper());
 	eq Dot.convertThisToSuper() = new Dot((Expr)getLeft().fullCopyAndDetach(), (Access)getRight().convertThisToSuper());
 	eq ThisAccess.convertThisToSuper() = new SuperAccess(true);
+	
+	public boolean Expr.isArgument() {
+		return getParent() instanceof List && getParent().getParent() instanceof Call;
+	}
 }

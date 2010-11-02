@@ -46,7 +46,7 @@ aspect TypeConstraints {
 		public boolean solved() {
 			TypeDecl lefttp = left.getConstrainedType().refresh().erasure(),
 			         righttp = right.getConstrainedType().refresh().erasure();
-			return !lefttp.isReferenceType() || !righttp.isReferenceType() || op.eval(lefttp, righttp);
+			return op.eval(lefttp, righttp);
 		}
 		
 		public String describe() {
@@ -167,7 +167,7 @@ aspect TypeConstraints {
 	eq Expr.getConstrainedType() = type();
 	eq Expr.describeConstraintVariable() = "[" + this + "]";
 	eq Expr.isFixed() {
-		if(!fromSource())
+		if(!fromSource() || !type().isSubtypeConstrainable())
 			return true;
 		if(isTypeAccess()) {
 			// only types of declarations and types appearing in casts are variable

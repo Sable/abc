@@ -16,29 +16,54 @@ aspect CollectTypeConstraints {
 		return constraints;
 	}
 	
+	/*
+	 * We only introduce subtype constraints for classes and interfaces (but not for parameterised or substituted ones).
+	 * Only these are "subtype constrainable". In principle, we should introduce conservative equality constraints
+	 * for non-subtype constrainable types to fix them to their old values; in practice, we rely on refactorings to never
+	 * try and change declarations of non-subtype constrainable type. 
+	 */
+	syn boolean TypeDecl.isSubtypeConstrainable() = false;
+	eq ClassDecl.isSubtypeConstrainable() = true;
+	eq InterfaceDecl.isSubtypeConstrainable() = true;
+	eq ArrayDecl.isSubtypeConstrainable() = false;
+	eq AnonymousDecl.isSubtypeConstrainable() = false;
+	eq ClassDeclSubstituted.isSubtypeConstrainable() = false;
+	eq ParClassDecl.isSubtypeConstrainable() = false;
+	eq UnknownType.isSubtypeConstrainable() = false;
+	eq GenericClassDeclSubstituted.isSubtypeConstrainable() = false;
+	eq InterfaceDeclSubstituted.isSubtypeConstrainable() = false;
+	eq GenericInterfaceDeclSubstituted.isSubtypeConstrainable() = false;
+	eq ParInterfaceDecl.isSubtypeConstrainable() = false;
+	
 	protected void ASTNode.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).collectTypeConstraints(pred, constraints);
 	}
 	
+	protected void CompilationUnit.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		// sometimes JastAddJ seems to load conflicting jars, so libraries don't always typecheck :-S
+		if(fromSource())
+			super.collectTypeConstraints(pred, constraints);
+	}
+	
 	protected void VariableDeclaration.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		if(hasInit())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
+			if(type().isSubtypeConstrainable() && getInit().type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
 	protected void FieldDeclaration.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		if(hasInit())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
+			if(type().isSubtypeConstrainable() && getInit().type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "initialisation", getInit(), Operator.LE, getTypeAccess()));
 		for(FieldDeclaration that : hiddenFields())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "field hiding", this, Operator.LT, that));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
 	protected void MethodDecl.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		if(isMainMethod())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "main method", 
-													 getParameter(0).getTypeAccess(), Operator.EQ, getParameter(0).type()));
+		// if array types were constrainable, we would need a constraint saying that the parameter of main has to be of type String[] 
 		for(MethodDecl that : overriddenMethods()) {
 			for(int i=0;i<getNumParameter();++i) {
 				ParameterDeclaration thisParm = this.getParameter(i),
@@ -49,8 +74,12 @@ aspect CollectTypeConstraints {
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
 		}
 		for(MethodDecl that : possiblyOverriddenAncestors()) {
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding/hiding return type for method " + that.fullName(),
-																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+			if(type().isPrimitiveType())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																		  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
+			else if(this.type().isSubtypeConstrainable() && that.type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																	  	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
 			for(int i=0;i<getNumParameter();++i) {
@@ -59,8 +88,12 @@ aspect CollectTypeConstraints {
 				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type for method " + that.fullName(),
 																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "overriding return type for method " + that.fullName(),
-																	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+			if(type().isPrimitiveType())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																		  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
+			else if(this.type().isSubtypeConstrainable() && that.type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																	  	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 		}
 		super.collectTypeConstraints(pred, constraints);
 	}
@@ -68,7 +101,8 @@ aspect CollectTypeConstraints {
 	protected void ReturnStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		if(hasResult()) {
 			MethodDecl md = (MethodDecl)hostBodyDecl();
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "return", getResult(), Operator.LE, md.getTypeAccess()));
+			if(getResult().type().isSubtypeConstrainable() && md.type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "return", getResult(), Operator.LE, md.getTypeAccess()));
 		}
 		super.collectTypeConstraints(pred, constraints);
 	}
@@ -81,16 +115,22 @@ aspect CollectTypeConstraints {
 	}
 
 	protected void AssignSimpleExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()));
+		if(getSource().type().isSubtypeConstrainable() && getDest().type().isSubtypeConstrainable())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()));
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "simple assignment expression", this, Operator.EQ, getDest()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
 	protected void MethodAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method invocation", this, Operator.EQ, decl().getTypeAccess()));
+		// conservatively approximate special typing rules for getClass()
+		if(name().equals("getClass"))
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "getClass()", this, Operator.EQ, type()));
+		else
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method invocation", this, Operator.EQ, decl().getTypeAccess()));
 		collectArgumentTypeConstraints(pred, constraints);
 		if(isQualified())
-			addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, decl().rootDefs()));
+			if(qualifier().type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "method invocation", qualifier(), Operator.LE, decl().rootDefs()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
@@ -119,35 +159,44 @@ aspect CollectTypeConstraints {
 				continue;
 			} else {
 				Expr arg = getArg(i);
-				addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.LE, parm.getTypeAccess()));
+				if(parm.type().isSubtypeConstrainable() && arg.type().isSubtypeConstrainable())
+					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.LE, parm.getTypeAccess()));
 			}
 		}
 	}
 	
 	protected void VarAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "variable access", this, Operator.EQ, decl().getTypeAccess()));
+		if(decl() instanceof VariableArityParameterDeclaration)
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "variable arity parameter access", this, Operator.EQ, type()));
+		else
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "variable access", this, Operator.EQ, decl().getTypeAccess()));
 		if(isQualified())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl()));
+			if(qualifier().type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "field access", qualifier(), Operator.LE, (FieldDeclaration)decl()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 
 	protected void CastExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		if(isDownCast())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "downcast", getTypeAccess(), Operator.LE, getExpr()));
-		else if(isUpCast())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "upcast", getExpr(), Operator.LE, getTypeAccess()));
+		if(getTypeAccess().type().isSubtypeConstrainable() && getExpr().type().isSubtypeConstrainable()) {
+			if(isDownCast())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "downcast", getTypeAccess(), Operator.LE, getExpr()));
+			else if(isUpCast())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(this, "upcast", getExpr(), Operator.LE, getTypeAccess()));
+		}
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "cast", this, Operator.EQ, getTypeAccess()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
 	protected void ArrayTypeWithSizeAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "sized array type", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
+		if(getExpr().type().isSubtypeConstrainable())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "sized array type", getExpr(), Operator.LE, typeInt().boxed()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 
 	protected void ArrayAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "array access", this, Operator.EQ, type()));
-		addConstraint(constraints, pred, new DisjunctiveTypeConstraint(this, "array index type", getExpr(), Operator.LE, typeInt().boxed(), typeInt()));
+		if(getExpr().type().isSubtypeConstrainable())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "array index type", getExpr(), Operator.LE, typeInt().boxed()));
 		addConstraint(constraints, pred, new IsArrayTypeConstraint(this, "array type", qualifier()));
 		super.collectTypeConstraints(pred, constraints);
 	}
@@ -155,12 +204,16 @@ aspect CollectTypeConstraints {
 	protected void ArrayInit.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		TypeDecl initializerType = declType().componentType();
 		for(Expr e : getInits())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(e, "array init", e, Operator.LE, initializerType));
+			if(e.type().isSubtypeConstrainable())
+				addConstraint(constraints, pred, new SimpleTypeConstraint(e, "array init", e, Operator.LE, initializerType));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
 	protected void ThisAccess.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "this", this, Operator.EQ, hostBodyDecl()));
+		if(this.isQualified())
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "qualified this", this, Operator.EQ, this.type()));
+		else
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "unqualified this", this, Operator.EQ, hostBodyDecl()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
@@ -211,9 +264,13 @@ aspect CollectTypeConstraints {
 	}
   	
 	protected void ConditionalExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.EQ, getFalseExpr()));
-		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, getTrueExpr()));		
-		if(!getCondition().type().isPrimitiveType())
+		TypeDecl truetp = getTrueExpr().type(), falsetp = getFalseExpr().type();
+		if(truetp.isSubtypeConstrainable() && falsetp.isSubtypeConstrainable()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.LE, type()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getFalseExpr(), Operator.LE, type()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, type()));
+		}
+		if(getCondition().type().isSubtypeConstrainable())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getCondition(), Operator.EQ, getCondition().type()));
 		super.collectTypeConstraints(pred, constraints);
 	}
