@@ -321,8 +321,9 @@ public class ChangeParameterTypeTests extends TestCase {
 						"class Main { void n(p.C d) { d.m(); } }")));
 	}
 	
+	// we do not adjust return types anymore
 	public void test16() {
-		testSucc("A", "m", 0, "java.lang.Object",
+		testFail("A", "m", 0, "java.lang.Object",
 				Program.fromClasses(
 				"class A {" +
 				"  String m(String s) {" +
@@ -334,7 +335,7 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void f(A a) {" +
 				"    s = a.m(null);" +
 				"  }" +
-				"}"),
+				"}")/*,
 				Program.fromClasses(
 				"class A {" +
 				"  Object m(Object s) {" +
@@ -346,7 +347,7 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void f(A a) {" +
 				"    s = a.m(null);" +
 				"  }" +
-				"}"));
+				"}")*/);
 	}
 	
 	public void test17() {

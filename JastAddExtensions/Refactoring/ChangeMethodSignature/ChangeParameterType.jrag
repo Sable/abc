@@ -54,6 +54,8 @@ aspect ChangeParameterType {
 					// TODO: this should be part of the type constraints
 					if(!oldTarget.throwsSameExceptionsAs(newTarget))
 						throw new RefactoringException("new target throws different exceptions");
+					if(oldTarget.type() != newTarget.type())
+						throw new RefactoringException("new target has different return type");
 					ma.lock(newTarget);
 				}
 			}

@@ -202,9 +202,10 @@ aspect TypeConstraints {
 			return true;
 		if(isTypeAccess()) {
 			// only types of declarations and types appearing in casts are variable
-			if(getParent() instanceof TypedDeclaration) {
-				TypedDeclaration td = (TypedDeclaration)getParent();
-				return this != td.getTypeAccess() || td.isSubstituted();
+			// method return types are not adjusted (see ExtractInterfaceTests.test9)
+			if(getParent() instanceof Variable) {
+				Variable v = (Variable)getParent();
+				return this != v.getTypeAccess() || v.isSubstituted();
 			}
 			if(getParent() instanceof CastExpr)
 				return this != ((CastExpr)getParent()).getTypeAccess();
