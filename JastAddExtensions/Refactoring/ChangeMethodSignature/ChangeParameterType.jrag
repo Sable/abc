@@ -10,74 +10,27 @@ aspect ChangeParameterType {
 		if(type().subtype(typeThrowable())) 
 			throw new RefactoringException("cannot change throwable types");
 		Program root = programRoot();
-		Collection<TypeConstraint> constraints = root.typeConstraints(type());
 		
-		Collection<TypeConstraintVariable> update = propagateGeneralisation(constraints, this.getTypeAccess(), newType);
+		// construct typeUpdate map
+		Map<Expr, TypeDecl> typeUpdate = new HashMap<Expr, TypeDecl>();
+		for(TypeConstraintVariable tcv : propagateGeneralisation(root.typeConstraints(type()), getTypeAccess(), newType))
+			if(tcv instanceof Expr)
+				typeUpdate.put((Expr)tcv, newType);
 		
-		Collection<String> affectedMethods = new HashSet<String>();
-		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();
+		// construct movement map (trivial)
+		Map<MemberDecl, TypeDecl> memberMove = new HashMap<MemberDecl, TypeDecl>();
 		
-		findAffectedCallables(update, newType, affectedMethods, affectedConstructors);
+		// construct overriding map (trivial)
+		Map<MethodDecl, Collection<MethodDecl>> methodOverriding = new HashMap<MethodDecl, Collection<MethodDecl>>();
 		
-		root.lockMethodNames(affectedMethods);
-		root.lockConstructorCalls(affectedConstructors);
-		root.lockOverridingDependencies(affectedMethods);
+		root.lockOverridingAndNames(typeUpdate, memberMove, methodOverriding);
+
+		// perform actual refactoring
+		for(Expr e : typeUpdate.keySet())
+			if(e.isTypeAccess())
+				e.replaceWith(newType.createLockedAccess());
 		
-		for(TypeConstraintVariable tcv : update) {
-			if(tcv instanceof Expr) {
-				Expr e = (Expr)tcv;
-				if(e.isTypeAccess())
-					e.replaceWith(newType.createLockedAccess());
-			}
-	    }
-		
-		root.flushCaches();
-		
+		root.adjustVirtualCalls(typeUpdate);
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
-	}
-	
-	public static void ASTNode.findAffectedCallables(Collection<TypeConstraintVariable> update, TypeDecl newType, Collection<String> affectedMethods, Collection<TypeDecl> affectedConstructors) {
-		for(TypeConstraintVariable tcv : update) {
-			if(tcv instanceof Expr) {
-				Expr e = (Expr)tcv;
-				if(e.isParameterType()) {
-					Callable c = ((ParameterDeclaration)e.getParent()).getParameterisedCallable();
-					if(c instanceof MethodDecl)
-						affectedMethods.add(((MethodDecl)c).name());
-					else if(c instanceof ConstructorDecl)
-						affectedConstructors.add(((ConstructorDecl)c).hostType());
-				}
-				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
-					MethodAccess ma = (MethodAccess)e.nextAccess();
-					MethodDecl oldTarget = ma.decl(),
-							   newTarget = oldTarget.ancestorIn(newType);
-					// TODO: this should be part of the type constraints
-					if(!oldTarget.throwsSameExceptionsAs(newTarget))
-						throw new RefactoringException("new target throws different exceptions");
-					if(oldTarget.type() != newTarget.type())
-						throw new RefactoringException("new target has different return type");
-					ma.lock(newTarget);
-				}
-			}
-		}		
-	}
-	
-	syn boolean Expr.isParameterType() = false;
-	eq Access.isParameterType() = isTypeAccess() && getParent() instanceof ParameterDeclaration;
-	
-	syn boolean Callable.throwsSameExceptionsAs(Callable that) {
-		if(this.getExceptionList().getNumChild() != that.getExceptionList().getNumChild())
-			return false;
-		for(Access exn : this.getExceptionList())
-			if(!that.throwsExactException(exn.type()))
-				return false;
-		return true;
-	}
-	
-	syn lazy boolean Callable.throwsExactException(TypeDecl exnType) {
-		for(Access exn : this.getExceptionList())
-			if(exn.type().equals(exnType))
-				return true;
-		return false;
 	}
 }

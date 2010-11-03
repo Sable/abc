@@ -90,4 +90,7 @@ aspect ExprExt {
 	public boolean Expr.isArgument() {
 		return getParent() instanceof List && getParent().getParent() instanceof Call;
 	}
+	
+	syn boolean Expr.isParameterType() = false;
+	eq Access.isParameterType() = isTypeAccess() && getParent() instanceof ParameterDeclaration;
 }

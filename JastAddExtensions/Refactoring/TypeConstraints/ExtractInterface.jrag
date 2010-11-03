@@ -62,4 +62,30 @@ aspect ExtractInterface {
 		extractInterface(pkg, name, methods);
 		root.eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
+	
+	public static void ASTNode.findAffectedCallables(Collection<TypeConstraintVariable> update, TypeDecl newType, Collection<String> affectedMethods, Collection<TypeDecl> affectedConstructors) {
+		for(TypeConstraintVariable tcv : update) {
+			if(tcv instanceof Expr) {
+				Expr e = (Expr)tcv;
+				if(e.isParameterType()) {
+					Callable c = ((ParameterDeclaration)e.getParent()).getParameterisedCallable();
+					if(c instanceof MethodDecl)
+						affectedMethods.add(((MethodDecl)c).name());
+					else if(c instanceof ConstructorDecl)
+						affectedConstructors.add(((ConstructorDecl)c).hostType());
+				}
+				if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
+					MethodAccess ma = (MethodAccess)e.nextAccess();
+					MethodDecl oldTarget = ma.decl(),
+							   newTarget = oldTarget.ancestorIn(newType);
+					// TODO: this should be part of the type constraints
+					if(!oldTarget.throwsSameExceptionsAs(newTarget))
+						throw new RefactoringException("new target throws different exceptions");
+					if(oldTarget.type() != newTarget.type())
+						throw new RefactoringException("new target has different return type");
+					ma.lock(newTarget);
+				}
+			}
+		}		
+	}
 }
