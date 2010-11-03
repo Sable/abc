@@ -40,7 +40,7 @@ public class AllTests {
 		suite.addTestSuite(tests.eclipse.ExtractTemp.ExtractTempTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInstanceMethod.MoveInstanceMethodTests.class);
 		suite.addTestSuite(tests.eclipse.PushDown.PushDownTests.class);
-		suite.addTestSuite(tests.eclipse.PullUp.PullUpTests.class);
+		//suite.addTestSuite(tests.eclipse.PullUp.PullUpTests.class);
 		suite.addTestSuite(tests.eclipse.RenamePackage.RenamePackageTests.class);
 		suite.addTestSuite(tests.eclipse.MoveInnerToTopLevel.MoveInnerToTopLevelTests.class);
 		suite.addTestSuite(tests.eclipse.ConvertAnonymousToNested.ConvertAnonymousToNestedTests.class);

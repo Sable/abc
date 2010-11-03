@@ -1,24 +1,55 @@
 aspect PullUpMethod {
 	public void MethodDecl.pullUp(boolean onlyAbstract) {
+		if(onlyAbstract)
+			throw new RefactoringException("onlyAbstract not supported");
 		if(!hostType().isClassDecl() || !hostType().fromSource() || !((ClassDecl)hostType()).superclass().fromSource())
 			throw new RefactoringException("no fitting super class");
+		Program root = programRoot();
 		ClassDecl host = (ClassDecl)hostType();
 		ClassDecl sup = host.superclass();
 		MethodDecl md = this;
-		lockAllNames();
-		removeSuper();
-		translateTypeVars(host, sup);
-		MethodDecl md_copy = (MethodDecl)fullCopyAndDetach();
-		md.replaceWith(md_copy);
-		programRoot().flushCaches();
-		sup.insertUnusedMethod(md);
-		if(onlyAbstract)
-			md.makeAbstract();
-		if(!md.isAbstract() || md_copy.isAbstract()) {
-			md_copy.rerouteUsesTo(md);
-			host.removeBodyDecl(md_copy);
+		
+		if(host.isGenericType() || sup.isParameterizedType() || sup.isSubstitutedType())
+			throw new RefactoringException("cannot pull up in the presence of generics");
+		
+		Collection<TypeDecl> inheritors = sup.inheritingTypes(this);
+		if(!inheritors.isEmpty())
+			throw new RefactoringException("method could be invoked dynamically");
+		
+		// construct typeUpdate map
+		Map<Expr, TypeDecl> typeUpdate = new HashMap<Expr, TypeDecl>();
+		for(ThisAccess acc : collectThisAccesses()) {
+			if(acc.isQualified())
+				throw new RefactoringException("Pull Up cannot preserve enclosing instances");
+			typeUpdate.put(acc, sup);
 		}
-		programRoot().flushCaches();
+		
+		// construct movement map
+		Map<MemberDecl, TypeDecl> memberMove = new HashMap<MemberDecl, TypeDecl>();
+		memberMove.put(this, sup);
+		
+		// construct overriding map
+		Map<MethodDecl, Collection<MethodDecl>> methodOverriding = new HashMap<MethodDecl, Collection<MethodDecl>>();
+		for(MethodDecl ovr : sup.overridingMethods(this)) {
+			Collection<MethodDecl> mds = new HashSet<MethodDecl>();
+			mds.addAll(ovr.overriddenMethods());
+			mds.removeAll(this.overriddenMethods());
+			mds.add(this);
+			methodOverriding.put(ovr, mds);
+		}
+		
+		root.lockOverridingAndNames(typeUpdate, memberMove, methodOverriding);
+		
+		// perform actual refactoring
+		removeSuper();
+		host.removeBodyDecl(this);
+		sup.addBodyDecl(this);
+		root.flushCaches();
+		if(isAbstract())
+			for(TypeDecl td : inheritingTypes())
+				td.makeAbstract();
+		root.flushCaches();
+		
 		// check that everything went OK wrt types
 		Collection<TypeConstraint> typeConstraints =
 			programRoot().typeConstraints(new Predicate<TypeConstraint>() {
@@ -29,17 +60,20 @@ aspect PullUpMethod {
 		for(TypeConstraint typeConstraint : typeConstraints)
 			if(!typeConstraint.solved())
 				throw new RefactoringException("type constraint violated: " + typeConstraint);
+		
+		root.adjustVirtualCalls(typeUpdate);
 	}
 	
 	public void MethodDecl.doPullUp(boolean onlyAbstract) {
 		pullUp(onlyAbstract);
-		programRoot().eliminate(LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 	
 	public void MethodDecl.doPullUp() {
 		doPullUp(false);
 	}
-	
+
+	// remove "super" qualifiers on field accesses
 	public void ASTNode.removeSuper() {
 		for(int i=0;i<getNumChild();++i)
 			getChild(i).removeSuper();
@@ -55,9 +89,140 @@ aspect PullUpMethod {
 			super.removeSuper();
 	}
 	
-	public void ThisAccess.removeSuper() {
-		if(isQualified())
-			throw new RefactoringException("pull up cannot preserve qualified this");
-		super.removeSuper();
+	// all "this" accesses in a subtree
+	public Collection<ThisAccess> ASTNode.collectThisAccesses() {
+		Collection<ThisAccess> res = new LinkedList<ThisAccess>();
+		collectThisAccesses(res);
+		return res;
+	}
+	
+	protected void ASTNode.collectThisAccesses(Collection<ThisAccess> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectThisAccesses(res);
+	}
+	
+	protected void ThisAccess.collectThisAccesses(Collection<ThisAccess> res) {
+		res.add(this);
+		super.collectThisAccesses(res);
+	}
+	
+	// adjust virtual calls according to type update map
+	// for every expression that is the receiver of a method call and that has its type updated,
+	// we find the new target of the method call in the updated receiver type, and lock it
+	public static void Program.adjustVirtualCalls(Map<Expr, TypeDecl> typeUpdate) {
+		for(Map.Entry<Expr, TypeDecl> entry : typeUpdate.entrySet()) {
+			Expr e = entry.getKey();
+			if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
+				TypeDecl newType = entry.getValue();
+				MethodAccess ma = (MethodAccess)e.nextAccess();
+				if(ma.isMonoCall())
+					continue;
+				MethodDecl oldTarget = ma.decl(),
+						   newTarget = oldTarget.ancestorIn(newType);
+				if(newTarget == null)
+					throw new RefactoringException("invalid type change");
+				if(!oldTarget.throwsSameExceptionsAs(newTarget))
+					throw new RefactoringException("new target throws different exceptions");
+				if(oldTarget.type() != newTarget.type())
+					throw new RefactoringException("new target has different return type");
+				ma.lock(newTarget);				
+			}
+		}
+	}
+	
+	// returns the set of subtypes of this that inherit a different method with the same signature as md
+	syn lazy Collection<TypeDecl> TypeDecl.inheritingTypes(MethodDecl md) {
+		Collection<TypeDecl> res = new HashSet<TypeDecl>();
+		inheritingTypes(md, res);
+		return res;
+	}
+	
+	protected void TypeDecl.inheritingTypes(MethodDecl md, Collection<TypeDecl> res) {
+		for(MethodDecl mmd : (Collection<MethodDecl>)memberMethods(md.name())) {
+			if(mmd != md && mmd.signature().equals(md.signature()))
+				res.add(this);
+		}
+		for(TypeDecl child : childTypes()) {
+			if(!child.supertypes().contains(this))
+				throw new RefactoringException("cannot deal with parameterised/substituted types");
+			if(child.localMethodsSignature(md.signature()).isEmpty())
+				child.inheritingTypes(md, res);
+		}
+	}
+	
+	// returns the set of new overriding methods md would pick up, were it moved to this
+	syn lazy Collection<MethodDecl> TypeDecl.overridingMethods(MethodDecl md) {
+		Collection<MethodDecl> res = new HashSet<MethodDecl>();
+		overridingMethods(md, res);
+		return res;
+	}
+	
+	protected void TypeDecl.overridingMethods(MethodDecl md, Collection<MethodDecl> res) {
+		SimpleSet s = localMethodsSignature(md.signature());
+		if(s instanceof MethodDecl) {
+			if(s != md)
+				res.add((MethodDecl)s);
+			return;
+		}
+		for(TypeDecl child : childTypes()) {
+			if(!child.supertypes().contains(this))
+				throw new RefactoringException("cannot deal with parameterised/substituted types");
+			if(child.minMemberAccess(this) > md.getVisibility())
+				continue;
+			child.overridingMethods(md, res);
+		}
+	}
+	
+	// lock overriding of affected methods and name binding of affected declarations and names
+	public void Program.lockOverridingAndNames(Map<Expr, TypeDecl> typeUpdate, Map<MemberDecl, TypeDecl> memberMove,
+			Map<MethodDecl, Collection<MethodDecl>> methodOverriding) {
+		// lock calls that have an argument type changed
+		for(Expr e : typeUpdate.keySet()) {
+			if(e.isArgument()) {
+				Call c = (Call)e.getParent().getParent();
+				// TODO: introduce method Call.lock()
+				if(c instanceof MethodAccess)
+					((MethodAccess)c).lock();
+				else if(c instanceof ConstructorAccess)
+					((ConstructorAccess)c).lock();
+				else if(c instanceof ClassInstanceExpr)
+					((ClassInstanceExpr)c).lock();
+			}
+		}
+		
+		// find names of potentially affected methods, constructors, fields and types
+		Collection<String> potentiallyAffectedMethods = new HashSet<String>();
+		Collection<TypeDecl> potentiallyAffectedConstructors = new HashSet<TypeDecl>();
+		Collection<String> potentiallyAffectedFields = new HashSet<String>();
+		for(Expr e : typeUpdate.keySet()) {
+			if(e.isParameterType()) {
+				Callable c = ((ParameterDeclaration)e.getParent()).getParameterisedCallable();
+				if(c instanceof MethodDecl)
+					potentiallyAffectedMethods.add(((MethodDecl)c).name());
+				else if(c instanceof ConstructorDecl)
+					potentiallyAffectedConstructors.add(((ConstructorDecl)c).hostType());
+			}			
+		}
+		for(MemberDecl md : memberMove.keySet()) {
+			if(md instanceof MethodDecl)
+				potentiallyAffectedMethods.add(((MethodDecl)md).name());
+			if(md instanceof FieldDeclaration)
+				potentiallyAffectedFields.add(((FieldDeclaration)md).name());
+			if(md instanceof MemberTypeDecl)
+				potentiallyAffectedFields.add(((MemberTypeDecl)md).typeDecl().name());
+		}
+		
+		// explicitly set overriding dependencies
+		for(Map.Entry<MethodDecl, Collection<MethodDecl>> entry : methodOverriding.entrySet())
+			entry.getKey().lockOverriding(entry.getValue());
+		
+		// lock existing overriding dependencies and names for the rest
+		lockOverridingDependencies(potentiallyAffectedMethods);
+		lockMethodNames(potentiallyAffectedMethods);
+		lockConstructorCalls(potentiallyAffectedConstructors);
+		lockNames(potentiallyAffectedFields);
+		
+		for(MemberDecl md : memberMove.keySet())
+			md.lockAllNames();
 	}
 }

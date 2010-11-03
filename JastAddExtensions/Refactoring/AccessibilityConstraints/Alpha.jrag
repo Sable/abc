@@ -35,4 +35,16 @@ aspect Alpha {
 	
 	public int TypeDecl.minAccess(Access acc) { return minAccess(acc.hostPackage(), acc.hostType()); }
 	public int BodyDecl.minAccess(Access acc) { return minAccess(acc.hostPackage(), acc.hostType()); }
+	
+	// the minimum accessibility needed for a member of "that" to be accessible within "this"
+	// should be merged with BodyDecl.minAccess above
+	syn lazy int TypeDecl.minMemberAccess(TypeDecl that) {
+		if(this.topLevelType() == that.topLevelType())
+			return ASTNode.VIS_PRIVATE;
+		if(this.hostPackage().equals(that.hostPackage()))
+			return ASTNode.VIS_PACKAGE;
+		if(this.withinBodyThatSubclasses(that) != null)
+			return ASTNode.VIS_PROTECTED;
+		return ASTNode.VIS_PUBLIC;
+	}
 }

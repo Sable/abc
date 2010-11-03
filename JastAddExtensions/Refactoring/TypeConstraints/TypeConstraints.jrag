@@ -89,6 +89,37 @@ aspect TypeConstraints {
 		}
 	}
 	
+	// an exception compatibility constraint enforces that an overriding method may not throw more exceptions
+	// than its overridden method; we have no way of solving such constraints, but just check them (relying on
+	// the fact that the currently implemented refactorings don't change thrown exceptions)
+	class ExceptionCompatibilityConstraint extends TypeConstraint {
+		private MethodDecl sub, sup;
+		
+		public ExceptionCompatibilityConstraint(MethodDecl sub, MethodDecl sup) {
+			super(sub, "compatible throws clauses");
+			this.sub = sub;
+			this.sup = sup;
+		}
+		
+		public boolean solved() {
+			for(Access acc : sub.getExceptions())
+				if(!sup.throwsException(acc.type()))
+					return false;
+			return true;
+		}
+		
+		public String describe() {
+			return sub.fullName() + " cannot throw more exceptions than " + sup.fullName();
+		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof ExceptionCompatibilityConstraint))
+				return false;
+			ExceptionCompatibilityConstraint that = (ExceptionCompatibilityConstraint)o;
+			return this.sub.equals(that.sub) && this.sup.equals(that.sup);
+		}
+	}
+	
 	// a disjunctive type constraint is a disjunction of type constraints
 	// at the moment, all disjunctive constraints are disjunctions of simple type constraints whose left hand side is
 	// the same

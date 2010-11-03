@@ -1,4 +1,10 @@
 aspect TypeExt {
+	syn boolean TypeDecl.isSubstitutedType() = false;
+	eq ClassDeclSubstituted.isSubstitutedType() = true;
+	eq InterfaceDeclSubstituted.isSubstitutedType() = true;
+	eq GenericClassDeclSubstituted.isSubstitutedType() = true;
+	eq GenericInterfaceDeclSubstituted.isSubstitutedType() = true;
+	
 	public MemberTypeDecl TypeDecl.asMemberTypeDecl() { throw new RefactoringException("cannot convert this kind of type to member type"); }
 	public MemberClassDecl ClassDecl.asMemberTypeDecl() { return new MemberClassDecl(this); }
 	public MemberInterfaceDecl InterfaceDecl.asMemberTypeDecl() { return new MemberInterfaceDecl(this); }

@@ -48,6 +48,11 @@ aspect TypeConstraintSolving {
 			throw new RefactoringException(var + " has to be an array");
 	}
 	
+	public void ExceptionCompatibilityConstraint.propagateGeneralisation(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(!solved())
+			throw new RefactoringException(describe());
+	}
+	
 	// NB: this crucially relies on disjunctive type constraints being of the form
 	//          [E] <= T_1 or [E] <= T_2 or ... or [E] <= T_n
 	//     with all the [E] being the same, and all the T_i being constant
@@ -121,10 +126,17 @@ aspect TypeConstraintSolving {
 			throw new RefactoringException("cannot propagate through constraint " + this);
 		}
 	}
+	
 	public void IsArrayTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
 		if(!newType.isArrayDecl())
 			update.remove(var);
 	}
+	
+	public void ExceptionCompatibilityConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
+		if(!solved())
+			throw new RefactoringException(describe());
+	}
+
 	public void DisjunctiveTypeConstraint.propagateBackwards(TypeDecl newType, Collection<TypeConstraintVariable> update) {
 		SimpleTypeConstraint constr = (SimpleTypeConstraint)constraints.iterator().next();
 		if(update.contains(constr.getLeft())) {

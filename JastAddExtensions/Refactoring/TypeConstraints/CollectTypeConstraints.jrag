@@ -72,6 +72,7 @@ aspect CollectTypeConstraints {
 																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "method overriding", this, Operator.LT, that));
+			addConstraint(constraints, pred, new ExceptionCompatibilityConstraint(this, that));
 		}
 		for(MethodDecl that : possiblyOverriddenAncestors()) {
 			if(type().isPrimitiveType())
@@ -332,6 +333,9 @@ aspect CollectTypeConstraints {
 	public boolean IsArrayTypeConstraint.relevantForGeneralisation(TypeDecl C) {
 		return var instanceof Expr && C.subtype(((Expr)var).type());
 	}
+	public boolean ExceptionCompatibilityConstraint.relevantForGeneralisation(TypeDecl C) {
+		return false;
+	}
 	
 	public abstract boolean TypeConstraint.relevantForSubtree(ASTNode nd);
 	public boolean SimpleTypeConstraint.relevantForSubtree(ASTNode nd) {
@@ -346,5 +350,8 @@ aspect CollectTypeConstraints {
 	}
 	public boolean IsArrayTypeConstraint.relevantForSubtree(ASTNode nd) {
 		return var instanceof Expr && ((Expr)var).isDescendantTo(nd);
+	}
+	public boolean ExceptionCompatibilityConstraint.relevantForSubtree(ASTNode nd) {
+		return sub.getExceptionList().isDescendantTo(nd) || sup.getExceptionList().isDescendantTo(nd);
 	}
 }
