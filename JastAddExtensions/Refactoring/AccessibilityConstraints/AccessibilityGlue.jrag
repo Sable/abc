@@ -33,6 +33,8 @@ aspect AccessibilityGlue {
 	protected void Program.adjustAccessibilities(Map<Visible, Integer> acc_map) {
 		for(Map.Entry<Visible, Integer> e : acc_map.entrySet()) {
 			Visible vis = e.getKey();
+			if(!vis.fromSource())
+				throw new RefactoringException("cannot adjust accessibility of library element");
 			// TODO: hide this behind an interface (see ChangeAccessibility.jrag)
 			if(vis instanceof FieldDeclaration) {
 				FieldDeclaration fd = (FieldDeclaration)vis;

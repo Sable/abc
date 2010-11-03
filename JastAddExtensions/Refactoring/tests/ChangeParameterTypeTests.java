@@ -468,4 +468,12 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void m() {k(ii);}"+
 				"}"));
 	}
+	
+	public void test29() {
+		testFail("A", "m", 0, "java.lang.AbstractStringBuilder",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(StringBuffer buf) { }" +
+				"}"));
+	}
 }

@@ -534,4 +534,26 @@ public class PullUpMethodTests extends TestCase {
     			"  class A extends Super { }" +
     			"}"));
     }
+    
+    public void test35() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  int m() { return 23; }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  String m() { return null; }" +
+    			"}"));
+    }
+    
+    public void test36() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  int m() { return 23; }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  void m() { }" +
+    			"}"));
+    }
 }

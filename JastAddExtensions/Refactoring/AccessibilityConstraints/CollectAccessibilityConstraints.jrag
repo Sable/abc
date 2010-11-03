@@ -192,9 +192,16 @@ aspect CollectConstraints {
 		java.util.Set<Visible> visiblesToDo = new HashSet<Visible>();
 		java.util.Set<Visible> visiblesDone = new HashSet<Visible>();
 		
-		for(AccessibilityConstraint ac : accessibilityConstraints())
-			if(!ac.isSolved())
-				visiblesToDo.addAll(ac.referencedVisibles());
+		for(AccessibilityConstraint ac : accessibilityConstraints()) {
+			if(!ac.isSolved()) {
+				Collection<Visible> vis = ac.referencedVisibles();
+				if(vis.isEmpty()) {
+					// constraint is violated, and there is nothing we can do about it
+					throw new RefactoringException("unfixable accessibility constraint");
+				}
+				visiblesToDo.addAll(vis);
+			}
+		}
 		
 		while (!visiblesToDo.isEmpty()) {
 			Visible actual = visiblesToDo.iterator().next();

@@ -75,7 +75,7 @@ aspect CollectTypeConstraints {
 			addConstraint(constraints, pred, new ExceptionCompatibilityConstraint(this, that));
 		}
 		for(MethodDecl that : possiblyOverriddenAncestors()) {
-			if(type().isPrimitiveType())
+			if(this.type().isPrimitiveType() || this.type().isVoid() || that.type().isPrimitiveType() || that.type().isVoid())
 				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
 																		  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
 			else if(this.type().isSubtypeConstrainable() && that.type().isSubtypeConstrainable())
