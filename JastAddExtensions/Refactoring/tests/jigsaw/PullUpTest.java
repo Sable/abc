@@ -1,9 +1,6 @@
 package tests.jigsaw;
 
-import java.io.IOException;
 import java.util.LinkedList;
-
-import tests.jigsaw.AbstractRealProgramTest;
 
 import AST.MethodDecl;
 import AST.Problem;
@@ -12,11 +9,12 @@ import AST.RefactoringException;
 
 public class PullUpTest extends AbstractRealProgramTest {
 	@Override
-	protected void performChanges(final Program prog, final Log log) throws IOException {
+	protected void performChanges( final Log log) throws Exception {
+		final Program prog = getProgram();
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		for(final MethodDecl method : prog.sourceMethods()){
 			final LogEntry entry = new LogEntry(name());
-			//prog.setLogEntry(entry);
+			prog.setLogEntry(entry);
 			Thread job = new Thread() {
 				@Override
 				public void run() {

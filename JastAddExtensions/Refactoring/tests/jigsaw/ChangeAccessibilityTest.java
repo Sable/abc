@@ -14,7 +14,8 @@ import AST.Visible;
 public class ChangeAccessibilityTest extends AbstractRealProgramTest {
 	
 	@Override
-	protected void performChanges(Program prog, Log log) throws IOException {
+	protected void performChanges(Log log) throws Exception {
+		Program prog = getProgram();
 		for(Visible visible : prog.sourceVisibles()) {
 			if(!visible.isPrivate())
 				log.add(run(prog, visible, Modifier.VIS_PRIVATE));
@@ -29,7 +30,7 @@ public class ChangeAccessibilityTest extends AbstractRealProgramTest {
 	
 	private LogEntry run(final Program prog, final Visible visible, final int accessModifier) {
 		final LogEntry entry = new LogEntry(name());
-		//prog.setLogEntry(entry);
+		prog.setLogEntry(entry);
 		entry.addParameter("declaration", visible.name());
 		entry.addParameter("accessibility", Modifier.visibilityToString(accessModifier));
 		

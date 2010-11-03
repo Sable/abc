@@ -15,7 +15,8 @@ import AST.TypeDecl;
 public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 
 	@Override
-	protected void performChanges(final Program prog, final Log log) throws IOException {
+	protected void performChanges(final Log log) throws Exception {
+		final Program prog = getProgram();
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		for(final MethodDecl md : prog.sourceMethods()) {
 			for(int i=0;i<md.getNumParameter();++i) {
@@ -25,7 +26,7 @@ public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 				substitutiontypes.addAll(tp.supertypestransitive());
 				for(final TypeDecl stp : substitutiontypes) {
 					final LogEntry entry = new LogEntry(name());
-					//prog.setLogEntry(entry);
+					prog.setLogEntry(entry);
 					entry.addParameter("method", md.fullName());
 					entry.addParameter("parameter #", i+"");
 					entry.addParameter("substitution type", stp.fullName());	

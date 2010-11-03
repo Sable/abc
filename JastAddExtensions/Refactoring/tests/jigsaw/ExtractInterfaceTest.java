@@ -1,12 +1,9 @@
 package tests.jigsaw;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import tests.jigsaw.AbstractRealProgramTest;
 
 import AST.ClassDecl;
 import AST.MethodDecl;
@@ -38,15 +35,18 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	 */
 	
 	@Override
-	protected void performChanges(Program prog, Log log) throws IOException {
+	protected void performChanges(Log log) throws Exception {
 		final String freshInterface = "RTT_NEW_INTERFACE";
 		final String freshPackage = "RTT_NEW_PACKAGE";
+		Program prog = getProgram();
+		
 		//Run1
 		for(ClassDecl classDecl : prog.sourceClassDecls()) {
 			for(Collection<MethodDecl> methodSet : computeMethodSets(classDecl)) {
 				log.add(performChanges(prog, classDecl, freshPackage, freshInterface, methodSet));				
 			}
 		}
+		
 		//Run2
 		for(ClassDecl classDecl : mostReferencedClassDecls(prog,10)) {
 			for (ClassDecl classDecl2 : prog.sourceClassDecls()) {
@@ -61,7 +61,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 	
 	private LogEntry performChanges(final Program prog, final ClassDecl clazz, final String pkg, final String name, final Collection<MethodDecl> methods) {
 		final LogEntry entry = new LogEntry(name());
-//		prog.setLogEntry(entry);
+		prog.setLogEntry(entry);
 		entry.addParameter("class", clazz.fullName());
 		entry.addParameter("interface package", pkg);
 		entry.addParameter("interface name", name);
