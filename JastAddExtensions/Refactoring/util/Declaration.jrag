@@ -14,8 +14,12 @@ aspect Declaration {
 		TypeDecl type();
 		Access getTypeAccess();
 		void setTypeAccess(Access acc);
+		boolean isSubstituted();
 	}
 	
 	Variable extends TypedDeclaration;
 	MethodDecl implements TypedDeclaration;
+	
+	public boolean MethodDecl.isSubstituted() { return false; }
+	public boolean MethodDeclSubstituted.isSubstituted() { return true; }
 }
