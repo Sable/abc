@@ -280,4 +280,36 @@ public class ExtractInterfaceTests extends TestCase {
 				"package p;" +
 				"interface J {abstract public Y n(Y y);}")));
 	}
+	
+	public void test9() {
+		testSucc("p.A", new String[]{"getA()"}, "p", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A {" +
+				"  public A getA() {return new A();}" +
+				"}" +
+				"class B {" +
+				"  A a;" +
+				"  void n(){" +
+				"    A b = a.getA();" +
+				"    A array[] = {b};" +
+				"  }" +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A implements I {" +
+				"  public A getA() {return new A();}" +
+				"}" +
+				"class B {" +
+				"  I a;" +
+				"  void n(){" +
+				"    A b = a.getA();" +
+				"    A array[] = {b};" +
+				"  }" +
+				"}"), new RawCU("I.java",
+				"package p;" +
+				"interface I {" +
+				"  abstract public A getA();" +
+				"}")));
+	}
 }
