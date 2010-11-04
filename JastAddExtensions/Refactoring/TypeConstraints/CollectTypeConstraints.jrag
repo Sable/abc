@@ -192,7 +192,7 @@ aspect CollectTypeConstraints {
 				} else {
 					// require both argument and parameter to keep its type 
 					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.EQ, arg.type()));
-					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), parm.getTypeAccess(), Operator.EQ, arg.type()));
+					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), parm.getTypeAccess(), Operator.EQ, parm.type()));
 				}
 			}
 		}
