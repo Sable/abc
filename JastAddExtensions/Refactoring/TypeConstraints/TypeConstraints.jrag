@@ -103,7 +103,7 @@ aspect TypeConstraints {
 		
 		public boolean solved() {
 			for(Access acc : sub.getExceptions())
-				if(!sup.throwsException(acc.type()))
+				if(!acc.type().isCheckedException() && !sup.throwsException(acc.type()))
 					return false;
 			return true;
 		}

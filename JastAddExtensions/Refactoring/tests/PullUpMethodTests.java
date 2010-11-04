@@ -556,4 +556,34 @@ public class PullUpMethodTests extends TestCase {
     			"  void m() { }" +
     			"}"));
     }
+    
+    public void test37() {
+    	testFail(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  void m() { }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  void m() throws java.io.IOException { }" +
+    			"}"));
+    }
+    
+    public void test38() {
+    	testSucc(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  void m() { }" +
+    			"}",
+    			"class B extends Super {" +
+    			"  void m() throws java.util.NoSuchElementException { }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  void m() { }" +
+    			"}",
+    			"class A extends Super { }",
+    			"class B extends Super {" +
+    			"  void m() throws java.util.NoSuchElementException { }" +
+    			"}"));
+    }
 }
