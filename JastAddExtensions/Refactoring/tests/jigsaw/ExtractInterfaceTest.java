@@ -1,6 +1,5 @@
 package tests.jigsaw;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,48 +13,14 @@ import AST.TypeDecl;
 
 public class ExtractInterfaceTest extends AbstractRealProgramTest {
 
-	/*
-	 * Run1:
-	 * 
-	 * Extract from every source class declaration
-	 * 	- an empty interface
-	 *  - an interface containing all public and non inherited methods of that class
-	 *  - all interfaces resulting from deletion of a single method from the set of all public and non inherited methods of that class
-	 * using a previously unused identifier and package name for the new interface
-	 * 
-	 * 
-	 * Run2:
-	 * 
-	 * Extract from 
-	 *   - the 10 most frequently referenced classes
-	 * an interface containing all public and non inherited 
-	 * methods of this class into interfaces
-	 *  - with same names as all types already present in the program
-	 * using a previously unused package name for the new interface
-	 */
-	
 	@Override
 	protected void performChanges(Log log) throws Exception {
 		final String freshInterface = "RTT_NEW_INTERFACE";
 		final String freshPackage = "RTT_NEW_PACKAGE";
 		Program prog = getProgram();
 		
-		//Run1
 		for(ClassDecl classDecl : prog.sourceClassDecls()) {
-			for(Collection<MethodDecl> methodSet : computeMethodSets(classDecl)) {
-				log.add(performChanges(prog, classDecl, freshPackage, freshInterface, methodSet));				
-			}
-		}
-		
-		//Run2
-		for(ClassDecl classDecl : mostReferencedClassDecls(prog,10)) {
-			for (ClassDecl classDecl2 : prog.sourceClassDecls()) {
-				log.add(performChanges(prog, classDecl, freshPackage, classDecl2.name(), allNonInheritedMethods(classDecl)));
-			}
-		}
-		
-		for(ClassDecl classDecl : mostReferencedClassDecls(prog, 5)){
-			System.out.println(classDecl.name());
+			log.add(performChanges(prog, classDecl, freshPackage, freshInterface, allPublicNonStaticNonInheritedMethods(classDecl)));				
 		}
 	}
 	
@@ -115,71 +80,13 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		return "extract interface";
 	}
 	
-	private Collection<Collection<MethodDecl>> computeMethodSets(TypeDecl typeDecl) {
-		Collection<Collection<MethodDecl>> res = new LinkedList<Collection<MethodDecl>>();
-		
-		Collection<MethodDecl> publicNonInheritedMethods = allNonInheritedMethods(typeDecl);
-		
-		// empty methods set
-		res.add(new LinkedList<MethodDecl>());
-		
-		// full methods set
-		res.add(flatCopy(publicNonInheritedMethods));
-		
-		// n-1 methods set
-		for (MethodDecl methodDecl : publicNonInheritedMethods) {
-			LinkedList<MethodDecl> methodList = flatCopy(publicNonInheritedMethods);
-			methodList.remove(methodDecl);
-			res.add(methodList);
-		}
-		return res;
-	}
-	
-	private Collection<MethodDecl> allNonInheritedMethods(TypeDecl typeDecl) {
+	private Collection<MethodDecl> allPublicNonStaticNonInheritedMethods(TypeDecl typeDecl) {
 		Collection<MethodDecl> res = new LinkedList<MethodDecl>();
 		Iterator<MethodDecl> methodIterator = typeDecl.methodsIterator();
 		while(methodIterator.hasNext()){
 			MethodDecl method = methodIterator.next();
-			if(method.getParent(2) == typeDecl)
+			if(!method.isStatic() && method.isPublic() && method.getParent(2) == typeDecl)
 				res.add(method);
-		}
-		return res;
-	}
-
-	private <T> LinkedList<T> flatCopy(Collection<T> toCopy){
-		LinkedList<T> res = new LinkedList<T>();
-		res.addAll(toCopy);
-		return res;
-	}
-	
-	private Collection<ClassDecl> mostReferencedClassDecls(Program prog, int resultLengh) {
-		Collection<ClassDecl> res = new LinkedList<ClassDecl>();
-		
-		class SortableClassDecl implements Comparable<SortableClassDecl> {
-			ClassDecl classDecl;
-			Integer numberOfReferences;
-			
-			SortableClassDecl(ClassDecl classDecl){
-				this.classDecl = classDecl;
-				this.numberOfReferences = classDecl.uses().size();
-			}
-			@Override
-			public int compareTo(SortableClassDecl other) {
-				return numberOfReferences.compareTo(other.numberOfReferences);
-			}
-		}
-		
-		SortableClassDecl[] sortableClassDecls = new SortableClassDecl[prog.sourceClassDecls().size()];
-		int j = 0;
-		for (ClassDecl classDecl : prog.sourceClassDecls()) {
-			sortableClassDecls[j++] = new SortableClassDecl(classDecl); 
-		}                                                  
-		Arrays.sort(sortableClassDecls);
-		resultLengh = Math.min(resultLengh, sortableClassDecls.length);
-		
-		int pos = sortableClassDecls.length-1;
-		for(int i = 0; i<resultLengh; i++){
-			res.add(sortableClassDecls[pos--].classDecl);
 		}
 		return res;
 	}
