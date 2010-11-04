@@ -312,4 +312,36 @@ public class ExtractInterfaceTests extends TestCase {
 				"  abstract public A getA();" +
 				"}")));
 	}
+	
+	public void test10() {
+		testSucc("p.A", new String[]{"m()"}, "q", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A {" +
+				"  @B public void m(){}" +
+				"}"),
+				new RawCU("I.java","package p; public @interface B {}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A implements q.I {" +
+				"  @B public void m(){}" +
+				"}"),
+				new RawCU("B.java","package p; public @interface B {}"),
+				new RawCU("I.java","package q; public interface I {public abstract void m(); }")));
+	}
+	
+	public void test11() {
+		testSucc("p.A", new String[]{"toString()"}, "p", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A {" +
+				"  @Override public String toString(){return new String();}" +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A implements I {" +
+				"  @Override public String toString(){return new String();}" +
+				"}"),
+				new RawCU("I.java","package p; interface I {abstract public String toString();}")));
+	}	
 }
