@@ -343,5 +343,22 @@ public class ExtractInterfaceTests extends TestCase {
 				"  @Override public String toString(){return new String();}" +
 				"}"),
 				new RawCU("I.java","package p; interface I {abstract public String toString();}")));
-	}	
+	}
+	
+	public void test12() {
+		testSucc("p.A", new String[]{}, "p", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A extends B {" +
+				"  public A(A a){super(a);}" +
+				"}" +
+				"class B<T> { public B(B<T> b){} }")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"class A extends B implements I {" +
+				"  public A(A a){super(a);}" +
+				"}" +
+				"class B<T> { public B(B<T> b){} }"),
+				new RawCU("I.java","package p; interface I {}")));
+	}
 }
