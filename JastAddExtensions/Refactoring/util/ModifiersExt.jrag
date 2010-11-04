@@ -54,4 +54,12 @@ aspect Modifiers {
 	}
 	
 	public boolean MemberDecl.isNative() { return false; }
+	
+	public void Modifiers.removeAnnotations() {
+		for(int i=getNumModifier()-1;i>=0;--i) {
+			Modifier mod = getModifier(i);
+			if(mod instanceof Annotation)
+				getModifierList().removeChild(i);
+		}
+	}
 }

@@ -27,6 +27,8 @@ aspect ExtractInterface {
 				throw new RefactoringException("selected method is static");
 			MethodDecl new_md = md.lockedCopyWithEmptyBody();
 			new_md.getModifiers().removeModifier("synchronized");
+			// it generally doesn't make sense to preserve annotations, so we don't
+			new_md.getModifiers().removeAnnotations();
 			// for Eclipse compatibility
 			new_md.getModifiers().addModifier("abstract");
 			new_md.getModifiers().removeModifier("final");	

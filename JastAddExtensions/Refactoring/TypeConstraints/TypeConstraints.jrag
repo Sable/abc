@@ -205,7 +205,9 @@ aspect TypeConstraints {
 			// method return types are not adjusted (see ExtractInterfaceTests.test9)
 			if(getParent() instanceof Variable) {
 				Variable v = (Variable)getParent();
-				return this != v.getTypeAccess() || v.isSubstituted();
+				return this != v.getTypeAccess() 
+					|| v.isSubstituted() 
+					|| v instanceof VariableArityParameterDeclaration;
 			}
 			if(getParent() instanceof CastExpr)
 				return this != ((CastExpr)getParent()).getTypeAccess();

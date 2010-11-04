@@ -320,7 +320,7 @@ public class ExtractInterfaceTests extends TestCase {
 				"class A {" +
 				"  @B public void m(){}" +
 				"}"),
-				new RawCU("I.java","package p; public @interface B {}")),
+				new RawCU("B.java","package p; public @interface B {}")),
 				Program.fromCompilationUnits(new RawCU("A.java",
 				"package p;" +
 				"class A implements q.I {" +

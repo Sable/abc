@@ -586,4 +586,31 @@ public class PullUpMethodTests extends TestCase {
     			"  void m() throws java.util.NoSuchElementException { }" +
     			"}"));
     }
+    
+    public void test39() {
+    	testSucc(Program.fromCompilationUnits(
+    			 new RawCU("Super.java",
+    			   "package p;" +
+    			   "public class Super { }"),
+    			 new RawCU("B.java",
+    			   "package q;" +
+    			   "public @interface B { }"),
+    			 new RawCU("A.java",
+    			   "package q;" +
+    			   "class A extends p.Super {" +
+    			   "  @B void m() { }" +
+    			   "}")),
+    			 Program.fromCompilationUnits(
+    			 new RawCU("Super.java",
+    			   "package p;" +
+    			   "public class Super {" +
+    			   "  @q.B void m() { }" +
+    			   "}"),
+      			 new RawCU("B.java",
+       			   "package q;" +
+       			   "public @interface B { }"),
+    			 new RawCU("A.java",
+    			   "package q;" +
+    			   "class A extends p.Super { }")));
+    }
 }

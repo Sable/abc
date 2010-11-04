@@ -291,7 +291,7 @@ aspect MethodExt {
 
 	// copy of method with locked names, but empty body
 	public MethodDecl MethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopyAndDetach();
+		Modifiers mods = (Modifiers)getModifiers().lockedCopy();
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -304,7 +304,7 @@ aspect MethodExt {
 	}
 	
 	public MethodDecl GenericMethodDecl.lockedCopyWithEmptyBody() {
-		Modifiers mods = (Modifiers)getModifiers().fullCopyAndDetach();
+		Modifiers mods = (Modifiers)getModifiers().lockedCopy();
 		Access rettype = type().createLockedAccess();
 		String name = name();
 		List<ParameterDeclaration> parms = new List<ParameterDeclaration>();
@@ -326,7 +326,6 @@ aspect MethodExt {
 	public MethodDecl AnnotationMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl BridgeMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
 	public MethodDecl RawMethodDecl.lockedCopyWithEmptyBody() { throw new UnsupportedOperationException(); }
-	
 	
 	// whether this method could be called from outside itself
 	syn lazy boolean MethodDecl.isCallableFromOutside() {
