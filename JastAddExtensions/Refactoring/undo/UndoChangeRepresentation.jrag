@@ -1,0 +1,52 @@
+aspect UndoChangeRepresentation {
+	public static Map<String, String> ASTNode.computeChanges(Collection<ASTModification> mods) {
+		HashSet<CompilationUnit> changed = new HashSet<CompilationUnit>();
+		Map<CompilationUnit, String> originalPaths = new HashMap<CompilationUnit, String>();
+		
+		Iterator<ASTModification> iter = mods.iterator();
+		while(iter.hasNext()) {
+			ASTModification m = iter.next();
+			if (m instanceof ASTModificationCompilationUnitSetId) {
+				ASTModificationCompilationUnitSetId mm = (ASTModificationCompilationUnitSetId) m;
+				originalPaths.put((CompilationUnit)mm.node, mm.oldPathName);
+			}
+		}
+		
+		iter = mods.iterator();
+		while(iter.hasNext()) {
+			ASTModification m = iter.next();
+			CompilationUnit cu = m.getCompilationUnit();
+			if(cu == null || !cu.fromSource() || changed.contains(cu))
+				continue;
+			changed.add(cu);
+		}
+		
+		Map<String, String> res = new HashMap<String, String>();
+		for(CompilationUnit cu : changed) {
+			String pathName = originalPaths.containsKey(cu) ? originalPaths.get(cu) : cu.pathName();
+			res.put(pathName, cu.toString());
+		}
+		
+		return res;
+	}
+	
+	public CompilationUnit ASTModification.getCompilationUnit() {
+		return null;
+	}
+	
+	public CompilationUnit ASTModificationInsertChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
+	}
+	
+	public CompilationUnit ASTModificationRemoveChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
+	}
+	
+	public CompilationUnit ASTModificationReplaceEdit.getCompilationUnit() {
+		return isInTree ? node.compilationUnit() : null;
+	}
+	
+	public CompilationUnit ASTModificationSetChild.getCompilationUnit() {
+		return isInTree ? parent.compilationUnit() : null;
+	}
+}

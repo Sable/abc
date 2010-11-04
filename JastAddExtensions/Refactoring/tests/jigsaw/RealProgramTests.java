@@ -1,12 +1,21 @@
 package tests.jigsaw;
 
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.jgroups;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.jmeter;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.servingxml;
+
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import tests.CompileHelper;
+import tests.jigsaw.DiffMatchPatch.Diff;
+import AST.ASTNode;
 import AST.AccessibilityConstraint;
+import AST.CompilationUnit;
 import AST.MethodDecl;
 import AST.Predicate;
 import AST.Program;
@@ -14,8 +23,6 @@ import AST.RefactoringException;
 import AST.SimpleSet;
 import AST.TypeConstraint;
 import AST.TypeDecl;
-
-import static tests.jigsaw.RealProgramTests.BenchmarkProgram.*;
 
 public class RealProgramTests extends TestCase {
 	private static String HOME = System.getProperty("user.home");
@@ -31,8 +38,23 @@ public class RealProgramTests extends TestCase {
 				BenchmarkProgram bp = BenchmarkProgram.valueOf(args[i]);
 				exhaustivelyPullUpMethods(bp.compile());
 			}
+		} else if(args.length >= 6 && args[0].equals("generalise-parameter")) {
+			BenchmarkProgram bp = BenchmarkProgram.valueOf(args[1]);
+			String type = args[2];
+			String sig = args[3];
+			int idx = Integer.parseInt(args[4]);
+			String newType = args[5];
+			generaliseParameterType(bp.compile(), type, sig, idx, newType, true);
+			pullUpMethod(bp.compile(), type, sig, true);
+		} else if(args.length >= 4 && args[0].equals("pull-up")) {
+			BenchmarkProgram bp = BenchmarkProgram.valueOf(args[1]);
+			String type = args[2];
+			String sig = args[3];
+			pullUpMethod(bp.compile(), type, sig, true);
 		} else {
-			System.out.println("Parameters: (cpt|pum) <benchmark name>...");
+			System.out.println(
+					"Usage: generalise-parameter <benchmark name> <type name> <method signature> <parameter index> <new type name>\n" +
+					"       pull-up <benchmark name> <type name> <method signature>");
 			System.out.print("Available benchmarks:");
 			for(BenchmarkProgram bp : BenchmarkProgram.values())
 				System.out.print(" " + bp);
@@ -296,23 +318,34 @@ public class RealProgramTests extends TestCase {
 	}
 	
 	public void testExhaustivelyGeneraliseParameter() throws Exception {
-		exhaustivelyChangeParameterTypes(jester.compile());
+		exhaustivelyChangeParameterTypes(jgroups.compile());
 	}
 
-	public void generaliseParameterType(Program prog, String type, String sig, int idx, String newType) {
+	public static void generaliseParameterType(Program prog, String type, String sig, int idx, String newType, boolean printReport) {
 		TypeDecl td = prog.findType(type);
 		assertNotNull(td);
 		SimpleSet s = td.localMethodsSignature(sig);
 		assertTrue(s instanceof MethodDecl);
 		TypeDecl newtd = prog.findType(newType);
-		((MethodDecl)s).getParameter(idx).changeType(newtd);
-		LinkedList errors = new LinkedList();
-		prog.errorCheck(errors);
-		if(!errors.isEmpty())
-			System.out.println("\n Refactoring introduced errors: " + errors);
+		try {
+			Program.startRecordingASTChangesAndFlush();
+			((MethodDecl)s).getParameter(idx).changeType(newtd);
+			LinkedList errors = new LinkedList();
+			prog.errorCheck(errors);
+			if(!errors.isEmpty())
+				System.out.println("\n Refactoring introduced errors: " + errors);
+		} catch(RefactoringException rfe) {
+			rfe.printStackTrace();
+		} finally {
+			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.undoStack) : null;
+			Program.undoAll();
+			prog.flushCaches();
+			if(printReport)
+				printReport(prog, changedCUs);
+		}
 	}
 	
-	public void pullUpMethod(Program prog, String type, String sig) {
+	public static void pullUpMethod(Program prog, String type, String sig, boolean printReport) {
 		TypeDecl td = prog.findType(type);
 		assertNotNull(td);
 		SimpleSet s = td.localMethodsSignature(sig);
@@ -328,23 +361,67 @@ public class RealProgramTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			rfe.printStackTrace();
 		} finally {
+			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.undoStack) : null;
 			Program.undoAll();
 			prog.flushCaches();
+			if(printReport)
+				printReport(prog, changedCUs);
 		}
+	}
+
+	private static void printReport(Program prog, Map<String, String> changedCUs) {
+		for(Map.Entry<String, String> changedCU : changedCUs.entrySet()) {
+			String pathName = changedCU.getKey(),
+				   newCU = changedCU.getValue();
+			CompilationUnit cu = null;
+			for(Iterator<CompilationUnit> iter=prog.compilationUnitIterator();iter.hasNext();) {
+				CompilationUnit ccu = iter.next();
+				if(ccu.pathName().equals(pathName)) {
+					cu = ccu;
+					break;
+				}
+			}
+			assertNotNull(cu);
+			DiffMatchPatch differ = new DiffMatchPatch();
+			LinkedList<Diff> diffs = differ.diff_compute(cu.toString(), newCU, true);
+			boolean printed_notification = false;
+			for(Diff diff : diffs) {
+				if(diff.text.length() == 0)
+					continue;
+				switch(diff.operation) {
+				case EQUAL:
+					break;
+				case DELETE:
+					printed_notification = printNotification(pathName, printed_notification);
+					System.out.println("deleted '" + diff.text + "'");
+					break;
+				case INSERT:
+					printed_notification = printNotification(pathName, printed_notification);
+					System.out.println("inserted '" + diff.text + "'");
+				}
+				if(diff.operation != DiffMatchPatch.Operation.EQUAL)
+					System.out.println();
+			}
+		}
+	}
+
+	private static boolean printNotification(String pathName, boolean printed_notification) {
+		if(!printed_notification) {
+			System.out.println("\nChanges in " + pathName + ":");
+			printed_notification = true;
+		}
+		return printed_notification;
 	}
 	
 	public void testGeneraliseParameterType() throws Exception {
-		generaliseParameterType(jgroups.compile(), "org.jgroups.protocols.SHARED_LOOPBACK", 
-								"sendToSingleMember(org.jgroups.Address, byte[], int, int)", 
-								0, "java.io.Externalizable");
+		generaliseParameterType(jgroups.compile(), "org.jgroups.util.ResponseCollector", 
+								"reset(org.jgroups.Address[])",	0, "java.lang.Object", false);
 	}
 	
 	public void testPullUp() throws Exception {
-		Program prog = jgroups.compile();
-		//pullUpMethod(prog, "org.junit.runners.ParentRunner", "getChildren()");
+		Program prog = servingxml.compile();
+		pullUpMethod(prog, "com.servingxml.util.record.RecordBuilder", "getFieldIndex(com.servingxml.util.Name)", false);
 		/*generaliseParameterType(prog, "org.jgroups.blocks.ConnectionTableNIO", 
 				  "runRequest(org.jgroups.Address, java.nio.ByteBuffer)", 0, "java.nio.Buffer");*/
-		generaliseParameterType(prog, "org.jgroups.blocks.ConnectionTableNIO", 
-									  "runRequest(org.jgroups.Address, java.nio.ByteBuffer)", 1, "java.nio.Buffer");
 	}
 }
