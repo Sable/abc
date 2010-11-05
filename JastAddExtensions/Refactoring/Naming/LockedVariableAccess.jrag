@@ -14,9 +14,16 @@ aspect LockedVariableAccess {
 	
 	refine VariableScopePropagation eq VarAccess.decls() = targetVariable == null ? refined() : SimpleSet.emptySet.add(targetVariable);
 	
-	refine Uses protected void VarAccess.collect__FieldDeclaration_Uses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
-		super.collect__FieldDeclaration_Uses(decl, name, col);
+	refine Uses protected void VarAccess.collectFieldUses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
+		super.collectFieldUses(decl, name, col);
 		if (targetVariable == decl || (name.equals(name()) && decl() == decl))
+			col.add(this);
+	}
+	
+	refine GenericsExt protected void VarAccess.collectFieldUsesWithCopies(FieldDeclaration decl, String name, ArrayList<VarAccess> col) {
+		super.collectFieldUsesWithCopies(decl, name, col);
+		if (targetVariable != null && targetVariable.sourceVariableDecl() == decl.sourceVariableDecl() 
+				|| (name.equals(name()) && decl().sourceVariableDecl() == decl.sourceVariableDecl()))
 			col.add(this);
 	}
 	

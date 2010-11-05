@@ -78,21 +78,4 @@ aspect TypeExt {
 		return false;
 	}
 	
-	// for an inherited method, get the method that is actually inherited (may be substituted copy)
-	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
-		SimpleSet res = SimpleSet.emptySet;
-		for(Iterator iter=memberMethods(md.name()).iterator(); iter.hasNext();) {
-			MethodDecl md2 = (MethodDecl)iter.next();
-			if(md.sourceMethodDecl() == md2.sourceMethodDecl())
-				res = res.add(md2);
-		}
-		return res;
-	}
-	
-	public MethodDecl TypeDecl.memberMethod(MethodDecl md) {
-		SimpleSet res = memberMethods(md);
-		if(res.size() > 1)
-			throw new Error("inherited multiple methods with the same source declaration");
-		return res.isEmpty() ? null : (MethodDecl)res.iterator().next();
-	}
 }

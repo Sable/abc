@@ -32,16 +32,43 @@ aspect GenericsExt {
 	GenericInterfaceDeclSubstituted implements TypeDeclSubstituted;
 	
 	
-	public Collection<FieldDeclarationSubstituted> FieldDeclaration.substitutedCopies() {
-		Collection<FieldDeclarationSubstituted> res = new LinkedList<FieldDeclarationSubstituted>();
-		if(!hostType().isGenericType())
-			return res;
-		GenericTypeDecl host = (GenericTypeDecl)hostType();
-		for(int i=0;i<host.getNumParTypeDecl();++i) {
-			ParTypeDecl ptd = host.getParTypeDecl(i);
-			for(Iterator<FieldDeclarationSubstituted> iter=ptd.localFields(name()).iterator();iter.hasNext();)
-				res.add(iter.next());
+	syn lazy ArrayList<VarAccess> FieldDeclaration.usesOfAllCopies() {
+		ArrayList<VarAccess> col = new ArrayList<VarAccess>();
+		programRoot().collectFieldUsesWithCopies(this, name(), col);
+		return col;
+	}
+	protected void ASTNode.collectFieldUsesWithCopies(FieldDeclaration decl, String name, ArrayList<VarAccess> col) {
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).collectFieldUsesWithCopies(decl, name, col);
+	}
+	protected void VarAccess.collectFieldUsesWithCopies(FieldDeclaration decl, String name, ArrayList<VarAccess> col) {
+		super.collectFieldUsesWithCopies(decl, name, col);
+		if (name.equals(name()) && decl().sourceVariableDecl() == decl.sourceVariableDecl())
+			col.add(this);
+	}
+	
+	// for an inherited method, get the method that is actually inherited (may be substituted copy)
+	public SimpleSet TypeDecl.memberMethods(MethodDecl md) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator iter=memberMethods(md.name()).iterator(); iter.hasNext();) {
+			MethodDecl md2 = (MethodDecl)iter.next();
+			if(md.sourceMethodDecl() == md2.sourceMethodDecl())
+				res = res.add(md2);
 		}
 		return res;
+	}
+	
+	public MethodDecl TypeDecl.memberMethod(MethodDecl md) {
+		SimpleSet res = memberMethods(md);
+		if(res.size() > 1)
+			throw new Error("inherited multiple methods with the same source declaration");
+		return res.isEmpty() ? null : (MethodDecl)res.iterator().next();
+	}
+	
+	public MethodDecl MethodDecl.copyIn(TypeDecl host) {
+		SimpleSet res = host.memberMethods(this);
+		if(res.size() == 1)
+			return (MethodDecl)res.iterator().next();
+		throw new RefactoringException("unable to find copy of " + fullName() + " in " + host.fullName());
 	}
 }

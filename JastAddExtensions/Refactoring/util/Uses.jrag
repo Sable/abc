@@ -5,23 +5,17 @@ aspect Uses {
 	
 	public boolean Variable.isUsed() { return !allUses().isEmpty(); }
 	
-//	coll Collection<VarAccess> FieldDeclaration.uses() [new HashSet<VarAccess>()] 
-//	                           with add root Program;
-//	VarAccess contributes
-//	this when decl() instanceof FieldDeclaration
-//	to FieldDeclaration.uses() for (FieldDeclaration)decl();
-	
 	syn lazy Collection<VarAccess> FieldDeclaration.uses() {
 		Collection<VarAccess> col = new LinkedList<VarAccess>();
-		programRoot().collect__FieldDeclaration_Uses(this, name(), col);
+		programRoot().collectFieldUses(this, name(), col);
 		return col;
 	}
-	protected void ASTNode.collect__FieldDeclaration_Uses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
+	protected void ASTNode.collectFieldUses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
 		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).collect__FieldDeclaration_Uses(decl, name, col);
+			getChild(i).collectFieldUses(decl, name, col);
 	}
-	protected void VarAccess.collect__FieldDeclaration_Uses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
-		super.collect__FieldDeclaration_Uses(decl, name, col);
+	protected void VarAccess.collectFieldUses(FieldDeclaration decl, String name, Collection<VarAccess> col) {
+		super.collectFieldUses(decl, name, col);
 		if (name.equals(name()) && decl() == decl)
 			col.add(this);
 	}

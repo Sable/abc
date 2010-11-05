@@ -45,12 +45,4 @@ aspect VariableExt {
 	syn boolean Expr.isFieldAccessInThis(FieldDeclaration fd) = false;
 	eq AbstractDot.isFieldAccessInThis(FieldDeclaration fd) = getLeft().isThisAccess() && getRight().isFieldAccessInThis(fd);
 	eq VarAccess.isFieldAccessInThis(FieldDeclaration fd) = decl() == fd;
-	
-	// uses of a field, including all its substituted copies
-	public ArrayList<VarAccess> FieldDeclaration.usesOfAllCopies() {
-		ArrayList<VarAccess> res = new ArrayList<VarAccess>(uses());
-		for(FieldDeclaration fd : substitutedCopies())
-			res.addAll(fd.uses());
-		return res;
-	}
 }

@@ -11,6 +11,7 @@ aspect SelfEncapsulateField {
 			VarAccess va = uses.get(i);
 			if(va.hostBodyDecl() == getter || va.hostBodyDecl() == setter)
 				continue;
+			TypeDecl receiver_type = va.decl().hostType();
 			if(va.isDest()) {
 				// constructors can write final fields
 				if(setter == null)
@@ -21,7 +22,7 @@ aspect SelfEncapsulateField {
 					p = va.getParent();
 				if(p.getParent() instanceof AssignSimpleExpr && p.getChildIndex() == 0) {
 					AssignSimpleExpr assgn = (AssignSimpleExpr)p.getParent();
-					Access setter_invocation = setter.createLockedAccess(new List<Expr>().add(assgn.getSource()));
+					Access setter_invocation = setter.copyIn(receiver_type).createLockedAccess(new List<Expr>().add(assgn.getSource()));
 					if(va.isQualified())
 						setter_invocation = va.qualifier().qualifiesAccess(setter_invocation);
 					assgn.replaceWith(setter_invocation);
@@ -29,7 +30,7 @@ aspect SelfEncapsulateField {
 					throw new RefactoringException("cannot encapsulate this access");
 				}
 			} else {
-				va.replaceWith(getter.createLockedAccess(new List<Expr>()));
+				va.replaceWith(getter.copyIn(receiver_type).createLockedAccess(new List<Expr>()));
 			}
 		}
 		
