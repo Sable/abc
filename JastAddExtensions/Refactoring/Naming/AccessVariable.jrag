@@ -56,7 +56,7 @@ aspect AccessVariable {
 			bend = td;
 			if(!td.localFields(target.name()).isEmpty() || td.ambiguousFieldName(target.name()))
 				directlyVisible = false;
-			else
+			else if(directlyVisible)
 				source = td;
 			return this;
 		}

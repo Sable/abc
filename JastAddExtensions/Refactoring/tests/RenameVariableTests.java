@@ -29,7 +29,7 @@ public class RenameVariableTests extends TestCase {
 			fd.rename(new_name);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
-			fail("Refactoring was supposed to succeed; failed with "+rfe);
+			assertEquals(out.toString(), rfe.getMessage());
 		}
 		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
@@ -1434,5 +1434,53 @@ public class RenameVariableTests extends TestCase {
     		    	  "class B extends A implements I {" +
     		    	  "  int x = A.j;" +
     		    	  "}")));
+    }
+    
+    public void test43() {
+    	testSucc("p", "SuperSuper", "x", "y",
+    		Program.fromCompilationUnits(
+    		new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper { public int x; }"),
+    		new RawCU("Super.java",
+    			"package p;" +
+    			"public class Super extends SuperSuper { public int y; }"),
+    		new RawCU("Sub.java",
+    			"package q;" +
+    			"public class Sub extends p.Super { int z = x; }")),
+   			Program.fromCompilationUnits(
+    		new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper { public int y; }"),
+    		new RawCU("Super.java",
+    			"package p;" +
+    			"public class Super extends SuperSuper { public int y; }"),
+    		new RawCU("Sub.java",
+    			"package q;" +
+    			"public class Sub extends p.Super { int z = ((p.SuperSuper)this).y; }")));
+    }
+    
+    public void test44() {
+    	testSucc("p", "SuperSuper", "x", "y",
+    		Program.fromCompilationUnits(
+    		new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"class SuperSuper { protected int x; }"),
+    		new RawCU("Super.java",
+    			"package p;" +
+    			"public class Super extends SuperSuper { protected int y; }"),
+    		new RawCU("Sub.java",
+    			"package q;" +
+    			"public class Sub extends p.Super { int z = x; }")),
+   			Program.fromCompilationUnits(
+    		new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper { public int y; }"),
+    		new RawCU("Super.java",
+    			"package p;" +
+    			"public class Super extends SuperSuper { protected int y; }"),
+    		new RawCU("Sub.java",
+    			"package q;" +
+    			"public class Sub extends p.Super { int z = ((p.SuperSuper)this).y; }")));
     }
 }
