@@ -1,8 +1,6 @@
 package tests.jigsaw;
 
-import static tests.jigsaw.RealProgramTests.BenchmarkProgram.jgroups;
-import static tests.jigsaw.RealProgramTests.BenchmarkProgram.jmeter;
-import static tests.jigsaw.RealProgramTests.BenchmarkProgram.servingxml;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.*;
 
 import java.io.File;
 import java.util.Collection;
@@ -307,7 +305,7 @@ public class RealProgramTests extends TestCase {
 		exhaustivelyPullUpMethods(prog, -1);
 	}
 	
-	// ensure that all projects compile and accessibility constraints are initially satisfied
+	// ensure that all projects compile and constraints are initially satisfied
 	public void testCompile() throws Exception {
 		for(BenchmarkProgram prog : BenchmarkProgram.values())
 			prog.compile();
@@ -337,7 +335,7 @@ public class RealProgramTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			rfe.printStackTrace();
 		} finally {
-			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.undoStack) : null;
+			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.getUndoStack()) : null;
 			Program.undoAll();
 			prog.flushCaches();
 			if(printReport)
@@ -361,7 +359,7 @@ public class RealProgramTests extends TestCase {
 		} catch(RefactoringException rfe) {
 			rfe.printStackTrace();
 		} finally {
-			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.undoStack) : null;
+			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.getUndoStack()) : null;
 			Program.undoAll();
 			prog.flushCaches();
 			if(printReport)
@@ -414,8 +412,9 @@ public class RealProgramTests extends TestCase {
 	}
 	
 	public void testGeneraliseParameterType() throws Exception {
-		generaliseParameterType(jgroups.compile(), "org.jgroups.util.ResponseCollector", 
-								"reset(org.jgroups.Address[])",	0, "java.lang.Object", false);
+		generaliseParameterType(hadoop.compile(), "org.apache.hadoop.fs.FileSystem", 
+								"setOwner(org.apache.hadoop.fs.Path, java.lang.String, java.lang.String)",
+								2, "java.lang.Object", false);
 	}
 	
 	public void testPullUp() throws Exception {

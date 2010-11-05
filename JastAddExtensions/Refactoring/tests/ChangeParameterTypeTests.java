@@ -477,4 +477,16 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  void m(StringBuffer buf) { }" +
 				"}"));
 	}
+	
+	public void test30() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {" +
+				"  void m(String s) {" +
+				"    n(\"\", s);" +
+				"  }" +
+				"  void n(String... p) {" +
+				"  }" +
+				"}"));
+	}
 }

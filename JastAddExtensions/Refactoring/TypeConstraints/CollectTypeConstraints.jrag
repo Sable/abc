@@ -134,7 +134,8 @@ aspect CollectTypeConstraints {
 	protected void TryStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		for(CatchClause cc : getCatchClauses())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(cc, "catch clause", cc.getParameter().getTypeAccess(), Operator.LE, cc.typeThrowable()));
-		// TODO: add constraints that types in later catch clauses may not be subtypes of types in earlier ones
+		// there is also a constraint that types in later catch clauses may not be subtypes of types in earlier ones, but we cannot express it
+		// we circumvent this by never allowing subtypes of Throwable to be generalised
 		super.collectTypeConstraints(pred, constraints);
 	}
 
@@ -182,19 +183,23 @@ aspect CollectTypeConstraints {
 		Callable c = decl();
 		for(int i=0;i<c.getNumParameter();++i) {
 			ParameterDeclaration parm = c.getParameter(i);
-			if(parm.isVariableArity()) {
-				// TODO: handle this; caution: there might not be a getArg(i)
-				continue;
+			if(parm.isVariableArity() && !invokesVariableArityAsArray()) {
+				while(i < getNumArg())
+					collectArgPassingConstraints(pred, constraints, c, parm, getArg(i++));
 			} else {
-				Expr arg = getArg(i);
-				if(parm.type().isSubtypeConstrainable() && arg.type().isSubtypeConstrainable()) {
-					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.LE, parm.getTypeAccess()));						
-				} else {
-					// require both argument and parameter to keep its type 
-					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.EQ, arg.type()));
-					addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), parm.getTypeAccess(), Operator.EQ, parm.type()));
-				}
+				collectArgPassingConstraints(pred, constraints, c, parm, getArg(i));
 			}
+		}
+	}
+	
+	public void Call.collectArgPassingConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints, 
+												   Callable c, ParameterDeclaration parm, Expr arg) {
+		if(!parm.isVariableArity() && parm.type().isSubtypeConstrainable() && arg.type().isSubtypeConstrainable()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.LE, parm.getTypeAccess()));						
+		} else {
+			// require both argument and parameter to keep its type 
+			addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), arg, Operator.EQ, arg.type()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(arg, "argument passing to callable " + c.fullName(), parm.getTypeAccess(), Operator.EQ, parm.getTypeAccess().type()));
 		}
 	}
 	
