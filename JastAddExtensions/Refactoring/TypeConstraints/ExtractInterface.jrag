@@ -13,6 +13,7 @@ aspect ExtractInterface {
 		mods.removeNonToplevelModifiers();
 		mods.removeModifier("abstract");
 		mods.removeModifier("final");
+		mods.removeAnnotations();
 		InterfaceDecl newInterface = new InterfaceDecl(mods, name, new List<Access>(), body);
 		
 		// TODO: determine path to put new compilation unit at
@@ -32,8 +33,8 @@ aspect ExtractInterface {
 			// for Eclipse compatibility
 			new_md.getModifiers().addModifier("abstract");
 			new_md.getModifiers().removeModifier("final");	
-			// this could be done by the accessibility constraints in some places 
-			// (e.g. MethodDecl.overridingMethods()) low accessibility is used as a break condition 
+			// this could be done by the accessibility constraints but in some places (e.g. MethodDecl.overridingMethods()) 
+			// low accessibility is used as a break condition so we adjust it here
 			new_md.getModifiers().setVisibility(Modifier.VIS_PUBLIC);
 			body.add(new_md);
 			md.lockOverriding();
