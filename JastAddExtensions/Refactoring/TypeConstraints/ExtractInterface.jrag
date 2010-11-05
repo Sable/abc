@@ -5,6 +5,8 @@ aspect ExtractInterface {
 	public void ClassDecl.extractInterface(String pkg, String name, Collection<MethodDecl> methods) {
 		if(!fromSource())
 			throw new RefactoringException("cannot extract from non-source type");
+		if(isEnumDecl())
+			throw new RefactoringException("cannot extract from enum");
 		if(subtype(typeThrowable())) 
 			throw new RefactoringException("cannot extract from throwable type");
 		Program root = programRoot();
