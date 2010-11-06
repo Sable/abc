@@ -28,6 +28,7 @@ aspect CollectTypeConstraints {
 	eq NullType.isSubtypeConstrainable() = true;
 	eq ArrayDecl.isSubtypeConstrainable() = false;
 	eq AnonymousDecl.isSubtypeConstrainable() = false;
+	eq EnumDecl.isSubtypeConstrainable() = false;  // if we make it "true", we'll need to handle switch statement
 	eq ClassDeclSubstituted.isSubtypeConstrainable() = false;
 	eq ParClassDecl.isSubtypeConstrainable() = false;
 	eq UnknownType.isSubtypeConstrainable() = false;

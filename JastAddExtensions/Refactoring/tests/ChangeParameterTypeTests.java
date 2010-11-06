@@ -489,4 +489,18 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  }" +
 				"}"));
 	}
+	
+	public void test31() {
+		testFail("A", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"enum E { E1, E2 };",
+				"class A {" +
+				"  int m(E e) {" +
+				"    switch(e) {" +
+				"    case E1: return 23;" +
+				"    default: return 42;" +
+				"    }" +
+				"  }" +
+				"}"));
+	}
 }
