@@ -59,7 +59,7 @@ aspect PullUpMethod {
 			});
 		for(TypeConstraint typeConstraint : typeConstraints)
 			if(!typeConstraint.solved())
-				throw new RefactoringException("type constraint violated: " + typeConstraint);
+				throw new RefactoringException("type constraint violated: " + typeConstraint.describe());
 		
 		root.adjustVirtualCalls(typeUpdate);
 	}
