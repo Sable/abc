@@ -310,11 +310,13 @@ aspect CollectTypeConstraints {
   	
 	protected void ConditionalExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		TypeDecl truetp = getTrueExpr().type(), falsetp = getFalseExpr().type();
-		if(truetp.isSubtypeConstrainable() && falsetp.isSubtypeConstrainable()) {
+		if(truetp.isSubtypeConstrainable()) {
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.LE, type()));
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getFalseExpr(), Operator.LE, type()));
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, type()));
 		}
+		if(falsetp.isSubtypeConstrainable()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getFalseExpr(), Operator.LE, type()));
+		}
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, type()));
 		if(getCondition().type().isSubtypeConstrainable())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getCondition(), Operator.EQ, getCondition().type()));
 		super.collectTypeConstraints(pred, constraints);
