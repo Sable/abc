@@ -140,6 +140,12 @@ aspect CollectTypeConstraints {
 		super.collectTypeConstraints(pred, constraints);
 	}
 
+	protected void EnhancedForStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "for each statement", getExpr(), Operator.EQ, getExpr().type()));
+		// In theory, we might be less restrictive here. What we need to ensure is (getExpr().type().isArrayDecl() || getExpr().type().isIterable()) 
+		super.collectTypeConstraints(pred, constraints);
+	}
+	
 	protected void AssignSimpleExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		if(getSource().type().isSubtypeConstrainable() && getDest().type().isSubtypeConstrainable()) {
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "assignment", getSource(), Operator.LE, getDest()));

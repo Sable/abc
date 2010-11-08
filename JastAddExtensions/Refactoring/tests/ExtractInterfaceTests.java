@@ -361,4 +361,27 @@ public class ExtractInterfaceTests extends TestCase {
 				"class B<T> { public B(B<T> b){} }"),
 				new RawCU("I.java","package p; interface I {}")));
 	}
+	
+	public void test13() {
+		testSucc("p.A", new String[]{}, "p", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"abstract class A implements java.lang.Iterable {}" +
+				"class B { " +
+				"  A a;" +
+				"  void m(){" +
+				"    for(Object o : a) {}" +
+				"  } " +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"package p;" +
+				"abstract class A implements java.lang.Iterable, I {}" +
+				"class B { " +
+				"  A a;" +
+				"  void m(){" +
+				"    for(Object o : a) {}" +
+				"  } " +
+				"}"),
+				new RawCU("I.java","package p; interface I {}")));
+	}
 }
