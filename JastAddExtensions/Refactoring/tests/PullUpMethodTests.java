@@ -671,8 +671,25 @@ public class PullUpMethodTests extends TestCase {
 	public void test45() {
 		testFail(Program.fromClasses("class Super {}" +
 				"class A extends Super {" +
-				"  class X { A m() {return A.this;}}" +
+				"  class X { A n() {return A.this;}}" +
 				"  void m(){X x;}" +
 				"}"), true);
 	}
+    
+	public void test46() {
+		testFail(Program.fromClasses("class Super {}" +
+				"class A extends Super {" +
+				"  static class X { X m() {return this;}}" +
+				"  void m(){X x;}" +
+				"}"), true);
+	}
+    
+    public void test47() {
+    	testFail(Program.fromClasses(
+    			"class Super {}" +
+    			"class A extends Super {" +
+    			"  A a = A.this;" +
+    			"  void m(){a.m();}" +
+    			"}"), true);
+    }
 }

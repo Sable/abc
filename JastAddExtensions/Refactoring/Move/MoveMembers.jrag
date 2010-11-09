@@ -25,6 +25,10 @@ aspect MoveMembers {
 			getInit().lockDataFlow();
 		else if(isFinal())
 			throw new RefactoringException("cannot move uninitialised final field");
+		for(ThisAccess acc : collectThisAccesses())
+			if(acc.isQualified())
+				throw new RefactoringException("Pull Up cannot preserve enclosing instances");
+		
 		lockAllNames();
 		programRoot().lockNames(name());
 		hostType().removeBodyDecl(this);
@@ -60,9 +64,25 @@ aspect MoveMembers {
 	public void MemberTypeDecl.moveTo(TypeDecl target) {
 		if(!target.fromSource())
 			throw new RefactoringException("cannot insert type into library class");
+		for(ThisAccess acc : collectThisAccesses())
+			if(acc.isQualified())
+				throw new RefactoringException("Pull Up cannot preserve enclosing instances");
+		
+		Program root = programRoot();
 		typeDecl().lockAllNames();
-		programRoot().lockNames(typeDecl().name());
+		root.lockNames(typeDecl().name());
 		hostType().removeBodyDecl(this);
 		target.insertUnusedType(typeDecl());
+		
+		// check that everything went OK wrt types
+		Collection<TypeConstraint> typeConstraints =
+			root.typeConstraints(new Predicate<TypeConstraint>() {
+				public boolean holds(TypeConstraint constr) {
+					return constr.relevantForSubtree(MemberTypeDecl.this);
+				}
+			});
+		for(TypeConstraint typeConstraint : typeConstraints)
+			if(!typeConstraint.solved())
+				throw new RefactoringException("type constraint violated: " + typeConstraint.describe());		
 	}
 }
