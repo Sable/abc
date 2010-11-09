@@ -1,9 +1,6 @@
 package tests.jigsaw;
 
-import java.io.IOException;
 import java.util.LinkedList;
-
-import tests.jigsaw.AbstractRealProgramTest;
 
 import AST.Modifier;
 import AST.Problem;
@@ -14,8 +11,7 @@ import AST.Visible;
 public class ChangeAccessibilityTest extends AbstractRealProgramTest {
 	
 	@Override
-	protected void performChanges(Log log) throws Exception {
-		Program prog = getProgram();
+	protected void performChanges(Log log, Program prog) throws Exception {
 		for(Visible visible : prog.sourceVisibles()) {
 			if(!visible.isPrivate())
 				log.add(run(prog, visible, Modifier.VIS_PRIVATE));
@@ -47,6 +43,7 @@ public class ChangeAccessibilityTest extends AbstractRealProgramTest {
 					LinkedList<Problem> errors = new LinkedList<Problem>();
 					prog.errorCheck(errors);
 					entry.logErrors(errors);
+					prog.clearErrors();
 				} catch(RefactoringException rfe){
 					entry.finished(rfe);
 				} catch(ThreadDeath td) {

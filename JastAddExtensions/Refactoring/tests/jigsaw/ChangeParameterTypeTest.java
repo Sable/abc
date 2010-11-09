@@ -1,10 +1,6 @@
 package tests.jigsaw;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedList;
-
-import tests.jigsaw.AbstractRealProgramTest;
 
 import AST.MethodDecl;
 import AST.Problem;
@@ -15,16 +11,13 @@ import AST.TypeDecl;
 public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 
 	@Override
-	protected void performChanges(final Log log) throws Exception {
-		final Program prog = getProgram();
+	protected void performChanges(final Log log, final Program prog) throws Exception {
 		final String orig = CHECK_UNDO ? prog.toString() : null;
 		for(final MethodDecl md : prog.sourceMethods()) {
 			for(int i=0;i<md.getNumParameter();++i) {
 				final int i_ = i;
 				TypeDecl tp = md.getParameter(i).type();
-				HashSet<TypeDecl> substitutiontypes = new HashSet<TypeDecl>();
-				substitutiontypes.addAll(tp.supertypestransitive());
-				for(final TypeDecl stp : substitutiontypes) {
+				for(final TypeDecl stp : tp.supertypes()) {
 					final LogEntry entry = new LogEntry(name());
 					prog.setLogEntry(entry);
 					entry.addParameter("method", md.fullName());
@@ -41,6 +34,7 @@ public class ChangeParameterTypeTest extends AbstractRealProgramTest {
 								LinkedList<Problem> errors = new LinkedList<Problem>();
 								prog.errorCheck(errors);
 								entry.logErrors(errors);
+								prog.clearErrors();
 							} catch(RefactoringException rfe){
 								entry.finished(rfe);
 							} catch(ThreadDeath td) {

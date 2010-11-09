@@ -111,6 +111,10 @@ public class LogEntry {
 		return throwable != null;
 	}
 
+	public String errorMessage() {
+		return (rfe == null ? "" : rfe.getMessage());
+	}
+
 	public String toString(){
 		StringBuilder res = new StringBuilder();
 		res.append(refactoring).append("; ");
@@ -154,4 +158,5 @@ public class LogEntry {
 		   .append("type adjustments;");
 		return res.toString();
 	}
+
 }

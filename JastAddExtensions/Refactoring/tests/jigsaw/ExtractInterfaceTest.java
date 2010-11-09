@@ -14,13 +14,12 @@ import AST.TypeDecl;
 public class ExtractInterfaceTest extends AbstractRealProgramTest {
 
 	@Override
-	protected void performChanges(Log log) throws Exception {
+	protected void performChanges(Log log, Program prog) throws Exception {
 		final String freshInterface = "RTT_NEW_INTERFACE";
 		final String freshPackage = "RTT_NEW_PACKAGE";
-		Program prog = getProgram();
-		
 		for(ClassDecl classDecl : prog.sourceClassDecls()) {
-			log.add(performChanges(prog, classDecl, freshPackage, freshInterface, allPublicNonStaticNonInheritedMethods(classDecl)));				
+			if(!classDecl.isAnonymous())
+				log.add(performChanges(prog, classDecl, freshPackage, freshInterface, allPublicNonStaticNonInheritedMethods(classDecl)));				
 		}
 	}
 	
@@ -32,11 +31,9 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 		entry.addParameter("interface name", name);
 		StringBuilder methodsList = new StringBuilder();
 		for(MethodDecl method : methods)
-			methodsList.append(method.name()).append(", ");
+			methodsList.append(method.fullName()).append(", ");
 		entry.addParameter("methods", methodsList.toString());
-		
 		final String orig = CHECK_UNDO ? prog.toString() : null;
-		
 		Thread job = new Thread() {
 			@Override
 			public void run() {
@@ -48,6 +45,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 					LinkedList<Problem> errors = new LinkedList<Problem>();
 					prog.errorCheck(errors);
 					entry.logErrors(errors);
+					prog.clearErrors();
 				} catch(RefactoringException rfe){
 					entry.finished(rfe);
 				} catch(ThreadDeath td) {
@@ -77,7 +75,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 
 	@Override
 	protected String name() {
-		return "extract interface";
+		return "extract interface pack methods";
 	}
 	
 	private Collection<MethodDecl> allPublicNonStaticNonInheritedMethods(TypeDecl typeDecl) {
