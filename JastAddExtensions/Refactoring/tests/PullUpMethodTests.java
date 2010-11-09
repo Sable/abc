@@ -1,9 +1,6 @@
 package tests;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
-import tests.AllTests;
 import AST.MethodDecl;
 import AST.Program;
 import AST.RawCU;
@@ -14,8 +11,8 @@ public class PullUpMethodTests extends TestCase {
 	public PullUpMethodTests(String name) {
 		super(name);
 	}
-	
-	public void testSucc(Program in, Program out) {		
+		
+	public void testSucc(Program in, Program out, boolean withRequired) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
 		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
@@ -25,7 +22,10 @@ public class PullUpMethodTests extends TestCase {
 		MethodDecl md = td.findMethod("m");
 		assertNotNull(md);
 		try {
-			md.doPullUp();
+			if(withRequired)
+				md.doPullUpWithRequired();
+			else
+				md.doPullUp();
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
 			assertEquals(out.toString(), rfe.toString());
@@ -34,8 +34,12 @@ public class PullUpMethodTests extends TestCase {
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
+	
+	public void testSucc(Program in, Program out) {
+		testSucc(in, out, false);
+	}
 
-	public void testFail(Program in) {		
+	public void testFail(Program in, boolean withRequired) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
 		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
@@ -44,12 +48,19 @@ public class PullUpMethodTests extends TestCase {
 		MethodDecl md = td.findMethod("m");
 		assertNotNull(md);
 		try {
-			md.doPullUp();
+			if(withRequired)
+				md.doPullUpWithRequired();
+			else
+				md.doPullUp();
 			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) { }
 		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
+	}
+	
+	public void testFail(Program in) {
+		testFail(in, false);
 	}
 
     public void test1() {
@@ -646,5 +657,15 @@ public class PullUpMethodTests extends TestCase {
     			"class Super {}",
     			"class B extends Super { static void m(){}}",
     			"class A extends Super { void m(){}}"));
-    }    
+    }   
+    
+    public void test44() {
+    	// can not assign A a value of type Super
+    	testFail(Program.fromClasses(
+    			"class Super {}" +
+    			"class A extends Super {" +
+    			"  A a = this;" +
+    			"  void m(){a.m();}" +
+    			"}"), true);
+    }
 }
