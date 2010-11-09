@@ -53,12 +53,26 @@ aspect LockedOverriding {
 	}
 	
 	private void MethodDecl.setOverridingDependencies(HashSet<SavedMethodDecl> deps) {
+		if(deps != null) {
+			if(this.isStatic() && !deps.isEmpty())
+				throw new RefactoringException("static methods cannot override other methods");
+			for(SavedMethodDecl smd : deps)
+				if(smd.isFinal() || smd.isStatic())
+					throw new RefactoringException("cannot override static or final method");
+		}
 		this.lockedOverridingDependencies = deps;
 	}
+	
 	public void MethodDecl.clearOverridingDependencies() {
 		setOverridingDependencies(null);
 	}
+	
+	// TODO: get rid of this method; it contains annoying duplications with setOverridingDependencies
 	public void MethodDecl.addOverriddenMethod(MethodDecl md) {
+		if(this.isStatic())
+			throw new RefactoringException("static methods cannot override other methods");
+		if(md.isFinal() || md.isStatic())
+			throw new RefactoringException("cannot override static or final method");
 		lockedOverridingDependencies.add(md.save());
 	}
 	

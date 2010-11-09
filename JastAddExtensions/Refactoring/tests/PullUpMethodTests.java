@@ -639,4 +639,12 @@ public class PullUpMethodTests extends TestCase {
     			"class A extends Super { String[] m(){return null;}}",
     			"class B extends Super { String m(){return null;}}"));
     }
+    
+    public void test43() {
+    	// a static method may not override an instance method
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class B extends Super { static void m(){}}",
+    			"class A extends Super { void m(){}}"));
+    }    
 }

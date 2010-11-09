@@ -40,6 +40,9 @@ aspect LockedMethodAccess {
 		public MethodDecl getDecl() {
 			return md;
 		}
+		
+		public boolean isFinal() { return md.isFinal(); }
+		public boolean isStatic() { return md.isStatic(); }
 	}
 	
 	class SavedParMethodDecl extends SavedMethodDecl {
