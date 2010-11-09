@@ -660,7 +660,6 @@ public class PullUpMethodTests extends TestCase {
     }   
     
     public void test44() {
-    	// can not assign A a value of type Super
     	testFail(Program.fromClasses(
     			"class Super {}" +
     			"class A extends Super {" +
@@ -668,4 +667,12 @@ public class PullUpMethodTests extends TestCase {
     			"  void m(){a.m();}" +
     			"}"), true);
     }
+    
+	public void test45() {
+		testFail(Program.fromClasses("class Super {}" +
+				"class A extends Super {" +
+				"  class X { A m() {return A.this;}}" +
+				"  void m(){X x;}" +
+				"}"), true);
+	}
 }

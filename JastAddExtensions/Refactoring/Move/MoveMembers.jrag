@@ -29,6 +29,17 @@ aspect MoveMembers {
 		programRoot().lockNames(name());
 		hostType().removeBodyDecl(this);
 		target.insertField(this);
+		
+		// check that everything went OK wrt types
+		Collection<TypeConstraint> typeConstraints =
+			programRoot().typeConstraints(new Predicate<TypeConstraint>() {
+				public boolean holds(TypeConstraint constr) {
+					return constr.relevantForSubtree(FieldDeclaration.this);
+				}
+			});
+		for(TypeConstraint typeConstraint : typeConstraints)
+			if(!typeConstraint.solved())
+				throw new RefactoringException("type constraint violated: " + typeConstraint.describe());
 	}
 	
 	public void MethodDecl.moveTo(TypeDecl target) {
