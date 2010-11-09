@@ -1,5 +1,7 @@
 package tests;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 import tests.AllTests;
 import AST.MethodDecl;
@@ -612,5 +614,29 @@ public class PullUpMethodTests extends TestCase {
     			 new RawCU("A.java",
     			   "package q;" +
     			   "class A extends p.Super { }")));
+    }
+    
+    public void test40() {
+    	// an instance method may not override a static method
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class A extends Super { static void m(){}}",
+    			"class B extends Super { void m(){}}"));
+    }
+    
+    public void test41() {
+    	// can not override final method
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class A extends Super { final void m(){}}",
+    			"class B extends Super { void m(){}}"));
+    }
+   
+    public void test42() {
+       	// the return type does not match the return type and may thus not be overriden
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class A extends Super { String[] m(){return null;}}",
+    			"class B extends Super { String m(){return null;}}"));
     }
 }
