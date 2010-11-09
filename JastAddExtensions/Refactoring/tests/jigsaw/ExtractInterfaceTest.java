@@ -75,7 +75,7 @@ public class ExtractInterfaceTest extends AbstractRealProgramTest {
 
 	@Override
 	protected String name() {
-		return "extract interface pack methods";
+		return "extract interface";
 	}
 	
 	private Collection<MethodDecl> allPublicNonStaticNonInheritedMethods(TypeDecl typeDecl) {
