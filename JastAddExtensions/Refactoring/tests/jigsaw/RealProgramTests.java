@@ -1,6 +1,10 @@
 package tests.jigsaw;
 
-import static tests.jigsaw.RealProgramTests.BenchmarkProgram.*;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.apachecodec;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.clojure;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.hadoop;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.jgroups;
+import static tests.jigsaw.RealProgramTests.BenchmarkProgram.junit45;
 
 import java.io.File;
 import java.util.Collection;
@@ -13,6 +17,7 @@ import tests.CompileHelper;
 import tests.jigsaw.DiffMatchPatch.Diff;
 import AST.ASTNode;
 import AST.AccessibilityConstraint;
+import AST.ClassDecl;
 import AST.CompilationUnit;
 import AST.MethodDecl;
 import AST.Predicate;
@@ -201,29 +206,28 @@ public class RealProgramTests extends TestCase {
 				return checkProgram(compileBenchmark("Jester1.37b"));
 			}
 		},
-		
+
 		//   2 KSLOC
 		apachecodec {
 			public Program compile() throws Exception {
 				return checkProgram(compileBenchmark("org.apache.commons.codec 1.3"));
 			}
 		};
-	
+
 		// total: 1009 KSLOC
 		abstract Program compile() throws Exception;
-	}
-		
-	
-	
-	private static Program checkProgram(Program prog) {
-		assertNotNull(prog);
-		for(AccessibilityConstraint ac : prog.accessibilityConstraints())
-			if(!ac.isSolved())
-				fail();
-		for(TypeConstraint constr : prog.typeConstraints(Predicate.TRUE))
-			if(!constr.solved())
-				fail();
-		return prog;
+
+		private static Program checkProgram(Program prog) {
+			assertNotNull(prog);
+			for(AccessibilityConstraint ac : prog.accessibilityConstraints())
+				if(!ac.isSolved())
+					fail();
+			for(TypeConstraint constr : prog.typeConstraints(Predicate.TRUE))
+				if(!constr.solved())
+					fail();
+			return prog;
+		}
+
 	}
 	
 	private static String orig;
@@ -312,19 +316,24 @@ public class RealProgramTests extends TestCase {
 	}
 	
 	public void testExhaustivelyPullUp() throws Exception {
-		exhaustivelyPullUpMethods(jmeter.compile());
+		exhaustivelyPullUpMethods(junit45.compile());
 	}
 	
 	public void testExhaustivelyGeneraliseParameter() throws Exception {
 		exhaustivelyChangeParameterTypes(jgroups.compile());
 	}
 
-	public static void generaliseParameterType(Program prog, String type, String sig, int idx, String newType, boolean printReport) {
+	public static void generaliseParameterType(Program prog, String type, String sig, int idx, String newtype, boolean printReport) {
+		TypeDecl newtd = prog.findType(newtype);
+		assertNotNull(newtd);
+		generaliseParameterType(prog, type, sig, idx, newtd, printReport);
+	}
+
+	public static void generaliseParameterType(Program prog, String type, String sig, int idx, TypeDecl newtd, boolean printReport) {
 		TypeDecl td = prog.findType(type);
 		assertNotNull(td);
 		SimpleSet s = td.localMethodsSignature(sig);
 		assertTrue(s instanceof MethodDecl);
-		TypeDecl newtd = prog.findType(newType);
 		try {
 			Program.startRecordingASTChangesAndFlush();
 			((MethodDecl)s).getParameter(idx).changeType(newtd);
@@ -351,6 +360,34 @@ public class RealProgramTests extends TestCase {
 		try {
 			Program.startRecordingASTChangesAndFlush();
 			((MethodDecl)s).doPullUpWithRequired();
+			LinkedList errors = new LinkedList();
+			prog.flushCaches();
+			prog.errorCheck(errors);
+			if(!errors.isEmpty())
+				System.out.println("\n Refactoring introduced errors: " + errors);
+		} catch(RefactoringException rfe) {
+			rfe.printStackTrace();
+		} finally {
+			Map<String, String> changedCUs = printReport ? ASTNode.computeChanges(Program.getUndoStack()) : null;
+			Program.undoAll();
+			prog.flushCaches();
+			if(printReport)
+				printReport(prog, changedCUs);
+		}
+	}
+
+	public static void extractInterface(Program prog, String type, String pkg, String name, boolean printReport) {
+		TypeDecl td = prog.findType(type);
+		assertTrue(td instanceof ClassDecl);
+		Collection<MethodDecl> methods = new LinkedList<MethodDecl>();
+		for(Iterator<MethodDecl> iter=td.localMethodsIterator();iter.hasNext();) {
+			MethodDecl meth = iter.next();
+			if(!meth.isStatic() && meth.isPublic())
+				methods.add(meth);
+		}		
+		try {
+			Program.startRecordingASTChangesAndFlush();
+			((ClassDecl)td).doExtractInterface(pkg, name, methods);
 			LinkedList errors = new LinkedList();
 			prog.flushCaches();
 			prog.errorCheck(errors);
@@ -418,9 +455,14 @@ public class RealProgramTests extends TestCase {
 	}
 	
 	public void testPullUp() throws Exception {
-		Program prog = servingxml.compile();
-		pullUpMethod(prog, "com.servingxml.util.record.RecordBuilder", "getFieldIndex(com.servingxml.util.Name)", false);
-		/*generaliseParameterType(prog, "org.jgroups.blocks.ConnectionTableNIO", 
-				  "runRequest(org.jgroups.Address, java.nio.ByteBuffer)", 0, "java.nio.Buffer");*/
+		Program prog = clojure.compile();
+		pullUpMethod(prog, "clojure.lang.PersistentTreeSet", "rseq()", false);
+		/*generaliseParameterType(prog, "org.jgroups.blocks.AbstractConnectionMap", 
+				  "hasOpenConnection(org.jgroups.Address)", 0, javaLangComparable.lookupParTypeDecl(args), false);*/
+	}
+	
+	public void testExtractInterface() throws Exception {
+		Program prog = apachecodec.compile();
+		extractInterface(prog, "org.apache.commons.codec.net.URLCodec", "p", "I", false);
 	}
 }
