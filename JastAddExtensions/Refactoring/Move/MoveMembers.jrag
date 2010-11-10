@@ -70,7 +70,14 @@ aspect MoveMembers {
 		
 		Program root = programRoot();
 		typeDecl().lockAllNames();
-		root.lockNames(typeDecl().name());
+		Collection<String> endangeredNames = new HashSet<String>();
+		endangeredNames.add(typeDecl().name());
+		collectAllFieldAndTypeNames(endangeredNames);
+		root.lockNames(endangeredNames);
+		endangeredNames.clear();
+		collectAllMethodNames(endangeredNames);
+		root.lockMethodNames(endangeredNames);
+		
 		hostType().removeBodyDecl(this);
 		target.insertUnusedType(typeDecl());
 		
@@ -84,5 +91,32 @@ aspect MoveMembers {
 		for(TypeConstraint typeConstraint : typeConstraints)
 			if(!typeConstraint.solved())
 				throw new RefactoringException("type constraint violated: " + typeConstraint.describe());		
+	}
+	
+	// collect the names of all fields and types in the AST below this node
+	protected void ASTNode.collectAllFieldAndTypeNames(Collection<String> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllFieldAndTypeNames(res);
+	}
+	
+	protected void FieldDeclaration.collectAllFieldAndTypeNames(Collection<String> res) {
+		res.add(name());
+		super.collectAllFieldAndTypeNames(res);
+	}
+	
+	protected void TypeDecl.collectAllFieldAndTypeNames(Collection<String> res) {
+		res.add(name());
+		super.collectAllFieldAndTypeNames(res);
+	}
+	
+	// collect the names of all methods in the AST below this node
+	protected void ASTNode.collectAllMethodNames(Collection<String> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllMethodNames(res);
+	}
+	
+	protected void MethodDecl.collectAllMethodNames(Collection<String> res) {
+		res.add(name());
+		super.collectAllMethodNames(res);
 	}
 }

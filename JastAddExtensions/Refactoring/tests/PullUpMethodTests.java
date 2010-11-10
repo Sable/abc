@@ -686,7 +686,7 @@ public class PullUpMethodTests extends TestCase {
     
     public void test47() {
     	testFail(Program.fromClasses(
-    			"class Super {}" +
+    			"class Super {}",
     			"class A extends Super {" +
     			"  A a = A.this;" +
     			"  void m(){a.m();}" +
@@ -725,5 +725,108 @@ public class PullUpMethodTests extends TestCase {
    		    	"  void k(){x.n();}" +
    		    	"}"))		
    				, true);
+    }
+    
+    public void test49() {
+    	testSucc(Program.fromClasses(
+    			"class Super {" +
+    			"	int n() {" +
+    			"		return 42;" +
+    			"	}" +
+    			"}",
+    			"class A extends Super {" +
+    			"	int m() {" +
+    			"		return this.n()+19;" +
+    			"	}" +
+    			"	int n() {" +
+    			"		return 23;" +
+    			"	}" +
+    			"}",
+    			"class Outer {" +
+    			"	int m() { return 56; }" +
+    			"	class B extends Super {" +
+    			"		{ m(); }" +
+    			"	}" +
+    			"}",
+    			"class C extends Super {" +
+    			"	int m() { return 72; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"	int m() {" +
+    			"		return this.n()+19;" +
+    			"	}" +
+    			"	int n() {" +
+    			"		return 42;" +
+    			"	}" +
+    			"}",
+    			"class A extends Super {" +
+    			"	int n() {" +
+    			"		return 23;" +
+    			"	}" +
+    	    	"}",
+    			"class Outer {" +
+    			"	int m() { return 56; }" +
+    			"	class B extends Super {" +
+    			"		{ Outer.this.m(); }" +
+    			"	}" +
+    			"}",
+    			"class C extends Super {" +
+    			"	int m() { return 72; }" +
+    			"}"));
+    }
+    
+    public void test50() {
+    	testSucc(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  class X {" +
+    			"    private int v;" +
+    			"  }" +
+    			"  X x;" +
+    			"  int m(X foo) { return x.v; }" +
+    			"  int n() { return x.v+19; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  class X {" +
+    			"    int v;" +
+    			"  }" +
+    			"  X x;" +
+    			"  int m(X foo) { return x.v; }" +
+    			"}",
+    			"class A extends Super {" +
+      			"  int n() { return x.v+19; }" +
+       			"}"), true);    					
+    }
+    
+    public void test51() {
+    	testSucc(Program.fromClasses(
+    			"class Super { }",
+    			"class A extends Super {" +
+    			"  class X {" +
+    			"    class Y {" +
+    			"      private int v;" +
+    			"    }" +
+    			"    Y y;" +
+    			"  }" +
+    			"  X x;" +
+    			"  int m(X foo) { return x.y.v; }" +
+    			"  int n() { return x.y.v+19; }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class Super {" +
+    			"  class X {" +
+    			"    class Y {" +
+    			"      int v;" +
+    			"    }" +
+    			"    Y y;" +
+    			"  }" +
+    			"  X x;" +
+    			"  int m(X foo) { return x.y.v; }" +
+    			"}",
+    			"class A extends Super {" +
+      			"  int n() { return x.y.v+19; }" +
+       			"}"), true);    					
     }
 }
