@@ -692,4 +692,38 @@ public class PullUpMethodTests extends TestCase {
     			"  void m(){a.m();}" +
     			"}"), true);
     }
+    
+    public void test48() {
+    	testSucc(Program.fromCompilationUnits(
+    		new RawCU("Super.java","package p; public class Super{}"),
+    		new RawCU("A.java", 
+    			"package q; " +
+    			"public class A extends p.Super {" +
+    			"  class X {void n(){}}" +
+    			"  X x;" +
+    			"  void m(X x){}" +
+    			"}"),
+    		new RawCU("B.java", "package q; " +
+    			"class B extends A {" +
+    			"  void k(){x.n();}" +
+    			"}")),
+    		Program.fromCompilationUnits(
+    		new RawCU("Super.java",
+    			"package p; " +
+    			"public class Super{" +
+    			"  protected class X {public void n(){}}" +
+    			"  void m(X x){}" +
+    	    	"}"),
+    		new RawCU("A.java", 
+    	    	"package q; " +
+    	    	"public class A extends p.Super {" +
+    	    	"  X x;" +
+    	    	"}"),
+   			new RawCU(
+   				"B.java", "package q; " +
+   		    	"class B extends A {" +
+   		    	"  void k(){x.n();}" +
+   		    	"}"))		
+   				, true);
+    }
 }
