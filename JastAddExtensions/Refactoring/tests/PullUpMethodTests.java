@@ -829,4 +829,22 @@ public class PullUpMethodTests extends TestCase {
       			"  int n() { return x.y.v+19; }" +
        			"}"), true);    					
     }
+    
+    public void test52() {
+    	testSucc(Program.fromClasses("" +
+    			"class Super {}",
+    			"class A extends Super {" +
+    			"  class X {private X(){}}" +
+    			"  void m(X x){}" +
+    			"  void n(){new X();}" +
+    			"}"), 
+    			Program.fromClasses("" +
+    	    	"class Super {" +
+    	    	"  class X {X(){}}" +
+    	    	"  void m(X x){}" +
+    	    	"}",
+    	    	"class A extends Super {" +
+    	    	"  void n(){new X();}" +
+    	    	"}"), true);
+    }
 }
