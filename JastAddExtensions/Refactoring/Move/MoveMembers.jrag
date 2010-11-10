@@ -77,7 +77,11 @@ aspect MoveMembers {
 		endangeredNames.clear();
 		collectAllMethodNames(endangeredNames);
 		root.lockMethodNames(endangeredNames);
-		
+
+		Collection<TypeDecl> endangeredTypeDecls = new LinkedList<TypeDecl>();
+		collectAllMemberTypeDecls(endangeredTypeDecls);
+		root.lockConstructorCalls(endangeredTypeDecls);
+
 		hostType().removeBodyDecl(this);
 		target.insertUnusedType(typeDecl());
 		
@@ -92,6 +96,17 @@ aspect MoveMembers {
 			if(!typeConstraint.solved())
 				throw new RefactoringException("type constraint violated: " + typeConstraint.describe());		
 	}
+	
+	// collect of all member type declarations in the AST below this node
+	protected void ASTNode.collectAllMemberTypeDecls(Collection<TypeDecl> res) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).collectAllMemberTypeDecls(res);		
+	}
+	
+	protected void MemberTypeDecl.collectAllMemberTypeDecls(Collection<TypeDecl> res) {
+		res.add(typeDecl());
+		super.collectAllMemberTypeDecls(res);
+	}	
 	
 	// collect the names of all fields and types in the AST below this node
 	protected void ASTNode.collectAllFieldAndTypeNames(Collection<String> res) {
