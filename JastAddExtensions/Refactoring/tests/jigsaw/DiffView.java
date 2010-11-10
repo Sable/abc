@@ -6,11 +6,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,8 +16,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,17 +28,20 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-import tests.jigsaw.DiffMatchPatch.Diff;
-import tests.jigsaw.DiffMatchPatch.Operation;
-
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
+import tests.CompileHelper;
+import tests.jigsaw.DiffMatchPatch.Diff;
+import tests.jigsaw.DiffMatchPatch.Operation;
 import AST.ASTNode;
 import AST.ClassDecl;
 import AST.CompilationUnit;
@@ -49,68 +49,76 @@ import AST.MethodDecl;
 import AST.Problem;
 import AST.Program;
 import AST.RefactoringException;
+import AST.SimpleSet;
 import AST.TypeDecl;
 
 public class DiffView extends JPanel {
+	public class PullUpMethodData {
+		public String typeName;
+		public String methodSig;
+		public JTextField typeNameField;
+		public JTextField methodSigField;
+
+		public PullUpMethodData(String typeName, String methodSig) {
+			this.typeName = typeName;
+			this.methodSig = methodSig;
+		}
+		
+		public Thread createHandler() {
+			return new Thread() {
+				public void run() {
+					typeName = typeNameField.getText();
+					methodSig = methodSigField.getText();
+					performRefactoring(new PullUpMethodRefactoring());
+				}
+			};
+		}
+	}
+
+	public class ExtractInterfaceData {
+		public String typeName;
+		public String ifaceName;
+		public JTextField typeNameField;
+		public JTextField ifaceNameField;
+
+		public ExtractInterfaceData(String typeName, String ifaceName) {
+			this.typeName = typeName;
+			this.ifaceName = ifaceName;
+		}
+		
+		public Thread createHandler() {
+			return new Thread() {
+				public void run() {
+					typeName = typeNameField.getText();
+					ifaceName = ifaceNameField.getText();
+					performRefactoring(new ExtractInterfaceRefactoring());
+				}
+			};			
+		}
+	}
+
 	private static JFrame frame;
 	private JTabbedPane tabbedPane;
 	private JLabel status;
 	
-	private RealProgramTests.BenchmarkProgram benchmark = RealProgramTests.BenchmarkProgram.apachecodec;
-	private String typeName = "org.apache.commons.codec.digest.DigestUtils";
-	private String ifaceName = "p.I";
-	
+	private String benchmark = System.getProperty("user.home") 
+							+ File.separator + "JastAdd"
+							+ File.separator + "benchmarks"
+							+ File.separator + "org.apache.commons.codec 1.3"
+							+ File.separator + ".classpath";
 	private Program prog = null;
-	private RealProgramTests.BenchmarkProgram prog_is_for_benchmark = null;
+	private String prog_is_for_benchmark = null;
 	
+	private ExtractInterfaceData extractInterfaceData = 
+		new ExtractInterfaceData("org.apache.commons.codec.digest.DigestUtils", "p.I");
+	
+	private PullUpMethodData pullUpMethodData = 
+		new PullUpMethodData("org.eclipse.draw2d.parts.Thumbnail", "getScaleX()");
+	
+	private Thread handler;
+
 	public DiffView() {
 		setLayout(new BorderLayout());
-		
-		// create combo box for selecting benchmark
-		final JComboBox benchbox = new JComboBox(RealProgramTests.BenchmarkProgram.values());
-		benchbox.setSelectedIndex(benchmark.ordinal());
-		benchbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				benchmark = RealProgramTests.BenchmarkProgram.values()[benchbox.getSelectedIndex()];
-			}
-		});
-		benchbox.setToolTipText("Select a benchmark to run the refactoring on.");
-		
-		// create text field for selecting type
-		final JTextField typeTextField = new JTextField(20);
-		typeTextField.setText(typeName);
-		typeTextField.setToolTipText("Enter the fully qualified name of the class to extract from.");
-		
-		// create text field for new interface name
-		final JTextField ifaceTextField = new JTextField(20);
-		ifaceTextField.setText(ifaceName);
-		ifaceTextField.setToolTipText("Enter the fully qualified name of the interface to extract into.");
-		
-		// create "Go" button
-		JButton goButton = new JButton("Go!");
-		goButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				typeName = typeTextField.getText();
-				ifaceName = ifaceTextField.getText();
-				new Thread() {
-					public void run() {
-						doExtract();
-					}
-				}.start();
-			}
-		});
-		
-		// create labels
-		JLabel benchboxLabel = new JLabel("Select benchmark:");
-		benchboxLabel.setLabelFor(benchbox);
-		JLabel typeTextFieldLabel = new JLabel("Class to extract from:");
-		typeTextFieldLabel.setLabelFor(typeTextField);
-		JLabel ifaceTextFieldLabel = new JLabel("Name of new interface:");
-		ifaceTextFieldLabel.setLabelFor(ifaceTextField);
-		
-		// create status bar
-		status = new JLabel("Ready");
-		status.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		
 		JPanel controlsPane = new JPanel();
 		GridBagLayout gbl = new GridBagLayout();
@@ -118,40 +126,158 @@ public class DiffView extends JPanel {
 		controlsPane.setBorder(BorderFactory.createCompoundBorder(
 									BorderFactory.createBevelBorder(BevelBorder.LOWERED),
 									BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		
-		addLabelTextRows(new JLabel[]{benchboxLabel, typeTextFieldLabel, ifaceTextFieldLabel}, 
-						 new JComponent[]{benchbox, typeTextField, ifaceTextField}, 
-						 gbl, controlsPane);
-		
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridwidth = GridBagConstraints.REMAINDER; //last
+		c.ipadx = 5;
+		c.ipady = 5;
+		
+		// tabbed pane to hold different parameter input panes
+		final JTabbedPane parmInputPanes = new JTabbedPane();
+		parmInputPanes.add("Extract Interface", createExtractInterfaceInputPane());
+		parmInputPanes.add("Pull Up Method", createPullUpMethodInputPane());
+		
+		handler = extractInterfaceData.createHandler();
+		parmInputPanes.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				switch(parmInputPanes.getSelectedIndex()) {
+				case 0:
+					handler = extractInterfaceData.createHandler();
+					break;
+				case 1:
+					handler = pullUpMethodData.createHandler();
+					break;
+				}
+			}
+		});
+		
+		// add parmInputPane to controlsPane
         c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weightx = 1.0;
+        controlsPane.add(parmInputPanes, c);
+		
+		// create combo box for selecting benchmark
+        final JTextField benchmarkPath = new JTextField(30);
+        benchmarkPath.setText(benchmark);
+		JLabel benchboxLabel = new JLabel("Test program:");
+		benchboxLabel.setLabelFor(benchmarkPath);
+		benchboxLabel.setToolTipText("Enter the path of the .classpath file of a program to run the refactoring on.");
+		JButton browseButton = new JButton("Browse...");
+		final JFileChooser fc = new JFileChooser();
+		fc.setFileHidingEnabled(false);
+		fc.addChoosableFileFilter(new FileFilter() {
+			public String getDescription() {
+				return "Eclipse .classpath files";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory() && !f.isHidden() || f.getName().equals(".classpath");
+			}
+		});
+		browseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int status = fc.showOpenDialog(frame);
+				if(status == JFileChooser.APPROVE_OPTION)
+					benchmarkPath.setText(fc.getSelectedFile().getAbsolutePath());
+			}
+		});
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = 1;
+		c.weightx = 0.0;
+		controlsPane.add(benchboxLabel, c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.weightx = 1.0;
+		controlsPane.add(benchmarkPath, c);
+		
+		//c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.weightx = 0.0;
+		controlsPane.add(browseButton, c);
+		
+		// create "Go" button
+		JButton goButton = new JButton("Go!");
+		goButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				benchmark = benchmarkPath.getText();
+				handler.start();
+			}
+		});
+		
+		c.anchor = GridBagConstraints.WEST;
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
         controlsPane.add(goButton, c);
-        
+		
+		// create status bar
+		status = new JLabel("Ready");
+		status.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+				
         tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		add(controlsPane, BorderLayout.NORTH);
 		add(tabbedPane, BorderLayout.CENTER);
 		add(status, BorderLayout.SOUTH);
 	}
-	
-	private void addLabelTextRows(JLabel[] jLabels, JComponent[] jComponents, GridBagLayout gbl, JPanel controlsPane) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.EAST;
-		int n = jLabels.length;
+
+	private JPanel createExtractInterfaceInputPane() {
+		JPanel parmInputPane = new JPanel();
+		parmInputPane.setLayout(new GridBagLayout());
 		
-		for(int i=0;i<n;++i) {
-			c.gridwidth = GridBagConstraints.RELATIVE;
-			c.fill = GridBagConstraints.NONE;
-			c.weightx = 0.0;
-			controlsPane.add(jLabels[i], c);
-			
-			c.gridwidth = GridBagConstraints.REMAINDER;
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.weightx = 1.0;
-			controlsPane.add(jComponents[i], c);
-		}
+		// create text field for selecting type
+		extractInterfaceData.typeNameField = new JTextField(20);
+		extractInterfaceData.typeNameField.setText(extractInterfaceData.typeName);
+		addStringInput(parmInputPane, "Class to extract from:", extractInterfaceData.typeNameField, 
+						"Enter the fully qualified name of the class to extract from.");
+		
+		// create text field for new interface name
+		extractInterfaceData.ifaceNameField = new JTextField(20);
+		extractInterfaceData.ifaceNameField.setText(extractInterfaceData.ifaceName);
+		addStringInput(parmInputPane, "Name of new interface:", extractInterfaceData.ifaceNameField,
+						"Enter the fully qualified name of the interface to extract into.");
+		return parmInputPane;
+	}
+	
+	private JPanel createPullUpMethodInputPane() {
+		JPanel parmInputPane = new JPanel();
+		parmInputPane.setLayout(new GridBagLayout());
+		
+		// create text field for selecting type
+		pullUpMethodData.typeNameField = new JTextField(20);
+		pullUpMethodData.typeNameField.setText(pullUpMethodData.typeName);
+		addStringInput(parmInputPane, "Class to pull up from:", pullUpMethodData.typeNameField, 
+						"Enter the fully qualified name of the class to pull the method up from.");
+		
+		// create text field for method signature
+		pullUpMethodData.methodSigField = new JTextField(20);
+		pullUpMethodData.methodSigField.setText(pullUpMethodData.methodSig);
+		addStringInput(parmInputPane, "Method signature:", pullUpMethodData.methodSigField,
+						"Enter the signature of the method to extract.");
+		return parmInputPane;		
+	}
+	
+	private void addStringInput(JPanel container, String labelText, JTextField textField, String tooltip) {
+		JLabel label = new JLabel(labelText);
+		label.setLabelFor(textField);
+		label.setToolTipText(tooltip);
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.WEST;
+		c.ipadx = 5;
+		
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		container.add(label, c);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
+		container.add(textField, c);
 	}
 
 	private static void createAndShowGUI() {
@@ -162,32 +288,17 @@ public class DiffView extends JPanel {
 		frame.setVisible(true);
 	}
 	
-	private void doExtract() {
+	private void performRefactoring(Runnable refactoring) {
 		try {
 			setBusyCursor();
 			Assert.assertNotNull("No benchmark selected.", benchmark);
-			if(prog == null || benchmark != prog_is_for_benchmark) {
+			if(prog == null || !benchmark.equals(prog_is_for_benchmark)) {
 				status("Compiling...");
-				prog = benchmark.compile();
+				prog = CompileHelper.buildProjectFromClassPathFile(new File(benchmark));
 				prog_is_for_benchmark = benchmark;
 			}
-			TypeDecl tp = prog.findType(typeName);
-			Assert.assertNotNull("There is no type '" + typeName + "' in " + benchmark + ".", tp);
-			Assert.assertTrue("Type '" + typeName + "' is not a class.", tp instanceof ClassDecl);
-			int idx = ifaceName.lastIndexOf('.');
-			String pkg = idx == -1 ? "" : ifaceName.substring(0, idx);
-			String name = ifaceName.substring(idx+1, ifaceName.length());
-			Collection<MethodDecl> methods = new LinkedList<MethodDecl>();
-			for(Iterator<MethodDecl> iter=tp.localMethodsIterator();iter.hasNext();) {
-				MethodDecl meth = iter.next();
-				if(!meth.isStatic() && meth.isPublic())
-					methods.add(meth);
-			}
 			
-			// now do the refactoring
-			status("Applying refactoring...");
-			Program.startRecordingASTChangesAndFlush();
-			((ClassDecl)tp).doExtractInterface(pkg, name, methods);
+			refactoring.run();
 			
 			// check for errors
 			status("Checking for errors...");
@@ -241,6 +352,42 @@ public class DiffView extends JPanel {
 			status("Done");
 		}
 	}
+
+	private class ExtractInterfaceRefactoring implements Runnable {
+		public void run() {
+			TypeDecl tp = prog.findType(extractInterfaceData.typeName);
+			Assert.assertNotNull("There is no type '" + extractInterfaceData.typeName + "' in " + benchmark + ".", tp);
+			Assert.assertTrue("Type '" + extractInterfaceData.typeName + "' is not a class.", tp instanceof ClassDecl);
+			int idx = extractInterfaceData.ifaceName.lastIndexOf('.');
+			String pkg = idx == -1 ? "" : extractInterfaceData.ifaceName.substring(0, idx);
+			String name = extractInterfaceData.ifaceName.substring(idx+1, extractInterfaceData.ifaceName.length());
+			Collection<MethodDecl> methods = new LinkedList<MethodDecl>();
+			for(Iterator<MethodDecl> iter=tp.localMethodsIterator();iter.hasNext();) {
+				MethodDecl meth = iter.next();
+				if(!meth.isStatic() && meth.isPublic())
+					methods.add(meth);
+			}
+
+			// now do the refactoring
+			status("Extracting interface...");
+			Program.startRecordingASTChangesAndFlush();
+			((ClassDecl)tp).doExtractInterface(pkg, name, methods);
+		}
+	}
+	
+	private class PullUpMethodRefactoring implements Runnable {
+		public void run() {
+			TypeDecl tp = prog.findType(pullUpMethodData.typeName);
+			Assert.assertNotNull("There is no type '" + pullUpMethodData.typeName + "' in " + benchmark + ".", tp);
+			Assert.assertTrue("Type '" + pullUpMethodData.typeName + "' is not a class.", tp instanceof ClassDecl);
+			SimpleSet res = tp.localMethodsSignature(pullUpMethodData.methodSig);
+			Assert.assertTrue("Class " + pullUpMethodData.typeName + " has no method with signature " + pullUpMethodData.methodSig, res instanceof MethodDecl);
+			
+			status("Pulling up method...");
+			Program.startRecordingASTChangesAndFlush();
+			((MethodDecl)res).doPullUpWithRequired();
+		}
+	}
 	
 	private void setBusyCursor() {
 		if(frame != null)
@@ -286,7 +433,7 @@ public class DiffView extends JPanel {
 				JTextPane oldPane = new JTextPane();
 				StyledDocument oldDoc = oldPane.getStyledDocument();
 				Style deleted = oldDoc.addStyle("deleted", deflt);
-				StyleConstants.setBackground(deleted, Color.darkGray);
+				StyleConstants.setBackground(deleted, Color.lightGray);
 
 				JTextPane newPane = new JTextPane();
 				StyledDocument newDoc = newPane.getStyledDocument();
