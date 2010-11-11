@@ -122,8 +122,8 @@ public class LogEntry {
 			res.append(parameter.getKey()).append(":").append(parameter.getValue()).append(", ");
 		res.append("; ")
 		   .append(wasSuccess()).append("; ")
-		   .append(rfe == null ? "" : rfe.getMessage()).append("; ")
-		   .append(hasException() ? "Exception: " + throwable.getMessage() : "").append("; ")
+		   .append(rfe == null ? "" : (rfe.getMessage().contains("cannot satisfy") ? "cannot satisfy..." : rfe.getMessage())).append("; ");
+		res.append(hasException() ? "Exception: " + throwable.getMessage().replaceAll(";", ",") : "").append("; ")
 		   .append(timeout()).append("; ")
 		   .append(hasErrors()).append("; ");
 		for(Problem problem : errors)
