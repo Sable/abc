@@ -384,4 +384,114 @@ public class ExtractInterfaceTests extends TestCase {
 				"}"),
 				new RawCU("I.java","package p; interface I {}")));
 	}
+	
+	public void test14() {
+		testSucc("p.C", new String[]{"m(p.C.B)"}, "p", "I",
+				Program.fromCompilationUnits(new RawCU("C.java",
+				"package p;" +
+				"class C {" +
+				"  private class B { }" +
+				"  void m(B b) { }" +
+				"  void n() { }" +
+				"}" +
+				"" +
+				"interface J {" +
+				"  class B { }" +
+				"}" +
+				"" +
+				"class D extends C implements J {" +
+				"  D(C c1, D d) { c1.m(null); }" +
+				"  D(C c2, C o) { c2.n(); D d = new D(c2, null); }" +
+				"  B f;" +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("C.java",
+				"package p;" +
+				"class C implements I {" +
+				"  class B { }" +
+				"  public void m(B b) { }" +
+				"  void n() { }" +
+				"}" +
+				"" +
+				"interface J {" +
+				"  class B { }" +
+				"}" +
+				"" +
+				"class D extends C implements J {" +
+				"  D(I c1, D d) { c1.m(null); }" +
+				"  D(C c2, I o) { c2.n(); D d = new D((I)c2, (D)null); }" +
+				"  J.B f;" +
+				"}"),
+				new RawCU("I.java",
+				"package p;" +
+				"interface I {" +
+				"  abstract public void m(C.B b);" +
+				"}")));
+	}
+	
+	public void test15() {
+		testSucc("p.C", new String[]{"m(p.C.B)"}, "q", "I",
+				Program.fromCompilationUnits(new RawCU("C.java",
+				"package p;" +
+				"class C {" +
+				"  private class B { }" +
+				"  void m(B b) { }" +
+				"  void n() { }" +
+				"}" +
+				"" +
+				"interface J {" +
+				"  class B { }" +
+				"}" +
+				"" +
+				"class D extends C implements J {" +
+				"  D(C c1, D d) { c1.m(null); }" +
+				"  D(C c2, C o) { c2.n(); D d = new D(c2, null); }" +
+				"  B f;" +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("C.java",
+				"package p;" +
+				"public class C implements q.I {" +
+				"  public class B { }" +
+				"  public void m(B b) { }" +
+				"  void n() { }" +
+				"}" +
+				"" +
+				"interface J {" +
+				"  class B { }" +
+				"}" +
+				"" +
+				"class D extends C implements J {" +
+				"  D(q.I c1, D d) { c1.m(null); }" +
+				"  D(C c2, q.I o) { c2.n(); D d = new D((q.I)c2, (D)null); }" +
+				"  J.B f;" +
+				"}"),
+				new RawCU("I.java",
+				"package q;" +
+				"public interface I {" +
+				"  abstract public void m(p.C.B b);" +
+				"}")));
+	}
+	
+	public void test16() {
+		testSucc("A", new String[]{"m()"}, "", "I",
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"interface J {" +
+				"  void m();" +
+				"}" +
+				"interface K extends J { }" +
+				"class A implements K {" +
+				"  public void m() { }" +
+				"}")),
+				Program.fromCompilationUnits(new RawCU("A.java",
+				"interface J {" +
+				"  void m();" +
+				"}" +
+				"interface K extends J { }" +
+				"class A implements K, I {" +
+				"  public void m() { }" +
+				"}"),
+				new RawCU("I.java",
+				"interface I {" +
+				"  public abstract void m();" +
+				"}")));
+	}
 }
