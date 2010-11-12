@@ -871,4 +871,38 @@ public class PullUpMethodTests extends TestCase {
     	    	"  void n(){x.new Y();}" +
     	    	"}"), true);
     }
+    
+    public void test54() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("Super.java","package q; public class Super{}"),
+    			new RawCU("A.java","package p; class A extends q.Super {" +
+    					"  void m(X x){}" +
+    					"  class X extends B{ void n(){}}" +
+    					"}"),
+    			new RawCU("B.java","package p; public abstract class B{abstract void n();}")),
+    			Program.fromCompilationUnits(
+    	    	new RawCU("Super.java","package q; public class Super{" +
+    	    			"  void m(X x){}" +
+    	    			"  class X extends p.B{ protected void n(){}}" +
+    	    			"}"),
+    	    	new RawCU("A.java","package p; class A extends q.Super {}"),
+    	    	new RawCU("B.java","package p; public abstract class B{abstract protected void n();}")),true);
+    }
+    
+    public void test55() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("Super.java","package q; public class Super{}"),
+    			new RawCU("A.java","package p; class A extends q.Super {" +
+    					"  void m(Y.X x){}" +
+    					"  public class Y { class X extends B{ void n(){}}}" +
+    					"}"),
+    			new RawCU("B.java","package p; public abstract class B{abstract void n();}")),
+    			Program.fromCompilationUnits(
+    	    	new RawCU("Super.java","package q; public class Super{" +
+    	    			"  void m(Y.X x){}" +
+    	    			"  public class Y { class X extends p.B{ protected void n(){}}}" +
+    	    			"}"),
+    	    	new RawCU("A.java","package p; class A extends q.Super {}"),
+    	    	new RawCU("B.java","package p; public abstract class B{abstract protected void n();}")),true);
+    }
 }

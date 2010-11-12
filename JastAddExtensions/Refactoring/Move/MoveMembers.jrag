@@ -77,7 +77,8 @@ aspect MoveMembers {
 		endangeredNames.clear();
 		collectAllMethodNames(endangeredNames);
 		root.lockMethodNames(endangeredNames);
-
+		root.lockOverridingDependencies(endangeredNames);
+		
 		Collection<TypeDecl> endangeredTypeDecls = new LinkedList<TypeDecl>();
 		collectAllMemberTypeDecls(endangeredTypeDecls);
 		root.lockConstructorCalls(endangeredTypeDecls);
