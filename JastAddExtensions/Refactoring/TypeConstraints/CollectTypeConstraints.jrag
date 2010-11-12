@@ -44,7 +44,7 @@ aspect CollectTypeConstraints {
 	
 	protected void CompilationUnit.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		// sometimes JastAddJ seems to load conflicting jars, so libraries don't always typecheck :-S
-		if(fromSource())
+		if(fromSource() || packageName().startsWith("java."))
 			super.collectTypeConstraints(pred, constraints);
 	}
 	

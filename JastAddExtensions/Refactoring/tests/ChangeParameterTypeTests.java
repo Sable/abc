@@ -503,4 +503,23 @@ public class ChangeParameterTypeTests extends TestCase {
 				"  }" +
 				"}"));
 	}
+	
+	public void test33() {
+		testSucc("I", "m", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A {public void m(String s){}}",
+				"class B extends A implements I {}",
+				"interface I {void m(String s);}"),
+				Program.fromClasses(
+				"class A {public void m(Object s){}}",
+				"class B extends A implements I {}",
+				"interface I {void m(Object s);}"));
+	}
+	
+	public void test32() {
+		testFail("I", "printStackTrace", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A extends java.lang.Exception implements I {}",
+				"interface I {void printStackTrace(java.io.PrintStream s);}"));
+	}
 }
