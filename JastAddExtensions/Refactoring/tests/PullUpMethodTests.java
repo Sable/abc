@@ -905,4 +905,20 @@ public class PullUpMethodTests extends TestCase {
     	    	new RawCU("A.java","package p; class A extends q.Super {}"),
     	    	new RawCU("B.java","package p; public abstract class B{abstract protected void n();}")),true);
     }
+    
+    public void test56() {
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class A extends Super {Integer m(){return null;}}",
+    			"class B extends Super {String m(){return null;}}"
+    			), true);
+    }
+
+    public void test57() {
+    	testFail(Program.fromClasses(
+    			"class Super {}",
+    			"class A extends Super {java.util.Set<Integer> m(){return null;}}",
+    			"class B extends Super {java.util.Set<String>  m(){return null;}}"
+    			), true);
+    }
 }
