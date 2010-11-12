@@ -11,7 +11,7 @@ aspect MoveMembers {
 	
 	public void TypeDecl.doMoveMembers(Collection<MemberDecl> members, TypeDecl target) {
 		moveMembers(members, target);
-		programRoot().eliminate(LOCKED_DATAFLOW, LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_DATAFLOW, LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 	
 	public void MemberDecl.moveTo(TypeDecl target) {
