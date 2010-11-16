@@ -53,7 +53,11 @@ import AST.SimpleSet;
 import AST.TypeDecl;
 
 public class DiffView extends JPanel {
-	public class PullUpMethodData {
+	interface HandlerProvider {
+		Thread createHandler();
+	}
+	
+	public class PullUpMethodData implements HandlerProvider {
 		public String typeName;
 		public String methodSig;
 		public JTextField typeNameField;
@@ -75,7 +79,7 @@ public class DiffView extends JPanel {
 		}
 	}
 
-	public class ExtractInterfaceData {
+	public class ExtractInterfaceData implements HandlerProvider {
 		public String typeName;
 		public String ifaceName;
 		public JTextField typeNameField;
@@ -115,7 +119,7 @@ public class DiffView extends JPanel {
 	private PullUpMethodData pullUpMethodData = 
 		new PullUpMethodData("org.eclipse.draw2d.parts.Thumbnail", "getScaleX()");
 	
-	private Thread handler;
+	private HandlerProvider handlerProvider;
 
 	public DiffView() {
 		setLayout(new BorderLayout());
@@ -135,15 +139,15 @@ public class DiffView extends JPanel {
 		parmInputPanes.add("Extract Interface", createExtractInterfaceInputPane());
 		parmInputPanes.add("Pull Up Method", createPullUpMethodInputPane());
 		
-		handler = extractInterfaceData.createHandler();
+		handlerProvider = extractInterfaceData;
 		parmInputPanes.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				switch(parmInputPanes.getSelectedIndex()) {
 				case 0:
-					handler = extractInterfaceData.createHandler();
+					handlerProvider = extractInterfaceData;
 					break;
 				case 1:
-					handler = pullUpMethodData.createHandler();
+					handlerProvider = pullUpMethodData;
 					break;
 				}
 			}
@@ -156,7 +160,7 @@ public class DiffView extends JPanel {
         c.weightx = 1.0;
         controlsPane.add(parmInputPanes, c);
 		
-		// create combo box for selecting benchmark
+		// create text box for selecting benchmark
         final JTextField benchmarkPath = new JTextField(30);
         benchmarkPath.setText(benchmark);
 		JLabel benchboxLabel = new JLabel("Test program:");
@@ -170,7 +174,6 @@ public class DiffView extends JPanel {
 				return "Eclipse .classpath files";
 			}
 			
-			@Override
 			public boolean accept(File f) {
 				return f.isDirectory() && !f.isHidden() || f.getName().equals(".classpath");
 			}
@@ -203,7 +206,7 @@ public class DiffView extends JPanel {
 		goButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				benchmark = benchmarkPath.getText();
-				handler.start();
+				handlerProvider.createHandler().start();
 			}
 		});
 		
@@ -345,6 +348,7 @@ public class DiffView extends JPanel {
 			error(rfe.getMessage());
 			prog = null;
 		} catch(Exception e) {
+			error(e.getMessage());
 			e.printStackTrace();
 			prog = null;
 		} finally {
