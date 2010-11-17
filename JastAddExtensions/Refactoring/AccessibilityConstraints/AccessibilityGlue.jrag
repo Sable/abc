@@ -12,22 +12,39 @@
  */
 
 aspect AccessibilityGlue {
-	public void Program.eliminateLockedNames() {
+	public void Program.eliminateLockedNamesInSubtree() {
 		// check naming constraints first; if that fails we don't have to solve constraints
 		checkNamingConstraints();
 		adjustAccessibility();
+		eliminateLockedNames();
+		while(!affectedByUnlock.isEmpty()) {
+			adjustAccessibility(collectAccessibilityConstraints(affectedByUnlock));
+			affectedByUnlock.clear();
+			eliminateLockedNames();
+		}
 		flushCaches();
-		super.eliminateLockedNames();
+	}
+	
+	private Collection<AccessibilityConstraint> Program.collectAccessibilityConstraints(Collection<Access> accs) {
+		Collection<AccessibilityConstraint> seed = new LinkedList<AccessibilityConstraint>();
+		for(Access acc : accs)
+			acc.collectAccessibilityConstraints(seed);
+		return seed;
 	}
 	
 	private void Program.adjustAccessibility() {
-		Collection<AccessibilityConstraint> accessibilityConstraints = assortedAccessibilityConstraints();	
+		adjustAccessibility(accessibilityConstraints());
+	}
+	
+	private void Program.adjustAccessibility(Collection<AccessibilityConstraint> seed) {
+		Collection<AccessibilityConstraint> accessibilityConstraints = relevantAccessibilityConstraints(seed);	
 		if(accessibilityConstraints.isEmpty())
 			return;
 		Map<Visible, Integer> acc_map = solve(accessibilityConstraints);
 		if(acc_map == null)
 			throw new RefactoringException("cannot adjust accessibilities");
 		adjustAccessibilities(acc_map);
+		flushCaches();
 	}
 	
 	protected void Program.adjustAccessibilities(Map<Visible, Integer> acc_map) {

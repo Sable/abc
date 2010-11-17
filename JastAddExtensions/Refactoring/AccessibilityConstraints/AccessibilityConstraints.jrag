@@ -84,6 +84,13 @@ aspect AccessibilityConstraints {
 				return ((MethodDecl)nd).fullName();
 			return nd.toString();
 		}
+		
+		public boolean equals(Object o) {
+			if(!(o instanceof AccessibilityConstraint))
+				return false;
+			AccessibilityConstraint that = (AccessibilityConstraint)o;
+			return this.left.equals(that.left) && this.right.equals(that.right) && this.op.equals(that.op);
+		}
 	}
 	
 	

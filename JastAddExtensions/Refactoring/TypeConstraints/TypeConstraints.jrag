@@ -42,10 +42,9 @@ aspect TypeConstraints {
 			this.right = right;
 		}
 		
-		// TODO: we use erasure() to get around dealing with generics; obviously, this only works in the simplest cases
 		public boolean solved() {
-			TypeDecl lefttp = left.getConstrainedType().refresh().erasure(),
-			         righttp = right.getConstrainedType().refresh().erasure();
+			TypeDecl lefttp = left.getConstrainedType().refresh(),
+			         righttp = right.getConstrainedType().refresh();
 			return op.eval(lefttp, righttp);
 		}
 		

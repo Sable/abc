@@ -524,7 +524,7 @@ public class RenameMethodTests extends TestCase {
     }
     
     public void test37() {
-    	testFail(
+    	testSucc(
     		"A.D", "g()", "f",
     		Program.fromClasses(
     		"class A {" +
@@ -537,6 +537,18 @@ public class RenameMethodTests extends TestCase {
     		"}",
     		"class B extends A {" +
     		"  { new D().f(); }" +
+    		"}"),
+    		Program.fromClasses(
+    		"class A {" +
+    		"  static class C {" +
+    		"    static int f() { return 23; }" +
+    		"  }" +
+    		"  static class D extends C {" +
+    		"    static int f() { return 42; }" +
+    		"  }" +
+    		"}" +
+    		"class B extends A {" +
+    		"  { ((C)new D()).f(); }" +
     		"}"));
     }
     

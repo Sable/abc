@@ -103,49 +103,25 @@ aspect Overriding {
 		return s;
 	}
 	
-	protected void TypeDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) { }
+	protected void TypeDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) {
+		for(TypeDecl supertp : supertypes())
+			possiblyOverriddenAncestorsFrom(supertp, s, signature);
+	}
 	
-	protected void ClassDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) {
-		if (superclass() != null) {
-			SimpleSet ss = superclass().localMethodsSignature(signature);
-			for (Iterator<MethodDecl> it = ss.iterator(); it.hasNext();) {
-				s.add(it.next());
-			}
-			if (ss.isEmpty()) {
-				superclass().possiblyOverriddenAncestors(s, signature);
-			}
-		}
-		
-		//methods from interfaces
-		int cnt = 0;
-		for (Iterator<InterfaceDecl> it = interfacesIterator(); it.hasNext();) {
-			InterfaceDecl intf = it.next();
-			for (Iterator<MethodDecl> itt = intf.localMethodsSignature(signature).iterator(); itt.hasNext();) {
-				s.add(itt.next());
-				cnt++;
-			}
-		}
-		if (cnt == 0) {
-			for (Iterator<InterfaceDecl> it = interfacesIterator(); it.hasNext();) {
-				it.next().possiblyOverriddenAncestors(s, signature);
-			}
+	protected void TypeDecl.possiblyOverriddenAncestorsFrom(TypeDecl supertp, HashSet<MethodDecl> s, String signature) {
+		SimpleSet r = supertp.localMethodsSignature(signature);
+		if(r.isEmpty()) {
+			supertp.possiblyOverriddenAncestors(s, signature);
+		} else {
+			for(Iterator<MethodDecl> iter=r.iterator(); iter.hasNext();)
+				s.add(iter.next());
 		}
 	}
 	
 	protected void InterfaceDecl.possiblyOverriddenAncestors(HashSet<MethodDecl> s, String signature) {
-		int cnt = 0;
-		for (Iterator<InterfaceDecl> it = superinterfacesIterator(); it.hasNext();) {
-			InterfaceDecl intf = it.next();
-			for (Iterator<MethodDecl> itt = intf.localMethodsSignature(signature).iterator(); itt.hasNext();) {
-				s.add(itt.next());
-				cnt++;
-			}
-		}
-		if (cnt == 0) {
-			for (Iterator<InterfaceDecl> it = superinterfacesIterator(); it.hasNext();) {
-				it.next().possiblyOverriddenAncestors(s, signature);
-			}
-		}
+		super.possiblyOverriddenAncestors(s, signature);
+		if(getNumSuperInterfaceId() == 0)
+			possiblyOverriddenAncestorsFrom(typeObject(), s, signature);
 	}
 	
 	syn lazy Collection<MethodDecl> MethodDecl.rootDefs() {
@@ -244,4 +220,10 @@ aspect Overriding {
 		return res;
 	}
 	
+	syn lazy Collection<MethodDecl> MethodDecl.possiblyHiddenMethods() {
+		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
+		if(!this.isStatic())
+			return ret;
+		return possiblyOverriddenAncestors();
+	}
 }

@@ -91,8 +91,7 @@ aspect CollectTypeConstraints {
 				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
 																	  	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
 			} else {
-				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
-						  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
+				collectReturnTypeSubstitutabilityConstraints(pred, constraints, that);
 			}
 		}
 		for(MethodDecl that : indirectlyOverriddenMethods()) {
@@ -102,18 +101,23 @@ aspect CollectTypeConstraints {
 				addConstraint(constraints, pred, new SimpleTypeConstraint(thisParm, "overriding parameter type for method " + that.fullName(),
 																		  thisParm.getTypeAccess(), Operator.EQ, thatParm.getTypeAccess()));
 			}
-			if(this.type().isPrimitiveType() || this.type().isVoid() || that.type().isPrimitiveType() || that.type().isVoid()) {
-				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
-																		  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
-			} else if(this.type().isSubtypeConstrainable() && that.type().isSubtypeConstrainable()) {
-				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
-																	  	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
-			} else {
-				addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type invariant", this.getTypeAccess(), Operator.EQ, this.type()));
-				addConstraint(constraints, pred, new SimpleTypeConstraint(that.getTypeAccess(), "return type invariant", that.getTypeAccess(), Operator.EQ, that.type()));
-			}
+			collectReturnTypeSubstitutabilityConstraints(pred, constraints,	that);
 		}
 		super.collectTypeConstraints(pred, constraints);
+	}
+	
+	protected void MethodDecl.collectReturnTypeSubstitutabilityConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints, MethodDecl that) {
+		if(this.type().isPrimitiveType() || this.type().isVoid() || that.type().isPrimitiveType() || that.type().isVoid()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																	  this.getTypeAccess(), Operator.EQ, that.getTypeAccess()));
+		} else if(this.type().isSubtypeConstrainable() && that.type().isSubtypeConstrainable()) {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability for method " + that.fullName(),
+																  	  this.getTypeAccess(), Operator.LE, that.getTypeAccess()));
+		} else {
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type invariant", this.getTypeAccess(), Operator.EQ, this.type()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(that.getTypeAccess(), "return type invariant", that.getTypeAccess(), Operator.EQ, that.type()));
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this.getTypeAccess(), "return type substitutability", this.type(), Operator.LE, that.type()));
+		}
 	}
 	
 	protected void ReturnStmt.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
@@ -307,15 +311,16 @@ aspect CollectTypeConstraints {
   	
 	protected void ConditionalExpr.collectTypeConstraints(Predicate<? super TypeConstraint> pred, Collection<TypeConstraint> constraints) {
 		TypeDecl truetp = getTrueExpr().type(), falsetp = getFalseExpr().type();
-		if(truetp.isSubtypeConstrainable()) {
+		if(truetp.isSubtypeConstrainable() && type().isSubtypeConstrainable())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.LE, type()));
-		}
-		if(falsetp.isSubtypeConstrainable()) {
+		else
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getTrueExpr(), Operator.EQ, getTrueExpr().type()));
+		if(falsetp.isSubtypeConstrainable() && type().isSubtypeConstrainable())
 			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getFalseExpr(), Operator.LE, type()));
-		}
+		else
+			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getFalseExpr(), Operator.EQ, getFalseExpr().type()));
 		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", this, Operator.EQ, type()));
-		if(getCondition().type().isSubtypeConstrainable())
-			addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getCondition(), Operator.EQ, getCondition().type()));
+		addConstraint(constraints, pred, new SimpleTypeConstraint(this, "conditional", getCondition(), Operator.EQ, getCondition().type()));
 		super.collectTypeConstraints(pred, constraints);
 	}
 	
@@ -383,7 +388,9 @@ aspect CollectTypeConstraints {
 	public abstract boolean TypeConstraint.relevantForSubtree(ASTNode nd);
 	public boolean SimpleTypeConstraint.relevantForSubtree(ASTNode nd) {
 		return left instanceof Expr && ((Expr)left).isDescendantTo(nd)
-		    || right instanceof Expr && ((Expr)right).isDescendantTo(nd);
+		    || right instanceof Expr && ((Expr)right).isDescendantTo(nd)
+			// constant constraints are always relevant
+			|| left instanceof TypeDecl && right instanceof TypeDecl;
 	}
 	public boolean DisjunctiveTypeConstraint.relevantForSubtree(ASTNode nd) {
 		for(TypeConstraint constr : constraints)
@@ -392,7 +399,7 @@ aspect CollectTypeConstraints {
 		return false;		
 	}
 	public boolean IsArrayTypeConstraint.relevantForSubtree(ASTNode nd) {
-		return var instanceof Expr && ((Expr)var).isDescendantTo(nd);
+		return var instanceof Expr && ((Expr)var).isDescendantTo(nd) || var instanceof TypeDecl;
 	}
 	public boolean ExceptionCompatibilityConstraint.relevantForSubtree(ASTNode nd) {
 		return sub.getExceptionList().isDescendantTo(nd) || sup.getExceptionList().isDescendantTo(nd);

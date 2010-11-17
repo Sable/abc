@@ -1,16 +1,41 @@
 aspect Rename {
 	public static LanguageExtension ASTNode.LOCKED_NAMES = new LanguageExtension("locked names") {
 		public void eliminateOn(ASTNode n) {
-			n.eliminateLockedNames();
-			n.flushCaches();
+			n.eliminateLockedNamesInSubtree();
 		}
 	};
 	
+	public void ASTNode.eliminateLockedNamesInSubtree() {
+		Program root = programRoot();
+		eliminateLockedNames();
+		while(root != null && !root.affectedByUnlock.isEmpty()) {
+			if(root != null)
+				root.affectedByUnlock.clear();
+			flushCaches();
+			eliminateLockedNames();
+		}
+		flushCaches();
+	}
+	
 	public void ASTNode.eliminateLockedNames() {
-		for(int i=0;i<getNumChild();++i) {
-			ASTNode child = getChild(i);
-			if(child != null)
-				child.eliminateLockedNames();
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).eliminateLockedNames();
+	}
+	
+	/* Any sweep over the tree to unlock names may introduce new locked names. We collect these 
+	 * and all names that have been re-qualified in the program node, if it is accessible. */
+	protected final Collection<Access> Program.affectedByUnlock = new LinkedList<Access>();
+	
+	public void Program.flushCaches() {
+		affectedByUnlock.clear();
+		super.flushCaches();
+	}
+	
+	protected void ASTNode.affectedByUnlock(Access... accs) {
+		Program root = programRoot();
+		if(root != null) {
+			for(Access acc : accs)
+				root.affectedByUnlock.add(acc);
 		}
 	}
 }

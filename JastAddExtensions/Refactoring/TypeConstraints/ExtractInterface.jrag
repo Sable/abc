@@ -9,40 +9,37 @@ aspect ExtractInterface {
 			throw new RefactoringException("cannot extract from enum");
 		if(subtype(typeThrowable())) 
 			throw new RefactoringException("cannot extract from throwable type");
-		Program root = programRoot();
-		List<BodyDecl> body = new List<BodyDecl>();
-		Modifiers mods = (Modifiers)getModifiers().fullCopy();
-		mods.removeNonToplevelModifiers();
-		mods.removeModifier("abstract");
-		mods.removeModifier("final");
-		mods.removeAnnotations();
-		InterfaceDecl newInterface = new InterfaceDecl(mods, name, new List<Access>(), body);
-		
-		// TODO: determine path to put new compilation unit at
-		String pathName = compilationUnit().pathName();
-		String path = pathName.substring(0, pathName.lastIndexOf(File.separatorChar)+1);
-		root.insertUnusedType(path, pkg == null ? packageName() : pkg, new List<ImportDecl>(), newInterface);
-		addImplements(newInterface.createLockedAccess());
 		for(MethodDecl md : methods) {
 			if(md.hostType() != this)
 				throw new RefactoringException("selected method is not a member of this type");
 			if(md.isStatic())
 				throw new RefactoringException("selected method is static");
-			MethodDecl new_md = md.lockedCopyWithEmptyBody();
-			new_md.getModifiers().removeModifier("synchronized");
-			// it generally doesn't make sense to preserve annotations, so we don't
-			new_md.getModifiers().removeAnnotations();
-			// for Eclipse compatibility
-			new_md.getModifiers().addModifier("abstract");
-			new_md.getModifiers().removeModifier("final");	
-			// this could be done by the accessibility constraints but in some places (e.g. MethodDecl.overridingMethods()) 
-			// low accessibility is used as a break condition so we adjust it here
-			new_md.getModifiers().setVisibility(Modifier.VIS_PUBLIC);
-			body.add(new_md);
-			md.lockOverriding();
-			md.addOverriddenMethod(new_md);
 		}
 		
+		Program root = programRoot();
+		
+		// create new interface
+		List<BodyDecl> body = new List<BodyDecl>();
+		InterfaceDecl newInterface = new InterfaceDecl(new Modifiers(), name, new List<Access>(), body);
+		for(MethodDecl md : methods) {
+			Collection<MethodDecl> ovr = md.overriddenMethods();
+			MethodDecl new_md = md.lockedCopyWithEmptyBody();
+			new_md.setModifiers(new Modifiers("public", "abstract"));
+			body.add(new_md);
+			ovr.add(new_md);
+			md.lockOverriding(ovr);
+		}
+		
+		// insert it into the program
+		// TODO: determine path to put new compilation unit at
+		String pathName = compilationUnit().pathName();
+		String path = pathName.substring(0, pathName.lastIndexOf(File.separatorChar)+1);
+		root.insertUnusedType(path, pkg == null ? packageName() : pkg, new List<ImportDecl>(), newInterface);
+		
+		// make class implement it
+		addImplements(newInterface.createLockedAccess());
+		
+		// compute updatable expressions
 		Collection<TypeConstraintVariable> updatable = computeUpdatableExprs(root.typeConstraints(this), this, newInterface);
 		Collection<String> affectedMethods = new HashSet<String>();
 		Collection<TypeDecl> affectedConstructors = new HashSet<TypeDecl>();

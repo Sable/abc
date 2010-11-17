@@ -78,12 +78,7 @@ aspect Locking {
 	public void AbstractDot.eliminateLockedNames() {
 		if(getRight() instanceof AbstractDot)
 			rotateLeft();
-		if(getRight() instanceof LockableName && ((LockableName)getRight()).isLocked()) {
-			getLeft().eliminateLockedNames();
-			((LockableName)getRight()).unlock().eliminateLockedNames();
-		} else {
-			super.eliminateLockedNames();	
-		}
+		super.eliminateLockedNames();	
 	}
 	
 	// check coarse-grained naming constraints

@@ -8,86 +8,82 @@ aspect CollectConstraints {
 	coll Collection<AccessibilityConstraint> Program.accessibilityConstraints() [new LinkedHashSet<AccessibilityConstraint>()]
 	                                         with addAll root Program;
 	
-	// Acc-1
-	TypeAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
-	           to Program.accessibilityConstraints()
-	           for programRoot();
+	Access contributes accessibilityConstraints() to Program.accessibilityConstraints() for programRoot();
 	
-	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(this), (FieldDeclaration)decl()))
-	           when decl() instanceof FieldDeclaration 
-	             && !(this instanceof BoundFieldAccess)    // BoundFieldAccesses are used internally by the frontend to circumvent name binding
-	           to Program.accessibilityConstraints()
-	           for programRoot();
+	syn lazy Collection<AccessibilityConstraint> Access.accessibilityConstraints() {
+		Collection<AccessibilityConstraint> res = new LinkedList<AccessibilityConstraint>();
+		collectAccessibilityConstraints(res);
+		return res;
+	}
 	
-	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
-    	       to Program.accessibilityConstraints()
-    	       for programRoot();
+	protected void Access.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) { }
 	
-	ConstructorAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
-    		   to Program.accessibilityConstraints()
-    		   for programRoot();
+	protected void TypeAccess.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// (Acc-1)
+		res.add(new AccessibilityConstraint(this, decl().minAccess(this), decl()));
+	}
 	
-	ClassInstanceExpr contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(this), decl()))
-	   		   to Program.accessibilityConstraints()
-	   		   for programRoot();
+	protected void VarAccess.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// (Acc-1)
+		if(decl().isField()) {
+			FieldDeclaration fd = (FieldDeclaration)decl();
+			res.add(new AccessibilityConstraint(this, fd.minAccess(this), fd));
+			if(isQualified()) {
+				// (Acc-2), see JLS 6.6.2.1
+				if(!decl().isStatic() && !qualifier().isSuperAccess()) {
+					TypeDecl C = fd.hostType();
+					TypeDecl S = hostType().withinBodyThatSubclasses(C);
+					if(fd.minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
+					   S != null && !qualifier().type().instanceOf(S))
+						res.add(new AccessibilityConstraint(this, fd, Operator.EQ, AccessModifierConstant.PUBLIC));
+				}
+				// (Inh-1)
+				res.add(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type()),
+													      Operator.LE, ((FieldDeclaration)decl())));
+			}
+		}
+	}
 	
-	// Acc-1 variant: when calling a method, the receiver type has to be accessible; when calling a constructor, the host type has to be accessible
-	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, qualifier().type().minAccess(this), qualifier().type()))
-               when isQualified()
-               to Program.accessibilityConstraints()
-               for programRoot();
+	protected void BoundFieldAccess.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// bound field accesses are used internally by the frontend to circumvent name binding rules, so we leave them alone
+	}
 	
-	ConstructorAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().hostType().minAccess(this), decl().hostType()))
-	           to Program.accessibilityConstraints()
-	           for programRoot();
+	protected void MethodAccess.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// (Acc-1)
+		res.add(new AccessibilityConstraint(this, decl().minAccess(this), decl()));
+		// (Acc-1) variant: when calling a method, the receiver type has to be accessible
+		if(isQualified()) {
+			res.add(new AccessibilityConstraint(this, qualifier().type().minAccess(this), qualifier().type()));
+			// (Acc-2), see JLS 6.6.2.1
+			if(!decl().isStatic() && !qualifier().isSuperAccess()) {
+				TypeDecl C = decl().hostType();
+				TypeDecl S = hostType().withinBodyThatSubclasses(C);
+				if(decl().minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
+				   S != null && !qualifier().type().instanceOf(S))
+					res.add(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC));
+			}
+			// (Inh-1)
+			res.add(new AccessibilityConstraint(this, decl().minAccess(qualifier().hostPackage(), qualifier().hostType()),
+                    							Operator.LE, decl()));
+		}
+	}
 	
-	ClassInstanceExpr contributes Collections.singleton(new AccessibilityConstraint(this, decl().hostType().minAccess(this), decl().hostType()))
-    		   to Program.accessibilityConstraints()
-    		   for programRoot();
-
-	// Acc-2
-	VarAccess  contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()), Operator.EQ, AccessModifierConstant.PUBLIC))
-	           when isQualified() &&
-	                decl() instanceof FieldDeclaration &&
-	                !(this instanceof BoundFieldAccess) &&
-	                !decl().isStatic() &&
-	                ((FieldDeclaration)decl()).minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-	                !qualifier().isSuperAccess() &&
-	                hostType().withinBodyThatSubclasses(((FieldDeclaration)decl()).hostType()) != null &&
-	                !qualifier().type().instanceOf(hostType().withinBodyThatSubclasses(((FieldDeclaration)decl()).hostType()))
-	           to Program.accessibilityConstraints()
-	           for programRoot();
+	protected void ConstructorAccess.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// (Acc-1)
+		res.add(new AccessibilityConstraint(this, decl().minAccess(this), decl()));
+		// (Acc-1) variant: when calling a constructor, the host type has to be accessible
+		res.add(new AccessibilityConstraint(this, decl().hostType().minAccess(this), decl().hostType()));
+	}
 	
-	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC))
-			   when isQualified() &&
-			   		!decl().isStatic() &&
-			   		decl().minAccess(hostPackage(), hostType()) == ASTNode.VIS_PROTECTED &&
-			   		!qualifier().isSuperAccess() &&
-	                hostType().withinBodyThatSubclasses(decl().hostType()) != null &&
-	                !qualifier().type().instanceOf(hostType().withinBodyThatSubclasses(decl().hostType()))
-			   to Program.accessibilityConstraints()
-			   for programRoot();
-	
-	ClassInstanceExpr contributes Collections.singleton(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC))
-	           when !hasTypeDecl() &&
-	                !hostType().hostPackage().equals(decl().hostType().hostPackage())
-	           to Program.accessibilityConstraints()
-	           for programRoot();
-	
-	// Inh-1
-	VarAccess contributes Collections.singleton(new AccessibilityConstraint(this, ((FieldDeclaration)decl()).minAccess(qualifier().type().hostPackage(), qualifier().type()),
-																			Operator.LE, ((FieldDeclaration)decl())))
-              when isQualified() 
-	            && decl() instanceof FieldDeclaration
-	            && !(this instanceof BoundFieldAccess)
-	          to Program.accessibilityConstraints()
-	          for programRoot();
-	
-	MethodAccess contributes Collections.singleton(new AccessibilityConstraint(this, decl().minAccess(qualifier().hostPackage(), qualifier().hostType()),
-			                                                                   Operator.LE, decl()))
-              when isQualified()
-    		  to Program.accessibilityConstraints()
-    		  for programRoot();
+	protected void ClassInstanceExpr.collectAccessibilityConstraints(Collection<AccessibilityConstraint> res) {
+		// (Acc-1)
+		res.add(new AccessibilityConstraint(this, decl().minAccess(this), decl()));
+		// (Acc-1) variant: when calling a constructor, the host type has to be accessible
+		res.add(new AccessibilityConstraint(this, decl().hostType().minAccess(this), decl().hostType()));
+		// (Acc-2)
+		if(!hasTypeDecl() && !hostType().hostPackage().equals(decl().hostType().hostPackage()))
+			res.add(new AccessibilityConstraint(this, decl(), Operator.EQ, AccessModifierConstant.PUBLIC));
+	}
 	
 	// constraints from method overriding
 	MethodDecl contributes accessibilityConstraintsFromOverridingAndHiding()
@@ -131,13 +127,6 @@ aspect CollectConstraints {
 			}
 		}
 		return constrs;
-	}
-	
-	syn lazy Collection<MethodDecl> MethodDecl.possiblyHiddenMethods() {
-		HashSet<MethodDecl> ret = new HashSet<MethodDecl>();
-		if(!this.isStatic())
-			return ret;
-		return possiblyOverriddenAncestors();
 	}
 	
 	// constraints for top-level types
@@ -187,12 +176,16 @@ aspect CollectConstraints {
 	           to Program.accessibilityConstraints() for programRoot();
 	
 
-	syn lazy Collection<AccessibilityConstraint> Program.assortedAccessibilityConstraints() {
+	public Collection<AccessibilityConstraint> Program.relevantAccessibilityConstraints() {
+		return relevantAccessibilityConstraints(accessibilityConstraints());
+	}
+	
+	public Collection<AccessibilityConstraint> Program.relevantAccessibilityConstraints(Collection<AccessibilityConstraint> seed) {
 		java.util.Set<AccessibilityConstraint> accessibilityConstraints = new HashSet<AccessibilityConstraint>();
 		java.util.Set<Visible> visiblesToDo = new HashSet<Visible>();
 		java.util.Set<Visible> visiblesDone = new HashSet<Visible>();
 		
-		for(AccessibilityConstraint ac : accessibilityConstraints()) {
+		for(AccessibilityConstraint ac : seed) {
 			if(!ac.isSolved()) {
 				Collection<Visible> vis = ac.referencedVisibles();
 				if(vis.isEmpty()) {

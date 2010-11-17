@@ -1,0 +1,25 @@
+aspect AdjustVirtualCalls {
+	// adjust virtual calls according to type update map
+	// for every expression that is the receiver of a method call and that has its type updated,
+	// we find the new target of the method call in the updated receiver type, and lock it
+	public static void Program.adjustVirtualCalls(Map<Expr, TypeDecl> typeUpdate) {
+		for(Map.Entry<Expr, TypeDecl> entry : typeUpdate.entrySet()) {
+			Expr e = entry.getKey();
+			if(e.isLeftChildOfDot() && e.nextAccess() instanceof MethodAccess) {
+				TypeDecl newType = entry.getValue();
+				MethodAccess ma = (MethodAccess)e.nextAccess();
+				if(ma.isMonoCall())
+					continue;
+				MethodDecl oldTarget = ma.decl(),
+						   newTarget = oldTarget.ancestorIn(newType);
+				if(newTarget == null)
+					throw new RefactoringException("invalid type change");
+				if(!oldTarget.throwsSameExceptionsAs(newTarget))
+					throw new RefactoringException("new target throws different exceptions");
+				if(oldTarget.type() != newTarget.type())
+					throw new RefactoringException("new target has different return type");
+				ma.lock(newTarget);				
+			}
+		}
+	}
+}

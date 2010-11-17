@@ -103,9 +103,8 @@ aspect LockedConstructor {
 	
 	public void ConstructorAccess.eliminateLockedNames() {
 		if(targetConstructor != null)
-			unlock().eliminateLockedNames();
-		else
-			super.eliminateLockedNames();
+			unlock();
+		super.eliminateLockedNames();
 	}
 	public ConstructorAccess ConstructorAccess.unlock() {
 		ConstructorDecl targetConstructor = this.targetConstructor.refresh();
@@ -123,9 +122,8 @@ aspect LockedConstructor {
 	}
 	public void ClassInstanceExpr.eliminateLockedNames() {
 		if(targetConstructor != null)
-			unlock().eliminateLockedNames();
-		else
-			super.eliminateLockedNames();
+			unlock();
+		super.eliminateLockedNames();
 	}
 	public ClassInstanceExpr ClassInstanceExpr.unlock() {
 		ConstructorDecl targetConstructor = this.targetConstructor.refresh();

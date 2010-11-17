@@ -119,11 +119,9 @@ aspect LockedMethodAccess {
 	// eliminating locked method accesses
 	inh TypeDecl MethodAccess.enclosingType();
 	public void MethodAccess.eliminateLockedNames() {
-		if(targetMethod != null) {
-			unlock().eliminateLockedNames();
-		} else {
-			super.eliminateLockedNames();
-		}
+		if(targetMethod != null)
+			unlock();
+		super.eliminateLockedNames();
 	}
 	
 	public Access MethodAccess.unlock() {
@@ -156,7 +154,9 @@ aspect LockedMethodAccess {
 				if(host.accessibleFrom(hostType()) && target.accessibleFrom(hostType()))
 					if (qual == null || (qual!=null && qual.type() != host)) {
 						this.flushCaches();
-						return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this));
+						Access hostAccess = host.createLockedAccess();
+						affectedByUnlock(hostAccess, this);
+						return (Access) replace(qual!=null ? parentDot() : this).with(hostAccess.qualifiesAccess(this));
 					} else
 						return qual!=null ? parentDot() : this;
 			} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
@@ -195,20 +195,26 @@ aspect LockedMethodAccess {
 			if(isMonoCall && !target.isPrivate()) {
 				// need to construct a super call
 				if(bend instanceof ClassDecl && source == ((ClassDecl)bend).superclass()) {
-					if(bend == enclosing)
+					if(bend == enclosing) {
+						ma.affectedByUnlock(ma);
 						return (Access)original.replace(original).with(new SuperAccess("super").qualifiesAccess(ma));
-					else {
-						return (Access)original.replace(original).with(bend.createLockedAccess().qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma)));
+					} else {
+						Access bendAccess = bend.createLockedAccess();
+						ma.affectedByUnlock(bendAccess, ma);
+						return (Access)original.replace(original).with(bendAccess.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma)));
 					}
 				}
 				throw new RefactoringException("cannot construct monomorphic call");
 			} else {
 				if(source != bend && target.isPrivate())
 					throw new RefactoringException("cannot access private method here");
-				if(bend == enclosing)
+				if(bend == enclosing) {
 					return (Access)original.replace(original).with(ma);
-				else
-					return (Access)original.replace(original).with(bend.createLockedAccess().qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma)));						
+				} else {
+					Access bendAccess = bend.createLockedAccess();
+					ma.affectedByUnlock(bendAccess, ma);
+					return (Access)original.replace(original).with(bendAccess.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma)));
+				}
 				/* Note: We do not distiguish whether source == bend or not, but since we are constructing a virtuall call
 				 *       there is no semantic difference between ((A)this).m() and this.m(), and ((A)B.this).m() and 
 				 *       B.this.m() anyway.
@@ -221,7 +227,10 @@ aspect LockedMethodAccess {
 	}
 	
 	public Access MethodAccessInfo.computeStaticAccess(MethodAccess original, TypeDecl enclosing, List<Expr> args) {
-		return source.createLockedAccess().qualifiesAccess(constructAccess(original, args));
+		Access sourceAccess = source.createLockedAccess();
+		Access methodAccess = constructAccess(original, args);
+		methodAccess.affectedByUnlock(sourceAccess, methodAccess);
+		return sourceAccess.qualifiesAccess(methodAccess);
 	}
 	
 	protected MethodAccess MethodAccessInfo.constructAccess(MethodAccess original, List<Expr> args) {
@@ -244,9 +253,13 @@ aspect LockedMethodAccess {
 				List<Expr> varargs = new List<Expr>();
 				while(i<args.getNumChild())
 					varargs.add(args.getChild(i++));
-				new_args.addChild(new ArrayCreationExpr(tp.createLockedAccess(), new Opt(new ArrayInit(varargs))));
+				Access tpAccess = tp.createLockedAccess();
+				((ASTNode)target).affectedByUnlock(tpAccess);
+				new_args.addChild(new ArrayCreationExpr(tpAccess, new Opt(new ArrayInit(varargs))));
 			} else {
-				new_args.addChild(new CastExpr(tp.createLockedAccess(), arg));
+				Access tpAccess = tp.createLockedAccess();
+				((ASTNode)target).affectedByUnlock(tpAccess);
+				new_args.addChild(new CastExpr(tpAccess, arg));
 			}
 		}
 		return new_args;
@@ -267,8 +280,10 @@ aspect LockedMethodAccess {
 				return ma.parentDot();
 			else if(!qualifier.isTypeAccess() && qualifier.type().equals(bend)) {
 				ma.parentDot().flushCaches();
+				Access sourceAccess = source.createLockedAccess();
+				ma.affectedByUnlock(sourceAccess, ma);
 				return (Access) ma.parentDot().replace(ma.parentDot()).with(
-						new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(ma));
+						new ParExpr(new CastExpr(sourceAccess, qualifier)).qualifiesAccess(ma));
 			}
 			throw new RefactoringException("cannot access method");
 		} else {

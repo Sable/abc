@@ -66,9 +66,8 @@ aspect LockedVariableAccess {
 	inh TypeDecl VarAccess.enclosingType();
 	public void VarAccess.eliminateLockedNames() {
 		if(targetVariable != null)
-			unlock().eliminateLockedNames();
-		else
-			super.eliminateLockedNames();
+			unlock();
+		super.eliminateLockedNames();
 	}
 	public Access VarAccess.unlock() {
 		Expr qual = getQualifier();
@@ -96,7 +95,9 @@ aspect LockedVariableAccess {
 				TypeDecl host = target.hostType();
 				if(host.accessibleFrom(hostType()) && mayAccess((FieldDeclaration)target)) {
 					this.flushCache();
-					return (Access) replace(qual!=null ? parentDot() : this).with(host.createLockedAccess().qualifiesAccess(this)); //??
+					Access hostAccess = host.createLockedAccess();
+					affectedByUnlock(hostAccess, this);
+					return (Access) replace(qual!=null ? parentDot() : this).with(hostAccess.qualifiesAccess(this));
 				}
 			} else if(qual != null && (qual.isThisAccess() || qual.isSuperAccess())) {
 				acc = parentDot().accessVariable(target);
@@ -121,36 +122,49 @@ aspect LockedVariableAccess {
 		ASTNode parent = to_replace.replace(to_replace);
 		
 		if(target.isStatic()) {
-			if (qualifier == null || qualifier.type() != target.hostType())
-				access = target.hostType().createLockedAccess().qualifiesAccess(va);
-			else
+			if (qualifier == null || qualifier.type() != target.hostType()) {
+				Access hostAccess = target.hostType().createLockedAccess();
+				parent.affectedByUnlock(hostAccess, va);
+				access = hostAccess.qualifiesAccess(va);
+			} else {
 				access = va;
+			}
 		} else {
 			if(directlyVisible) {
 				access = va;
 			} else {
 				if(qualifier == null) {
 					if(source.equals(bend)) {
-						if(bend.equals(enclosing)) {                                             // this.f
+						if(bend.equals(enclosing)) {                                         	// this.f
+							parent.affectedByUnlock(va);
 							access = new ThisAccess("this").qualifiesAccess(va);
-						} else {                                                                       // B.this.f
-							access = bend.createLockedAccess().qualifiesAccess(
-									new ThisAccess("this").qualifiesAccess(va));
+						} else {                                                                // B.this.f
+							Access bendAccess = bend.createLockedAccess();
+							parent.affectedByUnlock(bendAccess, va);
+							access = bendAccess.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
 						}
 					} else if(bend.isClassDecl() && source.equals(((ClassDecl)bend).superclass())) {
-						if(bend.equals(enclosing)) {                                             // super.f
+						if(bend.equals(enclosing)) {                                            // super.f
+							parent.affectedByUnlock(va);
 							access = new SuperAccess("super").qualifiesAccess(va);
-						} else {
-							access = bend.createLockedAccess().qualifiesAccess(                               // B.super.f
-									new SuperAccess("super").qualifiesAccess(va));
+						} else {                               									// B.super.f
+							Access bendAccess = bend.createLockedAccess();
+							parent.affectedByUnlock(bendAccess, va);
+							access = bendAccess.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
 						}
 					} else {
-						if(bend.equals(enclosing)) {
-							access = new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)this).f 
+						va.lock(target);
+						if(bend.equals(enclosing)) {											// ((S)this).f
+							Access sourceAccess = source.createLockedAccess();
+							parent.affectedByUnlock(sourceAccess, va);
+							access = new ParExpr(new CastExpr(sourceAccess,                     
 									new ThisAccess("this"))).qualifiesAccess(va);
-						} else {
-							access = new ParExpr(new CastExpr(source.createLockedAccess(),                    // ((S)B.this).f
-									bend.createLockedAccess().qualifiesAccess(
+						} else {																// ((S)B.this).f
+							Access sourceAccess = source.createLockedAccess(),
+								   bendAccess = bend.createLockedAccess();
+							parent.affectedByUnlock(sourceAccess, bendAccess, va);
+							access = new ParExpr(new CastExpr(sourceAccess,                    
+									bendAccess.qualifiesAccess(
 											new ThisAccess("this")))).qualifiesAccess(va);
 						}
 					}
@@ -159,7 +173,9 @@ aspect LockedVariableAccess {
 						throw new RefactoringException("cannot access variable");
 					if(source.equals(qualifier.type()))
 						access = va;
-					access = new ParExpr(new CastExpr(source.createLockedAccess(), qualifier)).qualifiesAccess(va);
+					Access sourceAccess = source.createLockedAccess();
+					parent.affectedByUnlock(sourceAccess, va);
+					access = new ParExpr(new CastExpr(sourceAccess, qualifier)).qualifiesAccess(va);
 				}
 			}
 		}

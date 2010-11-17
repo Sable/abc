@@ -1,0 +1,54 @@
+aspect SmartLocking {
+	// lock overriding of affected methods and name binding of affected declarations and names
+	public void Program.lockOverridingAndNames(Map<Expr, TypeDecl> typeUpdate, Map<MemberDecl, TypeDecl> memberMove,
+			Map<MethodDecl, Collection<MethodDecl>> methodOverriding) {
+		// lock calls that have an argument type changed
+		for(Expr e : typeUpdate.keySet()) {
+			if(e.isArgument()) {
+				Call c = (Call)e.getParent().getParent();
+				// TODO: introduce method Call.lock()
+				if(c instanceof MethodAccess)
+					((MethodAccess)c).lock();
+				else if(c instanceof ConstructorAccess)
+					((ConstructorAccess)c).lock();
+				else if(c instanceof ClassInstanceExpr)
+					((ClassInstanceExpr)c).lock();
+			}
+		}
+		
+		// find names of potentially affected methods, constructors, fields and types
+		Collection<String> potentiallyAffectedMethods = new HashSet<String>();
+		Collection<TypeDecl> potentiallyAffectedConstructors = new HashSet<TypeDecl>();
+		Collection<String> potentiallyAffectedFields = new HashSet<String>();
+		for(Expr e : typeUpdate.keySet()) {
+			if(e.isParameterType()) {
+				Callable c = ((ParameterDeclaration)e.getParent()).getParameterisedCallable();
+				if(c instanceof MethodDecl)
+					potentiallyAffectedMethods.add(((MethodDecl)c).name());
+				else if(c instanceof ConstructorDecl)
+					potentiallyAffectedConstructors.add(((ConstructorDecl)c).hostType());
+			}			
+		}
+		for(MemberDecl md : memberMove.keySet()) {
+			if(md instanceof MethodDecl)
+				potentiallyAffectedMethods.add(((MethodDecl)md).name());
+			if(md instanceof FieldDeclaration)
+				potentiallyAffectedFields.add(((FieldDeclaration)md).name());
+			if(md instanceof MemberTypeDecl)
+				potentiallyAffectedFields.add(((MemberTypeDecl)md).typeDecl().name());
+		}
+		
+		// explicitly set overriding dependencies
+		for(Map.Entry<MethodDecl, Collection<MethodDecl>> entry : methodOverriding.entrySet())
+			entry.getKey().lockOverriding(entry.getValue());
+		
+		// lock existing overriding dependencies and names for the rest
+		lockOverridingDependencies(potentiallyAffectedMethods);
+		lockMethodNames(potentiallyAffectedMethods);
+		lockConstructorCalls(potentiallyAffectedConstructors);
+		lockNames(potentiallyAffectedFields);
+		
+		for(MemberDecl md : memberMove.keySet())
+			md.lockAllNames();
+	}
+}

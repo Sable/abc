@@ -67,15 +67,6 @@ aspect LockedOverriding {
 		setOverridingDependencies(null);
 	}
 	
-	// TODO: get rid of this method; it contains annoying duplications with setOverridingDependencies
-	public void MethodDecl.addOverriddenMethod(MethodDecl md) {
-		if(this.isStatic())
-			throw new RefactoringException("static methods cannot override other methods");
-		if(md.isFinal() || md.isStatic())
-			throw new RefactoringException("cannot override static or final method");
-		lockedOverridingDependencies.add(md.save());
-	}
-	
 	public static LanguageExtension ASTNode.LOCKED_OVERRIDING = new LanguageExtension("locked overriding") {
 		public void eliminateOn(ASTNode n) {
 			n.unlockOverriding();

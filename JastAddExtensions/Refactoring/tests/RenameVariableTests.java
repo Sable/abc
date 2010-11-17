@@ -47,7 +47,7 @@ public class RenameVariableTests extends TestCase {
 			v.rename(new_name);
 			assertEquals(out.toString(), in.toString());
 		} catch(RefactoringException rfe) {
-			fail("Refactoring was supposed to succeed; failed with "+rfe);
+			assertEquals(out.toString(), rfe.getMessage());
 		}
 		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
@@ -65,7 +65,7 @@ public class RenameVariableTests extends TestCase {
 		FieldDeclaration fd = (FieldDeclaration)s.iterator().next();
 		try {
 			fd.rename(new_name);
-			fail("Refactoring was supposed to fail; succeeded with "+in);
+			assertEquals("<failure>", in.toString());
 		} catch(RefactoringException rfe) {
 		}
 		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
@@ -1183,7 +1183,7 @@ public class RenameVariableTests extends TestCase {
     }
 
     public void test41() {
-        testFail(
+        testSucc(
             "p", "A.D", "g", "f",
             Program.fromCompilationUnits(
             new RawCU("A.java", 
@@ -1200,8 +1200,23 @@ public class RenameVariableTests extends TestCase {
                       ""+
                       "class B extends A {"+
                       "  { new D().f = 23; }"+
+                      "}")),
+            Program.fromCompilationUnits(
+            new RawCU("A.java", 
+                      "package p;"+
+                      ""+
+                      "class A {"+
+                      "  class C {"+
+                      "    int f;"+
+                      "  }"+
+                      "  class D extends C {"+
+                      "    int f;"+
+                      "  }"+
                       "}"+
-                      ""))
+                      ""+
+                      "class B extends A {"+
+                      "  { ((C)new D()).f = 23; }"+
+                      "}"))
         );
     }
 
