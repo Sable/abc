@@ -189,15 +189,33 @@ aspect With {
 		if(isQualified()) {
 			super.eliminateWith(qualifiers, hostType);
 		} else {
-			for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
-				Access qual = qualifiers.getChild(i);
-				if(qual.type().memberMethods(name()).contains(decl())) {
-					if(!decl().accessibleFrom(hostType))
-						throw new RefactoringException("method not accessible");
-					qualifyWith((Expr)qual.fullCopyAndDetach());
-					flushCaches();
-					super.eliminateWith(qualifiers, hostType);
-					return;
+			if(this.isMonoCall()) {
+				for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
+					Access qual = qualifiers.getChild(i);
+					Collection<MethodDecl> meths = qual.type().memberMethods(name());
+					if(meths.contains(decl())) {
+						lock();
+						qualifyWith((Expr)qual.fullCopyAndDetach());
+						flushCaches();
+						super.eliminateWith(qualifiers, hostType);
+						return;
+					}
+				}
+			} else if(this.isPolyCall()) {
+				// it doesn't matter if we cannot access precisely the same method
+				// through the qualifier as long as we find a virtually equivalent method
+				for(int i=qualifiers.getNumChild()-1;i>=0;i--) {
+					Access qual = qualifiers.getChild(i);
+					Collection<MethodDecl> meths = qual.type().memberMethods(name());
+					for(MethodDecl md : meths) {
+						if(decl().overrides(md) || md.overrides(decl())) {
+							lock(md);
+							qualifyWith((Expr)qual.fullCopyAndDetach());
+							flushCaches();
+							super.eliminateWith(qualifiers, hostType);
+							return;
+						}
+					}
 				}
 			}
 			throw new RefactoringException("cannot eliminate with");

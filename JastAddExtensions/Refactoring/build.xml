@@ -45,6 +45,7 @@
 	  <include name="**/*.java"/>
 	  <exclude name="tests/eclipse/**/*.java"/>
 	  <exclude name="tests/RelativesTests/**/*.java"/>
+	  <exclude name="tests/jigsaw/*Test.java"/>
 	</javac>
 </target>
 

@@ -545,4 +545,47 @@ public class InlineMethodTests extends TestCase {
     	    "class A<T> { T f(T x) { T y = x; return y; } }",
     		"class B extends A<String> { void m() { String x = \"hello\"; String y = x; } }"));
     }
+    
+    public void test19() {
+    	testSucc(Program.fromClasses(
+    			"class A {" +
+    			"  public long m() {" +
+    			"    return k();" +
+    			"  }" +
+    			"  public long k() {" +
+    			"    return 10;" +
+    			"  }" +
+    			"}",
+    			"class B extends A {" +
+    			"  public long k() {" +
+    			"    return 20;" +
+    			"  }" +
+    			"  public long m() {" +
+    			"    return ((super.m()));" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    	"}"),
+    	Program.fromClasses(
+    			"class A {" +
+    			"  public long m() {" +
+    			"    return k();" +
+    			"  }" +
+    			"  public long k() {" +
+    			"    return 10;" +
+    			"  }" +
+    			"}",
+    			"class B extends A {" +
+    			"  public long m() {" +
+    			"    return k();" +
+    			"  }" +
+    			"  public long k() {" +
+    			"    return 20;" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    	"}"));
+    }
 }

@@ -504,6 +504,13 @@ public class ChangeParameterTypeTests extends TestCase {
 				"}"));
 	}
 	
+	public void test32() {
+		testFail("I", "printStackTrace", 0, "java.lang.Object",
+				Program.fromClasses(
+				"class A extends java.lang.Exception implements I {}",
+				"interface I {void printStackTrace(java.io.PrintStream s);}"));
+	}
+	
 	public void test33() {
 		testSucc("I", "m", 0, "java.lang.Object",
 				Program.fromClasses(
@@ -516,10 +523,37 @@ public class ChangeParameterTypeTests extends TestCase {
 				"interface I {void m(Object s);}"));
 	}
 	
-	public void test32() {
-		testFail("I", "printStackTrace", 0, "java.lang.Object",
+	public void test34() {
+		testSucc("X.C", "foo", 0, "X.B",
 				Program.fromClasses(
-				"class A extends java.lang.Exception implements I {}",
-				"interface I {void printStackTrace(java.io.PrintStream s);}"));
+				"interface I { void foo(X.C p); }",
+				"class X {" +
+				"  private static class B { public void foo() { } }" +
+				"  static class C extends B implements I {" +
+				"    public void foo(C q) { q.foo(); }" +
+				"    public void foo(I r) { foo(this); }" +
+				"  }" +
+				"}",
+				"class Outer {" +
+				"  static class B { }" +
+				"  class Inner extends X {" +
+				"    B f;" +
+				"  }" +
+				"}"),
+				Program.fromClasses(
+				"interface I { void foo(X.B p); }",
+				"class X {" +
+				"  static class B { public void foo() { } }" +
+				"  static class C extends B implements I {" +
+				"    public void foo(B q) { q.foo(); }" +
+				"    public void foo(I r) { foo((B)this); }" +
+				"  }" +
+				"}",
+				"class Outer {" +
+				"  static class B { }" +
+				"  class Inner extends X {" +
+				"    Outer.B f;" +
+				"  }" +
+				"}"));
 	}
 }

@@ -521,4 +521,41 @@ public class PushDownMethodTests extends TestCase {
     			"    }" +
     			"}"));
     }
+    
+    public void test39() {
+    	testSucc(Program.fromClasses(
+    			"class A {" +
+    			"  public long m() {" +
+    			"    return k();" +
+    			"  }" +
+    			"  public long k() {" +
+    			"    return 10;" +
+    			"  }" +
+    			"}",
+    			"class B extends A {" +
+    			"  public long k() {" +
+    			"    return 20;" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class A {" +
+    			"  public long k() {" +
+    			"    return 10;" +
+    			"  }" +
+    			"}",
+    			"class B extends A {" +
+    			"  public long m() {" +
+    			"    return k();" +
+    			"  }" +
+    			"  public long k() {" +
+    			"    return 20;" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}"));
+    }
 }
