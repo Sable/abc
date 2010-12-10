@@ -174,7 +174,11 @@ aspect LockedVariableAccess {
 					if(source.equals(qualifier.type()))
 						access = va;
 					Access sourceAccess = source.createLockedAccess();
+					va.lock(target);
 					parent.affectedByUnlock(sourceAccess, va);
+					// "super" is treated as a normal expression in JastAddJ, but it actually isn't
+					if(qualifier.isSuperAccess())
+						qualifier = qualifier.convertSuperToThis();
 					access = new ParExpr(new CastExpr(sourceAccess, qualifier)).qualifiesAccess(va);
 				}
 			}

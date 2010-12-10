@@ -1498,4 +1498,158 @@ public class RenameVariableTests extends TestCase {
     			"package q;" +
     			"public class Sub extends p.Super { int z = ((p.SuperSuper)this).y; }")));
     }
+    
+    public void test45() {
+    	testSucc("p", "A", "n", "k",
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"class A {" +
+    			"  protected int n = 7;" +
+    			"}" +
+    			"class B extends A {" +
+    			"  protected int k = -29;" +
+    			"}" +
+    			"class C extends B {" +
+    			"  public long m() {" +
+    			"    return super.n;" +
+    			"  }" +
+    			"}")),
+   			Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"class A {" +
+    			"  protected int k = 7;" +
+    			"}" +
+    			"class B extends A {" +
+    			"  protected int k = -29;" +
+    			"}" +
+    			"class C extends B {" +
+    			"  public long m() {" +
+    			"    return ((A)this).k;" +
+    			"  }" +
+    			"}")));
+    }
+    
+    public void test46() {
+    	testSucc("p", "A", "n", "k",
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  protected int n = -31;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  int k = 17;" +
+    			"  public long m() {" +
+    			"    return this.n;" +
+    			"  }" +
+    			"}")),
+   			Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k = -31;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  int k = 17;" +
+    			"  public long m() {" +
+    			"    return ((A)this).k;" +
+    			"  }" +
+    			"}")));
+    }
+    
+    public void test47() {
+    	testSucc("q", "B", "n", "k",
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  protected int k = -76;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  int n = -74;" +
+    			"}"),
+    		new RawCU("C.java",
+    			"package r;" +
+    			"import q.*;" +
+    			"public class C extends B {" +
+    			"  public long m() {" +
+    			"    return k;" +
+    			"  }" +
+    			"}")),
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k = -76;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  int k = -74;" +
+    			"}"),
+    		new RawCU("C.java",
+    			"package r;" +
+    			"import q.*;" +
+    			"public class C extends B {" +
+    			"  public long m() {" +
+    			"    return ((p.A)this).k;" +
+    			"  }" +
+    			"}")));
+    }
+    
+    public void test48() {
+    	testSucc("q", "B", "n", "k",
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k = -76;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  public int n = -74;" +
+    			"}"),
+    		new RawCU("C.java",
+    			"package r;" +
+    			"import q.*;" +
+    			"public class C extends B {" +
+    			"  public long m() {" +
+    			"    return k;" +
+    			"  }" +
+    			"}")),
+    		Program.fromCompilationUnits(
+    		new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k = -76;" +
+    			"}"),
+    		new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  public int k = -74;" +
+    			"}"),
+    		new RawCU("C.java",
+    			"package r;" +
+    			"import q.*;" +
+    			"public class C extends B {" +
+    			"  public long m() {" +
+    			"    return ((p.A)this).k;" +
+    			"  }" +
+    			"}")));
+    }
 }
