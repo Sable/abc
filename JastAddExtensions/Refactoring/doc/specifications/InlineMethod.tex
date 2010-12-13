@@ -42,16 +42,21 @@ see Algorithms~\ref{alg:InlineMethod}, \ref{alg:InlineMethodAccess}, \ref{alg:In
 \caption{$\refactoring{Inline To Anonymous Method}(am \colon \type{MethodAccess}) : \type{AnonymousMethod}$}
 \label{alg:InlineToAnonymousMethod}
 \begin{algorithmic}[1]
-\REQUIRE
-\ENSURE adds \code{with} statement, locked names
+\REQUIRE Java $\setminus$ \code{synchronized} qualifier, implicit \code{this} qualification
+\ENSURE Java $\cup$ \code{with} statement, locked names
 \medskip
+  \STATE $A \leftarrow \text{host class}$
   \STATE \assert $\util{target}(ma)$ is unambiguous
   \STATE $target \leftarrow \util{target}(ma)$
   \STATE \assert $target$ has a body
-  \STATE $am \leftarrow$ copy target as anonymous method, with locked names, 
-  			unfolded synchronize and arguments from $ma$
-  \IF{$ma$ is right child of $\type{Dot}$}
-    \STATE add \code{with} statement around the body of $am$ \\ mapping \code{this} to qualifier of $ma$
+  \STATE lock names in $target$
+  \STATE $am \leftarrow$ copy $target$ as anonymous method with arguments from $ma$
+  \IF{$ma$ is a \code{super} call}
+    \STATE \assert body of $am$ does not reference enclosing instances
+    \STATE adjust virtual calls in body of $am$ to bind to corresponding methods of $A$
+  \ELSIF{$ma$ is qualified}
+    \STATE $q \leftarrow \text{qualifier}$
+    \STATE add \code{with(q)} statement around the body of $am$
     \STATE replace qualifier and the access with $am$
   \ELSE
     \STATE replace $ma$ with $am$

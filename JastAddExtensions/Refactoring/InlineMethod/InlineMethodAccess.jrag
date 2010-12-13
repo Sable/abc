@@ -10,18 +10,31 @@ aspect InlineMethodAccess {
 		target.unfoldSynchronized();
 		target.expatiateQualifiers();
 		target.lockAllNames();
-		AnonymousMethod anon = target.asAnonymousMethod();
+		AnonymousMethod anon;
 		bundleQualifier();
 		if(isRightChildOfDot()) {
 			Expr qual = qualifier();
-			if(!(qual instanceof ThisAccess)) {
-				if(qual.isSuperAccess())
-					qual = qual.convertSuperToThis();
+			if(qual.isSuperAccess()) {
+				TypeDecl sup = qual.type();
+				// construct typeUpdate map
+				Map<Expr, TypeDecl> typeUpdate = new HashMap<Expr, TypeDecl>();
+				for(ThisAccess acc : target.collectThisAccesses()) {
+					if(acc.type() != sup)
+						throw new RefactoringException("inline cannot preserve enclosing instances");
+					typeUpdate.put(acc, hostType());
+				}
+				Program.adjustVirtualCalls(typeUpdate);
+				anon = target.asAnonymousMethod();
+			} else if(!(qual instanceof ThisAccess)) {
 				qual.lockAllNames();
+				anon = target.asAnonymousMethod();
 				anon.setBlock(new Block(new List<Stmt>().add(new WithStmt((Access)qual, anon.getBlock()))));
+			} else {
+				anon = target.asAnonymousMethod();
 			}
 			parentDot().replaceWith(anon);
 		} else {
+			anon = target.asAnonymousMethod();
 			replaceWith(anon);
 		}
 		target.replaceWith(target_cp);

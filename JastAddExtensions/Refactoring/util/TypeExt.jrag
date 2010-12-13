@@ -13,6 +13,7 @@ aspect TypeExt {
 	public ClassDecl AnonymousDecl.asNamedClass(String name, int visibility) {
 		Modifiers m = getModifiers();
 		m.setVisibility(visibility);
+		lockAllNames();
 		ClassDecl cd = new ClassDecl(m, name, new Opt<Access>(), new List<Access>(), getBodyDecls());
 		cd.setVisibilityOfImplicitConstructor(visibility);
 		if(superType().isClassDecl() && !superType().isObject())
@@ -38,9 +39,7 @@ aspect TypeExt {
 					if(ctor.isChained())
 						continue;
 					Expr init = fd.getInit();
-					Expr init_copy = (Expr)init.fullCopyAndDetach();
-					init.lockAllNames();
-					fd.setInit(init_copy);
+					fd.setInit(null);
 					ctor.getBlock().insertStmt(0, AssignExpr.asStmt(fd.createLockedAccess(), init));
 				}
 				fd.setInitOpt(new Opt());
