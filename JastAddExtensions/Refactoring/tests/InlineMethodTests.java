@@ -588,4 +588,23 @@ public class InlineMethodTests extends TestCase {
     			"  }" +
     	"}"));
     }
+    
+    public void test20() {
+    	testSucc(Program.fromClasses(
+    			"class A {" +
+    			"  int m() { return A.this.k(); }" +
+    			"  int k() { return 23; }" +
+    			"}",
+    			"class B extends A {" +
+    			"  { inline: m(); }" +
+    			"}"),
+    			Program.fromClasses(
+    			"class A {" +
+    			"  int m() { return A.this.k(); }" +
+    			"  int k() { return 23; }" +
+    			"}",
+    			"class B extends A {" +
+    			"  { k(); }" +
+    			"}"));
+    }
 }

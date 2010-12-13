@@ -558,4 +558,122 @@ public class PushDownMethodTests extends TestCase {
     			"  }" +
     			"}"));
     }
+    
+    public void test40() {
+    	testSucc(Program.fromClasses(
+    			"class A {" +
+    			"  long m() { return A.this.k(); }" +
+    			"  long k() { return 1; }" +
+    			"}",
+    			"class B extends A { }"),
+    			Program.fromClasses(
+    			"class A {" +
+    			"  long k() { return 1; }" +
+    			"}",
+    			"class B extends A {" +
+    			"  long m() { return k(); }" +
+    			"}"));
+    }
+    
+    public void test41() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int m() {" +
+    			"    return new A().k();" +
+    			"  }" +
+    			"  protected int k() {" +
+    			"    return 1;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A { }")),
+		Program.fromCompilationUnits(
+    			new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k() {" +
+    			"    return 1;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  public int m() {" +
+    			"    return new A().k();" +
+    			"  }" +
+    			"}")));
+    }
+
+    public void test42() {
+    	testSucc(Program.fromClasses(
+    			"class A {" +
+    			"  long m() { return k(); }" +
+    			"  long k() { return 1; }" +
+    			"}",
+    			"class B extends A {" +
+    			"  long k() { return 2; }" +
+    			"  long test() { return m(); }" +
+				"}"),
+    			Program.fromClasses(
+    			"class A {" +
+    			"  long k() { return 1; }" +
+    			"}",
+    			"class B extends A {" +
+    			"  long k() { return 2; }" +
+    			"  long m() { return k(); }" +
+    			"  long test() { return m(); }" +
+    			"}"));
+    }    
+    
+    public void test43() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int m() {" +
+    			"    return new A().k(2);" +
+    			"  }" +
+    			"  protected int k(int a) {" +
+    			"    return 1;" +
+    			"  }" +
+    			"  public int k(long a) {" +
+    			"    return 2;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  int test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")),
+		Program.fromCompilationUnits(
+    			new RawCU("A.java",
+    			"package p;" +
+    			"public class A {" +
+    			"  public int k(int a) {" +
+    			"    return 1;" +
+    			"  }" +
+    			"  public int k(long a) {" +
+    			"    return 2;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("B.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class B extends A {" +
+    			"  public int m() {" +
+    			"    return new A().k(2);" +
+    			"  }" +
+    			"  int test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")));
+    }
 }

@@ -941,4 +941,143 @@ public class PullUpMethodTests extends TestCase {
     			"  }" +
     			"}"));
     }
+    
+    public void test59() {
+    	testFail(Program.fromCompilationUnits(
+    			new RawCU("Super.java",
+    			"package p;" +
+    			"public class Super { }"),
+    			new RawCU("A.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class A extends Super {" +
+    			"  public long m() {" +
+    			"    return A.this.k(2);" +
+    			"  }" +
+    			"  public long k(long a) {" +
+    			"    return 1;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("B.java",
+    			"package r;" +
+    			"public class B {" +
+    			"  protected long k(long a) {" +
+    			"    return 3;" +
+    			"  }" +
+    			"}")));
+    }
+    
+    public void test60() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper {" +
+    			"  protected long k(long a) {" +
+    			"    return 3;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("Super.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class Super extends SuperSuper {" +
+    			"}"),
+    			new RawCU("A.java",
+    			"package p;" +
+    			"import q.*;" +
+    			"public class A extends Super {" +
+    			"  public long m() {" +
+    			"    return new SuperSuper().k(2);" +
+    			"  }" +
+    			"  protected long k(int a) {" +
+    			"    return 1;" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")),
+                 Program.fromCompilationUnits(
+    			new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper {" +
+    			"  public long k(long a) {" +
+    			"    return 3;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("Super.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class Super extends SuperSuper {" +
+    			"  public long m() {" +
+    			"    return new SuperSuper().k(2);" +
+    			"  }" +
+    			"}"),
+    			new RawCU("A.java",
+    			"package p;" +
+    			"import q.*;" +
+    			"public class A extends Super {" +
+    			"  protected long k(int a) {" +
+    			"    return 1;" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")));
+    }
+    
+    public void test61() {
+    	testSucc(Program.fromCompilationUnits(
+    			new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper {" +
+    			"  public long k(int a) {" +
+    			"    return 10;" +
+    			"  }" +
+    			"  public long k(long a) {" +
+    			"    return 20;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("Super.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class Super extends SuperSuper {" +
+    			"}"),
+    			new RawCU("A.java",
+    			"package p;" +
+    			"import q.*;" +
+    			"public class A extends Super {" +
+    			"  public long m() {" +
+    			"    return new SuperSuper().k(2);" +
+    			"  }" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")),
+                 Program.fromCompilationUnits(
+    			new RawCU("SuperSuper.java",
+    			"package p;" +
+    			"public class SuperSuper {" +
+    			"  protected long k(int a) {" +
+    			"    return 10;" +
+    			"  }" +
+    			"  public long k(long a) {" +
+    			"    return 20;" +
+    			"  }" +
+    			"}"),
+    			new RawCU("Super.java",
+    			"package q;" +
+    			"import p.*;" +
+    			"public class Super extends SuperSuper {" +
+    			"  public long m() {" +
+    			"    return new SuperSuper().k(2);" +
+    			"  }" +
+    			"}"),
+    			new RawCU("A.java",
+    			"package p;" +
+    			"import q.*;" +
+    			"public class A extends Super {" +
+    			"  public long test() {" +
+    			"    return m();" +
+    			"  }" +
+    			"}")));
+    }
 }
