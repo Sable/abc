@@ -43,6 +43,6 @@ aspect AddParameter {
 	
 	public void MethodDecl.doAddParameter(ParameterDeclaration pd, int idx, Literal value, boolean createDelegate) {
 		addParameter(pd, idx, value, createDelegate);
-		programRoot().eliminate(RETURN_VOID, LOCKED_OVERRIDING, LOCKED_NAMES);
+		programRoot().eliminate(RETURN_VOID, LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 }
