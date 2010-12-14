@@ -1,0 +1,39 @@
+<!-- RTXF: refactoring test exchange format -->
+<!ELEMENT testsuite (testcase)*>
+<!ATTLIST testsuite name CDATA #REQUIRED>
+
+<!ELEMENT testcase (refactoring, program, result)>
+<!ATTLIST testcase comment CDATA "">
+
+<!ELEMENT refactoring (rename)>
+
+<!ELEMENT rename (pkgref | typeref | methodref | fieldref | tempref)>
+<!ATTLIST rename newname CDATA #REQUIRED>
+
+<!ELEMENT pkgref EMPTY>
+<!ATTLIST pkgref name CDATA #REQUIRED>
+
+<!ELEMENT typeref EMPTY>
+<!ATTLIST typeref name CDATA #REQUIRED>
+                  
+<!ELEMENT methodref EMPTY>
+<!ATTLIST methodref host CDATA #REQUIRED
+                    signature CDATA #REQUIRED>
+
+<!ELEMENT fieldref EMPTY>
+<!ATTLIST fieldref host CDATA #REQUIRED
+	           name CDATA #REQUIRED>
+
+<!ELEMENT tempref EMPTY>
+<!ATTLIST tempref host CDATA #REQUIRED
+	          name CDATA #REQUIRED>
+
+<!ELEMENT program (cu+ | typedecl+ | bodydecl+ | stmt+)>
+<!ELEMENT cu (#PCDATA)>
+<!ELEMENT typedecl (#PCDATA)>
+<!ELEMENT bodydecl (#PCDATA)>
+<!ELEMENT stmt (#PCDATA)>
+<!ATTLIST cu name CDATA #REQUIRED>
+
+<!ELEMENT result (program)*>
+<!ATTLIST result mayfail (yes | no) "no">

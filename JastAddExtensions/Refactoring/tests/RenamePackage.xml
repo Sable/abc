@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE testsuite SYSTEM "rtxf.dtd">
+<?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
+<testsuite name="Rename Package">
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/A.java">
+package q;
+
+class A  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/r/A.java">
+package p.r;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/r/A.java">
+package q.r;
+
+class A  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+    </cu>
+    <cu name="r/B.java">
+package r;
+
+class B extends p.A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/A.java">
+package q;
+
+public class A  {
+}
+      </cu>
+      <cu name="r/B.java">
+package r;
+
+class B extends q.A  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+    </cu>
+    <cu name="r/B.java">
+package r;
+import p.A;
+
+class B extends A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="r/B.java">
+package r;
+import q.A;
+
+class B extends A  {
+}
+      </cu>
+      <cu name="q/A.java">
+package q;
+
+public class A  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q.r">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/r/A.java">
+package q.r;
+
+class A  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase comment="Fails because package exists.">
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+    <cu name="q/B.java">
+package q;
+
+class B  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="q/r/B.java">
+package q.r;
+
+class B  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q.r">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+    <cu name="q/B.java">
+package q;
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/r/A.java">
+package q.r;
+
+class A  {
+}
+      </cu>
+      <cu name="q/B.java">
+package q;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q.r">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+    <cu name="q/B.java">
+package q;
+
+class r  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="q">
+      <pkgref name="p"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="r/B.java">
+package r;
+
+class B extends p.A  {
+}
+
+class q  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+</testsuite>

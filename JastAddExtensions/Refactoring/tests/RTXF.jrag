@@ -1,0 +1,300 @@
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+aspect RTXF {
+	class RTXF {
+		public static String sanitise(String s) {
+			return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
+		}
+		
+		public static String fieldref(FieldDeclaration fd) {
+			return "<fieldref host=\"" + sanitise(fd.hostType().rtxfId()) + "\" name=\"" + sanitise(fd.name()) + "\"/>";
+		}
+		
+		public static String tempref(Variable v) {
+			BodyDecl bd = null;
+			if(v instanceof VariableDeclaration)
+				bd = ((VariableDeclaration)v).hostBodyDecl();
+			else if(v instanceof ParameterDeclaration)
+				bd = ((ParameterDeclaration)v).hostBodyDecl();
+			else
+				throw new Error("cannot create tempref for " + v);
+			return "<tempref host=\"" + sanitise(bd.rtxfId()) + "\" name=\"" + sanitise(v.name()) + "\"/>";
+		}
+		
+		public static String program(int indent, Program prog) {
+			StringBuffer res = new StringBuffer();
+			res.append(indent(indent) + "<program>\n");
+			for(Iterator<CompilationUnit> iter = prog.compilationUnitIterator(); iter.hasNext();) {
+				CompilationUnit cu = iter.next();
+				if(cu.fromSource()) {
+					String path = cu.getPackageDecl();
+					if(!path.equals(""))
+						path = path + ".";
+					res.append(indent(indent+2) + "<cu name=\"" + path.replace('.', '/') + sanitise(cu.getID()) + ".java\">\n");
+					res.append(sanitise(cu.toString()) + "\n");
+					res.append(indent(indent+2) + "</cu>\n");
+				}
+			}
+			res.append(indent(indent) + "</program>\n");
+			return res.toString();
+		}
+		
+		public static String indent(int indent) {
+			StringBuffer res = new StringBuffer();
+			for(int i=0;i<indent;++i)
+				res.append(' ');
+			return res.toString();
+		}
+		
+		public static String result(int indent, boolean mayfail, Program... progs) {
+			StringBuffer res = new StringBuffer();
+			res.append(indent(indent) + "<result" + (mayfail ? " mayfail=\"yes\"" : "")+ ">\n");
+			for(Program prog : progs)
+				res.append(program(indent+2, prog));
+			res.append(indent(indent) + "</result>\n");
+			return res.toString();
+		}
+		
+		public static void compare(rtxf.Result expected, Object actual) {
+			if(actual instanceof String) {
+				if(expected.getMayfail().equals("yes"))
+					return;
+				throw new junit.framework.ComparisonFailure(null, expected.getProgram().get(0).toString(), (String)actual);
+			} else {
+				String actual_prog = actual.toString();
+				String expected_prog = null;
+				for(rtxf.Program prog : expected.getProgram()) {
+					expected_prog = Program.fromRTXF(prog).toString();
+					if(expected_prog.equals(actual_prog))
+						return;
+				}
+				throw new junit.framework.ComparisonFailure(null, expected_prog == null ? "<failure>" : expected_prog, actual_prog);
+			}
+		}
+		
+		public static TestSuite makeSuite(String path) {
+			TestSuite suite = new TestSuite();
+			
+			try {
+				JAXBContext jc = JAXBContext.newInstance("rtxf");
+				Unmarshaller unmarshaller = jc.createUnmarshaller();
+				Object res = unmarshaller.unmarshal(new File(path));
+				
+				assert(res instanceof rtxf.Testsuite);
+				java.util.List<rtxf.Testcase> tcs = ((rtxf.Testsuite)res).getTestcase();
+				for(int i=0; i<tcs.size(); ++i) {
+					final rtxf.Testcase tc = tcs.get(i);
+					final rtxf.Rename r = tc.getRefactoring().getRename();
+					if(r == null)
+						throw new Error("cannot handle test");
+					suite.addTest(new TestCase("test" + i) {
+						public void runTest() {
+							rtxf.Program prog = tc.getProgram();
+							Program in = Program.fromRTXF(prog);
+							assertNotNull(in);
+							if(r.getFieldref() != null) {
+								FieldDeclaration fd = in.resolveFieldRef(r.getFieldref());
+								assertNotNull(fd);
+								try {
+									fd.rename(r.getNewname());
+									RTXF.compare(tc.getResult(), in);
+								} catch(RefactoringException rfe) {
+									RTXF.compare(tc.getResult(), rfe.getMessage());
+								}
+							} else if(r.getTempref() != null) {
+								Variable v = in.resolveTempRef(r.getTempref());
+								assertNotNull(v);
+								try {
+									v.rename(r.getNewname());
+									RTXF.compare(tc.getResult(), in);
+								} catch(RefactoringException rfe) {
+									RTXF.compare(tc.getResult(), rfe.getMessage());
+								}
+							} else if(r.getTyperef() != null) {
+								TypeDecl td = in.resolveTypeRef(r.getTyperef().getName());
+								assertNotNull(td);
+								try {
+									td.rename(r.getNewname());
+									RTXF.compare(tc.getResult(), in);
+								} catch(RefactoringException rfe) {
+									RTXF.compare(tc.getResult(), rfe.getMessage());
+								}
+							} else if(r.getMethodref() != null) {
+								MethodDecl md = in.resolveMethodRef(r.getMethodref());
+								assertNotNull(md);
+								try {
+									md.rename(r.getNewname());
+									RTXF.compare(tc.getResult(), in);
+								} catch(RefactoringException rfe) {
+									RTXF.compare(tc.getResult(), rfe.getMessage());
+								}
+							} else if(r.getPkgref() != null) {
+								try {
+									in.getPackageDecl(r.getPkgref().getName()).rename(r.getNewname());
+									RTXF.compare(tc.getResult(), in);
+								} catch(RefactoringException rfe) {
+									RTXF.compare(tc.getResult(), rfe.getMessage());
+								}
+							} else {
+								fail("Cannot handle rename.");
+							}
+						}
+					});
+				}
+			} catch (JAXBException e) {
+				throw new Error(e);
+			}
+			
+			return suite;
+		}
+	}
+	
+	public String TypeDecl.rtxfId() {
+		throw new Error("cannot compute RTXF id for " + fullName());
+	}
+	
+	public String ClassDecl.rtxfId() {
+		if(isTopLevelType())
+			return fullName();
+		if(getParent() instanceof MemberClassDecl)
+			return enclosingType().rtxfId() + "." + name(); 
+		if(getParent() instanceof LocalClassDeclStmt)
+			return hostBodyDecl().rtxfId() + "#" + name();
+		return super.rtxfId();
+	}
+	
+	public String InterfaceDecl.rtxfId() {
+		if(isTopLevelType())
+			return fullName();
+		if(getParent() instanceof MemberInterfaceDecl)
+			return enclosingType().rtxfId() + "." + name();
+		return super.rtxfId();
+	}
+	
+	public String GenericElement.rtxfId() {
+		return super.rtxfId();
+	}
+	
+	public String TypeVariable.rtxfId() {
+		return owner().rtxfId() + "@" + name();
+	}
+	
+	public String BodyDecl.rtxfId() {
+		return hostType().rtxfId();
+	}
+	
+	public String MethodDecl.rtxfId() {
+		return hostType().rtxfId() + "." + signature();
+	}
+	
+	public String ConstructorDecl.rtxfId() {
+		return hostType().rtxfId() + "." + signature();
+	}
+	
+	public static Program Program.fromRTXF(rtxf.Program prog) {
+		if(prog.getCu() != null) {
+			RawCU[] cus = new RawCU[prog.getCu().size()];
+			for(int i=0;i<cus.length;++i) {
+				rtxf.Cu cu = prog.getCu().get(i);
+				String name = cu.getName().substring(cu.getName().lastIndexOf('/')+1);
+				cus[i] = new RawCU(name, cu.getContent());
+			}
+			return Program.fromCompilationUnits(cus);
+		}
+		if(prog.getTypedecl() != null) {
+			String[] strs = new String[prog.getTypedecl().size()];
+			for(int i=0;i<strs.length;++i)
+				strs[i] = prog.getTypedecl().get(i).getContent();
+			return Program.fromClasses(strs);
+		}
+		if(prog.getBodydecl() != null) {
+			String[] strs = new String[prog.getBodydecl().size()];
+			for(int i=0;i<strs.length;++i)
+				strs[i] = prog.getBodydecl().get(i).getContent();
+			return Program.fromBodyDecls(strs);
+		}
+		if(prog.getStmt() != null) {
+			String[] strs = new String[prog.getStmt().size()];
+			for(int i=0;i<strs.length;++i)
+				strs[i] = prog.getStmt().get(i).getContent();
+			return Program.fromStmts(strs);
+		}
+		return null;
+	}
+	
+	public FieldDeclaration Program.resolveFieldRef(rtxf.Fieldref fr) {
+		String host = fr.getHost();
+		TypeDecl td = resolveTypeRef(host);
+		if(td == null)
+			return null;
+		SimpleSet fields = td.localFields(fr.getName());
+		return fields.isSingleton() ? (FieldDeclaration)fields.iterator().next() : null;
+	}
+	
+	public MethodDecl Program.resolveMethodRef(rtxf.Methodref mr) {
+		String host = mr.getHost();
+		TypeDecl td = resolveTypeRef(host);
+		if(td == null)
+			return null;
+		SimpleSet meths = td.localMethodsSignature(mr.getSignature());
+		return meths.isSingleton() ? (MethodDecl)meths.iterator().next() : null;
+	}
+	
+	public Variable Program.resolveTempRef(rtxf.Tempref tr) {
+		String host = tr.getHost();
+		ASTNode nd = resolveTypeOrMethodRef(host);
+		return nd == null ? null : nd.findVariable(tr.getName());
+	}
+	
+	public TypeDecl Program.resolveTypeRef(String ref) {
+		if(ref.contains("#")) {
+			int idx = ref.lastIndexOf('#');
+			String outer = ref.substring(0, idx);
+			String inner = ref.substring(idx+1);
+			if(inner.contains("."))
+				return null;
+			ASTNode nd = resolveTypeOrMethodRef(outer);
+			return nd == null ? null : nd.findSimpleType(inner);
+		} else if(ref.contains("@")) {
+			int idx = ref.indexOf('@');
+			String outer = ref.substring(0, idx);
+			String inner = ref.substring(idx+1);
+			if(inner.contains("@") || inner.contains("#") || inner.contains("."))
+				return null;
+			ASTNode nd = resolveTypeOrMethodRef(outer);
+			if(!(nd instanceof GenericElement))
+				return null;
+			GenericElement ge = (GenericElement)nd;
+			for(int i=0;i<ge.getNumTypeParameter();++i)
+				if(ge.getTypeParameter(i).name().equals(inner))
+					return ge.getTypeParameter(i);
+			return null;
+		} else {
+			return findType(ref);
+		}
+	}
+	
+	public MethodDecl Program.resolveMethodRef(String ref) {
+		int idx1 = ref.lastIndexOf('(');
+		String sub = ref.substring(0, idx1);
+		int idx2 = sub.lastIndexOf('.');
+		if(idx2 == -1)
+			return findMethodBySig(ref);
+		String tpname = ref.substring(0, idx2);
+		String sig = ref.substring(idx2+1);
+		TypeDecl tp = resolveTypeRef(tpname);
+		if(tp == null)
+			return null;
+		SimpleSet s = tp.localMethodsSignature(sig);
+		return s.isSingleton() ? (MethodDecl)s.iterator().next() : null; 
+	}
+	
+	public ASTNode Program.resolveTypeOrMethodRef(String ref) {
+		return ref.contains("(") ? resolveMethodRef(ref) : resolveTypeRef(ref);
+	}
+}

@@ -1,0 +1,1426 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE testsuite SYSTEM "rtxf.dtd">
+<?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
+<testsuite name="Rename Method">
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  float n() {
+    return 1.0F;
+  }
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  float n(char c) {
+    return 1.0F;
+  }
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  float n(char c) {
+    return 1.0F;
+  }
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+class B  {
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void n() {
+  }
+}
+
+class B  {
+  void m() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void n() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void m() {
+  }
+}
+
+class Z  {
+  String m(int i) {
+    return &quot;aluis&quot;;
+  }
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  void n() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+
+class Z  {
+  String m(int i) {
+    return &quot;aluis&quot;;
+  }
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void m() {
+  }
+}
+
+class Z  {
+  String n() {
+    return &quot;aluis&quot;;
+  }
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void m() {
+  }
+}
+
+class Z  {
+  String n(int i) {
+    return &quot;aluis&quot;;
+  }
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  void n() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+
+class Z  {
+  String n(int i) {
+    return &quot;aluis&quot;;
+  }
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+    n();
+  }
+}
+
+class Z  {
+  public void n() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  static void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  static void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  static void m() {
+  }
+}
+
+class B  {
+  void m() {
+    A a = new A();
+    a.n();
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  static void n() {
+  }
+}
+
+class B  {
+  void m() {
+    A a = new A();
+    ((Z)a).n();
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+}
+
+class B  {
+  void m() {
+    A a = new A();
+    a.n();
+  }
+}
+
+class Z  {
+  void n() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+  
+  class B  {
+    void n() {
+    }
+    void p() {
+      m();
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void n() {
+  }
+  
+  class B  {
+    void n() {
+    }
+    void p() {
+      A.this.n();
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+  
+  class B  {
+    void n() {
+    }
+    void p() {
+      A.this.m();
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void n() {
+  }
+  
+  class B  {
+    void n() {
+    }
+    void p() {
+      A.this.n();
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+  
+  class B  {
+    void n() {
+    }
+    void p() {
+      A.this.n();
+    }
+  }
+}
+
+class Z  {
+  void n() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  static {
+    n();
+  }
+  static void m() {
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  static {
+    Z.n();
+  }
+  static void n() {
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  static void m() {
+  }
+}
+
+class B extends A  {
+  {
+    n();
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  static void n() {
+  }
+}
+
+class B extends A  {
+  {
+    Z.n();
+  }
+}
+
+class Z  {
+  static void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  {
+    n();
+  }
+}
+
+class Z  {
+  void n() {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  static int m() {
+    return 23;
+  }
+  
+  static class B  {
+    int k = m();
+    static void n(int i) {
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  static int n() {
+    return 23;
+  }
+  
+  static class B  {
+    int k = A.n();
+    static void n(int i) {
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Z  {
+  static int m() {
+    return 23;
+  }
+}
+
+class B extends A  {
+  
+  class C  {
+    int k = n();
+  }
+}
+
+class Z  {
+  static int n() {
+    return 72;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Z  {
+  static int n() {
+    return 23;
+  }
+}
+
+class B extends A  {
+  
+  class C  {
+    int k = Z.n();
+  }
+}
+
+class Z  {
+  static int n() {
+    return 72;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  int m() {
+    return 23;
+  }
+}
+
+class B  {
+  A a;
+  int p() {
+    return a.m();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  int n() {
+    return 23;
+  }
+}
+
+class B  {
+  A a;
+  int p() {
+    return a.n();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  boolean[] m() {
+    return null;
+  }
+}
+
+class B extends A  {
+  void p() {
+    m();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  boolean[] n() {
+    return null;
+  }
+}
+
+class B extends A  {
+  void p() {
+    n();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  boolean[] m(int i) {
+    return null;
+  }
+  
+  class B extends Z  {
+    void p() {
+      m(42);
+    }
+  }
+}
+
+class Z  {
+  void n() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  boolean[] n(int i) {
+    return null;
+  }
+  
+  class B extends Z  {
+    void p() {
+      A.this.n(42);
+    }
+  }
+}
+
+class Z  {
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="valueOf">
+      <methodref host="A" signature="m(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static String m(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(valueOf(23));
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static String valueOf(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(String.valueOf(23));
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="valueOf">
+      <methodref host="A" signature="m(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static String m(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(String.valueOf(23));
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static String valueOf(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(String.valueOf(23));
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="valueOf">
+      <methodref host="A" signature="m(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static int String;
+  static String m(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(valueOf(23));
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static int String;
+  static String valueOf(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(java.lang.String.valueOf(23));
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="valueOf">
+      <methodref host="A" signature="m(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="A.java">
+import static java.lang.String.*;
+
+public class A  {
+  static int String;
+  static char java;
+  static String m(int i) {
+    return &quot;42&quot;;
+  }
+  public static void main(String[] args) {
+    System.out.println(valueOf(23));
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  public void m() {
+    System.out.println(42);
+  }
+}
+
+class B  {
+  static void n() {
+    System.out.println(23);
+  }
+  
+  class C extends A  {
+    {
+      n();
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  public void n() {
+    System.out.println(42);
+  }
+}
+
+class B  {
+  static void n() {
+    System.out.println(23);
+  }
+  
+  class C extends A  {
+    {
+      B.n();
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="q.B" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="q/B.java">
+package q;
+
+public class B extends p.A  {
+  void m() {
+  }
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="q/B.java">
+package q;
+
+public class B extends p.A  {
+  void n() {
+  }
+}
+      </cu>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  void m() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  static String m() {
+    return &quot;hello&quot;;
+  }
+}
+
+class C  {
+  static {
+    System.out.println(C.B.m().length());
+  }
+  
+  static class B extends A  {
+    static String n() {
+      return &quot;world!&quot;;
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="f">
+      <methodref host="A.D" signature="g()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  
+  private static class C  {
+    static int f() {
+      return 23;
+    }
+  }
+  
+  static class D extends C  {
+    static int g() {
+      return 42;
+    }
+  }
+}
+
+class B extends A  {
+  {
+    new D().f();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  
+  static class C  {
+    static int f() {
+      return 23;
+    }
+  }
+  
+  static class D extends C  {
+    static int f() {
+      return 42;
+    }
+  }
+}
+
+class B extends A  {
+  {
+    ((C)new D()).f();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="g">
+      <methodref host="A" signature="f(int)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  {
+    g(23);
+  }
+  void f(int x) {
+    System.out.println(x + 19);
+  }
+  void g(long x) {
+    System.out.println(x);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  {
+    g((long)23);
+  }
+  void g(int x) {
+    System.out.println(x + 19);
+  }
+  void g(long x) {
+    System.out.println(x);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A extends Super  {
+  void m() {
+  }
+}
+
+class B extends Super  {
+  void m() {
+  }
+}
+
+class Super  {
+  void m() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A extends Super  {
+  void n() {
+  }
+}
+
+class B extends Super  {
+  void n() {
+  }
+}
+
+class Super  {
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  private void n() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="B" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+abstract class B extends A implements I  {
+  void m() {
+  }
+}
+
+interface I  {
+  void n();
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+abstract class B extends A implements I  {
+}
+
+interface I  {
+  void n();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  public void n() {
+  }
+}
+
+abstract class B extends A implements I  {
+}
+
+interface I  {
+  void n();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m(java.lang.Object, java.lang.String)"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  {
+    n(&quot;&quot;, &quot;&quot;);
+  }
+  void m(Object x, String y) {
+  }
+  void n(String x, Object y) {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  {
+    n((String)&quot;&quot;, (Object)&quot;&quot;);
+  }
+  void n(Object x, String y) {
+  }
+  void n(String x, Object y) {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="n">
+      <methodref host="A" signature="m()"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+  }
+}
+
+class B extends A  {
+  void n() {
+  }
+}
+
+class C  {
+  void foo(A a) {
+    a.m();
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+</testsuite>

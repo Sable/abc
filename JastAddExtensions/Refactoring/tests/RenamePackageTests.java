@@ -1,105 +1,27 @@
 package tests;
 
 import junit.framework.TestCase;
-import tests.AllTests;
+import junit.framework.TestSuite;
 import AST.Program;
-import AST.RawCU;
-import AST.RefactoringException;
+import AST.RTXF;
 
 public class RenamePackageTests extends TestCase {
-	public RenamePackageTests(String name) {
-		super(name);
+	public static TestSuite suite() {
+		return RTXF.makeSuite("tests/RenamePackage.xml");
 	}
 	
-	public void testSucc(String old_name, String new_name, Program in, Program out) {
-		assertNotNull(in);
-		String originalProgram = in.toString();
-		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
-		assertNotNull(out);
-		try {
-			in.getPackageDecl(old_name).rename(new_name);
-			assertEquals(out.toString(), in.toString());
-		} catch(RefactoringException e) {
-			assertEquals(out.toString(), e.toString());
-		}
-		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
-		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
-		Program.stopRecordingASTChangesAndFlush();
-	}
-	
-	public void testFail(String old_name, String new_name, Program in) {
-		assertNotNull(in);
-		String originalProgram = in.toString();
-		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
-		try {
-			in.getPackageDecl(old_name).rename(new_name);
-			assertEquals("<failure>", in.toString());
-		} catch(RefactoringException e) {
-		}
-		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
-		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
-		Program.stopRecordingASTChangesAndFlush();
-	}
-
-	public void test1() {
-		testSucc("p", "q",
-			Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }")),
-			Program.fromCompilationUnits(new RawCU("A.java", "package q; class A { }")));
-	}
-
-	public void test2() {
-		testSucc("p", "q",
-			Program.fromCompilationUnits(new RawCU("A.java", "package p.r; class A { }")),
-			Program.fromCompilationUnits(new RawCU("A.java", "package q.r; class A { }")));
-	}
-	
-	public void test3() {		
-		testSucc("p", "q",
-				Program.fromCompilationUnits(new RawCU("A.java", "package p; public class A { }"),
-											 new RawCU("B.java", "package r; class B extends p.A { }")),
-				Program.fromCompilationUnits(new RawCU("A.java", "package q; public class A { }"),
-											 new RawCU("B.java", "package r; class B extends q.A { }")));
-	}
-	
-	public void test4() {		
-		testSucc("p", "q",
-				Program.fromCompilationUnits(new RawCU("A.java", "package p; public class A { }"),
-											 new RawCU("B.java", "package r; import p.A; class B extends A { }")),
-				Program.fromCompilationUnits(new RawCU("A.java", "package q; public class A { }"),
-											 new RawCU("B.java", "package r; import q.A; class B extends A { }")));
-	}
-	
-	public void test5() {
-		testSucc("p", "q.r",
-				Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }")),
-				Program.fromCompilationUnits(new RawCU("A.java", "package q.r; class A { }")));		
-	}
-	
-	public void test6() {
-		testFail("p", "q", Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }"),
-				                                        new RawCU("B.java", "package q; class B { }")));
-	}
-	
-	public void test7() {
-		testFail("p", "q", Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }"),
-				                                        new RawCU("B.java", "package q.r; class B { }")));
-	}
-	
-	public void test8() {
-		testSucc("p", "q.r",
-				Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }"),
-						                     new RawCU("B.java", "package q; class B { }")),
-				Program.fromCompilationUnits(new RawCU("A.java", "package q.r; class A { }"),
-						                     new RawCU("B.java", "package q; class B { }")));		
-	}
-
-	public void test9() {
-		testFail("p", "q.r", Program.fromCompilationUnits(new RawCU("A.java", "package p; class A { }"),
-				                                          new RawCU("B.java", "package q; class r { }")));
-	}
-	
-	public void test10() {
-		testFail("p", "q", Program.fromCompilationUnits(new RawCU("A.java", "package p; public class A { }"),
-                                                        new RawCU("B.java", "package r; class q { } class B extends p.A { }")));
+	private void outputTestCase(String old_name, String new_name, Program in, Program out) {
+		System.out.println("<testcase>");
+		System.out.println("  <refactoring>");
+		System.out.println("    <rename newname=\"" + RTXF.sanitise(new_name) + "\">");
+		System.out.println("      <pkgref name=\"" + RTXF.sanitise(old_name) + "\"/>");
+		System.out.println("    </rename>");
+		System.out.println("  </refactoring>");
+		System.out.print(RTXF.program(2, in));
+		if(out == null)
+			System.out.print(RTXF.result(2, true));
+		else
+			System.out.print(RTXF.result(2, false, out));
+		System.out.println("</testcase>");
 	}
 }

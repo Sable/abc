@@ -129,6 +129,24 @@ aspect Navigation {
 		return super.findMethod(name);
 	}
 	
+	// find a method given its signature
+	public MethodDecl ASTNode.findMethodBySig(String sig) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode child = getChild(i);
+			if(child != null) {
+				MethodDecl md = child.findMethodBySig(sig);
+				if(md != null) return md;
+			}
+		}
+		return null;		
+	}
+	
+	public MethodDecl MethodDecl.findMethodBySig(String sig) {
+		if(signature().equals(sig))
+			return this;
+		return super.findMethod(sig);
+	}
+	
 	// find a field given its name
 	public FieldDeclaration ASTNode.findField(String name) {
 		for(int i=0;i<getNumChild();++i) {

@@ -1,0 +1,3637 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE testsuite SYSTEM "rtxf.dtd">
+<?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
+<testsuite name="Rename Type">
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A a;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B a;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A A;
+  A A(A A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B A;
+  B A(B A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  
+  class C  {
+    public  &lt;T extends java.lang.Object> C() {
+    
+      super();
+    }
+  }
+}
+
+class D  {
+  Object o = new A().new&lt;A> C();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  
+  class C  {
+    public  &lt;T extends java.lang.Object> C() {
+    
+      super();
+    }
+  }
+}
+
+class D  {
+  Object o = new B().new&lt;B> C();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class X  {
+  
+  class Y  {
+     &lt;T extends java.lang.Object> Y() {
+    
+      super();
+    }
+  }
+}
+
+class Z extends X.Y  {
+  Z() {
+    new X().&lt;A>super();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class X  {
+  
+  class Y  {
+     &lt;T extends java.lang.Object> Y() {
+    
+      super();
+    }
+  }
+}
+
+class Z extends X.Y  {
+  Z() {
+    new X().&lt;B>super();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Thread">
+      <typeref name="p.MyThread"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    new Thread() {
+        public void run() {
+          System.out.println(23);
+        }
+    }.start();
+  }
+}
+
+class MyThread  {
+  public void start() {
+    System.out.println(42);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    new java.lang.Thread() {
+        public void run() {
+          System.out.println(23);
+        }
+    }.start();
+  }
+}
+
+class Thread  {
+  public void start() {
+    System.out.println(42);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="java">
+      <typeref name="p.A.C"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  {
+    java.lang.System.out.println(&quot;Hello, world!&quot;);
+  }
+  
+  class C  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  {
+    System.out.println(&quot;Hello, world!&quot;);
+  }
+  
+  class java  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="F">
+      <typeref name="p.A.B.C"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  
+  static class B  {
+    
+    static class C  {
+      
+      static class D  {
+      }
+    }
+  }
+}
+
+class E extends A.B.C.D  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  
+  static class B  {
+    
+    static class F  {
+      
+      static class D  {
+      }
+    }
+  }
+}
+
+class E extends A.B.F.D  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  p.A a;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B a;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m() {
+    A a = (A)new Object();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m() {
+    B a = (B)new Object();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m() {
+    boolean b = (new A()) instanceof A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m() {
+    boolean b = (new B()) instanceof B;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A a = new A();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B a = new B();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  static void s() {
+  }
+}
+
+class AA  {
+  AA() {
+    super();
+    A.s();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class AA  {
+  AA() {
+    super();
+    B.s();
+  }
+}
+
+class B  {
+  static void s() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  boolean A = new A() instanceof A;
+  A A(A A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+
+class AA extends A  {
+  A A = (A)new A();
+  A A(A A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class AA extends B  {
+  B A = (B)new B();
+  B A(B A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+
+class B  {
+  boolean A = new B() instanceof B;
+  B A(B A) {
+    A:
+      for(; true; ) {
+        if(A.A(A) == A) 
+          break A;
+      }
+    return A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int A = I.A;
+}
+
+interface I  {
+  int A = 0;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  int A = I.A;
+}
+
+interface I  {
+  int A = 0;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Exception  {
+}
+
+class AA  {
+  void m() {
+    try {
+      throw new A();
+    }
+    catch (A a) {
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class AA  {
+  void m() {
+    try {
+      throw new B();
+    }
+    catch (B a) {
+    }
+  }
+}
+
+class B extends Exception  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Exception  {
+  void m() {
+    try {
+      throw new A();
+    }
+    catch (A A) {
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Exception  {
+  void m() {
+    try {
+      throw new B();
+    }
+    catch (B A) {
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int A;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  int A;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="A.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="A/A.java">
+package A;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="A/A.java">
+package A;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="C">
+      <typeref name="RenameType.test21.in.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="RenameType/test21/in/A.java">
+package RenameType.test21.in;
+
+class A  {
+  B b;
+}
+    </cu>
+    <cu name="RenameType/test21/in/B.java">
+package RenameType.test21.in;
+import RenameType.test21.in.A;
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="RenameType/test21/in/B.java">
+package RenameType.test21.in;
+import RenameType.test21.in.C;
+
+class B  {
+}
+      </cu>
+      <cu name="RenameType/test21/in/A.java">
+package RenameType.test21.in;
+
+class C  {
+  B b;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A() {
+    super();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B() {
+    super();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A[] a = new A[5];
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B[] a = new B[5];
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Exception  {
+  void m() throws A {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Exception  {
+  void m() throws B {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  Class c = A.class;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  Class c = B.class;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int x;
+  
+  class Inner  {
+    void m() {
+      A.this.x++;
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  int x;
+  
+  class Inner  {
+    void m() {
+      B.this.x++;
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  String x;
+  
+  class Inner  {
+    void m() {
+      A.super.x++;
+    }
+  }
+}
+
+class Super  {
+  int x;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Super  {
+  String x;
+  
+  class Inner  {
+    void m() {
+      B.super.x++;
+    }
+  }
+}
+
+class Super  {
+  int x;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  
+  class Inner  {
+    void m() {
+      A.super.m1();
+    }
+  }
+}
+
+class Super  {
+  void m1() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Super  {
+  
+  class Inner  {
+    void m() {
+      B.super.m1();
+    }
+  }
+}
+
+class Super  {
+  void m1() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class AA extends A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class AA extends B  {
+}
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  static int f;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  static int f;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class C  {
+  C(A a) {
+    super();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+
+class C  {
+  C(B a) {
+    super();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Exception  {
+}
+
+class C  {
+  C() throws A {
+    super();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Exception  {
+}
+
+class C  {
+  C() throws B {
+    super();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  static {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  static {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  static {
+    A a;
+  }
+  static {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  static {
+    B a;
+  }
+  static {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  static {
+    A a;
+  }
+  {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  static {
+    B a;
+  }
+  {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class C  {
+  {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class C  {
+  {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class C  {
+  static {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class C  {
+  static {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void A() {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void A() {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class C  {
+  void m() {
+      class A  {
+      }
+    new A();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class C  {
+  void m() {
+      class A  {
+      }
+    new A();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A(A A) {
+    super();
+  }
+  A A(A A) {
+    A = new A(new A(A));
+    return A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  B(B A) {
+    super();
+  }
+  B A(B A) {
+    A = new B(new B(A));
+    return A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A(A A) {
+    super();
+  }
+  A A(A A) {
+    A = new A(new A(A));
+    return A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B(B A) {
+    super();
+  }
+  B A(B A) {
+    A = new B(new B(A));
+    return A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  static A A;
+}
+
+class X extends p.A  {
+  void x() {
+    p.A.A = A.A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  static B A;
+}
+
+class X extends B  {
+  void x() {
+    B.A = A.A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+interface A  {
+}
+
+interface C extends A  {
+}
+
+class K implements A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+interface B  {
+}
+
+interface C extends B  {
+}
+
+class K implements B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class C  {
+  void s() {
+    new A();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+
+class C  {
+  void s() {
+    new B();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class C  {
+  void s() {
+    new p.A();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+
+class C  {
+  void s() {
+    new B();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  static int fgT;
+  A() {
+    super();
+  }
+}
+
+class C  {
+  void s() {
+    new p.A();
+    p.A.fgT = 6;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  static int fgT;
+  B() {
+    super();
+  }
+}
+
+class C  {
+  void s() {
+    new B();
+    B.fgT = 6;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m(A a) {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m(B a) {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class C extends A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+}
+
+class C extends B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  
+  public class X  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  
+  public class X  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A[] m() {
+    return (A[])new A[3];
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  B[] m() {
+    return (B[])new B[3];
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A() {
+    super();
+  }
+  A(A A) {
+    super();
+  }
+  A m() {
+    return (A)new A();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  B() {
+    super();
+  }
+  B(B A) {
+    super();
+  }
+  B m() {
+    return (B)new B();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="XYZ">
+      <typeref name="p.A.X"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A() {
+    super();
+  }
+  A(A A) {
+    super();
+  }
+  A m() {
+    new X(null);
+    return (A)new A();
+  }
+  
+  class X  {
+    X(X X) {
+      super();
+      new X(null);
+    }
+  }
+}
+
+class B  {
+  A.X ax = new A().new X(null);
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  A() {
+    super();
+  }
+  A(A A) {
+    super();
+  }
+  A m() {
+    new XYZ(null);
+    return (A)new A();
+  }
+  
+  class XYZ  {
+    XYZ(XYZ X) {
+      super();
+      new XYZ(null);
+    }
+  }
+}
+
+class B  {
+  A.XYZ ax = new A().new XYZ(null);
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A() {
+    super();
+  }
+  A(A A) {
+    super();
+  }
+  A m() {
+    new X(null);
+    return (A)new A();
+  }
+  
+  class X  {
+    X(X X) {
+      super();
+      new X(null);
+    }
+  }
+}
+
+class B  {
+  A.X ax = new A().new X(null);
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="a.a.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="a/a/A.java">
+package a.a;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="a/a/A.java">
+package a.a;
+
+class B  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A a;
+  String aa = &quot;A&quot;;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  B a;
+  String aa = &quot;A&quot;;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Sup  {
+}
+
+class Sup  {
+  static int CONSTANT = 0;
+}
+
+class Test  {
+  public static void main(String[] arguments) {
+    System.out.println(A.CONSTANT);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B extends Sup  {
+}
+
+class Sup  {
+  static int CONSTANT = 0;
+}
+
+class Test  {
+  public static void main(String[] arguments) {
+    System.out.println(B.CONSTANT);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void f() {
+    A a = (A)this;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void f() {
+    B a = (B)this;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m(A A) {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m(B A) {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  A a;
+  String aa = &quot;C:\\A.java&quot;;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  B a;
+  String aa = &quot;C:\\A.java&quot;;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class Inner  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  
+  class Inner  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="C">
+      <typeref name="p.A.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class B  {
+  }
+}
+
+class C  {
+  
+  static class D extends A  {
+    int D;
+    int i = C.D.m();
+    static int m() {
+      return 23;
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class C  {
+  }
+}
+
+class C  {
+  
+  static class D extends A  {
+    int D;
+    int i = p.C.D.m();
+    static int m() {
+      return 23;
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="T">
+      <typeref name="p.A@S"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+public class A&lt;S extends java.lang.Object>  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+public class A&lt;T extends java.lang.Object>  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+class C&lt;T extends java.lang.Object>  {
+}
+
+class D  {
+  C&lt;A> b;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+class C&lt;T extends java.lang.Object>  {
+}
+
+class D  {
+  C&lt;B> b;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class C  {
+  class D&lt;T extends java.lang.Object>  {
+  }
+}
+
+class E  {
+  C.D&lt;A> b = new C().new D&lt;A>();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class C  {
+  class D&lt;T extends java.lang.Object>  {
+  }
+}
+
+class E  {
+  C.D&lt;B> b = new C().new D&lt;B>();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class B extends A  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class B extends C  {
+}
+
+class C extends A  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends B  {
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends C  {
+}
+
+class B  {
+}
+
+class C extends B  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  A m() {
+    return null;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  B m() {
+    return null;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="C">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/B.java">
+package p;
+import p.A.*;
+
+class B extends D  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  static class D  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+import p.C.*;
+
+class B extends D  {
+}
+      </cu>
+      <cu name="p/A.java">
+package p;
+
+class C  {
+  
+  static class D  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/C.java">
+package p;
+
+class C extends A  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+    <cu name="p/B.java">
+package p;
+
+class B extends C  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/B.java">
+package p;
+
+class B  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+class A extends C  {
+}
+    </cu>
+    <cu name="p/C.java">
+package p;
+
+class C extends B  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/B.java">
+package p;
+
+class B  {
+}
+    </cu>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class B  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class AA  {
+    
+    class AAA  {
+      
+      class B  {
+      }
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.B.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class B  {
+  
+  class A  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  interface B  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="D">
+      <typeref name="p.B.C"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class D  {
+  }
+  
+  class E extends B  {
+    D d;
+  }
+}
+
+class B  {
+  
+  class C  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  
+  class D  {
+  }
+  
+  class E extends B  {
+    A.D d;
+  }
+}
+
+class B  {
+  
+  class D  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m() {
+    A:
+      return ;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m() {
+    A:
+      return ;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Entry">
+      <typeref name="p.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+import static java.util.Map.Entry;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(Entry.class.getName());
+  }
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+import static java.util.Map.Entry;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(java.util.Map.Entry.class.getName());
+  }
+}
+
+class Entry  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Entry">
+      <typeref name="p.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+import java.util.Map.Entry;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(Entry.class.getName());
+  }
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(java.util.Map.Entry.class.getName());
+  }
+}
+
+class Entry  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.Outer.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class Outer  {
+  
+  class A  {
+  }
+  
+  class B  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.Outer.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class Outer  {
+  
+  class A  {
+  }
+  
+  interface B  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.Outer.Inner.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class Outer  {
+  
+  class Inner  {
+    
+    class A  {
+    }
+    
+    class B  {
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.Outer.Inner.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class Outer  {
+  
+  class Inner  {
+    
+    class A  {
+    }
+    
+    class B  {
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="T">
+      <typeref name="p.B@S"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+interface A&lt;V extends java.lang.Object>  {
+}
+interface B&lt;S extends java.lang.Object> extends A&lt;S>  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+interface A&lt;V extends java.lang.Object>  {
+}
+interface B&lt;T extends java.lang.Object> extends A&lt;T>  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m() {
+    A.class.getName();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m() {
+    B.class.getName();
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="C">
+      <typeref name="p.D.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(C.m());
+  }
+  
+  static class C extends D  {
+    static int x = 23;
+    static int m() {
+      return C.x;
+    }
+  }
+}
+
+class D  {
+  
+  static class B  {
+    static int x = 42;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(C.m());
+  }
+  
+  static class C extends D  {
+    static int x = 23;
+    static int m() {
+      return A.C.x;
+    }
+  }
+}
+
+class D  {
+  
+  static class C  {
+    static int x = 42;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Entry">
+      <typeref name="p.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+import static java.util.Map.*;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(Entry.class.getName());
+  }
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+import static java.util.Map.*;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(java.util.Map.Entry.class.getName());
+  }
+}
+
+class Entry  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  void m() {
+    A A;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class B  {
+  void m() {
+    B A;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Entry">
+      <typeref name="p.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+import java.util.Map.*;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(Entry.class.getName());
+  }
+}
+
+class B  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+import java.util.Map.*;
+
+public class A  {
+  public static void main(String[] args) {
+    System.out.println(java.util.Map.Entry.class.getName());
+  }
+}
+
+class Entry  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+public class A&lt;T extends java.lang.Object>  {
+  T f;
+  T m(int g) {
+    String s = new A&lt;String>().f;
+    return null;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+public class B&lt;T extends java.lang.Object>  {
+  T f;
+  T m(int g) {
+    String s = new B&lt;String>().f;
+    return null;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+public @interface A {
+}
+
+@A() class C  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+public @interface B {
+}
+
+@B() class C  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+public @interface A {
+}
+    </cu>
+    <cu name="p/package-info.java">
+@A() package p;
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/package-info.java">
+@B() package p;
+      </cu>
+      <cu name="p/B.java">
+package p;
+public @interface B {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+class C&lt;B extends java.lang.Object>  {
+  A a;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+class C&lt;B extends java.lang.Object>  {
+  p.B a;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  public static void main(String[] args) {
+    C&lt;A> a = new D&lt;String>();
+  }
+}
+class C&lt;T extends java.lang.Object>  {
+}
+class D&lt;B extends java.lang.Object> extends C&lt;A>  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+  public static void main(String[] args) {
+    C&lt;B> a = new D&lt;String>();
+  }
+}
+class C&lt;T extends java.lang.Object>  {
+}
+class D&lt;B extends java.lang.Object> extends C&lt;p.B>  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="T">
+      <typeref name="p.A@S"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+public class A&lt;S extends java.lang.Object>  {
+  S x;
+  
+  class T  {
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="C">
+      <typeref name="p.B"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+   &lt;T extends java.lang.Object> int m() {
+    return 23;
+  }
+}
+
+class B  {
+  int x = new A().&lt;B>m();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+   &lt;T extends java.lang.Object> int m() {
+    return 23;
+  }
+}
+
+class C  {
+  int x = new A().&lt;C>m();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="T">
+      <typeref name="p.A.m()@S"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+   &lt;S extends java.lang.Object> int m() {
+    S s;
+    return 23;
+  }
+}
+
+class B  {
+  int x = new A().&lt;B>m();
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+   &lt;T extends java.lang.Object> int m() {
+    T s;
+    return 23;
+  }
+}
+
+class B  {
+  int x = new A().&lt;B>m();
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="T">
+      <typeref name="p.A.S"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  public  &lt;T extends java.lang.Object> A() {
+  
+    super();
+  
+    S s;
+  }
+  
+  class S  {
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  public  &lt;T extends java.lang.Object> A() {
+  
+    super();
+  
+    A.T s;
+  }
+  
+  class T  {
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase>
+  <refactoring>
+    <rename newname="Y">
+      <typeref name="A.X"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A&lt;T extends java.lang.Object>  {
+  
+  class X  {
+    T x;
+  }
+}
+
+class B  {
+  String m(A&lt;String>.X a) {
+    return a.x;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A&lt;T extends java.lang.Object>  {
+  
+  class Y  {
+    T x;
+  }
+}
+
+class B  {
+  String m(A&lt;String>.Y a) {
+    return a.x;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+</testsuite>

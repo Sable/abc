@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="cu">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pkgref">
+    <xs:complexType>
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="refactoring">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="rename" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="testsuite">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="testcase" />
+      </xs:choice>
+      <xs:attribute name="name"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="methodref">
+    <xs:complexType>
+      <xs:attribute name="host" />
+      <xs:attribute name="signature" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="program">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element maxOccurs="unbounded" ref="cu" />
+        <xs:element maxOccurs="unbounded" ref="typedecl" />
+        <xs:element maxOccurs="unbounded" ref="bodydecl" />
+        <xs:element maxOccurs="unbounded" ref="stmt" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fieldref">
+    <xs:complexType>
+      <xs:attribute name="host" />
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="typedecl">
+    <xs:complexType mixed="true" />
+  </xs:element>
+  <xs:element name="result">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="program" />
+      </xs:choice>
+      <xs:attribute name="mayfail" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tempref">
+    <xs:complexType>
+      <xs:attribute name="host" />
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="typeref">
+    <xs:complexType>
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bodydecl">
+    <xs:complexType mixed="true" />
+  </xs:element>
+  <xs:element name="rename">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="pkgref" />
+        <xs:element ref="typeref" />
+        <xs:element ref="methodref" />
+        <xs:element ref="fieldref" />
+        <xs:element ref="tempref" />
+      </xs:choice>
+      <xs:attribute name="newname" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="testcase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="refactoring" />
+        <xs:element ref="program" />
+        <xs:element ref="result" />
+      </xs:sequence>
+      <xs:attribute name="comment" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stmt">
+    <xs:complexType mixed="true"/>
+  </xs:element>
+</xs:schema>
