@@ -1056,7 +1056,7 @@ public class PullUpMethodTests extends TestCase {
     			new RawCU("SuperSuper.java",
     			"package p;" +
     			"public class SuperSuper {" +
-    			"  protected long k(int a) {" +
+    			"  public long k(int a) {" +
     			"    return 10;" +
     			"  }" +
     			"  public long k(long a) {" +

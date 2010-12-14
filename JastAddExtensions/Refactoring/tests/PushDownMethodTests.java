@@ -571,7 +571,7 @@ public class PushDownMethodTests extends TestCase {
     			"  long k() { return 1; }" +
     			"}",
     			"class B extends A {" +
-    			"  long m() { return k(); }" +
+    			"  long m() { return this.k(); }" +
     			"}"));
     }
     

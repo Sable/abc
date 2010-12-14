@@ -39,6 +39,8 @@ aspect ControlFlow {
 	eq ExprStmt.isFlowThrough() = true;
 	eq ReturnStmt.isFlowThrough() = true;
 	eq LabeledStmt.isFlowThrough() = true;
+	eq BreakStmt.isFlowThrough() = true;
+	eq ContinueStmt.isFlowThrough() = true;
 	
 	syn lazy SmallSet<CFGNode> CFGNode.weakSucc() {
 		SmallSet<CFGNode> res = SmallSet.<CFGNode>empty();

@@ -60,6 +60,11 @@ public class InlineMethodTests extends TestCase {
 		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
 		Program.stopRecordingASTChangesAndFlush();
 	}
+	
+	public void test0() {
+		testSucc(Program.fromBodyDecls("int m() { return ((n())); }", "int n() { return 23; }"),
+				 Program.fromBodyDecls("int m() { return 23; }", "int n() { return 23; }"));
+	}
 
     public void test1() {
         testSucc(

@@ -133,7 +133,7 @@ aspect With {
 				Access qual = qualifiers.getChild(i);
 				TypeDecl qual_type = qual.type().isParameterizedType() ? ((ParTypeDecl)qual.type()).genericDecl() : qual.type();
 				if(qual_type.subtype(this.type())) {
-					if(qual.isThisAccess())
+					if(qual.isThisAccess() && qual_type == this.type())
 						return;
 					if(isLeftChildOfDot())
 						replace(getParent()).with(((Expr)qual.fullCopyAndDetach()).qualifiesAccess(parentDot().getRight()));

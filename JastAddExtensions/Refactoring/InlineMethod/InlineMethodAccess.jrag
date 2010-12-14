@@ -1,6 +1,7 @@
 aspect InlineMethodAccess {
 	
 	public AnonymousMethod MethodAccess.inlineToAnonymousMethod() {
+		expatiateQualifiers();
 		MethodDecl target = getUniqueTarget();
 		if(target == null)
 			throw new RefactoringException("cannot inline ambiguous method call");
@@ -19,13 +20,17 @@ aspect InlineMethodAccess {
 				// construct typeUpdate map
 				Map<Expr, TypeDecl> typeUpdate = new HashMap<Expr, TypeDecl>();
 				for(ThisAccess acc : target.collectThisAccesses()) {
-					if(acc.type() != sup)
-						throw new RefactoringException("inline cannot preserve enclosing instances");
+					if(acc.isQualified()) {
+						if(acc.type() == sup)
+							acc.unqualify();
+						else
+							throw new RefactoringException("cannot preserve enclosing instances");
+					}
 					typeUpdate.put(acc, hostType());
 				}
 				Program.adjustVirtualCalls(typeUpdate);
 				anon = target.asAnonymousMethod();
-			} else if(!(qual instanceof ThisAccess)) {
+			} else if(decl().hostType() != this.hostType()) {
 				qual.lockAllNames();
 				anon = target.asAnonymousMethod();
 				anon.setBlock(new Block(new List<Stmt>().add(new WithStmt((Access)qual, anon.getBlock()))));
@@ -56,6 +61,7 @@ aspect InlineMethodAccess {
 			assert(acc != null && acc instanceof SymbolicFieldAccess);
 			Expr qual = ((SymbolicFieldAccess)acc).getBend().createLockedAccess().qualifiesAccess(new ThisAccess(true));
 			replace(this).with(qual.qualifiesAccess(this));
+			flushCaches();
 		}
 		super.expatiateQualifiers();
 	}
@@ -66,6 +72,7 @@ aspect InlineMethodAccess {
 			assert(acc != null);
 			Expr qual = acc.getBend().createLockedAccess().qualifiesAccess(new ThisAccess(true));
 			replace(this).with(qual.qualifiesAccess(this));
+			flushCaches();
 		}
 		super.expatiateQualifiers();
 	}
@@ -131,12 +138,18 @@ aspect InlineMethodAccess {
 						replace(parent.getParent()).with(parent.parentDot().getRight());					
 				}
 			} else if(acc instanceof MethodAccess) {
-				// cannot remove it, but we can simply A.super.m(...) to super.m(...) if A is the host class
+				// cannot remove it, but we can simplify A.super.m(...) to super.m(...) if A is the host class
 				if(isQualified() && qualifier().type() == hostType()) {
 					bundleQualifier();
 					replace(getParent()).with(new SuperAccess(false));
 				}
 			}
 		}
+	}
+	
+	public void Access.unqualify() {
+		bundleQualifier();
+		if(isRightChildOfDot())
+			replace(getParent()).with(this);
 	}
 }

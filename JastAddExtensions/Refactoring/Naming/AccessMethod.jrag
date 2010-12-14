@@ -150,7 +150,7 @@ aspect AccessMethod {
 		for(Iterator<MethodDecl> iter=localMethodsIterator();iter.hasNext();) {
 			MethodDecl md2 = iter.next();
 			if(md2.equals(md)) {
-				Collection competitors = memberMethods(md.name());
+				Collection<MethodDecl> competitors = new HashSet<MethodDecl>(memberMethods(md.name()));
 				competitors.remove(md);
 				return new MethodAccessInfo(md, this, competitors);
 			}

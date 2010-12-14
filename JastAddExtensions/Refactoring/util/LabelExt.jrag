@@ -1,6 +1,27 @@
 aspect LabelExt {
 	public boolean BreakStmt.removeUseless() {
-		if(following().equals(succ())) {
+		// compute set of following CFG nodes, modulo flow-through constructs
+		/* for instance, in the following example _both_ "break" statements are useless:
+		 * 
+		 *   l: {
+		 *     {
+		 *       break l;
+		 *     }
+		 *     break l;
+		 *   }*/
+		SmallSet<CFGNode> following = SmallSet.<CFGNode>empty();
+		for(CFGNode f : following())
+			if(f.isFlowThrough())
+				following = following.union(f.weakSucc());
+			else
+				following = following.union(f);
+		SmallSet<CFGNode> succ = SmallSet.<CFGNode>empty();
+		for(CFGNode s : succ())
+			if(s.isFlowThrough())
+				succ = succ.union(s.weakSucc());
+			else
+				succ = succ.union(s);
+		if(following.equals(succ)) {
 			delete();
 			return true;
 		}
