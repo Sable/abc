@@ -13,7 +13,7 @@ aspect MoveMethod {
 
 	public void MethodDecl.doMoveTo(Variable target, boolean inlineDelegator, boolean removeDelegator, boolean removeSpuriousParameters) {
 		MethodDecl delegator = moveTo(target, removeSpuriousParameters);
-		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, DEMAND_FINAL_MODIFIER);
+		programRoot().eliminate(RETURN_VOID, FRESH_VARIABLES, WITH_STMT, LOCKED_NAMES, LOCKED_OVERRIDING, DEMAND_FINAL_MODIFIER);
 		if(inlineDelegator)
 			delegator.doInline(removeDelegator);
 	}
@@ -56,10 +56,10 @@ aspect MoveMethod {
 		Block withBlock = m.getBlock();
 		m.setBlock(new Block(new_b, new WithStmt(quals, withBlock)));
 		m.replaceWith(m_copy);
-		m_copy.programRoot().flushCaches(); m.flushCaches();
-		b.type().insertUnusedMethod(m);
 		VarAccess b_acc = b_copy.createLockedAccess();
 		m_copy.setBlock(new Block(new ReturnStmt(b_acc.qualifiesAccess(new MethodAccess(m, args, false)))));
+		m_copy.programRoot().flushCaches(); m.flushCaches();
+		b.type().insertUnusedMethod(m);
 		m.eliminate(ASTNode.WITH_STMT, ASTNode.FRESH_VARIABLES, ASTNode.LOCKED_NAMES);
 		new_b.inline();
 		// remove spurious parameters

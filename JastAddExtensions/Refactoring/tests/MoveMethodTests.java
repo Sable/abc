@@ -1,9 +1,10 @@
 package tests;
 
 import junit.framework.TestCase;
-import tests.AllTests;
+import AST.FieldDeclaration;
 import AST.MethodDecl;
 import AST.Program;
+import AST.RawCU;
 import AST.RefactoringException;
 import AST.SimpleSet;
 import AST.TypeDecl;
@@ -13,6 +14,29 @@ public class MoveMethodTests extends TestCase {
 		super(name);
 	}
 	
+	public void testSucc(String tp_name, String sig, String fld, Program in, Program out) {		
+		assertNotNull(in);
+		String originalProgram = in.toString();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
+		assertNotNull(out);
+		TypeDecl tp = in.findType(tp_name);
+		assertNotNull(tp);
+		SimpleSet s = tp.localMethodsSignature(sig);
+		assertTrue(s.isSingleton());
+		MethodDecl md = (MethodDecl)s.iterator().next();
+		FieldDeclaration fd = tp.findField(fld);
+		assertNotNull(fd);
+		try {
+			md.doMoveTo(fd, false, false, true);
+			assertEquals(out.toString(), in.toString());
+		} catch(RefactoringException rfe) {
+			fail("Refactoring was supposed to succeed; failed with "+rfe);
+		}
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
+	}
+
 	public void testSucc(String tp_name, String sig, Program in, Program out) {		
 		assertNotNull(in);
 		String originalProgram = in.toString();
@@ -52,6 +76,27 @@ public class MoveMethodTests extends TestCase {
 		Program.stopRecordingASTChangesAndFlush();
 	}
 	
+	public void testFail(String tp_name, String sig, String fld, Program in) {		
+		assertNotNull(in);
+		String originalProgram = in.toString();
+		if (AllTests.TEST_UNDO) Program.startRecordingASTChangesAndFlush();
+		TypeDecl tp = in.findType(tp_name);
+		assertNotNull(tp);
+		SimpleSet s = tp.localMethodsSignature(sig);
+		assertTrue(s.isSingleton());
+		MethodDecl md = (MethodDecl)s.iterator().next();
+		FieldDeclaration fd = tp.findField(fld);
+		assertNotNull(fd);
+		try {
+			md.doMoveTo(fd, true, true /*false, false,*/, true);
+			assertEquals("<failure>", in.toString());
+		} catch(RefactoringException rfe) {
+		}
+		if (AllTests.TEST_UNDO) { Program.undoAll(); in.flushCaches(); }
+		if (AllTests.TEST_UNDO) assertEquals(originalProgram, in.toString());
+		Program.stopRecordingASTChangesAndFlush();
+	}
+
 	public void test0() {
 		testFail("A", "m()", Program.fromClasses("class A { void m() { } }"));
 	}
@@ -637,6 +682,101 @@ public class MoveMethodTests extends TestCase {
 			"}",
 			"class B {" +
 			"  int l() { return 42; }" +
+			"}"));
+	}
+	
+	public void test33() {
+		testFail("A", "m(int)", "f",
+ 			Program.fromCompilationUnits(
+			new RawCU("A.java",
+				"package p;" +
+				"import q.*;" +
+				"public class A extends B {" +
+				"  public B f = null;" +
+				"  public long m(int a) { return 0; }" +
+				"  public long test() {" +
+				"    return new A().m(2);" +
+				"  }" +
+				"}"),
+			new RawCU("B.java",
+				"package q;" +
+				"public class B { }"),
+			new RawCU("C.java",
+				"package p;" +
+				"import q.*;" +
+				"public class C extends B {" +
+				"  protected long m(int a) { return 2; }" +
+				"}")));
+	}
+	
+	public void test34() {
+		testSucc("A", "m(int)", "f",
+ 			Program.fromCompilationUnits(
+			new RawCU("A.java",
+				"package p;" +
+				"import q.*;" +
+				"public class A {" +
+				"  public B f = null;" +
+				"  public long m(int a) { return 0; }" +
+				"}"),
+			new RawCU("B.java",
+				"package q;" +
+				"public class B {" +
+				"  protected long m(int a) { return 2; }" +
+				"}")),
+ 			Program.fromCompilationUnits(
+			new RawCU("A.java",
+				"package p;" +
+				"import q.*;" +
+				"public class A {" +
+				"  public B f = null;" +
+				"  public long m(int a) { return f.m(this, a); }" +
+				"}"),
+			new RawCU("B.java",
+				"package q;" +
+				"public class B {" +
+				"  protected long m(int a) { return 2; }" +
+				"  public long m(p.A a0, int a) { return 0; }" +
+				"}")));
+	}
+	
+	public void test35() {
+		testFail("A", "m()", "f",
+ 			Program.fromCompilationUnits(
+			new RawCU("A.java",
+				"package p;" +
+				"import q.*;" +
+				"public class A {" +
+				"  public B f = null;" +
+				"  public long m() { return 0; }" +
+				"}"),
+			new RawCU("B.java",
+				"package q;" +
+				"public class B {" +
+				"}"),
+			new RawCU("C.java",
+				"package p;" +
+				"import q.*;" +
+				"public class C extends B {" +
+				"  long m() { return 1; }" +
+				"}")));
+	}
+	
+	public void test36() {
+		testFail("B", "m()", "f",
+ 			Program.fromClasses(
+			"public class A {" +
+			"  public long m() { return 1; }" +
+			"}",
+			"public class B extends A {" +
+			"  public C f = null;" +
+			"  public long m() {" +
+			"    return 0;" +
+			"  }" +
+			"}",
+			"public class C { }",
+			"class Test {" +
+			"  { A a = new B(); a.m(); }" +
 			"}"));
 	}
 }

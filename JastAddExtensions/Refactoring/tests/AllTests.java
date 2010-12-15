@@ -27,10 +27,10 @@ public class AllTests {
 		suite.addTestSuite(PullUpMethodTests.class);
 		suite.addTestSuite(PushDownMethodTests.class);
 		suite.addTestSuite(RemoveUnusedMethodTests.class);
-		suite.addTestSuite(RenameMethodTests.class);
-		suite.addTestSuite(RenamePackageTests.class);
-		suite.addTestSuite(RenameTypeTests.class);
-		suite.addTestSuite(RenameVariableTests.class);
+		suite.addTest(RenameMethodTests.suite());
+		suite.addTest(RenamePackageTests.suite());
+		suite.addTest(RenameTypeTests.suite());
+		suite.addTest(RenameVariableTests.suite());
 		suite.addTestSuite(RelativesTests.class);
 		suite.addTestSuite(MakeMethodAbstract.class);
 		suite.addTestSuite(ChangeParameterTypeTests.class);

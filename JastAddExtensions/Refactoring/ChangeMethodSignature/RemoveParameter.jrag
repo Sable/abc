@@ -1,8 +1,8 @@
 aspect RemoveParameter {
-	// TODO: check that we don't pick up new overriding relations
 	public void MethodDecl.removeUnusedParameter(int i) {
 		// lock all calls
 		programRoot().lockMethodNames(name());
+		programRoot().lockOverridingDependencies(name());
 		// consider every relative in turn
 		for(MethodDecl rel : relatives()) {
 			if(!rel.getParameter(i).allUses().isEmpty())
@@ -23,6 +23,6 @@ aspect RemoveParameter {
 	
 	public void MethodDecl.doRemoveUnusedParameter(int i) {
 		removeUnusedParameter(i);
-		programRoot().eliminate(ASTNode.LOCKED_NAMES);
+		programRoot().eliminate(LOCKED_NAMES, LOCKED_OVERRIDING);
 	}
 }
