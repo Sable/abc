@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE testsuite SYSTEM "rtxf.dtd">
+<?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
+<testsuite name="Extract Block">
+<testcase name="test1">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A extends B  {
+  int x = init();
+  Data y = new Data();
+  public int init() {
+    return 4 + data;
+  }
+  public void f() {
+    int data;
+    x = 0;
+    y = new Data();
+    this.x = 2;
+    this.y.z = 3;
+  }
+  public void g() {
+    Data data;
+  }
+}
+
+class B  {
+  int data = 0;
+}
+
+class Data  {
+  int z;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A extends B  {
+  Data data = new Data();
+  {
+    data.setX(init());
+    data.setY(new p.Data());
+  }
+  public int init() {
+    return 4 + super.data;
+  }
+  public void f() {
+    int data;
+    this.data.setX(0);
+    this.data.setY(new p.Data());
+    this.data.setX(2);
+    this.data.getY().z = 3;
+  }
+  public void g() {
+    p.Data data;
+  }
+  
+  static class Data  {
+    private int x;
+    private p.Data y;
+    Data() { }
+    Data(int x, p.Data y) {
+      this.setX(x);
+      this.setY(y);
+    }
+    int getX() {
+      return x;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+    p.Data getY() {
+      return y;
+    }
+    p.Data setY(p.Data y) {
+      return this.y = y;
+    }
+  }
+}
+
+class B  {
+  int data = 0;
+}
+
+class Data  {
+  int z;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test2">
+  <refactoring>
+    <extract_class classname="Data" fieldname="d" fields="x" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A extends B  {
+  int x = init();
+  public int init() {
+    return 4 + d;
+  }
+}
+
+class B  {
+  int d = 0;
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A extends B  {
+  Data d = new Data(init());
+  public int init() {
+    return 4 + super.d;
+  }
+  
+  static class Data  {
+    private int x;
+    Data() { }
+    Data(int x) {
+      this.setX(x);
+    }
+    int getX() {
+      return x;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+  }
+}
+
+class B  {
+  int d = 0;
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test3">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+  Data x;
+}
+
+class Data  {
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+public class A  {
+  Data data = new Data();
+  
+  static class Data  {
+    private p.Data x;
+    Data() { }
+    Data(p.Data x) {
+      this.setX(x);
+    }
+    p.Data getX() {
+      return x;
+    }
+    p.Data setX(p.Data x) {
+      return this.x = x;
+    }
+  }
+}
+
+class Data  {
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test4">
+  <refactoring>
+    <extract_class classname="Data" fieldname="java" fields="x y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int x;
+  int y;
+  {
+    java.lang.System.out.println();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  Data java = new Data();
+  {
+    System.out.println();
+  }
+  
+  static class Data  {
+    private int x;
+    private int y;
+    Data() { }
+    Data(int x, int y) {
+      this.setX(x);
+      this.setY(y);
+    }
+    int getX() {
+      return x;
+    }
+    int getY() {
+      return y;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+    int setY(int y) {
+      return this.y = y;
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test5">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  int x = f();
+  int y = x + 19;
+}
+
+class Super  {
+  int f() {
+    return 23;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  static class Data {
+    private int x, y;
+
+    Data() { }
+    Data(int x, int y) {
+      this.setX(x);
+      this.setY(y);
+    }
+
+    int getX() { return x; }
+    int getY() { return y; }
+    int setX(int x) { return this.x = x; }
+    int setY(int y) { return this.y = y; }
+  }
+
+  Data data = new Data();
+  {
+    data.setX(f());
+    data.setY(data.getX() + 19);
+  }
+}
+
+class Super  {
+  int f() {
+    return 23;
+  }
+}
+    </cu>
+  </program>
+  </result>
+</testcase>
+<testcase name="test6">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  int x = 12;
+  int y = x + 19;
+}
+
+class Super  {
+  int f() {
+    return 23;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A extends Super  {
+  Data data = new Data();
+  {
+    data.setX(12);
+    data.setY(data.getX() + 19);
+  }
+  
+  static class Data  {
+    private int x;
+    private int y;
+    Data() { }
+    Data(int x, int y) {
+      this.setX(x);
+      this.setY(y);
+    }
+    int getX() {
+      return x;
+    }
+    int getY() {
+      return y;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+    int setY(int y) {
+      return this.y = y;
+    }
+  }
+}
+
+class Super  {
+  int f() {
+    return 23;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test7">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int x = 10;
+  int z = 20;
+  int y = 30;
+  {
+    java.lang.System.out.println();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  Data data = new Data(10, 30);
+  int z = 20;
+  {
+    java.lang.System.out.println();
+  }
+  
+  static class Data  {
+    private int x;
+    private int y;
+    Data() { }
+    Data(int x, int y) {
+      this.setX(x);
+      this.setY(y);
+    }
+    int getX() {
+      return x;
+    }
+    int getY() {
+      return y;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+    int setY(int y) {
+      return this.y = y;
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test8">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x y" encapsulate="no" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int x = 10;
+  int z = 20;
+  int y = z;
+  {
+    java.lang.System.out.println();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  Data data = new Data();
+  {
+    data.x = 10;
+  }
+  int z = 20;
+  {
+    data.y = z;
+  }
+  {
+    java.lang.System.out.println();
+  }
+  
+  static class Data  {
+    int x;
+    int y;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test9">
+  <refactoring>
+    <extract_class classname="Data" fieldname="data" fields="x w ww y" encapsulate="yes" toplevel="no">
+      <typeref name="p.A"/>
+    </extract_class>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+class A  {
+  int x = 10;
+  int z = 20;
+  int w;
+  java.util.List&lt;Object> ww;
+  double y;
+  {
+    java.lang.System.out.println();
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/A.java">
+package p;
+
+class A  {
+  Data data = new Data(10, 0, null, 0);
+  int z = 20;
+  {
+    java.lang.System.out.println();
+  }
+  
+  static class Data  {
+    private int x;
+    private int w;
+    private java.util.List&lt;Object> ww;
+    private double y;
+    Data() { }
+    Data(int x, int w, java.util.List&lt;Object> ww, double y) {
+      this.setX(x);
+      this.setW(w);
+      this.setWw(ww);
+      this.setY(y);
+    }
+    double getY() {
+      return y;
+    }
+    double setY(double y) {
+      return this.y = y;
+    }
+    int getW() {
+      return w;
+    }
+    int getX() {
+      return x;
+    }
+    int setW(int w) {
+      return this.w = w;
+    }
+    int setX(int x) {
+      return this.x = x;
+    }
+    java.util.List&lt;Object> getWw() {
+      return ww;
+    }
+    java.util.List&lt;Object> setWw(java.util.List&lt;Object> ww) {
+      return this.ww = ww;
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+</testsuite>

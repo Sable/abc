@@ -2,7 +2,7 @@
 <!DOCTYPE testsuite SYSTEM "rtxf.dtd">
 <?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
 <testsuite name="Rename Method">
-<testcase>
+<testcase name="test1">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -27,7 +27,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test2">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -47,7 +47,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test3">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -78,7 +78,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test4">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -113,7 +113,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test5">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -148,7 +148,7 @@ class B extends A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test6">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -199,7 +199,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test7">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -229,7 +229,7 @@ class Z  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test8">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -280,7 +280,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test9">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -303,7 +303,7 @@ class Z  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test10">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -328,7 +328,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test11">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -377,7 +377,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test12">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -406,7 +406,7 @@ class Z  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test13">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -447,7 +447,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test14">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -488,7 +488,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test15">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -518,7 +518,7 @@ class Z  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test16">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -559,7 +559,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test17">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -606,7 +606,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test18">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -634,7 +634,7 @@ class Z  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test19">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -673,7 +673,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test20">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -726,7 +726,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test21">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -767,7 +767,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test22">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -806,7 +806,7 @@ class B extends A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test23">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m(int)"/>
@@ -855,7 +855,7 @@ class Z  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test24">
   <refactoring>
     <rename newname="valueOf">
       <methodref host="A" signature="m(int)"/>
@@ -892,7 +892,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test25">
   <refactoring>
     <rename newname="valueOf">
       <methodref host="A" signature="m(int)"/>
@@ -929,7 +929,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test26">
   <refactoring>
     <rename newname="valueOf">
       <methodref host="A" signature="m(int)"/>
@@ -968,7 +968,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test27">
   <refactoring>
     <rename newname="valueOf">
       <methodref host="A" signature="m(int)"/>
@@ -993,7 +993,7 @@ public class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test28">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -1044,7 +1044,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test29">
   <refactoring>
     <rename newname="n">
       <methodref host="q.B" signature="m()"/>
@@ -1089,7 +1089,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test30">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -1119,7 +1119,7 @@ class C  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test31">
   <refactoring>
     <rename newname="f">
       <methodref host="A.D" signature="g()"/>
@@ -1176,7 +1176,7 @@ class B extends A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test32">
   <refactoring>
     <rename newname="g">
       <methodref host="A" signature="f(int)"/>
@@ -1215,7 +1215,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test33">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -1260,7 +1260,7 @@ class Super  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test34">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -1295,7 +1295,7 @@ class B extends A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test35">
   <refactoring>
     <rename newname="n">
       <methodref host="B" signature="m()"/>
@@ -1321,7 +1321,7 @@ interface I  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test36">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>
@@ -1360,7 +1360,7 @@ interface I  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test37">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m(java.lang.Object, java.lang.String)"/>
@@ -1395,7 +1395,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test38">
   <refactoring>
     <rename newname="n">
       <methodref host="A" signature="m()"/>

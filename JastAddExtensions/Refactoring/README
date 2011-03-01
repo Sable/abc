@@ -20,8 +20,7 @@ Overview:
 This is the command-line version of the refactoring engine for
 JastAddJ.  It comes with a number of test and driver programs, but it
 should not be thought of as an end-user tool. Most refactorings from
-recent versions of Eclipse are implemented, with the notable exception
-of most type-based refactorings.
+recent versions of Eclipse are implemented.
 
 Building:
 =========
@@ -41,10 +40,11 @@ Implementation:
 ===============
 The folder Naming/ contains the source code for the naming component
 of JRRT, Flow/ implements flow dependencies. The folder Concurrency/
-should contain the implementation of synchronisation dependencies, but
-currently only contains stubs due to unresolved licensing issues with
-this part of the framework. The folder LanguageExtensions/ contains
-the implementations of various language extensions and restrictions.
+contains the implementation of synchronisation dependencies. 
+The folder LanguageExtensions/ contains the implementations of various
+language extensions and restrictions. The folder AccessibilityConstraints/
+contains code for collecting and solving accessibility constraints,
+TypeConstraints/ does the same for type constraints.
 
 The folder tests/ contains several test suites and their data, on
 which see below. Folder util/ contains utility code. Folder doc/
@@ -73,9 +73,6 @@ The complete set of tests can then be run through the test suite
 tests.AllTests. Note that we have disabled all tests on which our
 results are not the same as Eclipse's, with detailed comments in the
 individual test suites explaining why the results are different.
-However, you will see four failing test cases that test features of
-the synchronisation dependency implementation, which cannot be
-distributed at the moment.
 
 If you only want to run the Eclipse test cases (without our own
 internal tests), use tests.eclipse.EclipseTests instead.

@@ -10,9 +10,10 @@ package rtxf;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
@@ -24,6 +25,8 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="after" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="before" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,37 +35,63 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "content"
-})
-@XmlRootElement(name = "bodydecl")
-public class Bodydecl {
+@XmlType(name = "")
+@XmlRootElement(name = "stmtref")
+public class Stmtref {
 
-    @XmlValue
-    protected String content;
+    @XmlAttribute
+    @XmlSchemaType(name = "anySimpleType")
+    protected String after;
+    @XmlAttribute
+    @XmlSchemaType(name = "anySimpleType")
+    protected String before;
 
     /**
-     * Gets the value of the content property.
+     * Gets the value of the after property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getAfter() {
+        return after;
     }
 
     /**
-     * Sets the value of the content property.
+     * Sets the value of the after property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
+    public void setAfter(String value) {
+        this.after = value;
+    }
+
+    /**
+     * Gets the value of the before property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getBefore() {
+        return before;
+    }
+
+    /**
+     * Sets the value of the before property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setBefore(String value) {
+        this.before = value;
     }
 
 }

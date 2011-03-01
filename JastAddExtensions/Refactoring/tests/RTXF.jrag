@@ -64,7 +64,8 @@ aspect RTXF {
 			if(actual instanceof String) {
 				if(expected.getMayfail().equals("yes"))
 					return;
-				throw new junit.framework.ComparisonFailure(null, expected.getProgram().get(0).toString(), (String)actual);
+				String expected_prog = Program.fromRTXF(expected.getProgram().get(0)).toString();
+				throw new junit.framework.ComparisonFailure(null, expected_prog, (String)actual);
 			} else {
 				String actual_prog = actual.toString();
 				String expected_prog = null;
@@ -89,68 +90,148 @@ aspect RTXF {
 				java.util.List<rtxf.Testcase> tcs = ((rtxf.Testsuite)res).getTestcase();
 				for(int i=0; i<tcs.size(); ++i) {
 					final rtxf.Testcase tc = tcs.get(i);
-					final rtxf.Rename r = tc.getRefactoring().getRename();
-					if(r == null)
+					rtxf.Refactoring refactoring = tc.getRefactoring();
+					if(refactoring.getRename() != null)
+						suite.addTest(makeTestCase(tc, refactoring.getRename()));
+					else if(refactoring.getExtractBlock() != null)
+						suite.addTest(makeTestCase(tc, refactoring.getExtractBlock()));
+					else if(refactoring.getExtractClass() != null)
+						suite.addTest(makeTestCase(tc, refactoring.getExtractClass()));
+					else if(refactoring.getExtractConstant() != null)
+						suite.addTest(makeTestCase(tc, refactoring.getExtractConstant()));
+					else
 						throw new Error("cannot handle test");
-					suite.addTest(new TestCase("test" + i) {
-						public void runTest() {
-							rtxf.Program prog = tc.getProgram();
-							Program in = Program.fromRTXF(prog);
-							assertNotNull(in);
-							if(r.getFieldref() != null) {
-								FieldDeclaration fd = in.resolveFieldRef(r.getFieldref());
-								assertNotNull(fd);
-								try {
-									fd.rename(r.getNewname());
-									RTXF.compare(tc.getResult(), in);
-								} catch(RefactoringException rfe) {
-									RTXF.compare(tc.getResult(), rfe.getMessage());
-								}
-							} else if(r.getTempref() != null) {
-								Variable v = in.resolveTempRef(r.getTempref());
-								assertNotNull(v);
-								try {
-									v.rename(r.getNewname());
-									RTXF.compare(tc.getResult(), in);
-								} catch(RefactoringException rfe) {
-									RTXF.compare(tc.getResult(), rfe.getMessage());
-								}
-							} else if(r.getTyperef() != null) {
-								TypeDecl td = in.resolveTypeRef(r.getTyperef().getName());
-								assertNotNull(td);
-								try {
-									td.rename(r.getNewname());
-									RTXF.compare(tc.getResult(), in);
-								} catch(RefactoringException rfe) {
-									RTXF.compare(tc.getResult(), rfe.getMessage());
-								}
-							} else if(r.getMethodref() != null) {
-								MethodDecl md = in.resolveMethodRef(r.getMethodref());
-								assertNotNull(md);
-								try {
-									md.rename(r.getNewname());
-									RTXF.compare(tc.getResult(), in);
-								} catch(RefactoringException rfe) {
-									RTXF.compare(tc.getResult(), rfe.getMessage());
-								}
-							} else if(r.getPkgref() != null) {
-								try {
-									in.getPackageDecl(r.getPkgref().getName()).rename(r.getNewname());
-									RTXF.compare(tc.getResult(), in);
-								} catch(RefactoringException rfe) {
-									RTXF.compare(tc.getResult(), rfe.getMessage());
-								}
-							} else {
-								fail("Cannot handle rename.");
-							}
-						}
-					});
 				}
 			} catch (JAXBException e) {
 				throw new Error(e);
 			}
 			
 			return suite;
+		}
+
+		private static TestCase makeTestCase(final rtxf.Testcase tc, final rtxf.Rename r) {
+			return new TestCase(tc.getName()) {
+				public void runTest() {
+					rtxf.Program prog = tc.getProgram();
+					Program in = Program.fromRTXF(prog);
+					assertNotNull(in);
+					if(r.getFieldref() != null) {
+						FieldDeclaration fd = in.resolveFieldRef(r.getFieldref());
+						assertNotNull(fd);
+						try {
+							fd.rename(r.getNewname());
+							RTXF.compare(tc.getResult(), in);
+						} catch(RefactoringException rfe) {
+							RTXF.compare(tc.getResult(), rfe.getMessage());
+						}
+					} else if(r.getTempref() != null) {
+						Variable v = in.resolveTempRef(r.getTempref());
+						assertNotNull(v);
+						try {
+							v.rename(r.getNewname());
+							RTXF.compare(tc.getResult(), in);
+						} catch(RefactoringException rfe) {
+							RTXF.compare(tc.getResult(), rfe.getMessage());
+						}
+					} else if(r.getTyperef() != null) {
+						TypeDecl td = in.resolveTypeRef(r.getTyperef().getName());
+						assertNotNull(td);
+						try {
+							td.rename(r.getNewname());
+							RTXF.compare(tc.getResult(), in);
+						} catch(RefactoringException rfe) {
+							RTXF.compare(tc.getResult(), rfe.getMessage());
+						}
+					} else if(r.getMethodref() != null) {
+						MethodDecl md = in.resolveMethodRef(r.getMethodref());
+						assertNotNull(md);
+						try {
+							md.rename(r.getNewname());
+							RTXF.compare(tc.getResult(), in);
+						} catch(RefactoringException rfe) {
+							RTXF.compare(tc.getResult(), rfe.getMessage());
+						}
+					} else if(r.getPkgref() != null) {
+						try {
+							in.getPackageDecl(r.getPkgref().getName()).rename(r.getNewname());
+							RTXF.compare(tc.getResult(), in);
+						} catch(RefactoringException rfe) {
+							RTXF.compare(tc.getResult(), rfe.getMessage());
+						}
+					} else {
+						fail("Cannot handle rename.");
+					}
+				}
+			};
+		}
+
+		private static TestCase makeTestCase(final rtxf.Testcase tc, final rtxf.ExtractBlock r) {
+			return new TestCase(tc.getName()) {
+				public void runTest() {
+					rtxf.Program prog = tc.getProgram();
+					Program in = Program.fromRTXF(prog);
+					assertNotNull(in);
+					Stmt fromStmt = in.resolveStmtRef(r.getContent().get(0)), 
+					       toStmt = in.resolveStmtRef(r.getContent().get(1));
+					assertNotNull(fromStmt);
+					assertNotNull(toStmt);
+			        Block block = fromStmt.enclosingBlock();
+			        assertEquals(block, toStmt.enclosingBlock());
+			        int start = block.getStmtList().getIndexOfChild(fromStmt);
+			        int end = block.getStmtList().getIndexOfChild(toStmt);
+			        assertNotSame(start, -1);
+			        assertNotSame(end, -1);
+			        try {
+						block.doExtractBlock(start, end);
+						RTXF.compare(tc.getResult(), in);
+					} catch (RefactoringException rfe) {
+						RTXF.compare(tc.getResult(), rfe.getMessage());
+					}
+				}
+			};
+		}
+
+		private static TestCase makeTestCase(final rtxf.Testcase tc, final rtxf.ExtractClass r) {
+			return new TestCase(tc.getName()) {
+				public void runTest() {
+					rtxf.Program prog = tc.getProgram();
+					Program in = Program.fromRTXF(prog);
+					assertNotNull(in);
+					TypeDecl td = in.resolveTypeRef(r.getTyperef().getName());
+					assertTrue(td instanceof ClassDecl);
+					ArrayList<FieldDeclaration> fds = new ArrayList<FieldDeclaration>();
+					for(String fn : r.getFields()) {
+						FieldDeclaration fd = td.findField(fn);
+						assertNotNull(fd);
+						fds.add(fd);
+					}					
+			        try {
+						((ClassDecl)td).doExtractClass(fds, r.getClassname(), r.getFieldname(), 
+													   r.getEncapsulate().equals("yes"), r.getToplevel().equals("yes"));
+						RTXF.compare(tc.getResult(), in);
+					} catch (RefactoringException rfe) {
+						RTXF.compare(tc.getResult(), rfe.getMessage());
+					}
+				}
+			};
+		}
+
+		private static TestCase makeTestCase(final rtxf.Testcase tc, final rtxf.ExtractConstant r) {
+			return new TestCase(tc.getName()) {
+				public void runTest() {
+					rtxf.Program prog = tc.getProgram();
+					Program in = Program.fromRTXF(prog);
+					assertNotNull(in);
+					Expr e = in.resolveExpref(r.getExpref());
+					assertNotNull(e);
+					try {
+						e.doExtractConstant(r.getName());
+						RTXF.compare(tc.getResult(), in);
+					} catch (RefactoringException rfe) {
+						RTXF.compare(tc.getResult(), rfe.getMessage());
+					}
+				}
+			};
 		}
 	}
 	
@@ -296,5 +377,18 @@ aspect RTXF {
 	
 	public ASTNode Program.resolveTypeOrMethodRef(String ref) {
 		return ref.contains("(") ? resolveMethodRef(ref) : resolveTypeRef(ref);
+	}
+	
+	public Stmt Program.resolveStmtRef(rtxf.Stmtref bstmt) {
+		Stmt from;
+		if(bstmt.getAfter() != null)
+			from = (Stmt)findNodeAfter(Stmt.class, bstmt.getAfter());
+		else
+			from = (Stmt)findNodeBefore(Stmt.class, bstmt.getBefore());
+		return from;
+	}
+	
+	public Expr Program.resolveExpref(rtxf.Expref eref) {
+		return (Expr)findNodeBetween(Expr.class, eref.getAfter(), eref.getBefore());
 	}
 }

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE testsuite SYSTEM "rtxf.dtd">
+<?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
+<testsuite name="Extract Block">
+<testcase name="test1">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    /*[*/i = 23;/*]*/
+    System.out.println(i);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    {
+      /*[*/i = 23;/*]*/
+    }
+    System.out.println(i);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test2">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    /*[*/i = 23;/*]*/
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    {
+      /*[*/i = 23;/*]*/
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test3">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/int i;
+    i = 23;/*]*/
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    {
+      /*[*/int i;
+      i = 23;/*]*/
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test4">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/int i;
+    i = 23;/*]*/
+    System.out.println(i);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/int i;
+    {
+      i = 23;/*]*/
+    }
+    System.out.println(i);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test5">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/int i = 23;/*]*/
+    System.out.println(i);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/int i;
+    {
+      i = 23;/*]*/
+    }
+    System.out.println(i);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test6">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/System.out.println(42);
+    int i = 23;/*]*/
+    System.out.println(i);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    {
+      /*[*/System.out.println(42);
+      i = 23;/*]*/
+    }
+    System.out.println(i);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test7">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    /*[*/System.out.println();
+    System.out.println();
+    int j;
+    j = 42;
+    System.out.println(j);
+    int i = 23;/*]*/
+    System.out.println(i + j);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    int i;
+    int j;
+    {
+      /*[*/System.out.println();
+      System.out.println();
+      j = 42;
+      System.out.println(j);
+      i = 23;/*]*/
+    }
+    System.out.println(i + j);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test8">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    switch (42){
+      /*[*/case 42:
+      System.out.println(&quot;Leibniz was right&quot;);
+      break ;/*]*/
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase name="test9">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    switch (42){
+      /*[*/case 42:/*]*/
+      System.out.println(&quot;Leibniz was right&quot;);
+      break ;
+    }
+  }
+}
+    </cu>
+  </program>
+  <result mayfail="yes">
+  </result>
+</testcase>
+<testcase name="test10">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  void m() {
+    switch (42){
+      case 42:
+      /*[*/System.out.println(&quot;Leibniz was right&quot;);
+      break ;/*]*/
+    }
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  void m() {
+    switch (42){
+      case 42:
+      {
+        /*[*/System.out.println(&quot;Leibniz was right&quot;);
+        break ;/*]*/
+      }
+    }
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test11">
+  <refactoring>
+    <extract_block>
+      <stmtref after="/*[*/"/>
+      <stmtref before="/*]*/"/>
+    </extract_block>
+  </refactoring>
+  <program>
+    <cu name="Test.java">
+class A  {
+  int x;
+  void m() {
+    /*[*/x = 1;
+    int x = 2;/*]*/
+    System.out.println(x);
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="Test.java">
+class A  {
+  int x;
+  void m() {
+    int x;
+    {
+      /*[*/this.x = 1;
+      x = 2;/*]*/
+    }
+    System.out.println(x);
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+</testsuite>

@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This schema has been generated from rtxf.dtd. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="stmtref">
+    <xs:complexType>
+      <xs:attribute name="after" use="optional" />
+      <xs:attribute name="before" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="expref">
+    <xs:complexType>
+      <xs:attribute name="after" use="optional" />
+      <xs:attribute name="before" use="optional" />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="cu">
     <xs:complexType mixed="true">
       <xs:attribute name="name" />
@@ -14,6 +25,9 @@
   <xs:element name="refactoring">
     <xs:complexType>
       <xs:choice>
+        <xs:element ref="extract_block" />
+        <xs:element ref="extract_class" />
+        <xs:element ref="extract_constant" />
         <xs:element ref="rename" />
       </xs:choice>
     </xs:complexType>
@@ -23,7 +37,7 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="testcase" />
       </xs:choice>
-      <xs:attribute name="name"/>
+      <xs:attribute name="name" />
     </xs:complexType>
   </xs:element>
   <xs:element name="methodref">
@@ -48,8 +62,19 @@
       <xs:attribute name="name" />
     </xs:complexType>
   </xs:element>
-  <xs:element name="typedecl">
-    <xs:complexType mixed="true" />
+  <xs:element name="tempref">
+    <xs:complexType>
+      <xs:attribute name="host" />
+      <xs:attribute name="name" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extract_constant">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="expref" />
+      </xs:choice>
+      <xs:attribute name="name" />
+    </xs:complexType>
   </xs:element>
   <xs:element name="result">
     <xs:complexType>
@@ -59,10 +84,27 @@
       <xs:attribute name="mayfail" use="optional" />
     </xs:complexType>
   </xs:element>
-  <xs:element name="tempref">
+  <xs:element name="typedecl">
+    <xs:complexType mixed="true" />
+  </xs:element>
+  <xs:element name="extract_block">
     <xs:complexType>
-      <xs:attribute name="host" />
-      <xs:attribute name="name" />
+      <xs:sequence>
+        <xs:element ref="stmtref" />
+        <xs:element ref="stmtref" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extract_class">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="typeref" />
+      </xs:choice>
+      <xs:attribute name="classname" />
+      <xs:attribute name="fieldname" />
+      <xs:attribute name="fields" type="xs:NMTOKENS" />
+      <xs:attribute name="encapsulate" use="optional" />
+      <xs:attribute name="toplevel" use="optional" />
     </xs:complexType>
   </xs:element>
   <xs:element name="typeref">
@@ -92,10 +134,11 @@
         <xs:element ref="program" />
         <xs:element ref="result" />
       </xs:sequence>
+      <xs:attribute name="name" />
       <xs:attribute name="comment" use="optional" />
     </xs:complexType>
   </xs:element>
   <xs:element name="stmt">
-    <xs:complexType mixed="true"/>
+    <xs:complexType mixed="true" />
   </xs:element>
 </xs:schema>

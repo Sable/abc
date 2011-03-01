@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -27,10 +26,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}program"/>
- *       &lt;/choice>
- *       &lt;attribute name="mayfail" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;sequence>
+ *         &lt;element ref="{}stmtref"/>
+ *         &lt;element ref="{}stmtref"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,67 +39,51 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "program"
+    "content"
 })
-@XmlRootElement(name = "result")
-public class Result {
+@XmlRootElement(name = "extract_block")
+public class ExtractBlock {
 
-    protected List<Program> program;
-    @XmlAttribute
-    @XmlSchemaType(name = "anySimpleType")
-    protected String mayfail;
+    @XmlElementRef(name = "stmtref", type = Stmtref.class)
+    protected List<Stmtref> content;
 
     /**
-     * Gets the value of the program property.
+     * Gets the rest of the content model. 
+     * 
+     * <p>
+     * You are getting this "catch-all" property because of the following reason: 
+     * The field name "Stmtref" is used by two different parts of a schema. See: 
+     * line 94 of file:/home/xiemaisi/JastAdd/Refactoring/tests/rtxf.xsd
+     * line 93 of file:/home/xiemaisi/JastAdd/Refactoring/tests/rtxf.xsd
+     * <p>
+     * To get rid of this property, apply a property customization to one 
+     * of both of the following declarations to change their names: 
+     * Gets the value of the content property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the program property.
+     * This is why there is not a <CODE>set</CODE> method for the content property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getProgram().add(newItem);
+     *    getContent().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Program }
+     * {@link Stmtref }
      * 
      * 
      */
-    public List<Program> getProgram() {
-        if (program == null) {
-            program = new ArrayList<Program>();
+    public List<Stmtref> getContent() {
+        if (content == null) {
+            content = new ArrayList<Stmtref>();
         }
-        return this.program;
-    }
-
-    /**
-     * Gets the value of the mayfail property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMayfail() {
-        return mayfail;
-    }
-
-    /**
-     * Sets the value of the mayfail property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMayfail(String value) {
-        this.mayfail = value;
+        return this.content;
     }
 
 }

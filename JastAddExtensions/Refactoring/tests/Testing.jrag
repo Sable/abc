@@ -231,7 +231,84 @@ aspect Testing {
 			unparenthesise();
 		}
 	}
+	
+	public ASTNode Program.findNodeAfter(Class clazz, String comment) {
+		for(CompilationUnit cu : getCompilationUnits()) {
+			FileRange fr = cu.findComment(comment);
+			if(fr != null)
+				return cu.findNodeAfter(clazz, fr.el, fr.ec);
+		}
+		return null;
+	}
+	
+	public ASTNode ASTNode.findNodeAfter(Class clazz, int line, int column) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode res = getChild(i).findNodeAfter(clazz, line, column);
+			if(res != null)
+				return res;
+		}
+		if(clazz.isAssignableFrom(this.getClass())) {
+			int startLine = getLine(getStart()),
+				startColumn = getColumn(getStart());
+			if(line < startLine || line == startLine && column <= startColumn)
+				return this;
+		}
+		return null;
+	}
+	
+	public ASTNode Program.findNodeBefore(Class clazz, String comment) {
+		for(CompilationUnit cu : getCompilationUnits()) {
+			FileRange fr = cu.findComment(comment);
+			if(fr != null)
+				return cu.findNodeBefore(clazz, fr.sl, fr.sc);
+		}
+		return null;
+	}
+	
+	public ASTNode ASTNode.findNodeBefore(Class clazz, int line, int column) {
+		for(int i=getNumChild()-1;i>=0;--i) {
+			ASTNode res = getChild(i).findNodeBefore(clazz, line, column);
+			if(res != null)
+				return res;
+		}
+		if(clazz.isAssignableFrom(this.getClass())) {
+			int endLine = getLine(getEnd()),
+				endColumn = getColumn(getEnd());
+			if(endLine != 0 && endLine < line || endLine == line && endColumn <= column)
+				return this;
+		}
+		return null;
+	}
 
+	public ASTNode Program.findNodeBetween(Class clazz, String startComment, String endComment) {
+		for(CompilationUnit cu : getCompilationUnits()) {
+			FileRange fr1 = findComment(startComment),
+					  fr2 = findComment(endComment);
+			if(fr1 != null && fr2 != null)
+				return findNodeBetween(clazz, fr1.el, fr1.ec, fr2.sl, fr2.sc);
+		}
+		return null;
+	}
+	
+	public ASTNode ASTNode.findNodeBetween(Class clazz, int line1, int column1, int line2, int column2) {
+		for(int i=0;i<getNumChild();++i) {
+			ASTNode res = getChild(i).findNodeBetween(clazz, line1, column1, line2, column2);
+			if(res != null)
+				return res;
+		}
+		if(clazz.isAssignableFrom(this.getClass())) {
+			int startLine = getLine(getStart()),
+				startColumn = getColumn(getStart()),
+			    endLine = getLine(getEnd()),
+				endColumn = getColumn(getEnd());
+			if((line1 < startLine || line1 == startLine && column1 <= startColumn)
+					&&
+			   (endLine != 0 && endLine < line2 || endLine == line2 && endColumn <= column2))
+				return this;
+		}
+		return null;
+	}
+	
 	public Stmt CompilationUnit.findStmtFollowingComment(String comment) {
 		FileRange fr = findComment(comment);
 		if(fr == null)

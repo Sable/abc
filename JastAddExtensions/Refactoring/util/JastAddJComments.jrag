@@ -1,14 +1,25 @@
 aspect Comments {
+	public HashMap<FileRange, String> CompilationUnit.comments;
 
-  public void CompilationUnit.setComments(HashMap<FileRange, String> map) {
-    comments = map;
-  }
-  public HashMap<FileRange, String> CompilationUnit.comments;
-  public FileRange CompilationUnit.findComment(String comment) {
-	  for(Map.Entry<FileRange, String> e : comments.entrySet())
-		  if(e.getValue().equals(comment))
-			  return e.getKey();
-	  return null;
-  }
+	public void CompilationUnit.setComments(HashMap<FileRange, String> map) {
+		comments = map;
+	}
 
+	public FileRange CompilationUnit.findComment(String comment) {
+		for(Map.Entry<FileRange, String> e : comments.entrySet())
+			if(e.getValue().equals(comment))
+				return e.getKey();
+		return null;
+	}
+
+	public FileRange Program.findComment(String comment) {
+		for(CompilationUnit cu : getCompilationUnits()) {
+			if(cu.fromSource()) {
+				FileRange fr = cu.findComment(comment);
+				if(fr != null)
+					return fr;
+			}
+		}
+		return null;
+	}
 }

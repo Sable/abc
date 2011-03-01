@@ -53,6 +53,8 @@ import AST.SimpleSet;
 import AST.TypeDecl;
 
 public class DiffView extends JPanel {
+	private static final long serialVersionUID = -3740617748885779946L;
+
 	interface HandlerProvider {
 		Thread createHandler();
 	}

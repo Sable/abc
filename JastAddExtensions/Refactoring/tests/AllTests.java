@@ -11,8 +11,8 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Refactoring tests");
 		//$JUnit-BEGIN$
-		suite.addTestSuite(ExtractBlockTests.class);
-		suite.addTestSuite(ExtractClassTests.class);
+		suite.addTest(ExtractBlockTests.suite());
+		suite.addTest(ExtractClassTests.suite());
 		suite.addTestSuite(ExtractConstantTests.class);
 		suite.addTestSuite(ExtractMethodTests.class);
 		suite.addTestSuite(ExtractTempTests.class);

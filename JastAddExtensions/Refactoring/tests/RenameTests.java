@@ -6,13 +6,11 @@ import junit.framework.TestSuite;
 public class RenameTests {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for tests");
-		//$JUnit-BEGIN$
-		suite.addTestSuite(RenameVariableTests.class);
-		suite.addTestSuite(RenameTypeTests.class);
-		suite.addTestSuite(RenamePackageTests.class);
-		suite.addTestSuite(RenameMethodTests.class);
-		//$JUnit-END$
+		TestSuite suite = new TestSuite("Rename tests");
+		suite.addTest(RenameVariableTests.suite());
+		suite.addTest(RenameTypeTests.suite());
+		suite.addTest(RenamePackageTests.suite());
+		suite.addTest(RenameMethodTests.suite());
 		return suite;
 	}
 

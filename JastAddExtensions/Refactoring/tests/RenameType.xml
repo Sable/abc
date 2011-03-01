@@ -2,7 +2,7 @@
 <!DOCTYPE testsuite SYSTEM "rtxf.dtd">
 <?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
 <testsuite name="Rename Type">
-<testcase>
+<testcase name="test1">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -27,7 +27,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test2">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -54,7 +54,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test3">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -97,7 +97,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test4">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -144,7 +144,7 @@ class D  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test5">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -201,7 +201,7 @@ class Z extends X.Y  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test6">
   <refactoring>
     <rename newname="Thread">
       <typeref name="p.MyThread"/>
@@ -252,7 +252,7 @@ class Thread  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test7">
   <refactoring>
     <rename newname="java">
       <typeref name="p.A.C"/>
@@ -289,7 +289,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test8">
   <refactoring>
     <rename newname="F">
       <typeref name="p.A.B.C"/>
@@ -338,7 +338,7 @@ class E extends A.B.F.D  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test9">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -365,7 +365,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test10">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -390,7 +390,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test11">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -421,7 +421,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test12">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -452,7 +452,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test13">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -479,7 +479,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test14">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -522,7 +522,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test15">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -589,7 +589,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test16">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -624,7 +624,7 @@ interface I  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test17">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -669,7 +669,7 @@ class B extends Exception  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test18">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -708,7 +708,7 @@ class B extends Exception  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test19">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -735,7 +735,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test20">
   <refactoring>
     <rename newname="B">
       <typeref name="A.A"/>
@@ -760,7 +760,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test21">
   <refactoring>
     <rename newname="C">
       <typeref name="RenameType.test21.in.A"/>
@@ -801,7 +801,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test22">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -832,7 +832,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test23">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -859,7 +859,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test24">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -888,7 +888,7 @@ class B extends Exception  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test25">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -915,7 +915,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test26">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -954,7 +954,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test27">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1001,7 +1001,7 @@ class Super  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test28">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1048,7 +1048,7 @@ class Super  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test29">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1073,7 +1073,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test30">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1104,7 +1104,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test31">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1131,7 +1131,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test32">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1156,7 +1156,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test33">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1193,7 +1193,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test34">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1230,7 +1230,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test35">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1261,7 +1261,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test36">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1292,7 +1292,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test37">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1329,7 +1329,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test38">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1366,7 +1366,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test39">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1381,43 +1381,6 @@ public class A  {
 
 class C  {
   {
-    A a;
-  }
-}
-    </cu>
-  </program>
-  <result>
-    <program>
-      <cu name="p/B.java">
-package p;
-
-public class B  {
-}
-
-class C  {
-  {
-    B a;
-  }
-}
-      </cu>
-    </program>
-  </result>
-</testcase>
-<testcase>
-  <refactoring>
-    <rename newname="B">
-      <typeref name="p.A"/>
-    </rename>
-  </refactoring>
-  <program>
-    <cu name="p/A.java">
-package p;
-
-public class A  {
-}
-
-class C  {
-  static {
     A a;
   }
 }
@@ -1432,6 +1395,43 @@ public class B  {
 }
 
 class C  {
+  {
+    B a;
+  }
+}
+      </cu>
+    </program>
+  </result>
+</testcase>
+<testcase name="test40">
+  <refactoring>
+    <rename newname="B">
+      <typeref name="p.A"/>
+    </rename>
+  </refactoring>
+  <program>
+    <cu name="p/A.java">
+package p;
+
+public class A  {
+}
+
+class C  {
+  static {
+    A a;
+  }
+}
+    </cu>
+  </program>
+  <result>
+    <program>
+      <cu name="p/B.java">
+package p;
+
+public class B  {
+}
+
+class C  {
   static {
     B a;
   }
@@ -1440,7 +1440,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test41">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1469,7 +1469,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test42">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1510,7 +1510,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test43">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1549,7 +1549,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test44">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1588,7 +1588,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test45">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1627,7 +1627,7 @@ class X extends B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test46">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1664,7 +1664,7 @@ class K implements B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test47">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1689,7 +1689,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test48">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1726,7 +1726,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test49">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1763,7 +1763,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test50">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1810,7 +1810,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test51">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1839,7 +1839,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test52">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1870,7 +1870,7 @@ class C extends B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test53">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1901,7 +1901,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test54">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1932,7 +1932,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test55">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -1975,7 +1975,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test56">
   <refactoring>
     <rename newname="XYZ">
       <typeref name="p.A.X"/>
@@ -2042,7 +2042,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test57">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2080,7 +2080,7 @@ class B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test58">
   <refactoring>
     <rename newname="B">
       <typeref name="a.a.A"/>
@@ -2105,7 +2105,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test59">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2134,7 +2134,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test60">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2179,7 +2179,7 @@ class Test  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test61">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2210,7 +2210,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test62">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2239,7 +2239,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test63">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2268,7 +2268,7 @@ public class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test64">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2299,7 +2299,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test65">
   <refactoring>
     <rename newname="C">
       <typeref name="p.A.B"/>
@@ -2352,7 +2352,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test66">
   <refactoring>
     <rename newname="T">
       <typeref name="p.A@S"/>
@@ -2375,7 +2375,7 @@ public class A&lt;T extends java.lang.Object>  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test67">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2412,7 +2412,7 @@ class D  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test68">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2455,7 +2455,7 @@ class E  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test69">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2475,7 +2475,7 @@ class B extends A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test70">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2498,7 +2498,7 @@ class C extends A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test71">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2518,7 +2518,7 @@ class B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test72">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2541,7 +2541,7 @@ class C extends B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test73">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2572,7 +2572,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test74">
   <refactoring>
     <rename newname="C">
       <typeref name="p.A"/>
@@ -2617,7 +2617,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test75">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2646,7 +2646,7 @@ class B extends C  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test76">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2675,7 +2675,7 @@ class C extends B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test77">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2695,7 +2695,7 @@ class B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test78">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2718,7 +2718,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test79">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2738,7 +2738,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test80">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2764,7 +2764,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test81">
   <refactoring>
     <rename newname="B">
       <typeref name="p.B.A"/>
@@ -2784,7 +2784,7 @@ class B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test82">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2804,7 +2804,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test83">
   <refactoring>
     <rename newname="D">
       <typeref name="p.B.C"/>
@@ -2855,7 +2855,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test84">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -2888,7 +2888,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test85">
   <refactoring>
     <rename newname="Entry">
       <typeref name="p.B"/>
@@ -2927,7 +2927,7 @@ class Entry  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test86">
   <refactoring>
     <rename newname="Entry">
       <typeref name="p.B"/>
@@ -2965,7 +2965,7 @@ class Entry  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test87">
   <refactoring>
     <rename newname="B">
       <typeref name="p.Outer.A"/>
@@ -2988,7 +2988,7 @@ class Outer  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test88">
   <refactoring>
     <rename newname="B">
       <typeref name="p.Outer.A"/>
@@ -3011,7 +3011,7 @@ class Outer  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test89">
   <refactoring>
     <rename newname="B">
       <typeref name="p.Outer.Inner.A"/>
@@ -3037,7 +3037,7 @@ class Outer  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test90">
   <refactoring>
     <rename newname="B">
       <typeref name="p.Outer.Inner.A"/>
@@ -3063,7 +3063,7 @@ class Outer  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test91">
   <refactoring>
     <rename newname="T">
       <typeref name="p.B@S"/>
@@ -3090,7 +3090,7 @@ interface B&lt;T extends java.lang.Object> extends A&lt;T>  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test92">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3121,7 +3121,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test93">
   <refactoring>
     <rename newname="C">
       <typeref name="p.D.B"/>
@@ -3180,7 +3180,7 @@ class D  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test94">
   <refactoring>
     <rename newname="Entry">
       <typeref name="p.B"/>
@@ -3219,7 +3219,7 @@ class Entry  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test95">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3250,7 +3250,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test96">
   <refactoring>
     <rename newname="Entry">
       <typeref name="p.B"/>
@@ -3289,7 +3289,7 @@ class Entry  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test97">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3322,7 +3322,7 @@ public class B&lt;T extends java.lang.Object>  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test98">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3351,7 +3351,7 @@ public @interface B {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test99">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3380,7 +3380,7 @@ public @interface B {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test100">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3411,7 +3411,7 @@ class C&lt;B extends java.lang.Object>  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test101">
   <refactoring>
     <rename newname="B">
       <typeref name="p.A"/>
@@ -3450,7 +3450,7 @@ class D&lt;B extends java.lang.Object> extends C&lt;p.B>  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test102">
   <refactoring>
     <rename newname="T">
       <typeref name="p.A@S"/>
@@ -3470,7 +3470,7 @@ public class A&lt;S extends java.lang.Object>  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test103">
   <refactoring>
     <rename newname="C">
       <typeref name="p.B"/>
@@ -3509,7 +3509,7 @@ class C  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test104">
   <refactoring>
     <rename newname="T">
       <typeref name="p.A.m()@S"/>
@@ -3550,7 +3550,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test105">
   <refactoring>
     <rename newname="T">
       <typeref name="p.A.S"/>
@@ -3593,7 +3593,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test106">
   <refactoring>
     <rename newname="Y">
       <typeref name="A.X"/>

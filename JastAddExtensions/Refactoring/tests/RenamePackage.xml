@@ -2,7 +2,7 @@
 <!DOCTYPE testsuite SYSTEM "rtxf.dtd">
 <?xml-stylesheet href="rtxf.xsl" type="text/xsl"?>
 <testsuite name="Rename Package">
-<testcase>
+<testcase name="test1">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -27,7 +27,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test2">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -52,7 +52,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test3">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -89,7 +89,7 @@ class B extends q.A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test4">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -128,7 +128,7 @@ public class A  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test5">
   <refactoring>
     <rename newname="q.r">
       <pkgref name="p"/>
@@ -153,7 +153,7 @@ class A  {
     </program>
   </result>
 </testcase>
-<testcase comment="Fails because package exists.">
+<testcase name="test6" comment="Fails because package exists.">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -176,7 +176,7 @@ class B  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test7">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
@@ -199,7 +199,7 @@ class A  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test8">
   <refactoring>
     <rename newname="q.r">
       <pkgref name="p"/>
@@ -236,7 +236,7 @@ class B  {
     </program>
   </result>
 </testcase>
-<testcase>
+<testcase name="test9">
   <refactoring>
     <rename newname="q.r">
       <pkgref name="p"/>
@@ -259,7 +259,7 @@ class r  {
   <result mayfail="yes">
   </result>
 </testcase>
-<testcase>
+<testcase name="test10">
   <refactoring>
     <rename newname="q">
       <pkgref name="p"/>
