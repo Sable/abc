@@ -33,7 +33,7 @@
   <!-- "tools" is the directory where generators and libraries are located. -->
   <property name="tools" value="${frontend}/tools"/>
 
-  <property name="Refactoring" value="${jastadd.ext}/Refactoring"/>
+  <property name="Refactoring" value="${refactoring.ext}"/>
 
   <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
   <taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
@@ -330,12 +330,6 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${jastadd.ext}/Refactoring/util">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
-			<exclude name="ASTReplace.jrag"/>
-		</fileset>	
 		<fileset dir="${jastadd.ext}/ControlFlowGraph">
 		    <include name="Nodes.ast"/>
 			<include name="ControlFlowGraph.jrag"/>

@@ -1,2 +1,13 @@
 ## Location of the root abc checkout
 abc-ja.loc=../abc-ja
+abc.loc=../abc
+jastadd=../JastAddJ
+jastadd.ext=../JastAddExtensions
+refactoring.ext=../Refactoring
+
+frontend=${jastadd}/Java1.4Frontend
+frontend1.5=${jastadd}/Java1.5Frontend
+flattening=${jastadd.ext}/JavaFlattening
+itds=${jastadd.ext}/IntertypeDeclarations
+backend=${jastadd.ext}/JimpleBackend
+aspectj=../abc-ja
