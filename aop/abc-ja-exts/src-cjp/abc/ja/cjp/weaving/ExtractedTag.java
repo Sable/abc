@@ -15,12 +15,10 @@ public class ExtractedTag implements Tag {
 		return cjpTypeName;
 	}
 
-	@Override
 	public String getName() {
 		return "abc.ja.cjp.weaving.ExtractedTag";
 	}
 
-	@Override
 	public byte[] getValue() throws AttributeValueException {
 		throw new AttributeValueException();
 	}
