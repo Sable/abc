@@ -1,5 +1,5 @@
 Running test 7: base/test100/static and non-static before methods -- one file
 Commandline: abc -d base/test100 -warn-unused-advice:off base/test100/Driver.java 
-PASS: Test 7: "base/test100/static and non-static before methods -- one file" passed in 4561ms, memory usage: 13308224.
+PASS: Test 7: "base/test100/static and non-static before methods -- one file" passed in 4216ms, memory usage: 13307336.
 
 
