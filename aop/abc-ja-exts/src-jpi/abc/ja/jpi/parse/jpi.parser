@@ -27,7 +27,7 @@ JPITypeDecl jpi_declaration =
 		return new JPITypeDecl(new Modifiers(), ((MethodDecl)a).getID(), new List(), (MethodDecl)a,null,new List());
 	:}
 	|
-	JPI method_header.m EXTENDS IDENTIFIER.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
+	JPI method_header.m EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
 		return new JPITypeDecl(new Modifiers(), ((MethodDecl)m).getID(), new List(), m, i, l);
 	:}
   ;
@@ -37,13 +37,26 @@ List parameter_list_inheritance =
   | parameter_list_inheritance.l COMMA simple_name.n	{: return l.add(n); :}
   ;
 
+
 /* add the possibility of declaring an exhibit to class_member_declaration */
 BodyDecl class_member_declaration =
 	exhibit_declaration.d {: return d; :}
 ;
 
 ExhibitBodyDecl exhibit_declaration =
-	EXHIBITS method_header.a COLON pointcut_expr.b SEMICOLON {:
+	EXHIBITS method_header_fully_qualify.a COLON pointcut_expr.b SEMICOLON {:
 		return new ExhibitBodyDecl(a.getID(), a, b);
 	:}
 ;
+
+/**
+ * we need to change the method_header definition because we need the fully
+ * qualify name of the jpi.
+ */
+
+ MethodDecl method_header_fully_qualify =
+    modifiers.m? type.t name_decl.q LPAREN formal_parameter_list.l? RPAREN dims.d? throws.tl?
+    {: return new MethodDecl(new Modifiers(m), t.addArrayDims(d), q.getID(), l, tl, new Opt()); :}
+  | modifiers.m? VOID name_decl.q LPAREN formal_parameter_list.l? RPAREN throws.tl?
+    {: return new MethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), q.getID(), l, tl, new Opt()); :}
+  ;
