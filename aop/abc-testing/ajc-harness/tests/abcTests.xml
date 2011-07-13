@@ -10911,4 +10911,48 @@
 	        <message kind="error" line="18"/>
         </compile>
     </ajc-test>   
+
+	<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - jpi">
+        <compile files="JPI.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>  
+
+	<ajc-test num="1601" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - jpi in the wrong place">
+        <compile files="JPIWrongScope.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="8" />
+        	<message kind="error" line ="21" />			       
+		</compile>
+    </ajc-test> 
+
+	<ajc-test num="1602" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - exhibit">
+        <compile files="Exhibit.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>  
+
+	<ajc-test num="1603" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - exhibit in the wrong place">
+        <compile files="ExhibitWrongScope.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="8" />
+        </compile>
+    </ajc-test>  
+
+	<ajc-test num="1604" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - advice definition">
+        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" />
+    </ajc-test> 
+
+	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - Inheritance">
+        <compile files="InheritanceSyntax.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="10" />	        
+		</compile>        	
+    </ajc-test> 
+
+	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - advice definition">
+        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
+    </ajc-test> 
+
+
 </suite>
