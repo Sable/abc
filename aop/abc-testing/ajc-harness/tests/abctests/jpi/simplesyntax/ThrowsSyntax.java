@@ -6,7 +6,7 @@
 import org.aspectj.testing.Tester;
 
 jpi void JP1(int amount) throws Exception;
-jpi void JP2(int items) throws Exception extends JP(items) ;
+jpi void JP2(int items) throws Exception extends JP(items);
 
 public class ThrowsSyntax{
 
