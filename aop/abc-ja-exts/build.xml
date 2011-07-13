@@ -457,12 +457,6 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${jastadd.ext}/Refactoring/util">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
-			<exclude name="ASTReplace.jrag"/>
-		</fileset>	
 		<fileset dir="${jastadd.ext}/ControlFlowGraph">
 		    <include name="Nodes.ast"/>
 			<include name="ControlFlowGraph.jrag"/>
