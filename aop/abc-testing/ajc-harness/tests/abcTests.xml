@@ -10920,8 +10920,8 @@
 	<ajc-test num="1601" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - jpi in the wrong place">
         <compile files="JPIWrongScope.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line ="8" />
-        	<message kind="error" line ="21" />			       
+        	<message kind="error" line ="10" />
+        	<message kind="error" line ="23" />			       
 		</compile>
     </ajc-test> 
 
