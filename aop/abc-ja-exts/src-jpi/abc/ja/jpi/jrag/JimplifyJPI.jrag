@@ -1,0 +1,24 @@
+/*
+ * The JastAdd Extensible Java Compiler (http://jastadd.org) is covered
+ * by the modified BSD License. You should have received a copy of the
+ * modified BSD license with this compiler.
+ * 
+ * Copyright (c) 2005-2008, Torbjorn Ekman
+ * All rights reserved.
+ */
+
+import soot.*;
+import soot.util.*;
+import soot.jimple.*;
+import soot.coffi.ClassFile;
+import soot.coffi.method_info;
+import soot.coffi.CONSTANT_Utf8_info;
+import soot.tagkit.SourceFileTag;
+
+aspect JimplifyJPI {
+
+  public void JPITypeDecl.jimplify2() {
+	//TODO fill in
+  }
+  
+}

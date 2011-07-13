@@ -1,0 +1,49 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2010 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+  
+/* add the possibility of declaring an jpi to type_declaration */
+TypeDecl type_declaration =
+	jpi_declaration.d	{: return d; :}
+;
+
+JPITypeDecl jpi_declaration =     
+	JPI abstract_method_declaration.a {: 
+		return new JPITypeDecl(new Modifiers(), ((MethodDecl)a).getID(), new List(), (MethodDecl)a,null,new List());
+	:}
+	|
+	JPI method_header.m EXTENDS IDENTIFIER.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
+		return new JPITypeDecl(new Modifiers(), ((MethodDecl)m).getID(), new List(), m, i, l);
+	:}
+  ;
+  
+List parameter_list_inheritance =
+    simple_name.n										{: return new List().add(n); :}
+  | parameter_list_inheritance.l COMMA simple_name.n	{: return l.add(n); :}
+  ;
+
+/* add the possibility of declaring an exhibit to class_member_declaration */
+BodyDecl class_member_declaration =
+	exhibit_declaration.d {: return d; :}
+;
+
+ExhibitBodyDecl exhibit_declaration =
+	EXHIBITS method_header.a COLON pointcut_expr.b SEMICOLON {:
+		return new ExhibitBodyDecl(a.getID(), a, b);
+	:}
+;

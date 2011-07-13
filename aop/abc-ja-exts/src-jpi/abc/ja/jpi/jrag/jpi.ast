@@ -1,0 +1,5 @@
+JPISuperArgAccess : VarAccess;
+
+JPITypeDecl : JoinpointTypeDecl ::= <SuperTypeName:String> SuperArgumentName:Access*;
+
+ExhibitBodyDecl : BodyDecl ::= <ExhibitName:String> Signature:MethodDecl Pointcut:PointcutExpr;

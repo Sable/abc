@@ -1,0 +1,12 @@
+aspect NameAnalysisJPI {
+
+    public static final NameType NameType.JPI_SUPER_ARG_NAME = new NameType() {
+      public Access reclassify(String name, int start, int end) { return new JPISuperArgAccess(name); }
+    };
+    
+    eq JPITypeDecl.getSuperArgumentName(int i).nameType() = NameType.JPI_SUPER_ARG_NAME;
+        
+    eq ExhibitBodyDecl.getPointcut().bindsInCurrentCflow(String name) =
+        getPointcut().binds(name) > 0;
+
+}
