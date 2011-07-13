@@ -11,10 +11,10 @@ public class JPIDeclared{
     	execution(* foo(..));
 
     exhibits void JP2() : //error, jpi JP2 doesn't exist
-    	execution(* foo(..))
+    	execution(* foo(..));
     
     exhibits void interfaces.JP2() : //error, jpi interfaces.JP2 doesn't exist
-    	execution(* foo(..))
+    	execution(* foo(..));
     
     void foo(){}
 
