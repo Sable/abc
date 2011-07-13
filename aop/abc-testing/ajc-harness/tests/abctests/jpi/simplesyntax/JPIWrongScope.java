@@ -3,6 +3,8 @@
  */
 import org.aspectj.testing.Tester;
 
+jpi void JP(int amount);
+
 public class JPIWrongScope{
 
 	jpi void JP(int amount); //error
