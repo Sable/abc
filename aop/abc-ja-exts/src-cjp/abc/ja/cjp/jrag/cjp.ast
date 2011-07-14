@@ -4,8 +4,18 @@ CJPTypeAccess : TypeAccess;
 
 ClosureJoinpointAccess : AnonymousMethod ::= Name:Access;
 
-JoinpointTypeDecl : TypeDecl ::= Signature:MethodDecl;
+JoinpointTypeDecl : TypeDecl ::= TypeAccess:Access Parameter:ParameterDeclaration* Exception:Access*;
 	
 CJPAdviceDecl : AdviceDecl;
 
 CJPPointcutExpr: PointcutExpr;
+
+CJPBeforeSpec : BeforeSpec ::= Name:Access;
+
+CJPAfterSpec : AfterSpec ::= Name:Access;
+
+CJPAfterReturningSpec : AfterReturningSpec ::= Name:Access;
+
+CJPAfterThrowingSpec : AfterThrowingSpec ::= Name:Access;
+
+CJPAroundSpec : AroundSpec ::= Name:Access;

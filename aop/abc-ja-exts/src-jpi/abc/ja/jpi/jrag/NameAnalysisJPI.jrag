@@ -9,4 +9,6 @@ aspect NameAnalysisJPI {
     eq ExhibitBodyDecl.getPointcut().bindsInCurrentCflow(String name) =
         getPointcut().binds(name) > 0;
 
+	eq ExhibitBodyDecl.getJPIName().nameType() = NameType.TYPE_NAME;
+	
 }

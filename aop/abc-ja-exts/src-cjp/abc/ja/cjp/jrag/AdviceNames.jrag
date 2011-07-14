@@ -27,10 +27,10 @@ import java.util.HashMap;
  */
 aspect AdviceNames
 {
- 	protected String AdviceSpec.givenName = null;
+ 	protected Access AdviceSpec.givenName = null;
  	
  	//called within the grammar to attach given name; to be called only once
- 	public void AdviceSpec.setGivenName(String n) {
+ 	public void AdviceSpec.setGivenName(Access n) {
  	    if(givenName!=null) throw new IllegalStateException("Name already set to:" +givenName);
  		givenName = n;
  	}
@@ -39,7 +39,7 @@ aspect AdviceNames
  		return givenName!=null;
  	}
 
- 	syn lazy String AdviceSpec.getGivenName() {
+ 	syn lazy Access AdviceSpec.getGivenName() {
  		return givenName;
  	}
  	
@@ -53,7 +53,7 @@ aspect AdviceNames
  		return ret;
  	} 
 
- 	syn lazy String CJPAdviceDecl.getGivenName() { 	
+ 	syn lazy Access CJPAdviceDecl.getGivenName() { 	
  		return getAdviceSpec().getGivenName();
  	} 
  	

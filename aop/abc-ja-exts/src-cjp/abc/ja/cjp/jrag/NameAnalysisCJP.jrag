@@ -12,4 +12,9 @@ aspect NameAnalysisCJP {
 		return enclosingType().getID()+"."+getID();
 	}	
 
+	eq CJPBeforeSpec.getName().nameType() = NameType.CJPTYPE_NAME;
+	eq CJPAfterSpec.getName().nameType() = NameType.CJPTYPE_NAME;
+	eq CJPAfterReturningSpec.getName().nameType() = NameType.CJPTYPE_NAME;
+	eq CJPAfterThrowingSpec.getName().nameType() = NameType.CJPTYPE_NAME;
+	eq CJPAroundSpec.getName().nameType() = NameType.CJPTYPE_NAME;
 }

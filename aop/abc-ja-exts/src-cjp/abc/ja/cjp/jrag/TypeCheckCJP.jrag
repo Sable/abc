@@ -8,11 +8,10 @@ aspect TypeCheckCJP {
   		TypeDecl decl = getName().type();
   		if(decl.isJoinpointTypeDecl()) {
   			JoinpointTypeDecl d = (JoinpointTypeDecl)decl;
-  			MethodDecl m = d.getSignature();
   			int i=0;
   			for(ParameterDeclaration p: getParameters()) {
-				if(p.type()!=m.getParameter(i).type()) {
-					error(p.getID()+" must be of type "+m.getParameter(i).type().name()+" but is of type "+p.type().name()+" instead.");
+				if(p.type()!=d.getParameter(i).type()) {
+					error(p.getID()+" must be of type "+d.getParameter(i).type().name()+" but is of type "+p.type().name()+" instead.");
 				}
 				i++;
   			}
@@ -41,15 +40,15 @@ aspect TypeCheckCJP {
 	
 		AdviceSpec spec = getAdviceSpec();
 		if(spec.isAround()) {
-			if(spec.returnType()!=cjpTypeDecl().getSignature().getTypeAccess().type()) {
-				error("return type must be "+cjpTypeDecl().getSignature().getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
+			if(spec.returnType()!=cjpTypeDecl().getTypeAccess().type()) {
+				error("return type must be "+cjpTypeDecl().getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
 			}
 		}	
 		
 		if(spec.isAfterReturning()) {
 			AfterReturningSpec r = (AfterReturningSpec) spec;
 			if(r.hasReturnParameter()) {
-				TypeDecl declared = cjpTypeDecl().getSignature().getTypeAccess().type();
+				TypeDecl declared = cjpTypeDecl().getTypeAccess().type();
 				TypeDecl here = r.getReturnParameter().getTypeAccess().type();
 				if(!declared.castingConversionTo(here)) {
 					error("joinpoint type "+ cjpTypeDecl().getID() + " returns type "+declared.name()+
@@ -65,7 +64,7 @@ aspect TypeCheckCJP {
 	 	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
 				if(!here.isCheckedException()) {
 					boolean found = false;
-			        for(Access ex: cjpTypeDecl().getSignature().getExceptions()) {
+			        for(Access ex: cjpTypeDecl().getExceptions()) {
 			        	TypeDecl declared = ex.type();
 			    		if(declared.castingConversionTo(here)) {
 			    			found = true;
@@ -82,7 +81,7 @@ aspect TypeCheckCJP {
  	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
  	    	if(e.type().isCheckedException()) continue;
 	        boolean found = false;
-	        for(Access e2: cjpTypeDecl().getSignature().getExceptions()) {
+	        for(Access e2: cjpTypeDecl().getExceptions()) {
 	          	if(e.type().instanceOf(e2.type())) {
 	          		found = true;
 	           		break;
@@ -118,8 +117,8 @@ aspect TypeCheckCJP {
 		if(t instanceof JoinpointTypeDecl) {
 			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) t;
 			try{
-				setReturnType(joinpointTypeDecl.getSignature().getTypeAccess().clone());
-				setExceptionList(joinpointTypeDecl.getSignature().getExceptionList().clone());
+				setReturnType(joinpointTypeDecl.getTypeAccess().clone());
+				setExceptionList(joinpointTypeDecl.getExceptionList().clone());
 			} catch(CloneNotSupportedException e) {
 				throw new RuntimeException(e); //cannot occur
 			}
@@ -144,46 +143,10 @@ aspect TypeCheckCJP {
 		//do nothing
 	}
  	
-	inh boolean MethodDecl.isWithinJoinpointTypeDecl();
-	eq JoinpointTypeDecl.getSignature().isWithinJoinpointTypeDecl() = true;
-	eq Program.getChild().isWithinJoinpointTypeDecl() = false;
-	
-
-	refine IntertypeMethodErrorCheck public void MethodDecl.nameCheck() {
-		if(isWithinJoinpointTypeDecl()) {
-		    if(!hostType().methodsSignature(signature()).contains(this)) {
-		      boolean allZap = true;
-		      for(Iterator iter = hostType().methodsSignature(signature()).iterator(); allZap && iter.hasNext(); ) {
-		        MethodDecl m = (MethodDecl)iter.next();
-		        if(!m.zaps(this))
-		          allZap = false;
-		      }
-		      if(!allZap)
-		        error("method with signature " + signature() + " is multiply declared in type " + hostType().typeName());
-		    }
-		} else {
-			IntertypeMethodErrorCheck.MethodDecl.nameCheck();
-		}
-	}
-
-	syn lazy JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl() = cjpTypeDecl(getAdviceSpec().getGivenName()); 
-
-	inh JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl(String name);
-	
-	eq TypeDecl.getBodyDecl().cjpTypeDecl(String name) {
-		for(BodyDecl b: getBodyDecls()) {
-			if(b instanceof MemberCJPTypeDecl) {
-				MemberCJPTypeDecl mj = (MemberCJPTypeDecl)b;
-				JoinpointTypeDecl j = (JoinpointTypeDecl)mj.typeDecl();
-				if(j.getID().equals(name)) {
-					return j;
-				}
-			}						
-		}
-		return null;
-	}
-
-	eq Program.getChild().cjpTypeDecl(String name) { throw new InternalError("attribute not supported here"); }
+	syn lazy JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl() {
+		TypeAccess name = (TypeAccess) getAdviceSpec().getGivenName();
+		return (JoinpointTypeDecl) name.decl();
+	} 
 
   //copied from Advice.jrag
   eq CJPAdviceDecl.getAdviceSpec().lookupVariable(String name) {

@@ -23,12 +23,14 @@ TypeDecl type_declaration =
 ;
 
 JPITypeDecl jpi_declaration =     
-	JPI abstract_method_declaration.a {: 
-		return new JPITypeDecl(new Modifiers(), ((MethodDecl)a).getID(), new List(), (MethodDecl)a,null,new List());
+	JPI joinpointtype_declexpr.d SEMICOLON {:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new CJPTypeAccess("","$RootJPI$"),new List());
 	:}
 	|
-	JPI method_header.m EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
-		return new JPITypeDecl(new Modifiers(), ((MethodDecl)m).getID(), new List(), m, i, l);
+	JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l);
 	:}
   ;
   
@@ -44,19 +46,11 @@ BodyDecl class_member_declaration =
 ;
 
 ExhibitBodyDecl exhibit_declaration =
-	EXHIBITS method_header_fully_qualify.a COLON pointcut_expr.b SEMICOLON {:
-		return new ExhibitBodyDecl(a.getID(), a, b);
-	:}
+	EXHIBITS type.a name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {: 
+    	return new ExhibitBodyDecl(a, b, c, d); 
+    :}
+    | 
+	EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
+    	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d); 
+    :}
 ;
-
-/**
- * we need to change the method_header definition because we need the fully
- * qualify name of the jpi.
- */
-
- MethodDecl method_header_fully_qualify =
-    modifiers.m? type.t name_decl.q LPAREN formal_parameter_list.l? RPAREN dims.d? throws.tl?
-    {: return new MethodDecl(new Modifiers(m), t.addArrayDims(d), q.getID(), l, tl, new Opt()); :}
-  | modifiers.m? VOID name_decl.q LPAREN formal_parameter_list.l? RPAREN throws.tl?
-    {: return new MethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), q.getID(), l, tl, new Opt()); :}
-  ;

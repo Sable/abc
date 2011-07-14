@@ -1,0 +1,10 @@
+aspect NameCheck{
+
+	public void ExhibitBodyDecl.nameCheck() {
+		TypeAccess jpiAccess = (TypeAccess) getJPIName();
+	    if(jpiAccess.decls().isEmpty()){
+	    	error("no jpi named " + jpiAccess.getID());
+		}
+		error("no jpi named " + jpiAccess.getID());		
+	}
+}
