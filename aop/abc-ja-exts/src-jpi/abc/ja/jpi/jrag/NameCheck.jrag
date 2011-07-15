@@ -3,8 +3,7 @@ aspect NameCheck{
 	public void ExhibitBodyDecl.nameCheck() {
 		TypeAccess jpiAccess = (TypeAccess) getJPIName();
 	    if(jpiAccess.decls().isEmpty()){
-	    	error("no jpi named " + jpiAccess.getID());
+	    	error("There is not a JPI declaration with the name "+jpiAccess.typeName());
 		}
-		error("no jpi named " + jpiAccess.getID());		
 	}
 }
