@@ -36,30 +36,37 @@ aspect TypeCheckCJP {
 
 	public void CJPAdviceDecl.typeCheck() {
 		super.typeCheck();
+		TypeAccess joinpointAccess = (TypeAccess) getName();
+		
+		if (joinpointAccess.decls().isEmpty()){
+			error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
+			return;
+		} 
+		else {
+			if (!joinpointAccess.decl().isCJPTypeDecl()){
+				error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
+				return;				
+			}
+		}
 	
 		if(cjpTypeDecl()==null) {
 			error("no visible joinpoint type named "+getName());
-			
 		}
 		
-		if(!cjpTypeDecl().isCJPTypeDecl()) {
-			error(cjpTypeDecl().getID()+" is not a valid type for JoinpointTypeDeclaration");
-		}
-	
 		AdviceSpec spec = getAdviceSpec();
 		if(spec.isAround()) {
-			if(spec.returnType()!=((JoinpointTypeDecl)cjpTypeDecl()).getTypeAccess().type()) {
-				error("return type must be "+((JoinpointTypeDecl)cjpTypeDecl()).getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
+			if(spec.returnType()!=cjpTypeDecl().getTypeAccess().type()) {
+				error("return type must be "+cjpTypeDecl().getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
 			}
 		}	
 		
 		if(spec.isAfterReturning()) {
 			AfterReturningSpec r = (AfterReturningSpec) spec;
 			if(r.hasReturnParameter()) {
-				TypeDecl declared = ((JoinpointTypeDecl)cjpTypeDecl()).getTypeAccess().type();
+				TypeDecl declared = cjpTypeDecl().getTypeAccess().type();
 				TypeDecl here = r.getReturnParameter().getTypeAccess().type();
 				if(!declared.castingConversionTo(here)) {
-					error("joinpoint type "+ ((JoinpointTypeDecl)cjpTypeDecl()).getID() + " returns type "+declared.name()+
+					error("joinpoint type "+ cjpTypeDecl().getID() + " returns type "+declared.name()+
 					      " which is incompatible with advice return type "+here.name());
 				}
 			}
@@ -72,14 +79,14 @@ aspect TypeCheckCJP {
 	 	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
 				if(!here.isCheckedException()) {
 					boolean found = false;
-			        for(Access ex: ((JoinpointTypeDecl)cjpTypeDecl()).getExceptions()) {
+			        for(Access ex: cjpTypeDecl().getExceptions()) {
 			        	TypeDecl declared = ex.type();
 			    		if(declared.castingConversionTo(here)) {
 			    			found = true;
 		    				break;
 	    				}
 		    			if(!found)
-		    				error("joinpoints of type "+ ((JoinpointTypeDecl)cjpTypeDecl()).getID() + " cannot throw checked exceptions of type "+here.name()); 
+		    				error("joinpoints of type "+ cjpTypeDecl().getID() + " cannot throw checked exceptions of type "+here.name()); 
 			        }
 		        }
 			}
@@ -89,7 +96,7 @@ aspect TypeCheckCJP {
  	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
  	    	if(e.type().isCheckedException()) continue;
 	        boolean found = false;
-	        for(Access e2: ((JoinpointTypeDecl)cjpTypeDecl()).getExceptions()) {
+	        for(Access e2: cjpTypeDecl().getExceptions()) {
 	          	if(e.type().instanceOf(e2.type())) {
 	          		found = true;
 	           		break;
@@ -151,27 +158,10 @@ aspect TypeCheckCJP {
 		//do nothing
 	}
 
-	syn lazy TypeDecl CJPAdviceDecl.cjpTypeDecl() {
-		TypeAccess name = (TypeAccess) getName();	
-		return (TypeDecl) name.decl();
-	}
-
-//TODO: check this with the implementation of NameCheck.jrag
-/*
-	syn lazy TypeDecl CJPAdviceDecl.getTypeDecl() {
-		TypeAccess name = (TypeAccess) getName();	
-		return (TypeDecl) name.decl();
-	}
-	
 	syn lazy JoinpointTypeDecl CJPAdviceDecl.cjpTypeDecl() {
-		TypeAccess name = (TypeAccess) getName();
-		TypeDecl decl = name.decl();
-		if(decl.isUnknown()) {
-			
-		}	
-		return (JoinpointTypeDecl) decl;
-	}  
-*/
+		TypeAccess name = (TypeAccess) getName();	
+		return (JoinpointTypeDecl) name.decl();
+	}
 
   //copied from Advice.jrag
   eq CJPAdviceDecl.getAdviceSpec().lookupVariable(String name) {

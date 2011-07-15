@@ -12,7 +12,7 @@ aspect NameCheck{
 	public void NamedAdvice.nameCheck(){
 		TypeAccess joinpointAccess = (TypeAccess) getName();
 		if (joinpointAccess.decls().isEmpty()){
-			error("There is not a Joinpoint declaration with the name "+joinpointAccess.typeName());
+			error("NameCheck: There is not a Joinpoint declaration with the name "+joinpointAccess.typeName());
 		}
 	}	
 }

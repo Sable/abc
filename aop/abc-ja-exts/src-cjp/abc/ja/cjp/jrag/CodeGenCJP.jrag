@@ -42,7 +42,7 @@ aspect CodeGenCJP {
     }
     
     inh JoinpointTypeDecl CJPPointcutExpr.joinpointTypeDeclReferencedByAdvice();
-    eq CJPAdviceDecl.getPointcutExpr().joinpointTypeDeclReferencedByAdvice() = (JoinpointTypeDecl)cjpTypeDecl();
+    eq CJPAdviceDecl.getPointcutExpr().joinpointTypeDeclReferencedByAdvice() = cjpTypeDecl();
     eq Program.getChild().joinpointTypeDeclReferencedByAdvice() { throw new InternalError("attribute not supported here"); } 
 
     inh List<ParameterDeclaration> CJPPointcutExpr.paramDecls();
