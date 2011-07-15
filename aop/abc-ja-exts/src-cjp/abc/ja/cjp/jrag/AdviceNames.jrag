@@ -27,21 +27,19 @@ import java.util.HashMap;
  */
 aspect AdviceNames
 {
- 	protected Access AdviceSpec.givenName = null;
+ 
+ 	interface NamedAdvice {
+ 		Access getName();
+ 	}
  	
- 	//called within the grammar to attach given name; to be called only once
- 	public void AdviceSpec.setGivenName(Access n) {
- 	    if(givenName!=null) throw new IllegalStateException("Name already set to:" +givenName);
- 		givenName = n;
- 	}
-
- 	syn lazy boolean AdviceSpec.hasGivenName() {
- 		return givenName!=null;
- 	}
-
- 	syn lazy Access AdviceSpec.getGivenName() {
- 		return givenName;
- 	}
+ 	CJPBeforeSpec implements NamedAdvice;
+ 	CJPAfterSpec implements NamedAdvice;
+ 	CJPAfterReturningSpec implements NamedAdvice;
+ 	CJPAfterThrowingSpec implements NamedAdvice;
+ 	CJPAroundSpec implements NamedAdvice;
+ 
+ 	syn lazy boolean AdviceSpec.hasGivenName() = false;
+ 	eq NamedAdvice.hasGivenName() = true;
  	
  	//propagate upwards, from AdviceSpec to CJPAdviceDecl
  	
@@ -53,10 +51,7 @@ aspect AdviceNames
  		return ret;
  	} 
 
- 	syn lazy Access CJPAdviceDecl.getGivenName() { 	
- 		return getAdviceSpec().getGivenName();
+ 	syn lazy Access CJPAdviceDecl.getName() { 	
+ 		return ((NamedAdvice)getAdviceSpec()).getName();
  	} 
- 	
- 
-
 }

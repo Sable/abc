@@ -17,4 +17,5 @@ aspect NameAnalysisCJP {
 	eq CJPAfterReturningSpec.getName().nameType() = NameType.CJPTYPE_NAME;
 	eq CJPAfterThrowingSpec.getName().nameType() = NameType.CJPTYPE_NAME;
 	eq CJPAroundSpec.getName().nameType() = NameType.CJPTYPE_NAME;
+	
 }

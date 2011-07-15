@@ -1,0 +1,18 @@
+aspect NameCheck{
+
+	/***
+	 * nameCheck is introduced for all ast nodes that implements this
+	 * interface (defined in AdviceNames.jrag):
+	 *	-CJPBeforeSpec
+	 *	-CJPAfterSpec
+	 *	-CJPAfterReturningSpec
+	 *	-CJPAfterThrowingSpec
+	 *	-CJPAroundSpec
+	 */
+	public void NamedAdvice.nameCheck(){
+		TypeAccess joinpointAccess = (TypeAccess) getName();
+		if (joinpointAccess.decls().isEmpty()){
+			error("There is not a Joinpoint declaration with the name "+joinpointAccess.typeName());
+		}
+	}	
+}
