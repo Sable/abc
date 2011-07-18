@@ -6,4 +6,37 @@ aspect NameCheck{
 	    	error("NameCheck: There is not a JPI declaration with the name "+jpiAccess.typeName());
 		}
 	}
+	
+	public void JPITypeDecl.nameCheck(){
+		TypeAccess jpiSuperAccess = (TypeAccess) getSuperTypeName();
+		if (jpiSuperAccess.getID().equals("$RootJPI$")){
+			return;
+		}
+		if(jpiSuperAccess.decls().isEmpty()){
+			error("NameCheck: There is not a JPI declaration with the name "+jpiSuperAccess.typeName());
+		}
+		
+	}
+	
+	public void JPISuperArgAccess.nameCheck(){
+	    if(decls().isEmpty())
+	      error("NameCheck: There is no argument named " + name());
+	}
+	
+	//inh SimpleSet JPISuperArgAccess.lookupVariable(String name);	
+
+	eq JPITypeDecl.getSuperArgumentName().lookupVariable(String name){
+	    for(int i = 0; i < getNumParameter(); i++)
+	      if(getParameter(i).name().equals(name))
+	        return (ParameterDeclaration)getParameter(i);
+	    return SimpleSet.emptySet;	
+	}
+
+	syn lazy SimpleSet JPISuperArgAccess.decls() {
+		SimpleSet set = lookupVariable(name());
+		return set;
+	}
+
+
+	
 }

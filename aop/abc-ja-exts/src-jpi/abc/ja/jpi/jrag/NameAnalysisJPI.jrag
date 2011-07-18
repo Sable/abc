@@ -11,4 +11,6 @@ aspect NameAnalysisJPI {
 
 	eq ExhibitBodyDecl.getJPIName().nameType() = NameType.TYPE_NAME;
 	
+	eq JPITypeDecl.getSuperTypeName().nameType() = NameType.TYPE_NAME;
+	
 }
