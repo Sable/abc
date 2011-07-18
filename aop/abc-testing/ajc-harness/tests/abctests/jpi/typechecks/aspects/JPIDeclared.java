@@ -1,6 +1,7 @@
 package aspects;
 
 import interfaces.JPI;
+import klass.klass;
 
 aspect A{
 
@@ -8,9 +9,11 @@ aspect A{
 
     before interfaces.JPI(){};
     
-    before JP2(){}; //error jpi JP2 doesn't exist.
+    before klass(){}; //error jpi JP2 doesn't exist.
+    
+    before interfaces.klass(){};
     
     before interfaces.JP2(){}; //error jpi interfaces.JP2 doesn't exist.
 
-
 }
+
