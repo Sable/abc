@@ -23,14 +23,16 @@ aspect NameCheck{
 	      error("NameCheck: There is no argument named " + name());
 	}
 	
-	//inh SimpleSet JPISuperArgAccess.lookupVariable(String name);	
-
-	eq JPITypeDecl.getSuperArgumentName().lookupVariable(String name){
+	//inh SimpleSet JPISuperArgAccess.lookupVariable(String name);
+	
+	syn lazy SimpleSet JPITypeDecl.lookupVariable(String name){
 	    for(int i = 0; i < getNumParameter(); i++)
 	      if(getParameter(i).name().equals(name))
 	        return (ParameterDeclaration)getParameter(i);
 	    return SimpleSet.emptySet;	
 	}
+
+	eq JPITypeDecl.getSuperArgumentName().lookupVariable(String name) = lookupVariable(name);
 
 	syn lazy SimpleSet JPISuperArgAccess.decls() {
 		SimpleSet set = lookupVariable(name());

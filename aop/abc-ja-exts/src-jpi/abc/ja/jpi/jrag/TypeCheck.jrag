@@ -1,0 +1,72 @@
+aspect TypeCheck{
+
+	/**
+	 * synthesized attribute isJPITypeDecl() indicates
+	 * if the TypeDecl is a JPITypeDecl or not.
+	 */
+	syn lazy boolean TypeDecl.isJPITypeDecl() = false;
+	eq JPITypeDecl.isJPITypeDecl() = true;
+	
+	syn lazy boolean JPITypeDecl.hasException(String name){
+  		for(int i = 0; i < getNumException(); i++){
+  			if(((TypeAccess)getException(i)).name().equals(name)){
+  				return true;
+  			}
+	    }
+	    return false;	
+	}
+
+	public void JPITypeDecl.typeCheck(){
+		TypeAccess jpiSuperAccess = (TypeAccess)getSuperTypeName();
+		JPITypeDecl jpiSuperDecl;
+		
+		/***
+		 * 1) check if SuperAcces is $RootJPI$
+		 * 2) check that the type of SuperAccess is JPITypeDecl.
+		 * 3) check the return types.
+		 * 4) check the exception accesses.
+		 * 5) check the arguments types.
+		 */
+		if (jpiSuperAccess.getID().equals("$RootJPI$")){
+			return;
+		}
+		
+		if (!jpiSuperAccess.type().isJPITypeDecl()){
+			error("TypeCheck: "+jpiSuperAccess.getID()+" must be a JPI not a "+jpiSuperAccess.type().typeName());
+			return;
+		}
+
+		jpiSuperDecl = (JPITypeDecl)jpiSuperAccess.type();
+		
+		if(!getTypeAccess().type().equals(jpiSuperDecl.getTypeAccess().type())){
+			error("TypeCheck: Return type must be equals");
+		}
+		
+		if(jpiSuperDecl.getNumException() > jpiSuperDecl.getNumException()){
+			error("TypeCheck: " +typeName()+" must at least defines the same exceptions of its parent.");
+		}
+		for(Access exceptionAccess: jpiSuperDecl.getExceptionList()){
+			if (!hasException(((TypeAccess)exceptionAccess).name())){
+				error("TypeCheck: "+((TypeAccess)exceptionAccess).name() +" must be declared in "+typeName());
+			}
+		}
+				
+		if(getNumSuperArgumentName() > jpiSuperDecl.getNumParameter()){
+			error("TypeCheck: There too much arguments in the extends clause.");
+		}
+		else {
+			for(int i=0; i<getNumSuperArgumentName(); i++){
+				SimpleSet childParameter = lookupVariable(getSuperArgumentName(i).variableName());
+				ParameterDeclaration parentParameter = jpiSuperDecl.getParameter(i);
+				if (childParameter.isEmpty()){
+					error("TypeCheck: "+getSuperArgumentName(i).variableName()+" doesn't exist as formal parameter of "+typeName()+" JPI.");
+					continue;
+				}
+				if (!((ParameterDeclaration)childParameter).getTypeAccess().type().equals(parentParameter.getTypeAccess().type())){
+					error("TypeCheck: Argument types must be equals.");
+				}
+				
+			}
+		}	
+	}
+}
