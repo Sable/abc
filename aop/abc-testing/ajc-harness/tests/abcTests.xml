@@ -10964,7 +10964,7 @@
 
     <ajc-test num="1621" dir="abctests/jpi/typechecks"
         title="Check JPI declared - aspect">
-        <compile files="interfaces/JPIDeclared.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
+        <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="11"/>
 	        <message kind="error" line="13"/>
         </compile>
@@ -11008,31 +11008,5 @@
 	        <message kind="error" line="25"/>
         </compile>
     </ajc-test> 
-
-    <ajc-test num="1627" dir="abctests/jpi/typechecks"
-        title="Check exception - proceed raise an Exception.">
-        <compile files="CheckJPIException3.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="31"/>
-        </compile>
-    </ajc-test> 
-
-    <ajc-test num="1628" dir="abctests/jpi/typechecks"
-        title="Check exception - proceed raise an compatibly exception.">
-        <compile files="CheckJPIException4.java" options="-ext,abc.ja.jpi" />
-    </ajc-test> 
-
-    <ajc-test num="1629" dir="abctests/jpi/typechecks"
-        title="Check exception - jpi doesn't allow the advice signature.">
-        <compile files="CheckJPIException5.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="31"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test num="1630" dir="abctests/jpi/typechecks"
-        title="Check exception - jpi doesn't allow the advice signature.">
-        <compile files="CheckJPIException6.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="31"/>
-        </compile>
-    </ajc-test>
 
 </suite>

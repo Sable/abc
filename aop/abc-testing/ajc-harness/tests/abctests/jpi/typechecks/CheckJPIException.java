@@ -6,23 +6,40 @@
 import java.io.*;
 
 jpi void JP();
-
-public class CheckJPIException{
-
-    exhibits void JP():
-        execution(* foo(..)); 
-
-    void foo(){}
-
-    public static void main(String[] args){
-        CheckJPIException ce = CheckJPIException();
-        ce.foo();
-    }
-}
+jpi void JP2();
+jpi void JP3() throws Exception;
+jpi void JP4() throws Exception;
+jpi void JP5() throws IOException;
 
 aspect A{
 
-    void around JP() throws IOException{ // error: IOException not allowed for JP
+    void around JP(){ //ok
         proceed();
     }
+    
+    void around JP2() throws IOException{ // error: IOException not allowed for JP2
+    	proceed();
+    }
+
+    void around JP3() throws IOException{
+    	proceed(); //error, can't raise Exception
+    }
+    
+    void around JP4() throws IOException{
+    	try{
+    		proceed();
+    	}
+    	catch(Exception e){
+    		throw new IOException(); //ok
+    	}
+    }
+
+    void around JP5() throws Exception{ //error, Exception not allowed for JP5
+    	proceed(); //ok
+    }
+    
+    void around JP6() throws Exception{ //error, Exception not allowed for JP5
+    	throw new Exception(); //error, base code doesn't handle Exception.
+    }
+    
 }
