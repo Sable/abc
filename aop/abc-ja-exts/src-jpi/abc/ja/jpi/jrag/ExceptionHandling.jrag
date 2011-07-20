@@ -1,0 +1,52 @@
+aspect ExceptionHandling{
+
+	inh Access Proceed.getJPIAccess();
+	eq Program.getCompilationUnit().getJPIAccess() = null;
+	eq CJPAdviceDecl.getBlock().getJPIAccess() = getName();
+	
+  	inh boolean Proceed.handlesException(TypeDecl exceptionType);
+  	eq Program.getCompilationUnit().handlesException(TypeDecl exceptionType) = false;
+  	eq CJPAdviceDecl.getBlock().handlesException(TypeDecl exceptionType){
+  		for(Access exceptionAccess : getExceptionList()){
+	    	if(exceptionType.instanceOf(exceptionAccess.type())){
+		        return true;    	
+	    	}
+	    	return false;  	
+  		}
+  	}
+	
+	public void Proceed.exceptionHandling(){
+	  for(TypeDecl exceptionType : exceptionCollection()){
+		  if(!handlesException(exceptionType)){
+			  error("ExceptionHandling: proceed may throw uncaught exception " + exceptionType.fullName());
+		  }
+	  }
+	}
+
+	syn lazy Collection<TypeDecl> Proceed.exceptionCollection() {
+	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
+	  JPITypeDecl jpiTypeDecl;
+	  HashSet<TypeDecl> set = new HashSet<TypeDecl>();
+	  
+	  if(!jpiAccess.type().isJoinpointTypeDecl()){
+		  return set;
+	  }
+	  
+	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
+	  
+	  for(Access exception : jpiTypeDecl.getExceptionList()){
+		  set.add(exception.type());
+	  }
+	  return set;
+	
+	}
+	
+	refine DeclareCodegen protected boolean Proceed.reachedException(TypeDecl catchType) {
+	  	for(TypeDecl exceptionType : exceptionCollection()){
+			if(catchType.mayCatch(exceptionType)){
+				return true;
+		  	}
+	  	}
+		return super.reachedException(catchType);
+  	}	
+}
