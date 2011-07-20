@@ -1,0 +1,24 @@
+Running test 1500: abctests/cjp/shopping/Shopping Session Example
+Commandline: abc -d abctests/cjp/shopping -warn-unused-advice:off -ext abc.ja.cjp abctests/cjp/shopping/ShoppingSession.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: java.lang.NoClassDefFoundError: jp/ac/kobe_u/cs/cream/Variable
+	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:81)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
+	... 4 more
+Caused by: java.lang.ClassNotFoundException: jp.ac.kobe_u.cs.cream.Variable
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:202)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:190)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:307)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:301)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:248)
+	... 6 more
+FAIL: Test 1500: "abctests/cjp/shopping/Shopping Session Example" failed in 2721ms, memory usage: 29451816.
+
+

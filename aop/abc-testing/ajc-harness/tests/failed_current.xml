@@ -1,3 +1,6 @@
-<suite> 
-  
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+ <ajc-test title="Shopping Session Example" num="1500" dir="abctests/cjp/shopping">
+        <compile options="-ext,abc.ja.cjp" files="ShoppingSession.java"></compile>
+    </ajc-test>
+ 
 </suite>
