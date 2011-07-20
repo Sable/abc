@@ -6,6 +6,9 @@ aspect NameAnalysisCJP {
     
     eq ClosureJoinpointAccess.getName().nameType() = NameType.CJPTYPE_NAME;
     
+    eq JoinpointTypeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
+    eq JoinpointTypeDecl.getException(int i).nameType() = NameType.TYPE_NAME;
+    
     eq MemberCJPTypeDecl.typeDecl() = getJoinpointTypeDecl(); 
     
 	syn lazy String JoinpointTypeDecl.getQualifiedName() {

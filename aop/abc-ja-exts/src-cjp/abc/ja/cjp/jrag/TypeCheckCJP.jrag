@@ -44,7 +44,7 @@ aspect TypeCheckCJP {
 		} 
 		else {
 			if (!joinpointAccess.decl().isCJPTypeDecl()){
-				error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
+				error("TypeChecking:"+joinpointAccess.decl().typeName()+" is not a valid type for JoinpointTypeDeclaration");
 				return;				
 			}
 		}
