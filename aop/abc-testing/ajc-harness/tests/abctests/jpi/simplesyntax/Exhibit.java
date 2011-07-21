@@ -8,7 +8,7 @@ jpi void JP(int amount);
 public class Exhibit{
 
     exhibits void JP(int i) : 
-    	execution (* SimpleSyntax2.foo(int)) && args(i);
+    	execution (* Exhibit.foo(int)) && args(i);
 
     void foo(int x){}
 

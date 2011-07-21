@@ -10914,7 +10914,9 @@
 
 	<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - jpi">
-        <compile files="JPI.java" options="-ext,abc.ja.jpi" />
+        <compile files="JPI.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="6" />
+		</compile>
     </ajc-test>  
 
 	<ajc-test num="1601" dir="abctests/jpi/simplesyntax"
@@ -10927,7 +10929,9 @@
 
 	<ajc-test num="1602" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - exhibit">
-        <compile files="Exhibit.java" options="-ext,abc.ja.jpi" />
+        <compile files="Exhibit.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="6" />
+		</compile>
     </ajc-test>  
 
 	<ajc-test num="1603" dir="abctests/jpi/simplesyntax"
@@ -10946,12 +10950,14 @@
         title="JPI syntax - Inheritance">
         <compile files="InheritanceSyntax.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line ="10" />	        
-		</compile>        	
+		</compile>
     </ajc-test> 
 
 	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - advice definition">
-        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
+        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="8" />        	
+        </compile>
     </ajc-test> 
 
     <ajc-test num="1620" dir="abctests/jpi/typechecks"
