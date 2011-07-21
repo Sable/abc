@@ -18,7 +18,7 @@ aspect A{
         proceed();
     }
     
-    void around JP2() throws IOException{ // error: IOException not allowed for JP2
+    void around JP2() throws IOException{ // error: JP2 can not throw exceptions.
     	proceed();
     }
 

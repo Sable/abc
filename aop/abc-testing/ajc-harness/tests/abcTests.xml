@@ -10963,77 +10963,138 @@
     <ajc-test num="1620" dir="abctests/jpi/typechecks"
         title="Check JPI declared - class">
         <compile files="interfaces/JPIDeclared.java, klass/JPIDeclared.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="3"/>
+	        <message kind="error" line="4"/>
 	        <message kind="error" line="13"/>
+	        <message kind="error" line="13"/>			
+	        <message kind="error" line="13"/>			
 	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>			
         </compile>
     </ajc-test>  
 
     <ajc-test num="1621" dir="abctests/jpi/typechecks"
         title="Check JPI declared - aspect">
         <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="11"/>
-	        <message kind="error" line="13"/>
+	        <message kind="error" line="3"/>
+	        <message kind="error" line="4"/>      	
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>			
         </compile>
     </ajc-test>
 
     <ajc-test num="1622" dir="abctests/jpi/typechecks"
         title="Check JPI inheritance">
         <compile files="CheckJPIInheritance.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="11"/>
+	        <message kind="error" line="10"/>
 	        <message kind="error" line="12"/>
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="14"/>			
+	        <message kind="error" line="18"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="21"/>
+	        <message kind="error" line="24"/>
+	        <message kind="error" line="26"/>
+	        <message kind="error" line="27"/>
         </compile>
     </ajc-test>  
-
+	
     <ajc-test num="1623" dir="abctests/jpi/typechecks"
-        title="Check JPI header">
-        <compile files="CheckJPIHeader.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="14"/>
-	        <message kind="error" line="20"/>
-	        <message kind="error" line="23"/>			
+        title="Check Exhibit">
+        <compile files="CheckJPIExhibit.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="7"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>
+	        <message kind="error" line="10"/>
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="18"/>
+	        <message kind="error" line="21"/>			
+	        <message kind="error" line="27"/>
         </compile>
     </ajc-test>
-
+	
     <ajc-test num="1624" dir="abctests/jpi/typechecks"
-        title="Check return types">
-        <compile files="CheckReturnTypes.java" options="-ext,abc.ja.jpi">
+        title="Check Exhibit Pointcut">
+        <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="7"/>
 	        <message kind="error" line="8"/>
-	        <message kind="error" line="11"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 	
     <ajc-test num="1625" dir="abctests/jpi/typechecks"
-        title="Check arguments">
-        <compile files="CheckArguments.java" options="-ext,abc.ja.jpi">
+        title="Check Advice">
+        <compile files="CheckJPIAdvice.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="7"/>
 	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>
+	        <message kind="error" line="10"/>
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="23"/>
         </compile>
     </ajc-test> 
 
     <ajc-test num="1626" dir="abctests/jpi/typechecks"
-        title="Check exception">
-        <compile files="CheckJPIException.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="25"/>
+        title="Check Advice exception">
+        <compile files="CheckJPIAdviceException.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>
+	        <message kind="error" line="10"/>
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="13"/>
+	        <message kind="error" line="21"/>
+	        <message kind="error" line="26"/>
+	        <message kind="error" line="38"/>
+	        <message kind="error" line="42"/>
         </compile>
     </ajc-test> 
 
     <ajc-test num="1627" dir="abctests/jpi/typechecks"
         title="Check Proceed">
         <compile files="CheckProceed.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="25"/>
+	        <message kind="error" line="7"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="24"/>			
         </compile>
     </ajc-test>
 
-    <ajc-test num="1628" dir="abctests/jpi/typechecks"
-        title="Check Exhibit">
-        <compile files="CheckJPIExhibit.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="25"/>
+
+    <ajc-test num="1630" dir="abctests/jpi/weaving"
+        title="Check JPI header">
+        <compile files="CheckJPIHeader.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="7"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>			
+	        <message kind="error" line="10"/>			
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="20"/>			
+	        <message kind="error" line="23"/>
         </compile>
     </ajc-test>
 
-    <ajc-test num="1629" dir="abctests/jpi/typechecks"
-        title="Check Exhibit Pointcut">
-        <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="25"/>
+    <ajc-test num="1631" dir="abctests/jpi/weaving"
+        title="Check return types">
+        <compile files="CheckReturnTypes.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="4"/>
+	        <message kind="error" line="5"/>
+	        <message kind="error" line="27"/>
         </compile>
-    </ajc-test>
+    </ajc-test> 
 	
 </suite>

@@ -2,7 +2,7 @@
  * This test checks the jpi signatures with throws clause.
  */
 
-import org.aspectj.testing.Tester;
+import java.lang.*;
 
 jpi void JP();
 jpi void JP1() throws IOException; 
@@ -26,8 +26,4 @@ public class CheckJPIHeader{
     void foo() throws IOException{}
 
     void bar() throws Exception{}
-
-    public static void main(String[] args){
-        new CheckJPIHeader().foo();
-    }
 }

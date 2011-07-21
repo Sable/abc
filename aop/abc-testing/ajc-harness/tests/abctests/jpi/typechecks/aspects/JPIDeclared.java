@@ -9,7 +9,7 @@ aspect A{
 
     before interfaces.JPI(){};
     
-    before klass(){}; //error jpi JP2 doesn't exist.
+    before klass(){}; //error, klass is a class.
     
     before interfaces.klass(){};
     
