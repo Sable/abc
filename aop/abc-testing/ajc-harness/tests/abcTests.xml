@@ -11003,10 +11003,31 @@
     </ajc-test> 
 
     <ajc-test num="1626" dir="abctests/jpi/typechecks"
-        title="Check exception - jpi without throws clause">
+        title="Check exception">
         <compile files="CheckJPIException.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="25"/>
         </compile>
     </ajc-test> 
 
+    <ajc-test num="1627" dir="abctests/jpi/typechecks"
+        title="Check Proceed">
+        <compile files="CheckProceed.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="25"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1628" dir="abctests/jpi/typechecks"
+        title="Check Exhibit">
+        <compile files="CheckJPIExhibit.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="25"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1629" dir="abctests/jpi/typechecks"
+        title="Check Exhibit Pointcut">
+        <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="25"/>
+        </compile>
+    </ajc-test>
+	
 </suite>

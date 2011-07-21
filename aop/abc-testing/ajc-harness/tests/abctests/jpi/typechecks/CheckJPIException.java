@@ -10,6 +10,7 @@ jpi void JP2();
 jpi void JP3() throws Exception;
 jpi void JP4() throws Exception;
 jpi void JP5() throws IOException;
+jpi void JP6() throws IOException;
 
 aspect A{
 
