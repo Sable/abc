@@ -95,9 +95,11 @@ aspect TypeCheck{
 			error("TypeCheck: Advice declaration must have the same quantity of parameter that "+jpiDecl.getTypeAccess().typeName());
 		}
 		else {
+			ParameterDeclaration adviceParameter;
+			ParameterDeclaration jpiParameter;
 			for(int i=0; i<jpiDecl.getNumParameter(); i++){
-				ParameterDeclaration adviceParameter = getAdviceSpec().getParameter(i);
-				ParameterDeclaration jpiParameter = jpiDecl.getParameter(i);
+				adviceParameter = getAdviceSpec().getParameter(i);
+				jpiParameter = jpiDecl.getParameter(i);
 				if(!adviceParameter.type().equals(jpiParameter.type())){
 					error("TypeCheck: Parameter "+adviceParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+adviceParameter.type().name());
 				}
@@ -128,5 +130,47 @@ aspect TypeCheck{
 				error("TypeCheck: Advice can not throw exception of type "+exceptionAccess.type().name());
 			}
 		}
+	}
+	
+	public void ExhibitBodyDecl.typeCheck(){
+	  	TypeAccess jpiAccess = (TypeAccess)getJPIName();
+	  	JPITypeDecl jpiDecl;
+	  
+		if (!jpiAccess.type().isJPITypeDecl()){
+			error("TypeCheck: "+jpiAccess.getID()+" must be a JPI not a "+jpiAccess.type().typeName());
+			return;
+		}
+		jpiDecl = (JPITypeDecl)jpiAccess.type();
+		
+		if(!getReturnType().type().equals(jpiDecl.getTypeAccess().type())){
+			error("TypeCheck: Exhibit return type: "+getReturnType().type().name()+" instead "+jpiDecl.getTypeAccess().type().name());
+		}
+		
+		if(getNumParameter() != jpiDecl.getNumParameter()){
+			error("TypeCheck: Exhibit clause must declare the same quantity of arguments that its JPI");
+		}
+		else{
+			ParameterDeclaration exhibitParameter;
+			ParameterDeclaration jpiParameter;
+			for(int i=0; i<jpiDecl.getNumParameter(); i++){
+				exhibitParameter = getParameter(i);
+				jpiParameter = jpiDecl.getParameter(i);
+				if(!exhibitParameter.type().equals(jpiParameter.type())){
+					error("TypeCheck: Exhibit parameter "+exhibitParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+exhibitParameter.type().name());
+				}
+			}
+		}
+
+		for(ParameterDeclaration parameter: getParameterList()){
+			int bindings = getPointcut().binds(parameter.name());
+			if(bindings == 0){
+				error("TypeCheck: Exhibit must bind its formal argument "+parameter.name());
+			}
+			else if(bindings > 1){
+				error("TypeCheck: Exhibit binds formal argument "+parameter.name() + " multiple times.");
+			}
+		}
+		
+			
 	}
 }

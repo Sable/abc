@@ -11,6 +11,18 @@ aspect NameAnalysisJPI {
 
 	eq ExhibitBodyDecl.getJPIName().nameType() = NameType.TYPE_NAME;
 	
+	eq ExhibitBodyDecl.getReturnType().nameType() = NameType.TYPE_NAME;
+		
 	eq JPITypeDecl.getSuperTypeName().nameType() = NameType.TYPE_NAME;
 	
+	eq ExhibitBodyDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;	
+	eq ExhibitBodyDecl.getParameter(int index).isMethodParameter() = false;
+  	eq ExhibitBodyDecl.getParameter(int index).isConstructorParameter() = false;
+  	eq ExhibitBodyDecl.getParameter(int index).isExceptionHandlerParameter() = false;
+  	eq ExhibitBodyDecl.getParameter(int index).isPointcutVariable() = true;
+  	
+  	
+    eq ExhibitBodyDecl.getPointcut().nameType() = NameType.TYPE_NAME;
+
+	eq ExhibitBodyDecl.getPointcut().getPattern(int i).nameType() = NameType.AMBIGUOUS_NAME;	
 }
