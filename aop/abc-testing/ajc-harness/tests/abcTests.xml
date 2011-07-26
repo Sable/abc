@@ -10852,6 +10852,8 @@
 	        <message kind="error" line="4"/>
 	        <message kind="error" line="5"/>
 	        <message kind="error" line="17"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="17"/>			
         </compile>
     </ajc-test>   
 
