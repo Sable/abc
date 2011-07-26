@@ -1,0 +1,15 @@
+aspect Exhibit{
+
+    syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
+    	for(ParameterDeclaration formalParameter : getParameterList()){
+    		if(formalParameter.name().equals(name)){
+                return SimpleSet.emptySet.add(formalParameter);    			
+    		}
+    	}
+        return SimpleSet.emptySet;
+    }
+
+	eq ExhibitBodyDecl.getPointcut().lookupVariable(String name){
+        return localLookupVariable(name);
+	}
+}

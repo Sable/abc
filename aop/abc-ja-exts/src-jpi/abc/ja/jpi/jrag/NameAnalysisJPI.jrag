@@ -22,7 +22,7 @@ aspect NameAnalysisJPI {
   	eq ExhibitBodyDecl.getParameter(int index).isPointcutVariable() = true;
   	
   	
-    eq ExhibitBodyDecl.getPointcut().nameType() = NameType.TYPE_NAME;
+    //eq ExhibitBodyDecl.getPointcut().nameType() = NameType.TYPE_NAME;
 
 	//eq ExhibitBodyDecl.getPointcut().getPattern(int i).nameType() = NameType.AMBIGUOUS_NAME;
 	//I commented out the above because this is not valid JastAdd syntax.
