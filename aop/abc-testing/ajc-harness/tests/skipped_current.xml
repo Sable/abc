@@ -1,3 +1,684 @@
-<suite> 
-  
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+ <ajc-test title="packages and generated inner types (for I.class)" num="132" keywords="from-java" dir="pureJava" abccomment="InterfaceAndClass.java not in directory p.  javac                     and jlc can compile without it being in correct directory.                   abc requires it to be in the directory p. July 1/04  LJH">
+        <abckeywords><skip></skip></abckeywords>
+	<compile files="InterfaceAndClass.java"></compile>
+        <run class="p.InterfaceAndClass"></run>
+    </ajc-test>
+<ajc-test title="advice on catch clauses" num="388" keywords="from-resolved_10x,knownLimitation" dir="new" abccomment="ajc fails this, since neither compiler                    supports after advice on handlers">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="CatchAdvice.java"></compile>
+        <run class="CatchAdvice"></run>
+    </ajc-test>
+<ajc-test title="holding onto proceed calls in a closure-like way" num="410" keywords="from-resolved_10x,knownLimitation" dir="new" abccomment="ajc fails in the same way as abc, due to a bug in the                    test case. Duplicated as 41001.">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="HoldProceed.java"></compile>
+        <run class="HoldProceed"></run>
+    </ajc-test>
+<ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new" abccomment="bug in test case, according to Erik Hilsdale                    (see ajc bug database: 72245,72335);                   duplicated as 41801">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="FieldInitializerJoinPoints.java"></compile>
+        <run class="FieldInitializerJoinPoints"></run>
+    </ajc-test>
+<ajc-test title="pcd if() expression visibility at compile-time  (minimal operation)" num="488" keywords="from-resolved_10x" dir="new" abccomment="tries to use target,args etc as vars in pointcut - we skip">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="IfPCDExprVisibility.java"></compile>
+        <run class="IfPCDExprVisibility"></run>
+    </ajc-test>
+<ajc-test title="advice on advice in usejavac mode" pr="456" num="492" keywords="from-resolved_10x" dir="new/pr456">
+        <compile options="-usejavac" files="Test_AroundVarBug.java,AroundVarBug.java"></compile>
+        <run class="Test_AroundVarBug"></run>
+    </ajc-test>
+<ajc-test title="functional modifiers work correctly with introduced members" num="506" keywords="from-resolved_10x" dir="new" abccomment="test depends on implementation-specific naming convention, via reflection.                   Cloned as 50601. ODM 11/08/04">
+    <abckeywords> <skip></skip> </abckeywords>
+        <compile files="IntroducedModifiers.java"></compile>
+        <run class="IntroducedModifiers"></run>
+    </ajc-test>
+<ajc-test title="functional modifiers work correctly with introduced members" num="50601" keywords="from-resolved_10x" dir="abctests/new" abccomment="test depends on implementation-specific naming convention, via reflection.                   Cloned from 506. ODM 11/08/04. Impossible to get this right                   for abc, because the field name depends on the name generator.">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="IntroducedModifiers.java"></compile>
+        <run class="IntroducedModifiers"></run>
+    </ajc-test>
+<ajc-test title="AspectOf available for different aspect types" num="524" keywords="from-resolved_10x" dir="new" abccomment="we don't support aspect as a variable name">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="AspectOf.java"></compile>
+        <run class="AspectOf"></run>
+    </ajc-test>
+<ajc-test title="enclosing join point not exported properly in pre-initialization join point" num="536" keywords="from-resolved_10x,knownLimitation" dir="new" abccomment="we do what ajc does here, which is apparently not what is expected...">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="PreInitialization.java"></compile>
+        <run class="PreInitialization"></run>
+    </ajc-test>
+<ajc-test title="after returning from initialization and after executing constructor" num="614" keywords="from-resolved_104" dir="new" abccomment="we don't support target as a variable name in pointcuts">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="ConstructorExecInit.java"></compile>
+        <run class="ConstructorExecInit"></run>
+    </ajc-test>
+<ajc-test title="after returning from initialization causes ExceptionInInitializer in aspect" num="615" dir="new" abccomment="we don't support target as a variable name in pointcuts">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="ConstructorExecInitFails.java"></compile>
+        <run class="ConstructorExecInitFails"></run>
+    </ajc-test>
+<ajc-test title="no error when public class is in file of a different name" pr="663" num="627" keywords="from-resolved_105,purejava" dir="new">
+        <compile options="-strict" files="PublicClassWrongFilename.java">
+            <message line="3" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="package typepattern with no packages (in default package)" num="633" keywords="from-resolved_105,knownLimitation" dir="new">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint" files="TypeNames.java">
+            <message line="34" kind="warning"></message>
+            <message line="39" kind="warning"></message>
+            <message line="43" kind="warning"></message>
+            <message line="47" kind="warning"></message>
+        </compile>
+        <run class="TypeNames"></run>
+    </ajc-test>
+<ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="643" keywords="from-resolved_105" dir="new" abccomment="we don't support this kind of package name usage">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="TypePat.java"></compile>
+        <run class="test.TypePat"></run>
+    </ajc-test>
+<ajc-test title="VerifyError if nested sync returning result" pr="601" num="659" keywords="from-resolved_10final,purejava" dir="new" comment="XXX inconsistent behavior?" abccomment="skipping since javac can't pass this either">
+        <compile files="NestedSyncWithResult.java"></compile>
+        <run class="NestedSyncWithResult"></run>
+        <abckeywords><skip></skip></abckeywords>
+    </ajc-test>
+<ajc-test title="compiling asserts in methods" num="669" keywords="from-14tests,purejava" dir="pureJava">
+        <compile options="-source,1.4,-usejavac" files="AssertInMethod.java"></compile>
+        <run vm="1.4" class="AssertInMethod"></run>
+    </ajc-test>
+<ajc-test title="asserts in aspect and declared methods [requires 1.4]" pr="725" num="670" keywords="from-14tests,purejava" dir="pureJava">
+        <compile options="-source,1.4,-usejavac" files="IntroducedAssertion.java"></compile>
+        <run vm="1.4" class="IntroducedAssertion"></run>
+    </ajc-test>
+<ajc-test title="around and return types + inlining optimizations" num="671" keywords="from-14tests,knownLimitation" dir="design/around" comment="-XOcodeSize not in 1.1, source uses 1.4 APIs">
+        <compile options="-XOcodeSize,-source,1.4" files="ReturnCastProceed.java,StackChecker.java">
+            <message line="68" kind="warning"></message>
+        </compile>
+        <run vm="1.4" class="ReturnCastProceed"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements" pr="386" num="674" keywords="from-broken14usejavac,purejava" dir="pureJava" abccomment="javac can't pass this test case">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfaces_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfaces_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly.                    Neither javac nor jikes pass this test.                    It used to work with javac 1.3.1. See                    http://www.geocities.com/herong_yang/jdk/unnamed_package.html                    Decided to skip 18/08/04 ODM/OL/PA/AGS">
+       <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 675 : javac can't pass this">
+       <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars2_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars2_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676 : javac can't pass this">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars3_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars3_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements" pr="386" num="678" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"></compile>
+        <run class="ImportingInnerInterfaces_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars" pr="386" num="679" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars 2" pr="386" num="680" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars2_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars2_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars 3" pr="386" num="681" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars3_PR386"></run>
+    </ajc-test>
+<ajc-test title="source locations within expressions (hard case of constructor start)" pr="885" num="689" keywords="knownLimitation" dir="new" comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved" abccomment="the pointcut in the source file refers to the wrong class, which means                   that neither abc nor ajc can pass. Cloned in 68901">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="SourceLocationWithinExprHard.java"></compile>
+        <run class="SourceLocationWithinExprHard"></run>
+    </ajc-test>
+<ajc-test title="options -warn:deprecation" num="697" dir="options/deprecated">
+      <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!eclipse,-warn:deprecation" files="WarnDeprecated.java,OldStuff.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint args()" num="699" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeArgsPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint declare parent" num="702" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeDeclareParent.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint target()" num="703" keywords="lint" dir="options">
+      <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeTargetPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint this()" num="704" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeThisPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint args()" num="705" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeArgsPCD.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint declare parent" num="706" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeDeclareParent.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint target()" num="707" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeTargetPCD.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint this()" num="708" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeThisPCD.java"></compile>
+    </ajc-test>
+<ajc-test title="testing new options" num="711" dir="new/options11" comment="XXX not validated correct yet">
+        <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>
+        
+    </ajc-test>
+<ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="718" keywords="tofix" dir="new" abccomment="abc doesn't support 'before' as an identifier inside an aspect.                 Cloned test case with different identifier name. PA">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="AfterReturningConstructor.java"></compile>
+        <run class="AfterReturningConstructor"></run>
+    </ajc-test>
+<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="AJC does not treat this as an error, and some                   programs depend on it.                   ASC 27/09/04">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="DeclareClassImplementsClass.java">
+          <message line="10" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Verify error on non-Throwable in declare soft" pr="28921" num="732" dir="bugs">
+    <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint:warning" files="DeclareSoftCf.java">
+		  <message line="28" kind="warning"></message>
+		  <message line="29" kind="error"></message>
+		  <message kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="unmatched type name in a declare parents should result in a warning in -Xlint mode" num="734" keywords="tofix" dir="new">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
+            <message line="20" kind="warning"></message>
+        </compile>
+        <run class="MissingTypeInDeclareParents"></run>
+    </ajc-test>
+<ajc-test title="declaring method on superclass and subclass" pr="852" num="738" keywords="knownLimitation" dir="new/PR852" abccomment="we can't handle packages named aspect">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="aspect/Aspect.java,target/SubClass.java,target/SuperClass.java">
+          <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
+        </compile>
+        <run class="aspect.Aspect"></run>
+    </ajc-test>
+<ajc-test title="incrementally change string size and wire in injar classes" num="770" keywords="knownLimitation" dir="incremental/stringliteral">
+        <compile staging="true" sourceroots="src" options="-incremental" files="oneInjar.jar,twoInjar.jar"></compile>
+		<run options="in packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"></dir-changes>
+        </inc-compile>
+        
+		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
+        <inc-compile tag="30">
+        	<dir-changes added="RunInjarMains"></dir-changes>
+        </inc-compile>
+		<run options="in longer packageOne.Main.main(..),       before main InjarOneMain,       before main InjarTwoMain,       before main packageOne.Main" class="packageOne.Main"></run>
+    </ajc-test>
+<ajc-test title="before():execution(new(..)) does not throw NoAspectBoundException" pr="34206" num="771" keywords="knownLimitation" dir="bugs" comment="correct behavior of this case needs to be thought through" abccomment="ajc throws the same exception at runtime that we do">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="AspectInitError.java"></compile>
+        <run class="AspectInitError"></run>
+    </ajc-test>
+<ajc-test title="declare soft and throw statements" pr="34925" num="772" dir="bugs" abccomment="bug in test itself.                   brackets around type in declare soft. Java does not                   allow bracketing of types (because of confusion with                   casts), and abc sticks to that. Cloned to 77201.                   ODM 17/08/04">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ConvertToUnchecked.java"></compile>
+        <run class="ConvertToUnchecked"></run>
+    </ajc-test>
+<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA.                   The test also imports org.aspectj.runtime.* for no                  apparent reason.">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
+                <ajcmessage line="102" kind="warning"></ajcmessage>
+        	<ajcmessage line="124" kind="warning"></ajcmessage>
+        	<ajcmessage line="138" kind="warning"></ajcmessage>
+                <message line="102" kind="warning"></message>
+        	<message line="124" kind="warning"></message>
+        </compile>
+        <run class="cap.OptionList"></run>
+    </ajc-test>
+<ajc-test title="The compiler crashes when using aspect libraries created without using -noweave" pr="36329" num="789" dir="new/options11" comment="the line number might change, we're really interested only in the files here" abccomment="this is testing binary aspects from jars and is not                supported by abc.  LJH August 23/04">
+        <abckeywords> <skip></skip></abckeywords>
+        <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
+            <message line="0" kind="error"></message>
+        </compile>
+   </ajc-test>
+<ajc-test title="expect class added in initial incremental tests" num="798" keywords="incremental-test" dir="incremental/initialTests/classAdded">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"></dir-changes>
+        </inc-compile>
+        <run skipTester="true" class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="expect class removed in initial incremental tests" num="799" keywords="incremental-test" dir="incremental/initialTests/classRemoved">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes removed="main.Target"></dir-changes>
+        </inc-compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="expect class updated in initial incremental tests" num="800" keywords="incremental-test" dir="incremental/initialTests/classUpdated">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes updated="main.Main"></dir-changes>
+        </inc-compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="add file with class" num="801" keywords="incremental-test" dir="incremental/initialTests/sourceAdded" comment="only expecting pickup if sourceroots">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"></dir-changes>
+        </inc-compile>
+        <inc-compile tag="30">
+            <dir-changes updated="main.Main"></dir-changes>
+        </inc-compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="delete source file before incremental compile" num="802" keywords="incremental-test" dir="incremental/initialTests/sourceDeleted" comment="build config should permit file deletions for incremental (sourceroots)">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="delete.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes removed="delete.DeleteMe"></dir-changes>
+        	<message line="6" kind="error" file="delete/Target.java"></message>
+        </inc-compile>
+        <inc-compile tag="30"></inc-compile> 
+        <run class="delete.Main"></run>
+    </ajc-test>
+<ajc-test title="do everything in default package (sourceroots)" num="804" keywords="incremental-test" dir="incremental/initialTests/defaultPackage">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="Main"></run>
+        <inc-compile tag="20">
+            <dir-changes added="Target"></dir-changes>
+        </inc-compile>
+        <run skipTester="true" class="Target"></run>
+        <inc-compile tag="30">
+            <dir-changes updated="Main"></dir-changes>
+        </inc-compile>
+        <run skipTester="true" class="Main"></run>
+        <inc-compile tag="40"> 
+			<message line="6" kind="error" file="Main.java"></message>
+        </inc-compile>
+        <inc-compile tag="50"></inc-compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="change sources in default package" num="806" keywords="incremental-test" dir="incremental/defaultPackage">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+        <run class="Main"></run>
+        <inc-compile tag="20"></inc-compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="change source" num="807" keywords="incremental-test" dir="incremental/interPackage">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+        <run class="app.Main"></run>
+        <inc-compile tag="20"></inc-compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="CLE: no sources" num="810" keywords="command-line-error" dir="harness" abccomment="abc fails this test because       when invoked without sources, it runs through and does nothing,       while ajc aborts with an error.">
+        <abckeywords><skip></skip></abckeywords>
+        <compile badInput="true">
+            <message text="no sources" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="CLE: no sourceroot specified for incremental" num="813" keywords="command-line-error,knownLimitation-ajdeCompiler" dir="harness" comment="ajde has same errors, different wording">
+        <compile options="-incremental" badInput="true">
+            <message text="no sources specified" kind="error"></message>
+            <message text="specify a source root" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="CLE: file specified with incremental" num="814" keywords="command-line-error,knownLimitation-ajdeCompiler" dir="harness" comment="ajde has same errors, different wording">
+        <compile options="-incremental" files="ErrorTest.java" badInput="true">
+            <message text="incremental mode only handles source files using -sourceroots" kind="error"></message>
+            <message text="no sources specified" kind="error"></message>
+            <message text="specify a source root" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="setting -warn:constructorName works" num="818" dir="harness">
+         <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-warn:constructorName" files="ConstructorNameWarning.java">
+        	<message text="constructor name" line="5" kind="warning"></message>
+    	</compile>
+    </ajc-test>
+<ajc-test title="valid XLintWarningTest file, default level of warning" num="819" dir="harness">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile files="XLintWarningTest.java">
+        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="warning"></message> 
+        </compile>
+    </ajc-test>
+<ajc-test title="XLint:error promotes XLint warnings to error" num="821" dir="harness">
+    <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint:error" files="XLintWarningTest.java">
+        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="error"></message> 
+        </compile>
+    </ajc-test>
+<ajc-test title="incrementally change only string literal, still expect advice" num="826" keywords="incremental-test" dir="incremental/stringliteral">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+		<run options="in packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"></dir-changes>
+        </inc-compile>
+		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
+    </ajc-test>
+<ajc-test title="-nowarn suppresses declare warnings" pr="38134" num="829" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-nowarn" files="WarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="-warn:none suppresses declare warnings" pr="38134" num="830" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-warn:none" files="WarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="Compiler crashes in jar and cflow (with .jar)" pr="39462" num="841" dir="bugs/cflowAndJar" comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj" abccomment="aspectpath tests should be skipped. ODM 16/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+        <compile files="TestAspect.aj,Test.java" aspectpath="lib.jar">
+        	<message line="16" kind="warning"></message>
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - interfaceOnly.jar" num="850" dir="new/interfaceLibrary" comment="prove that LibraryAspect is required" abccomment="don't do aspectpath. ODM 19/07/04">
+		<compile files="Client.java" aspectpath="interfaceOnly.jar">
+			<message line="5" kind="error"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectOnly.jar" num="851" dir="new/interfaceLibrary" abccomment="don't do aspectpath. ODM 19/07/04">
+		<compile files="lib/LibraryInterface.java,      Client.java" aspectpath="aspectOnly.jar"></compile>
+            <abckeywords> <skip></skip> </abckeywords>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar 1" num="855" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients" abccomment="abc doesn't support aspect path. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar" aspectpath="aspectOnly.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar 2" num="856" dir="new/interfaceLibrary" comment="works if source aspect and binary classpath woven with aspect?             should NOT warn about affected type not since affected type is already woven?" abccomment="abc doesn't support aspectpath. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="Client.java,LibraryAspect.java" classpath="aspectedInterfaceOnly.jar"></compile>
+			
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive binary" pr="41175" num="862" dir="bugs/interfaceLibrary">
+		<compile files="Client.java" aspectpath="lib.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - negative binary" pr="41175" num="863" dir="bugs/interfaceLibrary">
+		<compile files="ClientCE.java" aspectpath="lib.jar">
+			<message line="5" kind="error" file="ClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - positive binary" pr="41175" num="864" dir="bugs/interfaceLibrary">
+		<compile files="ClassClient.java" aspectpath="libClass.jar"></compile>
+		<run class="ClassClient"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - negative binary" pr="41175" num="865" dir="bugs/interfaceLibrary">
+		<compile files="ClassClientCE.java" aspectpath="libClass.jar">
+			<message line="5" kind="error" file="ClassClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="Weaving failure when using injars (on aspectpath)" pr="41123" num="867" dir="bugs/moreInterfaceLibrary">
+		<compile files="model/BusObj.java,model/MonitorBusObj.java" aspectpath="lib.jar">
+		</compile>
+	</ajc-test>
+<ajc-test title="Weaving failure when using injars (on classpath)" pr="41123" num="868" dir="bugs/moreInterfaceLibrary" abccomment="test with aspect in a jar - not supported by abc. ODM 27/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="model/BusObj.java,model/MonitorBusObj.java" classpath="lib.jar">
+		    <message line="3" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="Weaving failure when using injars (actual injars)" pr="41123" num="869" dir="bugs/moreInterfaceLibrary" abccomment="abc doesn't support weaving aspects from jars - error irrelevant. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
+		    <message line="3" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="(using aspectpath) percflow aspects compiled from jars share one instance for all entry points" pr="41359" num="871" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJarTest.java" aspectpath="lib.jar"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
+	</ajc-test>
+<ajc-test title="zip and jar suffixes for extdirs entries" pr="42574" num="880" dir="bugs/extdirs" abccomment="Skipping this case as we're not sure what the extdirs option          is meant to do. PA/AGS">
+		<abckeywords> <skip></skip> </abckeywords>
+		<compile files="extdirs-src/main/Main.java" extdirs="lib/lowercase"></compile>
+	</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type" pr="41952" num="888" dir="bugs">
+         <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-1.3" files="DeclaringTypeWarning.java">
+			<message text="declaring type" line="6" kind="warning">
+				<source line="12" file="DeclaringTypeWarning.java"></source>
+			</message>
+			<message text="declaring type" line="6" kind="warning">
+				<source line="14" file="DeclaringTypeWarning.java"></source>
+			</message>			
+		</compile>
+		</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)" pr="41952" num="889" dir="bugs">
+        <abckeywords><skip></skip></abckeywords>
+       		<compile options="-Xlint:ignore,-1.3" files="DeclaringTypeWarning.java">
+		</compile>
+	</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint:ignore)" pr="41952" num="890" dir="bugs">
+                <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-Xlint:ignore,-1.4" files="DeclaringTypeWarning.java">
+            <message line="12" kind="warning"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4)" pr="41952" num="891" dir="bugs">
+                <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-1.4" files="DeclaringTypeWarning.java">
+			<message text="declaring type" line="6" kind="warning">
+				<source line="14" file="DeclaringTypeWarning.java"></source>
+			</message>
+			<message text="declare warning" line="12" kind="warning">
+				<source line="19" file="DeclaringTypeWarning.java"></source>
+			</message>
+		</compile>
+	</ajc-test>
+<ajc-test title="Ensure we don't look for source on the classpath when binary not found" pr="46671" num="893" dir="bugs/faultingInSource" abccomment="we don't have -verbose">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-verbose" files="SimpleTracing.java" classpath=".">
+		  <message text="no match for this type name: SampleClass" line="4" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on abstract class not implemented by subtype" pr="49784" num="899" dir="bugs/abstractMethods">
+        <compile files="abstractClass/C.java" aspectpath="abstractClass/jars/AandB.jar">
+            <message line="1" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on interface not implemented by subtype (aspectpath)" pr="49784" num="902" dir="bugs/abstractMethods">
+        <compile files="interface/C.java" aspectpath="interface/jars/AandB.jar"></compile>
+        <run class="C"></run>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (not woven together)" pr="43972" num="909" dir="bugs/interfaceDefinition" abccomment="abc doesn't do separate compilation. ODM 19/07/04 ">
+        <abckeywords> <skip></skip> </abckeywords>
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <compile includeClassesDir="true" files="Main.java">
+        	<message line="3" kind="error"></message>
+       </compile>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (only one implementer)" pr="43972" num="911" dir="bugs/interfaceDefinition" abccomment="don't do separate compilation. ODM 19/07/04">
+     <abckeywords> <skip></skip> </abckeywords>
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <compile includeClassesDir="true" files="Main1.java"></compile>
+        <run class="Main1"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect no error 1" pr="50641" num="919" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+        <compile files="Main.java,TraceV1.aj"></compile>
+        <abckeywords> <skip></skip> </abckeywords>
+        <run class="Main"></run>
+        <compile files="TraceV2.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect error" pr="50641" num="920" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="Main.java,TraceV1.aj"></compile>
+        <run class="Main"></run>
+        <compile files="TraceRE.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect no error 2" pr="50641" num="921" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+        <compile files="Main.java,TraceWithInnerV1.aj"></compile>
+        <run class="Main"></run>
+        <compile files="TraceWithInnerV2.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="SUID: Around execution advice" pr="41181" num="929" dir="bugs/serialVersionUID" comment="OK because around_body private" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, AroundExecutionAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Around closure execution advice" pr="41181" num="931" dir="bugs/serialVersionUID" comment="Warning because around_body non-private" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile xlintfile="Xlint.properties" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj">
+            <message line="9" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: thisJoinPoint" pr="41181" num="932" dir="bugs/serialVersionUID" comment="Warning because of introduced clinit" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, TJP.aj">
+            <message line="6" kind="warning"></message>
+            <message line="13" kind="warning"></message>
+            <message line="17" kind="warning"></message>
+            <message line="24" kind="warning"></message>
+            <message line="31" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: After returning staticinitialization advice" pr="41181" num="934" dir="bugs/serialVersionUID" comment="Warning because of added clinit" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, AfterReturningStaticinitializationAdvice.aj">
+            <message line="6" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: ITD field" pr="41181" num="936" dir="bugs/serialVersionUID" comment="Error because added field may not be initialized" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:error" files="Test.java, Util.java, ITDField.aj">
+            <message line="0" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="SUID: ITD method" pr="41181" num="937" dir="bugs/serialVersionUID" comment="Warning because of added method" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, ITDMethod.aj">
+            <message line="3" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements (compile)" pr="41181" num="939" dir="bugs/serialVersionUID" comment="Warning because of added interface" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareImplements.aj">
+            <message kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements (weave)" pr="41181" num="942" dir="bugs/serialVersionUID" comment="Warning because of added interface" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="injar.jar, DeclareImplements.aj">
+            <message line="0" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Priviliged aspect" pr="41181" num="943" dir="bugs/serialVersionUID" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, PrivilegedAspect.aj">
+            <message line="1" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Perthis aspect" pr="41181" num="944" dir="bugs/serialVersionUID" comment="Warning because added of added interface MightHaveAspect. Added field is private transient" abccomment="we don't make any serialVersionUID guarantees">
+                <abckeywords><skip></skip></abckeywords>
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, PerThisAspect.aj">
+            <message line="0" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="add aspect source file and check world is rewoven" num="950" keywords="incremental-test" dir="incremental/initialTests/aspectSourceAdded">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <inc-compile tag="20">
+            <dir-changes added="Detour"></dir-changes>
+        </inc-compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="weaving from an aspectpath jar into that same jar.." pr="43714" num="955" dir="bugs">
+        <compile outjar="notAJar.jar" files="WeaveLocal.java" aspectpath="notAJar.jar">         	
+        </compile>
+    </ajc-test>
+<ajc-test title="make sure additional classes generated during weave are deleted with src class file" num="956" keywords="incremental-test" dir="incremental/initialTests/classWAroundClosureRemoved">
+      <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <inc-compile tag="20">
+            <dir-changes removed="AdviceOnIntroduced$AjcClosure1"></dir-changes>
+        </inc-compile>
+    </ajc-test>
+<ajc-test title="incremental with aspect-driven full rebuild" pr="59895" num="965" dir="incremental/full-rebuild">
+        <compile staging="true" sourceroots="src" options="-incremental">
+        	<message line="3" kind="error" file="Aspect.java"></message>
+        	</compile>
+        <inc-compile tag="20">
+        	<message line="4" kind="warning" file="Main.java"></message>
+        	</inc-compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="Double association" num="1404" dir="abctests/ra/doubleassociate">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-ext,abc.ra,-warn-unused-advice:on" files="DoubleAssociate.java"></compile>
+		<run class="DoubleAssociate"></run>
+    </ajc-test>
+<ajc-test title="Correct semantics for within pointcuts" num="1521" dir="abctests/cjp/matching">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-ext,abc.ja.cjp" files="CorrectWithinSemantics.java"></compile>
+    	<run class="CorrectWithinSemantics"></run>
+    </ajc-test>
+ 
 </suite>

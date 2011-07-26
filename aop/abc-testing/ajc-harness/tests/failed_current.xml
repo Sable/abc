@@ -1,6 +1,127 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="Shopping Session Example" num="1500" dir="abctests/cjp/shopping">
-        <compile options="-ext,abc.ja.cjp" files="ShoppingSession.java"></compile>
+ <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
+      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
+        <compile files="InnerHell.java"></compile>
+        <run class="InnerHell"></run>
+    </ajc-test>
+<ajc-test title="Not binding constructor when using more than one compilation" pr="408" num="115" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
+        <compile files="OuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ExtendsOuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
+        <run class="ConstructorNotFound_PR408"></run>
+    </ajc-test>
+<ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
+        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <message line="8" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
+      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
+        <compile files="NestedFinally.java"></compile>
+        <run class="NestedFinally"></run>
+    </ajc-test>
+<ajc-test title="interfaces with non-explicitly static inner classes" pr="680" num="190" keywords="from-java" dir="pureJava" abccomment="Probably a j2j error, reported to Jennifer July 3/04 LJH">
+        <compile files="InterfaceAndInnerHelper.java"></compile>
+        <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
+        <run class="InterfaceAndInner"></run>
+    </ajc-test>
+<ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
+        <run class="AroundInnerCalls13"></run>
+    </ajc-test>
+<ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="AroundAll.java"></compile>
+        <run class="AroundAll"></run>
+    </ajc-test>
+<ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
+        <compile files="SuperInIntroduction.java"></compile>
+        <run class="SuperInIntroduction"></run>
+    </ajc-test>
+<ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
+        <compile files="test/TypePat.java"></compile>
+        <run class="test.TypePat"></run>
+    </ajc-test>
+<ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
+        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
+          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
+        </compile>
+        <run class="pack.ImportInnerFromInterfaceImplementor"></run>
+    </ajc-test>
+<ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
+        <compile files="Finalizer.java">
+            <message line="22" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
+        <compile files="ArgsInCflowCf.java">
+            <message line="19" kind="error"></message>
+            <message line="29" kind="error"></message>
+            <message line="35" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
+        <compile files="ConvertToUnchecked.java"></compile>
+        <run class="ConvertToUnchecked"></run>
+    </ajc-test>
+<ajc-test title="arrays via Class.forName()" num="792" dir="new" comment="this is a pureJava test, but we always want to run it">
+        <compile files="ClassForName.java"></compile>
+        <run class="ClassForName"></run>
+    </ajc-test>
+<ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
+        <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
+            <message text="no sources specified" kind="error"></message>
+            <message text="bad sourceroot" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
+    	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
+            <message line="5" kind="warning"></message>
+            <message line="6" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
+	<compile files="IntArray.java"></compile>
+	<run class="IntArray"></run>
+    </ajc-test>
+<ajc-test title="cast pointcut can interact badly with jimple type assignment" num="992" dir="abctests/bugs">
+       <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
+       <run class="Cast"></run>
+    </ajc-test>
+<ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
+         <compile files="ExtraAnon.java"></compile>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
+        <run class="AdviseSelf"></run>
+    </ajc-test>
+<ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
+        <compile sourceroots="aspects/" inpath="java/"></compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getTarget()" num="1512" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="CheckTargetExposure.java"></compile>
+		<run class="CheckTargetExposure"></run>
+    </ajc-test>
+<ajc-test title="Check JPI header" num="1630" dir="abctests/jpi/weaving">
+        <compile options="-ext,abc.ja.jpi" files="CheckJPIHeader.java">
+	        <message line="7" kind="error"></message>
+	        <message line="8" kind="error"></message>
+	        <message line="9" kind="error"></message>			
+	        <message line="10" kind="error"></message>			
+	        <message line="14" kind="error"></message>
+	        <message line="20" kind="error"></message>			
+	        <message line="23" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check return types" num="1631" dir="abctests/jpi/weaving">
+        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypes.java">
+	        <message line="4" kind="error"></message>
+	        <message line="5" kind="error"></message>
+	        <message line="27" kind="error"></message>
+        </compile>
     </ajc-test>
  
 </suite>
