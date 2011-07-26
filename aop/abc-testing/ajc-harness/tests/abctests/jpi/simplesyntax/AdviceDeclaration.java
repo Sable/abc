@@ -7,7 +7,7 @@ jpi void JP(int amount);
 
 public class AdviceDeclaration{
 
-    exhibit void JP(int i):
+    exhibits void JP(int i):
         execution(* foo(..)) && args(i);
 
     void foo(int x){}

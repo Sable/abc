@@ -5,16 +5,19 @@
 import java.lang.*;
 
 jpi Integer JP(char x, Object i);
+jpi Integer JP1(char x, Object i);
 jpi Integer JP2(char x, Object i);
 
 class CheckJPIExhibit{
 
     exhibits Integer JP(char z, Object f) :
-        execution(* foo(char,Object)) && args(z,f);
+        execution(* foo(char,Object)) && args(z) && this(f);
 
-    exhibits void JP2(char l, Object k) :
+    exhibits Integer JP1(char z, Object f) :
+        execution(* foo(char,Object)) && args(z) && this(f);    
+    
+    exhibits void JP2(char l, Object k) : //wrong, return type and missed the binding for k.
         execution(* foo(..)) && args(l);
-
 }
 
 

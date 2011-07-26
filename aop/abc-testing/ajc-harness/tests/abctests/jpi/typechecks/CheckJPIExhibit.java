@@ -16,15 +16,15 @@ public class CheckJPIExhibit{
         execution(* foo(..));
 
     exhibits void JP(char l, Object k) : //wrong, return type must be the same.
-        execution(* foo(..));
+        execution(* foo(..)) && args(l,k);
 
     exhibits Integer JP3(char x, Integer i) : //wrong, arguments must have the same type. 
-        execution(* foo(..));
+        execution(* foo(..)) && args(x,i);
 
     exhibits Integer JP4(char x, Object p) : //ok
-        execution(* bar(..));
+        execution(* bar(..)) && args(x,p);
 
     exhibits Integer JP5(char x) : //wrong, must be the same quantity of args.
-        execution(* bar(..));
+        execution(* bar(..)) && args(x);
 
 }
