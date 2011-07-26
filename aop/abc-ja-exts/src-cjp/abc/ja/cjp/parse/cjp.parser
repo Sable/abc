@@ -49,11 +49,11 @@ MemberCJPTypeDecl joinpointtype_decl =
 
 MemberCJPTypeDecl joinpointtype_declexpr =
 	type.t IDENTIFIER.i LPAREN formal_parameter_list.l? RPAREN throws.tl? {:
-		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers("public"),i,new List(),t,l,tl));
+		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers(),i,new List(),t,l,tl));
 	:}
 	|
 	VOID IDENTIFIER.i LPAREN formal_parameter_list.l? RPAREN throws.tl? {:
-		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers("public"),i,new List(),new PrimitiveTypeAccess("void"),l,tl));
+		return new MemberCJPTypeDecl(new JoinpointTypeDecl(new Modifiers(),i,new List(),new PrimitiveTypeAccess("void"),l,tl));
 	:}
 ;
 

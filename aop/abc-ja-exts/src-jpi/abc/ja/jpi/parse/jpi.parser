@@ -25,11 +25,13 @@ TypeDecl type_declaration =
 JPITypeDecl jpi_declaration =     
 	JPI joinpointtype_declexpr.d SEMICOLON {:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");
 		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new CJPTypeAccess("","$RootJPI$"),new List());
 	:}
 	|
 	JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");		
 		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l);
 	:}
   ;
