@@ -10943,7 +10943,9 @@
 
 	<ajc-test num="1604" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - advice definition">
-        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" />
+        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" >
+        	<message kind="error" line ="6" />	        
+		</compile>		
     </ajc-test> 
 
 	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
@@ -11026,6 +11028,9 @@
         <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="7"/>
 	        <message kind="error" line="8"/>
+	        <message kind="error" line="9"/>			
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="19"/>			
         </compile>
     </ajc-test>
 	
