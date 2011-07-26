@@ -9,4 +9,4 @@ cp passed.xml passed_current.xml
 cp skipped.xml skipped_current.xml
 cp failed.output failed_current.output
 cp full.output full_current.output
-svn commit --username abctestbot --password abctestbot -m "automated push of current test results to repository" $FILES
+svn commit --trust-server-cert --username abctestbot --password abctestbot -m "automated push of current test results to repository" $FILES

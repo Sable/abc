@@ -13,6 +13,6 @@ shift 2
 #CLASSPATH= ant jars
 #cd ../abc-testing/ajc-harness/tests
 nice -n 5 ./runtests $* abcTests.xml # -morexml abcWholeProgramTests.xml 
-svn update $FILES
+svn update --trust-server-cert $FILES
 # perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
 ./calc_updates.pl "$ADDRESS" "$SUBJECT"
