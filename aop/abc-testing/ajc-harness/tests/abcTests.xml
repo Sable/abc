@@ -11030,7 +11030,8 @@
         <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="7"/>
 	        <message kind="error" line="8"/>
-	        <message kind="error" line="9"/>			
+	        <message kind="error" line="9"/>
+	        <message kind="error" line="17"/>			
 	        <message kind="error" line="19"/>
 	        <message kind="error" line="19"/>			
         </compile>

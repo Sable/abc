@@ -14,7 +14,7 @@ class CheckJPIExhibit{
         execution(* foo(char,Object)) && args(z) && this(f);
 
     exhibits Integer JP1(char z, Object f) :
-        execution(* foo(char,Object)) && args(z) && this(f);    
+        execution(* foo(char,Object)) && args(z,f) && this(l);  //wrong, l is not found.  
     
     exhibits void JP2(char l, Object k) : //wrong, return type and missed the binding for k.
         execution(* foo(..)) && args(l);
