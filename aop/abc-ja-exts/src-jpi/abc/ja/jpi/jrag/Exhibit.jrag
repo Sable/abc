@@ -1,5 +1,39 @@
 aspect Exhibit{
 
+	syn lazy boolean BodyDecl.isExhibit() = false;
+	eq ExhibitBodyDecl.isExhibit() = true;
+		
+
+	inh lazy Collection<ExhibitBodyDecl> CJPAdviceDecl.getExhibitDecls(JPITypeDecl jpiTypeDecl);
+	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
+	eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl){
+		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
+		ClassDecl classDecl;
+		TypeAccess jpiAccess;
+		for(TypeDecl typeDecl : getTypeDeclList()){
+			if (!typeDecl.isClassDecl()){ //aspect is considered as a class
+				continue;
+			}
+			classDecl = (ClassDecl)typeDecl;
+			for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
+				if (!bodyDecl.isExhibit()){
+					continue;
+				}			
+				jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
+				if (jpiAccess.type().equals(jpiTypeDecl)){
+					set.add((ExhibitBodyDecl)bodyDecl);
+				}
+			}
+		}
+		return set;
+	}
+	
+//	syn lazy Collection<ExhibitBodyDecl> TypeDecl.getExhibitDeclarations() = null;
+//	eq ClassDecl.getExhibitDeclarations(){
+//		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
+//		return set;
+//	}
+
     syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
     	for(ParameterDeclaration formalParameter : getParameterList()){
     		if(formalParameter.name().equals(name)){
@@ -12,4 +46,5 @@ aspect Exhibit{
 	eq ExhibitBodyDecl.getPointcut().lookupVariable(String name){
         return localLookupVariable(name);
 	}
+	
 }
