@@ -6121,7 +6121,8 @@
         <compile options="-ext,abc.ja.jpi" files="CheckJPIExhibitPointcut.aj">
 	        <message line="7" kind="error"></message>
 	        <message line="8" kind="error"></message>
-	        <message line="9" kind="error"></message>			
+	        <message line="9" kind="error"></message>
+	        <message line="17" kind="error"></message>			
 	        <message line="19" kind="error"></message>
 	        <message line="19" kind="error"></message>			
         </compile>
