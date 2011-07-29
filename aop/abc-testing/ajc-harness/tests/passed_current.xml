@@ -5964,6 +5964,10 @@
         <compile options="-ext,abc.ja.cjp" files="CheckThisExposure.java"></compile>
 		<run class="CheckThisExposure"></run>
     </ajc-test>
+<ajc-test title="Check thisJoinPoint.getTarget()" num="1512" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="CheckTargetExposure.java"></compile>
+		<run class="CheckTargetExposure"></run>
+    </ajc-test>
 <ajc-test title="Check thisJoinPoint.getArgs()" num="1513" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.cjp" files="CheckArgsExposure.java"></compile>
 		<run class="CheckArgsExposure"></run>

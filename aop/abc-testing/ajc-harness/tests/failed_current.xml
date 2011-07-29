@@ -101,10 +101,6 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="Check thisJoinPoint.getTarget()" num="1512" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.cjp" files="CheckTargetExposure.java"></compile>
-		<run class="CheckTargetExposure"></run>
-    </ajc-test>
 <ajc-test title="Check JPI header" num="1630" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckJPIHeader.java">
 	        <message line="7" kind="error"></message>
