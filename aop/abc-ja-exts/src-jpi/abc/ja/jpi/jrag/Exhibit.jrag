@@ -4,7 +4,7 @@ aspect Exhibit{
 	eq ExhibitBodyDecl.isExhibit() = true;
 		
 
-	inh lazy Collection<ExhibitBodyDecl> CJPAdviceDecl.getExhibitDecls(JPITypeDecl jpiTypeDecl);
+	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);
 	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
 	eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
@@ -27,12 +27,6 @@ aspect Exhibit{
 		}
 		return set;
 	}
-	
-//	syn lazy Collection<ExhibitBodyDecl> TypeDecl.getExhibitDeclarations() = null;
-//	eq ClassDecl.getExhibitDeclarations(){
-//		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
-//		return set;
-//	}
 
     syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
     	for(ParameterDeclaration formalParameter : getParameterList()){
@@ -46,5 +40,9 @@ aspect Exhibit{
 	eq ExhibitBodyDecl.getPointcut().lookupVariable(String name){
         return localLookupVariable(name);
 	}
+	
+	inh lazy TypeDecl ExhibitBodyDecl.getHostType();
+	
+	eq TypeDecl.getBodyDecl().getHostType() = hostType();
 	
 }

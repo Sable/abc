@@ -21,11 +21,9 @@ aspect NameAnalysisJPI {
   	eq ExhibitBodyDecl.getParameter(int index).isExceptionHandlerParameter() = false;
   	eq ExhibitBodyDecl.getParameter(int index).isPointcutVariable() = true;
   	
-  	
-    //eq ExhibitBodyDecl.getPointcut().nameType() = NameType.TYPE_NAME;
-
-	//eq ExhibitBodyDecl.getPointcut().getPattern(int i).nameType() = NameType.AMBIGUOUS_NAME;
-	//I commented out the above because this is not valid JastAdd syntax.
-	//An attribute name can only follow a single method call, not two nested calls such as
-	//getPointcut().getPattern(int i). (Eric)
+	refine NameAnalysisCJP eq CJPBeforeSpec.getName().nameType() = NameType.TYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterSpec.getName().nameType() = NameType.TYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterReturningSpec.getName().nameType() = NameType.TYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterThrowingSpec.getName().nameType() = NameType.TYPE_NAME;
+	refine NameAnalysisCJP eq CJPAroundSpec.getName().nameType() = NameType.TYPE_NAME;
 }

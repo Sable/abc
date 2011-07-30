@@ -1,0 +1,44 @@
+aspect CodeGen {
+
+	public void JPITypeDecl.jimplify2() {
+		//TODO fill in
+  	}
+
+	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
+	  Pointcut parentPointcut, hierarchyPointcut;
+	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
+	  JPITypeDecl jpiTypeDecl;
+	  JPITypeDecl currentJPITypeDecl;
+	  HashSet<CJPAdviceDecl> cjpAdviceSet = new HashSet<CJPAdviceDecl>();
+	  HashSet<Pointcut> hierarchyPointcuts = new HashSet<Pointcut>();
+	  
+	  if (!jpiAccess.type().isJPITypeDecl()){
+		  return null;
+	  }
+	  
+	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
+	  	  
+	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos());
+
+	  HashMap<JPITypeDecl, Object> jpiHierarchy = jpiTypeDecl.getHierarchy();
+	  for(CJPAdviceDecl cjpAdviceDecl : getAdviceDecls()){
+		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)cjpAdviceDecl.getName()).type();
+		  if(containsKey(jpiHierarchy,currentJPITypeDecl)){
+			  cjpAdviceSet.add(cjpAdviceDecl);
+		  }
+	  }
+	  
+	  for(CJPAdviceDecl cjpAdviceDecl : cjpAdviceSet){
+		  CJPPointcutExpr currentCJPPointcutExpr = (CJPPointcutExpr)(cjpAdviceDecl.getPointcutExpr());
+		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)((CJPAdviceDecl)cjpAdviceDecl).getName()).type();
+		  hierarchyPointcuts.add(extractPointcuts(currentCJPPointcutExpr.getExhibitDecls(currentJPITypeDecl),pos()));
+	  }
+	  
+	  if (hierarchyPointcuts.size() > 0){
+		  hierarchyPointcut = makeOrPointcuts(hierarchyPointcuts.iterator(), hierarchyPointcuts.size(), pos());		  
+		  parentPointcut = AndPointcut.construct(parentPointcut, NotPointcut.construct(hierarchyPointcut, pos()), pos());
+	  }
+	  return parentPointcut;
+	
+	}
+}

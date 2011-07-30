@@ -38,7 +38,8 @@ aspect NameCheck{
 		SimpleSet set = lookupVariable(name());
 		return set;
 	}
-
-
 	
+	public void DummyAccess.nameCheck(){
+		//FIXME: probably there is a better way to solve the $RootJPI$ access.
+	}
 }

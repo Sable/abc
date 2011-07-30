@@ -16,9 +16,5 @@ import soot.coffi.CONSTANT_Utf8_info;
 import soot.tagkit.SourceFileTag;
 
 aspect JimplifyJPI {
-
-  public void JPITypeDecl.jimplify2() {
-	//TODO fill in
-  }
   
 }
