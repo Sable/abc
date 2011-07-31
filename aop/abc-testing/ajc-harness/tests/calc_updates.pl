@@ -141,3 +141,7 @@ print "Skipped: ";
 &dodiffnum(\%newskipped,\%oldskipped);
 
 &dodiff(\%newfailed,\%oldfailed);
+
+#append failed.out
+open FAILED, "< failed.out";
+print <FAILED>;
