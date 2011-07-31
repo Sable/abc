@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1210ms, memory usage: 16396504.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 607ms, memory usage: 16446840.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1198ms, memory usage: 16706608.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1063ms, memory usage: 16585952.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 701ms, memory usage: 19358496.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 720ms, memory usage: 19334504.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 576ms, memory usage: 8009504.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 576ms, memory usage: 8024176.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,23 +36,23 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1023ms, memory usage: 14516528.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1028ms, memory usage: 14553344.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@172dd817.foo calls Outer$Inner@42c5d9e4.mi
+Outer@28890af2.foo calls Outer$Inner@3d2daaa8.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@42c5d9e4.mi calls java.io.PrintStream@4b6429fb.println
+Outer$Inner@3d2daaa8.mi calls java.io.PrintStream@11f1af9.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@172dd817.foo calls Outer$InnerRandom@32647cd5.nextHook
+Outer@28890af2.foo calls Outer$InnerRandom@4235cdc1.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@32647cd5.nextHook calls Outer$InnerRandom@32647cd5.next
+Outer$InnerRandom@4235cdc1.nextHook calls Outer$InnerRandom@4235cdc1.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@172dd817.foo calls X.nextInt
+Outer@28890af2.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -63,7 +63,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$4$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -72,7 +72,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2244ms, memory usage: 14142216.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2276ms, memory usage: 14158960.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -87,7 +87,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$24$around$1600(AroundAll.java:199)
+	at A.inline$27$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -96,7 +96,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2584ms, memory usage: 13579904.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2618ms, memory usage: 13607152.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -114,7 +114,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1754ms, memory usage: 11734744.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1858ms, memory usage: 11759216.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -138,26 +138,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2059ms, memory usage: 13350856.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2093ms, memory usage: 13356000.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 654ms, memory usage: 18228496.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 646ms, memory usage: 18249864.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 681ms, memory usage: 17336016.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 684ms, memory usage: 17364056.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 796ms, memory usage: 13590344.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 808ms, memory usage: 13614672.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -165,7 +165,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 749ms, memory usage: 20105896.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 750ms, memory usage: 20129720.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -189,7 +189,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:248)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1189ms, memory usage: 13787344.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1194ms, memory usage: 13552752.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -205,13 +205,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 700ms, memory usage: 30448104.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 687ms, memory usage: 30363408.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 213ms, memory usage: 11620392.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 213ms, memory usage: 11686936.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -220,7 +220,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 616ms, memory usage: 21914384.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 613ms, memory usage: 21977672.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -245,7 +245,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2481ms, memory usage: 12863968.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2510ms, memory usage: 12923504.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -266,7 +266,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 738ms, memory usage: 42733368.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 735ms, memory usage: 31310848.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -275,38 +275,234 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1129ms, memory usage: 23306504.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1209ms, memory usage: 29225472.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 543ms, memory usage: 14094168.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 541ms, memory usage: 14092120.
 
 
-Running test 1630: abctests/jpi/weaving/Check JPI header
+Running test 1600: abctests/jpi/simplesyntax/JPI syntax - jpi
+Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/JPI.java 
+Compilation succeeded but was expected to fail.
+FAIL: Test 1600: "abctests/jpi/simplesyntax/JPI syntax - jpi" failed in 2184ms, memory usage: 36539368.
+
+
+Running test 1602: abctests/jpi/simplesyntax/JPI syntax - exhibit
+Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/Exhibit.java 
+Compilation succeeded but was expected to fail.
+FAIL: Test 1602: "abctests/jpi/simplesyntax/JPI syntax - exhibit" failed in 960ms, memory usage: 36741560.
+
+
+Running test 1604: abctests/jpi/simplesyntax/JPI syntax - advice definition
+Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/AdviceDeclaration.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: polyglot.util.InternalCompilerError: abctests/jpi/simplesyntax/AdviceDeclaration.java:21: Advice formal i not found
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:202)
+	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:540)
+	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:275)
+	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:312)
+	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:482)
+	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:153)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
+	... 4 more
+Caused by: polyglot.util.InternalCompilerError: Advice formal i not found
+	at abc.weaving.aspectinfo.AdviceDecl.getFormalType(AdviceDecl.java:92)
+	at abc.weaving.matching.AdviceFormals.getAbcType(AdviceFormals.java:50)
+	at abc.weaving.aspectinfo.ArgVar.matchesAt(ArgVar.java:53)
+	at abc.weaving.aspectinfo.Args.matchesAt(Args.java:132)
+	at abc.weaving.aspectinfo.AndPointcut.matchesAt(AndPointcut.java:65)
+	at abc.weaving.aspectinfo.AndPointcut.matchesAt(AndPointcut.java:65)
+	at abc.weaving.matching.AdviceApplication$2.run(AdviceApplication.java:115)
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:192)
+	... 10 more
+FAIL: Test 1604: "abctests/jpi/simplesyntax/JPI syntax - advice definition" failed in 1158ms, memory usage: 56085264.
+
+
+Running test 1606: abctests/jpi/simplesyntax/JPI syntax - advice definition
+Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/ThrowsSyntax.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: polyglot.util.InternalCompilerError: abctests/jpi/simplesyntax/ThrowsSyntax.java:21: Advice formal i not found
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:202)
+	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:540)
+	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:275)
+	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:312)
+	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:482)
+	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:153)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
+	... 4 more
+Caused by: polyglot.util.InternalCompilerError: Advice formal i not found
+	at abc.weaving.aspectinfo.AdviceDecl.getFormalType(AdviceDecl.java:92)
+	at abc.weaving.matching.AdviceFormals.getAbcType(AdviceFormals.java:50)
+	at abc.weaving.aspectinfo.ArgVar.matchesAt(ArgVar.java:53)
+	at abc.weaving.aspectinfo.Args.matchesAt(Args.java:132)
+	at abc.weaving.aspectinfo.AndPointcut.matchesAt(AndPointcut.java:65)
+	at abc.weaving.aspectinfo.AndPointcut.matchesAt(AndPointcut.java:65)
+	at abc.weaving.matching.AdviceApplication$2.run(AdviceApplication.java:115)
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:192)
+	... 10 more
+FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - advice definition" failed in 1176ms, memory usage: 67483152.
+
+
+Running test 1620: abctests/jpi/typechecks/Check JPI declared - class
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/interfaces/JPIDeclared.java abctests/jpi/typechecks/klass/JPIDeclared.java 
+Compilation produced an unexpected number of errors: 6, should be 8
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:13: NameCheck: There is not a JPI declaration with the name JP2
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:13: TypeCheck: JP2 must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:13,19: no visible type named JP2
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:16: NameCheck: There is not a JPI declaration with the name interfaces.JP2
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:16: TypeCheck: JP2 must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/klass/JPIDeclared.java:16,19: no visible type named interfaces.JP2
+FAIL: Test 1620: "abctests/jpi/typechecks/Check JPI declared - class" failed in 1002ms, memory usage: 21580456.
+
+
+Running test 1621: abctests/jpi/typechecks/Check JPI declared - aspect
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/interfaces/JPIDeclared.java abctests/jpi/typechecks/klass/klass.java abctests/jpi/typechecks/aspects/JPIDeclared.java 
+Compilation produced an unexpected number of errors: 4, should be 6
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/aspects/JPIDeclared.java:12: TypeCheck: klass must be a JPI not a klass.klass
+Semantic Error at abctests/jpi/typechecks/aspects/JPIDeclared.java:16: NameCheck: There is not a Joinpoint declaration with the name interfaces.JP2
+Semantic Error at abctests/jpi/typechecks/aspects/JPIDeclared.java:16: TypeCheck: JP2 must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/aspects/JPIDeclared.java:16,12: no visible type named interfaces.JP2
+FAIL: Test 1621: "abctests/jpi/typechecks/Check JPI declared - aspect" failed in 887ms, memory usage: 21998280.
+
+
+Running test 1622: abctests/jpi/typechecks/Check JPI inheritance
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckJPIInheritance.java 
+Compilation produced an unexpected number of errors: 9, should be 12
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:12: NameCheck: There is not a JPI declaration with the name J
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:12: TypeCheck: J must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:12,36: no visible type named J
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:14: NameCheck: There is no argument named item
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:14: TypeCheck: item doesn't exist as formal parameter of JP4 JPI.
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:18: TypeCheck: Return type must be equals
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:19: TypeCheck: Argument types must be equals.
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:24: TypeCheck: Exception must be declared in JP11
+Semantic Error at abctests/jpi/typechecks/CheckJPIInheritance.java:27: TypeCheck: There too much arguments in the extends clause.
+FAIL: Test 1622: "abctests/jpi/typechecks/Check JPI inheritance" failed in 902ms, memory usage: 22247112.
+
+
+Running test 1623: abctests/jpi/typechecks/Check Exhibit
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckJPIExhibit.java 
+Compilation produced an unexpected number of errors: 6, should be 11
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:15: NameCheck: There is not a JPI declaration with the name JP1
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:15: TypeCheck: JP1 must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:15,19: no visible type named JP1
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:18: TypeCheck: Exhibit return type: void instead Integer
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:21: TypeCheck: Exhibit parameter i must be the type of Object instead Integer
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibit.java:27: TypeCheck: Exhibit clause must declare the same quantity of arguments that its JPI
+FAIL: Test 1623: "abctests/jpi/typechecks/Check Exhibit" failed in 975ms, memory usage: 22495488.
+
+
+Running test 1624: abctests/jpi/typechecks/Check Exhibit Pointcut
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckJPIExhibitPointcut.aj 
+Compilation produced an unexpected number of errors: 3, should be 6
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibitPointcut.aj:17,60: l not found
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibitPointcut.aj:19: TypeCheck: Exhibit must bind its formal argument k
+Semantic Error at abctests/jpi/typechecks/CheckJPIExhibitPointcut.aj:19: TypeCheck: Exhibit return type: void instead Integer
+FAIL: Test 1624: "abctests/jpi/typechecks/Check Exhibit Pointcut" failed in 958ms, memory usage: 21745992.
+
+
+Running test 1625: abctests/jpi/typechecks/Check Advice
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckJPIAdvice.java 
+Compilation produced an unexpected number of errors: 6, should be 11
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:15: NameCheck: There is not a Joinpoint declaration with the name JP1
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:15: TypeCheck: JP1 must be a JPI not a Unknown
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:15,17: no visible type named JP1
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:17: TypeCheck: Advice return type: void instead Integer
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:19: TypeCheck: Parameter i must be the type of Object instead Integer
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdvice.java:23: TypeCheck: Advice declaration must have the same quantity of parameter that Integer
+FAIL: Test 1625: "abctests/jpi/typechecks/Check Advice" failed in 925ms, memory usage: 21995648.
+
+
+Running test 1626: abctests/jpi/typechecks/Check Advice exception
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckJPIAdviceException.java 
+Compilation produced an unexpected number of errors: 4, should be 10
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdviceException.java:21: TypeCheck: Advice can not throws exceptions.
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdviceException.java:26: ExceptionHandling: proceed may throw uncaught exception java.lang.Exception
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdviceException.java:38: TypeCheck: Advice can not throw exception of type Exception
+Semantic Error at abctests/jpi/typechecks/CheckJPIAdviceException.java:42: TypeCheck: Advice can not throw exception of type Exception
+FAIL: Test 1626: "abctests/jpi/typechecks/Check Advice exception" failed in 898ms, memory usage: 22244072.
+
+
+Running test 1627: abctests/jpi/typechecks/Check Proceed
+Commandline: abc -d abctests/jpi/typechecks -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/CheckProceed.java 
+Compilation produced an unexpected number of errors: 3, should be 6
+Actual errors found: 
+Semantic Error at abctests/jpi/typechecks/CheckProceed.java:14: ExceptionHandling: proceed may throw uncaught exception java.lang.Exception
+Semantic Error at abctests/jpi/typechecks/CheckProceed.java:19: ExceptionHandling: proceed may throw uncaught exception java.lang.Exception
+Semantic Error at abctests/jpi/typechecks/CheckProceed.java:24: ExceptionHandling: proceed may throw uncaught exception java.lang.Exception
+FAIL: Test 1627: "abctests/jpi/typechecks/Check Proceed" failed in 886ms, memory usage: 22493840.
+
+
+Running test 1630: abctests/jpi/weaving/Check Weave
+Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckWeave.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: java.util.NoSuchElementException
+	at soot.util.HashChain.getFirst(HashChain.java:315)
+	at soot.PatchingChain.getFirst(PatchingChain.java:217)
+	at soot.PatchingChain.getFirst(PatchingChain.java:40)
+	at soot.toolkits.graph.ExceptionalUnitGraph.buildHeadsAndTails(ExceptionalUnitGraph.java:747)
+	at soot.toolkits.graph.ExceptionalUnitGraph.initialize(ExceptionalUnitGraph.java:284)
+	at soot.toolkits.graph.ExceptionalUnitGraph.<init>(ExceptionalUnitGraph.java:149)
+	at soot.toolkits.graph.ExceptionalUnitGraph.<init>(ExceptionalUnitGraph.java:181)
+	at soot.jimple.toolkits.scalar.CopyPropagator.internalTransform(CopyPropagator.java:101)
+	at soot.BodyTransformer.transform(BodyTransformer.java:51)
+	at soot.Transform.apply(Transform.java:104)
+	at soot.BodyPack.internalApply(BodyPack.java:49)
+	at soot.Pack.apply(Pack.java:124)
+	at soot.PackManager.runBodyPacks(PackManager.java:794)
+	at soot.PackManager.runBodyPacks(PackManager.java:463)
+	at soot.PackManager.runBodyPacks(PackManager.java:380)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 1630: "abctests/jpi/weaving/Check Weave" failed in 1256ms, memory usage: 55284952.
+
+
+Running test 1632: abctests/jpi/weaving/Check JPI header
 Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckJPIHeader.java 
-Found an unexpected error - should be on line 9, but is on line 8.
-Errors found during this compilation:
-Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:7: no visible type named $RootJPI$
-Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:8: no visible type named $RootJPI$
+Compilation produced an unexpected number of errors: 3, should be 7
+Actual errors found: 
 Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:8,23: no visible type named IOException
-Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:9: no visible type named $RootJPI$
-Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:10: no visible type named $RootJPI$
 Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:10,23: no visible type named IOException
 Semantic Error at abctests/jpi/weaving/CheckJPIHeader.java:26,23: no visible type named IOException
-FAIL: Test 1630: "abctests/jpi/weaving/Check JPI header" failed in 892ms, memory usage: 21788720.
+FAIL: Test 1632: "abctests/jpi/weaving/Check JPI header" failed in 907ms, memory usage: 35988200.
 
 
-Running test 1631: abctests/jpi/weaving/Check return types
+Running test 1633: abctests/jpi/weaving/Check return types
 Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckReturnTypes.java 
-Compilation produced an unexpected number of errors: 4, should be 3
+Compilation produced an unexpected number of errors: 2, should be 3
 Actual errors found: 
-Semantic Error at abctests/jpi/weaving/CheckReturnTypes.java:4: no visible type named $RootJPI$
-Semantic Error at abctests/jpi/weaving/CheckReturnTypes.java:5: no visible type named $RootJPI$
 Semantic Error at abctests/jpi/weaving/CheckReturnTypes.java:9: TypeCheck: Exhibit return type: Number instead Integer
 Semantic Error at abctests/jpi/weaving/CheckReturnTypes.java:27: TypeCheck: Advice return type: int instead Object
-FAIL: Test 1631: "abctests/jpi/weaving/Check return types" failed in 913ms, memory usage: 22033576.
+FAIL: Test 1633: "abctests/jpi/weaving/Check return types" failed in 923ms, memory usage: 36238872.
 
 
