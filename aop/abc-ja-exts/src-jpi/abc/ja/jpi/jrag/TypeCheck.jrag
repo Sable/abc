@@ -92,7 +92,7 @@ aspect TypeCheck{
 		}
 		
 		if (jpiDecl.getNumParameter() != getAdviceSpec().getNumParameter()){
-			error("TypeCheck: Advice declaration must have the same quantity of parameter that "+jpiDecl.getTypeAccess().typeName());
+			error("TypeCheck: Advice declaration must have the same quantity of parameter that "+jpiDecl.getID());
 		}
 		else {
 			ParameterDeclaration adviceParameter;
