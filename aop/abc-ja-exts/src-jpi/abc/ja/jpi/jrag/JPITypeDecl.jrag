@@ -1,0 +1,50 @@
+aspect JPITypeDecl{
+	
+	syn boolean JPITypeDecl.hasChildren(){
+		return hasJPIChildren(this);
+	}
+	
+	inh lazy boolean JPITypeDecl.hasJPIChildren(JPITypeDecl jpiTypeDecl);
+	eq Program.getCompilationUnit().hasJPIChildren(JPITypeDecl jpiTypeDecl) = false;
+	eq CompilationUnit.getTypeDecl().hasJPIChildren(JPITypeDecl jpiTypeDecl){
+		TypeAccess jpiSuperAccess;
+		for(TypeDecl typeDecl : getTypeDeclList()){
+			if(!typeDecl.isJPITypeDecl()){
+				continue;
+			}
+			jpiSuperAccess = (TypeAccess)((JPITypeDecl)typeDecl).getSuperTypeName();
+			if (jpiSuperAccess.type().equals(jpiTypeDecl)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	syn HashMap<JPITypeDecl,Object> JPITypeDecl.getHierarchy(){
+		return getJPIHierarchy(this);
+	}
+
+	inh lazy HashMap<JPITypeDecl,Object> JPITypeDecl.getJPIHierarchy(JPITypeDecl jpiTypeDecl);
+	eq Program.getCompilationUnit().getJPIHierarchy(JPITypeDecl jpiTypeDecl) = null;
+	eq CompilationUnit.getTypeDecl().getJPIHierarchy(JPITypeDecl jpiTypeDecl){
+		TypeAccess jpiSuperAccess;
+		HashMap<JPITypeDecl, Object> root = new HashMap<JPITypeDecl, Object>();		
+		HashMap<JPITypeDecl, Object> children;
+		for(TypeDecl typeDecl : getTypeDeclList()){
+			if(!typeDecl.isJPITypeDecl()){
+				continue;
+			}
+			children = new HashMap<JPITypeDecl, Object>();
+			jpiSuperAccess = (TypeAccess)((JPITypeDecl)typeDecl).getSuperTypeName();
+			if (jpiSuperAccess.type().equals(jpiTypeDecl)){
+				children = ((JPITypeDecl)typeDecl).getJPIHierarchy((JPITypeDecl)typeDecl);
+				root.put((JPITypeDecl)typeDecl, children);
+			}
+		}
+		return root;
+	}
+
+	syn lazy boolean BodyDecl.isCJPAdviceDecl() = false;
+	eq CJPAdviceDecl.isCJPAdviceDecl() = true;
+	
+}

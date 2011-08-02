@@ -18,7 +18,7 @@ aspect CodeGen {
 	  
 	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
 	  	  
-	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos());
+	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
 
 	  HashMap<JPITypeDecl, Object> jpiHierarchy = jpiTypeDecl.getHierarchy();
 	  for(CJPAdviceDecl cjpAdviceDecl : getAdviceDecls()){
@@ -31,14 +31,14 @@ aspect CodeGen {
 	  for(CJPAdviceDecl cjpAdviceDecl : cjpAdviceSet){
 		  CJPPointcutExpr currentCJPPointcutExpr = (CJPPointcutExpr)(cjpAdviceDecl.getPointcutExpr());
 		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)((CJPAdviceDecl)cjpAdviceDecl).getName()).type();
-		  hierarchyPointcuts.add(extractPointcuts(currentCJPPointcutExpr.getExhibitDecls(currentJPITypeDecl),pos()));
+		  hierarchyPointcuts.add(extractPointcuts(currentCJPPointcutExpr.getExhibitDecls(currentJPITypeDecl),pos(),true));
 	  }
 	  
 	  if (hierarchyPointcuts.size() > 0){
 		  hierarchyPointcut = makeOrPointcuts(hierarchyPointcuts.iterator(), hierarchyPointcuts.size(), pos());		  
 		  parentPointcut = AndPointcut.construct(parentPointcut, NotPointcut.construct(hierarchyPointcut, pos()), pos());
 	  }
-	  return parentPointcut;
-	
+	  
+	  return parentPointcut;	
 	}
 }
