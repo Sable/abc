@@ -10941,9 +10941,7 @@
 
 	<ajc-test num="1604" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - advice definition">
-        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" >
-        	<message kind="error" line ="6" />	        
-		</compile>		
+        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" />
     </ajc-test> 
 
 	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
@@ -10954,10 +10952,8 @@
     </ajc-test> 
 
 	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
-        title="JPI syntax - advice definition">
-        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line ="8" />        	
-        </compile>
+        title="JPI throw syntax">
+        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
     </ajc-test> 
 
     <ajc-test num="1620" dir="abctests/jpi/typechecks"
@@ -11059,6 +11055,13 @@
         title="Check Poincut">
         <compile files="CheckPointcutExpressions.java" options="-ext,abc.ja.jpi" />
     </ajc-test>
+
+    <ajc-test num="1632" dir="abctests/jpi/weaving"
+        title="Check Poincut Args">
+        <compile files="CheckPointcutExpressionsArgs.java" options="-ext,abc.ja.jpi" />
+		<run class="CheckPointcutExpressionsArgs" />
+    </ajc-test>
+
 
 <!--
     <ajc-test num="1632" dir="abctests/jpi/weaving"
