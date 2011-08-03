@@ -1,41 +1,26 @@
+jpi int JP(int i);
 
-jpi void JP();
-jpi void JP1() extends JP();
-jpi void JP2() extends JP();
-jpi void J1() extends JP1();
-jpi void J2() extends JP2();
-jpi void A1() extends J2();
-jpi void A2() extends J2();
-
-class C{
-	exhibits void JP1() : call(* foo());
-}
-
-class X{
-	exhibits void JP1() : call(* foo(..)) && within(X);
-}
-
-class Q{
-	exhibits void JP1() : execution(* bar());
-	exhibits void J1() : call(* bar(..)) && within(Q);
-}
-
-aspect A{
+public class C{
 	
-	exhibits void JP1() : cflow(execution(* foo()));
-
+	exhibits int JP(int h): call(* *.foo(..)) && args(h);
 	
-	void around JP1(){
-		
+	public void foo(int t){
+		new A().foo(6);
 	}
 	
-	void around J1(){}
-	/*
-	void around JP1(){}
+	public static void main(String[] args){
+		new C().foo(6);
+	}
 	
-	void around JP2(){}
-	
-	void around A1(){}
-	*/
+}
 
+class A{
+	public void foo(int l){}
+}
+
+aspect Z{
+	
+	/*int around JP(int k){
+		return proceed(k);
+	}*/
 }
