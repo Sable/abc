@@ -1,0 +1,46 @@
+aspect AdviceCodegen{
+
+
+  public abc.weaving.aspectinfo.AdviceSpec CJPAroundSpec.adviceSpec() {
+    MethodCategory.register(proceedSig(), MethodCategory.PROCEED);
+    AbcType return_type = AbcFactory.AbcType(returnType().getSootType());
+    return new abc.ja.jpi.weaving.CJPAroundAdvice(return_type, proceedSig(), pos(), (TypeAccess)getName());
+  }
+
+  protected void CJPAdviceDecl.createAspectInfo() {
+    int[] jp_params = implicitParameters();
+    Pointcut pc = getPointcutExpr().pointcut();
+    LinkedList methods = new LinkedList();
+    getBlock().addAllEnclosedMethodSigs(methods);
+
+    globalAspectInfo().addAdviceDecl(new abc.ja.jpi.weaving.CJPAdviceDecl(
+      getAdviceSpec().adviceSpec(),
+      pc,
+      methodSig(),
+      aspectClass(),
+      jp_params[0] /*jp*/,
+      jp_params[1] /*jpsp*/,
+      jp_params[2] /*ejp*/,
+      methods,
+      pos(),
+      (TypeAccess)getName()
+    ));
+  }
+
+	public abc.weaving.aspectinfo.AdviceSpec CJPAfterReturningSpec.adviceSpec() {
+		if (hasReturnParameter())
+			return new abc.ja.jpi.weaving.CJPAfterReturningArgAdvice(getReturnParameter().formal(),
+					pos(),(TypeAccess)getName());
+		else
+			return new abc.ja.jpi.weaving.CJPAfterReturningAdvice(pos(),(TypeAccess)getName());
+	}
+
+
+  public abc.weaving.aspectinfo.AdviceSpec CJPAfterThrowingSpec.adviceSpec() {
+    if(hasExceptionParameter())
+      return new abc.ja.jpi.weaving.CJPAfterThrowingArgAdvice(
+                    getExceptionParameter().formal(), pos(),(TypeAccess)getName());
+    else
+      return new abc.ja.jpi.weaving.CJPAfterThrowingAdvice(pos(),(TypeAccess)getName());
+  }  
+}

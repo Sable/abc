@@ -6,7 +6,9 @@ aspect Exhibit{
 
 	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);
 	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
-	eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl){
+	eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl) = getExhibitDecls(jpiTypeDecl); 
+	
+	syn lazy Collection<ExhibitBodyDecl> CompilationUnit.getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
 		TypeAccess jpiAccess;
@@ -44,5 +46,11 @@ aspect Exhibit{
 	inh lazy TypeDecl ExhibitBodyDecl.getHostType();
 	
 	eq TypeDecl.getBodyDecl().getHostType() = hostType();
+	
+    public String ExhibitBodyDecl.positionInfo() {
+        return "Exhibit "+getHostType().name() + "." + getJPIName().typeName()
+            +" ("+pos().file()
+            +", line "+pos().line()+")";
+    }
 	
 }

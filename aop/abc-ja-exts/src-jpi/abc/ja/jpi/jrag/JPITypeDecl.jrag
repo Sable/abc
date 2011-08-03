@@ -47,4 +47,8 @@ aspect JPITypeDecl{
 	syn lazy boolean BodyDecl.isCJPAdviceDecl() = false;
 	eq CJPAdviceDecl.isCJPAdviceDecl() = true;
 	
+	inh lazy Collection<ExhibitBodyDecl> JPITypeDecl.getExhibitDecls(JPITypeDecl jpiTypeDecl);
+	syn lazy Collection<ExhibitBodyDecl> JPITypeDecl.getExhibitDecls(){
+		return getExhibitDecls(this);
+	}
 }
