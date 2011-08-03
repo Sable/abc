@@ -11086,4 +11086,54 @@
         </compile>
     </ajc-test> 
 -->	
+
+    <ajc-test num="1700" dir="abctests/jpi/matching"
+        title="Simple Match">
+        <compile files="SimpleMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="SimpleMatch" />
+    </ajc-test>
+
+    <ajc-test num="1701" dir="abctests/jpi/matching"
+        title="Dont Match">
+        <compile files="DontMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="DontMatch" />
+    </ajc-test>
+
+    <ajc-test num="1702" dir="abctests/jpi/matching"
+        title="Dont Match 2">
+        <compile files="DontMatch2.java" options="-ext,abc.ja.jpi" />
+		<run class="DontMatch2" />
+    </ajc-test>
+
+    <ajc-test num="1703" dir="abctests/jpi/matching"
+        title="Inheritance Match">
+        <compile files="InheritanceMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch" />
+    </ajc-test>
+
+    <ajc-test num="1704" dir="abctests/jpi/matching"
+        title="Inheritance Match 2">
+        <compile files="InheritanceMatch2.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch2" />
+    </ajc-test>
+
+    <ajc-test num="1705" dir="abctests/jpi/matching"
+        title="Inheritance Match 3">
+        <compile files="InheritanceMatch3.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch3" />
+    </ajc-test>
+
+    <ajc-test num="1706" dir="abctests/jpi/matching"
+        title="Inheritance Match 4">
+        <compile files="InheritanceMatch4.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch4" />
+    </ajc-test>
+
+    <ajc-test num="1707" dir="abctests/jpi/matching"
+        title="Double Match">
+        <compile files="DoubleMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="DoubleMatch" />
+    </ajc-test>
+
+
 </suite>
