@@ -6049,10 +6049,16 @@
         	<message line="8" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="JPI syntax - advice definition" num="1604" dir="abctests/jpi/simplesyntax">
+        <compile options="-ext,abc.ja.jpi" files="AdviceDeclaration.java"></compile>
+    </ajc-test>
 <ajc-test title="JPI syntax - Inheritance" num="1605" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax.java">
         	<message line="10" kind="error"></message>	        
 		</compile>
+    </ajc-test>
+<ajc-test title="JPI throw syntax" num="1606" dir="abctests/jpi/simplesyntax">
+        <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java"></compile>
     </ajc-test>
 <ajc-test title="Check JPI declared - class" num="1620" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPIDeclared.java, klass/JPIDeclared.java">
@@ -6129,6 +6135,10 @@
     </ajc-test>
 <ajc-test title="Check Poincut" num="1631" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressions.java"></compile>
+    </ajc-test>
+<ajc-test title="Check Poincut Args" num="1632" dir="abctests/jpi/weaving">
+        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressionsArgs.java"></compile>
+		<run class="CheckPointcutExpressionsArgs"></run>
     </ajc-test>
  
 </suite>

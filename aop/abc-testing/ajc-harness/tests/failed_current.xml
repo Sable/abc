@@ -101,16 +101,6 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="JPI syntax - advice definition" num="1604" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="AdviceDeclaration.java">
-        	<message line="6" kind="error"></message>	        
-		</compile>		
-    </ajc-test>
-<ajc-test title="JPI syntax - advice definition" num="1606" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java">
-        	<message line="8" kind="error"></message>        	
-        </compile>
-    </ajc-test>
 <ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckWeave.java"></compile>
     </ajc-test>
