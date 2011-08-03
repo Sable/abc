@@ -1,5 +1,10 @@
 aspect ExceptionHandling{
 
+	inh boolean Proceed.insideCJPAdviceDecl();
+	eq Program.getCompilationUnit().insideCJPAdviceDecl() = false;
+	eq CJPAdviceDecl.getBlock().insideCJPAdviceDecl() = true;
+
+
 	inh Access Proceed.getJPIAccess();
 	eq Program.getCompilationUnit().getJPIAccess() = null;
 	eq CJPAdviceDecl.getBlock().getJPIAccess() = getName();
@@ -16,6 +21,7 @@ aspect ExceptionHandling{
   	}
 	
 	public void Proceed.exceptionHandling(){
+	  if (!insideCJPAdviceDecl()) return;	
 	  for(TypeDecl exceptionType : exceptionCollection()){
 		  if(!handlesException(exceptionType)){
 			  error("ExceptionHandling: proceed may throw uncaught exception " + exceptionType.fullName());
@@ -42,6 +48,7 @@ aspect ExceptionHandling{
 	}
 	
 	refine DeclareCodegen protected boolean Proceed.reachedException(TypeDecl catchType) {
+		if (!insideCJPAdviceDecl()) return true;
 	  	for(TypeDecl exceptionType : exceptionCollection()){
 			if(catchType.mayCatch(exceptionType)){
 				return true;
