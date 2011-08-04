@@ -101,8 +101,5 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
-        <compile options="-ext,abc.ja.jpi" files="CheckWeave.java"></compile>
-    </ajc-test>
  
 </suite>
