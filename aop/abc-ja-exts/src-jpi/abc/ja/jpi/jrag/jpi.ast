@@ -1,7 +1,11 @@
 JPISuperArgAccess : VarAccess;
 
-DummyAccess : TypeAccess;
-
 JPITypeDecl : JoinpointTypeDecl ::= SuperTypeName:Access SuperArgumentName:Access*;
 
 ExhibitBodyDecl : BodyDecl ::= ReturnType:Access JPIName:Access Parameter:ParameterDeclaration* Pointcut:PointcutExpr;
+
+DummyAccess : TypeAccess;
+
+DummyCJPAdviceDecl : CJPAdviceDecl;
+
+DummyCJPAroundSpec : CJPAroundSpec;

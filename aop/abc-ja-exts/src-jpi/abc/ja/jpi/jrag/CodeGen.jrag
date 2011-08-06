@@ -1,8 +1,23 @@
 aspect CodeGen {
 
-	public void JPITypeDecl.jimplify2() {
-		//TODO fill in
-  	}
+
+	public void JPITypeDecl.jimplify1phase1(){
+		registerDummyAspect();
+		registerJPIWithoutAdvice();
+	}
+	
+	public void JPITypeDecl.jimplify1phase2() {
+	  if (jpiWithoutAdvice.contains(this)){
+		  Collection<ExhibitBodyDecl> localExhibitDecls = getExhibitDecls();
+		  DummyCJPAdviceDecl dummyAdvice; 
+		  if(!localExhibitDecls.isEmpty()){
+			  dummyAdvice = getDummyAdviceDecl();
+			  dummyAdvice.setParent(this);
+			  dummyAdvice.jimplify1phase2();
+		  }
+		  jpiWithoutAdvice.remove(this);
+	  }
+	}
 
 	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
 	  Pointcut parentPointcut, hierarchyPointcut;
@@ -41,4 +56,128 @@ aspect CodeGen {
 	  
 	  return parentPointcut;	
 	}
+
+	public void DummyCJPAdviceDecl.jimplify1phase2() {
+		if(isEnabled()) {
+			((JPITypeDecl)hostType()).getSootClassDummyAspect().addMethod(sootMethod());
+			createAspectInfo();
+			getAdviceSpec().jimplify1phase2();
+		}
+	}
+	
+	private JPITypeDecl DummyCJPAdviceDecl.itsHost = null;
+	
+	public void DummyCJPAdviceDecl.setHostType(JPITypeDecl jpiTypeDecl){
+		itsHost = jpiTypeDecl;
+	}
+	
+	public TypeDecl DummyCJPAdviceDecl.hostType() {
+		return itsHost;
+	}
+	
+	protected MethodSig DummyCJPAdviceDecl.methodSig() {
+	    return new MethodSig(
+	      sootTypeModifiers(),
+	      AbcFactory.AbcClass(((JPITypeDecl)hostType()).getSootClassDummyAspect()),
+	      AbcFactory.AbcType(returnType().getSootType()),
+	      name(),
+	      getAdviceSpec().methodFormals(),
+	      abcExceptionList(),
+	      pos()
+	    );
+	}
+
+	  eq DummyCJPAdviceDecl.getAdviceSpec().proceedSig() {
+	    return new MethodSig(
+	      soot.Modifier.PUBLIC | soot.Modifier.FINAL | soot.Modifier.STATIC,
+	      AbcFactory.AbcClass(((JPITypeDecl)hostType()).getSootClassDummyAspect()),
+	      AbcFactory.AbcType(returnType().getSootType()),
+	      proceedName(),
+	      getAdviceSpec().aroundSpec().proceedFormals(),
+	      new ArrayList(),
+	      pos());
+	  }
+
+	  protected void DummyCJPAdviceDecl.createAspectInfo() {
+	    int[] jp_params = implicitParameters();
+	    Pointcut pc = getPointcutExpr().pointcut();
+	    LinkedList methods = new LinkedList();
+	    getBlock().addAllEnclosedMethodSigs(methods);
+	
+	    globalAspectInfo().addAdviceDecl(new abc.ja.jpi.weaving.CJPAdviceDecl(
+	      getAdviceSpec().adviceSpec(),
+	      pc,
+	      methodSig(),
+	      ((JPITypeDecl)hostType()).getDummyAspect(),
+	      jp_params[0] /*jp*/,
+	      jp_params[1] /*jpsp*/,
+	      jp_params[2] /*ejp*/,
+	      methods,
+	      pos(),
+	      (TypeAccess)getName()
+	    ));
+	  }		
+	  
+  public void DummyCJPAroundSpec.jimplify1phase2()
+  {
+    ((JPITypeDecl)hostType()).getSootClassDummyAspect().addMethod(proceedMethod());
+  }
+
+  public void DummyCJPAroundSpec.jimplify2()
+  {
+    JimpleBody body = Jimple.v().newBody(proceedMethod());
+    proceedMethod().setActiveBody(body);
+    Body b = new Body(hostType(), body, this);
+    jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
+  }
+  
+	public TypeDecl DummyCJPAroundSpec.hostType() {
+		return ((DummyCJPAdviceDecl)parent).hostType();
+	}  
+	
+	public String DummyCJPAdviceDecl.name = null;
+	
+	syn String DummyCJPAdviceDecl.name(){
+		if(name==null){
+			name = getAdviceSpec().kind() + "$" + ((JPITypeDecl)hostType()).adviceCounter++;
+			return name;
+		}
+		return name;
+	}
+
+	public static void JPITypeDecl.registerDummyAspect(){
+		abc.ja.jpi.weaving.dummyAspect.createDummyAspect("$dummyAspect$");
+		globalAspectInfo().addWeavableClass(abc.ja.jpi.weaving.dummyAspect.getDummyAspectAbcClass());		    
+		globalAspectInfo().addAspect(abc.ja.jpi.weaving.dummyAspect.getDummyAspect());
+	}
+	
+	public static Aspect JPITypeDecl.getDummyAspect(){
+		return abc.ja.jpi.weaving.dummyAspect.getDummyAspect();
+	}
+	
+	public static SootClass JPITypeDecl.getSootClassDummyAspect(){
+		return abc.ja.jpi.weaving.dummyAspect.getDummyAspectSootClass();
+	}
+
+	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;
+	
+	public void JPITypeDecl.registerJPIWithoutAdvice(){
+		if(jpiWithoutAdvice == null){
+			jpiWithoutAdvice = getJPIWithoutAdviceDeclaration();
+		}	
+	}
+
+	public DummyCJPAdviceDecl JPITypeDecl.getDummyAdviceDecl(){
+	  List<Stmt> stmts = new List<Stmt>().add(new ReturnStmt(new ClassInstanceExpr(new TypeAccess("Object"), new List(), new Opt())));
+	  DummyCJPAroundSpec dummyAround = new DummyCJPAroundSpec(new List(), new TypeAccess("Object"), new TypeAccess(this.name())); 
+	  DummyCJPAdviceDecl dummyAdvice = new DummyCJPAdviceDecl(new Modifiers(), 
+			  dummyAround,
+			  new ArgsPointcutExpr(), new List<Access>(), new Block(stmts));
+	  dummyAdvice.setHostType(this);
+	  return dummyAdvice;
+	}
+	
+	protected static int JPITypeDecl.adviceCounter = 0;
+	
 }

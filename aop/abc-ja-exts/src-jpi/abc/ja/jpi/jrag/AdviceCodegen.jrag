@@ -42,5 +42,5 @@ aspect AdviceCodegen{
                     getExceptionParameter().formal(), pos(),(TypeAccess)getName());
     else
       return new abc.ja.jpi.weaving.CJPAfterThrowingAdvice(pos(),(TypeAccess)getName());
-  }  
+  } 
 }

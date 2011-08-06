@@ -32,6 +32,7 @@ import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.ja.jpi.parse.JavaParser.Terminals;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.ClassnamePattern;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Pointcut;
 import abc.weaving.matching.AdviceApplication.ResidueConjunct;
 import abc.weaving.matching.MatchingContext;
@@ -56,6 +57,12 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
         List/*<ShadowType*/ shadowTypes = super.listShadowTypes();
 
         return shadowTypes;
+    }
+    
+
+    @Override
+    protected GlobalAspectInfo createGlobalAspectInfo() {
+    	return new JPIGlobalAspectInfo();
     }
 
 

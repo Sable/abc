@@ -50,5 +50,57 @@ aspect JPITypeDecl{
 	inh lazy Collection<ExhibitBodyDecl> JPITypeDecl.getExhibitDecls(JPITypeDecl jpiTypeDecl);
 	syn lazy Collection<ExhibitBodyDecl> JPITypeDecl.getExhibitDecls(){
 		return getExhibitDecls(this);
+	}	
+	
+	inh lazy Collection<JPITypeDecl> JPITypeDecl.getAllJPITypeDecls();
+	
+	eq Program.getCompilationUnit().getAllJPITypeDecls() = getAllJPITypeDecls();
+	
+	public Collection<JPITypeDecl> Program.getAllJPITypeDecls(){
+		HashSet<JPITypeDecl> set = new HashSet<JPITypeDecl>();
+		for(CompilationUnit cu : getCompilationUnits()){
+			for(TypeDecl td : cu.getTypeDecls()){
+				if(td.isJPITypeDecl()){
+					set.add((JPITypeDecl)td);
+				}
+			}
+		}
+		return set;
+	}
+	
+	inh lazy Collection<JPITypeDecl> JPITypeDecl.getJPIWithoutAdviceDeclaration();
+	inh lazy Collection<JPITypeDecl> JPITypeDecl.getJPIWithAdviceDeclaration();
+	
+	eq Program.getCompilationUnit().getJPIWithoutAdviceDeclaration(){
+	   Collection<JPITypeDecl> jpiWithAdvice = getJPIWithAdviceDeclaration();
+	   HashSet<JPITypeDecl> set = new HashSet<JPITypeDecl>();   
+	   for(JPITypeDecl jpiTypeDecl : getAllJPITypeDecls()){
+		   if(!jpiWithAdvice.contains(jpiTypeDecl)){
+			   set.add(jpiTypeDecl);
+		   }
+	   }
+	   return set;
+	}
+	
+	eq Program.getCompilationUnit().getJPIWithAdviceDeclaration() = getJPIWithAdviceDeclaration();
+	
+	public Collection<JPITypeDecl> Program.getJPIWithAdviceDeclaration(){
+		HashSet<JPITypeDecl> set = new HashSet<JPITypeDecl>();
+		JPITypeDecl jpiTypeDecl;
+		for(CompilationUnit cu : getCompilationUnits()){
+			for(TypeDecl td : cu.getTypeDecls()){
+				if(td.isAspectDecl()){
+					for(BodyDecl bd : ((AspectDecl)td).getBodyDecls()){
+						if(bd.isCJPAdviceDecl()){
+							jpiTypeDecl = (JPITypeDecl)((TypeAccess)((CJPAdviceDecl)bd).getName()).type();
+							if(!set.contains(jpiTypeDecl)){
+								set.add(jpiTypeDecl);
+							}
+						}
+					}
+				}
+			}
+		}
+		return set;
 	}
 }
