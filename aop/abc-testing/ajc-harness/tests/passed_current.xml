@@ -6041,24 +6041,15 @@
         	<message line="23" kind="error"></message>			       
 		</compile>
     </ajc-test>
-<ajc-test title="JPI syntax - exhibit" num="1602" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="Exhibit.java"></compile>
-    </ajc-test>
 <ajc-test title="JPI syntax - exhibit in the wrong place" num="1603" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="ExhibitWrongScope.java">
         	<message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="JPI syntax - advice definition" num="1604" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="AdviceDeclaration.java"></compile>
-    </ajc-test>
 <ajc-test title="JPI syntax - Inheritance" num="1605" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax.java">
         	<message line="10" kind="error"></message>	        
 		</compile>
-    </ajc-test>
-<ajc-test title="JPI throw syntax" num="1606" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java"></compile>
     </ajc-test>
 <ajc-test title="Check JPI declared - class" num="1620" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPIDeclared.java, klass/JPIDeclared.java">
@@ -6132,48 +6123,6 @@
 	        <message line="19" kind="error"></message>
 	        <message line="24" kind="error"></message>			
         </compile>
-    </ajc-test>
-<ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
-        <compile options="-ext,abc.ja.jpi" files="CheckWeave.java"></compile>
-    </ajc-test>
-<ajc-test title="Check Poincut" num="1631" dir="abctests/jpi/weaving">
-        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressions.java"></compile>
-    </ajc-test>
-<ajc-test title="Check Poincut Args" num="1632" dir="abctests/jpi/weaving">
-        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressionsArgs.java"></compile>
-		<run class="CheckPointcutExpressionsArgs"></run>
-    </ajc-test>
-<ajc-test title="Simple Match" num="1700" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="SimpleMatch.java"></compile>
-		<run class="SimpleMatch"></run>
-    </ajc-test>
-<ajc-test title="Dont Match" num="1701" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
-		<run class="DontMatch"></run>
-    </ajc-test>
-<ajc-test title="Dont Match 2" num="1702" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DontMatch2.java"></compile>
-		<run class="DontMatch2"></run>
-    </ajc-test>
-<ajc-test title="Inheritance Match" num="1703" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java"></compile>
-		<run class="InheritanceMatch"></run>
-    </ajc-test>
-<ajc-test title="Inheritance Match 2" num="1704" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch2.java"></compile>
-		<run class="InheritanceMatch2"></run>
-    </ajc-test>
-<ajc-test title="Inheritance Match 3" num="1705" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java"></compile>
-		<run class="InheritanceMatch3"></run>
-    </ajc-test>
-<ajc-test title="Inheritance Match 4" num="1706" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch4.java"></compile>
-		<run class="InheritanceMatch4"></run>
-    </ajc-test>
-<ajc-test title="Double Match" num="1707" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DoubleMatch.java"></compile>
-		<run class="DoubleMatch"></run>
     </ajc-test>
  
 </suite>
