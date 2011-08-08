@@ -9,15 +9,132 @@ aspect CodeGen {
 	public void JPITypeDecl.jimplify1phase2() {
 	  if (jpiWithoutAdvice.contains(this)){
 		  Collection<ExhibitBodyDecl> localExhibitDecls = getExhibitDecls();
-		  DummyCJPAdviceDecl dummyAdvice; 
 		  if(!localExhibitDecls.isEmpty()){
-			  dummyAdvice = getDummyAdviceDecl();
-			  dummyAdvice.setParent(this);
-			  dummyAdvice.jimplify1phase2();
+			  registerDummyAdviceDecl();
 		  }
 		  jpiWithoutAdvice.remove(this);
 	  }
 	}
+
+	public static void JPITypeDecl.registerDummyAspect(){
+		if (abc.ja.jpi.weaving.DummyAspect.createDummyAspect("$dummyAspect$")){
+			globalAspectInfo().addWeavableClass(abc.ja.jpi.weaving.DummyAspect.getDummyAspectAbcClass());		    
+			globalAspectInfo().addAspect(abc.ja.jpi.weaving.DummyAspect.getDummyAspect());
+		}
+	}
+	
+	public static Aspect JPITypeDecl.getDummyAspect(){
+		return abc.ja.jpi.weaving.DummyAspect.getDummyAspect();
+	}
+	
+	public static SootClass JPITypeDecl.getSootClassDummyAspect(){
+		return abc.ja.jpi.weaving.DummyAspect.getDummyAspectSootClass();
+	}
+
+	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;	
+
+	public void JPITypeDecl.registerJPIWithoutAdvice(){
+		if(jpiWithoutAdvice == null){
+			jpiWithoutAdvice = getJPIWithoutAdviceDeclaration();
+		}	
+	}
+
+	private Pointcut JPITypeDecl.extractPointcuts(Collection<ExhibitBodyDecl> exhibitBodyDeclarations, Position pos) {
+		Iterator<ExhibitBodyDecl> exhibitIterator = exhibitBodyDeclarations.iterator();
+		return runExtractPointcuts(exhibitIterator,exhibitBodyDeclarations.size(),pos);
+	}
+  
+	private Pointcut JPITypeDecl.runExtractPointcuts(Iterator<ExhibitBodyDecl> exhibitIterator, int size, Position pos){
+		if (size == 1){
+			return makeExhibitBodyDeclPointcut(exhibitIterator, pos);
+	  	}
+	  	if (size == 2){
+		  	Pointcut left = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
+		 	Pointcut right = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
+		  	return OrPointcut.construct(left,right,pos);
+	  	}
+	  	Pointcut parent = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
+	  	size = size - 1;
+	  	return OrPointcut.construct(parent, runExtractPointcuts(exhibitIterator,size,pos), pos);
+  	}
+  
+	private Pointcut JPITypeDecl.makeExhibitBodyDeclPointcut(Iterator<ExhibitBodyDecl> exhibitIterator, Position pos) {
+	  	Pointcut currentPointcut;
+	  	ExhibitBodyDecl tempExhibitBodyDecl = exhibitIterator.next();
+	  
+	  	Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
+	  	Hashtable/*<String,Abctype>*/ typeEnv=new Hashtable();
+	  
+	  	for(int i=0; i<getAdviceNumParameter(); i++){
+			Formal oldVar = tempExhibitBodyDecl.getParameter(i).formal();
+		  	renameEnv.put(oldVar.getName(),new Var(getAdviceParameter(i).name(), oldVar.getPosition()));
+		  	typeEnv.put(oldVar.getName(), oldVar.getType());
+	  	}
+	  	currentPointcut = tempExhibitBodyDecl.getPointcut().pointcut();
+	  	currentPointcut = currentPointcut.inline(renameEnv, typeEnv, null, 0);
+	  	return AndPointcut.construct(currentPointcut, 
+			  					   new Within(getPattern(tempExhibitBodyDecl.getHostType(), tempExhibitBodyDecl.getParent()), pos), pos);
+  	}
+
+	private ClassnamePattern JPITypeDecl.getPattern(TypeDecl hostType, ASTNode parentNode) {
+		SimpleNamePattern pattern;
+	  	pattern = new SimpleNamePattern(hostType.fullName());
+	  	pattern.setParent(parentNode);
+	  	return pattern.classnamePattern();  
+  	} 
+
+	public int JPITypeDecl.getAdviceNumParameter(){
+	  	return adviceParameterList.getNumChild();
+  	}
+  
+  	public ParameterDeclaration JPITypeDecl.getAdviceParameter(int i){
+	  	return adviceParameterList.getChild(i);
+  	}
+
+  	private List<ParameterDeclaration> JPITypeDecl.adviceParameterList = null;
+  
+  
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
+	public void JPITypeDecl.registerDummyAdviceDecl(){
+		ExhibitBodyDecl baseExhibit = getExhibitDecls().iterator().next();
+	  	adviceParameterList = baseExhibit.getParameterList();
+	  	Pointcut pointcut = extractPointcuts(getExhibitDecls(),pos());
+	  
+	  	Value returnValue = null;
+	  	TypeAccess returnType = (TypeAccess)baseExhibit.getReturnType();
+	  	if(!returnType.type().isPrimitiveType()){
+			returnValue = soot.jimple.NullConstant.v();
+	  	}
+	  	else{
+		  	if (!returnType.type().isVoid()){
+			  	returnValue = IntegerLiteral.emitConstant(Constant.create(0));
+		  	}
+	  	}
+	  	abc.ja.jpi.weaving.DummyAdvice.createDummyAroundAdvice(1, adviceParameterList, returnType.type().getSootType());
+	  	int[] jp_params = abc.ja.jpi.weaving.DummyAdvice.implicitParameters(adviceParameterList);
+	  	Pointcut pc = pointcut;
+	  	LinkedList methods = new LinkedList();
+	  	//getBlock().addAllEnclosedMethodSigs(methods);
+	  	TypeAccess jpiAccess = new TypeAccess(this.name());
+	  	jpiAccess.setParent(this);
+	  	globalAspectInfo().addAdviceDecl(new abc.ja.jpi.weaving.CJPAdviceDecl(
+			  abc.ja.jpi.weaving.DummyAdvice.adviceSpec(returnType.type().getSootType(), adviceParameterList, jpiAccess),
+			  pc,
+			  abc.ja.jpi.weaving.DummyAdvice.methodSig(returnType.type().getSootType(), adviceParameterList),
+			  abc.ja.jpi.weaving.DummyAspect.getDummyAspect(),
+			  jp_params[0] /*jp*/,
+			  jp_params[1] /*jpsp*/,
+			  jp_params[2] /*ejp*/,
+			  methods,
+			  pos(),
+			  jpiAccess
+	  	));
+	  	//jimplify1phase2 adviceSpec
+	  	abc.ja.jpi.weaving.DummyAspect.getDummyAspectSootClass().addMethod(abc.ja.jpi.weaving.DummyAdvice.createProceedMethod(adviceParameterList));
+	  	abc.ja.jpi.weaving.DummyAdvice.jimplify2(adviceParameterList,returnType.type(),returnValue);
+	}
+	
+
 
 	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
 	  Pointcut parentPointcut, hierarchyPointcut;
@@ -34,7 +151,7 @@ aspect CodeGen {
 	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
 	  	  
 	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
-
+	
 	  HashMap<JPITypeDecl, Object> jpiHierarchy = jpiTypeDecl.getHierarchy();
 	  for(CJPAdviceDecl cjpAdviceDecl : getAdviceDecls()){
 		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)cjpAdviceDecl.getName()).type();
@@ -56,128 +173,4 @@ aspect CodeGen {
 	  
 	  return parentPointcut;	
 	}
-
-	public void DummyCJPAdviceDecl.jimplify1phase2() {
-		if(isEnabled()) {
-			((JPITypeDecl)hostType()).getSootClassDummyAspect().addMethod(sootMethod());
-			createAspectInfo();
-			getAdviceSpec().jimplify1phase2();
-		}
-	}
-	
-	private JPITypeDecl DummyCJPAdviceDecl.itsHost = null;
-	
-	public void DummyCJPAdviceDecl.setHostType(JPITypeDecl jpiTypeDecl){
-		itsHost = jpiTypeDecl;
-	}
-	
-	public TypeDecl DummyCJPAdviceDecl.hostType() {
-		return itsHost;
-	}
-	
-	protected MethodSig DummyCJPAdviceDecl.methodSig() {
-	    return new MethodSig(
-	      sootTypeModifiers(),
-	      AbcFactory.AbcClass(((JPITypeDecl)hostType()).getSootClassDummyAspect()),
-	      AbcFactory.AbcType(returnType().getSootType()),
-	      name(),
-	      getAdviceSpec().methodFormals(),
-	      abcExceptionList(),
-	      pos()
-	    );
-	}
-
-	  eq DummyCJPAdviceDecl.getAdviceSpec().proceedSig() {
-	    return new MethodSig(
-	      soot.Modifier.PUBLIC | soot.Modifier.FINAL | soot.Modifier.STATIC,
-	      AbcFactory.AbcClass(((JPITypeDecl)hostType()).getSootClassDummyAspect()),
-	      AbcFactory.AbcType(returnType().getSootType()),
-	      proceedName(),
-	      getAdviceSpec().aroundSpec().proceedFormals(),
-	      new ArrayList(),
-	      pos());
-	  }
-
-	  protected void DummyCJPAdviceDecl.createAspectInfo() {
-	    int[] jp_params = implicitParameters();
-	    Pointcut pc = getPointcutExpr().pointcut();
-	    LinkedList methods = new LinkedList();
-	    getBlock().addAllEnclosedMethodSigs(methods);
-	
-	    globalAspectInfo().addAdviceDecl(new abc.ja.jpi.weaving.CJPAdviceDecl(
-	      getAdviceSpec().adviceSpec(),
-	      pc,
-	      methodSig(),
-	      ((JPITypeDecl)hostType()).getDummyAspect(),
-	      jp_params[0] /*jp*/,
-	      jp_params[1] /*jpsp*/,
-	      jp_params[2] /*ejp*/,
-	      methods,
-	      pos(),
-	      (TypeAccess)getName()
-	    ));
-	  }		
-	  
-  public void DummyCJPAroundSpec.jimplify1phase2()
-  {
-    ((JPITypeDecl)hostType()).getSootClassDummyAspect().addMethod(proceedMethod());
-  }
-
-  public void DummyCJPAroundSpec.jimplify2()
-  {
-    JimpleBody body = Jimple.v().newBody(proceedMethod());
-    proceedMethod().setActiveBody(body);
-    Body b = new Body(hostType(), body, this);
-    jimplify2(b);
-    b.add(Jimple.v().newReturnVoidStmt());
-  }
-  
-	public TypeDecl DummyCJPAroundSpec.hostType() {
-		return ((DummyCJPAdviceDecl)parent).hostType();
-	}  
-	
-	public String DummyCJPAdviceDecl.name = null;
-	
-	syn String DummyCJPAdviceDecl.name(){
-		if(name==null){
-			name = getAdviceSpec().kind() + "$" + ((JPITypeDecl)hostType()).adviceCounter++;
-			return name;
-		}
-		return name;
-	}
-
-	public static void JPITypeDecl.registerDummyAspect(){
-		abc.ja.jpi.weaving.dummyAspect.createDummyAspect("$dummyAspect$");
-		globalAspectInfo().addWeavableClass(abc.ja.jpi.weaving.dummyAspect.getDummyAspectAbcClass());		    
-		globalAspectInfo().addAspect(abc.ja.jpi.weaving.dummyAspect.getDummyAspect());
-	}
-	
-	public static Aspect JPITypeDecl.getDummyAspect(){
-		return abc.ja.jpi.weaving.dummyAspect.getDummyAspect();
-	}
-	
-	public static SootClass JPITypeDecl.getSootClassDummyAspect(){
-		return abc.ja.jpi.weaving.dummyAspect.getDummyAspectSootClass();
-	}
-
-	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;
-	
-	public void JPITypeDecl.registerJPIWithoutAdvice(){
-		if(jpiWithoutAdvice == null){
-			jpiWithoutAdvice = getJPIWithoutAdviceDeclaration();
-		}	
-	}
-
-	public DummyCJPAdviceDecl JPITypeDecl.getDummyAdviceDecl(){
-	  List<Stmt> stmts = new List<Stmt>().add(new ReturnStmt(new ClassInstanceExpr(new TypeAccess("Object"), new List(), new Opt())));
-	  DummyCJPAroundSpec dummyAround = new DummyCJPAroundSpec(new List(), new TypeAccess("Object"), new TypeAccess(this.name())); 
-	  DummyCJPAdviceDecl dummyAdvice = new DummyCJPAdviceDecl(new Modifiers(), 
-			  dummyAround,
-			  new ArgsPointcutExpr(), new List<Access>(), new Block(stmts));
-	  dummyAdvice.setHostType(this);
-	  return dummyAdvice;
-	}
-	
-	protected static int JPITypeDecl.adviceCounter = 0;
-	
 }
