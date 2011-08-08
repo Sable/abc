@@ -12,7 +12,7 @@ public class C{
 	public static Collection foo(String j, int m){return null;}
 	
 	public static void bar(){
-		java.util.Collection b = foo("",4);
+		java.util.Collection b = foo("",4); //error
 		//System.out.println(b);
 	}
 	

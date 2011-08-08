@@ -17,7 +17,7 @@ public class InheritanceMatch2{
     exhibits void JP(int i):
         execution(* foo(..)) && args(i);
 
-    exhibits void JP2(int z, InheritanceMatch2 i ):
+    exhibits void JP2(int z, InheritanceMatch2 i):
         execution(void foo(int)) && args(z) && this(i);
 
     exhibits void JP3(int i):

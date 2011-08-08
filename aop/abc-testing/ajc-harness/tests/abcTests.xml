@@ -11045,10 +11045,11 @@
         </compile>
     </ajc-test>
 
-
     <ajc-test num="1630" dir="abctests/jpi/weaving"
         title="Check Weave">
-        <compile files="CheckWeave.java" options="-ext,abc.ja.jpi" />
+        <compile files="CheckWeave.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="15"/>        	
+        </compile>
 		<run class="C" />
     </ajc-test>
 
