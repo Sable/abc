@@ -41,6 +41,15 @@ public class DummyAdvice {
 	private static int aroundAdviceCounter = 0;
 	private static java.util.HashMap<soot.Value, soot.tagkit.Tag> tagMap;
 	private static SootMethod proceedMethod;
+	
+	public static void reset(){
+		aroundAdviceName = "";
+		proceedMethodSig = null;
+		aroundAdvice = null;
+		aroundAdviceCounter = 0;
+		tagMap = null;
+		proceedMethod = null;		
+	}
 
 	public static void createDummyAroundAdvice(int sootTypeModifiers,
 			List<ParameterDeclaration> parameterList, Type returnType) {

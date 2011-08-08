@@ -29,7 +29,10 @@ import soot.SootMethod;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.parse.JavaParser.Terminals;
+import abc.ja.jpi.weaving.DummyAdvice;
+import abc.ja.jpi.weaving.DummyAspect;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.ClassnamePattern;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -62,6 +65,10 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
 
     @Override
     protected GlobalAspectInfo createGlobalAspectInfo() {
+    	//FIXME: Dirty hack to reset the static fields of our classes
+    	DummyAspect.reset();
+    	DummyAdvice.reset();
+    	JPITypeDecl.reset();
     	return new JPIGlobalAspectInfo();
     }
 

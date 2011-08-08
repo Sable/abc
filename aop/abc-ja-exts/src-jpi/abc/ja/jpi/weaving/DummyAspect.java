@@ -309,5 +309,11 @@ public class DummyAspect {
 	public static Aspect getDummyAspect() {
 		return dummyAspect;
 	}
+	
+	public static void reset(){
+		dummyAspect = null;
+		dummyAspectAbcClass = null;
+		dummyAspectSootClass = null;
+	}
 
 }

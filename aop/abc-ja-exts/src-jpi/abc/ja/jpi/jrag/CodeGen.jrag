@@ -34,6 +34,10 @@ aspect CodeGen {
 	}
 
 	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;	
+	
+	public static void JPITypeDecl.reset(){
+		jpiWithoutAdvice = null;
+	}
 
 	public Collection<JPITypeDecl> JPITypeDecl.registerJPIWithoutAdvice(){
 		if(jpiWithoutAdvice == null){
