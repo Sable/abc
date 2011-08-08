@@ -2,7 +2,8 @@
  * This test checks the jpi signatures with throws clause.
  */
 
-import java.lang.*;
+import java.lang.Exception;
+import java.io.IOException;
 
 jpi void JP();
 jpi void JP1() throws IOException; 

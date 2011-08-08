@@ -4,7 +4,7 @@ import java.lang.*;
 jpi Integer JP(int a);
 jpi String JP2(int b);
 
-public class CheckJPIDeclared{
+public class CheckReturnTypesWithDummyAspect{
 
     exhibits Integer JP(int i): //error, must be Integer not Number.
         execution(* foo(..)) && args(i);
@@ -16,15 +16,4 @@ public class CheckJPIDeclared{
     String foo(int i){ return null;} //but are marked here :-(
 
     Integer bar(int n) { return null;} //but are marked here :-(
-}
-
-aspect A{
-
-    Integer around JP(int i){
-        return proceed(i); 
-    }
-
-    String around JP2(int x){ 
-        return proceed(x); 
-    }
 }
