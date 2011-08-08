@@ -2,8 +2,10 @@ aspect CodeGen {
 
 
 	public void JPITypeDecl.jimplify1phase1(){
-		registerDummyAspect();
-		registerJPIWithoutAdvice();
+		if(!registerJPIWithoutAdvice().isEmpty()){
+			registerDummyAspect();	
+		}
+		
 	}
 	
 	public void JPITypeDecl.jimplify1phase2() {
@@ -33,10 +35,11 @@ aspect CodeGen {
 
 	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;	
 
-	public void JPITypeDecl.registerJPIWithoutAdvice(){
+	public Collection<JPITypeDecl> JPITypeDecl.registerJPIWithoutAdvice(){
 		if(jpiWithoutAdvice == null){
 			jpiWithoutAdvice = getJPIWithoutAdviceDeclaration();
-		}	
+		}
+		return jpiWithoutAdvice;
 	}
 
 	private Pointcut JPITypeDecl.extractPointcuts(Collection<ExhibitBodyDecl> exhibitBodyDeclarations, Position pos) {

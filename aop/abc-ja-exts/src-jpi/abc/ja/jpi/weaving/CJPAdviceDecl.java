@@ -1,6 +1,8 @@
 package abc.ja.jpi.weaving;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import polyglot.util.ErrorInfo;
@@ -8,6 +10,11 @@ import polyglot.util.Position;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
+import soot.tagkit.Host;
+import soot.tagkit.LineNumberTag;
+import soot.tagkit.SourceFileTag;
+import soot.tagkit.SourceLnPosTag;
+import abc.ja.jpi.jrag.Access;
 import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
 import abc.ja.jpi.jrag.ExhibitBodyDecl;
@@ -37,12 +44,40 @@ public class CJPAdviceDecl extends AdviceDecl {
 		jpiTypeDecl = (JPITypeDecl)jpiTypeAccess.decl();
 	}
 
-    public Residue postResidue(ShadowMatch sm) {
+    @SuppressWarnings("rawtypes")
+	public Residue postResidue(ShadowMatch sm) {
         List/*<SootClass>*/ advicethrown
             =getImpl().getSootMethod().getExceptions();
 
         List/*<SootClass>*/ shadowthrown
             =sm.getExceptions();
+        
+        /*
+         * Here we put our constrains about the throws clause for both jpi definition and base code.
+         */
+        
+        List/*<SootClass>*/ jpiThrown = new LinkedList();
+        for(Access exception : jpiTypeDecl.getExceptions()){
+        	jpiThrown.add(((TypeAccess)exception).type().getSootClassDecl());
+        }
+        if ((shadowthrown.size() > jpiTypeDecl.getNumException()) || (shadowthrown.size() < jpiTypeDecl.getNumException())){
+        	reportGeneralError(sm, shadowthrown, jpiThrown);
+        	return NeverMatch.v();
+        }
+        
+        for(Object exception : shadowthrown){        	
+        	if (!jpiThrown.contains(exception)){
+        		reportBaseCodeError(sm, (SootClass)exception);
+        		return NeverMatch.v();
+        	}
+        }
+        for(Object exception : jpiThrown){
+        	if (!shadowthrown.contains(exception)){
+        		reportError(sm, (SootClass)exception);
+        		return NeverMatch.v();
+        	}
+        }
+        //finish our check.
 
         eachadvicethrow:
         for(Iterator advicethrownit=advicethrown.iterator();
@@ -112,7 +147,32 @@ public class CJPAdviceDecl extends AdviceDecl {
 
     }
 
-    private void reportError(ShadowMatch sm, SootClass advicethrow) {
+    private void reportGeneralError(ShadowMatch sm, List shadowthrown, List jpiThrown) {
+    	for(ExhibitBodyDecl exhibitDecl : jpiTypeDecl.getExhibitDecls()){
+	        abc.main.Main.v().getAbcExtension().reportError
+	        (ErrorInfoFactory.newErrorInfo
+	         (ErrorInfo.SEMANTIC_ERROR,
+	          "exhibit clause "
+	          +exhibitDecl.positionInfo()
+	          +" applies here, and throws these exceptions "+throwListToString(jpiThrown)
+	          +" which are not already thrown here :" +throwListToString(shadowthrown),
+	          sm.getContainer(),
+	          sm.getHost()));
+    	}
+	}
+    
+    
+    private String throwListToString(List exceptions){
+    	String res = "[";
+    	for(Iterator it = exceptions.iterator();it.hasNext();){
+    		res = res + it.next().toString();
+    		if(it.hasNext())
+    			res = res + ",";
+    	}
+    	return res + "]";
+    }
+
+	private void reportError(ShadowMatch sm, SootClass advicethrow) {
     	for(ExhibitBodyDecl exhibitDecl : jpiTypeDecl.getExhibitDecls()){
 	        abc.main.Main.v().getAbcExtension().reportError
 	        (ErrorInfoFactory.newErrorInfo
@@ -125,4 +185,32 @@ public class CJPAdviceDecl extends AdviceDecl {
 	          sm.getHost()));
     	}
 	}
+
+	private void reportBaseCodeError(ShadowMatch sm, SootClass baseCodeThrow) {
+		String filename=((SourceFileTag)sm.getContainer().getDeclaringClass().getTag("SourceFileTag")).getAbsolutePath();
+		Host host = sm.getHost();
+		String line = "";
+		if(host.hasTag("SourceLnPosTag")) {
+            SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");			
+			line = slpTag.startLn()+"|"+slpTag.startPos() + "-" +slpTag.endLn() + "|" + slpTag.endPos();
+		}
+		else{
+            LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
+            line = ""+lnTag.getLineNumber();
+		}
+    	for(ExhibitBodyDecl exhibitDecl : jpiTypeDecl.getExhibitDecls()){
+	        abc.main.Main.v().getAbcExtension().reportError
+	        (ErrorInfoFactory.newErrorInfo
+	         (ErrorInfo.SEMANTIC_ERROR,
+	          "Base code at"
+              +" ("+filename
+              +", line "+line+")"
+	          +" throws exception :"+baseCodeThrow
+	          +" which is not already declared by "+jpiTypeDecl.name(),
+	          sm.getContainer(),
+	          sm.getHost()));
+    	}
+	}
+	
+	
 }
