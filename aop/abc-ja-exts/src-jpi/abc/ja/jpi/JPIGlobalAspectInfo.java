@@ -8,6 +8,7 @@ import soot.SootMethod;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.NeverMatch;
 
 public class JPIGlobalAspectInfo extends GlobalAspectInfo {
 	
@@ -42,25 +43,25 @@ public class JPIGlobalAspectInfo extends GlobalAspectInfo {
 			for(int j=0; j<adviceLists.get(key).bodyAdvice.size();j++){
 				AdviceApplication aa = adviceLists.get(key).bodyAdvice.get(j);
 				if(aa.advice.getAspect().getName().equals("$dummyAspect$")){
-					adviceLists.get(key).bodyAdvice.remove(j);
+					adviceLists.get(key).bodyAdvice.get(j).setResidue(NeverMatch.v());
 				}
 			}
 			for(int j=0; j<adviceLists.get(key).stmtAdvice.size();j++){
 				AdviceApplication aa = adviceLists.get(key).stmtAdvice.get(j);
 				if(aa.advice.getAspect().getName().equals("$dummyAspect$")){
-					adviceLists.get(key).stmtAdvice.remove(j);
+					adviceLists.get(key).stmtAdvice.get(j).setResidue(NeverMatch.v());
 				}
 			}
 			for(int j=0; j<adviceLists.get(key).preinitializationAdvice.size();j++){
 				AdviceApplication aa = adviceLists.get(key).preinitializationAdvice.get(j);
 				if(aa.advice.getAspect().getName().equals("$dummyAspect$")){
-					adviceLists.get(key).preinitializationAdvice.remove(j);
+					adviceLists.get(key).preinitializationAdvice.get(j).setResidue(NeverMatch.v());
 				}
 			}
 			for(int j=0; j<adviceLists.get(key).initializationAdvice.size();j++){
 				AdviceApplication aa = adviceLists.get(key).initializationAdvice.get(j);
 				if(aa.advice.getAspect().getName().equals("$dummyAspect$")){
-					adviceLists.get(key).initializationAdvice.remove(j);
+					adviceLists.get(key).initializationAdvice.get(j).setResidue(NeverMatch.v());
 				}
 			}
 		}
