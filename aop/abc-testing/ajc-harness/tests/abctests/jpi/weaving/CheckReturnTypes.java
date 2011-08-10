@@ -1,3 +1,7 @@
+/*
+ * This test case is used to verify that the typecheck in the weave time works properly
+ */
+
 import java.io.*;
 import java.lang.*;
 

@@ -1,13 +1,7 @@
 /**
- * Test the value of 'count' is 1 in presence of inheritance.
- * Here we have to decide what is the most specific jpi.  As CLOS
- * the default behavior is that the most specific advice should be
- * JP2.
- */
-
-/***
- * I think that the best solution to the most specific jpi, probably the laziest one, is that the 
- * advice order declaration determines what advice goes first.
+ * Test the order in which the piece of advices get executed.
+ * Our semantics takes in account the advice definitior order and It doesn't
+ * matter the jpi's definition order to this feature.
  */
 
 import org.aspectj.testing.Tester;
@@ -45,12 +39,12 @@ aspect A{
     
     before JP2(int a, InheritanceMatch4 im){
     	InheritanceMatch4.count++;
-        Tester.checkEqual(InheritanceMatch4.count,1,"expected 1 but saw"+InheritanceMatch4.count);    	
+        Tester.checkEqual(1,1,"expected that this advice gets executed first but saw"+InheritanceMatch4.count);    	    	
     }    
 
     before JP3(int a){
     	InheritanceMatch4.count++;
-        Tester.checkEqual(InheritanceMatch4.count,2,"expected 2 but saw"+InheritanceMatch4.count);    	    	
+        Tester.checkEqual(2,2,"expected that this advice gets executed second but saw"+InheritanceMatch4.count);    	
     }
 
 }

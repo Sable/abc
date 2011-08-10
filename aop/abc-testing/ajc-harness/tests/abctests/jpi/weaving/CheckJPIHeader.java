@@ -24,7 +24,7 @@ public class CheckJPIHeader{
     exhibits void JP3() : //error because advice may not be able to handle general Exceptions when calling proceed()
         execution(* bar(..));
 
-    void foo() throws IOException{}
+    void foo() throws IOException{} //but the errors are marked here --> 2 for this signature
 
-    void bar() throws Exception{}
+    void bar() throws Exception{} //but the errors are marked here --> 1 for this signature
 }

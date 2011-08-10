@@ -1,3 +1,9 @@
+/*
+ * This test case is used only to verify the correct comibination of the exhibits clauses in the
+ * advice declaration.  This test also consider the case when there is no advice for a certain
+ * jpi.
+ */
+
 jpi void H();
 jpi void JP() extends H();
 jpi void JP1() extends JP();
@@ -54,11 +60,3 @@ aspect D{
 
 	void around H(){}
 }
-
-/*
-
-aspect z{
-	void around() : call(* foo()) && within(z){}
-}
-
-*/

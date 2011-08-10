@@ -2,7 +2,6 @@
  * Test the value of 'count' should be 2 
  */
 
-import java.util.Random;
 import org.aspectj.testing.Tester;
 
 jpi void JP(int amount);
@@ -10,7 +9,8 @@ jpi void JP2(int items);
 
 public class DoubleMatch{
 
-    public static int count = 0;
+    public static int countJP = 0; //advice JP counter
+    public static int countJP2 = 0; //advice JP2 counter
 
     exhibits void JP(int i):
         execution(* foo(..)) && args(i);
@@ -22,18 +22,20 @@ public class DoubleMatch{
 
     public static void main(String[] args){
         new DoubleMatch().foo(6);
-        Tester.checkEqual(count,2,"expected 2 matches but saw"+count);
+        Tester.checkEqual(DoubleMatch.countJP+DoubleMatch.countJP2,2,"expected 2 matches but saw "+DoubleMatch.countJP+DoubleMatch.countJP2);
     }
 }
 
 aspect A{
 
-    void around JP(int a){
-        DoubleMatch.count++;
+    void around JP(int a){//match first
+        DoubleMatch.countJP++;
+        Tester.checkEqual(DoubleMatch.countJP,1,"expected 1 match but saw "+DoubleMatch.countJP);
         proceed(a);
     }
 
     void around JP2(int b){
-        DoubleMatch.count++;
+        DoubleMatch.countJP2++;
+        Tester.checkEqual(DoubleMatch.countJP2,1,"expected 1 match but saw "+DoubleMatch.countJP2);        
     }
 }

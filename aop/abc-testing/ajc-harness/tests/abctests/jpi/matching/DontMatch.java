@@ -33,10 +33,9 @@ aspect A{
 
     int around JP(int a){ 
         Tester.check(false,"should not execute");
+        return a;
     }
 
-    int around JP(int a){ 
-        return proceed(a);
-    }
+    int around JP2(int a){ return proceed(a);}
 
 }
