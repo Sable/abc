@@ -45,7 +45,7 @@ aspect A{
 	}
 	
 	void around JP(int i, String l){
-		Tester.check(false,"JP advice will never gets executed");				
+		Tester.check(false,"this advice should not execute");				
 	}
 	
 }	
