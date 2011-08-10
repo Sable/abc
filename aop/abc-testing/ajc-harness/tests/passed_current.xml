@@ -6133,6 +6133,11 @@
 	        <message line="24" kind="error"></message>			
         </compile>
     </ajc-test>
+<ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
+        <compile options="-ext,abc.ja.jpi" files="CheckWeave.java">
+	        <message line="15" kind="error"></message>        	
+        </compile>
+    </ajc-test>
 <ajc-test title="Check Poincut" num="1631" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressions.java"></compile>
     </ajc-test>
@@ -6174,6 +6179,10 @@
 <ajc-test title="Inheritance Match" num="1703" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java"></compile>
 		<run class="InheritanceMatch"></run>
+    </ajc-test>
+<ajc-test title="Inheritance Match 2" num="1704" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch2.java"></compile>
+		<run class="InheritanceMatch2"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match 3" num="1705" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java"></compile>
