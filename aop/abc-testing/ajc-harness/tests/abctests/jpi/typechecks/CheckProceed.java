@@ -18,7 +18,7 @@ aspect A{
     	try{
     		proceed(); //error
     	}
-    	catch(IOException e){
+    	catch(IOException e){ //only catches IOExceptions, not the Exception raised by proceed
     		throw new IOException();
     	}
     	proceed(); //error
