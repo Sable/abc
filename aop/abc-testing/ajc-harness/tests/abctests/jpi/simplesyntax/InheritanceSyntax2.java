@@ -5,12 +5,9 @@
 import org.aspectj.testing.Tester;
 
 jpi void JP(int amount);
-jpi void JP2(int items) extends JP(items);
-jpi void bar(int z, Object x) //there is not foo definition 
-	throws Exception 
-		extends foo(a,b); //a and b aren't defined.
+jpi void nai(char m, int i) throws IOException extends bar(3+4); //error, an expression can't be part of super name bindings.
 
-public class InheritanceSyntax{
+public class InheritanceSyntax2{
 
     exhibits void JP(int i):
         execution(* foo(..)) && args(i);
@@ -18,6 +15,6 @@ public class InheritanceSyntax{
     void foo(int x){}
 
     public static void main(String[] args){
-        new InheritanceSyntax().foo(5);
+        new InheritanceSyntax2().foo(5);
     }
 }
