@@ -10947,11 +10947,22 @@
 	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - Inheritance">
         <compile files="InheritanceSyntax.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line ="10" />	        
+        	<message kind="error" line ="9" />	        
+        	<message kind="error" line ="9" />	        
+        	<message kind="error" line ="11" />	        
+        	<message kind="error" line ="11" />	        
+        	<message kind="error" line ="11" />			
 		</compile>
     </ajc-test> 
-
+	
 	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - Inheritance2">
+        <compile files="InheritanceSyntax2.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="8" />	        
+		</compile>
+    </ajc-test> 	
+
+	<ajc-test num="1607" dir="abctests/jpi/simplesyntax"
         title="JPI throw syntax">
         <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
     </ajc-test> 
@@ -11048,7 +11059,7 @@
     <ajc-test num="1630" dir="abctests/jpi/weaving"
         title="Check Weave">
         <compile files="CheckWeave.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="15"/>        	
+	        <message kind="error" line="20"/>        	
         </compile>
     </ajc-test>
 
@@ -11075,16 +11086,17 @@
     <ajc-test num="1634" dir="abctests/jpi/weaving"
         title="Check return types">
         <compile files="CheckReturnTypes.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="16"/>
-	        <message kind="error" line="18"/>
+	        <message kind="error" line="20"/>
+	        <message kind="error" line="22"/>
         </compile>
     </ajc-test> 
 
     <ajc-test num="1635" dir="abctests/jpi/weaving"
         title="Check return types with DummyAspect">
         <compile files="CheckReturnTypesWithDummyAspect.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="16"/>
-	        <message kind="error" line="18"/>
+	        <message kind="error" line="25"/>
+	        <message kind="error" line="27"/>
+	        <message kind="error" line="29"/>			
         </compile>
     </ajc-test> 
 
@@ -11100,12 +11112,12 @@
 		<run class="DontMatch" />
     </ajc-test>
 
-    <ajc-test num="1702" dir="abctests/jpi/matching"
+<!--    <ajc-test num="1702" dir="abctests/jpi/matching"
         title="Dont Match 2">
         <compile files="DontMatch2.java" options="-ext,abc.ja.jpi" />
 		<run class="DontMatch2" />
     </ajc-test>
-
+-->
     <ajc-test num="1703" dir="abctests/jpi/matching"
         title="Inheritance Match">
         <compile files="InheritanceMatch.java" options="-ext,abc.ja.jpi" />
