@@ -6054,10 +6054,19 @@
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance" num="1605" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax.java">
-        	<message line="10" kind="error"></message>	        
+        	<message line="9" kind="error"></message>	        
+        	<message line="9" kind="error"></message>	        
+        	<message line="11" kind="error"></message>	        
+        	<message line="11" kind="error"></message>	        
+        	<message line="11" kind="error"></message>			
 		</compile>
     </ajc-test>
-<ajc-test title="JPI throw syntax" num="1606" dir="abctests/jpi/simplesyntax">
+<ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
+        	<message line="8" kind="error"></message>	        
+		</compile>
+    </ajc-test>
+<ajc-test title="JPI throw syntax" num="1607" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java"></compile>
     </ajc-test>
 <ajc-test title="Check JPI declared - class" num="1620" dir="abctests/jpi/typechecks">
@@ -6135,7 +6144,7 @@
     </ajc-test>
 <ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckWeave.java">
-	        <message line="15" kind="error"></message>        	
+	        <message line="20" kind="error"></message>        	
         </compile>
     </ajc-test>
 <ajc-test title="Check Poincut" num="1631" dir="abctests/jpi/weaving">
@@ -6154,14 +6163,15 @@
     </ajc-test>
 <ajc-test title="Check return types" num="1634" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypes.java">
-	        <message line="16" kind="error"></message>
-	        <message line="18" kind="error"></message>
+	        <message line="20" kind="error"></message>
+	        <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check return types with DummyAspect" num="1635" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesWithDummyAspect.java">
-	        <message line="16" kind="error"></message>
-	        <message line="18" kind="error"></message>
+	        <message line="25" kind="error"></message>
+	        <message line="27" kind="error"></message>
+	        <message line="29" kind="error"></message>			
         </compile>
     </ajc-test>
 <ajc-test title="Simple Match" num="1700" dir="abctests/jpi/matching">
@@ -6171,10 +6181,6 @@
 <ajc-test title="Dont Match" num="1701" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
 		<run class="DontMatch"></run>
-    </ajc-test>
-<ajc-test title="Dont Match 2" num="1702" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DontMatch2.java"></compile>
-		<run class="DontMatch2"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match" num="1703" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java"></compile>
