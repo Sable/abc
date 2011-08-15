@@ -11100,53 +11100,78 @@
         </compile>
     </ajc-test> 
 
-    <ajc-test num="1700" dir="abctests/jpi/matching"
+    <ajc-test num="1640" dir="abctests/jpi/matching"
         title="Simple Match">
         <compile files="SimpleMatch.java" options="-ext,abc.ja.jpi" />
 		<run class="SimpleMatch" />
     </ajc-test>
 
-    <ajc-test num="1701" dir="abctests/jpi/matching"
+    <ajc-test num="1641" dir="abctests/jpi/matching"
         title="Dont Match">
         <compile files="DontMatch.java" options="-ext,abc.ja.jpi" />
 		<run class="DontMatch" />
     </ajc-test>
 
-<!--    <ajc-test num="1702" dir="abctests/jpi/matching"
-        title="Dont Match 2">
-        <compile files="DontMatch2.java" options="-ext,abc.ja.jpi" />
-		<run class="DontMatch2" />
-    </ajc-test>
--->
-    <ajc-test num="1703" dir="abctests/jpi/matching"
+    <ajc-test num="1642" dir="abctests/jpi/matching"
         title="Inheritance Match">
         <compile files="InheritanceMatch.java" options="-ext,abc.ja.jpi" />
 		<run class="InheritanceMatch" />
     </ajc-test>
 
-    <ajc-test num="1704" dir="abctests/jpi/matching"
+    <ajc-test num="1643" dir="abctests/jpi/matching"
         title="Inheritance Match 2">
         <compile files="InheritanceMatch2.java" options="-ext,abc.ja.jpi" />
 		<run class="InheritanceMatch2" />
     </ajc-test>
 
-    <ajc-test num="1705" dir="abctests/jpi/matching"
+    <ajc-test num="1644" dir="abctests/jpi/matching"
         title="Inheritance Match 3">
         <compile files="InheritanceMatch3.java" options="-ext,abc.ja.jpi" />
 		<run class="InheritanceMatch3" />
     </ajc-test>
 
-    <ajc-test num="1706" dir="abctests/jpi/matching"
+    <ajc-test num="1645" dir="abctests/jpi/matching"
         title="Inheritance Match 4">
         <compile files="InheritanceMatch4.java" options="-ext,abc.ja.jpi" />
 		<run class="InheritanceMatch4" />
     </ajc-test>
 
-    <ajc-test num="1707" dir="abctests/jpi/matching"
+    <ajc-test num="1646" dir="abctests/jpi/matching"
         title="Double Match">
         <compile files="DoubleMatch.java" options="-ext,abc.ja.jpi" />
 		<run class="DoubleMatch" />
     </ajc-test>
+
+    <ajc-test num="1650" dir="abctests/jpi/FSE-NI"
+        title="example 1">
+        <compile files="Util.java, example1.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1651" dir="abctests/jpi/FSE-NI"
+        title="example 2">
+        <compile files="Util.java, example2.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1652" dir="abctests/jpi/FSE-NI"
+        title="example 2-2">
+        <compile files="Util.java, example2_2.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1653" dir="abctests/jpi/FSE-NI"
+        title="example 3">
+        <compile files="Util.java, example3.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1654" dir="abctests/jpi/FSE-NI"
+        title="example 4">
+        <compile files="Util.java, example4.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
 
 
 </suite>
