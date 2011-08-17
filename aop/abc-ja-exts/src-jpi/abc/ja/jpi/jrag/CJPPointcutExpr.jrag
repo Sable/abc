@@ -46,10 +46,23 @@ aspect CJPPointcutExpr{
   }
   
   private ClassnamePattern CJPPointcutExpr.getPattern(TypeDecl hostType, ASTNode parentNode) {
-	  SimpleNamePattern pattern;
-	  pattern = new SimpleNamePattern(hostType.fullName());
-	  pattern.setParent(parentNode);
-	  return pattern.classnamePattern();  
+	  ExplicitTypeNamePattern pattern;
+	  String name = hostType.getID();
+	  String packageName = "";
+	  String[] path = hostType.fullName().split("\\.");
+	  for(int i=0;i<path.length-1;i++){
+		  if (packageName==""){
+			  packageName = path[i];
+		  }
+		  else{
+			  packageName = packageName + "." + path[i];
+		  }
+	  }
+	  TypeAccess hostAccess = new TypeAccess(packageName,name);
+	  pattern = new ExplicitTypeNamePattern(hostAccess);
+	  hostAccess.setParent(pattern);
+	  pattern.setParent(parentNode);	  	  
+	  return pattern.classnamePattern();
   }
   
   private Pointcut CJPPointcutExpr.extractPointcuts(Collection<ExhibitBodyDecl> exhibitBodyDeclarations, Position pos, boolean hierarchy) {

@@ -5,30 +5,56 @@ aspect Exhibit{
 		
 
 	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);
-	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
-	eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl) = getExhibitDecls(jpiTypeDecl); 
 	
-	syn lazy Collection<ExhibitBodyDecl> CompilationUnit.getExhibitDecls(JPITypeDecl jpiTypeDecl){
+	
+	//eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
+	//eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl) = getExhibitDecls(jpiTypeDecl); 
+	
+//	syn lazy Collection<ExhibitBodyDecl> CompilationUnit.getExhibitDecls(JPITypeDecl jpiTypeDecl){
+//		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
+//		ClassDecl classDecl;
+//		TypeAccess jpiAccess;
+//		for(TypeDecl typeDecl : getTypeDeclList()){
+//			if (!typeDecl.isClassDecl()){ //aspect is considered as a class
+//				continue;
+//			}
+//			classDecl = (ClassDecl)typeDecl;
+//			for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
+//				if (!bodyDecl.isExhibit()){
+//					continue;
+//				}			
+//				jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
+//				if (jpiAccess.type().equals(jpiTypeDecl)){
+//					set.add((ExhibitBodyDecl)bodyDecl);
+//				}
+//			}
+//		}
+//		return set;
+//	}
+	
+	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
 		TypeAccess jpiAccess;
-		for(TypeDecl typeDecl : getTypeDeclList()){
-			if (!typeDecl.isClassDecl()){ //aspect is considered as a class
-				continue;
-			}
-			classDecl = (ClassDecl)typeDecl;
-			for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
-				if (!bodyDecl.isExhibit()){
+		for(CompilationUnit cu : getCompilationUnits()){
+			for(TypeDecl typeDecl : cu.getTypeDecls()){		
+				if (!typeDecl.isClassDecl()){ //aspect is considered as a class
 					continue;
-				}			
-				jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
-				if (jpiAccess.type().equals(jpiTypeDecl)){
-					set.add((ExhibitBodyDecl)bodyDecl);
+				}
+				classDecl = (ClassDecl)typeDecl;
+				for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
+					if (!bodyDecl.isExhibit()){
+						continue;
+					}			
+					jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
+					if (jpiAccess.type().equals(jpiTypeDecl)){
+						set.add((ExhibitBodyDecl)bodyDecl);
+					}
 				}
 			}
 		}
-		return set;
-	}
+		return set;	
+	}	
 
     syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
     	for(ParameterDeclaration formalParameter : getParameterList()){
