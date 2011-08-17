@@ -142,7 +142,7 @@ public class IndexingScheme
                                                 SMNode cur)
     {
         Collection frequentSymbols = tm.getFrequentSymbols();
-        if(frequentSymbols.isEmpty()) frequentSymbols = null;
+        if(frequentSymbols!=null && frequentSymbols.isEmpty()) frequentSymbols = null;
         Iterator symIt =
             frequentSymbols == null 
             	? tm.getSymbols().iterator()
