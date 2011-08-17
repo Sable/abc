@@ -11172,6 +11172,11 @@
 		<run class="ShoppingSession" />
     </ajc-test>
 
+    <ajc-test num="1660" dir="abctests/jpi/matching/exhibits"
+        title="collect exhibits clauses">
+        <compile files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java" options="-ext,abc.ja.jpi" />
+		<run class="classes.modificables.A" />
+    </ajc-test>
 
 
 </suite>
