@@ -11178,5 +11178,10 @@
 		<run class="classes.modificables.A" />
     </ajc-test>
 
+    <ajc-test num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy"
+        title="collect jpi hierarchy">
+        <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>
+
 
 </suite>
