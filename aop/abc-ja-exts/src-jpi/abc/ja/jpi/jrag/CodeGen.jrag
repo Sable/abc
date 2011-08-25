@@ -172,10 +172,10 @@ aspect CodeGen {
 	  	  
 	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
 	
-	  HashMap<JPITypeDecl, Object> jpiHierarchy = jpiTypeDecl.getHierarchy();
+	  abc.ja.jpi.utils.JPIHierarchyHashMap jpiHierarchy = jpiTypeDecl.getHierarchy();
 	  for(CJPAdviceDecl cjpAdviceDecl : getAdviceDecls()){
 		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)cjpAdviceDecl.getName()).type();
-		  if(containsKey(jpiHierarchy,currentJPITypeDecl)){
+		  if(jpiHierarchy.containsKey(currentJPITypeDecl)){
 			  cjpAdviceSet.add(cjpAdviceDecl);
 		  }
 	  }

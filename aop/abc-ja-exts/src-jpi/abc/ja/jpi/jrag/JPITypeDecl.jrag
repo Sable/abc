@@ -5,7 +5,6 @@ aspect JPITypeDecl{
 	}
 	
 	inh lazy boolean JPITypeDecl.hasJPIChildren(JPITypeDecl jpiTypeDecl);
-	//eq Program.getCompilationUnit().hasJPIChildren(JPITypeDecl jpiTypeDecl) = false;
 	eq Program.getCompilationUnit().hasJPIChildren(JPITypeDecl jpiTypeDecl){
 		TypeAccess jpiSuperAccess;
 		for(CompilationUnit cu : getCompilationUnits()){
@@ -22,41 +21,21 @@ aspect JPITypeDecl{
 		return false;
 	}
 	
-	syn HashMap<JPITypeDecl,Object> JPITypeDecl.getHierarchy(){
+	syn abc.ja.jpi.utils.JPIHierarchyHashMap JPITypeDecl.getHierarchy(){
 		return getJPIHierarchy(this);
 	}
 
-	inh lazy HashMap<JPITypeDecl,Object> JPITypeDecl.getJPIHierarchy(JPITypeDecl jpiTypeDecl);
-//	eq Program.getCompilationUnit().getJPIHierarchy(JPITypeDecl jpiTypeDecl) = null;
-	
-//	eq CompilationUnit.getTypeDecl().getJPIHierarchy(JPITypeDecl jpiTypeDecl){
-//		TypeAccess jpiSuperAccess;
-//		HashMap<JPITypeDecl, Object> root = new HashMap<JPITypeDecl, Object>();		
-//		HashMap<JPITypeDecl, Object> children;
-//		for(TypeDecl typeDecl : getTypeDeclList()){
-//			if(!typeDecl.isJPITypeDecl()){
-//				continue;
-//			}
-//			children = new HashMap<JPITypeDecl, Object>();
-//			jpiSuperAccess = (TypeAccess)((JPITypeDecl)typeDecl).getSuperTypeName();
-//			if (jpiSuperAccess.type().equals(jpiTypeDecl)){
-//				children = ((JPITypeDecl)typeDecl).getJPIHierarchy((JPITypeDecl)typeDecl);
-//				root.put((JPITypeDecl)typeDecl, children);
-//			}
-//		}
-//		return root;
-//	}
-
+	inh lazy abc.ja.jpi.utils.JPIHierarchyHashMap JPITypeDecl.getJPIHierarchy(JPITypeDecl jpiTypeDecl);
 	eq Program.getCompilationUnit().getJPIHierarchy(JPITypeDecl jpiTypeDecl){
 		TypeAccess jpiSuperAccess;
-		HashMap<JPITypeDecl, Object> root = new HashMap<JPITypeDecl, Object>();		
-		HashMap<JPITypeDecl, Object> children;
+		abc.ja.jpi.utils.JPIHierarchyHashMap root = new abc.ja.jpi.utils.JPIHierarchyHashMap();		
+		abc.ja.jpi.utils.JPIHierarchyHashMap children;
 		for(CompilationUnit cu : getCompilationUnits()){
 			for(TypeDecl typeDecl : cu.getTypeDecls()){					
 				if(!typeDecl.isJPITypeDecl()){
 					continue;
 				}
-				children = new HashMap<JPITypeDecl, Object>();
+				children = new abc.ja.jpi.utils.JPIHierarchyHashMap();
 				jpiSuperAccess = (TypeAccess)((JPITypeDecl)typeDecl).getSuperTypeName();
 				if (jpiSuperAccess.type().equals(jpiTypeDecl)){
 					children = ((JPITypeDecl)typeDecl).getJPIHierarchy((JPITypeDecl)typeDecl);

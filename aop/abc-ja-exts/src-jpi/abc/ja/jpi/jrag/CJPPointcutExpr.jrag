@@ -87,20 +87,20 @@ aspect CJPPointcutExpr{
   }
 
   
-  private boolean CJPPointcutExpr.containsKey(HashMap<JPITypeDecl, Object> jpiHierarchy, JPITypeDecl currentJPITypeDecl) {
-	  HashMap<JPITypeDecl, Object> local;
-	  if (jpiHierarchy.containsKey(currentJPITypeDecl)){
-		  return true;
-	  }
-	  for(Object value : jpiHierarchy.values()){
-		if(value == null){ continue; }
-		local = (HashMap<JPITypeDecl, Object>)value;
-		if (containsKey(local,currentJPITypeDecl)){
-			return true;
-		}
-	  }
-	  return false;
-  }
+//  private boolean CJPPointcutExpr.containsKey(HashMap<JPITypeDecl, Object> jpiHierarchy, JPITypeDecl currentJPITypeDecl) {
+//	  HashMap<JPITypeDecl, Object> local;
+//	  if (jpiHierarchy.containsKey(currentJPITypeDecl)){
+//		  return true;
+//	  }
+//	  for(Object value : jpiHierarchy.values()){
+//		if(value == null){ continue; }
+//		local = (HashMap<JPITypeDecl, Object>)value;
+//		if (containsKey(local,currentJPITypeDecl)){
+//			return true;
+//		}
+//	  }
+//	  return false;
+// }
 
 
   private Pointcut CJPPointcutExpr.makeExhibitBodyDeclPointcut(Iterator<ExhibitBodyDecl> exhibitIterator, Position pos, boolean hierarchy) {
