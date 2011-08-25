@@ -4,34 +4,7 @@ aspect Exhibit{
 	eq ExhibitBodyDecl.isExhibit() = true;
 		
 
-	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);
-	
-	
-	//eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl) = null;
-	//eq CompilationUnit.getTypeDecl().getExhibitDecls(JPITypeDecl jpiTypeDecl) = getExhibitDecls(jpiTypeDecl); 
-	
-//	syn lazy Collection<ExhibitBodyDecl> CompilationUnit.getExhibitDecls(JPITypeDecl jpiTypeDecl){
-//		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
-//		ClassDecl classDecl;
-//		TypeAccess jpiAccess;
-//		for(TypeDecl typeDecl : getTypeDeclList()){
-//			if (!typeDecl.isClassDecl()){ //aspect is considered as a class
-//				continue;
-//			}
-//			classDecl = (ClassDecl)typeDecl;
-//			for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
-//				if (!bodyDecl.isExhibit()){
-//					continue;
-//				}			
-//				jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
-//				if (jpiAccess.type().equals(jpiTypeDecl)){
-//					set.add((ExhibitBodyDecl)bodyDecl);
-//				}
-//			}
-//		}
-//		return set;
-//	}
-	
+	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);	
 	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
@@ -56,6 +29,29 @@ aspect Exhibit{
 		return set;	
 	}	
 
+	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getAllExhibitDecls();
+	eq Program.getCompilationUnit().getAllExhibitDecls(){
+		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
+		ClassDecl classDecl;
+		TypeAccess jpiAccess;
+		for(CompilationUnit cu : getCompilationUnits()){
+			for(TypeDecl typeDecl : cu.getTypeDecls()){		
+				if (!typeDecl.isClassDecl()){ //aspect is considered as a class
+					continue;
+				}
+				classDecl = (ClassDecl)typeDecl;
+				for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
+					if (!bodyDecl.isExhibit()){
+						continue;
+					}			
+					set.add((ExhibitBodyDecl)bodyDecl);
+				}
+			}
+		}
+		return set;	
+	}	
+
+
     syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
     	for(ParameterDeclaration formalParameter : getParameterList()){
     		if(formalParameter.name().equals(name)){
@@ -77,6 +73,5 @@ aspect Exhibit{
         return "Exhibit "+getHostType().name() + "." + getJPIName().typeName()
             +" ("+pos().file()
             +", line "+pos().line()+")";
-    }
-	
+    }	
 }
