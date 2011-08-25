@@ -106,4 +106,8 @@ aspect JPITypeDecl{
 		}
 		return set;
 	}
+	
+	public boolean JPITypeDecl.isSubType(JPITypeDecl jpiTypeDecl){
+		return getHierarchy().containsKey(jpiTypeDecl);
+	}
 }

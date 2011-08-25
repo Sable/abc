@@ -1,0 +1,17 @@
+aspect CJPAdviceDecl{
+
+	public boolean CJPAdviceDecl.isSubType(AdviceDecl adviceDecl){
+		CJPAdviceDecl cjpAdviceDecl;
+		if (!adviceDecl.isCJPAdviceDecl()){
+			return false;
+  		}
+  		cjpAdviceDecl = (CJPAdviceDecl)adviceDecl;
+  		if (!getAdviceSpec().kind().equals(adviceDecl.getAdviceSpec().kind())){
+			return false;
+  		}
+	  	JPITypeDecl childType = (JPITypeDecl)getName().type();
+	  	JPITypeDecl parentType = (JPITypeDecl)cjpAdviceDecl.getName().type();
+	  	return childType.isSubType(parentType);
+	}
+
+}
