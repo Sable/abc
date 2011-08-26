@@ -85,7 +85,7 @@ public class PointcutCombination {
 				pointcut = OrPointcut.construct(pointcut, extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden), exhibitDecl.pos());
 			}
 		}
-		return pointcut;
+		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 	
 
