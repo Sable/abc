@@ -8,7 +8,7 @@ import java.lang.*;
 import java.io.*;
 
 jpi Number JP(Number amount); //ok
-jpi Number JP2(char items, int x) extends JP(); //ok
+jpi Number JP2(char items, int x) extends JP(); //wrong
 jpi Number JP3(char items) extends J(); //wrong, J doesn't exist.
 
 jpi Number JP4(Number items) extends JP(item); //wrong, item doesn't exist.
@@ -27,3 +27,10 @@ jpi Number JPRoot2(); //ok
 jpi Number JP12(Integer z) extends JPRoot2(z); //wrong 
 jpi Number JP13() throws IOException extends JPRoot2(); //ok
 
+jpi Integer M(int a); //ok
+jpi Integer M1(int b) extends M(); //wrong
+jpi Integer M2(int z) extends M(z); //ok
+
+jpi void I(); //ok
+jpi void I1(int b) extends I(); //ok
+jpi void I2(int z) extends I(z); //wrong
