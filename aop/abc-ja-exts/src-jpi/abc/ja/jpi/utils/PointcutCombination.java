@@ -17,6 +17,7 @@ import abc.ja.jpi.jrag.ExhibitBodyDecl;
 import abc.ja.jpi.jrag.ExplicitTypeNamePattern;
 import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
+import abc.ja.jpi.jrag.VarAccess;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.ClassnamePattern;
 import abc.weaving.aspectinfo.EmptyPointcut;
@@ -48,6 +49,9 @@ public class PointcutCombination {
 	public static Pointcut combinePointcutsOverriden(CJPAdviceDecl currentAdvice, Collection<CJPAdviceDecl> CJPAdviceDecls,Collection<ExhibitBodyDecl> exhibitsDecls){
 		Pointcut pointcut = null;
 		Pointcut tempPointcut = null;
+		if (currentAdvice.isFinal()){
+			return new EmptyPointcut(new Position("", -1));
+		}
 		for (CJPAdviceDecl cjpAdvice : CJPAdviceDecls) {
 			if(cjpAdvice.isSubType(currentAdvice)){
 				if(pointcut == null){
@@ -58,7 +62,7 @@ public class PointcutCombination {
 					pointcut = OrPointcut.construct(pointcut, tempPointcut, tempPointcut.getPosition());
 				}
 			}
-		}
+		}		
 		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 
@@ -75,10 +79,10 @@ public class PointcutCombination {
 		Pointcut pointcut = null;
 		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {
 			if(pointcut == null){
-				pointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, false);
+				pointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden);
 			}
 			else{
-				pointcut = OrPointcut.construct(pointcut, extractAndTransformPointcuts(currentAdvice,exhibitDecl, false), exhibitDecl.pos());
+				pointcut = OrPointcut.construct(pointcut, extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden), exhibitDecl.pos());
 			}
 		}
 		return pointcut;
@@ -115,10 +119,16 @@ public class PointcutCombination {
 	 * @return
 	 */
 	public static Pointcut extractAndTransformPointcuts(CJPAdviceDecl currentAdvice, ExhibitBodyDecl exhibitDecl, boolean overriden){
-		Pointcut pointcut = extractPointcuts(exhibitDecl);
-		return transformBindingsToLocalVariables(pointcut, exhibitDecl, currentAdvice, overriden);
+		Pointcut pointcut = transformBindingsToLocalVariables(extractPointcuts(exhibitDecl), exhibitDecl, currentAdvice, overriden);
+		return reducePointcutScope(pointcut, exhibitDecl);
 	}
 	
+	private static Pointcut reducePointcutScope(Pointcut pointcut, ExhibitBodyDecl exhibitDecl) {
+		Position pos = exhibitDecl.pos();
+		Pointcut within = new Within(getPattern(exhibitDecl.getHostType(), exhibitDecl.getParent()), pos);
+		return AndPointcut.construct(pointcut, within, pos);		
+	}
+
 	/***
 	 * This method apply the correct semantics to convert the bindings into local variables
 	 * @param pointcut
@@ -162,7 +172,7 @@ public class PointcutCombination {
 		for(int i=0; i<jpiDecl.getNumSuperArgumentName(); i++){
 			for(int j=0; j<jpiDecl.getNumParameter();j++){
 				ParameterDeclaration pd = jpiDecl.getParameter(j);
-				if (pd.getID().equals(jpiDecl.getSuperArgumentName(i).type().getID())){
+				if (pd.getID().equals(((VarAccess)jpiDecl.getSuperArgumentName(i)).getID())){
 					set.add(new JPIParameterPosition(j, i, pd));
 				}
 			}
@@ -188,7 +198,7 @@ public class PointcutCombination {
 			}
 		}		
 		pointcut = pointcut.inline(renameEnv, typeEnv, null, 0);
-		return new LocalPointcutVars(pointcut,formals,pointcut.getPosition());
+		return formals.isEmpty() ? pointcut : new LocalPointcutVars(pointcut,formals,pointcut.getPosition());
 	}
 
 	/***
@@ -202,7 +212,7 @@ public class PointcutCombination {
 	private static Pointcut transformBindingsToLocalVariablesOverriden(Pointcut pointcut, ExhibitBodyDecl exhibitDecl){
 		LinkedList formals = new LinkedList();
 		for(ParameterDeclaration p : exhibitDecl.getParameterList()){
-			formals.add((Formal)p.formal());
+			formals.add(p.formal());
 		}
 		return new LocalPointcutVars(pointcut,formals,pointcut.getPosition());
 	}
@@ -213,9 +223,7 @@ public class PointcutCombination {
 	 * @return
 	 */
 	public static Pointcut extractPointcuts(ExhibitBodyDecl exhibitDecl){
-		Position pos = exhibitDecl.pos();
-		Pointcut within = new Within(getPattern(exhibitDecl.getHostType(), exhibitDecl.getParent()), pos);
-		return AndPointcut.construct(exhibitDecl.getPointcut().pointcut(), within, pos);
+		return exhibitDecl.getPointcut().pointcut();
 	}
 	
 	/***
