@@ -13,5 +13,11 @@ aspect CJPAdviceDecl{
 	  	JPITypeDecl parentType = (JPITypeDecl)cjpAdviceDecl.getName().type();
 	  	return childType.isSubType(parentType);
 	}
+	
+    eq CJPAdviceDecl.getModifiers().mayBeFinal() = true;
+    
+    public boolean CJPAdviceDecl.isFinal(){
+    	return getModifiers().isFinal();
+    }
 
 }

@@ -169,11 +169,21 @@ aspect CodeGen {
 	  }
 	  
 	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
-	  	  
+	  
+
+/*	  Pointcut pointcutPolymorphism, pointcutOverriden;
+	  CJPAdviceDecl currentAdvice = (CJPAdviceDecl)getCurrentAdvice();
+	  Collection<ExhibitBodyDecl> exhibitsDecls = getAllExhibitDecls();
+	  Collection<CJPAdviceDecl> cjpAdviceDecls = getCJPAdviceDecls();
+	  cjpAdviceDecls.remove(currentAdvice);
+	  pointcutPolymorphism = abc.ja.jpi.utils.PointcutCombination.combinePointcutsPolymorphism(currentAdvice, exhibitsDecls);
+	  pointcutOverriden = abc.ja.jpi.utils.PointcutCombination.combinePointcutsOverriden(currentAdvice, cjpAdviceDecls, exhibitsDecls);
+	  return AndPointcut.construct(pointcutPolymorphism, NotPointcut.construct(pointcutOverriden, pos()), pos());
+*/	  	  
 	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
 	
 	  abc.ja.jpi.utils.JPIHierarchyHashMap jpiHierarchy = jpiTypeDecl.getHierarchy();
-	  for(CJPAdviceDecl cjpAdviceDecl : getAdviceDecls()){
+	  for(CJPAdviceDecl cjpAdviceDecl : getCJPAdviceDecls()){
 		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)cjpAdviceDecl.getName()).type();
 		  if(jpiHierarchy.containsKey(currentJPITypeDecl)){
 			  cjpAdviceSet.add(cjpAdviceDecl);
@@ -191,6 +201,7 @@ aspect CodeGen {
 		  parentPointcut = AndPointcut.construct(parentPointcut, NotPointcut.construct(hierarchyPointcut, pos()), pos());
 	  }
 	  
-	  return parentPointcut;	
+	  return parentPointcut;
+	
 	}
 }

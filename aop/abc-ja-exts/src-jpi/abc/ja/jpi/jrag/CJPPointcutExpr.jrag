@@ -14,23 +14,10 @@ aspect CJPPointcutExpr{
 	eq DeclareError.getPointcutExpr().getAdviceSpec() = null;
 	eq ExhibitBodyDecl.getPointcut().getAdviceSpec() = null;
 	
-	inh lazy Collection<CJPAdviceDecl> CJPPointcutExpr.getAdviceDecls();
-	eq Program.getCompilationUnit().getAdviceDecls() = null;
-	eq AspectDecl.getBodyDecl().getAdviceDecls(){
-		HashSet<CJPAdviceDecl> set = new HashSet<CJPAdviceDecl>();
-		for(BodyDecl bodyDecl : getBodyDeclList()){
-			if (!bodyDecl.isCJPAdviceDecl()){
-				continue;
-			}
-			set.add((CJPAdviceDecl)bodyDecl);
-		}
-		return set;
-	}
-	
 	
 	inh lazy Access CJPPointcutExpr.getJPIAccess();
 	eq CJPAdviceDecl.getPointcutExpr().getJPIAccess() = getName();
-	
+
    private Pointcut CJPPointcutExpr.runExtractPointcuts(Iterator<ExhibitBodyDecl> exhibitIterator, int size, Position pos, boolean hierarchy){
 	  if (size == 1){
 		  return makeExhibitBodyDeclPointcut(exhibitIterator, pos, hierarchy);
@@ -86,23 +73,6 @@ aspect CJPPointcutExpr{
 	  
   }
 
-  
-//  private boolean CJPPointcutExpr.containsKey(HashMap<JPITypeDecl, Object> jpiHierarchy, JPITypeDecl currentJPITypeDecl) {
-//	  HashMap<JPITypeDecl, Object> local;
-//	  if (jpiHierarchy.containsKey(currentJPITypeDecl)){
-//		  return true;
-//	  }
-//	  for(Object value : jpiHierarchy.values()){
-//		if(value == null){ continue; }
-//		local = (HashMap<JPITypeDecl, Object>)value;
-//		if (containsKey(local,currentJPITypeDecl)){
-//			return true;
-//		}
-//	  }
-//	  return false;
-// }
-
-
   private Pointcut CJPPointcutExpr.makeExhibitBodyDeclPointcut(Iterator<ExhibitBodyDecl> exhibitIterator, Position pos, boolean hierarchy) {
 	  Pointcut currentPointcut;
 	  ExhibitBodyDecl tempExhibitBodyDecl = exhibitIterator.next();
@@ -134,9 +104,10 @@ aspect CJPPointcutExpr{
 	
 
     inh lazy AdviceDecl CJPPointcutExpr.getCurrentAdvice();
-    eq CJPAdviceDecl.getPointcutExpr().getCurrentAdvice() = this;
+    eq Program.getCompilationUnit().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
     eq AdviceDecl.getPointcutExpr().getCurrentAdvice() = this;
-	eq PointcutDecl.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
+    
+/*	eq PointcutDecl.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
 	eq PerTarget.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
 	eq PerThis.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
 	eq PerCflow.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
@@ -145,10 +116,12 @@ aspect CJPPointcutExpr{
 	eq DeclareWarning.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
 	eq DeclareError.getPointcutExpr().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}
 	eq ExhibitBodyDecl.getPointcut().getCurrentAdvice(){ throw new InternalCompilerError("Trying to get an advice decl");}    
-    
+  */  
+
     
     inh lazy Collection<CJPAdviceDecl> CJPPointcutExpr.getCJPAdviceDecls();
-    syn lazy Collection<CJPAdviceDecl> AspectDecl.getCJPAdviceDecls(){
+	eq Program.getCompilationUnit().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
+    eq AspectDecl.getBodyDecl().getCJPAdviceDecls(){
 	  	HashSet<CJPAdviceDecl> set = new HashSet<CJPAdviceDecl>();
     	for(BodyDecl bd : getBodyDecls()){
     		if(bd.isCJPAdviceDecl()){
@@ -157,7 +130,8 @@ aspect CJPPointcutExpr{
     	}
     	return set;
     }	    
-    eq AdviceDecl.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
+/*    
+    eq AdviceDecl.getPointcutExpr().getCJPAdviceDecls()
 	eq PointcutDecl.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
 	eq PerTarget.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
 	eq PerThis.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
@@ -167,4 +141,5 @@ aspect CJPPointcutExpr{
 	eq DeclareWarning.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
 	eq DeclareError.getPointcutExpr().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}
 	eq ExhibitBodyDecl.getPointcut().getCJPAdviceDecls(){throw new InternalCompilerError("Trying to get CJPAdviceDecl");}    	
+*/
 }
