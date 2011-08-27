@@ -11198,13 +11198,13 @@
         title="collect jpi hierarchy">
         <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
     </ajc-test>
-
+<!--
     <ajc-test num="1662" dir="abctests/jpi"
         title="parent advice">
         <compile files="TestTypeDecl.java" options="-ext,abc.ja.jpi" />
 		<run class="C"/>
     </ajc-test>
-
+-->
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
