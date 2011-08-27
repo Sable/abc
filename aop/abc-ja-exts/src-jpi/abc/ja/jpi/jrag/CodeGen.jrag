@@ -157,12 +157,12 @@ aspect CodeGen {
 
 
 	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
-	  Pointcut parentPointcut, hierarchyPointcut;
+//	  Pointcut parentPointcut, hierarchyPointcut;
 	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
 	  JPITypeDecl jpiTypeDecl;
-	  JPITypeDecl currentJPITypeDecl;
-	  HashSet<CJPAdviceDecl> cjpAdviceSet = new HashSet<CJPAdviceDecl>();
-	  HashSet<Pointcut> hierarchyPointcuts = new HashSet<Pointcut>();
+//	  JPITypeDecl currentJPITypeDecl;
+//	  HashSet<CJPAdviceDecl> cjpAdviceSet = new HashSet<CJPAdviceDecl>();
+//	  HashSet<Pointcut> hierarchyPointcuts = new HashSet<Pointcut>();
 	  
 	  if (!jpiAccess.type().isJPITypeDecl()){
 		  return null;
@@ -171,7 +171,7 @@ aspect CodeGen {
 	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
 	  
 
-/*	  Pointcut pointcutPolymorphism, pointcutOverriden;
+	  Pointcut pointcutPolymorphism, pointcutOverriden;
 	  CJPAdviceDecl currentAdvice = (CJPAdviceDecl)getCurrentAdvice();
 	  Collection<ExhibitBodyDecl> exhibitsDecls = getAllExhibitDecls();
 	  Collection<CJPAdviceDecl> cjpAdviceDecls = getCJPAdviceDecls();
@@ -179,7 +179,7 @@ aspect CodeGen {
 	  pointcutPolymorphism = abc.ja.jpi.utils.PointcutCombination.combinePointcutsPolymorphism(currentAdvice, exhibitsDecls);
 	  pointcutOverriden = abc.ja.jpi.utils.PointcutCombination.combinePointcutsOverriden(currentAdvice, cjpAdviceDecls, exhibitsDecls);
 	  return AndPointcut.construct(pointcutPolymorphism, NotPointcut.construct(pointcutOverriden, pos()), pos());
-*/	  	  
+/*	  	  
 	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
 	
 	  abc.ja.jpi.utils.JPIHierarchyHashMap jpiHierarchy = jpiTypeDecl.getHierarchy();
@@ -202,6 +202,6 @@ aspect CodeGen {
 	  }
 	  
 	  return parentPointcut;
-	
+*/
 	}
 }

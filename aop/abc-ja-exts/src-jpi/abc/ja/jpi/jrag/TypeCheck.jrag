@@ -51,8 +51,8 @@ aspect TypeCheck{
 			}
 		}
 				
-		if(getNumSuperArgumentName() > jpiSuperDecl.getNumParameter()){
-			error("TypeCheck: There too much arguments in the extends clause.");
+		if(getNumSuperArgumentName() != jpiSuperDecl.getNumParameter()){
+			error("TypeCheck: Arguments quantity must match in the extends clause.");
 		}
 		else {
 			for(int i=0; i<getNumSuperArgumentName(); i++){
