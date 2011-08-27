@@ -10982,6 +10982,7 @@
     <ajc-test num="1621" dir="abctests/jpi/typechecks"
         title="Check JPI declared - aspect">
         <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="6"/>
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="16"/>
 	        <message kind="error" line="16"/>
