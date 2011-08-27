@@ -11,10 +11,10 @@ jpi int JP2(int amount) extends JP(amount);
 public class DontMatch{
 
     exhibits int JP(int i):
-        execution(* foo(..)) && args(i);
+        call(* foo(..)) && args(i);
 
     exhibits int JP2(int i):
-        execution(* bar(..)) && args(i);
+        call(* bar(..)) && args(i);
 
     int foo(int x){
         return x;
