@@ -6081,23 +6081,11 @@
     </ajc-test>
 <ajc-test title="Check JPI declared - aspect" num="1621" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java">
+	        <message line="6" kind="error"></message>
 	        <message line="12" kind="error"></message>
 	        <message line="16" kind="error"></message>
 	        <message line="16" kind="error"></message>
 	        <message line="16" kind="error"></message>			
-        </compile>
-    </ajc-test>
-<ajc-test title="Check JPI inheritance" num="1622" dir="abctests/jpi/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckJPIInheritance.java">
-	        <message line="12" kind="error"></message>
-	        <message line="12" kind="error"></message>
-	        <message line="12" kind="error"></message>
-	        <message line="14" kind="error"></message>
-	        <message line="14" kind="error"></message>			
-	        <message line="18" kind="error"></message>
-	        <message line="19" kind="error"></message>
-	        <message line="24" kind="error"></message>
-	        <message line="27" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check Exhibit" num="1623" dir="abctests/jpi/typechecks">
@@ -6140,6 +6128,16 @@
 	        <message line="14" kind="error"></message>
 	        <message line="19" kind="error"></message>
 	        <message line="24" kind="error"></message>			
+        </compile>
+    </ajc-test>
+<ajc-test title="Check Aspect Definition" num="1628" dir="abctests/jpi/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckAspectAdviceDefinition.java">
+	        <message line="3" kind="error"></message>
+	        <message line="3" kind="error"></message>
+	        <message line="3" kind="error"></message>			
+	        <message line="3" kind="error"></message>
+	        <message line="3" kind="error"></message>
+	        <message line="3" kind="error"></message>						
         </compile>
     </ajc-test>
 <ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
@@ -6228,6 +6226,43 @@
     </ajc-test>
 <ajc-test title="collect jpi hierarchy" num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java"></compile>
+    </ajc-test>
+<ajc-test title="Don't match regular execution joinpoints on extracted method" num="1701" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="DontMatchExecution.java"></compile>
+		<run class="DontMatchExecution"></run>
+    </ajc-test>
+<ajc-test title="Dont allow capture of break and continue" num="1707" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckBreakContinueCapture.java">
+	        <message line="19" kind="error"></message>
+	        <message line="41" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Only allow access to final locals" num="1708" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckFinalAccess.java">
+	        <message line="4" kind="error"></message>
+	        <message line="8" kind="error"></message>
+	        <message line="8" kind="error"></message>
+	        <message line="17" kind="error"></message>
+	        <message line="22" kind="error"></message>
+	        <message line="22" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check return types at compile time" num="1717" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesIncorrect.java">
+	        <message line="7" kind="error"></message>
+	        <message line="12" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check return types at compile time (2)" num="1716" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesIncorrect2.java">
+	        <message line="17" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check exception types in base code" num="1720" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckExceptions2.java">
+	        <message line="14" kind="error"></message>
+	        <message line="18" kind="error"></message>
+        </compile>
     </ajc-test>
  
 </suite>

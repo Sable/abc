@@ -680,5 +680,10 @@
         <compile options="-ext,abc.ja.cjp" files="CorrectWithinSemantics.java"></compile>
     	<run class="CorrectWithinSemantics"></run>
     </ajc-test>
+<ajc-test title="Correct semantics for within pointcuts" num="1721" dir="abctests/cjp/matching">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-ext,abc.ja.jpi" files="CorrectWithinSemantics.java"></compile>
+    	<run class="CorrectWithinSemantics"></run>
+    </ajc-test>
  
 </suite>
