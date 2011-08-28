@@ -11158,6 +11158,13 @@
 		<run class="DoubleMatch" />
     </ajc-test>
 
+    <ajc-test num="1647" dir="abctests/jpi/matching"
+        title="Sub type match">
+        <compile files="SubTypeMatching.java" options="-ext,abc.ja.jpi" />
+		<run class="A" />
+    </ajc-test>
+
+
     <ajc-test num="1650" dir="abctests/jpi/FSE-NI"
         title="example 1">
         <compile files="Util.java, example1.java" options="-ext,abc.ja.jpi" />
@@ -11171,18 +11178,12 @@
     </ajc-test>
 
     <ajc-test num="1652" dir="abctests/jpi/FSE-NI"
-        title="example 2-2">
-        <compile files="Util.java, example2_2.java" options="-ext,abc.ja.jpi" />
-		<run class="ShoppingSession" />
-    </ajc-test>
-
-    <ajc-test num="1653" dir="abctests/jpi/FSE-NI"
         title="example 3">
         <compile files="Util.java, example3.java" options="-ext,abc.ja.jpi" />
 		<run class="ShoppingSession" />
     </ajc-test>
 
-    <ajc-test num="1654" dir="abctests/jpi/FSE-NI"
+    <ajc-test num="1653" dir="abctests/jpi/FSE-NI"
         title="example 4">
         <compile files="Util.java, example4.java" options="-ext,abc.ja.jpi" />
 		<run class="ShoppingSession" />
@@ -11198,13 +11199,13 @@
         title="collect jpi hierarchy">
         <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
     </ajc-test>
-<!--
+
     <ajc-test num="1662" dir="abctests/jpi"
         title="parent advice">
         <compile files="TestTypeDecl.java" options="-ext,abc.ja.jpi" />
 		<run class="C"/>
     </ajc-test>
--->
+
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>

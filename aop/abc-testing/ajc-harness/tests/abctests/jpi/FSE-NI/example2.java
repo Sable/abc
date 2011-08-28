@@ -6,9 +6,6 @@ jpi void Buying (Item item, float price, int amount, Customer cus) extends Check
 
 public class ShoppingSession{
 	
-	exhibits void CheckingOut(Item i, float price, int amount, Customer c):
-		call(* checkOut(..)) && args(i,price,amount,c);
-
 	exhibits void Buying(Item i, float price, int amount, Customer c):
 		call(* checkOut(..)) 
 		&& args(i,price,amount,c) 

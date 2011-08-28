@@ -4,21 +4,18 @@ import Util.*;
 
 jpi void CheckingOut(Item item, float price, int amount, Customer cus);
 jpi void Buying(Item item, float price, int amount, Customer cus) extends CheckingOut(item,price,amount,cus);
-jpi void Renting(Item item, float price, int amount, Customer cus, Date date) extends CheckingOut(item,price,amount,cus);
+jpi void Renting(Item item, float price, int amount, Customer cus) extends CheckingOut(item,price,amount,cus);
 
 public class ShoppingSession{
 	
-	exhibits void CheckingOut(Item i, float price, int amount, Customer c):
-		call(* checkOut(..)) && args(i,price,amount,c);
-
 	exhibits void Buying(Item i, float price, int amount, Customer c):
 		call(* checkOut(..)) 
 		&& args(i,price,amount,c) 
 		&& withincode(void ShoppingSession.buy(..));
 
-	exhibits void Renting(Item i, float price, int amount, Customer c, Date d):
+	exhibits void Renting(Item i, float price, int amount, Customer c):
 		call(* checkOut(..)) 
-		&& args(i,price,amount,c,d) 
+		&& args(i,price,amount,c) 
 		&& withincode(void ShoppingSession.rent(..));
 	
 	public static int counter = 0;
