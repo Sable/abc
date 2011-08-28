@@ -6088,6 +6088,22 @@
 	        <message line="16" kind="error"></message>			
         </compile>
     </ajc-test>
+<ajc-test title="Check JPI inheritance" num="1622" dir="abctests/jpi/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckJPIInheritance.java">
+	        <message line="11" kind="error"></message>        	
+	        <message line="12" kind="error"></message>
+	        <message line="12" kind="error"></message>
+	        <message line="12" kind="error"></message>
+	        <message line="14" kind="error"></message>
+	        <message line="14" kind="error"></message>			
+	        <message line="18" kind="error"></message>
+	        <message line="19" kind="error"></message>
+	        <message line="24" kind="error"></message>
+	        <message line="27" kind="error"></message>
+	        <message line="31" kind="error"></message>
+	        <message line="36" kind="error"></message>			
+        </compile>
+    </ajc-test>
 <ajc-test title="Check Exhibit" num="1623" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckJPIExhibit.java">
 	        <message line="15" kind="error"></message>
@@ -6175,10 +6191,6 @@
 <ajc-test title="Simple Match" num="1640" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="SimpleMatch.java"></compile>
 		<run class="SimpleMatch"></run>
-    </ajc-test>
-<ajc-test title="Dont Match" num="1641" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
-		<run class="DontMatch"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match" num="1642" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java"></compile>
