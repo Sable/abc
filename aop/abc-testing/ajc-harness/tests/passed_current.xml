@@ -6212,6 +6212,10 @@
         <compile options="-ext,abc.ja.jpi" files="DoubleMatch.java"></compile>
 		<run class="DoubleMatch"></run>
     </ajc-test>
+<ajc-test title="Sub type match" num="1647" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="SubTypeMatching.java"></compile>
+		<run class="A"></run>
+    </ajc-test>
 <ajc-test title="example 1" num="1650" dir="abctests/jpi/FSE-NI">
         <compile options="-ext,abc.ja.jpi" files="Util.java, example1.java"></compile>
 		<run class="ShoppingSession"></run>
@@ -6220,15 +6224,11 @@
         <compile options="-ext,abc.ja.jpi" files="Util.java, example2.java"></compile>
 		<run class="ShoppingSession"></run>
     </ajc-test>
-<ajc-test title="example 2-2" num="1652" dir="abctests/jpi/FSE-NI">
-        <compile options="-ext,abc.ja.jpi" files="Util.java, example2_2.java"></compile>
-		<run class="ShoppingSession"></run>
-    </ajc-test>
-<ajc-test title="example 3" num="1653" dir="abctests/jpi/FSE-NI">
+<ajc-test title="example 3" num="1652" dir="abctests/jpi/FSE-NI">
         <compile options="-ext,abc.ja.jpi" files="Util.java, example3.java"></compile>
 		<run class="ShoppingSession"></run>
     </ajc-test>
-<ajc-test title="example 4" num="1654" dir="abctests/jpi/FSE-NI">
+<ajc-test title="example 4" num="1653" dir="abctests/jpi/FSE-NI">
         <compile options="-ext,abc.ja.jpi" files="Util.java, example4.java"></compile>
 		<run class="ShoppingSession"></run>
     </ajc-test>

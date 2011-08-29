@@ -105,6 +105,10 @@
         <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
 		<run class="DontMatch"></run>
     </ajc-test>
+<ajc-test title="parent advice" num="1662" dir="abctests/jpi">
+        <compile options="-ext,abc.ja.jpi" files="TestTypeDecl.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
     </ajc-test>
