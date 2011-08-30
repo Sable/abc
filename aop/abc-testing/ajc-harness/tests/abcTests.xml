@@ -11201,9 +11201,9 @@
     </ajc-test>
 
     <ajc-test num="1662" dir="abctests/jpi"
-        title="parent advice">
-        <compile files="TestTypeDecl.java" options="-ext,abc.ja.jpi" />
-		<run class="C"/>
+        title="Bug">
+        <compile files="Bug.java" options="-ext,abc.ja.jpi" />
+		<run class="Bug"/>
     </ajc-test>
 
     <ajc-test num="1700" dir="abctests/cjp/shopping"
