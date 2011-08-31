@@ -6239,6 +6239,10 @@
 <ajc-test title="collect jpi hierarchy" num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java"></compile>
     </ajc-test>
+<ajc-test title="Bug" num="1662" dir="abctests/jpi">
+        <compile options="-ext,abc.ja.jpi" files="Bug.java"></compile>
+		<run class="Bug"></run>
+    </ajc-test>
 <ajc-test title="Don't match regular execution joinpoints on extracted method" num="1701" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="DontMatchExecution.java"></compile>
 		<run class="DontMatchExecution"></run>
