@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 871ms, memory usage: 16466240.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 840ms, memory usage: 18074536.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1413ms, memory usage: 7850360.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1220ms, memory usage: 7900952.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 791ms, memory usage: 19406416.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 794ms, memory usage: 19418344.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 664ms, memory usage: 8787552.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 688ms, memory usage: 8791832.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,23 +36,23 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1200ms, memory usage: 14693040.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1185ms, memory usage: 14725264.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@57496452.foo calls Outer$Inner@13597043.mi
+Outer@2a032950.foo calls Outer$Inner@358d58bc.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@13597043.mi calls java.io.PrintStream@54d948a1.println
+Outer$Inner@358d58bc.mi calls java.io.PrintStream@52bcba1b.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@57496452.foo calls Outer$InnerRandom@52c1746c.nextHook
+Outer@2a032950.foo calls Outer$InnerRandom@44b9577e.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@52c1746c.nextHook calls Outer$InnerRandom@52c1746c.next
+Outer$InnerRandom@44b9577e.nextHook calls Outer$InnerRandom@44b9577e.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@57496452.foo calls X.nextInt
+Outer@2a032950.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -63,7 +63,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$1$around$942(AroundInnerCalls13.java:41)
+	at A.inline$4$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -72,7 +72,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2387ms, memory usage: 14223048.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2388ms, memory usage: 14205856.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -87,7 +87,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$30$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -96,7 +96,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2802ms, memory usage: 13649848.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2761ms, memory usage: 13659888.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -114,7 +114,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1887ms, memory usage: 11793136.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1920ms, memory usage: 11833304.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -138,26 +138,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2235ms, memory usage: 13399336.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2761ms, memory usage: 13284240.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 735ms, memory usage: 18370664.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 733ms, memory usage: 18349272.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 783ms, memory usage: 11546920.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 820ms, memory usage: 11496656.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 925ms, memory usage: 14402344.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 929ms, memory usage: 14372336.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -165,7 +165,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 842ms, memory usage: 20929768.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 832ms, memory usage: 20887640.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -189,7 +189,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1291ms, memory usage: 14077840.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1288ms, memory usage: 14076544.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -205,13 +205,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 795ms, memory usage: 31054768.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 780ms, memory usage: 31061656.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 224ms, memory usage: 11842584.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 223ms, memory usage: 11801560.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -220,7 +220,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 701ms, memory usage: 7918968.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 710ms, memory usage: 7856168.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -245,7 +245,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2872ms, memory usage: 13065912.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2681ms, memory usage: 12947824.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -266,7 +266,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 851ms, memory usage: 25451456.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 852ms, memory usage: 25443096.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -275,14 +275,14 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1351ms, memory usage: 27900288.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1194ms, memory usage: 23272104.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 629ms, memory usage: 20224928.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 627ms, memory usage: 20258624.
 
 
 Running test 1641: abctests/jpi/matching/Dont Match
@@ -311,7 +311,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:202)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
 	... 4 more
-FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1444ms, memory usage: 56860632.
+FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1442ms, memory usage: 56857296.
 
 
 Running test 1700: abctests/cjp/shopping/Shopping Session Example
@@ -344,7 +344,7 @@ Caused by: java.lang.ClassCastException: abc.ja.jpi.jrag.JoinpointTypeDecl canno
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1700: "abctests/cjp/shopping/Shopping Session Example" failed in 1273ms, memory usage: 39628720.
+FAIL: Test 1700: "abctests/cjp/shopping/Shopping Session Example" failed in 1296ms, memory usage: 39276920.
 
 
 Running test 1702: abctests/cjp/matching/Match on closure joinpoints
@@ -352,7 +352,7 @@ Commandline: abc -d abctests/cjp/matching -warn-unused-advice:off -ext abc.ja.jp
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/MatchCJP.java:19: TypeCheck: Bar must be a JPI not a MatchCJP.Bar
-FAIL: Test 1702: "abctests/cjp/matching/Match on closure joinpoints" failed in 1158ms, memory usage: 38458832.
+FAIL: Test 1702: "abctests/cjp/matching/Match on closure joinpoints" failed in 1591ms, memory usage: 37000216.
 
 
 Running test 1703: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -360,7 +360,7 @@ Commandline: abc -d abctests/cjp/matching -warn-unused-advice:off -ext abc.ja.jp
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/MatchCJPWithArgs.java:19: TypeCheck: Bar must be a JPI not a MatchCJPWithArgs.Bar
-FAIL: Test 1703: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1080ms, memory usage: 21874064.
+FAIL: Test 1703: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1498ms, memory usage: 20922584.
 
 
 Running test 1704: abctests/cjp/matching/Match on two closure joinpoints of the same type
@@ -368,7 +368,7 @@ Commandline: abc -d abctests/cjp/matching -warn-unused-advice:off -ext abc.ja.jp
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/Match2CJP.java:20: TypeCheck: Bar must be a JPI not a Match2CJP.Bar
-FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1061ms, memory usage: 22119416.
+FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1385ms, memory usage: 20948112.
 
 
 Running test 1705: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -376,7 +376,7 @@ Commandline: abc -d abctests/cjp/matching -warn-unused-advice:off -ext abc.ja.jp
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/Match2CJPWithDifferentArgs.java:20: TypeCheck: Bar must be a JPI not a Match2CJPWithDifferentArgs.Bar
-FAIL: Test 1705: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1061ms, memory usage: 22369472.
+FAIL: Test 1705: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1375ms, memory usage: 20986840.
 
 
 Running test 1706: abctests/cjp/simplesyntax/Test simple syntax
@@ -384,7 +384,7 @@ Commandline: abc -d abctests/cjp/simplesyntax -warn-unused-advice:off -ext abc.j
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/simplesyntax/SimpleSyntax.java:21: TypeCheck: Bar must be a JPI not a SimpleSyntax.Bar
-FAIL: Test 1706: "abctests/cjp/simplesyntax/Test simple syntax" failed in 1071ms, memory usage: 22615856.
+FAIL: Test 1706: "abctests/cjp/simplesyntax/Test simple syntax" failed in 1282ms, memory usage: 21030760.
 
 
 Running test 1709: abctests/cjp/typechecks/Check field accesses
@@ -392,7 +392,7 @@ Commandline: abc -d abctests/cjp/typechecks -warn-unused-advice:off -ext abc.ja.
 Found an unexpected error - should be on line 17, but is on line 15.
 Errors found during this compilation:
 Semantic Error at abctests/cjp/typechecks/CheckFieldAccess.java:15,16: initialized field j can not be assigned
-FAIL: Test 1709: "abctests/cjp/typechecks/Check field accesses" failed in 1061ms, memory usage: 22879888.
+FAIL: Test 1709: "abctests/cjp/typechecks/Check field accesses" failed in 1162ms, memory usage: 21487768.
 
 
 Running test 1710: abctests/cjp/typechecks/Check access to 'this'
@@ -401,7 +401,7 @@ Found an unexpected error - should be on line 17, but is on line 15.
 Errors found during this compilation:
 Semantic Error at abctests/cjp/typechecks/CheckThisAccess.java:11,22: this may not be accessed in static context: s = this;
 Semantic Error at abctests/cjp/typechecks/CheckThisAccess.java:15: left hand side is not a variable
-FAIL: Test 1710: "abctests/cjp/typechecks/Check access to 'this'" failed in 1068ms, memory usage: 23129336.
+FAIL: Test 1710: "abctests/cjp/typechecks/Check access to 'this'" failed in 1155ms, memory usage: 21537424.
 
 
 Running test 1711: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -410,7 +410,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/CheckThisExposure.java:29: TypeCheck: JP must be a JPI not a A.JP
 Semantic Error at abctests/cjp/matching/CheckThisExposure.java:33: TypeCheck: JP2 must be a JPI not a A.JP2
-FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1081ms, memory usage: 21871528.
+FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1177ms, memory usage: 20884928.
 
 
 Running test 1712: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -419,7 +419,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/CheckTargetExposure.java:29: TypeCheck: JP must be a JPI not a A.JP
 Semantic Error at abctests/cjp/matching/CheckTargetExposure.java:33: TypeCheck: JP2 must be a JPI not a A.JP2
-FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1065ms, memory usage: 22126944.
+FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1153ms, memory usage: 20936480.
 
 
 Running test 1713: abctests/cjp/matching/Check thisJoinPoint.getArgs()
@@ -427,7 +427,7 @@ Commandline: abc -d abctests/cjp/matching -warn-unused-advice:off -ext abc.ja.jp
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/matching/CheckArgsExposure.java:23: TypeCheck: JP must be a JPI not a A.JP
-FAIL: Test 1713: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 1087ms, memory usage: 22375656.
+FAIL: Test 1713: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 1172ms, memory usage: 20985456.
 
 
 Running test 1714: abctests/cjp/typechecks/Check return types and casts at runtime
@@ -436,7 +436,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at abctests/cjp/typechecks/CheckReturnTypesCorrect.java:25: TypeCheck: JPHashSet must be a JPI not a CheckReturnTypesCorrect.JPHashSet
 Semantic Error at abctests/cjp/typechecks/CheckReturnTypesCorrect.java:29: TypeCheck: JPSet must be a JPI not a CheckReturnTypesCorrect.JPSet
-FAIL: Test 1714: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 1084ms, memory usage: 22628896.
+FAIL: Test 1714: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 1171ms, memory usage: 21034928.
 
 
 Running test 1717: abctests/cjp/typechecks/Check that CJP type is declared
@@ -449,7 +449,7 @@ Semantic Error at abctests/cjp/typechecks/CheckCJPDeclared.java:15: TypeCheck: J
 Semantic Error at abctests/cjp/typechecks/CheckCJPDeclared.java:17: NameCheck: There is not a Joinpoint declaration with the name JP
 Semantic Error at abctests/cjp/typechecks/CheckCJPDeclared.java:17: TypeCheck: JP must be a JPI not a Unknown
 Semantic Error at abctests/cjp/typechecks/CheckCJPDeclared.java:17,8: no visible type named JP
-FAIL: Test 1717: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 1050ms, memory usage: 22887448.
+FAIL: Test 1717: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 1132ms, memory usage: 21494088.
 
 
 Running test 1718: abctests/cjp/typechecks/Check argument types
@@ -459,7 +459,7 @@ Actual errors found:
 Semantic Error at abctests/cjp/typechecks/CheckArgumentTypes.java:10: o must be of type Set but is of type Object instead.
 Semantic Error at abctests/cjp/typechecks/CheckArgumentTypes.java:14: o must be of type Set but is of type Object instead.
 Semantic Error at abctests/cjp/typechecks/CheckArgumentTypes.java:27: TypeCheck: JPSet must be a JPI not a CheckArgumentTypes.JPSet
-FAIL: Test 1718: "abctests/cjp/typechecks/Check argument types" failed in 1096ms, memory usage: 23135536.
+FAIL: Test 1718: "abctests/cjp/typechecks/Check argument types" failed in 1195ms, memory usage: 21541352.
 
 
 Running test 1719: abctests/cjp/typechecks/Check exception types in advice
@@ -469,7 +469,7 @@ Actual errors found:
 Semantic Error at abctests/cjp/typechecks/CheckExceptions.java:11: TypeCheck: JPNone must be a JPI not a CheckExceptions.JPNone
 Semantic Error at abctests/cjp/typechecks/CheckExceptions.java:13: TypeCheck: JPIOException must be a JPI not a CheckExceptions.JPIOException
 Semantic Error at abctests/cjp/typechecks/CheckExceptions.java:15: TypeCheck: JPException must be a JPI not a CheckExceptions.JPException
-FAIL: Test 1719: "abctests/cjp/typechecks/Check exception types in advice" failed in 1051ms, memory usage: 21876120.
+FAIL: Test 1719: "abctests/cjp/typechecks/Check exception types in advice" failed in 1163ms, memory usage: 20887160.
 
 
 Running test 1722: abctests/cjp/matching/Check after-returning value
@@ -479,7 +479,7 @@ Actual errors found:
 Semantic Error at abctests/cjp/matching/MatchAfterReturning.java:4: TypeCheck: advice after JP has multiple definitions
 Semantic Error at abctests/cjp/matching/MatchAfterReturning.java:17: TypeCheck: JP must be a JPI not a MatchAfterReturning.JP
 Semantic Error at abctests/cjp/matching/MatchAfterReturning.java:21: TypeCheck: JP must be a JPI not a MatchAfterReturning.JP
-FAIL: Test 1722: "abctests/cjp/matching/Check after-returning value" failed in 1075ms, memory usage: 22641848.
+FAIL: Test 1722: "abctests/cjp/matching/Check after-returning value" failed in 1182ms, memory usage: 21283608.
 
 
 Running test 1723: abctests/cjp/matching/Check after-throwing value
@@ -489,7 +489,7 @@ Actual errors found:
 Semantic Error at abctests/cjp/matching/MatchAfterThrowing.java:4: TypeCheck: advice after JP has multiple definitions
 Semantic Error at abctests/cjp/matching/MatchAfterThrowing.java:22: TypeCheck: JP must be a JPI not a MatchAfterThrowing.JP
 Semantic Error at abctests/cjp/matching/MatchAfterThrowing.java:26: TypeCheck: JP must be a JPI not a MatchAfterThrowing.JP
-FAIL: Test 1723: "abctests/cjp/matching/Check after-throwing value" failed in 1066ms, memory usage: 22900856.
+FAIL: Test 1723: "abctests/cjp/matching/Check after-throwing value" failed in 1183ms, memory usage: 21314864.
 
 
 Running test 1724: abctests/cjp/typechecks/Check after-returning
@@ -500,7 +500,7 @@ Semantic Error at abctests/cjp/typechecks/CheckAfterReturning.java:3: TypeCheck:
 Semantic Error at abctests/cjp/typechecks/CheckAfterReturning.java:9: TypeCheck: JP must be a JPI not a CheckAfterReturning.JP
 Semantic Error at abctests/cjp/typechecks/CheckAfterReturning.java:11: TypeCheck: JP must be a JPI not a CheckAfterReturning.JP
 Semantic Error at abctests/cjp/typechecks/CheckAfterReturning.java:13: TypeCheck: JP2 must be a JPI not a CheckAfterReturning.JP2
-FAIL: Test 1724: "abctests/cjp/typechecks/Check after-returning" failed in 1075ms, memory usage: 21868400.
+FAIL: Test 1724: "abctests/cjp/typechecks/Check after-returning" failed in 1167ms, memory usage: 20885856.
 
 
 Running test 1725: abctests/cjp/typechecks/Check after-throwing
@@ -512,6 +512,6 @@ Semantic Error at abctests/cjp/typechecks/CheckAfterThrowing.java:12: TypeCheck:
 Semantic Error at abctests/cjp/typechecks/CheckAfterThrowing.java:14: TypeCheck: JPUSO must be a JPI not a CheckAfterThrowing.JPUSO
 Semantic Error at abctests/cjp/typechecks/CheckAfterThrowing.java:16: TypeCheck: JPAny must be a JPI not a CheckAfterThrowing.JPAny
 Semantic Error at abctests/cjp/typechecks/CheckAfterThrowing.java:18: TypeCheck: JPUSO must be a JPI not a CheckAfterThrowing.JPUSO
-FAIL: Test 1725: "abctests/cjp/typechecks/Check after-throwing" failed in 1062ms, memory usage: 22124464.
+FAIL: Test 1725: "abctests/cjp/typechecks/Check after-throwing" failed in 1171ms, memory usage: 20929512.
 
 
