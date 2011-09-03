@@ -1,7 +1,5 @@
 aspect TypeCheckCJP {
 
-	public boolean ClosureJoinpointAccess.passedTypeCheck = false;
-
 	public void ClosureJoinpointAccess.typeCheck() {
 		super.typeCheck();
 		
@@ -16,10 +14,6 @@ aspect TypeCheckCJP {
 				i++;
   			}
 		}
-
-		//setting this flag will enable the rewrite that
-		//extracts the closure into a proper method
-		this.passedTypeCheck=true;
 	}
 
 	syn lazy boolean AdviceSpec.isAround() = false;
@@ -107,16 +101,6 @@ aspect TypeCheckCJP {
        }	
 	}
 	
-	syn boolean ASTNode.allCjpHavePassedTypeCheck() {
-		for(int i = 0; i < getNumChild(); i++)
-			if(!getChild(i).allCjpHavePassedTypeCheck())
-				return false;
-		return true;
-	}
-
-	eq ClosureJoinpointAccess.allCjpHavePassedTypeCheck() = passedTypeCheck;
-
-
 	refine NameCheck public void TypeDecl.nameCheck() {
 		correctTheReturnTypeAndThrowsList();	
 		NameCheck.TypeDecl.nameCheck();
