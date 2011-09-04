@@ -88,10 +88,15 @@ aspect TypeCheck{
 		}
 		jpiDecl = (JPITypeDecl)jpiAccess.type();
 				
-		if (jpiDecl.getNumParameter() != currentAdviceSpec.getNumParameter()){
-			error("TypeCheck: Advice declaration must have the same quantity of parameter that "+jpiDecl.getID());
-		}
-		else {
+		int paramNum = 0;
+		for(int i=0; i<currentAdviceSpec.getNumParameter(); i++){
+			ParameterDeclaration adviceParameter = currentAdviceSpec.getParameter(i);
+			if(!adviceParameter.isImplicit()) paramNum++;			
+		}		
+		
+		if (jpiDecl.getNumParameter() != paramNum){
+			error("TypeCheck: Advice declaration must have the same number of parameter as "+jpiDecl.getID());
+		} else {
 			ParameterDeclaration adviceParameter;
 			ParameterDeclaration jpiParameter;
 			for(int i=0; i<jpiDecl.getNumParameter(); i++){
