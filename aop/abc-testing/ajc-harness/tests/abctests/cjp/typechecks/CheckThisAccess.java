@@ -18,6 +18,6 @@ public class CheckThisAccess {
 
 aspect A {
 	
-	joinpoint void JP();
+	jpi void JP();
 	
 }

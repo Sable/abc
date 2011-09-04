@@ -12,7 +12,7 @@ public aspect CheckReturnTypesIncorrect2 {
 		correct();
 	}
 
-	joinpoint HashSet JPHashSet();
+	jpi HashSet JPHashSet();
 	
 	Set around JPHashSet() {	//error: return type must be HashSet
 		return new TreeSet();

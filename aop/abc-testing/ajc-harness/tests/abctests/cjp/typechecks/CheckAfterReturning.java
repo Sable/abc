@@ -2,9 +2,9 @@ import java.util.*;
 
 public aspect CheckAfterReturning {
 	
-	joinpoint String JP();
+	jpi String JP();
 
-	joinpoint List JP2();
+	jpi List JP2();
 
 	after JP() returning(int i) {} //error: return types not compatible
 	

@@ -1,0 +1,17 @@
+class Category extends java.lang.Object
+{
+
+    void <init>()
+    {
+        Category this;
+
+        this := @this: Category;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

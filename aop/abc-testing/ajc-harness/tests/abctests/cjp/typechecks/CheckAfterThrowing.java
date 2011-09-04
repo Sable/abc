@@ -3,11 +3,11 @@ import java.util.*;
 
 public aspect CheckAfterThrowing {
 	
-	joinpoint String JPIO() throws IOException;
+	jpi String JPIO() throws IOException;
 
-	joinpoint String JPAny() throws IOException, Exception;
+	jpi String JPAny() throws IOException, Exception;
 
-	joinpoint List JPUSO() throws UnsupportedOperationException;
+	jpi List JPUSO() throws UnsupportedOperationException;
 
 	after JPIO() throwing(Exception e) {} //ok: types are cast-convertible
 	

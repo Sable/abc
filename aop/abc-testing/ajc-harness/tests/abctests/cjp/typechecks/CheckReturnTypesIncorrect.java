@@ -19,8 +19,8 @@ public aspect CheckReturnTypesIncorrect {
 		wrongDeclaredReturnType();
 	}
 
-	joinpoint Set JPSet();
+	jpi Set JPSet();
 
-	joinpoint HashSet JPHashSet();
+	jpi HashSet JPHashSet();
 	
 }

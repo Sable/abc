@@ -1,0 +1,18 @@
+class Item extends java.lang.Object
+{
+    static Category BOOK;
+
+    void <init>()
+    {
+        Item this;
+
+        this := @this: Item;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

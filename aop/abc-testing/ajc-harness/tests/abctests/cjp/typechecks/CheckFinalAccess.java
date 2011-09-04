@@ -27,5 +27,5 @@ public aspect CheckFinalAccess {
 		exhibit JP { int j = i; }; 	//no error
 	}
 
-	joinpoint void JP();
+	jpi void JP();
 }

@@ -1,0 +1,27 @@
+class Database extends java.lang.Object
+{
+
+    static Category categoryOf(Item)
+    {
+        Item i;
+        Category temp$0;
+
+        i := @parameter0: Item;
+        temp$0 = <Item: Category BOOK>;
+        return temp$0;
+    }
+
+    void <init>()
+    {
+        Database this;
+
+        this := @this: Database;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

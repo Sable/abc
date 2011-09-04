@@ -17,7 +17,7 @@ public aspect MatchAfterThrowing {
 	
 	static Object foo() { return new Object(); }
 	
-	joinpoint void JP() throws Exception; 
+	jpi void JP() throws Exception; 
 	
 	after JP() throwing(Exception r) {
 		e = r;

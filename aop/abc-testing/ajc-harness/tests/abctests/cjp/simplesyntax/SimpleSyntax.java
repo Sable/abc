@@ -5,7 +5,7 @@ public aspect SimpleSyntax {
 	static int count = 0;
 	static int count2 = 0;
 	
-	joinpoint void Bar();
+	jpi void Bar();
 	
 	public static void main(String args[]) {		
 		foo();

@@ -27,13 +27,13 @@ public aspect CorrectWithinSemantics {
 		
 		Tester.check(!s1.isEmpty(),"'within' did not match for CJP!");
 		Tester.check(!s2.isEmpty(),"'withincode' did not match for CJP!");
-		Tester.check(!s3.isEmpty(),"'within' did not match for joinpoint within CJP!");
-		Tester.check(!s4.isEmpty(),"'withincode' did not match for joinpoint within CJP!");
+		Tester.check(!s3.isEmpty(),"'within' did not match for jpi within CJP!");
+		Tester.check(!s4.isEmpty(),"'withincode' did not match for jpi within CJP!");
 
 		Tester.check(s1.contains(o),"'within' did not match correct CJP! "+s1);
 		Tester.check(s2.contains(o),"'withincode' did not match correct CJP! "+s2);
-		Tester.check(s3.contains(p),"'within' did not match correct joinpoint within CJP! "+s1);
-		Tester.check(s4.contains(p),"'withincode' did not match correct joinpoint within CJP! "+s2);
+		Tester.check(s3.contains(p),"'within' did not match correct jpi within CJP! "+s1);
+		Tester.check(s4.contains(p),"'withincode' did not match correct jpi within CJP! "+s2);
 
 		for(Object i: s1) {
 			if(i!=o) {
@@ -64,7 +64,7 @@ public aspect CorrectWithinSemantics {
 		}
 }
 	
-	joinpoint void JP(C j);
+	jpi void JP(C j);
 	
 	before(C o): within(CorrectWithinSemantics) && args(o) && !cflow(adviceexecution()) {
 		s1.add(o);

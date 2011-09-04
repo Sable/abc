@@ -1,0 +1,59 @@
+class ShoppingSession extends java.lang.Object
+{
+    int totalAmount;
+    ShoppingCart sc;
+
+    void buy(Item, int)
+    {
+        ShoppingSession this;
+        Item item;
+        int amount, temp$1;
+        Category temp$0;
+
+        this := @this: ShoppingSession;
+        item := @parameter0: Item;
+        amount := @parameter1: int;
+        temp$0 = staticinvoke <Database: Category categoryOf(Item)>(item);
+        temp$1 = virtualinvoke this.<ShoppingSession: int cjp$generated$0(int,Category,Item)>(amount, temp$0, item);
+        this.<ShoppingSession: int totalAmount> = temp$1;
+        return;
+    }
+
+    private final int cjp$generated$0(int, Category, Item)
+    {
+        ShoppingSession this;
+        int amount, temp$2, temp$3;
+        Category c;
+        Item item;
+        ShoppingCart temp$0;
+
+        this := @this: ShoppingSession;
+        amount := @parameter0: int;
+        c := @parameter1: Category;
+        item := @parameter2: Item;
+        temp$0 = this.<ShoppingSession: ShoppingCart sc>;
+        virtualinvoke temp$0.<ShoppingCart: void add(Item,int)>(item, amount);
+        temp$2 = this.<ShoppingSession: int totalAmount>;
+        temp$3 = temp$2 + amount;
+        return temp$3;
+    }
+
+    void <init>()
+    {
+        ShoppingSession this;
+        ShoppingCart temp$1;
+
+        this := @this: ShoppingSession;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<ShoppingSession: int totalAmount> = 0;
+        temp$1 = new ShoppingCart;
+        specialinvoke temp$1.<ShoppingCart: void <init>()>();
+        this.<ShoppingSession: ShoppingCart sc> = temp$1;
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

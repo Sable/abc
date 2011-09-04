@@ -18,9 +18,9 @@ public aspect CheckExceptions2 {
 		exhibit JPException {}; //error: must catch Exception		
 	}
 
-	joinpoint void JPNone();
+	jpi void JPNone();
 	
-	joinpoint void JPException() throws Exception;
+	jpi void JPException() throws Exception;
 
-	joinpoint void JPIOException() throws IOException;
+	jpi void JPIOException() throws IOException;
 }

@@ -1,0 +1,75 @@
+public class BonusProgram extends java.lang.Object
+{
+    public static final BonusProgram abc$perSingletonInstance;
+    private static java.lang.Throwable abc$initFailureCause;
+
+    void <init>()
+    {
+        BonusProgram this;
+
+        this := @this: BonusProgram;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    public static BonusProgram aspectOf()
+    {
+        BonusProgram theAspect;
+        org.aspectj.lang.NoAspectBoundException nabException;
+        java.lang.Throwable failureCause;
+
+        theAspect = <BonusProgram: BonusProgram abc$perSingletonInstance>;
+        if theAspect == null goto label0;
+
+        return theAspect;
+
+     label0:
+        nabException = new org.aspectj.lang.NoAspectBoundException;
+        failureCause = <BonusProgram: java.lang.Throwable abc$initFailureCause>;
+        specialinvoke nabException.<org.aspectj.lang.NoAspectBoundException: void <init>(java.lang.String,java.lang.Throwable)>("BonusProgram", failureCause);
+        throw nabException;
+    }
+
+    public static boolean hasAspect()
+    {
+        BonusProgram theAspect$0;
+
+        theAspect$0 = <BonusProgram: BonusProgram abc$perSingletonInstance>;
+        if theAspect$0 == null goto label0;
+
+        return 1;
+
+     label0:
+        return 0;
+    }
+
+    static void <clinit>()
+    {
+        java.lang.Throwable catchLocal$1;
+
+     label0:
+        staticinvoke <BonusProgram: void abc$postClinit()>();
+
+     label1:
+        goto label3;
+
+     label2:
+        catchLocal$1 := @caughtexception;
+        <BonusProgram: java.lang.Throwable abc$initFailureCause> = catchLocal$1;
+
+     label3:
+        return;
+
+        catch java.lang.Throwable from label0 to label1 with label2;
+    }
+
+    private static void abc$postClinit()
+    {
+        BonusProgram theAspect;
+
+        theAspect = new BonusProgram;
+        specialinvoke theAspect.<BonusProgram: void <init>()>();
+        <BonusProgram: BonusProgram abc$perSingletonInstance> = theAspect;
+        return;
+    }
+}

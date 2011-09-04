@@ -42,7 +42,7 @@ BodyDecl aspect_body_declaration =
 ;
 
 MemberCJPTypeDecl joinpointtype_decl = 
-	JOINPOINT joinpointtype_declexpr.e SEMICOLON {:
+	JPI joinpointtype_declexpr.e SEMICOLON {:
 		return e;
 	:}
 ;

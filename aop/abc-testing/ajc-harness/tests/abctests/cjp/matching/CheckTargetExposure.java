@@ -22,9 +22,9 @@ public class CheckTargetExposure {
 
 aspect A {
 	
-	joinpoint void JP();
+	jpi void JP();
 	
-	joinpoint void JP2();
+	jpi void JP2();
 
 	void around JP() {
 		Tester.check(thisJoinPoint.getTarget()==CheckTargetExposure.f && thisJoinPoint.getTarget()!=null,"getTarget() returned null or wrong object");

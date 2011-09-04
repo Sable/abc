@@ -15,5 +15,5 @@ public aspect CheckFieldAccess {
 		exhibit JP { j=1; }; //error: assignment to final field 
 	}
 
-	joinpoint void JP();
+	jpi void JP();
 }

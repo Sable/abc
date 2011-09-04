@@ -22,7 +22,7 @@ public aspect CheckArgumentTypes {
 		contravariantList(l);
 	}
 	
-	joinpoint void JPSet(Set s);
+	jpi void JPSet(Set s);
 	
 	before JPSet(Set s) {
 		System.out.println(s.getClass()); //this would fail, would we allow contravariantList to execute, as a list would be passed as a parameter

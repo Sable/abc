@@ -18,9 +18,9 @@ public aspect CheckReturnTypesCorrect {
 		correct();
 	}
 
-	joinpoint Set JPSet();
+	jpi Set JPSet();
 
-	joinpoint HashSet JPHashSet();
+	jpi HashSet JPHashSet();
 	
 	HashSet around JPHashSet() {
 		return new HashSet();

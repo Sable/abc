@@ -4,7 +4,7 @@ public aspect MatchCJPWithArgs {
 	
 	static int count = 0;
 	
-	joinpoint void Bar(int i);
+	jpi void Bar(int i);
 	
 	public static void main(String args[]) {		
 		foo();

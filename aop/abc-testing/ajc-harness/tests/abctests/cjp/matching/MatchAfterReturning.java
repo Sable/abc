@@ -12,7 +12,7 @@ public aspect MatchAfterReturning {
 	
 	static HashMap foo() { return new HashMap(); }
 	
-	joinpoint HashMap JP(); 
+	jpi HashMap JP(); 
 	
 	after JP() returning(HashMap r) {
 		o = r;

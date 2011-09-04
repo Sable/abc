@@ -44,5 +44,5 @@ public aspect CheckBreakContinueCapture {
 		}
 	}
 	
-	joinpoint void JP();
+	jpi void JP();
 }

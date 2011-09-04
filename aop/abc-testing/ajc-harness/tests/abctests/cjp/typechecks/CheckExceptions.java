@@ -2,11 +2,11 @@ import java.io.*;
 
 public aspect CheckExceptions {
 	
-	joinpoint void JPNone();
+	jpi void JPNone();
 	
-	joinpoint void JPException() throws Exception;
+	jpi void JPException() throws Exception;
 
-	joinpoint void JPIOException() throws IOException;
+	jpi void JPIOException() throws IOException;
 	
 	before JPNone() throws Exception { } //error: cannot throw Exception
 	

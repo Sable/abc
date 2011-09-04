@@ -18,7 +18,7 @@ public class CheckArgsExposure {
 
 aspect A {
 	
-	joinpoint void JP(Object o, Object p);
+	jpi void JP(Object o, Object p);
 	
 	void around JP(Object a, Object b) {
 		Tester.check(thisJoinPoint.getArgs()[0]!=a,"getArgs()[0] did not return 1st argument value, instead:"+thisJoinPoint.getArgs()[0]);

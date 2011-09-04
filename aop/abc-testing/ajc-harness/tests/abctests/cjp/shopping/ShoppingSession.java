@@ -15,7 +15,7 @@ class ShoppingSession {
 
 
 aspect BonusProgram {
-	joinpoint int Buying(int amount, Category cat);
+	jpi int Buying(int amount, Category cat);
 	int around Buying(int amt, Category cat) {	
 		if(cat==Item.BOOK)
 			amt += amt / 2;

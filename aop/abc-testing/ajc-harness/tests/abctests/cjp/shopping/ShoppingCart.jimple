@@ -1,0 +1,29 @@
+class ShoppingCart extends java.lang.Object
+{
+
+    void add(Item, int)
+    {
+        ShoppingCart this;
+        Item i;
+        int amount;
+
+        this := @this: ShoppingCart;
+        i := @parameter0: Item;
+        amount := @parameter1: int;
+        return;
+    }
+
+    void <init>()
+    {
+        ShoppingCart this;
+
+        this := @this: ShoppingCart;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}
