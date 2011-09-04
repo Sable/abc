@@ -114,7 +114,7 @@ aspect TypeCheck{
 		}
 		else{
 			if(jpiDecl.getNumException() > 0 && getNumException() == 0){
-				error("TypeCheck: Advice must throws at least one exception.");
+				error("TypeCheck: Advice must throw at least one exception.");
 				return;
 			}			
 		}
