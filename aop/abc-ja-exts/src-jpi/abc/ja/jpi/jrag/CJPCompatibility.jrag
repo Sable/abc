@@ -1,0 +1,11 @@
+aspect CJPCompatibility {
+
+	//rewrite CJP's JoinpointTypeDecl to JPITypeDecl
+	rewrite JoinpointTypeDecl { 
+		when(!isJPITypeDecl())
+		to JPITypeDecl {		
+			return new JPITypeDecl(getModifiers(), getID(), getBodyDecls(), getTypeAccess(), getParameters(), getExceptions(), new DummyAccess("","$RootJPI$"),new List());
+		} 
+	}	
+
+}

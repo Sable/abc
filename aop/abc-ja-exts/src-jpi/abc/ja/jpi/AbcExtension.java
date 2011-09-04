@@ -226,10 +226,9 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           //keywords for cjp extension
           lexer.addJavaKeyword("exhibit", new LexerAction_c(new Integer(Terminals.EXHIBIT)));
           lexer.addAspectJKeyword("exhibit", new LexerAction_c(new Integer(Terminals.EXHIBIT)));
-          lexer.addAspectJKeyword("joinpoint", new LexerAction_c(new Integer(Terminals.JOINPOINT)));
+          lexer.addGlobalKeyword("jpi", new LexerAction_c(new Integer(Terminals.JPI)));
 
           //keywords for jpi extension
-          lexer.addGlobalKeyword("jpi", new LexerAction_c(new Integer(Terminals.JPI)));
           lexer.addJavaKeyword("exhibits", new LexerAction_c(new Integer(Terminals.EXHIBITS),
                   new Integer(lexer.pointcut_state())));
           lexer.addAspectJKeyword("exhibits", new LexerAction_c(new Integer(Terminals.EXHIBITS),

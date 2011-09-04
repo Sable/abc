@@ -20,5 +20,5 @@ public class JPIWrongScope{
 }
 
 aspect A{
-	jpi void JP(int amount); //error	
+	jpi void JP(int amount); //ok (since the integration with CJP we do allow member types)	
 }
