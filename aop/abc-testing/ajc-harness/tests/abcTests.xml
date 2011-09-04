@@ -11163,7 +11163,6 @@
 		<run class="A" />
     </ajc-test>
 
-
     <ajc-test num="1650" dir="abctests/jpi/FSE-NI"
         title="example 1">
         <compile files="Util.java, example1.java" options="-ext,abc.ja.jpi" />
@@ -11269,7 +11268,7 @@
     <ajc-test num="1709" dir="abctests/cjp/typechecks"
         title="Check field accesses">
         <compile files="CheckFieldAccess.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="17"/>
+	        <message kind="error" line="15"/>
         </compile>
     </ajc-test>     
 
@@ -11277,7 +11276,7 @@
         title="Check access to 'this'">
         <compile files="CheckThisAccess.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="11"/>
-	        <message kind="error" line="17"/>
+	        <message kind="error" line="15"/>
         </compile>
     </ajc-test>   
 
@@ -11305,7 +11304,7 @@
     	<run class="CheckReturnTypesCorrect"/>
     </ajc-test>   
 
-    <ajc-test num="1717" dir="abctests/cjp/typechecks"
+    <ajc-test num="1715" dir="abctests/cjp/typechecks"
         title="Check return types at compile time">
         <compile files="CheckReturnTypesIncorrect.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="7"/>
@@ -11387,6 +11386,5 @@
 	        <message kind="error" line="18"/>
         </compile>
     </ajc-test>   
-
-
+    
 </suite>
