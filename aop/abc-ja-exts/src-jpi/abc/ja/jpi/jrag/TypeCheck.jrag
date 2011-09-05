@@ -216,14 +216,10 @@ aspect TypeCheck{
 	refine AspectErrorCheck public void AspectDecl.typeCheck() {
 		AspectErrorCheck.AspectDecl.typeCheck();
 		CJPAdviceDecl cjpAdvice;
-  		HashSet<abc.ja.jpi.utils.CJPAdviceDeclElement> set = new HashSet<abc.ja.jpi.utils.CJPAdviceDeclElement>();
   		int CJPAdviceCounter=0, FinalCJPAdviceCounter=0;
   		for(BodyDecl bd : getBodyDeclList()){
 	  		if(bd.isCJPAdviceDecl()){
 			  	cjpAdvice = (CJPAdviceDecl)bd;
-			  	if (!set.add(new abc.ja.jpi.utils.CJPAdviceDeclElement(cjpAdvice.getAdviceSpec().kind(),cjpAdvice.getName()))){
-					error("TypeCheck: advice " +cjpAdvice.getAdviceSpec().kind()+" " + cjpAdvice.getName().typeName() +" has multiple definitions");
-		  		}
 			  	if (cjpAdvice.isFinal()){
 			  		if (CJPAdviceCounter != FinalCJPAdviceCounter){
 			  			error("TypeCheck: final advice "+cjpAdvice.getAdviceSpec().kind()+" " + cjpAdvice.getName().typeName() +" has to be defined before of no final pieces of advice");
