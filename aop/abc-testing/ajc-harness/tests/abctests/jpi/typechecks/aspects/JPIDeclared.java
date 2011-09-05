@@ -7,7 +7,7 @@ aspect A{
 
     before JPI(){};
 
-    before interfaces.JPI(){}; //error JPI is already declared
+    before interfaces.JPI(){}; 
     
     before klass(){}; //error, klass is a class.
     
