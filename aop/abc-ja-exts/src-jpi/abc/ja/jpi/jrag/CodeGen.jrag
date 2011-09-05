@@ -157,12 +157,10 @@ aspect CodeGen {
 
 
 	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
-//	  Pointcut parentPointcut, hierarchyPointcut;
+	  Pointcut cjpPointcut = CodeGenCJP.CJPPointcutExpr.pointcut();
+	
 	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
 	  JPITypeDecl jpiTypeDecl;
-//	  JPITypeDecl currentJPITypeDecl;
-//	  HashSet<CJPAdviceDecl> cjpAdviceSet = new HashSet<CJPAdviceDecl>();
-//	  HashSet<Pointcut> hierarchyPointcuts = new HashSet<Pointcut>();
 	  
 	  if (!jpiAccess.type().isJPITypeDecl()){
 		  return null;
@@ -177,31 +175,11 @@ aspect CodeGen {
 	  Collection<CJPAdviceDecl> cjpAdviceDecls = getCJPAdviceDecls();
 	  cjpAdviceDecls.remove(currentAdvice);
 	  pointcutPolymorphism = abc.ja.jpi.utils.PointcutCombination.combinePointcutsPolymorphism(currentAdvice, exhibitsDecls);
+
+	  //include pointcut to match on closure joinpoints	  
+	  pointcutPolymorphism =  OrPointcut.construct(cjpPointcut, pointcutPolymorphism, pos());
+	  
 	  pointcutOverriden = abc.ja.jpi.utils.PointcutCombination.combinePointcutsOverriden(currentAdvice, cjpAdviceDecls, exhibitsDecls);
 	  return AndPointcut.construct(pointcutPolymorphism, NotPointcut.construct(pointcutOverriden, pos()), pos());
-/*	  	  
-	  parentPointcut = extractPointcuts(getExhibitDecls(jpiTypeDecl),pos(),false);
-	
-	  abc.ja.jpi.utils.JPIHierarchyHashMap jpiHierarchy = jpiTypeDecl.getHierarchy();
-	  for(CJPAdviceDecl cjpAdviceDecl : getCJPAdviceDecls()){
-		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)cjpAdviceDecl.getName()).type();
-		  if(jpiHierarchy.containsKey(currentJPITypeDecl)){
-			  cjpAdviceSet.add(cjpAdviceDecl);
-		  }
-	  }
-	  
-	  for(CJPAdviceDecl cjpAdviceDecl : cjpAdviceSet){
-		  CJPPointcutExpr currentCJPPointcutExpr = (CJPPointcutExpr)(cjpAdviceDecl.getPointcutExpr());
-		  currentJPITypeDecl = (JPITypeDecl)((TypeAccess)((CJPAdviceDecl)cjpAdviceDecl).getName()).type();
-		  hierarchyPointcuts.add(extractPointcuts(currentCJPPointcutExpr.getExhibitDecls(currentJPITypeDecl),pos(),true));
-	  }
-	  
-	  if (hierarchyPointcuts.size() > 0){
-		  hierarchyPointcut = makeOrPointcuts(hierarchyPointcuts.iterator(), hierarchyPointcuts.size(), pos());		  
-		  parentPointcut = AndPointcut.construct(parentPointcut, NotPointcut.construct(hierarchyPointcut, pos()), pos());
-	  }
-	  
-	  return parentPointcut;
-*/
 	}
 }
