@@ -10896,8 +10896,10 @@
 
     <ajc-test num="1523" dir="abctests/cjp/matching"
         title="Check after-throwing value">
-        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.cjp"/>
-    	<run class="MatchAfterThrowing"/>
+        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.cjp">
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="26"/>
+        </compile>
     </ajc-test>   
 
     <ajc-test num="1524" dir="abctests/cjp/typechecks"
@@ -10981,7 +10983,6 @@
     <ajc-test num="1621" dir="abctests/jpi/typechecks"
         title="Check JPI declared - aspect">
         <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="6"/>
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="16"/>
 	        <message kind="error" line="16"/>
@@ -11369,8 +11370,10 @@
 
     <ajc-test num="1723" dir="abctests/cjp/matching"
         title="Check after-throwing value">
-        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.jpi"/>
-    	<run class="MatchAfterThrowing"/>
+        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="26"/>
+        </compile>
     </ajc-test>   
 
     <ajc-test num="1724" dir="abctests/cjp/typechecks"
