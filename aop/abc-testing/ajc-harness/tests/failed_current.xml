@@ -105,9 +105,6 @@
         <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
 		<run class="DontMatch"></run>
     </ajc-test>
-<ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
-        <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
-    </ajc-test>
 <ajc-test title="Match on closure joinpoints" num="1702" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="MatchCJP.java"></compile>
 		<run class="MatchCJP"></run>
@@ -127,54 +124,6 @@
 <ajc-test title="Test simple syntax" num="1706" dir="abctests/cjp/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="SimpleSyntax.java"></compile>
 		<run class="SimpleSyntax"></run>
-    </ajc-test>
-<ajc-test title="Check field accesses" num="1709" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckFieldAccess.java">
-	        <message line="17" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check access to 'this'" num="1710" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckThisAccess.java">
-	        <message line="11" kind="error"></message>
-	        <message line="17" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check thisJoinPoint.getThis()" num="1711" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.jpi" files="CheckThisExposure.java"></compile>
-		<run class="CheckThisExposure"></run>
-    </ajc-test>
-<ajc-test title="Check thisJoinPoint.getTarget()" num="1712" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.jpi" files="CheckTargetExposure.java"></compile>
-		<run class="CheckTargetExposure"></run>
-    </ajc-test>
-<ajc-test title="Check thisJoinPoint.getArgs()" num="1713" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.jpi" files="CheckArgsExposure.java"></compile>
-		<run class="CheckArgsExposure"></run>
-    </ajc-test>
-<ajc-test title="Check return types and casts at runtime" num="1714" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesCorrect.java"></compile>
-    	<run class="CheckReturnTypesCorrect"></run>
-    </ajc-test>
-<ajc-test title="Check that CJP type is declared" num="1717" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckCJPDeclared.java">
-	        <message line="4" kind="error"></message>
-	        <message line="5" kind="error"></message>
-	        <message line="17" kind="error"></message>
-	        <message line="17" kind="error"></message>
-	        <message line="17" kind="error"></message>			
-        </compile>
-    </ajc-test>
-<ajc-test title="Check argument types" num="1718" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckArgumentTypes.java">
-	        <message line="10" kind="error"></message>
-	        <message line="14" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check exception types in advice" num="1719" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckExceptions.java">
-	        <message line="11" kind="error"></message>
-	        <message line="13" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="Check after-returning value" num="1722" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="MatchAfterReturning.java"></compile>

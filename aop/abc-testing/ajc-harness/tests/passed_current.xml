@@ -6038,7 +6038,6 @@
 <ajc-test title="JPI syntax - jpi in the wrong place" num="1601" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="JPIWrongScope.java">
         	<message line="10" kind="error"></message>
-        	<message line="23" kind="error"></message>			       
 		</compile>
     </ajc-test>
 <ajc-test title="JPI syntax - exhibit" num="1602" dir="abctests/jpi/simplesyntax">
@@ -6243,6 +6242,9 @@
         <compile options="-ext,abc.ja.jpi" files="Bug.java"></compile>
 		<run class="Bug"></run>
     </ajc-test>
+<ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
+        <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
+    </ajc-test>
 <ajc-test title="Don't match regular execution joinpoints on extracted method" num="1701" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="DontMatchExecution.java"></compile>
 		<run class="DontMatchExecution"></run>
@@ -6263,7 +6265,34 @@
 	        <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Check return types at compile time" num="1717" dir="abctests/cjp/typechecks">
+<ajc-test title="Check field accesses" num="1709" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckFieldAccess.java">
+	        <message line="15" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check access to 'this'" num="1710" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckThisAccess.java">
+	        <message line="11" kind="error"></message>
+	        <message line="15" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getThis()" num="1711" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="CheckThisExposure.java"></compile>
+		<run class="CheckThisExposure"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getTarget()" num="1712" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="CheckTargetExposure.java"></compile>
+		<run class="CheckTargetExposure"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getArgs()" num="1713" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="CheckArgsExposure.java"></compile>
+		<run class="CheckArgsExposure"></run>
+    </ajc-test>
+<ajc-test title="Check return types and casts at runtime" num="1714" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesCorrect.java"></compile>
+    	<run class="CheckReturnTypesCorrect"></run>
+    </ajc-test>
+<ajc-test title="Check return types at compile time" num="1715" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesIncorrect.java">
 	        <message line="7" kind="error"></message>
 	        <message line="12" kind="error"></message>
@@ -6272,6 +6301,27 @@
 <ajc-test title="Check return types at compile time (2)" num="1716" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesIncorrect2.java">
 	        <message line="17" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check that CJP type is declared" num="1717" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckCJPDeclared.java">
+	        <message line="4" kind="error"></message>
+	        <message line="5" kind="error"></message>
+	        <message line="17" kind="error"></message>
+	        <message line="17" kind="error"></message>
+	        <message line="17" kind="error"></message>			
+        </compile>
+    </ajc-test>
+<ajc-test title="Check argument types" num="1718" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckArgumentTypes.java">
+	        <message line="10" kind="error"></message>
+	        <message line="14" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Check exception types in advice" num="1719" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckExceptions.java">
+	        <message line="11" kind="error"></message>
+	        <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check exception types in base code" num="1720" dir="abctests/cjp/typechecks">
