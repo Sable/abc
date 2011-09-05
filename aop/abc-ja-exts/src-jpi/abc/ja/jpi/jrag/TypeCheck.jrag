@@ -119,7 +119,7 @@ aspect TypeCheck{
 			  	cjpAdvice = (CJPAdviceDecl)bd;
 			  	if (cjpAdvice.isFinal()){
 			  		if (CJPAdviceCounter != FinalCJPAdviceCounter){
-			  			cjpAdvice.error("TypeCheck: final advice "+cjpAdvice.getAdviceSpec().kind()+" " + cjpAdvice.getName().typeName() +" has to be defined before of no final pieces of advice");
+			  			cjpAdvice.error("TypeCheck: final advice "+cjpAdvice.getAdviceSpec().kind()+" " + cjpAdvice.getName().typeName() +" has to be defined before all non-final pieces of advice");
 			  		}
 			  		FinalCJPAdviceCounter++;
 			  	}
