@@ -29,76 +29,104 @@ aspect TypeCheckCJP {
 	eq JoinpointTypeDecl.isCJPTypeDecl() = true;
 
 	public void CJPAdviceDecl.typeCheck() {
-		super.typeCheck();
-		TypeAccess joinpointAccess = (TypeAccess) getName();
+		TypeAccess jpiAccess = (TypeAccess)getName();
+		JoinpointTypeDecl jpiDecl;
+		AdviceSpec currentAdviceSpec = getAdviceSpec();
+
+		/***
+		 * 1) check that the type of SuperAccess is JPITypeDecl.
+		 * 2) check the arguments types.
+		 * 3) check the return types.
+		 * 4) check the exceptions.
+		 */		
 		
-		if (joinpointAccess.decls().isEmpty()){
-			error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
-			return;
-		} 
-		else {
-			if (!joinpointAccess.decl().isCJPTypeDecl()){
-				error("TypeChecking:"+joinpointAccess.decl().typeName()+" is not a valid type for JoinpointTypeDeclaration");
-				return;				
-			}
-		}
-	
-		if(cjpTypeDecl()==null) {
-			error("no visible joinpoint type named "+getName());
-		}
+		jpiDecl = (JoinpointTypeDecl)jpiAccess.type();
+				
+		int paramNum = 0;
+		for(int i=0; i<currentAdviceSpec.getNumParameter(); i++){
+			ParameterDeclaration adviceParameter = currentAdviceSpec.getParameter(i);
+			if(!adviceParameter.isImplicit()) paramNum++;			
+		}		
 		
-		AdviceSpec spec = getAdviceSpec();
-		if(spec.isAround()) {
-			if(spec.returnType()!=cjpTypeDecl().getTypeAccess().type()) {
-				error("return type must be "+cjpTypeDecl().getTypeAccess().type().name()+" but is "+spec.returnType().name()+" instead.");
-			}
-		}	
-		
-		if(spec.isAfterReturning()) {
-			AfterReturningSpec r = (AfterReturningSpec) spec;
-			if(r.hasReturnParameter()) {
-				TypeDecl declared = cjpTypeDecl().getTypeAccess().type();
-				TypeDecl here = r.getReturnParameter().getTypeAccess().type();
-				if(!declared.castingConversionTo(here)) {
-					error("joinpoint type "+ cjpTypeDecl().getID() + " returns type "+declared.name()+
-					      " which is incompatible with advice return type "+here.name());
+		if (jpiDecl.getNumParameter() != paramNum){
+			error("TypeCheck: Advice declaration must have the same number of parameter as "+jpiDecl.getID());
+		} else {
+			ParameterDeclaration adviceParameter;
+			ParameterDeclaration jpiParameter;
+			for(int i=0; i<jpiDecl.getNumParameter(); i++){
+				adviceParameter = currentAdviceSpec.getParameter(i);
+				jpiParameter = jpiDecl.getParameter(i);
+				if(!adviceParameter.type().equals(jpiParameter.type())){
+					error("TypeCheck: Parameter "+adviceParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+adviceParameter.type().name());
 				}
 			}
 		}
-
-		if(spec.isAfterThrowing()) {
-			AfterThrowingSpec r = (AfterThrowingSpec) spec;
+		
+		if (currentAdviceSpec.isAround()){
+			if (!jpiDecl.getTypeAccess().type().equals(returnType())){
+				error("TypeCheck: Advice return type: "+returnType().name()+" instead "+jpiDecl.getTypeAccess().type().name());
+			}			
+		}
+		
+		if (currentAdviceSpec.isAfterReturning()){
+			AfterReturningSpec r = (AfterReturningSpec) currentAdviceSpec;
+			if(r.hasReturnParameter()) {
+				TypeDecl jpiReturnType = jpiDecl.getTypeAccess().type();
+				TypeDecl adviceReturnType = r.getReturnParameter().getTypeAccess().type();
+				if(!jpiReturnType.castingConversionTo(adviceReturnType)) {
+					error("TypeCheck: jpi "+ jpiDecl.getID() + " returns type "+jpiReturnType.name()+
+					      " which is incompatible with advice return type "+adviceReturnType.name());
+				}
+			}
+			
+		}
+		
+		if(currentAdviceSpec.isAfterThrowing()) {
+			AfterThrowingSpec r = (AfterThrowingSpec) currentAdviceSpec;
 			if(r.hasExceptionParameter()) {
-				TypeDecl here = r.getExceptionParameter().getTypeAccess().type();
+				TypeDecl adviceSpecException = r.getExceptionParameter().getTypeAccess().type();
 	 	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
-				if(!here.isCheckedException()) {
+				if(!adviceSpecException.isCheckedException()) {
 					boolean found = false;
-			        for(Access ex: cjpTypeDecl().getExceptions()) {
+			        for(Access ex: jpiDecl.getExceptions()) {
 			        	TypeDecl declared = ex.type();
-			    		if(declared.castingConversionTo(here)) {
+			    		if(declared.castingConversionTo(adviceSpecException)) {
 			    			found = true;
 		    				break;
 	    				}
 		    			if(!found)
-		    				error("joinpoints of type "+ cjpTypeDecl().getID() + " cannot throw checked exceptions of type "+here.name()); 
+		    				error("TypeCheck: jpi "+ jpiDecl.getID() + " cannot throw checked exceptions of type "+adviceSpecException.name()); 
 			        }
 		        }
 			}
-		}
+		}		
 		
- 	    for(Access e: getExceptions()) {
- 	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
- 	    	if(e.type().isCheckedException()) continue;
-	        boolean found = false;
-	        for(Access e2: cjpTypeDecl().getExceptions()) {
-	          	if(e.type().instanceOf(e2.type())) {
-	          		found = true;
-	           		break;
-           		}
-	        }
-	        if(!found)
-	          error("Advice may not throw checked exception of type "+e.type().name()+" because its the joinpoint declaration does not declare such exceptions to be thrown.");
-       }	
+		boolean found;
+		for(Access exceptionAccess: getExceptionList()){
+			found = false;
+			for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
+				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+					found = true;
+					break;
+				}
+			}
+			if (!found){
+				error("TypeCheck: Advice cannot throw exception of type "+exceptionAccess.type().name());
+			}
+		}
+
+		for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
+			found = false;
+			for(Access exceptionAccess: getExceptionList()){
+				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+					found = true;
+					break;
+				}
+			}
+			if (!found){
+				error("TypeCheck: Advice must throw exceptions of type "+parentExceptionAccess.type().name());
+			}
+		}
 	}
 	
 	refine NameCheck public void TypeDecl.nameCheck() {
