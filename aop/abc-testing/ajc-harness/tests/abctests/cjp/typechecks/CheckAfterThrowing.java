@@ -9,11 +9,11 @@ public aspect CheckAfterThrowing {
 
 	jpi List JPUSO() throws UnsupportedOperationException;
 
-	after JPIO() throwing(Exception e) {} //ok: types are cast-convertible
+	after JPIO() throwing(Exception e) throws IOException {} //ok: types are cast-convertible
 	
-	after JPUSO() throwing(RuntimeException e) {} //ok: exception type not a checked exception
+	after JPUSO() throwing(RuntimeException e) throws UnsupportedOperationException {} //ok: exception type not a checked exception
 
-	after JPAny() throwing(UnsupportedOperationException e) {} //ok: Exception cast-convertible to UnsupportedOperationException 
+	after JPAny() throwing(UnsupportedOperationException e) throws IOException, Exception {} //ok: Exception cast-convertible to UnsupportedOperationException 
 	
-	after JPUSO() throwing(IOException e) {} //error: checked exception and types are not cast-convertible
+	after JPUSO() throwing(IOException e) throws UnsupportedOperationException {} //error: checked exception and types are not cast-convertible
 }
