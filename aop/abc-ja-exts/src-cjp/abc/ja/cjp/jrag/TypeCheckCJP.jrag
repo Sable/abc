@@ -29,6 +29,20 @@ aspect TypeCheckCJP {
 	eq JoinpointTypeDecl.isCJPTypeDecl() = true;
 
 	public void CJPAdviceDecl.typeCheck() {
+		super.typeCheck();
+		TypeAccess joinpointAccess = (TypeAccess) getName();
+		
+		if (joinpointAccess.decls().isEmpty()){
+			error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
+			return;
+		} 
+		else { 			
+			if (!joinpointAccess.decl().isCJPTypeDecl()){
+				error("TypeChecking: "+joinpointAccess.decl().typeName()+" is not a valid type for JoinpointTypeDeclaration");
+				return;				
+			}
+		}	
+		
 		TypeAccess jpiAccess = (TypeAccess)getName();
 		JoinpointTypeDecl jpiDecl;
 		AdviceSpec currentAdviceSpec = getAdviceSpec();
@@ -124,7 +138,7 @@ aspect TypeCheckCJP {
 				}
 			}
 			if (!found){
-				error("TypeCheck: Advice must throw exceptions of type "+parentExceptionAccess.type().name());
+				error("TypeCheck: Advice must declare to throw exceptions of type "+parentExceptionAccess.type().name());
 			}
 		}
 	}
