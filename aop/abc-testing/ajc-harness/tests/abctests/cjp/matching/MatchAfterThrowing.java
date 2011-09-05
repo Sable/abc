@@ -19,11 +19,11 @@ public aspect MatchAfterThrowing {
 	
 	jpi void JP() throws Exception; 
 	
-	after JP() throwing(Exception r) {
+	after JP() throwing(Exception r) { //error: must declare to throw exception
 		e = r;
 	}	
 
-	after JP() throwing(IOException r) { //should not execute, as an Exception is no IOException
+	after JP() throwing(IOException r) { //error: must declare to throw exception
 		Tester.check(false,"executed wrong piece of advice");
 	}
 }
