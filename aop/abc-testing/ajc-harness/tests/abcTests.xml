@@ -11063,12 +11063,7 @@
     <ajc-test num="1628" dir="abctests/jpi/typechecks"
         title="Check Aspect Definition">
         <compile files="CheckAspectAdviceDefinition.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="3"/>
-	        <message kind="error" line="3"/>
-	        <message kind="error" line="3"/>			
-	        <message kind="error" line="3"/>
-	        <message kind="error" line="3"/>
-	        <message kind="error" line="3"/>						
+	        <message kind="error" line="19"/>
         </compile>
     </ajc-test>
 	

@@ -6,17 +6,17 @@ aspect C{
 	
 	void around JP(int l){}
 
-	void around JP(int l){} //error -->line 3
+	void around JP(int l){}
 	
 	before JP(int m){}
 	
 	after JP(int a){}
 	
-	before JP(int n){} //error -->line 3
+	before JP(int n){}
 	
-	after JP(int h){} //error -->line 3
+	after JP(int h){} 
 	
-	final after JP(int l){} //error -->line 3
+	final after JP(int l){} //error must occur before non-final pieces of advice
 	
 	public static void main(String[] args){
 		
