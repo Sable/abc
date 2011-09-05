@@ -115,30 +115,33 @@ aspect TypeCheckCJP {
 			}
 		}		
 		
-		boolean found;
+		boolean foundError;
+		boolean foundSomeError=false;
 		for(Access exceptionAccess: getExceptionList()){
-			found = false;
+			foundError = false;
 			for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
 				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
-					found = true;
+					foundError = true;
 					break;
 				}
 			}
-			if (!found){
+			if (!foundError){
+				foundSomeError=true;
 				error("TypeCheck: Advice cannot throw exception of type "+exceptionAccess.type().name());
 			}
 		}
-
-		for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
-			found = false;
-			for(Access exceptionAccess: getExceptionList()){
-				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
-					found = true;
-					break;
+		if(!foundSomeError) {
+			for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
+				foundError = false;
+				for(Access exceptionAccess: getExceptionList()){
+					if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+						foundError = true;
+						break;
+					}
 				}
-			}
-			if (!found){
-				error("TypeCheck: Advice must declare to throw exceptions of type "+parentExceptionAccess.type().name());
+				if (!foundError){
+					error("TypeCheck: Advice must declare to throw exceptions of type "+parentExceptionAccess.type().name());
+				}
 			}
 		}
 	}
