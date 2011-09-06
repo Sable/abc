@@ -100,6 +100,7 @@ public class Bind extends Residue {
          * add the binding to the Bindings object
          */
         public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+	        	if(andRoot==null) return;
                 WeavingVar target=variable;
                 if (!(target instanceof AdviceFormal)) {
                         target=((BindingLink)andRoot).getAdviceFormal(target);
