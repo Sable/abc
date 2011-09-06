@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 765ms, memory usage: 18287176.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 914ms, memory usage: 16554432.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1045ms, memory usage: 16504176.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1039ms, memory usage: 16678872.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 687ms, memory usage: 19399960.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 693ms, memory usage: 19419008.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 564ms, memory usage: 8087000.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 575ms, memory usage: 8074816.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,23 +36,23 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1006ms, memory usage: 14745520.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1030ms, memory usage: 14736992.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@7c0d2646.foo calls Outer$Inner@434bfd4a.mi
+Outer@54b073ec.foo calls Outer$Inner@c8ab664.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@434bfd4a.mi calls java.io.PrintStream@31e227ca.println
+Outer$Inner@c8ab664.mi calls java.io.PrintStream@66cc65aa.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@7c0d2646.foo calls Outer$InnerRandom@5f871fce.nextHook
+Outer@54b073ec.foo calls Outer$InnerRandom@3f1b9090.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@5f871fce.nextHook calls Outer$InnerRandom@5f871fce.next
+Outer$InnerRandom@3f1b9090.nextHook calls Outer$InnerRandom@3f1b9090.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@7c0d2646.foo calls X.nextInt
+Outer@54b073ec.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -72,7 +72,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2223ms, memory usage: 14219608.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2313ms, memory usage: 14204264.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -87,7 +87,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$21$around$1600(AroundAll.java:199)
+	at A.inline$27$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -96,7 +96,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2615ms, memory usage: 13634288.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2644ms, memory usage: 13639192.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -114,7 +114,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1838ms, memory usage: 11724376.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1804ms, memory usage: 11695912.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -138,26 +138,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2066ms, memory usage: 13417600.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2127ms, memory usage: 13288560.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 631ms, memory usage: 18298464.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 658ms, memory usage: 18305296.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 684ms, memory usage: 17436152.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 689ms, memory usage: 17443664.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 839ms, memory usage: 13631688.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 837ms, memory usage: 13646856.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -165,7 +165,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 754ms, memory usage: 20167952.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 736ms, memory usage: 20175568.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -189,7 +189,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1179ms, memory usage: 14147512.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1210ms, memory usage: 13730568.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -205,13 +205,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 697ms, memory usage: 30782392.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 706ms, memory usage: 30308552.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 212ms, memory usage: 11833984.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 223ms, memory usage: 11780368.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -220,7 +220,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 776ms, memory usage: 22073120.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 605ms, memory usage: 22039040.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -245,7 +245,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2499ms, memory usage: 13024304.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2564ms, memory usage: 12971616.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -266,7 +266,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 728ms, memory usage: 43152008.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 735ms, memory usage: 41495408.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -275,593 +275,13 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1104ms, memory usage: 23361992.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1195ms, memory usage: 27459872.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 758ms, memory usage: 14076048.
-
-
-Running test 1604: abctests/jpi/simplesyntax/JPI syntax - advice definition
-Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/AdviceDeclaration.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1604: "abctests/jpi/simplesyntax/JPI syntax - advice definition" failed in 1429ms, memory usage: 38963144.
-
-
-Running test 1607: abctests/jpi/simplesyntax/JPI throw syntax
-Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/simplesyntax/ThrowsSyntax.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1607: "abctests/jpi/simplesyntax/JPI throw syntax" failed in 1295ms, memory usage: 53732920.
-
-
-Running test 1631: abctests/jpi/weaving/Check Poincut
-Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckPointcutExpressions.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1631: "abctests/jpi/weaving/Check Poincut" failed in 1059ms, memory usage: 43367896.
-
-
-Running test 1632: abctests/jpi/weaving/Check Poincut Args
-Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckPointcutExpressionsArgs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1110ms, memory usage: 51028328.
-
-
-Running test 1634: abctests/jpi/weaving/Check return types
-Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckReturnTypes.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1634: "abctests/jpi/weaving/Check return types" failed in 1081ms, memory usage: 41250712.
-
-
-Running test 1640: abctests/jpi/matching/Simple Match
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/SimpleMatch.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1640: "abctests/jpi/matching/Simple Match" failed in 1198ms, memory usage: 54636120.
-
-
-Running test 1641: abctests/jpi/matching/Dont Match
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/DontMatch.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1136ms, memory usage: 39075336.
-
-
-Running test 1642: abctests/jpi/matching/Inheritance Match
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/InheritanceMatch.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1132ms, memory usage: 47181312.
-
-
-Running test 1643: abctests/jpi/matching/Inheritance Match 2
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/InheritanceMatch2.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1214ms, memory usage: 73323800.
-
-
-Running test 1644: abctests/jpi/matching/Inheritance Match 3
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/InheritanceMatch3.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1093ms, memory usage: 56960944.
-
-
-Running test 1645: abctests/jpi/matching/Inheritance Match 4
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/InheritanceMatch4.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1103ms, memory usage: 39102136.
-
-
-Running test 1646: abctests/jpi/matching/Double Match
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/DoubleMatch.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1092ms, memory usage: 52195776.
-
-
-Running test 1647: abctests/jpi/matching/Sub type match
-Commandline: abc -d abctests/jpi/matching -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/SubTypeMatching.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1647: "abctests/jpi/matching/Sub type match" failed in 1082ms, memory usage: 56444456.
-
-
-Running test 1650: abctests/jpi/FSE-NI/example 1
-Commandline: abc -d abctests/jpi/FSE-NI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/FSE-NI/Util.java abctests/jpi/FSE-NI/example1.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 1205ms, memory usage: 56638464.
-
-
-Running test 1651: abctests/jpi/FSE-NI/example 2
-Commandline: abc -d abctests/jpi/FSE-NI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/FSE-NI/Util.java abctests/jpi/FSE-NI/example2.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1651: "abctests/jpi/FSE-NI/example 2" failed in 1191ms, memory usage: 39274680.
-
-
-Running test 1652: abctests/jpi/FSE-NI/example 3
-Commandline: abc -d abctests/jpi/FSE-NI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/FSE-NI/Util.java abctests/jpi/FSE-NI/example3.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1652: "abctests/jpi/FSE-NI/example 3" failed in 1200ms, memory usage: 46062112.
-
-
-Running test 1653: abctests/jpi/FSE-NI/example 4
-Commandline: abc -d abctests/jpi/FSE-NI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/FSE-NI/Util.java abctests/jpi/FSE-NI/example4.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 1377ms, memory usage: 77647064.
-
-
-Running test 1660: abctests/jpi/matching/exhibits/collect exhibits clauses
-Commandline: abc -d abctests/jpi/matching/exhibits -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/matching/exhibits/interfaces/JPI.java abctests/jpi/matching/exhibits/classes/A.java abctests/jpi/matching/exhibits/classes/B.java abctests/jpi/matching/exhibits/aspects/M.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1660: "abctests/jpi/matching/exhibits/collect exhibits clauses" failed in 1156ms, memory usage: 45769136.
-
-
-Running test 1661: abctests/jpi/typechecks/jpi-hierarchy/collect jpi hierarchy
-Commandline: abc -d abctests/jpi/typechecks/jpi-hierarchy -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/typechecks/jpi-hierarchy/interfaces/JPI.java abctests/jpi/typechecks/jpi-hierarchy/interfaces/JPI2.java abctests/jpi/typechecks/jpi-hierarchy/aspects/A.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1661: "abctests/jpi/typechecks/jpi-hierarchy/collect jpi hierarchy" failed in 1169ms, memory usage: 54294576.
-
-
-Running test 1662: abctests/jpi/Bug
-Commandline: abc -d abctests/jpi -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/Bug.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:110)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.NullPointerException
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName_compute(JoinpointTypeDecl.java:582)
-	at abc.ja.jpi.jrag.JoinpointTypeDecl.getQualifiedName(JoinpointTypeDecl.java:574)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.refined_CodeGenCJP_CJPPointcutExpr_pointcut(CJPPointcutExpr.java:158)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut_compute(CJPPointcutExpr.java:198)
-	at abc.ja.jpi.jrag.CJPPointcutExpr.pointcut(CJPPointcutExpr.java:190)
-	at abc.ja.jpi.jrag.CJPAdviceDecl.createAspectInfo(CJPAdviceDecl.java:247)
-	at abc.ja.jpi.jrag.AdviceDecl.jimplify1phase2(AdviceDecl.java:152)
-	at abc.ja.jpi.jrag.TypeDecl.jimplify1phase2(TypeDecl.java:1377)
-	at abc.ja.jpi.jrag.ClassDecl.jimplify1phase2(ClassDecl.java:519)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.ASTNode.jimplify1phase2(ASTNode.java:690)
-	at abc.ja.jpi.jrag.Program.jimplify1(Program.java:1819)
-	at abc.ja.jpi.jrag.Program.doCompileSequence(Program.java:1012)
-	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:88)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
-	... 4 more
-FAIL: Test 1662: "abctests/jpi/Bug" failed in 1090ms, memory usage: 50961480.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 550ms, memory usage: 14170840.
 
 
