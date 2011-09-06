@@ -11,10 +11,6 @@ aspect NameAnalysisCJP {
     
     eq MemberCJPTypeDecl.typeDecl() = getJoinpointTypeDecl(); 
     
-	syn lazy String JoinpointTypeDecl.getQualifiedName() {
-		return enclosingType().getID()+"."+getID();
-	}	
-
 	eq CJPBeforeSpec.getName().nameType() = NameType.CJPTYPE_NAME;
 	eq CJPAfterSpec.getName().nameType() = NameType.CJPTYPE_NAME;
 	eq CJPAfterReturningSpec.getName().nameType() = NameType.CJPTYPE_NAME;
