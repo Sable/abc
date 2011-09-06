@@ -29,7 +29,7 @@ aspect ExtractCJP {
 		TypeDecl type = getName().type();
 		if(type instanceof JoinpointTypeDecl) {
 			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) type;
-			md.cjpTypeName = joinpointTypeDecl.getQualifiedName(); 
+			md.cjpTypeName = joinpointTypeDecl.fullName(); 
 		}
 		md.wasExtractedFromCJP = true;
 	}
