@@ -22,7 +22,7 @@ public class Bug{
 
 aspect A{
 
-    final int around JP(String a){ 
+    int around JP(String a){ 
     	return proceed(a);
     }
     int around JP2(String a){ 
