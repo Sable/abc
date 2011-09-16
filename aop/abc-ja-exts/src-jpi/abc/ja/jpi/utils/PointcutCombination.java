@@ -160,7 +160,10 @@ public class PointcutCombination {
 		Hashtable/*<String,Abctype>*/ typeEnv=new Hashtable();
 		JPIParameterPosition tempPosition;		
 		if(jpiDecl.equals(currentAdvice.getName().type())){
-			for(int i=0; i< currentAdvice.getAdviceSpec().getNumParameter(); i++){
+			//for(int i=0; i< currentAdvice.getAdviceSpec().getNumParameter(); i++){
+			//BugFix: it's not possible iterate over adviceSpec because
+			//the system add arguments related with the static part
+			for(int i=0; i< exhibitDecl.getNumParameter(); i++){
 				Formal oldVar = exhibitDecl.getParameter(i).formal();
 				renameEnv.put(oldVar.getName(),new Var(currentAdvice.getAdviceSpec().getParameter(i).name(), oldVar.getPosition()));
 				typeEnv.put(oldVar.getName(), oldVar.getType());				
