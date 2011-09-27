@@ -2,6 +2,9 @@ aspect Exhibit{
 
 	syn lazy boolean BodyDecl.isExhibit() = false;
 	eq ExhibitBodyDecl.isExhibit() = true;
+	
+	syn lazy boolean BodyDecl.isMemberClassDecl() = false;
+	eq MemberClassDecl.isMemberClassDecl() = true;
 		
 
 	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);	
@@ -40,17 +43,25 @@ aspect Exhibit{
 					continue;
 				}
 				classDecl = (ClassDecl)typeDecl;
-				for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
-					if (!bodyDecl.isExhibit()){
-						continue;
-					}			
-					set.add((ExhibitBodyDecl)bodyDecl);
-				}
+				collectExhibitDecls(classDecl.getBodyDeclList(),set);
 			}
 		}
 		return set;	
 	}	
 
+
+	private void Program.collectExhibitDecls(List<BodyDecl> bodyDeclList, HashSet<ExhibitBodyDecl> set) {
+		for(BodyDecl bodyDecl : bodyDeclList){
+			if (bodyDecl.isMemberClassDecl()){
+				collectExhibitDecls(((MemberClassDecl)bodyDecl).getClassDecl().getBodyDeclList(),set);
+				continue;
+			}
+			if (!bodyDecl.isExhibit()){
+				continue;
+			}
+			set.add((ExhibitBodyDecl)bodyDecl);
+		}
+	}
 
     syn SimpleSet ExhibitBodyDecl.localLookupVariable(String name) {
     	for(ParameterDeclaration formalParameter : getParameterList()){

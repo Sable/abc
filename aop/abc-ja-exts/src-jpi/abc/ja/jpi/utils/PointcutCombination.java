@@ -10,6 +10,7 @@ import polyglot.util.Position;
 
 import abc.ja.jpi.jrag.ASTNode;
 import abc.ja.jpi.jrag.Access;
+import abc.ja.jpi.jrag.Dot;
 import abc.ja.jpi.jrag.ParameterDeclaration;
 import abc.ja.jpi.jrag.TypeDecl;
 import abc.ja.jpi.jrag.CJPAdviceDecl;
@@ -240,6 +241,7 @@ public class PointcutCombination {
 		  ExplicitTypeNamePattern pattern;
 		  String name = hostType.getID();
 		  String packageName = "";
+		  //FIXME: what happen with nested classes?
 		  String[] path = hostType.fullName().split("\\.");
 		  for(int i=0;i<path.length-1;i++){
 			  if (packageName==""){
@@ -251,6 +253,7 @@ public class PointcutCombination {
 		  }
 		  TypeAccess hostAccess = new TypeAccess(packageName,name);
 		  pattern = new ExplicitTypeNamePattern(hostAccess);
+		  new ExplicitTypeNamePattern(new Dot());
 		  hostAccess.setParent(pattern);
 		  pattern.setParent(parentNode);	  	  
 		  return pattern.classnamePattern();
