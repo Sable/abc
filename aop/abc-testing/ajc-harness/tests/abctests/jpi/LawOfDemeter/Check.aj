@@ -1,6 +1,8 @@
 
 public aspect Check{
 
+	private pointcut IgnoreCalls(): call(* java..*.*(..));
+	
 	private pointcut IgnoreTargets(): get(static * java..*.*);
 	
 	public static void main(String[] args){
