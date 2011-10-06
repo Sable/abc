@@ -13,12 +13,12 @@ public aspect A{
 	}
 	
 	before JP(){
-		Tester.check(false,"");
+		Tester.check(true,"");
 	}
 	
-	before JP1(int b){
-		Tester.check(true,"");		
-	}
+//	before JP1(int b){
+//		Tester.check(true,"");		
+//	}
 	
 	after JP1(int b){
 		Tester.check(true,"");		
