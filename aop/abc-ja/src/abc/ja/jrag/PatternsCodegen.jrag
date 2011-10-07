@@ -545,6 +545,11 @@ aspect PatternsCodegen
     //NEIL: Temporary regex matching for patterns. 
     //TODO: Probably broken for inner/anon classes, depending on what name() returns
     eq DotDotNamePattern.matchesType(SootClass c) {
+//		Disabled by Eric Bodden because it prevents LawOfDemeter to compile with this pointcut: java..*.* 
+//
+//    	if (namePatternRoot() != this) {
+//    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
+//    	}
     	if (namePatternRoot() != this) {
     		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
     	}
