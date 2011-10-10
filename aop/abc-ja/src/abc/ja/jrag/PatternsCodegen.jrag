@@ -550,9 +550,6 @@ aspect PatternsCodegen
 //    	if (namePatternRoot() != this) {
 //    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
 //    	}
-    	if (namePatternRoot() != this) {
-    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
-    	}
     	String regex = this.makeNamePatternRegex();
         boolean ret = c.getName().matches(regex);
         if (abc.main.Debug.v().namePatternMatches) {
