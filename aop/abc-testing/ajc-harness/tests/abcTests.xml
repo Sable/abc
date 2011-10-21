@@ -11182,6 +11182,23 @@
         <compile files="Util.java, example4.java" options="-ext,abc.ja.jpi" />
 		<run class="ShoppingSession" />
     </ajc-test>
+	
+    <ajc-test num="1654" dir="abctests/jpi/ICSE2012"
+        title="website example">
+        <compile files="aspects/Discount.aj,
+						aspects/Logger.aj,
+						classes/BestSeller.java,
+						classes/Book.java,
+						classes/Customer.java,
+						classes/EcoFriendly.java,
+						classes/Item.java,
+						classes/Movie.java,
+						classes/ShoppingSession.java,
+						classes/Utils.java,
+						joinpointinterfaces/Interfaces.java" options="-ext,abc.ja.jpi" />
+		<run class="classes.ShoppingSession" />
+    </ajc-test>	
+	
 
     <ajc-test num="1660" dir="abctests/jpi/matching/exhibits"
         title="collect exhibits clauses">
@@ -11195,9 +11212,9 @@
     </ajc-test>
 
     <ajc-test num="1662" dir="abctests/jpi"
-        title="Bug">
-        <compile files="Bug.java" options="-ext,abc.ja.jpi" />
-		<run class="Bug"/>
+        title="Check">
+        <compile files="LawOfDemeter/Check.aj" options="-ext,abc.ja.jpi" />
+		<run class="Check"/>
     </ajc-test>
 
     <ajc-test num="1700" dir="abctests/cjp/shopping"
