@@ -6231,6 +6231,10 @@
         <compile options="-ext,abc.ja.jpi" files="Util.java, example4.java"></compile>
 		<run class="ShoppingSession"></run>
     </ajc-test>
+<ajc-test title="website example" num="1654" dir="abctests/jpi/ICSE2012">
+        <compile options="-ext,abc.ja.jpi" files="aspects/Discount.aj,       aspects/Logger.aj,       classes/BestSeller.java,       classes/Book.java,       classes/Customer.java,       classes/EcoFriendly.java,       classes/Item.java,       classes/Movie.java,       classes/ShoppingSession.java,       classes/Utils.java,       joinpointinterfaces/Interfaces.java"></compile>
+		<run class="classes.ShoppingSession"></run>
+    </ajc-test>
 <ajc-test title="collect exhibits clauses" num="1660" dir="abctests/jpi/matching/exhibits">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java"></compile>
 		<run class="classes.modificables.A"></run>
@@ -6238,9 +6242,9 @@
 <ajc-test title="collect jpi hierarchy" num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java"></compile>
     </ajc-test>
-<ajc-test title="Bug" num="1662" dir="abctests/jpi">
-        <compile options="-ext,abc.ja.jpi" files="Bug.java"></compile>
-		<run class="Bug"></run>
+<ajc-test title="Check" num="1662" dir="abctests/jpi">
+        <compile options="-ext,abc.ja.jpi" files="LawOfDemeter/Check.aj"></compile>
+		<run class="Check"></run>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
