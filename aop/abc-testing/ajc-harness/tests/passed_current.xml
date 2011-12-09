@@ -6037,11 +6037,6 @@
 <ajc-test title="JPI syntax - jpi" num="1600" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="JPI.java"></compile>
     </ajc-test>
-<ajc-test title="JPI syntax - jpi in the wrong place" num="1601" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="JPIWrongScope.java">
-        	<message line="10" kind="error"></message>
-		</compile>
-    </ajc-test>
 <ajc-test title="JPI syntax - exhibit" num="1602" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="Exhibit.java"></compile>
     </ajc-test>
