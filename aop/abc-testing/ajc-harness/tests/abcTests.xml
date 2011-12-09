@@ -10925,6 +10925,7 @@
         title="JPI syntax - jpi in the wrong place">
         <compile files="JPIWrongScope.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line ="10" />
+                <message kind="error" line ="12" />
 		</compile>
     </ajc-test> 
 
