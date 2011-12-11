@@ -101,10 +101,5 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="JPI syntax - jpi in the wrong place" num="1601" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="JPIWrongScope.java">
-        	<message line="10" kind="error"></message>
-		</compile>
-    </ajc-test>
  
 </suite>
