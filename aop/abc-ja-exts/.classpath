@@ -8,8 +8,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/abc-ja"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libs"/>
-	<classpathentry kind="lib" path="/JastAddExtensions/Refactoring/lib/choco-solver.jar"/>
-	<classpathentry kind="lib" path="/JastAddExtensions/Refactoring/lib/cream106.jar"/>
-	<classpathentry kind="lib" path="/JastAddExtensions/Refactoring/lib/junit.jar"/>
+	<classpathentry kind="lib" path="/Refactoring/lib/choco-solver.jar"/>
+	<classpathentry kind="lib" path="/Refactoring/lib/cream106.jar" sourcepath="/home/xiemaisi/cream/src"/>
+	<classpathentry kind="lib" path="/Refactoring/lib/junit.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
