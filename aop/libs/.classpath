@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry exported="true" kind="lib" path="ant.jar"/>
-	<classpathentry exported="true" kind="lib" path="jasminclasses-custom.jar"/>
+	<classpathentry exported="true" kind="lib" path="jasminclasses-custom.jar" sourcepath="/jasmin"/>
 	<classpathentry exported="true" kind="lib" path="java_cup.jar"/>
 	<classpathentry exported="true" kind="lib" path="javabdd_0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="jedd-runtime.jar"/>
