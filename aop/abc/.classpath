@@ -5,6 +5,8 @@
 	<classpathentry kind="src" path="testing-src"/>
 	<classpathentry kind="src" path="paddle-src"/>
 	<classpathentry kind="src" path="runtime-src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jasmin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/soot"/>
 	<classpathentry kind="lib" path="ajc-harness/lib/abc-testing-ajc-part.jar"/>
 	<classpathentry kind="lib" path="lib/abc-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/abc-testing.jar"/>

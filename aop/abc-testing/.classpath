@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/abc-ja-exts"/>
+	<classpathentry kind="lib" path="/abc/lib/abc-testing.jar"/>
+	<classpathentry kind="output" path="tests/people/sascha/profiler"/>
+</classpath>
