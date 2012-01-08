@@ -3594,6 +3594,10 @@
         <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
         <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
+<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
+	    <compile files="java/lang/Object.java,java/lang/String.java">
+	    </compile>
+	</ajc-test>
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>
