@@ -1,0 +1,654 @@
+
+<!-- <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> -->
+
+<!--
+
+***** ABC Boys and Girls .... Rules for editing this file. ******
+
+1)  you may add an abccomment to an ajc-test entry,  here is an
+    example I have added to the first entry of abcTests.xml.
+
+    Note that this is INSIDE that <ajc-test num="1" ajc-test ....> tag.
+
+<ajc-test num="2" dir="base/test100"
+      abccomment="I have put this comment in as a test, and this is a very
+         long one over multiple lines too. LJH"
+      title="static and non-static before methods -  one file"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+2)  if you want to change any of the <message ... /> items because they don't
+    correspond to the errors/warnings that we expect from abc,  you
+    should.
+
+      (a) RENAME ALL existing <message ... /> items to
+                              <ajcmessage ... />.
+
+      (b) INSERT new <message .../> items corresponding to what you
+               expect from abc.  (note that the testHarness seems to
+               only handle one message per line number)
+
+      (c) INSERT an abccomment into the <ajc-test num="3" ... /> tag to describe
+             what you changed and why
+
+3) if you want to change an entry from one that was supposed to run, to
+     one that should exit with compile-time errors ...
+
+      (a) REPLACE the <compile files="foo.java"/>  
+          with an entry as follows.  Note that the <compile .../> entry
+          is replaced with <compile>  .... </compile>, where the first
+          entry is an ajcmessage with kind="ignore" and then your
+          real messages.
+ 
+                      <compile files="foo.java">
+                         <ajcmessage kind="ignore"/>
+                         <message kind="error" line="xx"/>
+                         <message kind="warning" line="yy"/>
+                       </compile>
+
+       (b) CHANGE  the <run .... > to <ajcrun ....>
+
+       (c) INSERT an abccomment to say what you changed and why
+           
+     Here is an example:
+
+     original entry:
+
+     <ajc-test num="4" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java"/>
+        <crun class="KeywordAspect" />
+     </ajc-test>
+
+
+     new entry:
+
+     <ajc-test num="5" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <ajcmessage kind="ignore" />
+          <message kind="error" line="7"/> 
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+
+4) A new set/style of keywords is available for <ajctest/> tags. The
+     attribute "keywords" is still valid, in addition each <ajctest>
+     can contain a <abckeywords> element, which in turn contains 
+     keywords *in the form of further elements*. This allows keywords
+     to be taken from a pre-defined list and easily verified.
+
+     An example to make it clear - 
+     
+         <ajc-test num="6" dir="base/test100"
+	        abccomment="I have put this comment in as a test, and this is a very
+	       long one over multiple lines too. LJH"
+	         title="static and non-static before methods - one file"
+		 keywords="from-base">
+		<compile files="Driver.java"/>
+		<run class="Driver"/>
+		<abckeywords>
+		     <laurie/>
+		     <pavel/>
+		</abckeywords>
+         </ajc-test>
+	 
+
+     For now, the keywords available as elements in the DTD are:
+     ganesh, aske, oege, laurie, sascha, pavel, julian, jennifer,
+     abclimitations, introductions, polyglot, soot.
+
+     To extend the DTD with additional keywords as the need arises,
+     (a) EDIT the line starting with <!ELEMENT abckeywords ...> so that
+         the enumeration of possible child elements includes the new
+	 keyword
+     (b) INSERT a line declaring the new element below. It should have
+         the form <!ELEMENT new_keyword EMPTY>.
+
+-->
+
+<!--
+  known keywords:
+ 
+  knownLimitation     Accepted limitation of current implementation (fails)
+  purejava            Sources compile under javac as well
+  broken-test         ??
+  messages-vary       one of many (usually two) test specs that differ only in 
+                      messages expected by the different compilers.
+                      Currently ajc 1.0 tests are in ajcTests10.xml,
+                      so there may only be one copy marked "messages-vary" here.
+  new-messages-vary   like messages-vary, except need to make ajcTest10 variant
+
+  fail-{...}          test fails in some configuration
+  fail-unimplmented   eajc throwing "unimplemented" exception
+  fail-commandLine    fails in ajc on command line (move to ajcTestsBroken.xml)
+  fail-in-eclipse     fail when harness in run from inside eclipse
+  fail-publicType     now fixed - no longer presenting error for public type in wrong file
+
+  from-{file}         from original {file}.txt for file in
+                      java, bigjava, resolved_1*, 14tests, errors, design, base... 
+
+  incremental-test    uses inc-compile step
+  command-error       command-line error test
+
+  knownLimitation-ajctaskCompiler
+                      Accepted limitation of the AjcTaskCompilerCommand wrapper
+  knownLimitation-ajdeCompiler
+                      Accepted limitation of the AJDE CompileCommand wrapper
+                      
+  poorErrorMessages   test case passes but errors produced by compiler could do with
+                      improvement                      
+                      
+  Test titles:
+  
+  Titles should be unique and not change, and related tests should have the 
+  same title prefix.  This permits us to automatically compare the test results 
+  from different versions (and suites), and to see related differences together.
+  
+  -->
+
+<suite>
+	<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - jpi">
+        <compile files="JPI.java" options="-ext,abc.ja.jpi"/>
+    </ajc-test>  
+
+	<ajc-test num="1601" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - jpi in the wrong place">
+        <compile files="JPIWrongScope.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="10" />
+            <message kind="error" line ="12" />
+		</compile>
+    </ajc-test> 
+
+	<ajc-test num="1602" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - exhibit">
+        <compile files="Exhibit.java" options="-ext,abc.ja.jpi"/>
+    </ajc-test>  
+
+	<ajc-test num="1603" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - exhibit in the wrong place">
+        <compile files="ExhibitWrongScope.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="8" />
+        </compile>
+    </ajc-test>  
+
+	<ajc-test num="1604" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - advice definition">
+        <compile files="AdviceDeclaration.java" options="-ext,abc.ja.jpi" />
+    </ajc-test> 
+
+	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - Inheritance">
+        <compile files="InheritanceSyntax.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="9" />	        
+        	<message kind="error" line ="9" />	        
+        	<message kind="error" line ="11" />	        
+        	<message kind="error" line ="11" />	        
+        	<message kind="error" line ="11" />			
+		</compile>
+    </ajc-test> 
+	
+	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
+        title="JPI syntax - Inheritance2">
+        <compile files="InheritanceSyntax2.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line ="8" />	        
+		</compile>
+    </ajc-test> 	
+
+	<ajc-test num="1607" dir="abctests/jpi/simplesyntax"
+        title="JPI throw syntax">
+        <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
+    </ajc-test> 
+
+    <ajc-test num="1620" dir="abctests/jpi/typechecks"
+        title="Check JPI declared - class">
+        <compile files="interfaces/JPIDeclared.java, klass/JPIDeclared.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="13"/>
+	        <message kind="error" line="13"/>			
+	        <message kind="error" line="13"/>			
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>			
+        </compile>
+    </ajc-test>  
+
+    <ajc-test num="1621" dir="abctests/jpi/typechecks"
+        title="Check JPI declared - aspect">
+        <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="16"/>			
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1622" dir="abctests/jpi/typechecks"
+        title="Check JPI inheritance">
+        <compile files="CheckJPIInheritance.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="11"/>        	
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="12"/>
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="14"/>			
+	        <message kind="error" line="18"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="24"/>
+	        <message kind="error" line="27"/>
+	        <message kind="error" line="31"/>
+	        <message kind="error" line="36"/>			
+        </compile>
+    </ajc-test>  
+	
+    <ajc-test num="1623" dir="abctests/jpi/typechecks"
+        title="Check Exhibit">
+        <compile files="CheckJPIExhibit.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="18"/>
+	        <message kind="error" line="21"/>			
+	        <message kind="error" line="27"/>
+        </compile>
+    </ajc-test>
+	
+    <ajc-test num="1624" dir="abctests/jpi/typechecks"
+        title="Check Exhibit Pointcut">
+        <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="17"/>			
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="19"/>			
+        </compile>
+    </ajc-test>
+	
+    <ajc-test num="1625" dir="abctests/jpi/typechecks"
+        title="Check Advice">
+        <compile files="CheckJPIAdvice.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="23"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test num="1626" dir="abctests/jpi/typechecks"
+        title="Check Advice exception">
+        <compile files="CheckJPIAdviceException.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="18"/>
+	        <message kind="error" line="31"/>
+	        <message kind="error" line="37"/>
+	        <message kind="error" line="48"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test num="1627" dir="abctests/jpi/typechecks"
+        title="Check Proceed">
+        <compile files="CheckProceed.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="24"/>			
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1628" dir="abctests/jpi/typechecks"
+        title="Check Aspect Definition">
+        <compile files="CheckAspectAdviceDefinition.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+	
+    <ajc-test num="1630" dir="abctests/jpi/weaving"
+        title="Check Weave">
+        <compile files="CheckWeave.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="20"/>        	
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1631" dir="abctests/jpi/weaving"
+        title="Check Poincut">
+        <compile files="CheckPointcutExpressions.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>
+
+    <ajc-test num="1632" dir="abctests/jpi/weaving"
+        title="Check Poincut Args">
+        <compile files="CheckPointcutExpressionsArgs.java" options="-ext,abc.ja.jpi" />
+		<run class="CheckPointcutExpressionsArgs" />
+    </ajc-test>
+
+    <ajc-test num="1633" dir="abctests/jpi/weaving"
+        title="Check JPI header">
+        <compile files="CheckJPIHeader.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="27"/>
+	        <message kind="error" line="27"/>
+	        <message kind="error" line="29"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1634" dir="abctests/jpi/weaving"
+        title="Check return types">
+        <compile files="CheckReturnTypes.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="20"/>
+	        <message kind="error" line="22"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test num="1635" dir="abctests/jpi/weaving"
+        title="Check return types with DummyAspect">
+        <compile files="CheckReturnTypesWithDummyAspect.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="25"/>
+	        <message kind="error" line="27"/>
+	        <message kind="error" line="29"/>			
+        </compile>
+    </ajc-test> 
+
+    <ajc-test num="1640" dir="abctests/jpi/matching"
+        title="Simple Match">
+        <compile files="SimpleMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="SimpleMatch" />
+    </ajc-test>
+
+    <ajc-test num="1641" dir="abctests/jpi/matching"
+        title="Dont Match">
+        <compile files="DontMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="DontMatch" />
+    </ajc-test>
+
+    <ajc-test num="1642" dir="abctests/jpi/matching"
+        title="Inheritance Match">
+        <compile files="InheritanceMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch" />
+    </ajc-test>
+
+    <ajc-test num="1643" dir="abctests/jpi/matching"
+        title="Inheritance Match 2">
+        <compile files="InheritanceMatch2.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch2" />
+    </ajc-test>
+
+    <ajc-test num="1644" dir="abctests/jpi/matching"
+        title="Inheritance Match 3">
+        <compile files="InheritanceMatch3.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch3" />
+    </ajc-test>
+
+    <ajc-test num="1645" dir="abctests/jpi/matching"
+        title="Inheritance Match 4">
+        <compile files="InheritanceMatch4.java" options="-ext,abc.ja.jpi" />
+		<run class="InheritanceMatch4" />
+    </ajc-test>
+
+    <ajc-test num="1646" dir="abctests/jpi/matching"
+        title="Double Match">
+        <compile files="DoubleMatch.java" options="-ext,abc.ja.jpi" />
+		<run class="DoubleMatch" />
+    </ajc-test>
+
+    <ajc-test num="1647" dir="abctests/jpi/matching"
+        title="Sub type match">
+        <compile files="SubTypeMatching.java" options="-ext,abc.ja.jpi" />
+		<run class="A" />
+    </ajc-test>
+
+    <ajc-test num="1650" dir="abctests/jpi/FSE-NI"
+        title="example 1">
+        <compile files="Util.java, example1.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1651" dir="abctests/jpi/FSE-NI"
+        title="example 2">
+        <compile files="Util.java, example2.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1652" dir="abctests/jpi/FSE-NI"
+        title="example 3">
+        <compile files="Util.java, example3.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+
+    <ajc-test num="1653" dir="abctests/jpi/FSE-NI"
+        title="example 4">
+        <compile files="Util.java, example4.java" options="-ext,abc.ja.jpi" />
+		<run class="ShoppingSession" />
+    </ajc-test>
+	
+    <ajc-test num="1654" dir="abctests/jpi/ICSE2012"
+        title="website example">
+        <compile files="aspects/Discount.aj,
+						aspects/Logger.aj,
+						classes/BestSeller.java,
+						classes/Book.java,
+						classes/Customer.java,
+						classes/EcoFriendly.java,
+						classes/Item.java,
+						classes/Movie.java,
+						classes/ShoppingSession.java,
+						classes/Utils.java,
+						joinpointinterfaces/Interfaces.java" options="-ext,abc.ja.jpi" />
+		<run class="classes.ShoppingSession" />
+    </ajc-test>	
+	
+
+    <ajc-test num="1660" dir="abctests/jpi/matching/exhibits"
+        title="collect exhibits clauses">
+        <compile files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java" options="-ext,abc.ja.jpi" />
+		<run class="classes.modificables.A" />
+    </ajc-test>
+
+    <ajc-test num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy"
+        title="collect jpi hierarchy">
+        <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>
+
+    <ajc-test num="1662" dir="abctests/jpi"
+        title="Check">
+        <compile files="LawOfDemeter/Check.aj" options="-ext,abc.ja.jpi" />
+		<run class="Check"/>
+    </ajc-test>
+	
+    <ajc-test num="1663" dir="abctests/jpi/typechecks"
+        title="Check Advice exception">
+        <compile files="CheckJPIAdviceException2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="21"/>
+	        <message kind="error" line="24"/>
+        </compile>
+    </ajc-test> 	
+
+    <ajc-test num="1700" dir="abctests/cjp/shopping"
+        title="Shopping Session Example">
+        <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
+    </ajc-test>    
+
+    <ajc-test num="1701" dir="abctests/cjp/matching"
+        title="Don't match regular execution joinpoints on extracted method">
+        <compile files="DontMatchExecution.java" options="-ext,abc.ja.jpi"/>
+		<run class="DontMatchExecution"/>
+    </ajc-test>    
+
+    <ajc-test num="1702" dir="abctests/cjp/matching"
+        title="Match on closure joinpoints">
+        <compile files="MatchCJP.java" options="-ext,abc.ja.jpi"/>
+		<run class="MatchCJP"/>
+    </ajc-test>  
+    
+    <ajc-test num="1703" dir="abctests/cjp/matching"
+        title="Match on closure joinpoints with arguments">
+        <compile files="MatchCJPWithArgs.java" options="-ext,abc.ja.jpi"/>
+		<run class="MatchCJPWithArgs"/>
+    </ajc-test>   
+
+    <ajc-test num="1704" dir="abctests/cjp/matching"
+        title="Match on two closure joinpoints of the same type">
+        <compile files="Match2CJP.java" options="-ext,abc.ja.jpi"/>
+		<run class="Match2CJP"/>
+    </ajc-test>  
+    
+    <ajc-test num="1705" dir="abctests/cjp/matching"
+        title="Match on closure joinpoints with arguments">
+        <compile files="Match2CJPWithDifferentArgs.java" options="-ext,abc.ja.jpi"/>
+		<run class="Match2CJPWithDifferentArgs"/>
+    </ajc-test>   
+    
+    <ajc-test num="1706" dir="abctests/cjp/simplesyntax"
+        title="Test simple syntax">
+        <compile files="SimpleSyntax.java" options="-ext,abc.ja.jpi"/>
+		<run class="SimpleSyntax"/>
+    </ajc-test>  
+
+    <ajc-test num="1707" dir="abctests/cjp/typechecks"
+        title="Dont allow capture of break and continue">
+        <compile files="CheckBreakContinueCapture.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="19"/>
+	        <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>  
+
+    <ajc-test num="1708" dir="abctests/cjp/typechecks"
+        title="Only allow access to final locals">
+        <compile files="CheckFinalAccess.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="4"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="8"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>  
+    
+    <ajc-test num="1709" dir="abctests/cjp/typechecks"
+        title="Check field accesses">
+        <compile files="CheckFieldAccess.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>     
+
+    <ajc-test num="1710" dir="abctests/cjp/typechecks"
+        title="Check access to 'this'">
+        <compile files="CheckThisAccess.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1711" dir="abctests/cjp/matching"
+        title="Check thisJoinPoint.getThis()">
+        <compile files="CheckThisExposure.java" options="-ext,abc.ja.jpi"/>
+		<run class="CheckThisExposure"/>
+    </ajc-test>   
+
+    <ajc-test num="1712" dir="abctests/cjp/matching"
+        title="Check thisJoinPoint.getTarget()">
+        <compile files="CheckTargetExposure.java" options="-ext,abc.ja.jpi"/>
+		<run class="CheckTargetExposure"/>
+    </ajc-test>   
+
+    <ajc-test num="1713" dir="abctests/cjp/matching"
+        title="Check thisJoinPoint.getArgs()">
+        <compile files="CheckArgsExposure.java" options="-ext,abc.ja.jpi"/>
+		<run class="CheckArgsExposure"/>
+    </ajc-test>   
+
+    <ajc-test num="1714" dir="abctests/cjp/typechecks"
+        title="Check return types and casts at runtime">
+        <compile files="CheckReturnTypesCorrect.java" options="-ext,abc.ja.jpi"/>
+    	<run class="CheckReturnTypesCorrect"/>
+    </ajc-test>   
+
+    <ajc-test num="1715" dir="abctests/cjp/typechecks"
+        title="Check return types at compile time">
+        <compile files="CheckReturnTypesIncorrect.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="7"/>
+	        <message kind="error" line="12"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1716" dir="abctests/cjp/typechecks"
+        title="Check return types at compile time (2)">
+        <compile files="CheckReturnTypesIncorrect2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1717" dir="abctests/cjp/typechecks"
+        title="Check that CJP type is declared">
+        <compile files="CheckCJPDeclared.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="4"/>
+	        <message kind="error" line="5"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="17"/>
+	        <message kind="error" line="17"/>			
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1718" dir="abctests/cjp/typechecks"
+        title="Check argument types">
+        <compile files="CheckArgumentTypes.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="10"/>
+	        <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1719" dir="abctests/cjp/typechecks"
+        title="Check exception types in advice">
+        <compile files="CheckExceptions.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1720" dir="abctests/cjp/typechecks"
+        title="Check exception types in base code">
+        <compile files="CheckExceptions2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>   
+
+	<ajc-test num="1721" dir="abctests/cjp/matching"
+        title="Correct semantics for within pointcuts">
+        <abckeywords><skip/></abckeywords>
+        <compile files="CorrectWithinSemantics.java" options="-ext,abc.ja.jpi"/>
+    	<run class="CorrectWithinSemantics"/>
+    </ajc-test>    
+
+    <ajc-test num="1722" dir="abctests/cjp/matching"
+        title="Check after-returning value">
+        <compile files="MatchAfterReturning.java" options="-ext,abc.ja.jpi"/>
+    	<run class="MatchAfterReturning"/>
+    </ajc-test>   
+
+    <ajc-test num="1723" dir="abctests/cjp/matching"
+        title="Check after-throwing value">
+        <compile files="MatchAfterThrowing.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>   
+
+    <ajc-test num="1724" dir="abctests/cjp/typechecks"
+        title="Check after-returning">
+        <compile files="CheckAfterReturning.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test num="1725" dir="abctests/cjp/typechecks"
+        title="Check after-throwing">
+        <compile files="CheckAfterThrowing.java" options="-ext,abc.ja.jpi">	        
+	        <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
+	
+	
+    <ajc-test num="1900" dir="abctests/jpi/matching"
+        title="test">
+        <compile files="CJPMatching.java" options="-ext,abc.ja.jpi" />
+		<run class="A"/>		
+    </ajc-test> 	
+    
+</suite>
