@@ -11,13 +11,14 @@ aspect ExceptionHandling{
 	
   	inh boolean Proceed.handlesException(TypeDecl exceptionType);
   	eq Program.getCompilationUnit().handlesException(TypeDecl exceptionType) = false;
+  	
   	eq CJPAdviceDecl.getBlock().handlesException(TypeDecl exceptionType){
   		for(Access exceptionAccess : getExceptionList()){
 	    	if(exceptionType.instanceOf(exceptionAccess.type())){
 		        return true;    	
 	    	}
-	    	return false;  	
   		}
+    	return false;  		
   	}
 	
 	public void Proceed.exceptionHandling(){

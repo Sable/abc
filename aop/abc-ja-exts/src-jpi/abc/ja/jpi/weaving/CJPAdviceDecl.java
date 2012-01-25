@@ -46,21 +46,20 @@ public class CJPAdviceDecl extends AdviceDecl {
 
     @SuppressWarnings("rawtypes")
 	public Residue postResidue(ShadowMatch sm) {
-        List/*<SootClass>*/ advicethrown
-            =getImpl().getSootMethod().getExceptions();
+        List/*<SootClass>*/ advicethrown = getImpl().getSootMethod().getExceptions();
 
-        List/*<SootClass>*/ shadowthrown
-            =sm.getExceptions();
+        List/*<SootClass>*/ shadowthrown = sm.getExceptions();
+        
         
         /*
-         * Here we put our constrains about the throws clause for both jpi definition and base code.
+         * Here we introduce our constrains about the throws clause for both jpi definition and base code.
          */
         
         List/*<SootClass>*/ jpiThrown = new LinkedList();
         for(Access exception : jpiTypeDecl.getExceptions()){
         	jpiThrown.add(((TypeAccess)exception).type().getSootClassDecl());
         }
-        if ((shadowthrown.size() > jpiTypeDecl.getNumException()) || (shadowthrown.size() < jpiTypeDecl.getNumException())){
+        if (shadowthrown.size() != jpiTypeDecl.getNumException()){
         	reportGeneralError(sm, shadowthrown, jpiThrown);
         	return NeverMatch.v();
         }
