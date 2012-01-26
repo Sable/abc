@@ -6018,12 +6018,6 @@
         <compile options="-ext,abc.ja.cjp" files="MatchAfterReturning.java"></compile>
     	<run class="MatchAfterReturning"></run>
     </ajc-test>
-<ajc-test title="Check after-throwing value" num="1523" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.cjp" files="MatchAfterThrowing.java">
-	        <message line="22" kind="error"></message>
-	        <message line="26" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="Check after-returning" num="1524" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.cjp" files="CheckAfterReturning.java">
 	        <message line="9" kind="error"></message>
@@ -6130,14 +6124,6 @@
 	        <message line="17" kind="error"></message>
 	        <message line="19" kind="error"></message>
 	        <message line="23" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check Advice exception" num="1626" dir="abctests/jpi/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckJPIAdviceException.java">
-	        <message line="21" kind="error"></message>
-	        <message line="26" kind="error"></message>
-	        <message line="38" kind="error"></message>
-	        <message line="42" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check Proceed" num="1627" dir="abctests/jpi/typechecks">
@@ -6358,12 +6344,6 @@
 <ajc-test title="Check after-returning value" num="1722" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="MatchAfterReturning.java"></compile>
     	<run class="MatchAfterReturning"></run>
-    </ajc-test>
-<ajc-test title="Check after-throwing value" num="1723" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.jpi" files="MatchAfterThrowing.java">
-	        <message line="22" kind="error"></message>
-	        <message line="26" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="Check after-returning" num="1724" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckAfterReturning.java">
