@@ -10911,8 +10911,8 @@
         <compile files="CheckAfterThrowing.java" options="-ext,abc.ja.cjp">	        
 	        <message kind="error" line="18"/>
         </compile>
-    </ajc-test>   
-
+    </ajc-test>  
+	 
 	<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - jpi">
         <compile files="JPI.java" options="-ext,abc.ja.jpi"/>
@@ -10922,7 +10922,7 @@
         title="JPI syntax - jpi in the wrong place">
         <compile files="JPIWrongScope.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line ="10" />
-                <message kind="error" line ="12" />
+            <message kind="error" line ="12" />
 		</compile>
     </ajc-test> 
 
@@ -10966,7 +10966,7 @@
         <compile files="ThrowsSyntax.java" options="-ext,abc.ja.jpi" />
     </ajc-test> 
 
-    <ajc-test num="1620" dir="abctests/jpi/typechecks"
+    <ajc-test num="1610" dir="abctests/jpi/typechecks"
         title="Check JPI declared - class">
         <compile files="interfaces/JPIDeclared.java, klass/JPIDeclared.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="13"/>
@@ -10978,7 +10978,7 @@
         </compile>
     </ajc-test>  
 
-    <ajc-test num="1621" dir="abctests/jpi/typechecks"
+    <ajc-test num="1611" dir="abctests/jpi/typechecks"
         title="Check JPI declared - aspect">
         <compile files="interfaces/JPIDeclared.java, klass/klass.java, aspects/JPIDeclared.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="12"/>
@@ -10988,7 +10988,7 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1622" dir="abctests/jpi/typechecks"
+    <ajc-test num="1612" dir="abctests/jpi/typechecks"
         title="Check JPI inheritance">
         <compile files="CheckJPIInheritance.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="11"/>        	
@@ -11006,7 +11006,7 @@
         </compile>
     </ajc-test>  
 	
-    <ajc-test num="1623" dir="abctests/jpi/typechecks"
+    <ajc-test num="1613" dir="abctests/jpi/typechecks"
         title="Check Exhibit">
         <compile files="CheckJPIExhibit.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="15"/>
@@ -11018,7 +11018,7 @@
         </compile>
     </ajc-test>
 	
-    <ajc-test num="1624" dir="abctests/jpi/typechecks"
+    <ajc-test num="1614" dir="abctests/jpi/typechecks"
         title="Check Exhibit Pointcut">
         <compile files="CheckJPIExhibitPointcut.aj" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="17"/>			
@@ -11027,7 +11027,7 @@
         </compile>
     </ajc-test>
 	
-    <ajc-test num="1625" dir="abctests/jpi/typechecks"
+    <ajc-test num="1615" dir="abctests/jpi/typechecks"
         title="Check Advice">
         <compile files="CheckJPIAdvice.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="15"/>
@@ -11039,7 +11039,7 @@
         </compile>
     </ajc-test> 
 
-    <ajc-test num="1626" dir="abctests/jpi/typechecks"
+    <ajc-test num="1616" dir="abctests/jpi/typechecks"
         title="Check Advice exception">
         <compile files="CheckJPIAdviceException.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="18"/>
@@ -11049,7 +11049,7 @@
         </compile>
     </ajc-test> 
 
-    <ajc-test num="1627" dir="abctests/jpi/typechecks"
+    <ajc-test num="1617" dir="abctests/jpi/typechecks"
         title="Check Proceed">
         <compile files="CheckProceed.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="14"/>
@@ -11058,12 +11058,25 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1628" dir="abctests/jpi/typechecks"
+    <ajc-test num="1618" dir="abctests/jpi/typechecks"
         title="Check Aspect Definition">
         <compile files="CheckAspectAdviceDefinition.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="19"/>
         </compile>
     </ajc-test>
+	
+    <ajc-test num="1619" dir="abctests/jpi/typechecks/jpi-hierarchy"
+        title="collect jpi hierarchy">
+        <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>	
+	
+    <ajc-test num="1620" dir="abctests/jpi/typechecks"
+        title="Check Advice exception">
+        <compile files="CheckJPIAdviceException2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="21"/>
+	        <message kind="error" line="24"/>
+        </compile>
+    </ajc-test> 		
 	
     <ajc-test num="1630" dir="abctests/jpi/weaving"
         title="Check Weave">
@@ -11157,6 +11170,37 @@
 		<run class="A" />
     </ajc-test>
 
+    <ajc-test num="1648" dir="abctests/jpi/matching/exhibits"
+        title="collect exhibits clauses">
+        <compile files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java" options="-ext,abc.ja.jpi" />
+		<run class="classes.modificables.A" />
+    </ajc-test>
+	
+    <ajc-test num="1649" dir="abctests/jpi/matching/InvPCD"
+        title="Interfaces-InvPCD">
+        <compile files="InterfacesType.java" options="-ext,abc.ja.jpi" />
+		<run class="AS"/>		
+    </ajc-test> 	
+
+    <ajc-test num="1650" dir="abctests/jpi/matching/InvPCD"
+        title="Arguments-InvPCD">
+        <compile files="ArgumentType.java" options="-ext,abc.ja.jpi" />
+		<run class="AS"/>		
+    </ajc-test> 	
+
+    <ajc-test num="1651" dir="abctests/jpi/matching/InvPCD"
+        title="Target-InvPCD">
+        <compile files="TargetType.java" options="-ext,abc.ja.jpi" />
+		<run class="AS"/>		
+    </ajc-test> 	
+
+    <ajc-test num="1652" dir="abctests/jpi/matching/InvPCD"
+        title="This-InvPCD">
+        <compile files="ThisType.java" options="-ext,abc.ja.jpi" />
+		<run class="AS"/>		
+    </ajc-test> 	
+	
+
     <ajc-test num="1650" dir="abctests/jpi/FSE-NI"
         title="example 1">
         <compile files="Util.java, example1.java" options="-ext,abc.ja.jpi" />
@@ -11197,32 +11241,6 @@
 		<run class="classes.ShoppingSession" />
     </ajc-test>	
 	
-
-    <ajc-test num="1660" dir="abctests/jpi/matching/exhibits"
-        title="collect exhibits clauses">
-        <compile files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java" options="-ext,abc.ja.jpi" />
-		<run class="classes.modificables.A" />
-    </ajc-test>
-
-    <ajc-test num="1661" dir="abctests/jpi/typechecks/jpi-hierarchy"
-        title="collect jpi hierarchy">
-        <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi" />
-    </ajc-test>
-
-    <ajc-test num="1662" dir="abctests/jpi"
-        title="Check">
-        <compile files="LawOfDemeter/Check.aj" options="-ext,abc.ja.jpi" />
-		<run class="Check"/>
-    </ajc-test>
-	
-    <ajc-test num="1663" dir="abctests/jpi/typechecks"
-        title="Check Advice exception">
-        <compile files="CheckJPIAdviceException2.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="21"/>
-	        <message kind="error" line="24"/>
-        </compile>
-    </ajc-test> 	
-
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
