@@ -234,6 +234,9 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           lexer.addAspectJKeyword("exhibits", new LexerAction_c(new Integer(Terminals.EXHIBITS),
         		  new Integer(lexer.pointcut_state())));
 
+          lexer.addPointcutKeyword("argsinv", new LexerAction_c(new Integer(Terminals.PC_ARGS_INV)));
+          lexer.addPointcutKeyword("targetinv", new LexerAction_c(new Integer(Terminals.PC_TARGET_INV)));
+          lexer.addPointcutKeyword("thisinv", new LexerAction_c(new Integer(Terminals.PC_THIS_INV)));
     }
 
     public CompileSequence createCompileSequence() {

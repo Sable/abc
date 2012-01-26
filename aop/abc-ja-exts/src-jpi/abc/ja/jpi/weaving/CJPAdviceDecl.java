@@ -157,7 +157,7 @@ public class CJPAdviceDecl extends AdviceDecl {
 	          +" which are not already thrown here :" +throwListToString(shadowthrown),
 	          sm.getContainer(),
 	          sm.getHost()));
-    	}
+    	}    	
 	}
     
     

@@ -1,0 +1,67 @@
+aspect InvPCD{
+
+	public boolean ArgsPointcutExpr.invariant = false;
+	public boolean ThisPointcutExpr.invariant = false;
+	public boolean TargetPointcutExpr.invariant = false;
+
+	public ArgsPointcutExpr.ArgsPointcutExpr(List<BindingPattern> p0, boolean invariant) {
+    	setChild(p0, 0);
+    	this.invariant = invariant;
+    }
+
+	public ThisPointcutExpr.ThisPointcutExpr(BindingPattern p0, boolean invariant) {
+    	setChild(p0, 0);
+    	this.invariant = invariant;
+    }
+
+	public TargetPointcutExpr.TargetPointcutExpr(BindingPattern p0, boolean invariant) {
+    	setChild(p0, 0);
+    	this.invariant = invariant;
+    }
+
+    
+	refine PointcutsCodegen public Pointcut ArgsPointcutExpr.pointcut(){
+		java.util.List arg_patterns = new ArrayList();        
+        if (this.invariant){
+	        for(int i = 0; i < getNumPattern(); i++){
+	        	ArgPattern ap = getPattern(i).argPattern();
+	        	if(ap instanceof ArgVar){
+	        		ap = new abc.ja.jpi.weaving.ArgVarInv(((ArgVar) ap).getVar(), ap.getPosition());
+	        	}
+	        	if(ap instanceof ArgType){
+	        		ap = new abc.ja.jpi.weaving.ArgTypeInv(((ArgType) ap).getType(), ap.getPosition());
+	        	}
+	        	arg_patterns.add(ap);
+			}
+	        return new ArgsInv(arg_patterns, pos());
+        }
+        for(int i = 0; i < getNumPattern(); i++){
+        	arg_patterns.add(getPattern(i).argPattern());
+		}
+        return new Args(arg_patterns, pos());  
+    }
+    
+    refine PointcutsCodegen public Pointcut TargetPointcutExpr.pointcut(){
+    	if (this.invariant){
+    		Pointcut pc = getPattern().targetPointcut();
+    		if (pc instanceof TargetVar)
+    			return new abc.ja.jpi.weaving.TargetVarInv(((TargetVar) pc).getVar(),pc.getPosition());
+    		if (pc instanceof TargetType)
+    			return new abc.ja.jpi.weaving.TargetTypeInv(((TargetType) pc).getType(),pc.getPosition());
+    	}
+        return getPattern().targetPointcut();
+    }
+    
+    refine PointcutsCodegen public Pointcut ThisPointcutExpr.pointcut(){
+    	if (this.invariant){
+    		Pointcut pc = getPattern().thisPointcut();
+    		if (pc instanceof ThisVar)
+    			return new abc.ja.jpi.weaving.ThisVarInv(((ThisVar) pc).getVar(),pc.getPosition());
+    		if (pc instanceof ThisType)
+    			return new abc.ja.jpi.weaving.ThisTypeInv(((ThisType) pc).getType(),pc.getPosition());
+    	}
+        return getPattern().thisPointcut();
+    }
+
+    
+}

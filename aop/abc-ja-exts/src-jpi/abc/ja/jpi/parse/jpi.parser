@@ -56,3 +56,21 @@ ExhibitBodyDecl exhibit_declaration =
     	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d); 
     :}
 ;
+
+/* add the possibility of declaring the invPCD to basic_pointcut_exrp */
+PointcutExpr basic_pointcut_expr =
+   // following two rules, ajc only allows * or a fully-defined type/id
+   | PC_THIS_INV.x LPAREN type_id_star.a RPAREN.y 
+       {: ParserTrace.parserTrace("THIS pointcut");
+          return new ThisPointcutExpr(a, true);
+       :}
+   | PC_TARGET_INV.x LPAREN type_id_star.a RPAREN.y 
+       {: ParserTrace.parserTrace("TARGET pointcut");
+          return new TargetPointcutExpr(a, true);
+       :}
+   // for args, ajc only allows each arg to be * .. or fully-defined type/id
+   | PC_ARGS_INV.x LPAREN type_id_star_list.a? RPAREN.y
+       {: ParserTrace.parserTrace("ARGS pointcut");
+          return new ArgsPointcutExpr(a, true);
+       :}
+;
