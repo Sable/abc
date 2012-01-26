@@ -33,7 +33,7 @@ aspect InvPCD{
 	        	}
 	        	arg_patterns.add(ap);
 			}
-	        return new ArgsInv(arg_patterns, pos());
+	        return new abc.ja.jpi.weaving.ArgsInv(arg_patterns, pos());
         }
         for(int i = 0; i < getNumPattern(); i++){
         	arg_patterns.add(getPattern(i).argPattern());
