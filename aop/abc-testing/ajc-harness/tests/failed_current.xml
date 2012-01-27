@@ -101,25 +101,5 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="Check after-throwing value" num="1523" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.cjp" files="MatchAfterThrowing.java">
-	        <message line="22" kind="error"></message>
-	        <message line="26" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check Advice exception" num="1626" dir="abctests/jpi/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckJPIAdviceException.java">
-	        <message line="21" kind="error"></message>
-	        <message line="26" kind="error"></message>
-	        <message line="38" kind="error"></message>
-	        <message line="42" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="Check after-throwing value" num="1723" dir="abctests/cjp/matching">
-        <compile options="-ext,abc.ja.jpi" files="MatchAfterThrowing.java">
-	        <message line="22" kind="error"></message>
-	        <message line="26" kind="error"></message>
-        </compile>
-    </ajc-test>
  
 </suite>
