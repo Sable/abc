@@ -20,9 +20,19 @@
 
 package abc.ja.jpi.weaving;
 
-import soot.*;
+import soot.BooleanType;
+import soot.FastHierarchy;
+import soot.Local;
+import soot.NullType;
+import soot.PrimType;
+import soot.RefType;
+import soot.Scene;
+import soot.SootMethod;
+import soot.Type;
+import soot.Value;
 import soot.util.Chain;
 import soot.jimple.*;
+import soot.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.residues.*;
@@ -98,9 +108,15 @@ public class CheckType extends Residue {
             FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
 
             if(from instanceof NullType) return NeverMatch.v();
-
-            //if(hier.canStoreType(from,to))
-            //    return AlwaysMatch.v();
+            
+            if (to instanceof RefType){
+            	
+            	if (((RefType)to).getSootClass().isInterface()){
+                    if(hier.canStoreType(from,to))
+                    	return AlwaysMatch.v();            		
+            	}
+            }
+            
             if (from.equals(to))
             	return AlwaysMatch.v();
             
