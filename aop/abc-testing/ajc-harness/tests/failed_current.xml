@@ -101,5 +101,9 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
+<ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="InterfacesType.java"></compile>
+		<run class="AS"></run>		
+    </ajc-test>
  
 </suite>

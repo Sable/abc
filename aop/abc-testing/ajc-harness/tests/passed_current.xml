@@ -6226,10 +6226,6 @@
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java"></compile>
 		<run class="classes.modificables.A"></run>
     </ajc-test>
-<ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
-        <compile options="-ext,abc.ja.jpi" files="InterfacesType.java"></compile>
-		<run class="AS"></run>		
-    </ajc-test>
 <ajc-test title="Arguments-InvPCD" num="1650" dir="abctests/jpi/matching/InvPCD">
         <compile options="-ext,abc.ja.jpi" files="ArgumentType.java"></compile>
 		<run class="AS"></run>		
