@@ -33,19 +33,19 @@ public aspect AS{
 
 	
 	before JP(){
-		count++;
+		AS.count++;
 		System.out.println("JPI: capture variant");
 	}
 	
 	before JP2(I a){
-		count++;
+		AS.count++;
 	}
 	
 	public static void main(String[] args){
 		A a = new A();
 		a.bar();
 		a.zar();
-		Tester.checkEqual(AS.count,6,"expected 3 matches but saw "+AS.count);
+		Tester.checkEqual(AS.count,6,"expected 6 matches but saw "+AS.count);
 		
 	}
 	
