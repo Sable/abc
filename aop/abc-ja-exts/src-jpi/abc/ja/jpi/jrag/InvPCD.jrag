@@ -62,6 +62,30 @@ aspect InvPCD{
     	}
         return getPattern().thisPointcut();
     }
+    
+    syn lazy boolean PointcutExpr.isInvPCD() = true;
+    
+    eq BinaryPointcutExpr.isInvPCD(){
+    	return getLhs().isInvPCD() && getRhs().isInvPCD();
+    }
+    
+    eq ArgsPointcutExpr.isInvPCD(){
+    	if(this.invariant)
+    		return true;
+    	return false;
+    }
+
+    eq TargetPointcutExpr.isInvPCD(){
+    	if(this.invariant)
+    		return true;
+    	return false;
+    }
+
+    eq ThisPointcutExpr.isInvPCD(){
+    	if(this.invariant)
+    		return true;
+    	return false;
+    }
 
     
 }

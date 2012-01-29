@@ -108,6 +108,10 @@ aspect TypeCheck{
 				error("TypeCheck: Exhibit binds formal argument "+parameter.name() + " multiple times.");
 			}
 		}
+		
+		PointcutExpr pe = getPointcut();
+		if (!pe.isInvPCD())
+			warning("TypeCheck: Exhibit pointcut expression should not contain PCD such as Args, This, or Target.");		
 	}
 	
 	refine AspectErrorCheck public void AspectDecl.typeCheck() {
