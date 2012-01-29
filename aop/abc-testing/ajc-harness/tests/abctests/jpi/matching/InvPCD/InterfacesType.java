@@ -1,7 +1,7 @@
 import org.aspectj.testing.Tester;
 
 jpi void JP();
-jpi void JP2();
+jpi void JP2(I a);
 
 interface I{
 	public void bar();
@@ -12,7 +12,7 @@ class A implements I{
 	
 	exhibits void JP() : call(void *(..)) && target(I);
 
-	exhibits void JP2() : call(void *(..)) && targetinv(I);
+	exhibits void JP2(I a) : call(void *(..)) && targetinv(a);
 
 	public void bar(){
 		zar();
@@ -29,7 +29,7 @@ public aspect AS{
 	
 	exhibits void JP() : call(void *(..)) && target(I);
 
-	exhibits void JP2() : call(void *(..)) && targetinv(I);
+	exhibits void JP2(I a) : call(void *(..)) && targetinv(a);
 
 	
 	before JP(){
@@ -37,15 +37,15 @@ public aspect AS{
 		System.out.println("JPI: capture variant");
 	}
 	
-	before JP2(){
-		Tester.check(false,"this advice should not get executed");
+	before JP2(I a){
+		count++;
 	}
 	
 	public static void main(String[] args){
 		A a = new A();
 		a.bar();
 		a.zar();
-		Tester.checkEqual(AS.count,3,"expected 3 matches but saw "+AS.count);
+		Tester.checkEqual(AS.count,6,"expected 3 matches but saw "+AS.count);
 		
 	}
 	
