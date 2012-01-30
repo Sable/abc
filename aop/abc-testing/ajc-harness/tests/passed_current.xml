@@ -6041,7 +6041,10 @@
 		</compile>
     </ajc-test>
 <ajc-test title="JPI syntax - exhibit" num="1602" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="Exhibit.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="Exhibit.java">
+        	<message line="10" kind="warning"></message>
+            <message line="21" kind="warning"></message>        	
+        </compile>
     </ajc-test>
 <ajc-test title="JPI syntax - exhibit in the wrong place" num="1603" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="ExhibitWrongScope.java">
@@ -6049,7 +6052,9 @@
         </compile>
     </ajc-test>
 <ajc-test title="JPI syntax - advice definition" num="1604" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="AdviceDeclaration.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="AdviceDeclaration.java">
+        	<message line="10" kind="warning"></message>        	
+        </compile>
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance" num="1605" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax.java">
@@ -6066,7 +6071,9 @@
 		</compile>
     </ajc-test>
 <ajc-test title="JPI throw syntax" num="1607" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="ThrowsSyntax.java">
+        	<message line="13" kind="warning"></message>        	
+    	</compile>
     </ajc-test>
 <ajc-test title="Check JPI declared - class" num="1610" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPIDeclared.java, klass/JPIDeclared.java">
@@ -6150,7 +6157,9 @@
         </compile>
     </ajc-test>
 <ajc-test title="collect jpi hierarchy" num="1619" dir="abctests/jpi/typechecks/jpi-hierarchy">
-        <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java">
+	        <message line="7" kind="warning"></message>        	
+        </compile>
     </ajc-test>
 <ajc-test title="Check Advice exception" num="1620" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckJPIAdviceException2.java">
@@ -6160,14 +6169,19 @@
     </ajc-test>
 <ajc-test title="Check Weave" num="1630" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckWeave.java">
-	        <message line="20" kind="error"></message>        	
+	        <message line="14" kind="warning"></message>
+	        <message line="20" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check Poincut" num="1631" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressions.java"></compile>
     </ajc-test>
 <ajc-test title="Check Poincut Args" num="1632" dir="abctests/jpi/weaving">
-        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressionsArgs.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressionsArgs.java">
+	        <message line="16" kind="warning"></message>
+	        <message line="17" kind="warning"></message>
+	        <message line="29" kind="warning"></message>
+        </compile>
 		<run class="CheckPointcutExpressionsArgs"></run>
     </ajc-test>
 <ajc-test title="Check JPI header" num="1633" dir="abctests/jpi/weaving">
@@ -6179,83 +6193,143 @@
     </ajc-test>
 <ajc-test title="Check return types" num="1634" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypes.java">
+	        <message line="13" kind="warning"></message>
+	        <message line="16" kind="warning"></message>        	
 	        <message line="20" kind="error"></message>
 	        <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check return types with DummyAspect" num="1635" dir="abctests/jpi/weaving">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesWithDummyAspect.java">
+	        <message line="16" kind="warning"></message>
+	        <message line="19" kind="warning"></message>
+	        <message line="22" kind="warning"></message>        	
 	        <message line="25" kind="error"></message>
 	        <message line="27" kind="error"></message>
 	        <message line="29" kind="error"></message>			
         </compile>
     </ajc-test>
 <ajc-test title="Simple Match" num="1640" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="SimpleMatch.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="SimpleMatch.java">
+	        <message line="16" kind="warning"></message>
+        </compile>
 		<run class="SimpleMatch"></run>
     </ajc-test>
 <ajc-test title="Dont Match" num="1641" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DontMatch.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="DontMatch.java">
+	        <message line="13" kind="warning"></message>
+	        <message line="16" kind="warning"></message>
+		</compile>
 		<run class="DontMatch"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match" num="1642" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java">
+	        <message line="13" kind="warning"></message>
+	        <message line="16" kind="warning"></message>
+		</compile>		
 		<run class="InheritanceMatch"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match 2" num="1643" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch2.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch2.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>
 		<run class="InheritanceMatch2"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match 3" num="1644" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>		
 		<run class="InheritanceMatch3"></run>
     </ajc-test>
 <ajc-test title="Inheritance Match 4" num="1645" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch4.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch4.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>		
 		<run class="InheritanceMatch4"></run>
     </ajc-test>
 <ajc-test title="Double Match" num="1646" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="DoubleMatch.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="DoubleMatch.java">
+	        <message line="15" kind="warning"></message>
+	        <message line="18" kind="warning"></message>
+		</compile>		
 		<run class="DoubleMatch"></run>
     </ajc-test>
 <ajc-test title="Sub type match" num="1647" dir="abctests/jpi/matching">
-        <compile options="-ext,abc.ja.jpi" files="SubTypeMatching.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="SubTypeMatching.java">
+	        <message line="8" kind="warning"></message>
+		</compile>
 		<run class="A"></run>
     </ajc-test>
 <ajc-test title="collect exhibits clauses" num="1648" dir="abctests/jpi/matching/exhibits">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java"></compile>
 		<run class="classes.modificables.A"></run>
     </ajc-test>
+<ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="InterfacesType.java">
+        	<message line="13" kind="warning"></message>
+        	<message line="30" kind="warning"></message>			
+		</compile>
+		<run class="AS"></run>		
+    </ajc-test>
 <ajc-test title="Arguments-InvPCD" num="1650" dir="abctests/jpi/matching/InvPCD">
-        <compile options="-ext,abc.ja.jpi" files="ArgumentType.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="ArgumentType.java">
+        	<message line="20" kind="warning"></message>
+        	<message line="28" kind="warning"></message>        	
+        </compile>
 		<run class="AS"></run>		
     </ajc-test>
 <ajc-test title="Target-InvPCD" num="1651" dir="abctests/jpi/matching/InvPCD">
-        <compile options="-ext,abc.ja.jpi" files="TargetType.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="TargetType.java">
+        	<message line="30" kind="warning"></message>        	
+        </compile>
 		<run class="AS"></run>		
     </ajc-test>
 <ajc-test title="This-InvPCD" num="1652" dir="abctests/jpi/matching/InvPCD">
-        <compile options="-ext,abc.ja.jpi" files="ThisType.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="ThisType.java">
+        	<message line="8" kind="warning"></message>
+        	<message line="21" kind="warning"></message>
+        	<message line="33" kind="warning"></message>
+        </compile>
 		<run class="AS"></run>		
     </ajc-test>
 <ajc-test title="example 1" num="1650" dir="abctests/jpi/FSE-NI">
-        <compile options="-ext,abc.ja.jpi" files="Util.java, example1.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example1.java">
+	        <message line="9" kind="warning"></message>
+		</compile>		
 		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="example 2" num="1651" dir="abctests/jpi/FSE-NI">
-        <compile options="-ext,abc.ja.jpi" files="Util.java, example2.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example2.java">
+	        <message line="9" kind="warning"></message>
+		</compile>		
 		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="example 3" num="1652" dir="abctests/jpi/FSE-NI">
-        <compile options="-ext,abc.ja.jpi" files="Util.java, example3.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example3.java">
+	        <message line="11" kind="warning"></message>
+	        <message line="16" kind="warning"></message>
+		</compile>
 		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="example 4" num="1653" dir="abctests/jpi/FSE-NI">
-        <compile options="-ext,abc.ja.jpi" files="Util.java, example4.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example4.java">
+	        <message line="11" kind="warning"></message>
+	        <message line="16" kind="warning"></message>	
+		</compile>				
 		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="website example" num="1654" dir="abctests/jpi/ICSE2012">
-        <compile options="-ext,abc.ja.jpi" files="aspects/Discount.aj,       aspects/Logger.aj,       classes/BestSeller.java,       classes/Book.java,       classes/Customer.java,       classes/EcoFriendly.java,       classes/Item.java,       classes/Movie.java,       classes/ShoppingSession.java,       classes/Utils.java,       joinpointinterfaces/Interfaces.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="aspects/Discount.aj,       aspects/Logger.aj,       classes/BestSeller.java,       classes/Book.java,       classes/Customer.java,       classes/EcoFriendly.java,       classes/Item.java,       classes/Movie.java,       classes/ShoppingSession.java,       classes/Utils.java,       joinpointinterfaces/Interfaces.java">
+	        <message line="11" kind="warning"></message>
+	        <message line="15" kind="warning"></message>
+	        <message line="21" kind="warning"></message>
+		</compile>			
 		<run class="classes.ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
