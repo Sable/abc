@@ -27,35 +27,16 @@ aspect TypeCheckCJP {
 	
 	syn lazy boolean TypeDecl.isCJPTypeDecl() = false;
 	eq JoinpointTypeDecl.isCJPTypeDecl() = true;
-
-	public void CJPAdviceDecl.typeCheck() {
-		super.typeCheck();
-		TypeAccess joinpointAccess = (TypeAccess) getName();
-		
-		if (joinpointAccess.decls().isEmpty()){
-			error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
-			return;
-		} 
-		else { 			
-			if (!joinpointAccess.decl().isCJPTypeDecl()){
-				error("TypeChecking: "+joinpointAccess.decl().typeName()+" is not a valid type for JoinpointTypeDeclaration");
-				return;				
-			}
-		}	
-		
-		TypeAccess jpiAccess = (TypeAccess)getName();
-		JoinpointTypeDecl jpiDecl;
-		AdviceSpec currentAdviceSpec = getAdviceSpec();
-
+	
+	
+  public void CJPAdviceDecl.doTypeChecking(JoinpointTypeDecl jpiDecl){
 		/***
 		 * 1) check that the type of SuperAccess is JPITypeDecl.
 		 * 2) check the arguments types.
 		 * 3) check the return types.
 		 * 4) check the exceptions.
 		 */		
-		
-		jpiDecl = (JoinpointTypeDecl)jpiAccess.type();
-				
+		AdviceSpec currentAdviceSpec = getAdviceSpec();	  
 		int paramNum = 0;
 		for(int i=0; i<currentAdviceSpec.getNumParameter(); i++){
 			ParameterDeclaration adviceParameter = currentAdviceSpec.getParameter(i);
@@ -127,7 +108,24 @@ aspect TypeCheckCJP {
 			if (!foundError){
 				error("TypeCheck: Advice cannot throw exception of type "+exceptionAccess.type().name());
 			}
-		}
+		}	  
+	}	
+
+	public void CJPAdviceDecl.typeCheck() {
+		super.typeCheck();
+		TypeAccess joinpointAccess = (TypeAccess) getName();
+		
+		if (joinpointAccess.decls().isEmpty()){
+			error("TypeChecking: "+joinpointAccess.getID()+" is not a valid type for JoinpointTypeDeclaration");
+			return;
+		} 
+		else { 			
+			if (!joinpointAccess.decl().isCJPTypeDecl()){
+				error("TypeChecking: "+joinpointAccess.decl().typeName()+" is not a valid type for JoinpointTypeDeclaration");
+				return;				
+			}
+		}	
+		doTypeChecking((JoinpointTypeDecl)joinpointAccess.type());
 	}
 	
 	refine NameCheck public void TypeDecl.nameCheck() {
