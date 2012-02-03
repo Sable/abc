@@ -260,7 +260,9 @@
 	        <message kind="error" line="15"/>
 	        <message kind="error" line="18"/>
 	        <message kind="error" line="21"/>			
+	        <message kind="error" line="21"/>						
 	        <message kind="error" line="27"/>
+	        <message kind="error" line="27"/>			
         </compile>
     </ajc-test>
 	
@@ -314,7 +316,7 @@
     <ajc-test num="1619" dir="abctests/jpi/typechecks/jpi-hierarchy"
         title="collect jpi hierarchy">
         <compile files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java" options="-ext,abc.ja.jpi">
-	        <message kind="warning" line="7"/>        	
+	        <message kind="warning" line="7"/>
         </compile>
     </ajc-test>	
 	
@@ -550,6 +552,34 @@
 		<run class="classes.ShoppingSession" />
     </ajc-test>	
 	
+    <ajc-test num="1660" dir="abctests/jpi/staticoverloading"
+        title="type check static overloading">
+        <compile files="typecheck.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="1"/>
+        	<message kind="error" line="2"/>			        	
+        	<message kind="error" line="3"/>
+        	<message kind="error" line="4"/>
+        </compile>
+    </ajc-test>    
+
+    <ajc-test num="1661" dir="abctests/jpi/staticoverloading"
+        title="type check advice binding">
+        <compile files="advice.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="11"/>
+        	<message kind="error" line="15"/>
+        	<message kind="error" line="19"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1662" dir="abctests/jpi/staticoverloading"
+        title="type check exhibit clause">
+        <compile files="TypeCheckExhibitClause.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="10"/>
+        	<message kind="error" line="12"/>			
+		</compile>
+    </ajc-test>    
+	
+	
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
@@ -732,10 +762,12 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1900" dir="abctests/jpi/matching/InvPCD"
-        title="test">
-        <compile files="InterfacesType.java" options="-ext,abc.ja.jpi" />
-		<run class="AS"/>		
-    </ajc-test> 	
+    <ajc-test num="1900" dir="abctests/jpi/staticoverloading"
+        title="type check advice binding">
+        <compile files="exhibitsClause.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="12"/>
+        	<message kind="error" line="14"/>			
+		</compile>
+    </ajc-test>    
 	    
 </suite>
