@@ -24,9 +24,9 @@ public abstract class CJPAbstractAfterAdvice extends AbstractAfterAdvice {
 
 	private JPITypeDecl jpiTypeDecl;
 	
-	public CJPAbstractAfterAdvice(Position pos, TypeAccess jpiTypeAccess) {
+	public CJPAbstractAfterAdvice(Position pos, JPITypeDecl jpiDecl) {
 		super(pos);
-		jpiTypeDecl = (JPITypeDecl)jpiTypeAccess.decl();
+		jpiTypeDecl = jpiDecl;
 	}
 
 	private void reportWarning(ShadowMatch sm, AbstractAdviceDecl ad){

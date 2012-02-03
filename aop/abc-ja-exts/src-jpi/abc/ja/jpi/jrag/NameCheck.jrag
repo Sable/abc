@@ -1,13 +1,24 @@
 aspect NameCheck{
 
 	public void ExhibitBodyDecl.nameCheck() {
-		TypeAccess jpiAccess = (TypeAccess) getJPIName();
-	    if(jpiAccess.decls().isEmpty()){
-	    	error("NameCheck: There is not a JPI declaration with the name "+jpiAccess.typeName());
-		}
+		JPITypeAccess jpiAccess = (JPITypeAccess) getJPIName();
+	    if(jpiAccess.decls(getParameterTypeList()).isEmpty()){
+	    	StringBuffer parameters = new StringBuffer();
+	    	for(TypeDecl pd : getParameterTypeList()){
+	    		parameters.append(pd.name()+",");
+	    	}
+	    	if (parameters.length() != 0)
+	    		parameters.deleteCharAt(parameters.length()-1);
+	    	error("NameCheck: There is not a JPI declaration with the signature "+jpiAccess.typeName()+"("+parameters+")");
+		}	
 	}
 	
 	public void JPITypeDecl.nameCheck(){
+		JPITypeAccess dummyAccess = new JPITypeAccess("", this.getID());
+		dummyAccess.setParent(this);
+		SimpleSet set = dummyAccess.decls(this.getParameterTypeList());
+		if (set.size() > 1)
+			error("NameCheck: There is other JPI with the same signature");	  
 		TypeAccess jpiSuperAccess = (TypeAccess) getSuperTypeName();
 		if (jpiSuperAccess.getID().equals("$RootJPI$")){
 			return;
@@ -15,7 +26,6 @@ aspect NameCheck{
 		if(jpiSuperAccess.decls().isEmpty()){
 			error("NameCheck: There is not a JPI declaration with the name "+jpiSuperAccess.typeName());
 		}
-		
 	}
 	
 	public void JPISuperArgAccess.nameCheck(){

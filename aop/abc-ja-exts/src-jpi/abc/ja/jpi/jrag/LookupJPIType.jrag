@@ -1,0 +1,336 @@
+aspect LookupJPIType{
+
+	syn SimpleSet JPITypeAccess.decls(java.util.List<TypeDecl> parameterList) {
+	    if(packageName().equals(""))
+	      return lookupJPIType(name(), parameterList);
+	    else {
+	      TypeDecl typeDecl = lookupJPIType(packageName(), name(), parameterList);
+	      if(typeDecl != null)
+	        return SimpleSet.emptySet.add(typeDecl);
+	      return SimpleSet.emptySet;
+	    }
+	}
+	
+	//fully qualified lookup for JPIType
+	inh TypeDecl Expr.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+	inh TypeDecl Stmt.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+	inh TypeDecl BodyDecl.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+	inh TypeDecl TypeDecl.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+	inh TypeDecl CompilationUnit.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+
+	eq Program.getChild().lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList) = lookupJPIType(packageName, typeName, parameterList);
+
+	syn lazy TypeDecl Program.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList) {
+		addPrimitiveTypes();
+		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
+		boolean match;
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
+				if (getCompilationUnit(i).getTypeDecl(j).isJPITypeDecl()){
+					JPITypeDecl type = (JPITypeDecl)getCompilationUnit(i).getTypeDecl(j);
+			    	if(type.fullName().equals(fullName)){
+			    		if (type.getNumParameter() == parameterList.size()){
+			    			match = true;
+			    			for(int k=0; k<type.getNumParameter(); k++){
+			    				if(!type.getParameter(k).type().equals(parameterList.get(k))){
+			    					match = false;
+			    				}
+			    			}
+			    			if (match)
+			    				return type;			    				
+			    		}
+			    	}
+				}
+		  	}
+		}
+    
+		CompilationUnit u = getCompilationUnit(fullName);
+		if(u != null) {
+			addCompilationUnit(u);
+			getCompilationUnit(getNumCompilationUnit()-1);
+			for(int j = 0; j < u.getNumTypeDecl(); j++) {
+				if (u.getTypeDecl(j).isJPITypeDecl()){
+					JPITypeDecl type = (JPITypeDecl)u.getTypeDecl(j);
+			    	if(type.fullName().equals(fullName)){
+			    		if (type.getNumParameter() == parameterList.size()){
+			    			match = true;
+			    			for(int k=0; k<type.getNumParameter(); k++){
+			    				if(!type.getParameter(k).type().equals(parameterList.get(k))){
+			    					match = false;
+			    				}
+			    			}
+			    			if (match)
+			    				return type;			    				
+			    		}
+			    	}
+				}
+			}
+			//throw new Error("No type named " + typeName + " in file " + fullName + ", " + u.pathName() + ", " + u.relativeName());
+		}
+    	return null;
+    }
+	
+	//normal lookup
+	inh lazy SimpleSet CompilationUnit.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+	inh lazy SimpleSet TypeDecl.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+	inh SimpleSet BodyDecl.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+	inh SimpleSet Stmt.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+	inh lazy SimpleSet Block.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+	inh SimpleSet Expr.lookupJPIType(String name, java.util.List<TypeDecl> parameterList);
+
+	eq Program.getChild().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) = SimpleSet.emptySet;
+  
+  // The scope of a type import declaration is all the class and interface type declarations in
+  // the compilation unit in which the import declaration appears.
+  eq CompilationUnit.getChild().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    // locally declared types in compilation unit
+    SimpleSet set = localLookupJPIType(name, parameterList);
+    if(!set.isEmpty()) return set;
+
+    // imported types
+    set = importedJPITypes(name, parameterList);
+    if(!set.isEmpty()) return set;
+
+    // types in the same package
+    TypeDecl result = lookupJPIType(packageName(), name, parameterList);
+    if(result != null && result.accessibleFromPackage(packageName())) 
+      return SimpleSet.emptySet.add(result);
+    
+    // types imported on demand
+    set = importedJPITypesOnDemand(name, parameterList);
+    if(!set.isEmpty()) return set;
+        
+    // include primitive types
+    //result = lookupType(PRIMITIVE_PACKAGE_NAME, name);
+    //if(result != null) return SimpleSet.emptySet.add(result);
+    
+    // 7.5.5 Automatic Imports
+    //result = lookupType("java.lang", name);
+    //if(result != null && result.accessibleFromPackage(packageName()))
+    //  return SimpleSet.emptySet.add(result);
+    return lookupJPIType(name, parameterList);
+  }
+    
+	syn SimpleSet CompilationUnit.localLookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+		boolean match;
+		JPITypeDecl jpiType;
+		SimpleSet set = SimpleSet.emptySet;
+		for(int i = 0; i < getNumTypeDecl(); i++){
+			match = true;
+			if (getTypeDecl(i).isJPITypeDecl()){
+				jpiType = (JPITypeDecl)getTypeDecl(i);
+				if(jpiType.name().equals(name)){
+					if(jpiType.getNumParameter() == parameterList.size()){
+						for(int j=0; j<jpiType.getNumParameter(); j++){
+							if(!jpiType.getParameter(j).type().equals(parameterList.get(j))){
+								match = false;
+							}
+						}
+						if(match)
+							set = set.add(jpiType);
+					}
+				}
+			}
+		}
+		return set;
+	}
+  
+  syn SimpleSet CompilationUnit.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet set = SimpleSet.emptySet;
+    for(int i = 0; i < getNumImportDecl(); i++)
+      if(!getImportDecl(i).isOnDemand())
+        for(Iterator iter = getImportDecl(i).importedJPITypes(name, parameterList).iterator(); iter.hasNext(); )
+          set = set.add(iter.next());
+    return set;
+  }
+
+	syn lazy SimpleSet ImportDecl.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) = SimpleSet.emptySet;
+	eq SingleTypeImportDecl.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) {
+	    TypeAccess access = (TypeAccess) getAccess();
+	    if (access.type().name().equals(name)){
+		    if(access.type().isJPITypeDecl()){
+		    	JPITypeAccess jpiAccess = new JPITypeAccess(access.getPackage(), name/*access.getID()*/);
+		    	jpiAccess.setParent(access.getParent());
+		    	return jpiAccess.decls(parameterList);
+		    }
+	    }
+	    return SimpleSet.emptySet;		
+	}
+	
+	
+  eq TypeImportOnDemandDecl.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet set = SimpleSet.emptySet;
+    if(getAccess() instanceof PackageAccess) {
+      String packageName = ((PackageAccess)getAccess()).getPackage();
+      TypeDecl typeDecl = lookupJPIType(packageName, name, parameterList);
+      if(typeDecl != null && typeDecl.accessibleFromPackage(packageName()) &&
+         typeDecl.typeName().equals(packageName + "." + name)) // canonical names match
+        set = set.add(typeDecl);
+    }
+    else {
+      for(Iterator iter = getAccess().type().memberTypes(name).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(decl.accessibleFromPackage(packageName()) &&
+           decl.typeName().equals(getAccess().typeName() + "." + name)) // canonical names match
+          set = set.add(decl);
+      }
+    }
+    return set;
+  }
+  inh TypeDecl TypeImportOnDemandDecl.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList);
+	
+	
+
+  // imports are not themselves affected by imports
+  eq CompilationUnit.getImportDecl().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) =
+    lookupJPIType(name, parameterList);
+
+  eq TypeDecl.getBodyDecl().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet c = memberJPITypes(name, parameterList);
+    if(!c.isEmpty()) 
+      return c;
+    if(name().equals(name))
+      return SimpleSet.emptySet.add(this);
+
+    c = lookupJPIType(name, parameterList);
+    // 8.5.2
+    if(isClassDecl() && isStatic() && !isTopLevelType()) {
+      SimpleSet newSet = SimpleSet.emptySet;
+      for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+        TypeDecl d = (TypeDecl)iter.next();
+        //if(d.isStatic() || d.isTopLevelType() || this.instanceOf(d.enclosingType())) {
+          newSet = newSet.add(d);
+        //}
+      }
+      c = newSet;
+    }
+    return c;
+  }
+  
+	syn boolean BodyDecl.declaresJPIType(String name, java.util.List<TypeDecl> parameterList){
+		JoinpointTypeDecl member;
+		boolean match = true;
+		if (this instanceof MemberCJPTypeDecl){
+			member = ((MemberCJPTypeDecl)this).getJoinpointTypeDecl();
+			if (member.name().equals(name)){
+				if (member.getNumParameter() == parameterList.size()){
+					for(int i=0; i<member.getNumParameter(); i++){
+						if (!member.getParameter(i).type().equals(parameterList.get(i))){
+							match = false;
+						}
+					}
+					return match;
+				}
+			}
+		}
+		return false; 	
+	}
+  
+
+  eq Block.getStmt(int index).lookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet c = SimpleSet.emptySet;
+    for(int i = index; i >= 0 && !(getStmt(i) instanceof Case); i--) {
+      if(getStmt(i) instanceof LocalClassDeclStmt) {
+        TypeDecl t = ((LocalClassDeclStmt)getStmt(i)).getClassDecl();
+        if(t.name().equals(name)) {
+          c = c.add(t);
+        }
+      }
+    }
+    if(!c.isEmpty())
+      return c;
+    return lookupType(name);
+  }
+
+  eq ClassInstanceExpr.getAccess().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet c = lookupJPIType(name, parameterList);
+    if(c.size() == 1) {
+      if(isQualified())
+        c = keepInnerClasses(c);
+    }
+    return c;
+  }
+  
+  eq ClassInstanceExpr.getTypeDecl().lookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet c = localLookupJPIType(name, parameterList);
+    if(!c.isEmpty())
+      return c;
+    c = lookupJPIType(name, parameterList);
+    if(!c.isEmpty())
+      return c;
+    return unqualifiedScope().lookupJPIType(name, parameterList);
+  }
+  
+  syn lazy SimpleSet TypeDecl.localJPITypeDecls(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet set = SimpleSet.emptySet;
+    for(int i = 0; i < getNumBodyDecl(); i++)
+      if(getBodyDecl(i).declaresJPIType(name, parameterList))
+        set = set.add(getBodyDecl(i).type(name));
+    return set;
+  }
+  
+  
+  syn lazy SimpleSet ClassInstanceExpr.localLookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+    if(hasTypeDecl() && getTypeDecl().name().equals(name))
+      return SimpleSet.emptySet.add(getTypeDecl());
+    return SimpleSet.emptySet;
+  }
+
+  syn lazy SimpleSet TypeDecl.memberJPITypes(String name, java.util.List<TypeDecl> parameterList) = SimpleSet.emptySet;
+
+  eq ClassDecl.memberJPITypes(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet set = localJPITypeDecls(name, parameterList);
+    if(!set.isEmpty()) return set;
+    for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.memberJPITypes(name, parameterList).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate() && decl.accessibleFrom(this))
+          set = set.add(decl);
+      }
+    }
+    if(hasSuperclass()) {
+      for(Iterator iter = superclass().memberJPITypes(name, parameterList).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate() && decl.accessibleFrom(this)) {
+          set = set.add(decl);
+        }
+      }
+    }
+    return set;
+  }
+
+  eq InterfaceDecl.memberJPITypes(String name, java.util.List<TypeDecl> parameterList) {
+    SimpleSet set = localJPITypeDecls(name, parameterList);
+    if(!set.isEmpty()) return set;
+    for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)outerIter.next();
+      for(Iterator iter = typeDecl.memberJPITypes(name, parameterList).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate())
+          set = set.add(decl);
+      }
+    }
+    return set;
+  }
+  
+	syn TypeDecl JPITypeAccess.decl(java.util.List<TypeDecl> parameterList) {
+		SimpleSet decls = decls(parameterList);
+		if(decls.size() == 1) {
+			return (TypeDecl)decls.iterator().next();
+		}
+		return unknownType();
+	}
+	
+	syn SimpleSet CompilationUnit.importedJPITypesOnDemand(String name, java.util.List<TypeDecl> parameterList) {
+		SimpleSet set = SimpleSet.emptySet;
+		for(int i = 0; i < getNumImportDecl(); i++)
+			if(getImportDecl(i).isOnDemand())
+		    	for(Iterator iter = getImportDecl(i).importedJPITypes(name, parameterList).iterator(); iter.hasNext(); )
+		      		set = set.add(iter.next());
+		return set;
+	}
+	
+	
+  	
+}

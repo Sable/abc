@@ -8,6 +8,7 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -24,8 +25,8 @@ import abc.weaving.weaver.WeavingContext;
  *  @author Ganesh Sittampalam
  */
 public class CJPAfterReturningAdvice extends CJPAbstractAfterAdvice {
-    public CJPAfterReturningAdvice(Position pos, TypeAccess jpiTypeAccess) {
-    	super(pos,jpiTypeAccess);
+    public CJPAfterReturningAdvice(Position pos, JPITypeDecl jpiTypeDecl) {
+    	super(pos,jpiTypeDecl);
     }
 
     public String toString() {

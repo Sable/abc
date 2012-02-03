@@ -21,6 +21,7 @@ package abc.ja.jpi.weaving;
 
 
 import polyglot.util.Position;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Formal;
@@ -41,8 +42,8 @@ public class CJPAfterReturningArgAdvice extends CJPAfterReturningAdvice {
 	protected Var var;
 	protected WeavingVar weavingVar;
 
-    public CJPAfterReturningArgAdvice(Formal formal, Position pos, TypeAccess jpiTypeAccess) {
-	super(pos, jpiTypeAccess);
+    public CJPAfterReturningArgAdvice(Formal formal, Position pos, JPITypeDecl jpiDecl) {
+	super(pos, jpiDecl);
 	this.formal = formal;
 	this.var=new Var(formal.getName(),formal.getPosition());
     }

@@ -38,6 +38,7 @@ import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.tagkit.ThrowCreatedByCompilerTag;
 import soot.util.Chain;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -61,8 +62,8 @@ import abc.weaving.weaver.WeavingContext;
  *  @author Ganesh Sittampalam
  */
 public class CJPAfterThrowingAdvice extends CJPAbstractAfterAdvice {
-    public CJPAfterThrowingAdvice(Position pos, TypeAccess jpiTypeAccess) {
-	super(pos, jpiTypeAccess);
+    public CJPAfterThrowingAdvice(Position pos, JPITypeDecl jpiDecl) {
+	super(pos, jpiDecl);
     }
 
     public String toString() {

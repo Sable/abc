@@ -11,7 +11,7 @@ aspect Exhibit{
 	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
-		TypeAccess jpiAccess;
+		JPITypeAccess jpiAccess;
 		for(CompilationUnit cu : getCompilationUnits()){
 			for(TypeDecl typeDecl : cu.getTypeDecls()){		
 				if (!typeDecl.isClassDecl()){ //aspect is considered as a class
@@ -21,10 +21,12 @@ aspect Exhibit{
 				for(BodyDecl bodyDecl : classDecl.getBodyDeclList()){
 					if (!bodyDecl.isExhibit()){
 						continue;
-					}			
-					jpiAccess = (TypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
-					if (jpiAccess.type().equals(jpiTypeDecl)){
-						set.add((ExhibitBodyDecl)bodyDecl);
+					}
+					jpiAccess = (JPITypeAccess)((ExhibitBodyDecl)bodyDecl).getJPIName();
+					if (jpiAccess.getID().equals(jpiTypeDecl.getID())){
+						if (jpiAccess.decl(((ExhibitBodyDecl)bodyDecl).getParameterTypeList()).equals(jpiTypeDecl)){
+							set.add((ExhibitBodyDecl)bodyDecl);
+						}
 					}
 				}
 			}

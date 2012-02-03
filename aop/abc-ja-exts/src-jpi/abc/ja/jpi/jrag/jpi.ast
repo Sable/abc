@@ -5,3 +5,5 @@ JPITypeDecl : JoinpointTypeDecl ::= SuperTypeName:Access SuperArgumentName:Acces
 ExhibitBodyDecl : BodyDecl ::= ReturnType:Access JPIName:Access Parameter:ParameterDeclaration* Pointcut:PointcutExpr;
 
 DummyAccess : TypeAccess;
+
+JPITypeAccess : TypeAccess;

@@ -1,0 +1,32 @@
+aspect StaticOverloading{
+
+	public java.util.List<TypeDecl> AdviceSpec.getParameterTypeList(){
+		java.util.List<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(ParameterDeclaration pd : getParameterList()){
+			if (!pd.isImplicit())
+				types.add(pd.type());
+		}
+		return types;
+	}
+
+	
+	public java.util.List<TypeDecl> ExhibitBodyDecl.getParameterTypeList(){
+		java.util.List<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(ParameterDeclaration pd : getParameterList()){
+			if (!pd.isImplicit())
+				types.add(pd.type());
+		}
+		return types;
+	}
+
+	public java.util.List<TypeDecl> JPITypeDecl.getParameterTypeList(){
+		java.util.List<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(ParameterDeclaration pd : getParameterList()){
+			if (!pd.isImplicit())
+				types.add(pd.type());
+		}
+		return types;
+	}
+
+    
+}

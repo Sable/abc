@@ -135,10 +135,10 @@ aspect CodeGen {
 	  	Pointcut pc = pointcut;
 	  	LinkedList methods = new LinkedList();
 	  	//getBlock().addAllEnclosedMethodSigs(methods);
-	  	TypeAccess jpiAccess = new TypeAccess(this.name());
-	  	jpiAccess.setParent(this);
+	  	//TypeAccess jpiAccess = new TypeAccess(this.name());
+	  	//jpiAccess.setParent(this);
 	  	globalAspectInfo().addAdviceDecl(new abc.ja.jpi.weaving.CJPAdviceDecl(
-			  abc.ja.jpi.weaving.DummyAdvice.adviceSpec(returnType.type().getSootType(), adviceParameterList, jpiAccess),
+			  abc.ja.jpi.weaving.DummyAdvice.adviceSpec(returnType.type().getSootType(), adviceParameterList, this),
 			  pc,
 			  abc.ja.jpi.weaving.DummyAdvice.methodSig(returnType.type().getSootType(), adviceParameterList),
 			  abc.ja.jpi.weaving.DummyAspect.getDummyAspect(),
@@ -147,7 +147,7 @@ aspect CodeGen {
 			  jp_params[2] /*ejp*/,
 			  methods,
 			  pos(),
-			  jpiAccess
+			  this
 	  	));
 	  	//jimplify1phase2 adviceSpec
 	  	abc.ja.jpi.weaving.DummyAspect.getDummyAspectSootClass().addMethod(abc.ja.jpi.weaving.DummyAdvice.createProceedMethod(adviceParameterList));

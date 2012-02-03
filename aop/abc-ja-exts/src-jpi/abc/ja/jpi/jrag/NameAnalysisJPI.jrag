@@ -4,12 +4,16 @@ aspect NameAnalysisJPI {
       public Access reclassify(String name, int start, int end) { return new JPISuperArgAccess(name); }
     };
     
+    public static final NameType NameType.JPITYPE_NAME = new NameType(){
+      public Access reclassify(String name, int start, int end) { return new JPITypeAccess("",name); }
+    };
+    
     eq JPITypeDecl.getSuperArgumentName(int i).nameType() = NameType.JPI_SUPER_ARG_NAME;
         
     eq ExhibitBodyDecl.getPointcut().bindsInCurrentCflow(String name) =
         getPointcut().binds(name) > 0;
 
-	eq ExhibitBodyDecl.getJPIName().nameType() = NameType.TYPE_NAME;
+	eq ExhibitBodyDecl.getJPIName().nameType() = NameType.JPITYPE_NAME;
 	
 	eq ExhibitBodyDecl.getReturnType().nameType() = NameType.TYPE_NAME;
 		
@@ -21,9 +25,9 @@ aspect NameAnalysisJPI {
   	eq ExhibitBodyDecl.getParameter(int index).isExceptionHandlerParameter() = false;
   	eq ExhibitBodyDecl.getParameter(int index).isPointcutVariable() = true;
   	
-	refine NameAnalysisCJP eq CJPBeforeSpec.getName().nameType() = NameType.TYPE_NAME;
-	refine NameAnalysisCJP eq CJPAfterSpec.getName().nameType() = NameType.TYPE_NAME;
-	refine NameAnalysisCJP eq CJPAfterReturningSpec.getName().nameType() = NameType.TYPE_NAME;
-	refine NameAnalysisCJP eq CJPAfterThrowingSpec.getName().nameType() = NameType.TYPE_NAME;
-	refine NameAnalysisCJP eq CJPAroundSpec.getName().nameType() = NameType.TYPE_NAME;
+	refine NameAnalysisCJP eq CJPBeforeSpec.getName().nameType() = NameType.JPITYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterSpec.getName().nameType() = NameType.JPITYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterReturningSpec.getName().nameType() = NameType.JPITYPE_NAME;
+	refine NameAnalysisCJP eq CJPAfterThrowingSpec.getName().nameType() = NameType.JPITYPE_NAME;
+	refine NameAnalysisCJP eq CJPAroundSpec.getName().nameType() = NameType.JPITYPE_NAME;
 }

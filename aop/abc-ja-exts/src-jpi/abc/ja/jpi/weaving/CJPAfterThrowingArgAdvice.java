@@ -24,6 +24,7 @@ package abc.ja.jpi.weaving;
 import polyglot.util.Position;
 import soot.Local;
 import soot.RefType;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.TypeAccess;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Formal;
@@ -38,8 +39,8 @@ public class CJPAfterThrowingArgAdvice extends CJPAfterThrowingAdvice {
     protected Formal formal;
     protected Local local;
 
-    public CJPAfterThrowingArgAdvice(Formal formal, Position pos, TypeAccess jpiTypeAccess) {
-	super(pos, jpiTypeAccess);
+    public CJPAfterThrowingArgAdvice(Formal formal, Position pos, JPITypeDecl jpiDecl) {
+	super(pos, jpiDecl);
 	this.formal = formal;
     }
 

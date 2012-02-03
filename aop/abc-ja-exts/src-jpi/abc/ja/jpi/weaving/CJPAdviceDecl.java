@@ -39,9 +39,9 @@ public class CJPAdviceDecl extends AdviceDecl {
 
 	private JPITypeDecl jpiTypeDecl;
 	public CJPAdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl,
-			Aspect aspct, int jp, int jpsp, int ejp, List methods, Position pos, TypeAccess jpiTypeAccess) {
+			Aspect aspct, int jp, int jpsp, int ejp, List methods, Position pos, JPITypeDecl jpiDecl) {
 		super(spec, pc, impl, aspct, jp, jpsp, ejp, methods, pos);
-		jpiTypeDecl = (JPITypeDecl)jpiTypeAccess.decl();
+		jpiTypeDecl = jpiDecl;
 	}
 
     @SuppressWarnings("rawtypes")

@@ -30,9 +30,9 @@ import abc.weaving.residues.Residue;
 public class CJPAroundAdvice extends AroundAdvice {
 
 	private JPITypeDecl jpiTypeDecl;
-	public CJPAroundAdvice(AbcType rtype, MethodSig proceed, Position pos, TypeAccess jpiTypeAccess) {
+	public CJPAroundAdvice(AbcType rtype, MethodSig proceed, Position pos, JPITypeDecl jpiDecl) {
 		super(rtype, proceed, pos);
-		jpiTypeDecl = (JPITypeDecl)jpiTypeAccess.decl();
+		jpiTypeDecl = jpiDecl;
 	}
 
 	private void reportWarning(ShadowMatch sm, AbstractAdviceDecl ad){

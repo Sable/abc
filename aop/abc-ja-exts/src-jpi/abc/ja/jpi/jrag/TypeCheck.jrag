@@ -36,6 +36,7 @@ aspect TypeCheck{
 			return;
 		}
 
+		//TODO: static overloading is pending
 		jpiSuperDecl = (JPITypeDecl)jpiSuperAccess.type();
 		
 		if(!getTypeAccess().type().equals(jpiSuperDecl.getTypeAccess().type())){
@@ -74,12 +75,13 @@ aspect TypeCheck{
 	  	TypeAccess jpiAccess = (TypeAccess)getJPIName();
 	  	JPITypeDecl jpiDecl;
 	  
-		if (!jpiAccess.type().isJPITypeDecl()){
-			error("TypeCheck: "+jpiAccess.getID()+" must be a JPI not a "+jpiAccess.type().typeName());
+		if (!((JPITypeAccess)jpiAccess).decl(this.getParameterTypeList()).isJPITypeDecl()){
+			error("TypeCheck: "+jpiAccess.getID()+" must be a valid JPI type definition");// not a "+jpiAccess.type().typeName());
 			return;
 		}
-		jpiDecl = (JPITypeDecl)jpiAccess.type();
 		
+		jpiDecl = (JPITypeDecl) ((JPITypeAccess)jpiAccess).decl(this.getParameterTypeList());
+				
 		if(!getReturnType().type().equals(jpiDecl.getTypeAccess().type())){
 			error("TypeCheck: Exhibit return type: "+getReturnType().type().name()+" instead "+jpiDecl.getTypeAccess().type().name());
 		}
@@ -113,6 +115,17 @@ aspect TypeCheck{
 		if (!pe.isInvPCD())
 			warning("TypeCheck: Exhibit pointcut expression should not contain PCD such as Args, This, or Target.");		
 	}
+	
+	refine TypeCheckCJP public void CJPAdviceDecl.typeCheck() {
+		super.typeCheck();
+		TypeAccess jpiAccess = (TypeAccess)getName();
+		
+		if (!((JPITypeAccess)jpiAccess).decl(this.getAdviceSpec().getParameterTypeList()).isJPITypeDecl()){
+			error("TypeChecking: "+jpiAccess.getID()+" is not a valid type for JPITypeDeclaration");
+			return;
+		} 
+		doTypeChecking((JoinpointTypeDecl)((JPITypeAccess)jpiAccess).decl(this.getAdviceSpec().getParameterTypeList()));				
+	}	
 	
 	refine AspectErrorCheck public void AspectDecl.typeCheck() {
 		AspectErrorCheck.AspectDecl.typeCheck();

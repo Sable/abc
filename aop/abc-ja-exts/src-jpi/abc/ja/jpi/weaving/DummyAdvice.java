@@ -22,6 +22,7 @@ import abc.ja.jpi.jrag.ASTNode;
 import abc.ja.jpi.jrag.AdviceDecl;
 import abc.ja.jpi.jrag.AdviceSpec;
 import abc.ja.jpi.jrag.Body;
+import abc.ja.jpi.jrag.JPITypeDecl;
 import abc.ja.jpi.jrag.List;
 import abc.ja.jpi.jrag.ParameterDeclaration;
 import abc.ja.jpi.jrag.TypeAccess;
@@ -132,12 +133,12 @@ public class DummyAdvice {
 	}
 
 	public static abc.weaving.aspectinfo.AdviceSpec adviceSpec(Type returnType,
-			List<ParameterDeclaration> parameterDeclaration, TypeAccess jpi) {
+			List<ParameterDeclaration> parameterDeclaration, JPITypeDecl jpiTypeDecl) {
 		proceedMethodSig = proceedSig(returnType, parameterDeclaration);
 		MethodCategory.register(proceedMethodSig, MethodCategory.PROCEED);
 		AbcType return_type = AbcFactory.AbcType(returnType);
 		return new CJPAroundAdvice(return_type, proceedMethodSig,
-				proceedMethodSig.getPosition(), jpi);
+				proceedMethodSig.getPosition(), jpiTypeDecl);
 	}
 
 	public static SootMethod createProceedMethod(
