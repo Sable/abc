@@ -6116,7 +6116,9 @@
 	        <message line="15" kind="error"></message>
 	        <message line="18" kind="error"></message>
 	        <message line="21" kind="error"></message>			
+	        <message line="21" kind="error"></message>						
 	        <message line="27" kind="error"></message>
+	        <message line="27" kind="error"></message>			
         </compile>
     </ajc-test>
 <ajc-test title="Check Exhibit Pointcut" num="1614" dir="abctests/jpi/typechecks">
@@ -6158,7 +6160,7 @@
     </ajc-test>
 <ajc-test title="collect jpi hierarchy" num="1619" dir="abctests/jpi/typechecks/jpi-hierarchy">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, interfaces/JPI2.java, aspects/A.java">
-	        <message line="7" kind="warning"></message>        	
+	        <message line="7" kind="warning"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Check Advice exception" num="1620" dir="abctests/jpi/typechecks">
@@ -6331,6 +6333,27 @@
 	        <message line="21" kind="warning"></message>
 		</compile>			
 		<run class="classes.ShoppingSession"></run>
+    </ajc-test>
+<ajc-test title="type check static overloading" num="1660" dir="abctests/jpi/staticoverloading">
+        <compile options="-ext,abc.ja.jpi" files="typecheck.java">
+        	<message line="1" kind="error"></message>
+        	<message line="2" kind="error"></message>			        	
+        	<message line="3" kind="error"></message>
+        	<message line="4" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="type check advice binding" num="1661" dir="abctests/jpi/staticoverloading">
+        <compile options="-ext,abc.ja.jpi" files="advice.java">
+        	<message line="11" kind="error"></message>
+        	<message line="15" kind="error"></message>
+        	<message line="19" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="type check exhibit clause" num="1662" dir="abctests/jpi/staticoverloading">
+        <compile options="-ext,abc.ja.jpi" files="TypeCheckExhibitClause.java">
+        	<message line="10" kind="error"></message>
+        	<message line="12" kind="error"></message>			
+		</compile>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
