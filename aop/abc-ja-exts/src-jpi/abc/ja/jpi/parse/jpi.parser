@@ -22,14 +22,26 @@ TypeDecl type_declaration =
 	jpi_declaration.d	{: return d; :}
 ;
 
-JPITypeDecl jpi_declaration =     
+JPITypeDecl jpi_declaration =   
 	JPI joinpointtype_declexpr.d SEMICOLON {:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
 		a.getModifiers().addModifier("public");
 		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List());
 	:}
 	|
+	LT type_parameter_list_1.c JPI joinpointtype_declexpr.d SEMICOLON {:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");
+		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List());
+	:}
+	|
 	JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");		
+		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l);
+	:}
+	|
+	LT type_parameter_list_1.c JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
 		a.getModifiers().addModifier("public");		
 		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l);
@@ -52,9 +64,18 @@ ExhibitBodyDecl exhibit_declaration =
     	return new ExhibitBodyDecl(a, b, c, d); 
     :}
     | 
+    LT type_parameter_list_1.e EXHIBITS type.a name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {: 
+    	return new ExhibitBodyDecl(a, b, c, d); 
+    :}
+    |
 	EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
     	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d); 
     :}
+    |
+	LT type_parameter_list_1.e EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
+    	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d); 
+    :}
+    
 ;
 
 /* add the possibility of declaring the invPCD to basic_pointcut_exrp */
@@ -74,3 +95,16 @@ PointcutExpr basic_pointcut_expr =
           return new ArgsPointcutExpr(a, true);
        :}
 ;
+
+AdviceSpec cjp_advice_spec =
+  |  LT type_parameter_list_1.c type.a AROUND name.name LPAREN formal_parameter_list.b? RPAREN.y
+	   {: ParserTrace.parserTrace("non-void-type around (formals)");
+	      AdviceSpec s = new CJPAroundSpec(b, a, name);
+	      return s;
+	   :}
+  |  LT type_parameter_list_1.c VOID.a AROUND name.name LPAREN formal_parameter_list.b? RPAREN.y
+       {: ParserTrace.parserTrace("VOID around (formals)");
+          AdviceSpec s = new CJPAroundSpec(b, new PrimitiveTypeAccess("void"), name);
+          return s;
+       :}	   
+  ;
