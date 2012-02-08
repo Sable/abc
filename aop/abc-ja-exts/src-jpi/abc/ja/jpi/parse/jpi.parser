@@ -32,7 +32,7 @@ JPITypeDecl jpi_declaration =
 	LT type_parameter_list_1.c JPI joinpointtype_declexpr.d SEMICOLON {:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
 		a.getModifiers().addModifier("public");
-		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List());
+		return new GenericJPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List(), c);
 	:}
 	|
 	JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
@@ -44,7 +44,7 @@ JPITypeDecl jpi_declaration =
 	LT type_parameter_list_1.c JPI joinpointtype_declexpr.d EXTENDS name.i LPAREN parameter_list_inheritance.l? RPAREN SEMICOLON{:
 		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
 		a.getModifiers().addModifier("public");		
-		return new JPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l);
+		return new GenericJPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l, c);
 	:}
   ;
   
@@ -65,7 +65,7 @@ ExhibitBodyDecl exhibit_declaration =
     :}
     | 
     LT type_parameter_list_1.e EXHIBITS type.a name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {: 
-    	return new ExhibitBodyDecl(a, b, c, d); 
+    	return new GenericExhibitBodyDecl(a, b, c, d, e); 
     :}
     |
 	EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
@@ -73,7 +73,7 @@ ExhibitBodyDecl exhibit_declaration =
     :}
     |
 	LT type_parameter_list_1.e EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
-    	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d); 
+    	return new GenericExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d, e); 
     :}
     
 ;
@@ -99,12 +99,12 @@ PointcutExpr basic_pointcut_expr =
 AdviceSpec cjp_advice_spec =
   |  LT type_parameter_list_1.c type.a AROUND name.name LPAREN formal_parameter_list.b? RPAREN.y
 	   {: ParserTrace.parserTrace("non-void-type around (formals)");
-	      AdviceSpec s = new CJPAroundSpec(b, a, name);
+	      GenericCJPAroundSpec s = new GenericCJPAroundSpec(b, a, name, c);
 	      return s;
 	   :}
   |  LT type_parameter_list_1.c VOID.a AROUND name.name LPAREN formal_parameter_list.b? RPAREN.y
        {: ParserTrace.parserTrace("VOID around (formals)");
-          AdviceSpec s = new CJPAroundSpec(b, new PrimitiveTypeAccess("void"), name);
+          GenericCJPAroundSpec s = new GenericCJPAroundSpec(b, new PrimitiveTypeAccess("void"), name, c);
           return s;
        :}	   
   ;

@@ -81,7 +81,23 @@ aspect TypeCheck{
 		}
 		
 		jpiDecl = (JPITypeDecl) ((JPITypeAccess)jpiAccess).decl(this.getParameterTypeList());
-				
+		doTypeChecking(jpiDecl);
+		for(ParameterDeclaration parameter: getParameterList()){
+			int bindings = getPointcut().binds(parameter.name());
+			if(bindings == 0){
+				error("TypeCheck: Exhibit must bind its formal argument "+parameter.name());
+			}
+			else if(bindings > 1){
+				error("TypeCheck: Exhibit binds formal argument "+parameter.name() + " multiple times.");
+			}
+		}
+		
+		PointcutExpr pe = getPointcut();
+		if (!pe.isInvPCD())
+			warning("TypeCheck: Exhibit pointcut expression should not contain PCD such as Args, This, or Target.");			
+	}
+	
+	public void ExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){
 		if(!getReturnType().type().equals(jpiDecl.getTypeAccess().type())){
 			error("TypeCheck: Exhibit return type: "+getReturnType().type().name()+" instead "+jpiDecl.getTypeAccess().type().name());
 		}
@@ -100,20 +116,6 @@ aspect TypeCheck{
 				}
 			}
 		}
-
-		for(ParameterDeclaration parameter: getParameterList()){
-			int bindings = getPointcut().binds(parameter.name());
-			if(bindings == 0){
-				error("TypeCheck: Exhibit must bind its formal argument "+parameter.name());
-			}
-			else if(bindings > 1){
-				error("TypeCheck: Exhibit binds formal argument "+parameter.name() + " multiple times.");
-			}
-		}
-		
-		PointcutExpr pe = getPointcut();
-		if (!pe.isInvPCD())
-			warning("TypeCheck: Exhibit pointcut expression should not contain PCD such as Args, This, or Target.");		
 	}
 	
 	refine TypeCheckCJP public void CJPAdviceDecl.typeCheck() {

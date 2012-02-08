@@ -1,0 +1,497 @@
+aspect GenericsJPI{
+
+	//refine GenricTypeVariablesTypeAnalysis public void TypeVariable.typeCheck(){}
+	
+	//refine GenericTypeVariables public void TypeVariable.nameCheck(){}
+	
+	inh SimpleSet GenericJPITypeDecl.lookupType(String name);
+	syn SimpleSet GenericJPITypeDecl.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	eq GenericJPITypeDecl.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	
+	inh SimpleSet GenericExhibitBodyDecl.lookupType(String name);
+	syn SimpleSet GenericExhibitBodyDecl.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	eq GenericExhibitBodyDecl.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+
+
+	inh SimpleSet CJPAdviceDecl.lookupType(String name);
+	syn SimpleSet CJPAdviceDecl.localLookupType(String name) {
+		if (getAdviceSpec() instanceof GenericCJPAroundSpec){
+			GenericCJPAroundSpec spec = (GenericCJPAroundSpec)getAdviceSpec(); 
+			for(int i = 0; i < spec.getNumTypeVar(); i++) {
+				if(spec.getTypeVar(i).name().equals(name))
+			    	return SimpleSet.emptySet.add(spec.getTypeVar(i));
+			}
+		}
+		return SimpleSet.emptySet;		
+  	}
+	eq CJPAdviceDecl.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	
+
+	inh SimpleSet GenericCJPAroundSpec.lookupType(String name);
+	syn SimpleSet GenericCJPAroundSpec.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	eq GenericCJPAroundSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	
+	public void GenericExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){
+	  	TypeVariable exhibitTypeVariable, jpiTypeVariable;
+	  	if (getReturnType().type().isTypeVariable() && jpiDecl.getTypeAccess().type().isTypeVariable()){
+	  		exhibitTypeVariable = (TypeVariable) getReturnType().type();
+	  		jpiTypeVariable = (TypeVariable) jpiDecl.getTypeAccess().type();
+			if(!exhibitTypeVariable.getTypeBound(0).type().equals(jpiTypeVariable.getTypeBound(0).type())){
+				error("TypeCheck: Exhibit return type: "+getReturnType().type().name()+" instead "+jpiDecl.getTypeAccess().type().name());			
+			}
+	  	}
+	  	else{
+			if(!getReturnType().type().equals(jpiDecl.getTypeAccess().type())){
+				error("TypeCheck: Exhibit return type: "+getReturnType().type().name()+" instead "+jpiDecl.getTypeAccess().type().name());
+			}
+	  	}
+		if(getNumParameter() != jpiDecl.getNumParameter()){
+			error("TypeCheck: Exhibit clause must declare the same quantity of arguments that its JPI");
+		}
+		else{
+			ParameterDeclaration exhibitParameter;
+			ParameterDeclaration jpiParameter;
+			for(int i=0; i<jpiDecl.getNumParameter(); i++){
+				exhibitParameter = getParameter(i);
+				jpiParameter = jpiDecl.getParameter(i);
+				if (exhibitParameter.type().isTypeVariable() && jpiParameter.type().isTypeVariable()){
+					exhibitTypeVariable = (TypeVariable) exhibitParameter.type();
+					jpiTypeVariable = (TypeVariable) jpiParameter.type();
+					if(!exhibitTypeVariable.getTypeBound(0).type().equals(jpiTypeVariable.getTypeBound(0).type())){
+						error("TypeCheck: Exhibit parameter "+exhibitParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+exhibitParameter.type().name());
+					}					
+				}
+				else{
+					if(!exhibitParameter.type().equals(jpiParameter.type())){
+						error("TypeCheck: Exhibit parameter "+exhibitParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+exhibitParameter.type().name());
+					}
+				}
+			}
+		}
+	}
+	
+	
+	/*
+	* static overloading semantics for type variables.
+	*/
+	
+	refine LookupJPIType eq Program.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList) {
+				addPrimitiveTypes();
+		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
+		boolean match;
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
+				if (getCompilationUnit(i).getTypeDecl(j).isJPITypeDecl()){
+					JPITypeDecl type = (JPITypeDecl)getCompilationUnit(i).getTypeDecl(j);
+			    	if(type.fullName().equals(fullName)){
+			    		if (type.getNumParameter() == parameterList.size()){
+			    			match = true;
+			    			for(int k=0; k<type.getNumParameter(); k++){
+			    				if(type.getParameter(k).type().isTypeVariable() && parameterList.get(k).isTypeVariable()){
+			    					if(!((TypeVariable)type.getParameter(k).type()).getTypeBound(0).type().equals(((TypeVariable)parameterList.get(k)).getTypeBound(0).type())){
+			    						match = false;
+			    					}
+			    				}
+			    				else{
+				    				if(!type.getParameter(k).type().equals(parameterList.get(k))){
+				    					match = false;
+				    				}
+			    				}
+			    			}
+			    			if (match)
+			    				return type;			    				
+			    		}
+			    	}
+				}
+		  	}
+		}
+    
+		CompilationUnit u = getCompilationUnit(fullName);
+		if(u != null) {
+			addCompilationUnit(u);
+			getCompilationUnit(getNumCompilationUnit()-1);
+			for(int j = 0; j < u.getNumTypeDecl(); j++) {
+				if (u.getTypeDecl(j).isJPITypeDecl()){
+					JPITypeDecl type = (JPITypeDecl)u.getTypeDecl(j);
+			    	if(type.fullName().equals(fullName)){
+			    		if (type.getNumParameter() == parameterList.size()){
+			    			match = true;
+			    			for(int k=0; k<type.getNumParameter(); k++){
+			    				if(type.getParameter(k).type().isTypeVariable() && parameterList.get(k).isTypeVariable()){
+			    					if(!((TypeVariable)type.getParameter(k).type()).getTypeBound(0).type().equals(((TypeVariable)parameterList.get(k)).getTypeBound(0).type())){
+			    						match = false;
+			    					}
+			    				}
+			    				else{
+				    				if(!type.getParameter(k).type().equals(parameterList.get(k))){
+				    					match = false;
+				    				}
+			    				}
+			    			}
+			    			if (match)
+			    				return type;			    				
+			    		}
+			    	}
+				}
+			}
+			//throw new Error("No type named " + typeName + " in file " + fullName + ", " + u.pathName() + ", " + u.relativeName());
+		}
+    	return null;
+    }
+	
+	refine LookupJPIType eq CompilationUnit.localLookupJPIType(String name, java.util.List<TypeDecl> parameterList) {
+		boolean match;
+		JPITypeDecl jpiType;
+		SimpleSet set = SimpleSet.emptySet;
+		for(int i = 0; i < getNumTypeDecl(); i++){
+			match = true;
+			if (getTypeDecl(i).isJPITypeDecl()){
+				jpiType = (JPITypeDecl)getTypeDecl(i);
+				if(jpiType.name().equals(name)){
+					if(jpiType.getNumParameter() == parameterList.size()){
+						for(int j=0; j<jpiType.getNumParameter(); j++){
+		    				if(jpiType.getParameter(j).type().isTypeVariable() && parameterList.get(j).isTypeVariable()){
+		    					if(!((TypeVariable)jpiType.getParameter(j).type()).getTypeBound(0).type().equals(((TypeVariable)parameterList.get(j)).getTypeBound(0).type())){
+		    						match = false;
+		    					}
+		    				}
+		    				else{
+			    				if(!jpiType.getParameter(j).type().equals(parameterList.get(j))){
+			    					match = false;
+			    				}
+		    				}
+						}
+						if(match)
+							set = set.add(jpiType);
+					}
+				}
+			}
+		}
+		return set;
+	}
+
+	refine LookupJPIType eq BodyDecl.declaresJPIType(String name, java.util.List<TypeDecl> parameterList){
+		JoinpointTypeDecl member;
+		boolean match = true;
+		if (this instanceof MemberCJPTypeDecl){
+			member = ((MemberCJPTypeDecl)this).getJoinpointTypeDecl();
+			if (member.name().equals(name)){
+				if (member.getNumParameter() == parameterList.size()){
+					for(int i=0; i<member.getNumParameter(); i++){
+	    				if(member.getParameter(i).type().isTypeVariable() && parameterList.get(i).isTypeVariable()){
+	    					if(!((TypeVariable)member.getParameter(i).type()).getTypeBound(0).type().equals(((TypeVariable)parameterList.get(i)).getTypeBound(0).type())){
+	    						match = false;
+	    					}
+	    				}
+	    				else{
+		    				if(!member.getParameter(i).type().equals(parameterList.get(i))){
+		    					match = false;
+		    				}
+	    				}
+					}
+					return match;
+				}
+			}
+		}
+		return false; 	
+	}
+	
+	/*
+	* typechecking for CJPAdviceDecl
+	*/
+
+	refine TypeCheckCJP public void CJPAdviceDecl.doTypeChecking(JoinpointTypeDecl jpiDecl){
+		/***
+		 * 1) check that the type of SuperAccess is JPITypeDecl.
+		 * 2) check the arguments types.
+		 * 3) check the return types.
+		 * 4) check the exceptions.
+		 */		
+		AdviceSpec currentAdviceSpec = getAdviceSpec();	  
+		int paramNum = 0;
+		for(int i=0; i<currentAdviceSpec.getNumParameter(); i++){
+			ParameterDeclaration adviceParameter = currentAdviceSpec.getParameter(i);
+			if(!adviceParameter.isImplicit()) paramNum++;			
+		}		
+		
+		if (jpiDecl.getNumParameter() != paramNum){
+			error("TypeCheck: Advice declaration must have the same number of parameter as "+jpiDecl.getID());
+		} else {
+			ParameterDeclaration adviceParameter;
+			ParameterDeclaration jpiParameter;
+			for(int i=0; i<jpiDecl.getNumParameter(); i++){
+				adviceParameter = currentAdviceSpec.getParameter(i);
+				jpiParameter = jpiDecl.getParameter(i);
+				if(adviceParameter.type().isTypeVariable() && jpiParameter.type().isTypeVariable()){
+					if(!((TypeVariable)adviceParameter.type()).getTypeBound(0).type().equals(((TypeVariable)jpiParameter.type()).getTypeBound(0).type())){
+						error("TypeCheck: Parameter "+adviceParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+adviceParameter.type().name());						
+					}
+				}
+				else{
+					if(!adviceParameter.type().equals(jpiParameter.type())){
+						error("TypeCheck: Parameter "+adviceParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+adviceParameter.type().name());
+					}
+				}
+			}
+		}
+		
+		if (currentAdviceSpec.isAround()){
+			if(jpiDecl.getTypeAccess().type().isTypeVariable() && returnType().isTypeVariable()){
+				if(!((TypeVariable)jpiDecl.getTypeAccess().type()).getTypeBound(0).type().equals(((TypeVariable)returnType()).getTypeBound(0).type())){
+					error("TypeCheck: Advice return type: "+returnType().name()+" instead "+jpiDecl.getTypeAccess().type().name());
+				}				
+			}
+			else{
+				if (!jpiDecl.getTypeAccess().type().equals(returnType())){
+					error("TypeCheck: Advice return type: "+returnType().name()+" instead "+jpiDecl.getTypeAccess().type().name());
+				}			
+			}
+		}
+		
+		if (currentAdviceSpec.isAfterReturning()){
+			AfterReturningSpec r = (AfterReturningSpec) currentAdviceSpec;
+			if(r.hasReturnParameter()) {
+				TypeDecl jpiReturnType = jpiDecl.getTypeAccess().type();
+				TypeDecl adviceReturnType = r.getReturnParameter().getTypeAccess().type();
+				if(!jpiReturnType.castingConversionTo(adviceReturnType)) {
+					error("TypeCheck: jpi "+ jpiDecl.getID() + " returns type "+jpiReturnType.name()+
+					      " which is incompatible with advice return type "+adviceReturnType.name());
+				}
+			}
+			
+		}
+		
+		if(currentAdviceSpec.isAfterThrowing()) {
+			AfterThrowingSpec r = (AfterThrowingSpec) currentAdviceSpec;
+			if(r.hasExceptionParameter()) {
+				TypeDecl adviceSpecException = r.getExceptionParameter().getTypeAccess().type();
+	 	    	//note: the notion of checked and unchecked exceptions is apparently incorrectly reversed in JastAdd!!! 
+				if(!adviceSpecException.isCheckedException()) {
+					boolean found = false;
+			        for(Access ex: jpiDecl.getExceptions()) {
+			        	TypeDecl declared = ex.type();
+			    		if(declared.castingConversionTo(adviceSpecException)) {
+			    			found = true;
+		    				break;
+	    				}
+		    			if(!found)
+		    				error("TypeCheck: jpi "+ jpiDecl.getID() + " cannot throw checked exceptions of type "+adviceSpecException.name()); 
+			        }
+		        }
+			}
+		}		
+		
+		boolean foundError;
+		for(Access exceptionAccess: getExceptionList()){
+			foundError = false;
+			for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
+				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+					foundError = true;
+					break;
+				}
+			}
+			if (!foundError){
+				error("TypeCheck: Advice cannot throw exception of type "+exceptionAccess.type().name());
+			}
+		}  
+	}
+	
+	/*
+	* typecheck proceed
+	*/	
+
+	refine Advice public void Proceed.typeCheck(){
+		AroundSpec spec = aroundSpec();
+		if (spec == null)
+			error("Can only use proceed within around advice");
+		else if (spec.getNumAroundParameter() != getNumArg()) {
+			error("Proceed called with the wrong number of arguments");
+		} else {
+			if (spec instanceof GenericCJPAroundSpec){
+				for (int i = 0; i < getNumArg(); i++) {
+			    	TypeDecl exprType = getArg(i).type();
+			    	TypeDecl parmType = spec.getAroundParameter(i).type();
+			    	if (exprType.isTypeVariable() && parmType.isTypeVariable()){
+			    		if(!((TypeVariable)exprType).getTypeBound(0).type().equals(((TypeVariable)parmType).getTypeBound(0).type())){
+				        	error("Expression " + getArg(i) + " of type " + exprType.typeName()
+						        	+ " is not compatible with the proceed parameter type " +
+						        	parmType.typeName());			    			
+			    		}
+			    	}
+			    	else{
+			    		if (!exprType.isTypeVariable() && !parmType.isTypeVariable()){
+							if (!exprType.methodInvocationConversionTo(parmType)
+							        && !exprType.isUnknown() && !parmType.isUnknown())
+								{
+							    	error("Expression " + getArg(i) + " of type " + exprType.typeName()
+								+ " is not compatible with the proceed parameter type " +
+								parmType.typeName());
+								}			    			
+			    		}
+				    	else{
+					    	error("Expression " + getArg(i) + " of type " + exprType.typeName()
+									+ " is not compatible with the proceed parameter type " +
+									parmType.typeName());				    		
+				    	}
+			    		
+			    	}
+				}
+				
+			}
+			else{
+				for (int i = 0; i < getNumArg(); i++) {
+			    	TypeDecl exprType = getArg(i).type();
+			    	TypeDecl parmType = spec.getAroundParameter(i).type();		
+				    if (!exprType.methodInvocationConversionTo(parmType)
+				        && !exprType.isUnknown() && !parmType.isUnknown())
+			    	{
+			        	error("Expression " + getArg(i) + " of type " + exprType.typeName()
+			        	+ " is not compatible with the proceed parameter type " +
+			        	parmType.typeName());
+			    	}
+			  	}
+			}
+		}
+	}
+	
+	
+	refine TypeCheck public void VariableDeclaration.typeCheck() {
+	    if(hasInit()) {
+			TypeDecl source = getInit().type();
+			TypeDecl dest = type();    	
+	    	if (hostBodyDecl().isCJPAdviceDecl()){
+	    		AdviceSpec as = ((CJPAdviceDecl)hostBodyDecl()).getAdviceSpec();
+	    		if (as != null && as instanceof GenericCJPAroundSpec){
+	    			if (source.isTypeVariable() && dest.isTypeVariable()){
+	    				if(!((TypeVariable)source).getTypeBound(0).type().equals(((TypeVariable)dest).getTypeBound(0).type())){
+	        				error("can not assign " + name() + " of type " + dest.typeName() +
+	        	    				" a value of type " + source.typeName());    					
+	        				return;
+	    				}
+	    			}
+	    			else{
+	    				if (!source.isTypeVariable() && !dest.isTypeVariable()){
+	    	    			if(!source.assignConversionTo(dest, getInit()))
+	    	    				error("can not assign " + name() + " of type " + dest.typeName() +
+	    	    				" a value of type " + source.typeName());
+	    	    			return;    					
+	    				}
+	    				else{
+	        				error("can not assign " + name() + " of type " + dest.typeName() +
+	        	    				" a value of type " + source.typeName());
+	    					return;
+	    				}
+	    			}
+	    		}
+	    	}    	
+			if(!source.assignConversionTo(dest, getInit()))
+				error("can not assign " + name() + " of type " + dest.typeName() +
+				" a value of type " + source.typeName());
+	    }
+	}
+	
+	refine TypeCheck public void ReturnStmt.typeCheck() {		
+		boolean error = false;
+	    if(hasResult() && !returnType().isVoid()) {
+	      if(!getResult().type().assignConversionTo(returnType(), getResult())){
+	    	  error("return value must be an instance of " + returnType().typeName() + " which " + getResult().type().typeName() + " is not");
+	    	  error = true;
+	      }
+	    }
+	    // 8.4.5 8.8.5
+	    if(returnType().isVoid() && hasResult())
+	      error("return stmt may not have an expression in void methods");
+	    // 8.4.5
+	    if(!returnType().isVoid() && !hasResult())
+	      error("return stmt must have an expression in non void methods");
+	    if(enclosingBodyDecl() instanceof InstanceInitializer || enclosingBodyDecl() instanceof StaticInitializer)
+	      error("Initializers may not return");
+	      
+	    if (hostBodyDecl().isCJPAdviceDecl() && error==false){
+	    	TypeDecl from = getResult().type();
+	    	TypeDecl local = returnType();
+	    	if (from.isTypeVariable() && local.isTypeVariable()){
+	    		if(!((TypeVariable)from).getTypeBound(0).type().equals(((TypeVariable)local).getTypeBound(0).type())){
+	    	        error("return value must be an instance of " + returnType().typeName() + " which " + getResult().type().typeName() + " is not");    			
+	    		}
+	    	}
+	    	else{
+	    		if(!(!from.isTypeVariable() && !local.isTypeVariable())){
+	    	        error("return value must be an instance of " + returnType().typeName() + " which " + getResult().type().typeName() + " is not");    			
+	    		}
+	    	}
+	    }	
+	}
+	
+	
+	refine TypeCheck public void AssignSimpleExpr.typeCheck() {
+		boolean error = false;	  
+		if(!getDest().isVariable())
+			error("left hand side is not a variable");
+		else{
+			if(!sourceType().assignConversionTo(getDest().type(), getSource()) && !sourceType().isUnknown()){
+				error("can not assign " + getDest() + " of type " + getDest().type().typeName() +
+				" a value of type " + sourceType().typeName());
+  				error=true;
+			}
+		}
+		if (hostBodyDecl().isCJPAdviceDecl() && error==false){
+			TypeDecl from = sourceType();
+			TypeDecl local = getDest().type();
+			if (from.isTypeVariable() && local.isTypeVariable()){
+				if(!((TypeVariable)from).getTypeBound(0).type().equals(((TypeVariable)local).getTypeBound(0).type())){
+				      error("can not assign " + getDest() + " of type " + getDest().type().typeName() +
+					            " a value of type " + sourceType().typeName());
+				}
+			}
+			else{
+				if(!(!from.isTypeVariable() && !local.isTypeVariable())){
+				      error("can not assign " + getDest() + " of type " + getDest().type().typeName() +
+					            " a value of type " + sourceType().typeName());
+				}
+			}
+		}    
+	}
+	
+	refine TypeCheck public void CastExpr.typeCheck() {
+		boolean error = false;
+		TypeDecl expr = getExpr().type();
+		TypeDecl type = getTypeAccess().type();
+		if(!expr.isUnknown()) {
+		if(!expr.castingConversionTo(type))
+			error(expr.typeName() + " can not be cast into " + type.typeName());
+		if(!getTypeAccess().isTypeAccess())
+			error("" + getTypeAccess() + " is not a type access in cast expression");
+		}
+		if (hostBodyDecl().isCJPAdviceDecl() && error==false){
+			if (expr.isTypeVariable() && type.isTypeVariable()){
+				if(!((TypeVariable)expr).getTypeBound(0).type().equals(((TypeVariable)type).getTypeBound(0).type())){
+					error(expr.typeName() + " can not be cast into " + type.typeName());
+				}
+			}
+			else{
+				if(!(!expr.isTypeVariable() && !type.isTypeVariable())){
+					error(expr.typeName() + " can not be cast into " + type.typeName());
+				}
+			}    	
+		}
+	}
+}

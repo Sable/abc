@@ -7,3 +7,9 @@ ExhibitBodyDecl : BodyDecl ::= ReturnType:Access JPIName:Access Parameter:Parame
 DummyAccess : TypeAccess;
 
 JPITypeAccess : TypeAccess;
+
+GenericJPITypeDecl : JPITypeDecl ::= TypeVar:TypeVariable*;
+
+GenericExhibitBodyDecl : ExhibitBodyDecl ::= TypeVar:TypeVariable*;
+
+GenericCJPAroundSpec : CJPAroundSpec ::= TypeVar:TypeVariable*;
