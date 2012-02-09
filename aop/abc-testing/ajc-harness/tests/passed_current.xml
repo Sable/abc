@@ -6355,6 +6355,47 @@
         	<message line="12" kind="error"></message>			
 		</compile>
     </ajc-test>
+<ajc-test title="simplesyntax" num="1670" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="simplesyntax.java"></compile>
+    </ajc-test>
+<ajc-test title="typecheck generic jpi" num="1671" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericJPI.java">
+        	<message line="10" kind="error"></message>
+        	<message line="10" kind="error"></message>
+        	<message line="11" kind="error"></message>			
+        	<message line="11" kind="error"></message>
+        	<message line="12" kind="error"></message>
+        	<message line="18" kind="error"></message>
+        	<message line="19" kind="error"></message>
+        	<message line="21" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="typecheck generic exhibit" num="1672" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericExhibit.java"></compile>
+    </ajc-test>
+<ajc-test title="typecheck generic advice" num="1673" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdvice.java">
+        	<message line="10" kind="error"></message>
+        	<message line="11" kind="error"></message>
+        	<message line="16" kind="error"></message>
+        	<message line="21" kind="error"></message>
+        	<message line="25" kind="error"></message>
+        	<message line="25" kind="error"></message>
+        	<message line="26" kind="error"></message>
+        	<message line="30" kind="error"></message>
+        	<message line="31" kind="error"></message>
+        	<message line="35" kind="error"></message>
+        	<message line="36" kind="error"></message>
+        	<message line="37" kind="error"></message>
+        	<message line="39" kind="error"></message>			
+		</compile>
+    </ajc-test>
+<ajc-test title="matching" num="1674" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching.java">
+        	<message line="25" kind="warning"></message>
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
     </ajc-test>
