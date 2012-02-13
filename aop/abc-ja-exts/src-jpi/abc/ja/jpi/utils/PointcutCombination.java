@@ -8,26 +8,9 @@ import java.util.LinkedList;
 
 import polyglot.util.Position;
 
-import abc.ja.jpi.jrag.ASTNode;
-import abc.ja.jpi.jrag.Access;
-import abc.ja.jpi.jrag.Dot;
-import abc.ja.jpi.jrag.ParameterDeclaration;
-import abc.ja.jpi.jrag.TypeDecl;
-import abc.ja.jpi.jrag.CJPAdviceDecl;
-import abc.ja.jpi.jrag.ExhibitBodyDecl;
-import abc.ja.jpi.jrag.ExplicitTypeNamePattern;
-import abc.ja.jpi.jrag.JPITypeDecl;
-import abc.ja.jpi.jrag.TypeAccess;
-import abc.ja.jpi.jrag.VarAccess;
-import abc.weaving.aspectinfo.AndPointcut;
-import abc.weaving.aspectinfo.ClassnamePattern;
-import abc.weaving.aspectinfo.EmptyPointcut;
-import abc.weaving.aspectinfo.Formal;
-import abc.weaving.aspectinfo.LocalPointcutVars;
-import abc.weaving.aspectinfo.OrPointcut;
-import abc.weaving.aspectinfo.Pointcut;
-import abc.weaving.aspectinfo.Var;
-import abc.weaving.aspectinfo.Within;
+import abc.ja.jpi.jrag.*;
+import abc.weaving.aspectinfo.*;
+import abc.weaving.aspectinfo.MethodPattern;
 
 public class PointcutCombination {
 	
@@ -100,11 +83,12 @@ public class PointcutCombination {
 	 */
 	public static Collection<ExhibitBodyDecl> collectExhibitDecls(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls){
 		JPITypeDecl jpiType, jpiTypeTemp;
-		jpiType = (JPITypeDecl)currentAdvice.getName().type();
+		jpiType = (JPITypeDecl)((JPITypeAccess)currentAdvice.getName()).decl(currentAdvice.getAdviceSpec().getParameterTypeList());
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		for(ExhibitBodyDecl exhibitDecl : exhibitsDecls){
-			jpiTypeTemp = (JPITypeDecl)exhibitDecl.getJPIName().type();
-			if (jpiTypeTemp.isSubType(jpiType) || jpiTypeTemp.equals(jpiType)){
+			jpiTypeTemp = (JPITypeDecl)((JPITypeAccess)exhibitDecl.getJPIName()).decls(exhibitDecl.getParameterTypeList());
+			//TODO: check sub type semantics!
+			if (jpiTypeTemp.isSubType(jpiType) || (jpiTypeTemp == jpiType)){
 				set.add(exhibitDecl);
 			}
 		}
@@ -227,7 +211,25 @@ public class PointcutCombination {
 	 * @return
 	 */
 	public static Pointcut extractPointcuts(ExhibitBodyDecl exhibitDecl){
+		if (exhibitDecl instanceof GenericExhibitBodyDecl){
+			replaceTypeVariableForTypeBound(exhibitDecl.getPointcut(), exhibitDecl);
+		}
 		return exhibitDecl.getPointcut().pointcut();
+	}
+	
+	
+	public static void replaceTypeVariableForTypeBound(ASTNode<ASTNode> node, ExhibitBodyDecl exhibitDecl){
+		if (node instanceof SimpleNamePattern){
+			SimpleNamePattern pattern = (SimpleNamePattern)node;
+			SimpleSet set = ((GenericExhibitBodyDecl)exhibitDecl).localLookupType(pattern.getPattern());
+			if (!set.isEmpty()){
+				TypeAccess access = (TypeAccess)((TypeVariable)set.iterator().next()).getTypeBound(0);
+				pattern.setPattern(access.typeName());
+			}			
+		}
+		for(int i=0; i<node.getNumChild(); i++){
+			replaceTypeVariableForTypeBound(node.getChild(i), exhibitDecl);
+		}
 	}
 	
 	/***
