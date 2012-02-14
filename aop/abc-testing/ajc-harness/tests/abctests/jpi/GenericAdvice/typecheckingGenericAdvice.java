@@ -32,11 +32,13 @@ aspect A{
 	}	
 		
 	<L> L around JP2(L a){
-		a = null; //error
+		a = null; //ok
 		a = new Object(); //error
-		proceed(null); //error;
+		proceed(null); //ok;
 		L b = proceed(a); //ok
-		return proceed(null); //error 
+		L z = null; //ok
+		return null; //ok
+		//return proceed(null); //ok
 	}	
 }
 
