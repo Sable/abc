@@ -35,7 +35,7 @@ public class CJPAroundAdvice extends AroundAdvice {
 		jpiTypeDecl = jpiDecl;
 	}
 
-	private void reportWarning(ShadowMatch sm, AbstractAdviceDecl ad){
+	public void reportWarning(ShadowMatch sm, AbstractAdviceDecl ad){
 		for(ExhibitBodyDecl exhibitDecl : jpiTypeDecl.getExhibitDecls()){
 			abc.main.Main
 			.v()
@@ -79,7 +79,7 @@ public class CJPAroundAdvice extends AroundAdvice {
 		return AlwaysMatch.v();
 	}
 
-	private void checkTypes(Type shadowType, Type adviceType) {
+	public void checkTypes(Type shadowType, Type adviceType) {
 		Type objectType = Scene.v().getSootClass("java.lang.Object").getType();
 		if (adviceType.equals(objectType)) {
 			// object type advice can always be applied
@@ -110,15 +110,10 @@ public class CJPAroundAdvice extends AroundAdvice {
 				} else {
 					if (hier.canStoreType(adviceType, shadowType)) {
 
-					} else{
-						if (hier.canStoreType(shadowType, adviceType)){
-							
-						}
+					} 
 						else
 							throw new RuntimeException(
 							"Advice return type can't be converted");
-
-					}
 				}
 				if (Restructure.JavaTypeInfo.isForbiddenConversion(shadowType,
 						adviceType))
@@ -127,7 +122,7 @@ public class CJPAroundAdvice extends AroundAdvice {
 		}
 	}
 
-	private void reportError(ShadowMatch sm, Type shadowType, Type adviceType, RuntimeException e) {
+	public void reportError(ShadowMatch sm, Type shadowType, Type adviceType, RuntimeException e) {
 		for(ExhibitBodyDecl exhibitDecl : jpiTypeDecl.getExhibitDecls()){
 			abc.main.Main
 					.v()

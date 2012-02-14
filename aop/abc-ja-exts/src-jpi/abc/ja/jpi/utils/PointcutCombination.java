@@ -224,7 +224,10 @@ public class PointcutCombination {
 			SimpleSet set = ((GenericExhibitBodyDecl)exhibitDecl).localLookupType(pattern.getPattern());
 			if (!set.isEmpty()){
 				TypeAccess access = (TypeAccess)((TypeVariable)set.iterator().next()).getTypeBound(0);
-				pattern.setPattern(access.typeName());
+				int index = pattern.getParent().getIndexOfChild(pattern);
+				SubtypeNamePattern stnp = new SubtypeNamePattern(new ExplicitTypeNamePattern(access));
+				ASTNode parent = pattern.getParent();
+				parent.setChild(stnp, index);
 			}			
 		}
 		for(int i=0; i<node.getNumChild(); i++){

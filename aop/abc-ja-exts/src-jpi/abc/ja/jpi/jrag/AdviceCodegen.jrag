@@ -4,7 +4,9 @@ aspect AdviceCodegen{
   public abc.weaving.aspectinfo.AdviceSpec CJPAroundSpec.adviceSpec() {
     MethodCategory.register(proceedSig(), MethodCategory.PROCEED);
     AbcType return_type = AbcFactory.AbcType(returnType().getSootType());
-    return new abc.ja.jpi.weaving.CJPAroundAdvice(return_type, proceedSig(), pos(), (JPITypeDecl)((TypeAccess)getName()).type());  
+    return returnType().isTypeVariable() ?
+    	new abc.ja.jpi.weaving.GenericCJPAroundAdvice(return_type, proceedSig(), pos(), (JPITypeDecl)((TypeAccess)getName()).type()) : 
+    	new abc.ja.jpi.weaving.CJPAroundAdvice(return_type, proceedSig(), pos(), (JPITypeDecl)((TypeAccess)getName()).type());  
   }
 
   protected void CJPAdviceDecl.createAspectInfo() {

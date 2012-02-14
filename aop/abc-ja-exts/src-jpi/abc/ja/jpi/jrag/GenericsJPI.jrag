@@ -558,4 +558,28 @@ aspect GenericsJPI{
 			}    	
 		}
 	}
+	
+	/*
+	* Bugfix: hack to ExplicitTypeNamePattern --> call(Number+ *(..))
+	*/
+	refine PatternsCodegen eq ExplicitTypeNamePattern.matchesType(Type t) {
+		//bugfix: apparently the get confused with the difference
+		//        between isPrimitive and isPrimitiveType.
+        //boolean builtin_pat = getAccess().type().isPrimitive()
+        //                        || getAccess().type().isVoid();
+
+        boolean builtin_pat = getAccess().type().isPrimitiveType()
+                                || getAccess().type().isVoid();
+        boolean builtin_type = ! (t instanceof RefType);
+
+        if (builtin_pat && builtin_type) {
+            return getAccess().type().name().equals(t.toString())
+                    && getAccess().isTypeAccess();
+        }
+        if (builtin_pat || builtin_type) {
+            return false;
+        }
+        SootClass c = ((RefType) t).getSootClass();
+        return matchesType(c);
+    }
 }
