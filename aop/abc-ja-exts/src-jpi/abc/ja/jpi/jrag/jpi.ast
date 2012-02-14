@@ -12,4 +12,12 @@ GenericJPITypeDecl : JPITypeDecl ::= TypeVar:TypeVariable*;
 
 GenericExhibitBodyDecl : ExhibitBodyDecl ::= TypeVar:TypeVariable*;
 
+GenericCJPBeforeSpec : CJPBeforeSpec ::= TypeVar:TypeVariable*;
+
+GenericCJPAfterSpec : CJPAfterSpec ::= TypeVar:TypeVariable*;
+
+GenericCJPAfterReturningSpec : CJPAfterReturningSpec ::= TypeVar:TypeVariable*;
+
+GenericCJPAfterThrowingSpec : CJPAfterThrowingSpec ::= TypeVar:TypeVariable*;
+
 GenericCJPAroundSpec : CJPAroundSpec ::= TypeVar:TypeVariable*;

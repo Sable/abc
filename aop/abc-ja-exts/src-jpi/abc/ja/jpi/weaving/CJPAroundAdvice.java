@@ -110,9 +110,15 @@ public class CJPAroundAdvice extends AroundAdvice {
 				} else {
 					if (hier.canStoreType(adviceType, shadowType)) {
 
-					} else
-						throw new RuntimeException(
-								"Advice return type can't be converted");
+					} else{
+						if (hier.canStoreType(shadowType, adviceType)){
+							
+						}
+						else
+							throw new RuntimeException(
+							"Advice return type can't be converted");
+
+					}
 				}
 				if (Restructure.JavaTypeInfo.isForbiddenConversion(shadowType,
 						adviceType))

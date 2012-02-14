@@ -1,8 +1,28 @@
 aspect GenericsJPI{
 
-	//refine GenricTypeVariablesTypeAnalysis public void TypeVariable.typeCheck(){}
+
+	syn boolean AdviceSpec.isGeneric() = false;
 	
-	//refine GenericTypeVariables public void TypeVariable.nameCheck(){}
+	eq GenericCJPBeforeSpec.isGeneric() = true;
+	eq GenericCJPAfterSpec.isGeneric() = true;
+	eq GenericCJPAfterReturningSpec.isGeneric() = true;	
+	eq GenericCJPAfterThrowingSpec.isGeneric() = true;
+	eq GenericCJPAroundSpec.isGeneric() = true;
+	
+	interface GenericCJPAdviceSpec {
+ 		int getNumTypeVar();
+ 		TypeVariable getTypeVar(int i);
+ 	}
+
+	GenericCJPBeforeSpec implements GenericCJPAdviceSpec;
+	GenericCJPAfterSpec implements GenericCJPAdviceSpec;
+	GenericCJPAfterReturningSpec implements GenericCJPAdviceSpec;
+	GenericCJPAfterThrowingSpec implements GenericCJPAdviceSpec;
+	GenericCJPAroundSpec implements GenericCJPAdviceSpec;
+	
+	syn lazy GenericCJPAdviceSpec CJPAdviceDecl.getGenericCJPAdviceSpec(){
+		return (GenericCJPAdviceSpec)getAdviceSpec();
+	}
 	
 	inh SimpleSet GenericJPITypeDecl.lookupType(String name);
 	syn SimpleSet GenericJPITypeDecl.localLookupType(String name) {
@@ -27,8 +47,8 @@ aspect GenericsJPI{
 
 	inh SimpleSet CJPAdviceDecl.lookupType(String name);
 	syn SimpleSet CJPAdviceDecl.localLookupType(String name) {
-		if (getAdviceSpec() instanceof GenericCJPAroundSpec){
-			GenericCJPAroundSpec spec = (GenericCJPAroundSpec)getAdviceSpec(); 
+		if (getAdviceSpec().isGeneric()){
+			GenericCJPAdviceSpec spec = (GenericCJPAdviceSpec)getAdviceSpec(); 
 			for(int i = 0; i < spec.getNumTypeVar(); i++) {
 				if(spec.getTypeVar(i).name().equals(name))
 			    	return SimpleSet.emptySet.add(spec.getTypeVar(i));
@@ -39,7 +59,41 @@ aspect GenericsJPI{
 	eq CJPAdviceDecl.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
 	
 
+
+	inh SimpleSet GenericCJPBeforeSpec.lookupType(String name);
+	inh SimpleSet GenericCJPAfterSpec.lookupType(String name);
+	inh SimpleSet GenericCJPAfterReturningSpec.lookupType(String name);
+	inh SimpleSet GenericCJPAfterThrowingSpec.lookupType(String name);
 	inh SimpleSet GenericCJPAroundSpec.lookupType(String name);
+	
+	syn SimpleSet GenericCJPBeforeSpec.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	syn SimpleSet GenericCJPAfterSpec.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	syn SimpleSet GenericCJPAfterReturningSpec.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
+	syn SimpleSet GenericCJPAfterThrowingSpec.localLookupType(String name) {
+		for(int i = 0; i < getNumTypeVar(); i++) {
+			if(getTypeVar(i).name().equals(name))
+		    	return SimpleSet.emptySet.add(getTypeVar(i));
+		}
+		return SimpleSet.emptySet;
+  	}
 	syn SimpleSet GenericCJPAroundSpec.localLookupType(String name) {
 		for(int i = 0; i < getNumTypeVar(); i++) {
 			if(getTypeVar(i).name().equals(name))
@@ -47,8 +101,15 @@ aspect GenericsJPI{
 		}
 		return SimpleSet.emptySet;
   	}
+  	
+	eq GenericCJPBeforeSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	eq GenericCJPAfterSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	eq GenericCJPAfterReturningSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
+	eq GenericCJPAfterThrowingSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
 	eq GenericCJPAroundSpec.getChild().lookupType(String name) = localLookupType(name).isEmpty() ? lookupType(name) : localLookupType(name);
-	
+
+
+
 	public void GenericExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){
 	  	TypeVariable exhibitTypeVariable, jpiTypeVariable;
 	  	if (getReturnType().type().isTypeVariable() && jpiDecl.getTypeAccess().type().isTypeVariable()){
@@ -325,7 +386,7 @@ aspect GenericsJPI{
 		else if (spec.getNumAroundParameter() != getNumArg()) {
 			error("Proceed called with the wrong number of arguments");
 		} else {
-			if (spec instanceof GenericCJPAroundSpec){
+			if (spec.isGeneric()){
 				for (int i = 0; i < getNumArg(); i++) {
 			    	TypeDecl exprType = getArg(i).type();
 			    	TypeDecl parmType = spec.getAroundParameter(i).type();
@@ -347,11 +408,11 @@ aspect GenericsJPI{
 								}			    			
 			    		}
 				    	else{
-					    	error("Expression " + getArg(i) + " of type " + exprType.typeName()
-									+ " is not compatible with the proceed parameter type " +
-									parmType.typeName());				    		
+							if (!exprType.isNull())
+						    	error("Expression " + getArg(i) + " of type " + exprType.typeName()
+										+ " is not compatible with the proceed parameter type " +
+										parmType.typeName());				    		
 				    	}
-			    		
 			    	}
 				}
 				
@@ -379,7 +440,7 @@ aspect GenericsJPI{
 			TypeDecl dest = type();    	
 	    	if (hostBodyDecl().isCJPAdviceDecl()){
 	    		AdviceSpec as = ((CJPAdviceDecl)hostBodyDecl()).getAdviceSpec();
-	    		if (as != null && as instanceof GenericCJPAroundSpec){
+	    		if (as != null && as.isGeneric()){
 	    			if (source.isTypeVariable() && dest.isTypeVariable()){
 	    				if(!((TypeVariable)source).getTypeBound(0).type().equals(((TypeVariable)dest).getTypeBound(0).type())){
 	        				error("can not assign " + name() + " of type " + dest.typeName() +
@@ -395,9 +456,10 @@ aspect GenericsJPI{
 	    	    			return;    					
 	    				}
 	    				else{
-	        				error("can not assign " + name() + " of type " + dest.typeName() +
-	        	    				" a value of type " + source.typeName());
-	    					return;
+	    					if (!source.isNull())
+		        				error("can not assign " + name() + " of type " + dest.typeName() +
+		        	    				" a value of type " + source.typeName());
+		    					return;
 	    				}
 	    			}
 	    		}
@@ -435,7 +497,8 @@ aspect GenericsJPI{
 	    	}
 	    	else{
 	    		if(!(!from.isTypeVariable() && !local.isTypeVariable())){
-	    	        error("return value must be an instance of " + returnType().typeName() + " which " + getResult().type().typeName() + " is not");    			
+	    			if(!from.isNull())
+	    				error("return value must be an instance of " + returnType().typeName() + " which " + getResult().type().typeName() + " is not");    			
 	    		}
 	    	}
 	    }	
@@ -464,7 +527,8 @@ aspect GenericsJPI{
 			}
 			else{
 				if(!(!from.isTypeVariable() && !local.isTypeVariable())){
-				      error("can not assign " + getDest() + " of type " + getDest().type().typeName() +
+					if (!from.isNull())
+				    	error("can not assign " + getDest() + " of type " + getDest().type().typeName() +
 					            " a value of type " + sourceType().typeName());
 				}
 			}
