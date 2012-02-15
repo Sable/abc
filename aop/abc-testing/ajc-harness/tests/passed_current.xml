@@ -6384,16 +6384,23 @@
         	<message line="26" kind="error"></message>
         	<message line="30" kind="error"></message>
         	<message line="31" kind="error"></message>
-        	<message line="35" kind="error"></message>
         	<message line="36" kind="error"></message>
-        	<message line="37" kind="error"></message>
-        	<message line="39" kind="error"></message>			
 		</compile>
     </ajc-test>
 <ajc-test title="matching" num="1674" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="matching.java">
-        	<message line="25" kind="warning"></message>
-        </compile>
+        <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="Integer methods on bound type Integer" num="1675" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="IntegerMethods.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching type variables in pointcut expression" num="1676" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="TypeVariableInPointcutExpression.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="type check on Advice specifications" num="1678" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdviceSpec.java"></compile>
 		<run class="C"></run>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
