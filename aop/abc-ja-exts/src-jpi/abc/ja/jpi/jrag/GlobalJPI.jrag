@@ -1,0 +1,122 @@
+aspect GlobaJPI{
+
+	syn boolean JPITypeDecl.hasGlobalPointcut() = false;
+	eq GlobalJPITypeDecl.hasGlobalPointcut() = true;
+	eq GenericGlobalJPITypeDecl.hasGlobalPointcut() = true;
+	
+	syn PointcutExpr JPITypeDecl.getPointcut(){throw new InternalCompilerError("Trying to get a pointcut expression");}
+
+    eq GlobalJPITypeDecl.getPointcut().bindsInCurrentCflow(String name) =
+        getPointcut().binds(name) > 0;
+
+    eq GenericGlobalJPITypeDecl.getPointcut().bindsInCurrentCflow(String name) =
+        getPointcut().binds(name) > 0;
+
+	eq GlobalJPITypeDecl.getPointcut().nameType() = NameType.TYPE_NAME;
+
+	eq GenericGlobalJPITypeDecl.getPointcut().nameType() = NameType.TYPE_NAME;
+	
+	eq GlobalJPITypeDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;	
+	eq GlobalJPITypeDecl.getParameter(int index).isMethodParameter() = false;
+  	eq GlobalJPITypeDecl.getParameter(int index).isConstructorParameter() = false;
+  	eq GlobalJPITypeDecl.getParameter(int index).isExceptionHandlerParameter() = false;
+  	eq GlobalJPITypeDecl.getParameter(int index).isPointcutVariable() = true;
+
+	eq GenericGlobalJPITypeDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;	
+	eq GenericGlobalJPITypeDecl.getParameter(int index).isMethodParameter() = false;
+  	eq GenericGlobalJPITypeDecl.getParameter(int index).isConstructorParameter() = false;
+  	eq GenericGlobalJPITypeDecl.getParameter(int index).isExceptionHandlerParameter() = false;
+  	eq GenericGlobalJPITypeDecl.getParameter(int index).isPointcutVariable() = true;
+
+    syn SimpleSet GlobalJPITypeDecl.localLookupVariable(String name) {
+    	for(ParameterDeclaration formalParameter : getParameterList()){
+    		if(formalParameter.name().equals(name)){
+                return SimpleSet.emptySet.add(formalParameter);    			
+    		}
+    	}
+        return SimpleSet.emptySet;
+    }
+
+	eq GlobalJPITypeDecl.getPointcut().lookupVariable(String name){
+        return localLookupVariable(name);
+	}
+
+    syn SimpleSet GenericGlobalJPITypeDecl.localLookupVariable(String name) {
+    	for(ParameterDeclaration formalParameter : getParameterList()){
+    		if(formalParameter.name().equals(name)){
+                return SimpleSet.emptySet.add(formalParameter);    			
+    		}
+    	}
+        return SimpleSet.emptySet;
+    }
+
+	eq GenericGlobalJPITypeDecl.getPointcut().lookupVariable(String name){
+        return localLookupVariable(name);
+	}
+
+	public void GlobalJPITypeDecl.typeCheck(){
+		super.typeCheck();
+		for(ParameterDeclaration parameter: getParameterList()){
+			int bindings = getPointcut().binds(parameter.name());
+			if(bindings == 0){
+				error("TypeCheck: global jpi must bind its formal argument "+parameter.name());
+			}
+			else if(bindings > 1){
+				error("TypeCheck: global jpi binds formal argument "+parameter.name() + " multiple times.");
+			}
+		}
+		
+		PointcutExpr pe = getPointcut();
+		if (!pe.isInvPCD())
+			warning("TypeCheck: global jpi pointcut expression should not contain PCD such as Args, This, or Target.");			
+	}	
+	
+	public void GenericGlobalJPITypeDecl.typeCheck(){
+		super.typeCheck();
+		for(ParameterDeclaration parameter: getParameterList()){
+			int bindings = getPointcut().binds(parameter.name());
+			if(bindings == 0){
+				error("TypeCheck: generic global jpi must bind its formal argument "+parameter.name());
+			}
+			else if(bindings > 1){
+				error("TypeCheck: generic global jpi binds formal argument "+parameter.name() + " multiple times.");
+			}
+		}
+		
+		PointcutExpr pe = getPointcut();
+		if (!pe.isInvPCD())
+			warning("TypeCheck: generic global jpi pointcut expression should not contain PCD such as Args, This, or Target.");			
+	}
+	
+	refine CodeGen eq CJPPointcutExpr.pointcut(){
+		Pointcut pointcutSynthesized = CodeGen.CJPPointcutExpr.pointcut();
+		Pointcut globalPointcut, scopePointcut = null;
+		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();		
+		if (jpiTypeDecl.hasGlobalPointcut()){
+			globalPointcut = jpiTypeDecl.getPointcut().pointcut();
+			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope((CJPAdviceDecl)getCurrentAdvice(), getAllExhibitDecls(), false), pos());
+			pointcutSynthesized = OrPointcut.construct(AndPointcut.construct(globalPointcut, scopePointcut, pos()), pointcutSynthesized, pos());
+	  	}
+	  	return pointcutSynthesized;
+	}
+	
+	
+	syn lazy Pointcut SealedExpr.pointcut(){
+		return new abc.ja.jpi.weaving.JPIEmptyPointcut(pos());
+	}
+	
+	syn lazy boolean ExhibitBodyDecl.isSealing(){
+		return getPointcut().isSealing();
+	}
+	
+    syn lazy boolean PointcutExpr.isSealing() = false;
+    
+    eq BinaryPointcutExpr.isSealing(){
+    	return getLhs().isSealing() || getRhs().isSealing();
+    }
+    
+    eq SealedExpr.isSealing(){
+    	return true;
+    }
+		
+}

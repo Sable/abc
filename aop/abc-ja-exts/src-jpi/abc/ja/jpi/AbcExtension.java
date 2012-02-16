@@ -226,7 +226,8 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           //keywords for cjp extension
           lexer.addJavaKeyword("exhibit", new LexerAction_c(new Integer(Terminals.EXHIBIT)));
           lexer.addAspectJKeyword("exhibit", new LexerAction_c(new Integer(Terminals.EXHIBIT)));
-          lexer.addGlobalKeyword("jpi", new LexerAction_c(new Integer(Terminals.JPI)));
+          lexer.addGlobalKeyword("jpi", new LexerAction_c(new Integer(Terminals.JPI),
+        		  new Integer(lexer.pointcut_state())));
 
           //keywords for jpi extension
           lexer.addJavaKeyword("exhibits", new LexerAction_c(new Integer(Terminals.EXHIBITS),
@@ -237,6 +238,9 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           lexer.addPointcutKeyword("argsinv", new LexerAction_c(new Integer(Terminals.PC_ARGS_INV)));
           lexer.addPointcutKeyword("targetinv", new LexerAction_c(new Integer(Terminals.PC_TARGET_INV)));
           lexer.addPointcutKeyword("thisinv", new LexerAction_c(new Integer(Terminals.PC_THIS_INV)));
+          lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(Terminals.GLOBAL)));
+          lexer.addPointcutKeyword("sealed", new LexerAction_c(new Integer(Terminals.PC_SEALED)));          
+          
     }
 
     public CompileSequence createCompileSequence() {

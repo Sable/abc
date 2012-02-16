@@ -46,6 +46,20 @@ JPITypeDecl jpi_declaration =
 		a.getModifiers().addModifier("public");		
 		return new GenericJPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), i, l, c);
 	:}
+	|
+	GLOBAL JPI joinpointtype_declexpr.d COLON pointcut_expr.e SEMICOLON {:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");
+		return new GlobalJPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List(), e);
+	:}
+	|
+	LT type_parameter_list_1.c GLOBAL JPI joinpointtype_declexpr.d COLON pointcut_expr.e SEMICOLON {:
+		JoinpointTypeDecl a = d.getJoinpointTypeDecl();
+		a.getModifiers().addModifier("public");
+		return new GenericGlobalJPITypeDecl(a.getModifiers(), a.getID(), a.getBodyDecls(), a.getTypeAccess(), a.getParameters(), a.getExceptions(), new DummyAccess("","$RootJPI$"),new List(), c, e);
+	:}
+	
+		
   ;
   
 List parameter_list_inheritance =
@@ -93,6 +107,10 @@ PointcutExpr basic_pointcut_expr =
    | PC_ARGS_INV.x LPAREN type_id_star_list.a? RPAREN.y
        {: ParserTrace.parserTrace("ARGS pointcut");
           return new ArgsPointcutExpr(a, true);
+       :}
+   | PC_SEALED LPAREN RPAREN
+       {: ParserTrace.parserTrace("SEALED pointcut");
+          return new SealedExpr();
        :}
 ;
 

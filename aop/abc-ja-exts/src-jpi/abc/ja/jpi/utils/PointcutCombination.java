@@ -72,6 +72,26 @@ public class PointcutCombination {
 		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 	
+	public static Pointcut makeScope(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
+		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(currentAdvice, exhibitsDecls);
+		Pointcut pointcut=null, tempPointcut=null;
+		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {
+			if (exhibitDecl.isSealing()){
+				if(pointcut == null){
+					tempPointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden);
+					pointcut = (tempPointcut instanceof AndPointcut) ? ((AndPointcut)tempPointcut).getRightPointcut() : tempPointcut;
+				}
+				else{
+					tempPointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden);
+					tempPointcut = (tempPointcut instanceof AndPointcut) ? ((AndPointcut)tempPointcut).getRightPointcut() : tempPointcut;
+					pointcut = OrPointcut.construct(pointcut, tempPointcut, exhibitDecl.pos());
+				}
+			}
+		}
+		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
+	}
+	
+	
 
 	
 	/***

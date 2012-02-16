@@ -21,3 +21,9 @@ GenericCJPAfterReturningSpec : CJPAfterReturningSpec ::= TypeVar:TypeVariable*;
 GenericCJPAfterThrowingSpec : CJPAfterThrowingSpec ::= TypeVar:TypeVariable*;
 
 GenericCJPAroundSpec : CJPAroundSpec ::= TypeVar:TypeVariable*;
+
+GlobalJPITypeDecl : JPITypeDecl ::= Pointcut:PointcutExpr;
+
+GenericGlobalJPITypeDecl : GenericJPITypeDecl ::= Pointcut:PointcutExpr;
+
+SealedExpr : PointcutExpr;
