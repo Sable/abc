@@ -201,7 +201,9 @@
 	<ajc-test num="1606" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - Inheritance2">
         <compile files="InheritanceSyntax2.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line ="8" />	        
+        	<message kind="error" line ="8" />
+        	<message kind="error" line ="8" />
+        	<message kind="error" line ="8" />
 		</compile>
     </ajc-test> 	
 
@@ -643,6 +645,48 @@
 		<run class="C" />
     </ajc-test>  	
 	
+    <ajc-test num="1680" dir="abctests/jpi/GlobalJPI"
+        title="simple syntax">
+        <compile files="syntax.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="9" />
+        </compile>
+    </ajc-test>    
+
+    <ajc-test num="1681" dir="abctests/jpi/GlobalJPI"
+        title="generic syntax">
+        <compile files="syntax.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="9" />
+        </compile>
+    </ajc-test>	
+	
+    <ajc-test num="1682" dir="abctests/jpi/GlobalJPI"
+        title="typechecking">
+        <compile files="typechecking.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="11" />
+        	<message kind="error" line="13" />
+        	<message kind="error" line="25" />
+        	<message kind="error" line="29" />			
+        </compile>
+    </ajc-test>
+	
+    <ajc-test num="1683" dir="abctests/jpi/GlobalJPI"
+        title="matching">
+        <compile files="matching.java" options="-ext,abc.ja.jpi" />
+		<run class="C" />
+    </ajc-test>    
+
+    <ajc-test num="1684" dir="abctests/jpi/GlobalJPI"
+        title="matching_2">
+        <compile files="matching2.java" options="-ext,abc.ja.jpi" />
+		<run class="C" />
+    </ajc-test>    
+
+    <ajc-test num="1685" dir="abctests/jpi/GlobalJPI"
+        title="matching_3">
+        <compile files="matching3.java" options="-ext,abc.ja.jpi" />
+		<run class="C" />
+    </ajc-test>    		
+	
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
@@ -825,9 +869,9 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1900" dir="abctests/jpi/GenericAdvice"
+    <ajc-test num="1900" dir="abctests/jpi/GlobalJPI"
         title="test">
-        <compile files="typecheckingGenericAdviceSpec.java" options="-ext,abc.ja.jpi" />
+        <compile files="matching3.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    
 	    
