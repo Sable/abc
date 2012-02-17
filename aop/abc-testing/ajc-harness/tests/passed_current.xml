@@ -6067,7 +6067,9 @@
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
-        	<message line="8" kind="error"></message>	        
+        	<message line="8" kind="error"></message>
+        	<message line="8" kind="error"></message>
+        	<message line="8" kind="error"></message>
 		</compile>
     </ajc-test>
 <ajc-test title="JPI throw syntax" num="1607" dir="abctests/jpi/simplesyntax">
@@ -6401,6 +6403,36 @@
     </ajc-test>
 <ajc-test title="type check on Advice specifications" num="1678" dir="abctests/jpi/GenericAdvice">
         <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdviceSpec.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="simple syntax" num="1680" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="syntax.java">
+        	<message line="9" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="generic syntax" num="1681" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="syntax.java">
+        	<message line="9" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="typechecking" num="1682" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="typechecking.java">
+        	<message line="11" kind="error"></message>
+        	<message line="13" kind="error"></message>
+        	<message line="25" kind="error"></message>
+        	<message line="29" kind="error"></message>			
+        </compile>
+    </ajc-test>
+<ajc-test title="matching" num="1683" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_2" num="1684" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_3" num="1685" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
 		<run class="C"></run>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
