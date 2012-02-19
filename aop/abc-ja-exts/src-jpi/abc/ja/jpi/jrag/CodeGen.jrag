@@ -33,7 +33,7 @@ aspect CodeGen {
 		return abc.ja.jpi.weaving.DummyAspect.getDummyAspectSootClass();
 	}
 
-	private static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;	
+	protected static Collection<JPITypeDecl> JPITypeDecl.jpiWithoutAdvice = null;	
 	
 	public static void JPITypeDecl.reset(){
 		jpiWithoutAdvice = null;
@@ -46,63 +46,6 @@ aspect CodeGen {
 		return jpiWithoutAdvice;
 	}
 
-	private Pointcut JPITypeDecl.extractPointcuts(Collection<ExhibitBodyDecl> exhibitBodyDeclarations, Position pos) {
-		Iterator<ExhibitBodyDecl> exhibitIterator = exhibitBodyDeclarations.iterator();
-		return runExtractPointcuts(exhibitIterator,exhibitBodyDeclarations.size(),pos);
-	}
-  
-	private Pointcut JPITypeDecl.runExtractPointcuts(Iterator<ExhibitBodyDecl> exhibitIterator, int size, Position pos){
-		if (size == 1){
-			return makeExhibitBodyDeclPointcut(exhibitIterator, pos);
-	  	}
-	  	if (size == 2){
-		  	Pointcut left = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
-		 	Pointcut right = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
-		  	return OrPointcut.construct(left,right,pos);
-	  	}
-	  	Pointcut parent = makeExhibitBodyDeclPointcut(exhibitIterator, pos);
-	  	size = size - 1;
-	  	return OrPointcut.construct(parent, runExtractPointcuts(exhibitIterator,size,pos), pos);
-  	}
-  
-	private Pointcut JPITypeDecl.makeExhibitBodyDeclPointcut(Iterator<ExhibitBodyDecl> exhibitIterator, Position pos) {
-	  	Pointcut currentPointcut;
-	  	ExhibitBodyDecl tempExhibitBodyDecl = exhibitIterator.next();
-	  
-	  	Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
-	  	Hashtable/*<String,Abctype>*/ typeEnv=new Hashtable();
-	  
-	  	for(int i=0; i<getAdviceNumParameter(); i++){
-			Formal oldVar = tempExhibitBodyDecl.getParameter(i).formal();
-		  	renameEnv.put(oldVar.getName(),new Var(getAdviceParameter(i).name(), oldVar.getPosition()));
-		  	typeEnv.put(oldVar.getName(), oldVar.getType());
-	  	}
-	  	currentPointcut = tempExhibitBodyDecl.getPointcut().pointcut();
-	  	currentPointcut = currentPointcut.inline(renameEnv, typeEnv, null, 0);
-	  	return AndPointcut.construct(currentPointcut, 
-			  					   new Within(getPattern(tempExhibitBodyDecl.getHostType(), tempExhibitBodyDecl.getParent()), pos), pos);
-  	}
-
-	private ClassnamePattern JPITypeDecl.getPattern(TypeDecl hostType, ASTNode parentNode) {
-	  ExplicitTypeNamePattern pattern;
-	  String name = hostType.getID();
-	  String packageName = "";
-	  String[] path = hostType.fullName().split("\\.");
-	  for(int i=0;i<path.length-1;i++){
-		  if (packageName==""){
-			  packageName = path[i];
-		  }
-		  else{
-			  packageName = packageName + "." + path[i];
-		  }
-	  }
-	  TypeAccess hostAccess = new TypeAccess(packageName,name);
-	  pattern = new ExplicitTypeNamePattern(hostAccess);
-	  hostAccess.setParent(pattern);
-	  pattern.setParent(parentNode);	  	  
-	  return pattern.classnamePattern();
-  	} 
-
 	public int JPITypeDecl.getAdviceNumParameter(){
 	  	return adviceParameterList.getNumChild();
   	}
@@ -111,17 +54,19 @@ aspect CodeGen {
 	  	return adviceParameterList.getChild(i);
   	}
 
-  	private List<ParameterDeclaration> JPITypeDecl.adviceParameterList = null;
+  	protected List<ParameterDeclaration> JPITypeDecl.adviceParameterList = null;
   
   
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	public void JPITypeDecl.registerDummyAdviceDecl(){
-		ExhibitBodyDecl baseExhibit = getExhibitDecls().iterator().next();
-	  	adviceParameterList = baseExhibit.getParameterList();
-	  	Pointcut pointcut = extractPointcuts(getExhibitDecls(),pos());
-	  
+	  	adviceParameterList = getParameterList();
+	  	Pointcut pointcut = abc.ja.jpi.utils.PointcutCombination.synthesizedPointcutsFromJPIWithoutAdviceDecl(getExhibitDecls(), adviceParameterList, pos());
+	  	doRegisterDummyAdviceDecl(pointcut);
+	}
+  
+	public void JPITypeDecl.doRegisterDummyAdviceDecl(Pointcut pointcut){
 	  	Value returnValue = null;
-	  	TypeAccess returnType = (TypeAccess)baseExhibit.getReturnType();
+	  	TypeAccess returnType = (TypeAccess)getTypeAccess();
 	  	if(!returnType.type().isPrimitiveType()){
 			returnValue = soot.jimple.NullConstant.v();
 	  	}
@@ -152,13 +97,13 @@ aspect CodeGen {
 	  	//jimplify1phase2 adviceSpec
 	  	abc.ja.jpi.weaving.DummyAspect.getDummyAspectSootClass().addMethod(abc.ja.jpi.weaving.DummyAdvice.createProceedMethod(adviceParameterList));
 	  	abc.ja.jpi.weaving.DummyAdvice.jimplify2(adviceParameterList,returnType.type(),returnValue);
-	}
+	  
+  	}
 	
 
 
 	refine CodeGenCJP eq CJPPointcutExpr.pointcut() {
-	  Pointcut cjpPointcut = CodeGenCJP.CJPPointcutExpr.pointcut();
-	
+	  Pointcut cjpPointcut = CodeGenCJP.CJPPointcutExpr.pointcut();	
 	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
 	  JPITypeDecl jpiTypeDecl;
 	  
@@ -167,19 +112,22 @@ aspect CodeGen {
 	  }
 	  
 	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
-	  
-
-	  Pointcut pointcutPolymorphism, pointcutOverriden;
-	  CJPAdviceDecl currentAdvice = (CJPAdviceDecl)getCurrentAdvice();
-	  Collection<ExhibitBodyDecl> exhibitsDecls = getAllExhibitDecls();
-	  Collection<CJPAdviceDecl> cjpAdviceDecls = getCJPAdviceDecls();
-	  cjpAdviceDecls.remove(currentAdvice);
-	  pointcutPolymorphism = abc.ja.jpi.utils.PointcutCombination.combinePointcutsPolymorphism(currentAdvice, exhibitsDecls);
-
-	  //include pointcut to match on closure joinpoints	  
-	  pointcutPolymorphism =  OrPointcut.construct(cjpPointcut, pointcutPolymorphism, pos());
-	  
-	  pointcutOverriden = abc.ja.jpi.utils.PointcutCombination.combinePointcutsOverriden(currentAdvice, cjpAdviceDecls, exhibitsDecls);
-	  return AndPointcut.construct(pointcutPolymorphism, NotPointcut.construct(pointcutOverriden, pos()), pos());
+	  return synthesizedPointcut(jpiTypeDecl, cjpPointcut);
 	}
+	
+	public Pointcut CJPPointcutExpr.synthesizedPointcut(JPITypeDecl jpiTypeDecl, Pointcut cjpPointcut){
+		Pointcut pointcutPolymorphism, pointcutOverriden;
+		CJPAdviceDecl currentAdvice = (CJPAdviceDecl)getCurrentAdvice();
+  		Collection<ExhibitBodyDecl> exhibitsDecls = getAllExhibitDecls();
+  		Collection<CJPAdviceDecl> cjpAdviceDecls = getCJPAdviceDecls();
+  		cjpAdviceDecls.remove(currentAdvice);
+  		pointcutPolymorphism = abc.ja.jpi.utils.PointcutCombination.combinePointcutsPolymorphism(currentAdvice, exhibitsDecls);
+	
+		//include pointcut to match on closure joinpoints	  
+		pointcutPolymorphism =  OrPointcut.construct(cjpPointcut, pointcutPolymorphism, pos());
+	  
+	  	pointcutOverriden = abc.ja.jpi.utils.PointcutCombination.combinePointcutsOverriden(currentAdvice, cjpAdviceDecls, exhibitsDecls);
+	  	return AndPointcut.construct(pointcutPolymorphism, NotPointcut.construct(pointcutOverriden, pos()), pos());	
+	} 
+	
 }

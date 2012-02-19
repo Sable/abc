@@ -94,7 +94,7 @@ aspect GlobaJPI{
 		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();		
 		if (jpiTypeDecl.hasGlobalPointcut()){
 			globalPointcut = jpiTypeDecl.getPointcut().pointcut();
-			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope((CJPAdviceDecl)getCurrentAdvice(), getAllExhibitDecls(), false), pos());
+			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope(jpiTypeDecl, getAllExhibitDecls(), false), pos());
 			pointcutSynthesized = OrPointcut.construct(AndPointcut.construct(globalPointcut, scopePointcut, pos()), pointcutSynthesized, pos());
 	  	}
 	  	return pointcutSynthesized;
@@ -106,21 +106,8 @@ aspect GlobaJPI{
 	}
 	    
 	syn lazy Pointcut GlobalExpr.pointcut(){
-		//return new abc.ja.jpi.weaving.JPIEmptyPointcut(pos());
-		//return null;
 		ExhibitBodyDecl type = hostExhibitBodyDecl();
-		if (type==null){
-			error("boom!");
-		}
-		else{
-			if (type.bindGlobalJPI()){
-				return ((ExhibitBodyDecl)type).getPointcut().pointcut();
-			}
-			else {
-				error("boom!");
-			}
-		}
-		return null;
+		return ((JPITypeDecl)((JPITypeAccess)type.getJPIName()).decl(type.getParameterTypeList())).getPointcut().pointcut();
 	}
 
 	inh ExhibitBodyDecl GlobalExpr.hostExhibitBodyDecl();
@@ -129,6 +116,76 @@ aspect GlobaJPI{
 	eq ExhibitBodyDecl.getChild().hostExhibitBodyDecl(){
 		return this;
 	}
+	
+	/*
+	* register dummy advice decl to perform typechecking
+	*/
+	public void GlobalJPITypeDecl.jimplify1phase2() {
+		if (jpiWithoutAdvice.contains(this)){
+	  		registerDummyAdviceDecl();
+	  		jpiWithoutAdvice.remove(this);
+	  	}
+	}
 
-		
+	public void GenericGlobalJPITypeDecl.jimplify1phase2() {
+		if (jpiWithoutAdvice.contains(this)){
+	  		registerDummyAdviceDecl();
+	  		jpiWithoutAdvice.remove(this);
+	  	}
+	}
+	
+	public void GlobalJPITypeDecl.registerDummyAdviceDecl(){
+	  	adviceParameterList = getParameterList();
+	  	Pointcut synthesizedPointcut = abc.ja.jpi.utils.PointcutCombination.synthesizedPointcutsFromJPIWithoutAdviceDecl(getExhibitDecls(), adviceParameterList, pos());
+		Pointcut globalPointcut, scopePointcut = null;	
+		if (hasGlobalPointcut()){
+			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope(this, getAllExhibitDecls(), false), pos());
+			synthesizedPointcut = OrPointcut.construct(AndPointcut.construct(getPointcut().pointcut(), scopePointcut, pos()), synthesizedPointcut, pos());
+	  	}  	
+	  	doRegisterDummyAdviceDecl(synthesizedPointcut);
+	}  	
+
+	public void GenericGlobalJPITypeDecl.registerDummyAdviceDecl(){
+	  	adviceParameterList = getParameterList();
+	  	Pointcut synthesizedPointcut = abc.ja.jpi.utils.PointcutCombination.synthesizedPointcutsFromJPIWithoutAdviceDecl(getExhibitDecls(), adviceParameterList, pos());
+		Pointcut globalPointcut, scopePointcut = null;	
+		if (hasGlobalPointcut()){
+			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope(this, getAllExhibitDecls(), false), pos());
+			synthesizedPointcut = OrPointcut.construct(AndPointcut.construct(getPointcut().pointcut(), scopePointcut, pos()), synthesizedPointcut, pos());
+	  	}  	
+	  	doRegisterDummyAdviceDecl(synthesizedPointcut);
+	}  	
+
+
+	inh lazy Collection<ExhibitBodyDecl> JPITypeDecl.getAllExhibitDecls();	
+
+	public String JPITypeDecl.positionInfo() {
+      return "JPITypeDecl " + typeName()
+          +" ("+pos().file()
+          +", line "+pos().line()+")";
+  	}  
+	
+    syn lazy boolean PointcutExpr.hasGlobal() = false;
+    
+    eq BinaryPointcutExpr.hasGlobal(){
+    	return getLhs().hasGlobal() || getRhs().hasGlobal();
+    }
+    
+    eq GlobalExpr.hasGlobal(){
+    	return true;
+    }
+    
+    refine TypeCheck public void ExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){
+    	TypeCheck.ExhibitBodyDecl.doTypeChecking(jpiDecl);
+		if (getPointcut().hasGlobal() && !jpiDecl.hasGlobalPointcut())
+			error("TypeCheck: global() pointcut expression must be used in a exhibit clause which binds a global jpi definition.");			    	
+    }
+
+    refine GenericsJPI public void GenericExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){
+    	GenericsJPI.ExhibitBodyDecl.doTypeChecking(jpiDecl);
+		if (getPointcut().hasGlobal() && !jpiDecl.hasGlobalPointcut())
+			error("TypeCheck: global() pointcut expression must be used in a exhibit clause which binds a global jpi definition.");			    	
+    }
+    
+    
 }

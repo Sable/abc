@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import polyglot.util.Position;
@@ -59,7 +60,8 @@ public class PointcutCombination {
 	 * @return
 	 */
 	public static Pointcut combinePointcuts(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
-		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(currentAdvice, exhibitsDecls);
+		JPITypeDecl jpiType = (JPITypeDecl)((JPITypeAccess)currentAdvice.getName()).decl(currentAdvice.getAdviceSpec().getParameterTypeList());		
+		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(jpiType, exhibitsDecls);
 		Pointcut pointcut = null;
 		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {
 			if(pointcut == null){
@@ -72,8 +74,8 @@ public class PointcutCombination {
 		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 	
-	public static Pointcut makeScope(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
-		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(currentAdvice, exhibitsDecls);
+	public static Pointcut makeScope(JPITypeDecl jpiType, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
+		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(jpiType, exhibitsDecls);
 		Pointcut pointcut=null;
 		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {			
 			if(pointcut == null){
@@ -96,9 +98,8 @@ public class PointcutCombination {
 	 * @param exhibitsDecls
 	 * @return
 	 */
-	public static Collection<ExhibitBodyDecl> collectExhibitDecls(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls){
-		JPITypeDecl jpiType, jpiTypeTemp;
-		jpiType = (JPITypeDecl)((JPITypeAccess)currentAdvice.getName()).decl(currentAdvice.getAdviceSpec().getParameterTypeList());
+	public static Collection<ExhibitBodyDecl> collectExhibitDecls(JPITypeDecl jpiType, Collection<ExhibitBodyDecl> exhibitsDecls){
+		JPITypeDecl jpiTypeTemp;
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		for(ExhibitBodyDecl exhibitDecl : exhibitsDecls){
 			jpiTypeTemp = (JPITypeDecl)((JPITypeAccess)exhibitDecl.getJPIName()).decls(exhibitDecl.getParameterTypeList());
@@ -280,5 +281,45 @@ public class PointcutCombination {
 	  }
 	
 	
+	public static Pointcut synthesizedPointcutsFromJPIWithoutAdviceDecl(Collection<ExhibitBodyDecl> exhibitBodyDeclarations, List<ParameterDeclaration> adviceParameterList, Position pos) {
+		Iterator<ExhibitBodyDecl> exhibitIterator = exhibitBodyDeclarations.iterator();
+		if (exhibitBodyDeclarations.size() == 0){
+			return new EmptyPointcut(pos);
+		}
+		return runSynthesizedPointcutsFromJPIWithoutAdviceDecl(exhibitIterator,exhibitBodyDeclarations.size(),adviceParameterList,pos);
+	}
+
+	private static Pointcut runSynthesizedPointcutsFromJPIWithoutAdviceDecl(Iterator<ExhibitBodyDecl> exhibitIterator, int size, List<ParameterDeclaration> adviceParameterList, Position pos){
+		if (size == 1){
+			return makeExhibitBodyDeclPointcut(exhibitIterator, adviceParameterList, pos);
+	  	}
+	  	if (size == 2){
+		  	Pointcut left = makeExhibitBodyDeclPointcut(exhibitIterator, adviceParameterList, pos);
+		 	Pointcut right = makeExhibitBodyDeclPointcut(exhibitIterator, adviceParameterList, pos);
+		  	return OrPointcut.construct(left,right,pos);
+	  	}
+	  	Pointcut parent = makeExhibitBodyDeclPointcut(exhibitIterator, adviceParameterList, pos);
+	  	size = size - 1;
+	  	return OrPointcut.construct(parent, runSynthesizedPointcutsFromJPIWithoutAdviceDecl(exhibitIterator,size,adviceParameterList,pos), pos);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static Pointcut makeExhibitBodyDeclPointcut(Iterator<ExhibitBodyDecl> exhibitIterator, List<ParameterDeclaration> adviceParameterList, Position pos) {
+	  	Pointcut currentPointcut;
+	  	ExhibitBodyDecl tempExhibitBodyDecl = exhibitIterator.next();
+	  
+	  	Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
+	  	Hashtable/*<String,Abctype>*/ typeEnv=new Hashtable();
+	  
+	  	for(int i=0; i<adviceParameterList.getNumChild(); i++){
+			Formal oldVar = tempExhibitBodyDecl.getParameter(i).formal();
+		  	renameEnv.put(oldVar.getName(),new Var(adviceParameterList.getChild(i).name(), oldVar.getPosition()));
+		  	typeEnv.put(oldVar.getName(), oldVar.getType());
+	  	}
+	  	currentPointcut = tempExhibitBodyDecl.getPointcut().pointcut();
+	  	currentPointcut = currentPointcut.inline(renameEnv, typeEnv, null, 0);
+	  	return AndPointcut.construct(currentPointcut, 
+			  					   new Within(getPattern(tempExhibitBodyDecl.getHostType(), tempExhibitBodyDecl.getParent()), pos), pos);
+	}
 	
 }

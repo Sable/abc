@@ -138,6 +138,20 @@ public class CJPAroundAdvice extends AroundAdvice {
 			// Main.v().error_queue.enqueue(
 			// ErrorInfo.SEMANTIC_ERROR, s);
 		}
+		if (jpiTypeDecl.getExhibitDecls().size() == 0){
+			abc.main.Main
+			.v()
+			.getAbcExtension()
+			.reportError(
+					ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,
+							"Invalid application of around advice from "
+							+ jpiTypeDecl.positionInfo() + " : " + e.getMessage()
+							+ " (shadow type: " + shadowType
+							+ "; advice return type: " + adviceType + ")", 
+							sm.getContainer(), 
+							sm.getHost()));
+			
+		}
 	}
 
 }

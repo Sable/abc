@@ -7,7 +7,7 @@ aspect Exhibit{
 	eq MemberClassDecl.isMemberClassDecl() = true;
 		
 
-	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);	
+	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getExhibitDecls(JPITypeDecl jpiTypeDecl);
 	eq Program.getCompilationUnit().getExhibitDecls(JPITypeDecl jpiTypeDecl){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
@@ -34,7 +34,8 @@ aspect Exhibit{
 		return set;	
 	}	
 
-	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getAllExhibitDecls();
+
+	inh lazy Collection<ExhibitBodyDecl> CJPPointcutExpr.getAllExhibitDecls();	
 	eq Program.getCompilationUnit().getAllExhibitDecls(){
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		ClassDecl classDecl;
@@ -49,8 +50,7 @@ aspect Exhibit{
 			}
 		}
 		return set;	
-	}	
-
+	}
 
 	private void Program.collectExhibitDecls(List<BodyDecl> bodyDeclList, HashSet<ExhibitBodyDecl> set) {
 		for(BodyDecl bodyDecl : bodyDeclList){
