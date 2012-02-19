@@ -4,7 +4,7 @@ import org.aspectj.testing.Tester;
 global jpi int JP() : execution(int get*(..));
 
 class A{
-   exhibits int JP() : call(int NotAGetName(..));
+   exhibits int JP() : call(int NotAGetName(..)) || global();
 
    public static int NotAGetName(){  return 1;}
    
@@ -12,7 +12,7 @@ class A{
 }
 
 class B{
-   exhibits int JP() : sealed(); //false -->EmptyPointcut()
+   exhibits int JP();
 
    public static int getQuantity(){  return 1;}
 }

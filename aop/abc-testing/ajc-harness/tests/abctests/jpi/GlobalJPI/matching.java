@@ -8,7 +8,7 @@ class A{
 }
 
 class B{ 
-	<L> exhibits L JP() : sealed();	
+	<L> exhibits L JP();	
 	public static Float foo(){return null;} //this join point won't be selected.
 }
 

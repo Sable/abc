@@ -1,12 +1,16 @@
 import java.lang.*;
 import org.aspectj.testing.Tester;
 
-<R> global jpi R JP() : call(* *(..)); //(!)
-//(!) we can get stuck in an infinite regression if
-//the around advice defined below gets executed.
+<R> global jpi R JP() : call(* *(..));
 
-class A{ 
-	public static Integer foo(){return null;}
+class A{
+	
+	<M> exhibits M JP() : call(* NoFoo(..));
+	
+	public static Integer foo(){
+		B.foo(); 
+		return null;
+	}
 }
 
 class B{ 
@@ -31,11 +35,7 @@ public class C{
 
 aspect AS{
 	
-	<L> exhibits L JP() : sealed(); //(!!)
-	//(!!) We sealed the aspect to avoid
-	// infinite regression.  I think this is nicer
-	// than put !cflow(adviceexecution()) in the
-	// global jpi pointcut expression.
+	<L> exhibits L JP(); 
 	
 	<L> L around JP(){
 		System.out.println(thisJoinPoint.toString());
