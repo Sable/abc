@@ -89,7 +89,22 @@ ExhibitBodyDecl exhibit_declaration =
 	LT type_parameter_list_1.e EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN COLON pointcut_expr.d SEMICOLON {:
     	return new GenericExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, d, e); 
     :}
-    
+	|
+	EXHIBITS type.a name.b LPAREN formal_parameter_list.c? RPAREN SEMICOLON {: 
+    	return new ExhibitBodyDecl(a, b, c, new EmptyPointcutExpr()); 
+    :}
+    | 
+    LT type_parameter_list_1.e EXHIBITS type.a name.b LPAREN formal_parameter_list.c? RPAREN SEMICOLON {: 
+    	return new GenericExhibitBodyDecl(a, b, c, new EmptyPointcutExpr(), e); 
+    :}
+    |
+	EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN SEMICOLON {:
+    	return new ExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, new EmptyPointcutExpr()); 
+    :}
+    |
+	LT type_parameter_list_1.e EXHIBITS VOID name.b LPAREN formal_parameter_list.c? RPAREN SEMICOLON {:
+    	return new GenericExhibitBodyDecl(new PrimitiveTypeAccess("void"), b, c, new EmptyPointcutExpr(), e); 
+    :}
 ;
 
 /* add the possibility of declaring the invPCD to basic_pointcut_exrp */
@@ -108,10 +123,15 @@ PointcutExpr basic_pointcut_expr =
        {: ParserTrace.parserTrace("ARGS pointcut");
           return new ArgsPointcutExpr(a, true);
        :}
-   | PC_SEALED LPAREN RPAREN
-       {: ParserTrace.parserTrace("SEALED pointcut");
-          return new SealedExpr();
+//   | PC_SEALED LPAREN RPAREN
+//       {: ParserTrace.parserTrace("SEALED pointcut");
+//          return new SealedExpr();
+//       :}
+   | PC_GLOBAL LPAREN RPAREN
+       {: ParserTrace.parserTrace("GLOBAL pointcut");
+          return new GlobalExpr();
        :}
+       
 ;
 
 AdviceSpec cjp_advice_spec =

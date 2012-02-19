@@ -74,18 +74,13 @@ public class PointcutCombination {
 	
 	public static Pointcut makeScope(CJPAdviceDecl currentAdvice, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
 		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(currentAdvice, exhibitsDecls);
-		Pointcut pointcut=null, tempPointcut=null;
-		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {
-			if (exhibitDecl.isSealing()){
-				if(pointcut == null){
-					tempPointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden);
-					pointcut = (tempPointcut instanceof AndPointcut) ? ((AndPointcut)tempPointcut).getRightPointcut() : tempPointcut;
-				}
-				else{
-					tempPointcut = extractAndTransformPointcuts(currentAdvice,exhibitDecl, overriden);
-					tempPointcut = (tempPointcut instanceof AndPointcut) ? ((AndPointcut)tempPointcut).getRightPointcut() : tempPointcut;
-					pointcut = OrPointcut.construct(pointcut, tempPointcut, exhibitDecl.pos());
-				}
+		Pointcut pointcut=null;
+		for (ExhibitBodyDecl exhibitDecl : exhibitDecls) {			
+			if(pointcut == null){
+				pointcut = new Within(getPattern(exhibitDecl.getHostType(), exhibitDecl.getParent()), exhibitDecl.getPointcut().pos());
+			}
+			else{
+				pointcut = OrPointcut.construct(pointcut, new Within(getPattern(exhibitDecl.getHostType(), exhibitDecl.getParent()), exhibitDecl.getPointcut().pos()), exhibitDecl.getPointcut().pos());
 			}
 		}
 		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));

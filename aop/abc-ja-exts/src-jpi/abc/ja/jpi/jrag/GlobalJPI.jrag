@@ -100,23 +100,35 @@ aspect GlobaJPI{
 	  	return pointcutSynthesized;
 	}
 	
-	
-	syn lazy Pointcut SealedExpr.pointcut(){
-		return new abc.ja.jpi.weaving.JPIEmptyPointcut(pos());
+		
+	syn lazy boolean ExhibitBodyDecl.bindGlobalJPI(){
+		return ((JPITypeDecl)((JPITypeAccess)getJPIName()).decl(getParameterTypeList())).hasGlobalPointcut();
 	}
-	
-	syn lazy boolean ExhibitBodyDecl.isSealing(){
-		return getPointcut().isSealing();
+	    
+	syn lazy Pointcut GlobalExpr.pointcut(){
+		//return new abc.ja.jpi.weaving.JPIEmptyPointcut(pos());
+		//return null;
+		ExhibitBodyDecl type = hostExhibitBodyDecl();
+		if (type==null){
+			error("boom!");
+		}
+		else{
+			if (type.bindGlobalJPI()){
+				return ((ExhibitBodyDecl)type).getPointcut().pointcut();
+			}
+			else {
+				error("boom!");
+			}
+		}
+		return null;
 	}
-	
-    syn lazy boolean PointcutExpr.isSealing() = false;
-    
-    eq BinaryPointcutExpr.isSealing(){
-    	return getLhs().isSealing() || getRhs().isSealing();
-    }
-    
-    eq SealedExpr.isSealing(){
-    	return true;
-    }
+
+	inh ExhibitBodyDecl GlobalExpr.hostExhibitBodyDecl();
+	eq Program.getCompilationUnit().hostExhibitBodyDecl() = null;
+
+	eq ExhibitBodyDecl.getChild().hostExhibitBodyDecl(){
+		return this;
+	}
+
 		
 }

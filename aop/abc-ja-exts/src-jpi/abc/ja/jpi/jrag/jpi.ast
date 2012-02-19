@@ -26,4 +26,4 @@ GlobalJPITypeDecl : JPITypeDecl ::= Pointcut:PointcutExpr;
 
 GenericGlobalJPITypeDecl : GenericJPITypeDecl ::= Pointcut:PointcutExpr;
 
-SealedExpr : PointcutExpr;
+GlobalExpr : PointcutExpr;
