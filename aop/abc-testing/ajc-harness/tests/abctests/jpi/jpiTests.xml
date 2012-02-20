@@ -699,6 +699,10 @@
         <compile files="matching3.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    		
+
+    <ajc-test num="1688" dir="abctests/jpi/GlobalJPI" title="matching_4">
+        <compile files="matching4.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>   
 	
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
@@ -883,9 +887,7 @@
     </ajc-test>
 
     <ajc-test num="1900" dir="abctests/jpi/GlobalJPI" title="000">
-        <compile files="typechecking3.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="8"/>
-        </compile>
+        <compile files="matching4.java" options="-ext,abc.ja.jpi" />
     </ajc-test>    
 	    
 </suite>

@@ -11462,6 +11462,10 @@
 		<run class="C" />
     </ajc-test>    		
 	
+    <ajc-test num="1688" dir="abctests/jpi/GlobalJPI" title="matching_4">
+        <compile files="matching4.java" options="-ext,abc.ja.jpi" />
+    </ajc-test> 
+	
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
         <compile files="ShoppingSession.java" options="-ext,abc.ja.jpi"/>
