@@ -107,7 +107,16 @@ aspect GlobaJPI{
 	    
 	syn lazy Pointcut GlobalExpr.pointcut(){
 		ExhibitBodyDecl type = hostExhibitBodyDecl();
-		return ((JPITypeDecl)((JPITypeAccess)type.getJPIName()).decl(type.getParameterTypeList())).getPointcut().pointcut();
+		JPITypeDecl jpiDecl = ((JPITypeDecl)((JPITypeAccess)type.getJPIName()).decl(type.getParameterTypeList()));
+		PointcutExpr pc = null;
+		try {
+			pc = jpiDecl.getPointcut().clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		abc.ja.jpi.utils.PointcutCombination.replaceTypeVariableForTypeBound(pc, jpiDecl);
+		return pc.pointcut();
 	}
 
 	inh ExhibitBodyDecl GlobalExpr.hostExhibitBodyDecl();

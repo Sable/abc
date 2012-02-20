@@ -321,5 +321,23 @@ public class PointcutCombination {
 	  	return AndPointcut.construct(currentPointcut, 
 			  					   new Within(getPattern(tempExhibitBodyDecl.getHostType(), tempExhibitBodyDecl.getParent()), pos), pos);
 	}
+
+	
+	public static void replaceTypeVariableForTypeBound(ASTNode<ASTNode> node, JPITypeDecl jpiDecl){
+		if (node instanceof SimpleNamePattern){
+			SimpleNamePattern pattern = (SimpleNamePattern)node;
+			SimpleSet set = ((GenericGlobalJPITypeDecl)jpiDecl).localLookupType(pattern.getPattern());
+			if (!set.isEmpty()){
+				TypeAccess access = (TypeAccess)((TypeVariable)set.iterator().next()).getTypeBound(0);
+				int index = pattern.getParent().getIndexOfChild(pattern);
+				SubtypeNamePattern stnp = new SubtypeNamePattern(new ExplicitTypeNamePattern(access));
+				ASTNode parent = pattern.getParent();
+				parent.setChild(stnp, index);
+			}			
+		}
+		for(int i=0; i<node.getNumChild(); i++){
+			replaceTypeVariableForTypeBound(node.getChild(i), jpiDecl);
+		}
+	}
 	
 }
