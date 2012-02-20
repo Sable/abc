@@ -6423,15 +6423,26 @@
         	<message line="29" kind="error"></message>			
         </compile>
     </ajc-test>
-<ajc-test title="matching" num="1683" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="typechecking around advice" num="1683" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="typechecking2.java">
+	        <message line="12" kind="error"></message>
+	        <message line="20" kind="error"></message>        	
+        </compile>
+    </ajc-test>
+<ajc-test title="tychecking global PCD" num="1684" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="typechecking3.java">
+	        <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="matching" num="1685" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_2" num="1684" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching_2" num="1686" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_3" num="1685" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching_3" num="1687" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
 		<run class="C"></run>
     </ajc-test>
