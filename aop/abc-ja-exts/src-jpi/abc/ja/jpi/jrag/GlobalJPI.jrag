@@ -115,7 +115,8 @@ aspect GlobaJPI{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		abc.ja.jpi.utils.PointcutCombination.replaceTypeVariableForTypeBound(pc, jpiDecl);
+		if (jpiDecl instanceof GenericGlobalJPITypeDecl)
+			abc.ja.jpi.utils.PointcutCombination.replaceTypeVariableForTypeBound(pc, jpiDecl);
 		return pc.pointcut();
 	}
 
