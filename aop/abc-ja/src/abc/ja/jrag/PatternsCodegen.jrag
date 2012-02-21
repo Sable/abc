@@ -578,7 +578,7 @@ aspect PatternsCodegen
         return matchesType(c);
     }
     eq ExplicitTypeNamePattern.matchesType(Type t) {
-        boolean builtin_pat = getAccess().type().isPrimitive()
+        boolean builtin_pat = getAccess().type().isPrimitiveType()
                                 || getAccess().type().isVoid();
         boolean builtin_type = ! (t instanceof RefType);
 
