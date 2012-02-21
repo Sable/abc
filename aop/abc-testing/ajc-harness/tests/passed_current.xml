@@ -6438,13 +6438,12 @@
         <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_2" num="1686" dir="abctests/jpi/GlobalJPI">
-        <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
-		<run class="C"></run>
-    </ajc-test>
 <ajc-test title="matching_3" num="1687" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
 		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_4" num="1688" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching4.java"></compile>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
