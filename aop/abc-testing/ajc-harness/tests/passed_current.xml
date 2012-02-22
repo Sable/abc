@@ -6438,6 +6438,10 @@
         <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
 		<run class="C"></run>
     </ajc-test>
+<ajc-test title="matching_2" num="1686" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="matching_3" num="1687" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
 		<run class="C"></run>
