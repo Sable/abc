@@ -11364,7 +11364,9 @@
 
     <ajc-test num="1672" dir="abctests/jpi/GenericAdvice"
         title="typecheck generic exhibit">
-        <compile files="typecheckingGenericExhibit.java" options="-ext,abc.ja.jpi" />
+        <compile files="typecheckingGenericExhibit.java" options="-ext,abc.ja.jpi" >
+        	<message kind="warning" line="11" />        	
+        </compile>
     </ajc-test> 
 	
     <ajc-test num="1673" dir="abctests/jpi/GenericAdvice"
@@ -11385,25 +11387,44 @@
 
     <ajc-test num="1674" dir="abctests/jpi/GenericAdvice"
         title="matching">
-        <compile files="matching.java" options="-ext,abc.ja.jpi" />
+        <compile files="matching.java" options="-ext,abc.ja.jpi" >
+        	<message kind="warning" line="33" />        	
+        </compile>
 		<run class="C" />
-    </ajc-test>  
+    </ajc-test> 
+
+    <ajc-test num="1675" dir="abctests/jpi/GenericAdvice" title="matching 2">
+        <compile files="matching_2.java" options="-ext,abc.ja.jpi">
+        	<message kind="warning" line="20" />
+        	<message kind="warning" line="20" />
+        	<message kind="warning" line="20" />
+        	<message kind="warning" line="21" />
+        	<message kind="warning" line="22" />
+        	<message kind="warning" line="23" />			
+        </compile>
+    </ajc-test> 
 	
-    <ajc-test num="1675" dir="abctests/jpi/GenericAdvice"
+    <ajc-test num="1676" dir="abctests/jpi/GenericAdvice"
         title="Integer methods on bound type Integer">
-        <compile files="IntegerMethods.java" options="-ext,abc.ja.jpi" />
+        <compile files="IntegerMethods.java" options="-ext,abc.ja.jpi">
+        	<message kind="warning" line="16" />        	
+        </compile>
 		<run class="C" />
     </ajc-test>
 
-    <ajc-test num="1676" dir="abctests/jpi/GenericAdvice"
+    <ajc-test num="1677" dir="abctests/jpi/GenericAdvice"
         title="matching type variables in pointcut expression">
-        <compile files="TypeVariableInPointcutExpression.java" options="-ext,abc.ja.jpi" />
+        <compile files="TypeVariableInPointcutExpression.java" options="-ext,abc.ja.jpi">
+        	<message kind="warning" line="16" />        	
+        </compile>		
 		<run class="C" />
     </ajc-test>
 	
     <ajc-test num="1678" dir="abctests/jpi/GenericAdvice"
         title="type check on Advice specifications">
-        <compile files="typecheckingGenericAdviceSpec.java" options="-ext,abc.ja.jpi" />
+        <compile files="typecheckingGenericAdviceSpec.java" options="-ext,abc.ja.jpi">
+        	<message kind="warning" line="31" />        	
+        </compile>
 		<run class="C" />
     </ajc-test>  	
 	
@@ -11461,10 +11482,16 @@
         <compile files="matching3.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    		
-	
+
     <ajc-test num="1688" dir="abctests/jpi/GlobalJPI" title="matching_4">
         <compile files="matching4.java" options="-ext,abc.ja.jpi" />
-    </ajc-test> 
+    </ajc-test>   
+
+    <ajc-test num="1689" dir="abctests/jpi/GlobalJPI" title="matching_5">
+        <compile files="matching5.java" options="-ext,abc.ja.jpi">
+        	<message kind="error" line="16" />				
+        </compile>
+    </ajc-test>  
 	
     <ajc-test num="1700" dir="abctests/cjp/shopping"
         title="Shopping Session Example">
