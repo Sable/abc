@@ -19,3 +19,6 @@ class M{}
 <L> jpi L JP2(L b); //error
 <I extends Integer> jpi I JP2(I m);
 <I> jpi I JP2(I o); //error
+
+<E extends Exception> jpi void JP3() throws E;
+<E> jpi void JP3(E e) throws E;

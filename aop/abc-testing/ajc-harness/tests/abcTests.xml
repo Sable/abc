@@ -11359,8 +11359,9 @@
         	<message kind="error" line="18"/>
         	<message kind="error" line="19"/>
         	<message kind="error" line="21"/>
+        	<message kind="error" line="24"/>
         </compile>
-    </ajc-test>    	
+    </ajc-test>   	
 
     <ajc-test num="1672" dir="abctests/jpi/GenericAdvice"
         title="typecheck generic exhibit">
