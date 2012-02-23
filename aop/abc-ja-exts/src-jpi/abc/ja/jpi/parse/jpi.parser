@@ -111,22 +111,18 @@ ExhibitBodyDecl exhibit_declaration =
 PointcutExpr basic_pointcut_expr =
    // following two rules, ajc only allows * or a fully-defined type/id
    | PC_THIS_INV.x LPAREN type_id_star.a RPAREN.y 
-       {: ParserTrace.parserTrace("THIS pointcut");
-          return new ThisPointcutExpr(a, true);
+       {: ParserTrace.parserTrace("THISINV pointcut");
+          return new ThisInvPointcutExpr(a);
        :}
    | PC_TARGET_INV.x LPAREN type_id_star.a RPAREN.y 
-       {: ParserTrace.parserTrace("TARGET pointcut");
-          return new TargetPointcutExpr(a, true);
+       {: ParserTrace.parserTrace("TARGETINV pointcut");
+          return new TargetInvPointcutExpr(a);
        :}
    // for args, ajc only allows each arg to be * .. or fully-defined type/id
    | PC_ARGS_INV.x LPAREN type_id_star_list.a? RPAREN.y
-       {: ParserTrace.parserTrace("ARGS pointcut");
-          return new ArgsPointcutExpr(a, true);
+       {: ParserTrace.parserTrace("ARGSINV pointcut");
+          return new ArgsInvPointcutExpr(a);
        :}
-//   | PC_SEALED LPAREN RPAREN
-//       {: ParserTrace.parserTrace("SEALED pointcut");
-//          return new SealedExpr();
-//       :}
    | PC_GLOBAL LPAREN RPAREN
        {: ParserTrace.parserTrace("GLOBAL pointcut");
           return new GlobalExpr();

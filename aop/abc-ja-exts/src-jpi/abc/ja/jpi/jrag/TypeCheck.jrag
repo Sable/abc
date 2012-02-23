@@ -82,16 +82,18 @@ aspect TypeCheck{
 		
 		jpiDecl = (JPITypeDecl) ((JPITypeAccess)jpiAccess).decl(this.getParameterTypeList());
 		doTypeChecking(jpiDecl);
-		for(ParameterDeclaration parameter: getParameterList()){
-			int bindings = getPointcut().binds(parameter.name());
-			if(bindings == 0){
-				error("TypeCheck: Exhibit must bind its formal argument "+parameter.name());
+
+		if (!(getPointcut() instanceof GlobalExpr)){
+			for(ParameterDeclaration parameter: getParameterList()){
+				int bindings = getPointcut().binds(parameter.name());
+				if(bindings == 0){
+					error("TypeCheck: Exhibits must bind its formal argument "+parameter.name());
+				}
+				else if(bindings > 1){
+					error("TypeCheck: Exhibits binds formal argument "+parameter.name() + " multiple times.");
+				}
 			}
-			else if(bindings > 1){
-				error("TypeCheck: Exhibit binds formal argument "+parameter.name() + " multiple times.");
-			}
-		}
-		
+		}			
 		PointcutExpr pe = getPointcut();
 		if (!pe.isInvPCD())
 			warning("TypeCheck: Exhibit pointcut expression should not contain PCD such as Args, This, or Target.");			
@@ -115,7 +117,7 @@ aspect TypeCheck{
 					error("TypeCheck: Exhibit parameter "+exhibitParameter.getID()+" must be the type of "+jpiParameter.type().name()+" instead "+exhibitParameter.type().name());
 				}
 			}
-		}
+		}	
 	}
 	
 	refine TypeCheckCJP public void CJPAdviceDecl.typeCheck() {

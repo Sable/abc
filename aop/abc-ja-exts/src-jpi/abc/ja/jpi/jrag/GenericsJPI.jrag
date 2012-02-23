@@ -558,4 +558,196 @@ aspect GenericsJPI{
 			}    	
 		}
 	}
+	
+	refine InvPCD public Pointcut ArgsInvPointcutExpr.pointcut(){
+		java.util.List arg_patterns = new ArrayList();        
+        for(int i = 0; i < getNumPattern(); i++){
+        	ArgPattern ap = getPattern(i).argPattern();
+        	if(ap instanceof ArgVar){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).type().isTypeVariable()){
+							ap = new abc.ja.jpi.weaving.ArgVarInv(((ArgVar) ap).getVar(), ap.getPosition());        				}
+	    				else{
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the type variable.");
+	    				}    				        				
+        			}
+        		}
+        		else{
+        			ap = new abc.ja.jpi.weaving.ArgVarInv(((ArgVar) ap).getVar(), ap.getPosition());
+        		}
+        	}
+        	if(ap instanceof ArgType){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).getAccess().type().isTypeVariable()){
+                			ap = new abc.ja.jpi.weaving.ArgTypeInv(((ArgType) ap).getType(), ap.getPosition());        					
+        				}
+	    				else{
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the type variable.");
+	    				}        				
+        			}
+        		}
+        		else{
+        			ap = new abc.ja.jpi.weaving.ArgTypeInv(((ArgType) ap).getType(), ap.getPosition());
+        		}
+        	}
+        	arg_patterns.add(ap);
+		}
+        return new abc.ja.jpi.weaving.ArgsInv(arg_patterns, pos());
+    }
+    
+    refine InvPCD public Pointcut ThisInvPointcutExpr.pointcut(){
+		Pointcut pc = getPattern().thisPointcut();
+		if (pc instanceof ThisVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isTypeVariable()){
+    					return new abc.ja.jpi.weaving.ThisVarInv(((ThisVar) pc).getVar(),pc.getPosition());		    				
+    				}
+    				else{
+    					warning("this pointcut will be treated as an this pointcut due to the type variable.");
+    				}
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isTypeVariable()){
+    					return new abc.ja.jpi.weaving.ThisTypeInv(((ThisType) pc).getType(),pc.getPosition());
+    				}
+    				else{
+    					warning("this pointcut will be treated as an this pointcut due to the type variable.");    					
+    				}
+    			}
+    		}
+		}
+		return pc;
+    }
+    
+    refine InvPCD public Pointcut TargetInvPointcutExpr.pointcut(){
+		Pointcut pc = getPattern().targetPointcut();
+		if (pc instanceof TargetVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isTypeVariable()){
+    					return new abc.ja.jpi.weaving.TargetVarInv(((TargetVar) pc).getVar(),pc.getPosition());
+    				}
+    				else{
+    					warning("targetinv pointcut will be treated as an target pointcut due to the type variable.");
+    				}    				
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(!((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isTypeVariable()){
+    					return new abc.ja.jpi.weaving.TargetTypeInv(((TargetType) pc).getType(),pc.getPosition());
+    				}
+    				else{
+    					warning("targetinv pointcut will be treated as an target pointcut due to the type variable.");
+    				}    				
+    			}
+    		}
+		}
+		return pc;
+    }
+
+    public void PointcutExpr.checkTypeVarInvPCD(){
+    }
+    
+    public void BinaryPointcutExpr.checkTypeVarInvPCD(){
+    	getLhs().checkTypeVarInvPCD();
+    	getRhs().checkTypeVarInvPCD();
+    }
+    
+    public void ArgsInvPointcutExpr.checkTypeVarInvPCD(){
+		java.util.List arg_patterns = new ArrayList();        
+        for(int i = 0; i < getNumPattern(); i++){
+        	ArgPattern ap = getPattern(i).argPattern();
+        	if(ap instanceof ArgVar){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).type().isTypeVariable()){
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the type variable.");
+	    				}    				        				
+        			}
+        		}
+        	}
+        	if(ap instanceof ArgType){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).getAccess().type().isTypeVariable()){
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the type variable.");
+	    				}        				
+        			}
+        		}
+        	}
+		}
+    }
+    
+    public void ThisInvPointcutExpr.checkTypeVarInvPCD(){
+		Pointcut pc = getPattern().thisPointcut();
+		if (pc instanceof ThisVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isTypeVariable()){
+    					warning("thisinv pointcut will be treated as an this pointcut due to the type variable.");
+    				}
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isTypeVariable()){
+    					warning("thisinv pointcut will be treated as an this pointcut due to the type variable.");    					
+    				}
+    			}
+    		}
+		}
+    }
+    
+    public void TargetInvPointcutExpr.checkTypeVarInvPCD(){
+		Pointcut pc = getPattern().targetPointcut();
+		if (pc instanceof TargetVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isTypeVariable()){
+    					warning("targetinv pointcut will be treated as an target pointcut due to the type variable.");
+    				}    				
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isTypeVariable()){
+    					warning("targetinv pointcut will be treated as an target pointcut due to the type variable.");
+    				}    				
+    			}
+    		}
+		}
+    }
+    
+    refine TypeCheck public void ExhibitBodyDecl.typeCheck(){
+    	TypeCheck.JPITypeDecl.typeCheck();
+		PointcutExpr pe = getPointcut();    	
+	    pe.checkTypeVarInvPCD();
+    }
+    
+    refine GlobalJPI public void GlobalJPITypeDecl.typeCheck(){
+    	GlobalJPI.GlobalJPITypeDecl.typeCheck();
+		PointcutExpr pe = getPointcut();
+		pe.checkTypeVarInvPCD();
+    }
+    
+    refine GlobalJPI public void GenericGlobalJPITypeDecl.typeCheck(){
+    	GlobalJPI.GenericJPITypeDecl.typeCheck();
+		PointcutExpr pe = getPointcut();
+		pe.checkTypeVarInvPCD();
+    }
+    
 }

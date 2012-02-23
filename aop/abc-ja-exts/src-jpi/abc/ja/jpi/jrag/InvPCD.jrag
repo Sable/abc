@@ -1,66 +1,34 @@
 aspect InvPCD{
 
-	public boolean ArgsPointcutExpr.invariant = false;
-	public boolean ThisPointcutExpr.invariant = false;
-	public boolean TargetPointcutExpr.invariant = false;
-
-	public ArgsPointcutExpr.ArgsPointcutExpr(List<BindingPattern> p0, boolean invariant) {
-    	setChild(p0, 0);
-    	this.invariant = invariant;
-    }
-
-	public ThisPointcutExpr.ThisPointcutExpr(BindingPattern p0, boolean invariant) {
-    	setChild(p0, 0);
-    	this.invariant = invariant;
-    }
-
-	public TargetPointcutExpr.TargetPointcutExpr(BindingPattern p0, boolean invariant) {
-    	setChild(p0, 0);
-    	this.invariant = invariant;
-    }
-
-    
-	refine PointcutsCodegen public Pointcut ArgsPointcutExpr.pointcut(){
+	public Pointcut ArgsInvPointcutExpr.pointcut(){
 		java.util.List arg_patterns = new ArrayList();        
-        if (this.invariant){
-	        for(int i = 0; i < getNumPattern(); i++){
-	        	ArgPattern ap = getPattern(i).argPattern();
-	        	if(ap instanceof ArgVar){
-	        		ap = new abc.ja.jpi.weaving.ArgVarInv(((ArgVar) ap).getVar(), ap.getPosition());
-	        	}
-	        	if(ap instanceof ArgType){
-	        		ap = new abc.ja.jpi.weaving.ArgTypeInv(((ArgType) ap).getType(), ap.getPosition());
-	        	}
-	        	arg_patterns.add(ap);
-			}
-	        return new abc.ja.jpi.weaving.ArgsInv(arg_patterns, pos());
-        }
         for(int i = 0; i < getNumPattern(); i++){
-        	arg_patterns.add(getPattern(i).argPattern());
+        	ArgPattern ap = getPattern(i).argPattern();
+        	if(ap instanceof ArgVar){
+        		ap = new abc.ja.jpi.weaving.ArgVarInv(((ArgVar) ap).getVar(), ap.getPosition());
+        	}
+        	if(ap instanceof ArgType){
+        		ap = new abc.ja.jpi.weaving.ArgTypeInv(((ArgType) ap).getType(), ap.getPosition());
+        	}
+        	arg_patterns.add(ap);
 		}
-        return new Args(arg_patterns, pos());  
+        return new abc.ja.jpi.weaving.ArgsInv(arg_patterns, pos());
     }
     
-    refine PointcutsCodegen public Pointcut TargetPointcutExpr.pointcut(){
-    	if (this.invariant){
-    		Pointcut pc = getPattern().targetPointcut();
-    		if (pc instanceof TargetVar)
-    			return new abc.ja.jpi.weaving.TargetVarInv(((TargetVar) pc).getVar(),pc.getPosition());
-    		if (pc instanceof TargetType)
-    			return new abc.ja.jpi.weaving.TargetTypeInv(((TargetType) pc).getType(),pc.getPosition());
-    	}
-        return getPattern().targetPointcut();
+    public Pointcut TargetInvPointcutExpr.pointcut(){
+		Pointcut pc = getPattern().targetPointcut();
+		return (pc instanceof TargetVar) ? 
+			new abc.ja.jpi.weaving.TargetVarInv(((TargetVar) pc).getVar(),pc.getPosition())
+			:
+			new abc.ja.jpi.weaving.TargetTypeInv(((TargetType) pc).getType(),pc.getPosition());
     }
     
-    refine PointcutsCodegen public Pointcut ThisPointcutExpr.pointcut(){
-    	if (this.invariant){
-    		Pointcut pc = getPattern().thisPointcut();
-    		if (pc instanceof ThisVar)
-    			return new abc.ja.jpi.weaving.ThisVarInv(((ThisVar) pc).getVar(),pc.getPosition());
-    		if (pc instanceof ThisType)
-    			return new abc.ja.jpi.weaving.ThisTypeInv(((ThisType) pc).getType(),pc.getPosition());
-    	}
-        return getPattern().thisPointcut();
+    public Pointcut ThisInvPointcutExpr.pointcut(){
+		Pointcut pc = getPattern().thisPointcut();
+		return (pc instanceof ThisVar) ?
+			new abc.ja.jpi.weaving.ThisVarInv(((ThisVar) pc).getVar(),pc.getPosition())
+			:
+			new abc.ja.jpi.weaving.ThisTypeInv(((ThisType) pc).getType(),pc.getPosition());
     }
     
     syn lazy boolean PointcutExpr.isInvPCD() = true;
@@ -69,23 +37,13 @@ aspect InvPCD{
     	return getLhs().isInvPCD() && getRhs().isInvPCD();
     }
     
-    eq ArgsPointcutExpr.isInvPCD(){
-    	if(this.invariant)
-    		return true;
-    	return false;
-    }
-
-    eq TargetPointcutExpr.isInvPCD(){
-    	if(this.invariant)
-    		return true;
-    	return false;
-    }
-
-    eq ThisPointcutExpr.isInvPCD(){
-    	if(this.invariant)
-    		return true;
-    	return false;
-    }
-
+    eq ArgsPointcutExpr.isInvPCD() = false;
+    eq TargetPointcutExpr.isInvPCD() = false;
+    eq ThisPointcutExpr.isInvPCD() = false;
+    eq ArgsInvPointcutExpr.isInvPCD() = true;
+    eq TargetInvPointcutExpr.isInvPCD() = true;
+    eq ThisInvPointcutExpr.isInvPCD() = true;
+    
+    
     
 }
