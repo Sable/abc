@@ -665,23 +665,49 @@
         	<message kind="warning" line="31" />        	
         </compile>
 		<run class="C" />
-    </ajc-test>  	
+    </ajc-test>
 	
-    <ajc-test num="1680" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1679" dir="abctests/jpi/GenericAdvice" title="exception handling">
+        <compile files="exceptions.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="13"/>
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="16"/>
+	        <message kind="error" line="30"/>
+	        <message kind="error" line="31"/>
+	        <message kind="error" line="34"/>
+	        <message kind="error" line="44"/>
+	        <message kind="error" line="48"/>
+	        <message kind="error" line="51"/>
+	        <message kind="error" line="51"/>
+	        <message kind="error" line="55"/>
+        </compile>
+    </ajc-test>
+	
+    <ajc-test num="1680" dir="abctests/jpi/GenericAdvice" title="exception handling with throw stmts">
+        <compile files="exceptions2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="25"/>
+	        <message kind="error" line="28"/>
+        </compile>
+    </ajc-test> 	
+	
+    <ajc-test num="1690" dir="abctests/jpi/GlobalJPI"
         title="simple syntax">
         <compile files="syntax.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line="9" />
         </compile>
     </ajc-test>    
 
-    <ajc-test num="1681" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1691" dir="abctests/jpi/GlobalJPI"
         title="generic syntax">
         <compile files="syntax.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line="9" />
         </compile>
     </ajc-test>	
 	
-    <ajc-test num="1682" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1692" dir="abctests/jpi/GlobalJPI"
         title="typechecking">
         <compile files="typechecking.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line="11" />
@@ -691,42 +717,42 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1683" dir="abctests/jpi/GlobalJPI" title="typechecking around advice">
+    <ajc-test num="1693" dir="abctests/jpi/GlobalJPI" title="typechecking around advice">
         <compile files="typechecking2.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="20"/>        	
         </compile>
     </ajc-test> 
 	
-    <ajc-test num="1684" dir="abctests/jpi/GlobalJPI" title="tychecking global PCD">
+    <ajc-test num="1694" dir="abctests/jpi/GlobalJPI" title="tychecking global PCD">
         <compile files="typechecking3.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="8"/>
         </compile>
     </ajc-test>   	
 	
-    <ajc-test num="1685" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1695" dir="abctests/jpi/GlobalJPI"
         title="matching">
         <compile files="matching.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    
 
-    <ajc-test num="1686" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1696" dir="abctests/jpi/GlobalJPI"
         title="matching_2">
         <compile files="matching2.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    
 
-    <ajc-test num="1687" dir="abctests/jpi/GlobalJPI"
+    <ajc-test num="1697" dir="abctests/jpi/GlobalJPI"
         title="matching_3">
         <compile files="matching3.java" options="-ext,abc.ja.jpi" />
 		<run class="C" />
     </ajc-test>    		
 
-    <ajc-test num="1688" dir="abctests/jpi/GlobalJPI" title="matching_4">
+    <ajc-test num="1698" dir="abctests/jpi/GlobalJPI" title="matching_4">
         <compile files="matching4.java" options="-ext,abc.ja.jpi" />
     </ajc-test>   
 
-    <ajc-test num="1689" dir="abctests/jpi/GlobalJPI" title="matching_5">
+    <ajc-test num="1699" dir="abctests/jpi/GlobalJPI" title="matching_5">
         <compile files="matching5.java" options="-ext,abc.ja.jpi">
         	<message kind="error" line="16" />				
         </compile>
@@ -914,9 +940,13 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="1900" dir="abctests/jpi/GlobalJPI" title="000">
-        <compile files="matching5.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line="16" />				
+    <ajc-test num="1900" dir="abctests/jpi/GenericAdvice" title="000">
+        <compile files="exceptions2.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="15"/>
+	        <message kind="error" line="22"/>
+	        <message kind="error" line="25"/>
+	        <message kind="error" line="28"/>
         </compile>
     </ajc-test>    
 	    
