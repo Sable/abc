@@ -46,7 +46,7 @@ aspect ExceptionHandling{
 	  }
 	  return set;
 	
-	}
+	}	
 	
 	refine DeclareCodegen protected boolean Proceed.reachedException(TypeDecl catchType) {
 		if (!insideCJPAdviceDecl()) return true;
@@ -56,5 +56,5 @@ aspect ExceptionHandling{
 		  	}
 	  	}
 		return super.reachedException(catchType);
-  	}	
+  	} 	
 }

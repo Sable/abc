@@ -364,10 +364,18 @@ aspect GenericsJPI{
 		for(Access exceptionAccess: getExceptionList()){
 			foundError = false;
 			for(Access parentExceptionAccess: jpiDecl.getExceptionList()){
-				if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
-					foundError = true;
-					break;
+				if(exceptionAccess.type().isTypeVariable() && parentExceptionAccess.type().isTypeVariable()){
+					if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+						foundError = true;
+						break;
+					}					
 				}
+				if(!exceptionAccess.type().isTypeVariable() && !parentExceptionAccess.type().isTypeVariable()){
+					if(exceptionAccess.type().instanceOf(parentExceptionAccess.type())){
+						foundError = true;
+						break;
+					}					
+				}				
 			}
 			if (!foundError){
 				error("TypeCheck: Advice cannot throw exception of type "+exceptionAccess.type().name());
@@ -750,4 +758,71 @@ aspect GenericsJPI{
 		pe.checkTypeVarInvPCD();
     }
     
+    /*
+     * Attributes to check ThrowStmt exceptions
+     */
+  	refine ExceptionHandling eq CJPAdviceDecl.getBlock().handlesException(TypeDecl exceptionType){
+  		for(Access exceptionAccess : getExceptionList()){
+	    	if(exceptionType.instanceOf(exceptionAccess.type())){
+		        return true;    	
+	    	}
+  		}
+    	return false;  		
+  	}
+
+	inh boolean ThrowStmt.insideCJPAdviceDecl();
+	inh Access ThrowStmt.getJPIAccess();
+	  	
+  	inh boolean ThrowStmt.handlesExceptionThrowStmt(TypeDecl exceptionType);
+  	eq Program.getCompilationUnit().handlesExceptionThrowStmt(TypeDecl exceptionType) = false;
+  	
+  	eq CJPAdviceDecl.getBlock().handlesExceptionThrowStmt(TypeDecl exceptionType){
+  		for(Access exceptionAccess : getExceptionList()){
+  			if(exceptionAccess.type().isTypeVariable())
+  				continue;
+	    	if(exceptionType.instanceOf(exceptionAccess.type())){
+		        return true;    	
+	    	}
+  		}
+    	return false;  		
+  	}
+  		  	
+	refine DeclareCodegen public void ThrowStmt.exceptionHandling(){
+		if (!insideCJPAdviceDecl()) return;	
+		TypeDecl exceptionType = getExpr().type();
+		if(exceptionType == typeNull())
+			exceptionType = typeNullPointerException();
+		if(!handlesExceptionThrowStmt(exceptionType)){
+			error("ExceptionHandling " + this + " throws uncaught exception " + exceptionType.fullName());
+		}	
+	}
+
+	syn lazy Collection<TypeDecl> ThrowStmt.exceptionCollection() {
+	  TypeAccess jpiAccess = (TypeAccess)getJPIAccess();
+	  JPITypeDecl jpiTypeDecl;
+	  HashSet<TypeDecl> set = new HashSet<TypeDecl>();
+	  
+	  if(!jpiAccess.type().isJoinpointTypeDecl()){
+		  return set;
+	  }
+	  
+	  jpiTypeDecl = (JPITypeDecl)jpiAccess.type();
+	  
+	  for(Access exception : jpiTypeDecl.getExceptionList()){
+		  set.add(exception.type());
+	  }
+	  return set;
+	
+	}
+	
+	refine ExceptionHandling protected boolean ThrowStmt.reachedException(TypeDecl catchType) {
+		if (!insideCJPAdviceDecl()) return true;
+	  	for(TypeDecl exceptionType : exceptionCollection()){
+			if(catchType.mayCatch(exceptionType)){
+				return true;
+		  	}
+	  	}
+		return super.reachedException(catchType);
+  	}   	
+  	 
 }
