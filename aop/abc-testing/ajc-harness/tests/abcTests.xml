@@ -11447,13 +11447,27 @@
 	
     <ajc-test num="1680" dir="abctests/jpi/GenericAdvice" title="exception handling with throw stmts">
         <compile files="exceptions2.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="11"/>
-	        <message kind="error" line="15"/>
-	        <message kind="error" line="22"/>
+	        <message kind="error" line="14"/>
+	        <message kind="error" line="18"/>
 	        <message kind="error" line="25"/>
 	        <message kind="error" line="28"/>
+	        <message kind="error" line="31"/>
         </compile>
     </ajc-test> 	
+
+    <ajc-test num="1681" dir="abctests/jpi/GenericADvice" title="000">
+        <compile files="matching3.java" options="-ext,abc.ja.jpi">
+	        <message kind="error" line="16"/>        	
+        </compile>
+    </ajc-test>    
+
+    <ajc-test num="1682" dir="abctests/jpi/GenericADvice" title="000">
+        <compile files="matching4.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>    
+
+    <ajc-test num="1683" dir="abctests/jpi/GenericADvice" title="000">
+        <compile files="matching5.java" options="-ext,abc.ja.jpi" />
+    </ajc-test>  
 	
     <ajc-test num="1690" dir="abctests/jpi/GlobalJPI"
         title="simple syntax">

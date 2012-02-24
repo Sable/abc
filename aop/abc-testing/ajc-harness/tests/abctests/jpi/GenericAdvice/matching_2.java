@@ -21,5 +21,4 @@ public class C{
 	<R extends Number> exhibits R JP(R d) : execution(R *(..)) && argsinv(d);
 	<R extends Number> exhibits R JP1(R d) : execution(R *(..)) && thisinv(d);
 	<R extends Number> exhibits R JP2(R d) : execution(R *(..)) && targetinv(d);
-	
 }
