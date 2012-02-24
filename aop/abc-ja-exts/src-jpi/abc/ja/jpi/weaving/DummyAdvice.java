@@ -19,6 +19,7 @@ import soot.jimple.JimpleBody;
 import soot.jimple.ParameterRef;
 import soot.tagkit.LineNumberTag;
 import abc.ja.jpi.jrag.ASTNode;
+import abc.ja.jpi.jrag.Access;
 import abc.ja.jpi.jrag.AdviceDecl;
 import abc.ja.jpi.jrag.AdviceSpec;
 import abc.ja.jpi.jrag.Body;
@@ -53,7 +54,7 @@ public class DummyAdvice {
 	}
 
 	public static void createDummyAroundAdvice(int sootTypeModifiers,
-			List<ParameterDeclaration> parameterList, Type returnType) {
+			List<ParameterDeclaration> parameterList, Type returnType, List<Access> exceptionList) {
 		aroundAdviceName = "";
 		proceedMethod = null;
 		aroundAdvice = null;
@@ -69,8 +70,8 @@ public class DummyAdvice {
 		// provided by args -->soot.Type returnType = type().getSootType();
 		// int modifiers = typeModifier;//sootTypeModifiers();
 		ArrayList throwtypes = new ArrayList();
-		// for(int i = 0; i < getNumException(); i++)
-		// throwtypes.add(getException(i).type().getSootClassDecl());
+		for(int i = 0; i < exceptionList.getNumChild(); i++)
+			throwtypes.add(exceptionList.getChild(i).type().getSootClassDecl());
 		String name = getAroundAdviceName();
 		String signature = SootMethod.getSubSignature(name, parameters,
 				returnType);

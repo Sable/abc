@@ -75,7 +75,7 @@ aspect CodeGen {
 			  	returnValue = IntegerLiteral.emitConstant(Constant.create(0));
 		  	}
 	  	}
-	  	abc.ja.jpi.weaving.DummyAdvice.createDummyAroundAdvice(1, adviceParameterList, returnType.type().getSootType());
+	  	abc.ja.jpi.weaving.DummyAdvice.createDummyAroundAdvice(1, adviceParameterList, returnType.type().getSootType(), getExceptionList());
 	  	int[] jp_params = abc.ja.jpi.weaving.DummyAdvice.implicitParameters(adviceParameterList);
 	  	Pointcut pc = pointcut;
 	  	LinkedList methods = new LinkedList();

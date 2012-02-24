@@ -49,16 +49,21 @@ public class CJPAdviceDecl extends AdviceDecl {
         List/*<SootClass>*/ advicethrown = getImpl().getSootMethod().getExceptions();
 
         List/*<SootClass>*/ shadowthrown = sm.getExceptions();
-        
+
+        List jpithrown = new LinkedList();
+        for(Access exception : jpiTypeDecl.getExceptions()){
+        	jpithrown.add(((TypeAccess)exception).type().getSootClassDecl());
+        }
         
         /*
          * Here we introduce our constrains about the throws clause for both jpi definition and base code.
          */
-        
-        List/*<SootClass>*/ jpiThrown = new LinkedList();
+        /*        
+        List jpiThrown = new LinkedList();
         for(Access exception : jpiTypeDecl.getExceptions()){
         	jpiThrown.add(((TypeAccess)exception).type().getSootClassDecl());
         }
+        
         if (shadowthrown.size() != jpiTypeDecl.getNumException()){
         	reportGeneralError(sm, shadowthrown, jpiThrown);
         	return NeverMatch.v();
@@ -76,6 +81,41 @@ public class CJPAdviceDecl extends AdviceDecl {
         		return NeverMatch.v();
         	}
         }
+        for(Object jpiException : jpiThrown){
+            if (shadowthrown.contains(jpiException)){
+            	
+            }
+        }
+        */
+
+        eachadvicethrow:
+            for(Iterator shadowthrownit=shadowthrown.iterator();
+                shadowthrownit.hasNext();
+                ) {
+                SootClass shadowthrow=(SootClass) (shadowthrownit.next());
+
+                // don't care about unchecked exceptions
+                if(Scene.v().getOrMakeFastHierarchy().isSubclass
+                   (shadowthrow,Scene.v().getSootClass("java.lang.RuntimeException"))) continue;
+
+                if(Scene.v().getOrMakeFastHierarchy().isSubclass
+                   (shadowthrow,Scene.v().getSootClass("java.lang.Error"))) continue;
+
+                for(Iterator jpithrownit=jpithrown.iterator();
+                    jpithrownit.hasNext();
+                    ) {
+
+                    SootClass jpithrow=(SootClass) (jpithrownit.next());
+                    if(Scene.v().getOrMakeFastHierarchy().isSubclass(shadowthrow,jpithrow))
+                        break eachadvicethrow;
+                }
+
+                // FIXME: this should be a multi-position error
+                reportError(sm, shadowthrow);
+                return NeverMatch.v();
+
+            }        
+        
         //finish our check.
 
         eachadvicethrow:
