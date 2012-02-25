@@ -146,15 +146,14 @@ aspect LookupJPIType{
 
 	syn lazy SimpleSet ImportDecl.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) = SimpleSet.emptySet;
 	eq SingleTypeImportDecl.importedJPITypes(String name, java.util.List<TypeDecl> parameterList) {
-	    TypeAccess access = (TypeAccess) getAccess();
-	    if (access.type().name().equals(name)){
-		    if(access.type().isJPITypeDecl()){
-		    	JPITypeAccess jpiAccess = new JPITypeAccess(access.getPackage(), name/*access.getID()*/);
-		    	jpiAccess.setParent(access.getParent());
+	    if (getAccess().type().name().equals(name)){
+		    if(getAccess().type().isJPITypeDecl()){
+		    	JPITypeAccess jpiAccess = new JPITypeAccess(((TypeAccess)getAccess()).getPackage(), name/*access.getID()*/);
+		    	jpiAccess.setParent(getAccess().getParent());
 		    	return jpiAccess.decls(parameterList);
 		    }
 	    }
-	    return SimpleSet.emptySet;		
+	    return SimpleSet.emptySet;
 	}
 	
 	
