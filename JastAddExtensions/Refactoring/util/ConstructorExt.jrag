@@ -8,8 +8,8 @@ aspect ConstructorExt {
 	syn ConstructorDecl GenericConstructorDecl.rawConstructor() = lookupParConstructorDecl(new ArrayList());
 	
 	syn lazy ConstructorDecl GenericConstructorDecl.lookupParConstructorDecl(ArrayList<TypeDecl> list) {
-        for(int i = 0; i < getNumParConstructorDecl(); i++) {
-	        ParConstructorDecl decl = (ParConstructorDecl)getParConstructorDecl(i);
+        for(int i = 0; i < getNumTypeParameter(); i++) {
+	        ParConstructorDecl decl = (ParConstructorDecl)((ParTypeDecl)getTypeParameter(i));
 	        if(decl.isRawConstructor() ? list.isEmpty() : (!list.isEmpty() && decl.sameSignature(list)))
 	            return decl;
 	    }
@@ -68,8 +68,8 @@ aspect ConstructorExt {
 		if(!hostType().isGenericType())
 			return res;
 		GenericTypeDecl host = (GenericTypeDecl)hostType();
-		for(int i=0;i<host.getNumParTypeDecl();++i) {
-			ParClassDecl pcd = (ParClassDecl)host.getParTypeDecl(i);
+		for(int i=0;i<host.getNumTypeParameter();++i) {
+			ParClassDecl pcd = (ParClassDecl)((ParTypeDecl)host.getTypeParameter(i));
 			for(Object o : pcd.constructors())
 				if(o instanceof ConstructorDeclSubstituted && ((ConstructorDeclSubstituted)o).sourceConstructorDecl() == this)
 					res.add((ConstructorDeclSubstituted)o);
