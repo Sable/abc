@@ -777,6 +777,8 @@ aspect GenericsJPI{
   	eq Program.getCompilationUnit().handlesExceptionThrowStmt(TypeDecl exceptionType) = false;
   	
   	eq CJPAdviceDecl.getBlock().handlesExceptionThrowStmt(TypeDecl exceptionType){
+	    if(!exceptionType.isUncheckedException())
+      		return true;  	
   		for(Access exceptionAccess : getExceptionList()){
   			if(exceptionAccess.type().isTypeVariable())
   				continue;
