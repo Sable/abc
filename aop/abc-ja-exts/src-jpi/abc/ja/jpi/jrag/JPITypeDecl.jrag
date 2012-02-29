@@ -95,7 +95,7 @@ aspect JPITypeDecl{
 				if(td.isAspectDecl()){
 					for(BodyDecl bd : ((AspectDecl)td).getBodyDecls()){
 						if(bd.isCJPAdviceDecl()){
-							jpiTypeDecl = (JPITypeDecl)((TypeAccess)((CJPAdviceDecl)bd).getName()).type();
+							jpiTypeDecl = (JPITypeDecl) ((JPITypeAccess)((CJPAdviceDecl)bd).getName()).decls(((CJPAdviceDecl)bd).getAdviceSpec().getParameterTypeList());
 							if(!set.contains(jpiTypeDecl)){
 								set.add(jpiTypeDecl);
 							}
