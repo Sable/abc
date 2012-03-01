@@ -103,7 +103,6 @@ public class PointcutCombination {
 		HashSet<ExhibitBodyDecl> set = new HashSet<ExhibitBodyDecl>();
 		for(ExhibitBodyDecl exhibitDecl : exhibitsDecls){
 			jpiTypeTemp = (JPITypeDecl)((JPITypeAccess)exhibitDecl.getJPIName()).decls(exhibitDecl.getParameterTypeList());
-			//TODO: check sub type semantics!
 			if (jpiTypeTemp.isSubType(jpiType) || (jpiTypeTemp == jpiType)){
 				set.add(exhibitDecl);
 			}
