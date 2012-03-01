@@ -10914,7 +10914,7 @@
     </ajc-test>
 		
 
-<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
+	<ajc-test num="1600" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - jpi">
         <compile files="JPI.java" options="-ext,abc.ja.jpi"/>
     </ajc-test>  
@@ -10952,11 +10952,11 @@
 	<ajc-test num="1605" dir="abctests/jpi/simplesyntax"
         title="JPI syntax - Inheritance">
         <compile files="InheritanceSyntax.java" options="-ext,abc.ja.jpi">
-        	<message kind="error" line ="9" />	        
-        	<message kind="error" line ="9" />	        
-        	<message kind="error" line ="11" />	        
-        	<message kind="error" line ="11" />	        
-        	<message kind="error" line ="11" />			
+        	<message kind="error" line ="9" />
+        	<message kind="error" line ="9" />
+        	<message kind="error" line ="9" />
+        	<message kind="error" line ="11" />
+        	<message kind="error" line ="11" />
 		</compile>
     </ajc-test> 
 	
@@ -11001,17 +11001,23 @@
     <ajc-test num="1612" dir="abctests/jpi/typechecks"
         title="Check JPI inheritance">
         <compile files="CheckJPIInheritance.java" options="-ext,abc.ja.jpi">
-	        <message kind="error" line="11"/>        	
+	        <message kind="error" line="11"/>
+	        <message kind="error" line="11"/>
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="12"/>
 	        <message kind="error" line="14"/>
 	        <message kind="error" line="14"/>			
+	        <message kind="error" line="14"/>			
 	        <message kind="error" line="18"/>
+	        <message kind="error" line="19"/>
 	        <message kind="error" line="19"/>
 	        <message kind="error" line="24"/>
 	        <message kind="error" line="27"/>
+	        <message kind="error" line="27"/>
 	        <message kind="error" line="31"/>
+	        <message kind="error" line="31"/>
+	        <message kind="error" line="36"/>			
 	        <message kind="error" line="36"/>			
         </compile>
     </ajc-test>  
@@ -11455,19 +11461,26 @@
         </compile>
     </ajc-test> 	
 
-    <ajc-test num="1681" dir="abctests/jpi/GenericADvice" title="000">
+    <ajc-test num="1681" dir="abctests/jpi/GenericADvice" title="matching-3">
         <compile files="matching3.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="16"/>        	
         </compile>
     </ajc-test>    
 
-    <ajc-test num="1682" dir="abctests/jpi/GenericADvice" title="000">
+    <ajc-test num="1682" dir="abctests/jpi/GenericADvice" title="matching-4">
         <compile files="matching4.java" options="-ext,abc.ja.jpi" />
     </ajc-test>    
 
-    <ajc-test num="1683" dir="abctests/jpi/GenericADvice" title="000">
+    <ajc-test num="1683" dir="abctests/jpi/GenericADvice" title="matching-5">
         <compile files="matching5.java" options="-ext,abc.ja.jpi" />
     </ajc-test>  
+
+    <ajc-test num="1684" dir="abctests/jpi/GenericAdvice" title="inheritance in generice advice">
+        <compile files="inheritance.java" options="-ext,abc.ja.jpi">
+	        <message kind="warning" line="16"/>        	
+        </compile>
+		<run class="C" />
+    </ajc-test> 
 	
     <ajc-test num="1690" dir="abctests/jpi/GlobalJPI"
         title="simple syntax">
