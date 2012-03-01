@@ -23,9 +23,9 @@ aspect NameCheck{
 		if (jpiSuperAccess.getID().equals("$RootJPI$")){
 			return;
 		}
-		if(jpiSuperAccess.decls().isEmpty()){
-			error("NameCheck: There is not a JPI declaration with the name "+jpiSuperAccess.typeName());
-		}
+		if(((JPITypeAccess)jpiSuperAccess).decls(getParentParameterTypeList()).isEmpty()){
+			error("NameCheck: There is not a JPI declaration with the same signature.");
+		}	
 	}
 	
 	public void JPISuperArgAccess.nameCheck(){

@@ -45,9 +45,13 @@ aspect TypeCheck{
 			return;
 		}
 		
-		//TODO: static overloading is pending
-		jpiSuperDecl = (JPITypeDecl)((JPITypeAccess)jpiSuperAccess).decl(getParentParameterTypeList());
-		
+		TypeDecl jpiTypeDecl = ((JPITypeAccess)jpiSuperAccess).decl(getParentParameterTypeList());
+		if (jpiTypeDecl.isUnknown()){
+			error("TypeCheck: There is not a JPI declaration with the same signature.");
+			return;
+		}
+		jpiSuperDecl = (JPITypeDecl)jpiTypeDecl;
+				
 		if(!getTypeAccess().type().equals(jpiSuperDecl.getTypeAccess().type())){
 			error("TypeCheck: Return type must be equals");
 		}
