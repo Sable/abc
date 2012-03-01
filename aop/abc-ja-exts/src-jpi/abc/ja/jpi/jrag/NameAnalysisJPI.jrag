@@ -19,7 +19,7 @@ aspect NameAnalysisJPI {
 	
 	eq ExhibitBodyDecl.getPointcut().nameType() = NameType.TYPE_NAME;
 		
-	eq JPITypeDecl.getSuperTypeName().nameType() = NameType.TYPE_NAME;
+	eq JPITypeDecl.getSuperTypeName().nameType() = NameType.JPITYPE_NAME;
 	
 	eq ExhibitBodyDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;	
 	eq ExhibitBodyDecl.getParameter(int index).isMethodParameter() = false;
@@ -32,4 +32,7 @@ aspect NameAnalysisJPI {
 	refine NameAnalysisCJP eq CJPAfterReturningSpec.getName().nameType() = NameType.JPITYPE_NAME;
 	refine NameAnalysisCJP eq CJPAfterThrowingSpec.getName().nameType() = NameType.JPITYPE_NAME;
 	refine NameAnalysisCJP eq CJPAroundSpec.getName().nameType() = NameType.JPITYPE_NAME;
+	
+	syn lazy boolean Access.isDummyAccess() = false;
+	eq DummyAccess.isDummyAccess() = true;
 }

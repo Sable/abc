@@ -37,7 +37,10 @@ aspect JPITypeDecl{
 				}
 				children = new abc.ja.jpi.utils.JPIHierarchyHashMap();
 				jpiSuperAccess = (TypeAccess)((JPITypeDecl)typeDecl).getSuperTypeName();
-				if (jpiSuperAccess.type().equals(jpiTypeDecl)){
+				if (jpiSuperAccess.isDummyAccess()){
+					continue;
+				}
+				if (((JPITypeDecl)((JPITypeAccess)jpiSuperAccess).decl(((JPITypeDecl)typeDecl).getParentParameterTypeList())).equals(jpiTypeDecl)){
 					children = ((JPITypeDecl)typeDecl).getJPIHierarchy((JPITypeDecl)typeDecl);
 					root.put((JPITypeDecl)typeDecl, children);
 				}

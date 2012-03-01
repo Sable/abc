@@ -46,7 +46,7 @@ aspect TypeCheck{
 		}
 		
 		//TODO: static overloading is pending
-		jpiSuperDecl = (JPITypeDecl)jpiSuperAccess.type();
+		jpiSuperDecl = (JPITypeDecl)((JPITypeAccess)jpiSuperAccess).decl(getParentParameterTypeList());
 		
 		if(!getTypeAccess().type().equals(jpiSuperDecl.getTypeAccess().type())){
 			error("TypeCheck: Return type must be equals");
@@ -72,10 +72,10 @@ aspect TypeCheck{
 					error("TypeCheck: "+getSuperArgumentName(i).variableName()+" doesn't exist as formal parameter of "+typeName()+" JPI.");
 					continue;
 				}
-				if (!((ParameterDeclaration)childParameter).getTypeAccess().type().equals(parentParameter.getTypeAccess().type())){
+				//HINT:getSootType is added in this check because TypeVariables.
+				if (!((ParameterDeclaration)childParameter).getTypeAccess().type().getSootType().equals(parentParameter.getTypeAccess().type().getSootType())){
 					error("TypeCheck: Argument types must be equals.");
-				}
-				
+				}				
 			}
 		}	
 	}	

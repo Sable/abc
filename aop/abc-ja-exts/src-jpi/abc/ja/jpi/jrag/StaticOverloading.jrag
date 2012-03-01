@@ -28,5 +28,13 @@ aspect StaticOverloading{
 		return types;
 	}
 
+	public java.util.List<TypeDecl> JPITypeDecl.getParentParameterTypeList(){
+		java.util.List<TypeDecl> types = new ArrayList<TypeDecl>();
+		for(Access a : getSuperArgumentNameList()){
+			types.add(a.type());
+		}
+		return types;
+	}
+
     
 }
