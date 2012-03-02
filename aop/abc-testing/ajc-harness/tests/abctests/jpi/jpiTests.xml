@@ -292,6 +292,7 @@
 	        <message kind="error" line="17"/>
 	        <message kind="error" line="19"/>
 	        <message kind="error" line="23"/>
+	        <message kind="error" line="25"/>			
         </compile>
     </ajc-test> 
 

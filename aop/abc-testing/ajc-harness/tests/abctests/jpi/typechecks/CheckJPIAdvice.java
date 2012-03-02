@@ -21,5 +21,7 @@ aspect A{
     Integer around JP4(char x, Object p){ return 1;} //ok
 
     Integer around JP5(char x){ return 1;} //wrong, must be the same quantity of args.
+    
+    Integer around A(char x, Object p){ return 1;} //wrong
 
 }
