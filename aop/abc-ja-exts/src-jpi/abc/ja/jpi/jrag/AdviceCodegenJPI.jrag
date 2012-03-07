@@ -1,4 +1,4 @@
-aspect AdviceCodegen{
+aspect AdviceCodegenJPI{
 
 
   public abc.weaving.aspectinfo.AdviceSpec CJPAroundSpec.adviceSpec() {

@@ -1,0 +1,86 @@
+aspect JPIAudit{
+
+	refine AdviceCodegen public abc.weaving.aspectinfo.AdviceSpec BeforeSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericBefore++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.before++;		
+		}
+		return AdviceCodegen.BeforeSpec.adviceSpec();
+	}
+
+	refine AdviceCodegen public abc.weaving.aspectinfo.AdviceSpec AfterSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAfter++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.after++;		
+		}
+		return AdviceCodegen.AfterSpec.adviceSpec();
+	}
+
+	refine AdviceCodegen public abc.weaving.aspectinfo.AdviceSpec AfterReturningSpec.adviceSpec(){
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAfterReturning++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.afterReturning++;		
+		}
+		return AdviceCodegen.AfterReturningSpec.adviceSpec();
+	}
+
+	refine AdviceCodegen public abc.weaving.aspectinfo.AdviceSpec AfterThrowingSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAfterThrowing++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.afterThrowing++;		
+		}
+		return AdviceCodegen.AfterThrowingSpec.adviceSpec();
+	}
+	
+	refine AdviceCodegen public abc.weaving.aspectinfo.AdviceSpec AroundSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAround++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.around++;		
+		}
+		return AdviceCodegen.AroundSpec.adviceSpec();	
+	}
+	
+	refine AdviceCodegenJPI public abc.weaving.aspectinfo.AdviceSpec CJPAroundSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAround++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.around++;		
+		}
+		return AdviceCodegenJPI.CJPAroundSpec.adviceSpec();
+  	}
+
+	refine AdviceCodegenJPI public abc.weaving.aspectinfo.AdviceSpec CJPAfterReturningSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAfterReturning++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.afterReturning++;		
+		}
+		return AdviceCodegenJPI.CJPAfterReturningSpec.adviceSpec();
+	}
+
+	refine AdviceCodegenJPI public abc.weaving.aspectinfo.AdviceSpec CJPAfterThrowingSpec.adviceSpec() {
+		if(isGeneric()){
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.genericAfterThrowing++;		
+		}
+		else{
+			abc.ja.jpi.utils.JPIAudit.CJPAdvice.afterThrowing++;		
+		}
+		return AdviceCodegenJPI.CJPAfterThrowingSpec.adviceSpec();
+	} 
+  
+
+	
+	
+}

@@ -36,6 +36,7 @@ import abc.ja.jpi.jrag.BytecodeParser;
 import abc.ja.jpi.jrag.CompilationUnit;
 import abc.ja.jpi.jrag.JavaParser;
 import abc.ja.jpi.jrag.Program;
+import abc.ja.jpi.utils.JPIAudit;
 
 import abc.main.AbcExtension;
 import abc.main.AbcTimer;
@@ -86,6 +87,7 @@ public class CompileSequence extends abc.ja.cjp.CompileSequence {
     setupParser(program);
     
     program.doCompileSequence(error_queue, aspect_sources, jar_classes);
+    JPIAudit.printOverall();
   }
 	
   public void weave() throws CompilerFailedException {
