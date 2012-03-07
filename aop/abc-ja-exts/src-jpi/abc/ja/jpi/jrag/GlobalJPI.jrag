@@ -68,7 +68,7 @@ aspect GlobaJPI{
 		
 		PointcutExpr pe = getPointcut();
 		if (!pe.isInvPCD())
-			warning("TypeCheck: global jpi pointcut expression should not contain PCD such as Args, This, or Target.");			
+			warning("TypeCheck: Use argsInv, thisInv, respectively targetInv instead.");			
 	}	
 	
 	public void GenericGlobalJPITypeDecl.typeCheck(){
