@@ -109,7 +109,8 @@ aspect TypeCheck{
 		}			
 		PointcutExpr pe = getPointcut();
 		if (!pe.isInvPCD())
-			warning("TypeCheck: Use argsInv, thisInv, respectively targetInv instead.");			
+			warning("TypeCheck: Use argsInv, thisInv, respectively targetInv instead.");
+		pe.checkInterfaceTypeInvPCD();
 	}
 	
 	public void ExhibitBodyDecl.doTypeChecking(JPITypeDecl jpiDecl){

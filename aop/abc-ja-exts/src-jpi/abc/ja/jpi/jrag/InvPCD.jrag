@@ -44,6 +44,79 @@ aspect InvPCD{
     eq TargetInvPointcutExpr.isInvPCD() = true;
     eq ThisInvPointcutExpr.isInvPCD() = true;
     
+    public void PointcutExpr.checkInterfaceTypeInvPCD(){}
+
+    public void BinaryPointcutExpr.checkInterfaceTypeInvPCD(){
+    	getLhs().checkInterfaceTypeInvPCD();
+    	getRhs().checkInterfaceTypeInvPCD();
+    }
     
+    public void ArgsInvPointcutExpr.checkInterfaceTypeInvPCD(){
+		java.util.List arg_patterns = new ArrayList();        
+        for(int i = 0; i < getNumPattern(); i++){
+        	ArgPattern ap = getPattern(i).argPattern();
+        	if(ap instanceof ArgVar){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).type().isInterfaceDecl()){
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the interface type.");
+	    				}    				        				
+        			}
+        		}
+        	}
+        	if(ap instanceof ArgType){
+        		if (getPattern(i) instanceof NameBindingPattern){
+        			if( ((NameBindingPattern)getPattern(i)).getPattern() instanceof ExplicitTypeNamePattern){
+        				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern(i)).getPattern()).getAccess().type().isInterfaceDecl()){
+	    					warning("argsinv pointcut will be treated as an args pointcut due to the interface type.");
+	    				}        				
+        			}
+        		}
+        	}
+		}
+    }
     
+    public void ThisInvPointcutExpr.checkInterfaceTypeInvPCD(){
+		Pointcut pc = getPattern().thisPointcut();
+		if (pc instanceof ThisVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isInterfaceDecl()){
+    					warning("thisinv pointcut will be treated as an this pointcut due to the interface type.");
+    				}
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isInterfaceDecl()){
+    					warning("thisinv pointcut will be treated as an this pointcut due to the interface type.");    					
+    				}
+    			}
+    		}
+		}
+    }
+    
+    public void TargetInvPointcutExpr.checkInterfaceTypeInvPCD(){
+		Pointcut pc = getPattern().targetPointcut();
+		if (pc instanceof TargetVar){
+			if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).type().isInterfaceDecl()){
+    					warning("targetinv pointcut will be treated as an target pointcut due to the interface type.");
+    				}    				
+    			}
+    		}
+		}
+		else{
+    		if (getPattern() instanceof NameBindingPattern){
+    			if( ((NameBindingPattern)getPattern()).getPattern() instanceof ExplicitTypeNamePattern){
+    				if(((ExplicitTypeNamePattern)((NameBindingPattern)getPattern()).getPattern()).getAccess().type().isInterfaceDecl()){
+    					warning("targetinv pointcut will be treated as an target pointcut due to the interface type.");
+    				}    				
+    			}
+    		}
+		}
+    }        
 }
