@@ -474,7 +474,9 @@
         title="Interfaces-InvPCD">
         <compile files="InterfacesType.java" options="-ext,abc.ja.jpi">
         	<message kind="warning" line="13" />
-        	<message kind="warning" line="30" />			
+        	<message kind="warning" line="15" />
+        	<message kind="warning" line="30" />
+        	<message kind="warning" line="32" />
 		</compile>
 		<run class="AS"/>		
     </ajc-test> 	
