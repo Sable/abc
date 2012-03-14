@@ -125,7 +125,7 @@ aspect Privileged {
     // 6.6.2.1 -  include qualifier type for protected access
     if(m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
       TypeDecl C = m.hostType();
-      TypeDecl S = visibilityContext().subclassWithinBody(C);
+      TypeDecl S = thisType().withinBodyThatSubclasses(C);
       TypeDecl Q = qualifier().type();
       if(!visibilityContext().isPrivileged() && (S == null || !Q.instanceOf(S))) {
         return false;
