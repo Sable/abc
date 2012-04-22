@@ -235,9 +235,9 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           lexer.addAspectJKeyword("exhibits", new LexerAction_c(new Integer(Terminals.EXHIBITS),
         		  new Integer(lexer.pointcut_state())));
 
-          lexer.addPointcutKeyword("argsinv", new LexerAction_c(new Integer(Terminals.PC_ARGS_INV)));
-          lexer.addPointcutKeyword("targetinv", new LexerAction_c(new Integer(Terminals.PC_TARGET_INV)));
-          lexer.addPointcutKeyword("thisinv", new LexerAction_c(new Integer(Terminals.PC_THIS_INV)));
+          lexer.addPointcutKeyword("Args", new LexerAction_c(new Integer(Terminals.PC_ARGS_INV)));
+          lexer.addPointcutKeyword("Target", new LexerAction_c(new Integer(Terminals.PC_TARGET_INV)));
+          lexer.addPointcutKeyword("This", new LexerAction_c(new Integer(Terminals.PC_THIS_INV)));
           lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(Terminals.GLOBAL)));
           //lexer.addPointcutKeyword("sealed", new LexerAction_c(new Integer(Terminals.PC_SEALED)));          
           lexer.addPointcutKeyword("global", new LexerAction_c(new Integer(Terminals.PC_GLOBAL)));          
