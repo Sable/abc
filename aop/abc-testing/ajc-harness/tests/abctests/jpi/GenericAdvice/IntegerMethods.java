@@ -13,7 +13,7 @@ aspect A{
 
 public class C{
 	
-	<R extends Integer> exhibits R  JP(R r) : call(Integer *(..)) && argsinv(r);
+	<R extends Integer> exhibits R  JP(R r) : call(Integer *(..)) && Args(r);
 		
 	public Integer foo2(Integer u){return u;}
 	

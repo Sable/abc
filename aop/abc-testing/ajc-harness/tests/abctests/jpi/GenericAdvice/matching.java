@@ -30,7 +30,7 @@ public class C{
 	public static int counterJP2 = 0;
 
 	<R> exhibits R JP() : execution(* *(..));
-	<R extends Integer> exhibits R JP(R d) : execution(R *(..)) && argsinv(d);
+	<R extends Integer> exhibits R JP(R d) : execution(R *(..)) && Args(d);
 	<R extends Number> exhibits R JP2() : execution(R *(..));
 		
 	public static Integer foo(Integer a){return null;}

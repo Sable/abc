@@ -28,7 +28,7 @@ aspect A{
 
 public class C{
 	
-	<M extends Integer> exhibits M JP1(M k) : call(M *(..)) && argsinv(k);
+	<M extends Integer> exhibits M JP1(M k) : call(M *(..)) && Args(k);
 	
 	public static Integer foo(Integer a){return 1;}
 	

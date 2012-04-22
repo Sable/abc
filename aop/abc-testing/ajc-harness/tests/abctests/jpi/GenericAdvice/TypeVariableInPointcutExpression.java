@@ -13,7 +13,7 @@ public class C{
 	
 	<J extends Integer> exhibits J JP() : execution(J *(..));
 
-	<J extends Float> exhibits J JP(J m) : execution(J *(..)) && argsinv(m);
+	<J extends Float> exhibits J JP(J m) : execution(J *(..)) && Args(m);
 	
 	public static Integer foo(){return null;}
 	public static Integer bar(){return null;}

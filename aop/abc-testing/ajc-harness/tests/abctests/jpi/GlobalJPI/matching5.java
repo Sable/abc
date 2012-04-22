@@ -1,7 +1,7 @@
 import java.lang.*;
 import org.aspectj.testing.Tester;
 
-<R extends Integer, L extends Number>global jpi R JP(L a) : execution(R get*(..)) && argsinv(a); //warning
+<R extends Integer, L extends Number>global jpi R JP(L a) : execution(R get*(..)) && Args(a); //warning
 
 class A{
    <X extends Integer, U extends Number> exhibits X JP(U a) : global();

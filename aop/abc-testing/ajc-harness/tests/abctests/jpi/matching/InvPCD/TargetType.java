@@ -29,7 +29,7 @@ public aspect AS{
 	
 	exhibits void JP(A a) : call(void *(..)) && target(a);
 	
-	exhibits void JP2(A a) : call(void *(..)) && targetinv(a);
+	exhibits void JP2(A a) : call(void *(..)) && Target(a);
 
 	public static void main(String[] args){
 		A a = new A();

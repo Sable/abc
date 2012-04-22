@@ -6,7 +6,7 @@ jpi void JP2(A i);
 class A{
 	
 	exhibits void JP(A l) : call(void *(..)) && this(l);
-	exhibits void JP2(A k) : call(void *(..)) && thisinv(k);
+	exhibits void JP2(A k) : call(void *(..)) && This(k);
 	
 	public void bar(){
 		zar();
@@ -19,7 +19,7 @@ class A{
 class B extends A{
 	
 	exhibits void JP(A l) : call(void *(..)) && this(l);
-	exhibits void JP2(A k) : call(void *(..)) && thisinv(k);	
+	exhibits void JP2(A k) : call(void *(..)) && This(k);	
 	
 	public void foo(){
 		bar();
@@ -31,7 +31,7 @@ class B extends A{
 public aspect AS{
 
 	exhibits void JP(A l) : call(void *(..)) && this(l);
-	exhibits void JP2(A k) : call(void *(..)) && thisinv(k);	
+	exhibits void JP2(A k) : call(void *(..)) && This(k);	
 
 	public static int countVariant = 0;
 	public static int countInvariant = 0;	

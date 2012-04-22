@@ -16,7 +16,7 @@ public aspect AS{
 	public static int countReferenced = 0;
 
 	//primitive types	
-	exhibits void JP(int a) : call(void *(..)) && argsinv(a);
+	exhibits void JP(int a) : call(void *(..)) && Args(a);
 	exhibits void JP2(int a) : call(void *(..)) && args(a);
 
 	public static void foo(char x){}
@@ -24,7 +24,7 @@ public aspect AS{
 	public static void zoo(short x){}
 	
 	//Referenced types
-	exhibits void JP3(A a) : call(void *(..)) && argsinv(a);
+	exhibits void JP3(A a) : call(void *(..)) && Args(a);
 	exhibits void JP4(A a) : call(void *(..)) && args(a);
 	
 	public static void foo2(B x){}

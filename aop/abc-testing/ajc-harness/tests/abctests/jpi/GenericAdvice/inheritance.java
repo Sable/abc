@@ -13,7 +13,7 @@ public class C{
 	
 	public static int counter=0;
 	
-	<R extends AbstractCommand> exhibits void CommandContractsNotifyingView(R acommand) : call(* *(..)) && argsinv(acommand);
+	<R extends AbstractCommand> exhibits void CommandContractsNotifyingView(R acommand) : call(* *(..)) && Args(acommand);
 
 	public static void foo(AbstractCommand a){}
 	public static void bar(ZoomCommand a){}

@@ -8,7 +8,7 @@ import java.lang.*;
 class M{
 	
 	<L> exhibits L JP1() : call(* *(..));
-	<H> exhibits H JP2(H i) : call (* *(..)) && argsinv(i);
+	<H> exhibits H JP2(H i) : call (* *(..)) && Args(i);
 	
 }
 

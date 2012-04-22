@@ -12,7 +12,7 @@ class A implements I{
 	
 	exhibits void JP() : call(void *(..)) && target(I);
 
-	exhibits void JP2(I a) : call(void *(..)) && targetinv(a);
+	exhibits void JP2(I a) : call(void *(..)) && Target(a);
 
 	public void bar(){
 		zar();
@@ -29,7 +29,7 @@ public aspect AS{
 	
 	exhibits void JP() : call(void *(..)) && target(I);
 
-	exhibits void JP2(I a) : call(void *(..)) && targetinv(a);
+	exhibits void JP2(I a) : call(void *(..)) && Target(a);
 
 	
 	before JP(){
