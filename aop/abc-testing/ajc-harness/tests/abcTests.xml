@@ -11464,17 +11464,17 @@
         </compile>
     </ajc-test> 	
 
-    <ajc-test num="1681" dir="abctests/jpi/GenericADvice" title="matching-3">
+    <ajc-test num="1681" dir="abctests/jpi/GenericAdvice" title="matching-3">
         <compile files="matching3.java" options="-ext,abc.ja.jpi">
 	        <message kind="error" line="16"/>        	
         </compile>
     </ajc-test>    
 
-    <ajc-test num="1682" dir="abctests/jpi/GenericADvice" title="matching-4">
+    <ajc-test num="1682" dir="abctests/jpi/GenericAdvice" title="matching-4">
         <compile files="matching4.java" options="-ext,abc.ja.jpi" />
     </ajc-test>    
 
-    <ajc-test num="1683" dir="abctests/jpi/GenericADvice" title="matching-5">
+    <ajc-test num="1683" dir="abctests/jpi/GenericAdvice" title="matching-5">
         <compile files="matching5.java" options="-ext,abc.ja.jpi" />
     </ajc-test>  
 
