@@ -6058,11 +6058,11 @@
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance" num="1605" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax.java">
-        	<message line="9" kind="error"></message>	        
-        	<message line="9" kind="error"></message>	        
-        	<message line="11" kind="error"></message>	        
-        	<message line="11" kind="error"></message>	        
-        	<message line="11" kind="error"></message>			
+        	<message line="9" kind="error"></message>
+        	<message line="9" kind="error"></message>
+        	<message line="9" kind="error"></message>
+        	<message line="11" kind="error"></message>
+        	<message line="11" kind="error"></message>
 		</compile>
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
@@ -6097,17 +6097,23 @@
     </ajc-test>
 <ajc-test title="Check JPI inheritance" num="1612" dir="abctests/jpi/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckJPIInheritance.java">
-	        <message line="11" kind="error"></message>        	
+	        <message line="11" kind="error"></message>
+	        <message line="11" kind="error"></message>
 	        <message line="12" kind="error"></message>
 	        <message line="12" kind="error"></message>
 	        <message line="12" kind="error"></message>
 	        <message line="14" kind="error"></message>
 	        <message line="14" kind="error"></message>			
+	        <message line="14" kind="error"></message>			
 	        <message line="18" kind="error"></message>
+	        <message line="19" kind="error"></message>
 	        <message line="19" kind="error"></message>
 	        <message line="24" kind="error"></message>
 	        <message line="27" kind="error"></message>
+	        <message line="27" kind="error"></message>
 	        <message line="31" kind="error"></message>
+	        <message line="31" kind="error"></message>
+	        <message line="36" kind="error"></message>			
 	        <message line="36" kind="error"></message>			
         </compile>
     </ajc-test>
@@ -6138,6 +6144,7 @@
 	        <message line="17" kind="error"></message>
 	        <message line="19" kind="error"></message>
 	        <message line="23" kind="error"></message>
+	        <message line="25" kind="error"></message>			
         </compile>
     </ajc-test>
 <ajc-test title="Check Advice exception" num="1616" dir="abctests/jpi/typechecks">
@@ -6277,7 +6284,9 @@
 <ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
         <compile options="-ext,abc.ja.jpi" files="InterfacesType.java">
         	<message line="13" kind="warning"></message>
-        	<message line="30" kind="warning"></message>			
+        	<message line="15" kind="warning"></message>
+        	<message line="30" kind="warning"></message>
+        	<message line="32" kind="warning"></message>
 		</compile>
 		<run class="AS"></run>		
     </ajc-test>
@@ -6370,10 +6379,13 @@
         	<message line="18" kind="error"></message>
         	<message line="19" kind="error"></message>
         	<message line="21" kind="error"></message>
+        	<message line="24" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="typecheck generic exhibit" num="1672" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericExhibit.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericExhibit.java">
+        	<message line="11" kind="warning"></message>        	
+        </compile>
     </ajc-test>
 <ajc-test title="typecheck generic advice" num="1673" dir="abctests/jpi/GenericAdvice">
         <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdvice.java">
@@ -6390,32 +6402,91 @@
 		</compile>
     </ajc-test>
 <ajc-test title="matching" num="1674" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="matching.java">
+        	<message line="33" kind="warning"></message>        	
+        </compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="Integer methods on bound type Integer" num="1675" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="IntegerMethods.java"></compile>
+<ajc-test title="matching 2" num="1675" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching_2.java">
+        	<message line="20" kind="warning"></message>
+        	<message line="20" kind="warning"></message>
+        	<message line="20" kind="warning"></message>
+        	<message line="21" kind="warning"></message>
+        	<message line="22" kind="warning"></message>
+        	<message line="23" kind="warning"></message>			
+        </compile>
+    </ajc-test>
+<ajc-test title="Integer methods on bound type Integer" num="1676" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="IntegerMethods.java">
+        	<message line="16" kind="warning"></message>        	
+        </compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching type variables in pointcut expression" num="1676" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="TypeVariableInPointcutExpression.java"></compile>
+<ajc-test title="matching type variables in pointcut expression" num="1677" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="TypeVariableInPointcutExpression.java">
+        	<message line="16" kind="warning"></message>        	
+        </compile>		
 		<run class="C"></run>
     </ajc-test>
 <ajc-test title="type check on Advice specifications" num="1678" dir="abctests/jpi/GenericAdvice">
-        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdviceSpec.java"></compile>
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdviceSpec.java">
+        	<message line="31" kind="warning"></message>        	
+        </compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="simple syntax" num="1680" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="exception handling" num="1679" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="exceptions.java">
+	        <message line="13" kind="error"></message>
+	        <message line="14" kind="error"></message>
+	        <message line="16" kind="error"></message>
+	        <message line="30" kind="error"></message>
+	        <message line="31" kind="error"></message>
+	        <message line="34" kind="error"></message>
+	        <message line="44" kind="error"></message>
+	        <message line="48" kind="error"></message>
+	        <message line="51" kind="error"></message>
+	        <message line="51" kind="error"></message>
+	        <message line="55" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="exception handling with throw stmts" num="1680" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="exceptions2.java">
+	        <message line="14" kind="error"></message>
+	        <message line="18" kind="error"></message>
+	        <message line="25" kind="error"></message>
+	        <message line="28" kind="error"></message>
+	        <message line="31" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="matching-3" num="1681" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching3.java">
+	        <message line="16" kind="error"></message>        	
+        </compile>
+    </ajc-test>
+<ajc-test title="matching-4" num="1682" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching4.java"></compile>
+    </ajc-test>
+<ajc-test title="matching-5" num="1683" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching5.java"></compile>
+    </ajc-test>
+<ajc-test title="inheritance in generice advice" num="1684" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="inheritance.java">
+	        <message line="16" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="simple syntax" num="1690" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="syntax.java">
         	<message line="9" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="generic syntax" num="1681" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="generic syntax" num="1691" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="syntax.java">
         	<message line="9" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="typechecking" num="1682" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="typechecking" num="1692" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="typechecking.java">
         	<message line="11" kind="error"></message>
         	<message line="13" kind="error"></message>
@@ -6423,31 +6494,36 @@
         	<message line="29" kind="error"></message>			
         </compile>
     </ajc-test>
-<ajc-test title="typechecking around advice" num="1683" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="typechecking around advice" num="1693" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="typechecking2.java">
 	        <message line="12" kind="error"></message>
 	        <message line="20" kind="error"></message>        	
         </compile>
     </ajc-test>
-<ajc-test title="tychecking global PCD" num="1684" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="tychecking global PCD" num="1694" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="typechecking3.java">
 	        <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="matching" num="1685" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching" num="1695" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_2" num="1686" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching_2" num="1696" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_3" num="1687" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching_3" num="1697" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
 		<run class="C"></run>
     </ajc-test>
-<ajc-test title="matching_4" num="1688" dir="abctests/jpi/GlobalJPI">
+<ajc-test title="matching_4" num="1698" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching4.java"></compile>
+    </ajc-test>
+<ajc-test title="matching_5" num="1699" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching5.java">
+        	<message line="16" kind="error"></message>				
+        </compile>
     </ajc-test>
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
