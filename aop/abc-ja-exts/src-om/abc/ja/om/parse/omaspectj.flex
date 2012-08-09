@@ -1,6 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2008 Pavel Avgustinov
- * Copyright (C) 2008 Torbjörn Ekman
+ * Copyright (C) 2008 Torbjorn Ekman
  * Copyright (C) 2008 Julian Tibble
  * Copyright (C) 2008 Neil Ongkingco
  *
