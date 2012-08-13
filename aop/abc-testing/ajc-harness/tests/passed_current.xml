@@ -3762,10 +3762,6 @@
         <compile files="Simple.java,Main.java"></compile>
         <run class="Main"></run>
     </ajc-test>
-<ajc-test title="options -injars" num="710" dir="options/injars/simple">
-        <compile options="!eclipse" files="Simple.java,main.jar"></compile>
-        <run class="Main"></run>
-    </ajc-test>
 <ajc-test title="interface self-reference in anonymous instance" pr="774" num="712" dir="new">
         <compile files="AnonymousSelfReference.java"></compile>
         <run class="AnonymousSelfReference"></run>
@@ -4086,10 +4082,6 @@
             <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
-<ajc-test title="options -injars checking declare parents interactions" pr="35865" num="777" dir="options/injars/simple">
-        <compile options="!eclipse" files="DecParents.java,main.jar"></compile>
-        <run class="DecParents"></run>
-    </ajc-test>
 <ajc-test title="IllegalAccessError while accessing introduced variable / 1.1rc1" pr="36110" num="778" dir="bugs/interSpecials">
         <compile files="p1/C.java,p2/A1.java"></compile>
         <run class="p2.A1"></run>
@@ -4194,68 +4186,6 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
-<ajc-test title="declare warnings on binary javac 1.4 classes" pr="37020" num="794" dir="new/binaryWarnings/src">
-        <compile files="aspects/MainWarnings.java,../injars/app-javac-1.4.jar">
-        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
-        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
-        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
-        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
-        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
-        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
-        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
-        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
-        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
-        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
-        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
-        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
-        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
-        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
-        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-	</ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start" abccomment="ideally we'd get the message at line 6, but 12 is about the best we can do.                      6 isn't reported in the bytecode anywhere, so there's no hope of that.                      ajc does the same as us.">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
-        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
-        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary javac 1.4 classes" pr="37020" num="797" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start; XXX need javac inlining example" abccomment="ideally we'd get the message at line 6 and 17, but 12 and 20 is the best we can do                     given what the bytecode has. ajc does the same as us.">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-javac-1.4.jar">
-        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
-        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="20" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
 <ajc-test title="expected class tree" num="803" dir="incremental/initialTests/expClasses">
         <compile files="Main.java">
             <dir-changes expDir="expected"></dir-changes>
@@ -4292,29 +4222,11 @@
         <compile files="FinalFields.java"></compile>
         <run class="FinalFields"></run>
     </ajc-test>
-<ajc-test title="Weaving rt.jar results in stack overflow" pr="37758" num="817" dir="bugs/lines">
-        <compile files="A.java,big.jar">
- 			
-        </compile>
-        <run class="Big"></run>
-    </ajc-test>
 <ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
         <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
     </ajc-test>
 <ajc-test title="declare warnings on main - constructor execution" pr="37020" num="822" keywords="knownLimitation" dir="new/binaryWarnings/src">
         <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" num="823" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 main - constructor execution" pr="37020" num="824" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
         	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
         </compile>
         <run class="app.Main"></run>
@@ -4633,11 +4545,6 @@
         <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>
         <run class="C"></run>
     </ajc-test>
-<ajc-test title="Introduced abstract method on interface not implemented by subtype (injars)" pr="49784" num="901" dir="bugs/abstractMethods">
-       <compile files="interface/C.java,interface/jars/AandB.jar"> 
-            <message line="1" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="Introduced abstract method on abstract class not implemented by subtype (single source file)" pr="49784" num="903" dir="bugs/abstractMethods" abccomment="abc gives message at intertype decl rather than class. ODM July 14,2004">
         <compile files="singlesource/C.java">
         	<ajcmessage line="9" kind="error"></ajcmessage>
@@ -4950,243 +4857,6 @@
         	<message line="7" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare error binary-weaving NPE 1" pr="57432" num="961" dir="bugs/systemouts" abccomment="we correctly report two errors at line 13">
-        <compile files="injar-debug.jar,A.java">
-			<ajcmessage line="12" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="13" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="20" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="22" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="23" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="27" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="28" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="29" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="30" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="31" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="32" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="33" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="34" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="35" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="36" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="37" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="38" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="39" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="40" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="41" kind="error" file="X.java"></ajcmessage>
-			<message line="12" kind="error" file="X.java"></message>
-			<message line="13" kind="error" file="X.java"></message>
-			<message line="13" kind="error" file="X.java"></message>
-			<message line="20" kind="error" file="X.java"></message>
-			<message line="22" kind="error" file="X.java"></message>
-			<message line="23" kind="error" file="X.java"></message>
-			<message line="27" kind="error" file="X.java"></message>
-			<message line="28" kind="error" file="X.java"></message>
-			<message line="29" kind="error" file="X.java"></message>
-			<message line="30" kind="error" file="X.java"></message>
-			<message line="31" kind="error" file="X.java"></message>
-			<message line="32" kind="error" file="X.java"></message>
-			<message line="33" kind="error" file="X.java"></message>
-			<message line="34" kind="error" file="X.java"></message>
-			<message line="35" kind="error" file="X.java"></message>
-			<message line="36" kind="error" file="X.java"></message>
-			<message line="37" kind="error" file="X.java"></message>
-			<message line="38" kind="error" file="X.java"></message>
-			<message line="39" kind="error" file="X.java"></message>
-			<message line="40" kind="error" file="X.java"></message>
-			<message line="41" kind="error" file="X.java"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="declare error binary-weaving NPE 2 " pr="57432" num="962" dir="bugs/systemouts" abccomment="we generate 21 errors, just like ajc..">
-        <compile files="injar-nodebug.jar,A.java">
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<message kind="error"></message>
-			<ajcmessage line="0" kind="error"></ajcmessage>
-        </compile>
-    </ajc-test>
-<ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors" abccomment="abc stops after 100 errors, ajc after 101. Nothing               interesting in this test case. PA">
-        <compile files="Joinpoints101.jar,DecErrors.aj">
-         
-          <ajcmessage line="10" kind="error"></ajcmessage><ajcmessage line="11" kind="error"></ajcmessage>
-          <ajcmessage line="12" kind="error"></ajcmessage><ajcmessage line="13" kind="error"></ajcmessage>
-          <ajcmessage line="14" kind="error"></ajcmessage>
-
-          <ajcmessage line="16" kind="error"></ajcmessage><ajcmessage line="17" kind="error"></ajcmessage>
-          <ajcmessage line="18" kind="error"></ajcmessage><ajcmessage line="19" kind="error"></ajcmessage>
-          <ajcmessage line="20" kind="error"></ajcmessage>
- 
-          <ajcmessage line="22" kind="error"></ajcmessage><ajcmessage line="23" kind="error"></ajcmessage>
-          <ajcmessage line="24" kind="error"></ajcmessage><ajcmessage line="25" kind="error"></ajcmessage>
-          <ajcmessage line="26" kind="error"></ajcmessage>
- 
-          <ajcmessage line="28" kind="error"></ajcmessage><ajcmessage line="29" kind="error"></ajcmessage>
-          <ajcmessage line="30" kind="error"></ajcmessage><ajcmessage line="31" kind="error"></ajcmessage>
-          <ajcmessage line="32" kind="error"></ajcmessage>
-  
-          <ajcmessage line="34" kind="error"></ajcmessage><ajcmessage line="35" kind="error"></ajcmessage>
-          <ajcmessage line="36" kind="error"></ajcmessage><ajcmessage line="37" kind="error"></ajcmessage>
-          <ajcmessage line="38" kind="error"></ajcmessage>
- 
-          <ajcmessage line="40" kind="error"></ajcmessage><ajcmessage line="41" kind="error"></ajcmessage>
-          <ajcmessage line="42" kind="error"></ajcmessage><ajcmessage line="43" kind="error"></ajcmessage>
-          <ajcmessage line="44" kind="error"></ajcmessage>
-          
-          <ajcmessage line="46" kind="error"></ajcmessage><ajcmessage line="47" kind="error"></ajcmessage>
-          <ajcmessage line="48" kind="error"></ajcmessage><ajcmessage line="49" kind="error"></ajcmessage>
-          <ajcmessage line="50" kind="error"></ajcmessage>
- 
-          <ajcmessage line="52" kind="error"></ajcmessage><ajcmessage line="53" kind="error"></ajcmessage>
-          <ajcmessage line="54" kind="error"></ajcmessage><ajcmessage line="55" kind="error"></ajcmessage>
-          <ajcmessage line="56" kind="error"></ajcmessage>
-  
-          <ajcmessage line="58" kind="error"></ajcmessage><ajcmessage line="59" kind="error"></ajcmessage>
-          <ajcmessage line="60" kind="error"></ajcmessage><ajcmessage line="61" kind="error"></ajcmessage>
-          <ajcmessage line="62" kind="error"></ajcmessage>
- 
-          <ajcmessage line="64" kind="error"></ajcmessage><ajcmessage line="65" kind="error"></ajcmessage>
-          <ajcmessage line="66" kind="error"></ajcmessage><ajcmessage line="67" kind="error"></ajcmessage>
-          <ajcmessage line="68" kind="error"></ajcmessage>
-          
-          <ajcmessage line="70" kind="error"></ajcmessage><ajcmessage line="71" kind="error"></ajcmessage>
-          <ajcmessage line="72" kind="error"></ajcmessage><ajcmessage line="73" kind="error"></ajcmessage>
-          <ajcmessage line="74" kind="error"></ajcmessage>
- 
-          <ajcmessage line="76" kind="error"></ajcmessage><ajcmessage line="77" kind="error"></ajcmessage>
-          <ajcmessage line="78" kind="error"></ajcmessage><ajcmessage line="79" kind="error"></ajcmessage>
-          <ajcmessage line="80" kind="error"></ajcmessage>
-  
-          <ajcmessage line="82" kind="error"></ajcmessage><ajcmessage line="83" kind="error"></ajcmessage>
-          <ajcmessage line="84" kind="error"></ajcmessage><ajcmessage line="85" kind="error"></ajcmessage>
-          <ajcmessage line="86" kind="error"></ajcmessage>
- 
-          <ajcmessage line="88" kind="error"></ajcmessage><ajcmessage line="89" kind="error"></ajcmessage>
-          <ajcmessage line="90" kind="error"></ajcmessage><ajcmessage line="91" kind="error"></ajcmessage>
-          <ajcmessage line="92" kind="error"></ajcmessage>
-          
-          <ajcmessage line="94" kind="error"></ajcmessage><ajcmessage line="95" kind="error"></ajcmessage>
-          <ajcmessage line="96" kind="error"></ajcmessage><ajcmessage line="97" kind="error"></ajcmessage>
-          <ajcmessage line="98" kind="error"></ajcmessage>
- 
-          <ajcmessage line="100" kind="error"></ajcmessage><ajcmessage line="101" kind="error"></ajcmessage>
-          <ajcmessage line="102" kind="error"></ajcmessage><ajcmessage line="103" kind="error"></ajcmessage>
-          <ajcmessage line="104" kind="error"></ajcmessage>
-  
-          <ajcmessage line="106" kind="error"></ajcmessage><ajcmessage line="107" kind="error"></ajcmessage>
-          <ajcmessage line="108" kind="error"></ajcmessage><ajcmessage line="109" kind="error"></ajcmessage>
-          <ajcmessage line="110" kind="error"></ajcmessage>
- 
-          <ajcmessage line="112" kind="error"></ajcmessage><ajcmessage line="113" kind="error"></ajcmessage>
-          <ajcmessage line="114" kind="error"></ajcmessage><ajcmessage line="115" kind="error"></ajcmessage>
-          <ajcmessage line="116" kind="error"></ajcmessage>
-          
-          <ajcmessage line="118" kind="error"></ajcmessage><ajcmessage line="119" kind="error"></ajcmessage>
-          <ajcmessage line="120" kind="error"></ajcmessage><ajcmessage line="121" kind="error"></ajcmessage>
-          <ajcmessage line="122" kind="error"></ajcmessage>
-  
-          <ajcmessage line="124" kind="error"></ajcmessage><ajcmessage line="125" kind="error"></ajcmessage>
-          <ajcmessage line="126" kind="error"></ajcmessage><ajcmessage line="127" kind="error"></ajcmessage>
-          <ajcmessage line="128" kind="error"></ajcmessage>
- 
-          <ajcmessage line="130" kind="error"></ajcmessage>
-          
-          <message line="10" kind="error"></message><message line="11" kind="error"></message>
-          <message line="12" kind="error"></message><message line="13" kind="error"></message>
-          <message line="14" kind="error"></message>
-
-          <message line="16" kind="error"></message><message line="17" kind="error"></message>
-          <message line="18" kind="error"></message><message line="19" kind="error"></message>
-          <message line="20" kind="error"></message>
- 
-          <message line="22" kind="error"></message><message line="23" kind="error"></message>
-          <message line="24" kind="error"></message><message line="25" kind="error"></message>
-          <message line="26" kind="error"></message>
- 
-          <message line="28" kind="error"></message><message line="29" kind="error"></message>
-          <message line="30" kind="error"></message><message line="31" kind="error"></message>
-          <message line="32" kind="error"></message>
-  
-          <message line="34" kind="error"></message><message line="35" kind="error"></message>
-          <message line="36" kind="error"></message><message line="37" kind="error"></message>
-          <message line="38" kind="error"></message>
- 
-          <message line="40" kind="error"></message><message line="41" kind="error"></message>
-          <message line="42" kind="error"></message><message line="43" kind="error"></message>
-          <message line="44" kind="error"></message>
-          
-          <message line="46" kind="error"></message><message line="47" kind="error"></message>
-          <message line="48" kind="error"></message><message line="49" kind="error"></message>
-          <message line="50" kind="error"></message>
- 
-          <message line="52" kind="error"></message><message line="53" kind="error"></message>
-          <message line="54" kind="error"></message><message line="55" kind="error"></message>
-          <message line="56" kind="error"></message>
-  
-          <message line="58" kind="error"></message><message line="59" kind="error"></message>
-          <message line="60" kind="error"></message><message line="61" kind="error"></message>
-          <message line="62" kind="error"></message>
- 
-          <message line="64" kind="error"></message><message line="65" kind="error"></message>
-          <message line="66" kind="error"></message><message line="67" kind="error"></message>
-          <message line="68" kind="error"></message>
-          
-          <message line="70" kind="error"></message><message line="71" kind="error"></message>
-          <message line="72" kind="error"></message><message line="73" kind="error"></message>
-          <message line="74" kind="error"></message>
- 
-          <message line="76" kind="error"></message><message line="77" kind="error"></message>
-          <message line="78" kind="error"></message><message line="79" kind="error"></message>
-          <message line="80" kind="error"></message>
-  
-          <message line="82" kind="error"></message><message line="83" kind="error"></message>
-          <message line="84" kind="error"></message><message line="85" kind="error"></message>
-          <message line="86" kind="error"></message>
- 
-          <message line="88" kind="error"></message><message line="89" kind="error"></message>
-          <message line="90" kind="error"></message><message line="91" kind="error"></message>
-          <message line="92" kind="error"></message>
-          
-          <message line="94" kind="error"></message><message line="95" kind="error"></message>
-          <message line="96" kind="error"></message><message line="97" kind="error"></message>
-          <message line="98" kind="error"></message>
- 
-          <message line="100" kind="error"></message><message line="101" kind="error"></message>
-          <message line="102" kind="error"></message><message line="103" kind="error"></message>
-          <message line="104" kind="error"></message>
-  
-          <message line="106" kind="error"></message><message line="107" kind="error"></message>
-          <message line="108" kind="error"></message><message line="109" kind="error"></message>
-          <message line="110" kind="error"></message>
- 
-          <message line="112" kind="error"></message><message line="113" kind="error"></message>
-          <message line="114" kind="error"></message><message line="115" kind="error"></message>
-          <message line="116" kind="error"></message>
-          
-          <message line="118" kind="error"></message><message line="119" kind="error"></message>
-          <message line="120" kind="error"></message><message line="121" kind="error"></message>
-          <message line="122" kind="error"></message>
-  
-          <message line="124" kind="error"></message><message line="125" kind="error"></message>
-          <message line="126" kind="error"></message><message line="127" kind="error"></message>
-          <message line="128" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="NPE when binary weaving a ctor ITD" pr="59440" num="964" dir="bugs">
         <compile files="CtorITD.aj">
         	<message line="2" kind="error"></message>
@@ -5279,16 +4949,6 @@
     </ajc-test>
 <ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
        <compile files="DeclareParentsInner.java"></compile>
-    </ajc-test>
-<ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
-       <compile files="BinaryClasses.jar,Aspect.java"></compile>
-       <run class="BinaryClasses"></run>
-    </ajc-test>
-<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
-       <compile files="BinaryClasses2.jar,Aspect.java">
-           
-           <message line="24" kind="error" file="BinaryClasses2.java"></message>
-       </compile>
     </ajc-test>
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
@@ -5404,18 +5064,6 @@
     </ajc-test>
 <ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
          <compile files="PrecedenceSort.java"></compile>
-    </ajc-test>
-<ajc-test title="checks for declare parents on binary classes" num="1016" dir="abctests/bugs">
-         <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-            <message kind="error"></message>
-         </compile>
     </ajc-test>
 <ajc-test title="around weaver incorrectly unboxing double literals in float context" num="1017" dir="abctests/bugs">
         <compile files="AroundUnboxing.java"></compile>
