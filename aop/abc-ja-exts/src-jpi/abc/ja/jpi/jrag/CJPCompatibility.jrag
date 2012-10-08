@@ -1,5 +1,12 @@
 aspect CJPCompatibility {
 
+	inh TypeDecl Expr.getShadowExpectedType();
+	eq AssignSimpleExpr.getSource().getShadowExpectedType() = getDest().type();
+	eq ReturnStmt.getResult().getShadowExpectedType() = returnType();
+	eq VariableDeclaration.getInit().getShadowExpectedType() = type();
+	eq Program.getChild().getShadowExpectedType() = typeVoid();
+
+  
 	//rewrite CJP's JoinpointTypeDecl to JPITypeDecl
 	rewrite JoinpointTypeDecl { 
 		when(!isJPITypeDecl())
@@ -7,5 +14,36 @@ aspect CJPCompatibility {
 			return new JPITypeDecl(getModifiers(), getID(), getBodyDecls(), getTypeAccess(), getParameters(), getExceptions(), new DummyAccess("","$RootJPI$"),new List());
 		} 
 	}	
+	
+	refine TypeCheckCJP public void ClosureJoinpointAccess.correctTheReturnTypeAndThrowsList(){
+		TypeDecl decl = getName().type();
+		TypeDecl returnShadowType = this.getShadowExpectedType();
+		TypeAccess cjpReturnTypeAccess = null;
+
+		if (decl.isJoinpointTypeDecl()) {
+			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) decl;
+			cjpReturnTypeAccess = (TypeAccess)joinpointTypeDecl.getTypeAccess();
+			if (cjpReturnTypeAccess.type().isTypeVariable()) {
+				try {
+					cjpReturnTypeAccess = cjpReturnTypeAccess.clone();
+				} catch (CloneNotSupportedException e) {
+					throw new RuntimeException(e); //cannot occur
+				}
+				cjpReturnTypeAccess.decl_value = returnShadowType;
+				cjpReturnTypeAccess.decls_value = returnShadowType;
+				cjpReturnTypeAccess.tokenString_ID = returnShadowType.tokenString_ID;
+				cjpReturnTypeAccess.decl_computed = true;
+			}
+			try{
+				setReturnType(cjpReturnTypeAccess);
+				setExceptionList(joinpointTypeDecl.getExceptionList().clone());
+			} catch(CloneNotSupportedException e) {
+				throw new RuntimeException(e); //cannot occur
+			}
+			
+		}
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).correctTheReturnTypeAndThrowsList();	
+	}
 
 }
