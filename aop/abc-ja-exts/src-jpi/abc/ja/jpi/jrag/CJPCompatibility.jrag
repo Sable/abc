@@ -1,10 +1,15 @@
 aspect CJPCompatibility {
 
-	inh TypeDecl Expr.getShadowExpectedType();
-	eq AssignSimpleExpr.getSource().getShadowExpectedType() = getDest().type();
-	eq ReturnStmt.getResult().getShadowExpectedType() = returnType();
-	eq VariableDeclaration.getInit().getShadowExpectedType() = type();
-	eq Program.getChild().getShadowExpectedType() = typeVoid();
+	inh TypeDecl Expr.getShadowExpectedReturnType();
+	eq AssignSimpleExpr.getSource().getShadowExpectedReturnType() = getDest().type();
+	eq ReturnStmt.getResult().getShadowExpectedReturnType() = returnType();
+	eq VariableDeclaration.getInit().getShadowExpectedReturnType() = type();
+	eq Program.getChild().getShadowExpectedReturnType() = typeVoid();
+
+
+	inh lazy List<Access> Expr.getShadowExpectedExceptionList();
+	eq MethodDecl.getBlock().getShadowExpectedExceptionList() = getExceptions();
+	eq Program.getChild().getShadowExpectedExceptionList() = null;
 
   
 	//rewrite CJP's JoinpointTypeDecl to JPITypeDecl
@@ -17,9 +22,12 @@ aspect CJPCompatibility {
 	
 	refine TypeCheckCJP public void ClosureJoinpointAccess.correctTheReturnTypeAndThrowsList(){
 		TypeDecl decl = getName().type();
-		TypeDecl returnShadowType = this.getShadowExpectedType();
+		TypeDecl returnShadowType = this.getShadowExpectedReturnType();
 		TypeAccess cjpReturnTypeAccess = null;
-
+		List<Access> cjpExceptionList = new List<Access>();
+		boolean exceptionTypeVariableFlag = false;
+		
+		
 		if (decl.isJoinpointTypeDecl()) {
 			JoinpointTypeDecl joinpointTypeDecl = (JoinpointTypeDecl) decl;
 			cjpReturnTypeAccess = (TypeAccess)joinpointTypeDecl.getTypeAccess();
@@ -33,17 +41,36 @@ aspect CJPCompatibility {
 				cjpReturnTypeAccess.decls_value = returnShadowType;
 				cjpReturnTypeAccess.tokenString_ID = returnShadowType.tokenString_ID;
 				cjpReturnTypeAccess.decl_computed = true;
+				cjpReturnTypeAccess.parent = this;
 			}
-			try{
-				setReturnType(cjpReturnTypeAccess);
-				setExceptionList(joinpointTypeDecl.getExceptionList().clone());
+			try{				
+				for(Access exception : joinpointTypeDecl.getExceptionList()) {
+					if (exception.type().isTypeVariable()) {
+						exceptionTypeVariableFlag = true;
+					} else {
+						cjpExceptionList.add(exception.clone());
+					}
+				}
+				if (exceptionTypeVariableFlag) {
+					for(int i=0; i<this.getShadowExpectedExceptionList().getNumChild(); i++) {
+						cjpExceptionList.add(this.getShadowExpectedExceptionList().getChild(i).clone());
+					}
+				}
 			} catch(CloneNotSupportedException e) {
 				throw new RuntimeException(e); //cannot occur
 			}
-			
+						
+			setExceptionList(cjpExceptionList);
+			setReturnType(cjpReturnTypeAccess);
 		}
 		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).correctTheReturnTypeAndThrowsList();	
+			getChild(i).correctTheReturnTypeAndThrowsList();
+	}
+	
+	refine ExtractCJP public void ClosureJoinpointAccess.extractIntoMethod() {
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).extractIntoMethod();		
+		ExtractCJP.ClosureJoinpointAccess.extractIntoMethod();
 	}
 
 }

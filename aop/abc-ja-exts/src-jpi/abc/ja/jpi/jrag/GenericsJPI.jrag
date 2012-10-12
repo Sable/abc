@@ -553,7 +553,7 @@ aspect GenericsJPI{
 		if(!getTypeAccess().isTypeAccess())
 			error("" + getTypeAccess() + " is not a type access in cast expression");
 		}
-		if (hostBodyDecl().isCJPAdviceDecl() && error==false){
+		/*if (hostBodyDecl().isCJPAdviceDecl() && error==false){
 			if (expr.isTypeVariable() && type.isTypeVariable()){
 				if(!((TypeVariable)expr).getTypeBound(0).type().equals(((TypeVariable)type).getTypeBound(0).type())){
 					error(expr.typeName() + " can not be cast into " + type.typeName());
@@ -564,7 +564,7 @@ aspect GenericsJPI{
 					error(expr.typeName() + " can not be cast into " + type.typeName());
 				}
 			}    	
-		}
+		}*/
 	}
 	
 	refine InvPCD public Pointcut ArgsInvPointcutExpr.pointcut(){
