@@ -970,11 +970,10 @@
     </ajc-test>
 
 
-    <ajc-test num="1900" dir="abctests/jpi/GenericAdvice" title="000">
-        <compile files="inheritance.java" options="-ext,abc.ja.jpi">
-	        <message kind="warning" line="16"/>        	
+    <ajc-test num="1900" dir="abctests/jpi/open-sealed/matching" title="000">
+        <compile files="SimpleMatch.java" options="-ext,abc.ja.jpi">
         </compile>
-		<run class="C" />
+        <run class="SimpleMatch" />
     </ajc-test>    
 
 	    
