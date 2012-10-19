@@ -47,6 +47,9 @@ import abc.weaving.residues.Residue;
  */
 public class AbcExtension extends abc.ja.cjp.AbcExtension
 {
+	
+	public String cgq = "sealed";
+	
     protected void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
@@ -65,10 +68,10 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
 
     @Override
     protected GlobalAspectInfo createGlobalAspectInfo() {
-    	//FIXME: Dirty hack to reset the static fields of our classes
     	DummyAspect.reset();
     	DummyAdvice.reset();
     	JPITypeDecl.reset();
+    	this.cgq = (abc.main.options.OptionsParser.v().cgq() != null) ? abc.main.options.OptionsParser.v().cgq() : "sealed";
     	return new JPIGlobalAspectInfo();
     }
 
@@ -239,9 +242,9 @@ public class AbcExtension extends abc.ja.cjp.AbcExtension
           lexer.addPointcutKeyword("Target", new LexerAction_c(new Integer(Terminals.PC_TARGET_INV)));
           lexer.addPointcutKeyword("This", new LexerAction_c(new Integer(Terminals.PC_THIS_INV)));
           lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(Terminals.GLOBAL)));
-          //lexer.addPointcutKeyword("sealed", new LexerAction_c(new Integer(Terminals.PC_SEALED)));          
-          lexer.addPointcutKeyword("global", new LexerAction_c(new Integer(Terminals.PC_GLOBAL)));          
-          
+          lexer.addPointcutKeyword("global", new LexerAction_c(new Integer(Terminals.PC_GLOBAL)));
+          lexer.addGlobalKeyword("Open", new LexerAction_c(new Integer(Terminals.OPEN)));
+          lexer.addGlobalKeyword("Sealed", new LexerAction_c(new Integer(Terminals.SEALED)));
     }
 
     public CompileSequence createCompileSequence() {

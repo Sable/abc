@@ -74,6 +74,19 @@ public class PointcutCombination {
 		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 	
+	public static Pointcut makeWithinPointcut(Collection<ClassDecl> allSealedClasses) {
+		Pointcut pointcut = null;
+		for (ClassDecl klass :  allSealedClasses) {
+			if (pointcut == null) {
+				pointcut = new Within(getPattern(klass, klass.getParent()), klass.pos());
+			} else {
+				pointcut = OrPointcut.construct(pointcut, new Within(getPattern(klass, klass.getParent()), klass.pos()), klass.pos());
+			}
+		}
+		return pointcut != null ? pointcut : new EmptyPointcut(new Position("", -1));
+	}
+	
+	
 	public static Pointcut makeScope(JPITypeDecl jpiType, Collection<ExhibitBodyDecl> exhibitsDecls, boolean overriden){
 		Collection<ExhibitBodyDecl> exhibitDecls = collectExhibitDecls(jpiType, exhibitsDecls);
 		Pointcut pointcut=null;
@@ -92,9 +105,8 @@ public class PointcutCombination {
 
 	
 	/***
-	 * Collect all the exhibits definitions that are defined for the jpi contained
-	 * in currentAdvice and for its subtypes.
-	 * @param currentAdvice
+	 * Collect all the exhibits definitions related with the given jpi type declaration.
+	 * @param jpiType
 	 * @param exhibitsDecls
 	 * @return
 	 */

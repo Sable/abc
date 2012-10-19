@@ -206,3 +206,8 @@ AdviceSpec cjp_advice_spec =
           return s;
        :}	   
   ;
+  
+Modifier modifier = 
+	OPEN 		{: return new Modifier("open"); :}
+	| SEALED	{: return new Modifier("sealed"); :}
+	;

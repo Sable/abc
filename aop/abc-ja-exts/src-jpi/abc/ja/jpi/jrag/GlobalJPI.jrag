@@ -91,12 +91,23 @@ aspect GlobaJPI{
 	
 	refine CodeGen eq CJPPointcutExpr.pointcut(){
 		Pointcut pointcutSynthesized = CodeGen.CJPPointcutExpr.pointcut();
-		Pointcut globalPointcut, scopePointcut = null;
-		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();		
+		Pointcut globalPointcut, scopedPointcut, withinPointcut = null;
+		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();
+		
+		withinPointcut = abc.ja.jpi.utils.PointcutCombination.makeWithinPointcut(getAllSealedClasses());		
 		if (jpiTypeDecl.hasGlobalPointcut()){
 			globalPointcut = jpiTypeDecl.getPointcut().pointcut();
-			scopePointcut = NotPointcut.construct(abc.ja.jpi.utils.PointcutCombination.makeScope(jpiTypeDecl, getAllExhibitDecls(), false), pos());
-			pointcutSynthesized = OrPointcut.construct(AndPointcut.construct(globalPointcut, scopePointcut, pos()), pointcutSynthesized, pos());
+			withinPointcut = OrPointcut.construct(
+				withinPointcut,
+				abc.ja.jpi.utils.PointcutCombination.makeScope(jpiTypeDecl, getAllExhibitDecls(), false),
+				pos()
+			);
+			scopedPointcut = NotPointcut.construct(withinPointcut, pos());
+			pointcutSynthesized = OrPointcut.construct(
+				AndPointcut.construct(globalPointcut, scopedPointcut, pos()),
+				pointcutSynthesized,
+				pos()
+			);
 	  	}
 	  	return pointcutSynthesized;
 	}
@@ -197,6 +208,55 @@ aspect GlobaJPI{
 		if (getPointcut().hasGlobal() && !jpiDecl.hasGlobalPointcut())
 			error("TypeCheck: global() pointcut expression must be used in a exhibit clause which binds a global jpi definition.");			    	
     }
-    
+
+
+	/***
+	 * controlled global quantification
+	 **/
+ 
+ 	inh lazy Collection<ClassDecl> CJPPointcutExpr.getAllSealedClasses();	
+	eq Program.getCompilationUnit().getAllSealedClasses(){
+		HashSet<ClassDecl> set = new HashSet<ClassDecl>();
+		ClassDecl classDecl;
+		TypeAccess jpiAccess;
+		for(CompilationUnit cu : getCompilationUnits()){
+			for(TypeDecl typeDecl : cu.getTypeDecls()){		
+				if (!typeDecl.isClassDecl()){ //aspect is considered as a class
+					continue;
+				}
+				classDecl = (ClassDecl)typeDecl;
+				if (classDecl.isSealed()) {
+					set.add(classDecl);
+				}
+				//getAllSealedClasses(classDecl.getBodyDeclList(),set);
+			}
+		}
+		return set;	
+	}
+
+	/*private void Program.getAllSealedClasses(List<BodyDecl> bodyDeclList, HashSet<ExhibitBodyDecl> set) {
+		for(BodyDecl bodyDecl : bodyDeclList){
+			if (bodyDecl.isMemberClassDecl()){
+				getAllSealedClasses(((MemberClassDecl)bodyDecl).getClassDecl().getBodyDeclList(),set);
+				continue;
+			}
+			if (!bodyDecl.isExhibit()){
+				continue;
+			}
+			set.add((ExhibitBodyDecl)bodyDecl);
+		}
+	}*/
+	
+	public boolean ClassDecl.isSealed() {
+		for (Modifier modifier : getModifiers().getModifierList()) {
+			if (modifier.getID().equals("sealed")) {
+				return true;
+			}
+			if (modifier.getID().equals("open")) {
+				return false;
+			}
+		}		
+		return ((abc.ja.jpi.AbcExtension)abc.main.Main.v().getAbcExtension()).cgq.equals("sealed");
+	}    
     
 }
