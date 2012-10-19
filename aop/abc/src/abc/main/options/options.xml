@@ -104,6 +104,7 @@ any of their subdirectories.
         classpath abc is invoked with.
       </long_desc>
     </stringopt>
+    
     <stringopt>
       <alias>main-class</alias>
       <set_arg_label>class</set_arg_label>
@@ -113,7 +114,9 @@ any of their subdirectories.
         This option sets the main class.
       </long_desc>
     </stringopt>
-  </section>
+  <stringopt>
+  	<alias>cgq</alias>
+  	<short_desc>Sets the default behavior of global quantification when no keyword is provided</short_desc></stringopt></section>
   <section>
     <name>Output Options</name>
     <boolopt>
