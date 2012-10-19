@@ -21,7 +21,7 @@ class AA{
 	public static String foo(){return null;}
 }
 
-public class C{
+Open public class C{
 	
 	public static int counter = 0;
 	

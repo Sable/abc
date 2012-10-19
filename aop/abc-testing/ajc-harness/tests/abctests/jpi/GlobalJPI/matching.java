@@ -3,7 +3,7 @@ import org.aspectj.testing.Tester;
 
 <R> global jpi R JP() : execution(* *(..));
 
-class A{ 
+Open class A{ 
 	public static Integer foo(){return null;}
 }
 
@@ -12,7 +12,7 @@ class B{
 	public static Float foo(){return null;} //this join point won't be selected.
 }
 
-class AA{ 
+Open class AA{ 
 	public static String foo(){return null;}
 }
 
@@ -24,7 +24,7 @@ public class C{
 		A.foo();
 		B.foo();
 		AA.foo();
-		Tester.checkEqual(3, counter, "expected 3 matches but saw "+counter);		
+		Tester.checkEqual(2, counter, "expected 2 matches but saw "+counter);		
 	}
 }
 

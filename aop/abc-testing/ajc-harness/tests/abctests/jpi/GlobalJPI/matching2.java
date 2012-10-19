@@ -3,7 +3,7 @@ import org.aspectj.testing.Tester;
 
 global jpi int JP() : execution(int get*(..));
 
-class A{
+Open class A{
    exhibits int JP() : call(int NotAGetName(..)) || global();
 
    public static int NotAGetName(){  return 1;}
@@ -17,7 +17,7 @@ class B{
    public static int getQuantity(){  return 1;}
 }
 
-public class C{
+Open public class C{
 	
 	public static int counter=0;
 	
