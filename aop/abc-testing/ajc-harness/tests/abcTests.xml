@@ -11730,5 +11730,41 @@
 	        <message kind="error" line="18"/>
         </compile>
     </ajc-test>
+
+    <ajc-test num="1730" dir="abctests/jpi/open-sealed/matching" title="simple match with cgq set to default value">
+        <compile files="SimpleMatch.java" options="-ext,abc.ja.jpi">
+        </compile>
+        <run class="SimpleMatch" />
+    </ajc-test>    
+
+    <ajc-test num="1731" dir="abctests/jpi/open-sealed/matching" title="matching over inner classes with cgq set to default value">
+        <compile files="InnerClasses.java" options="-ext,abc.ja.jpi">
+        </compile>
+        <run class="InnerClasses" />
+    </ajc-test>
+
+    <ajc-test num="1732" dir="abctests/jpi/open-sealed/matching" title="matching with default value of cgq">
+        <compile files="JPIOverridenDefault.java" options="-ext,abc.ja.jpi">
+        </compile>
+        <run class="asp" />
+    </ajc-test>    
+
+    <ajc-test num="1733" dir="abctests/jpi/open-sealed/matching" title="matching with cgq in sealed">
+        <compile files="JPIOverridenSealed.java" options="-ext,abc.ja.jpi,-cgq,sealed">
+        </compile>
+        <run class="asp" />
+    </ajc-test>    
+
+    <ajc-test num="1734" dir="abctests/jpi/open-sealed/matching" title="matching with cgq in open">
+        <compile files="JPIOverridenOpen.java" options="-ext,abc.ja.jpi,-cgq,open">
+        </compile>
+        <run class="asp" />
+    </ajc-test>    
+
+    <ajc-test num="1735" dir="abctests/jpi/open-sealed/matching" title="matching a open class sealed by a jp overriden">
+        <compile files="JPIOverridenSealedByJPOpenKeyword.java" options="-ext,abc.ja.jpi">
+        </compile>
+        <run class="asp" />
+    </ajc-test>
     
 </suite>

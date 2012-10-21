@@ -1,3 +1,4 @@
+import org.aspectj.testing.Tester;
 
 global jpi void JP1() : execution(void *.foo());
 
@@ -29,8 +30,10 @@ Open class CC {
 
 aspect InnerClasses {
 	
+	public static int executionCounter = 0;
+	
 	void around JP1() {
-		System.out.println("hello");
+		InnerClasses.executionCounter++;
 		proceed();
 	}
 	
@@ -39,5 +42,8 @@ aspect InnerClasses {
 		a.bar();
 		CC c = new CC();
 		c.bar();
+		
+		Tester.checkEqual(InnerClasses.executionCounter,1, "expected 1 matches but saw "+InnerClasses.executionCounter);		
+		
 	}
 }

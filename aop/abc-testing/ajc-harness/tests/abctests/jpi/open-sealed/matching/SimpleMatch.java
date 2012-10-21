@@ -1,4 +1,5 @@
-/*
+import org.aspectj.testing.Tester;
+
 global jpi void JP() : execution(void *.foo());
 
 class A{
@@ -19,8 +20,10 @@ Open class D {
 
 aspect SimpleMatch {
 	
+	public static int executionCounter = 0;
+	
 	void around JP() {
-		System.out.println("hello");
+		SimpleMatch.executionCounter++;
 		proceed();
 	}
 	
@@ -29,5 +32,6 @@ aspect SimpleMatch {
 		B.foo();
 		C.foo();
 		D.foo();
+		Tester.checkEqual(SimpleMatch.executionCounter,1, "expected 1 matches but saw "+SimpleMatch.executionCounter);
 	}
-}*/
+}
