@@ -92,13 +92,13 @@ aspect GlobaJPI{
 	refine CodeGen eq CJPPointcutExpr.pointcut(){
 		Pointcut pointcutSynthesized = CodeGen.CJPPointcutExpr.pointcut();
 		Pointcut globalPointcut, scopedPointcut, withinPointcut = null;
-		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();
-		
-		withinPointcut = abc.ja.jpi.utils.PointcutCombination.makeWithinPointcut(getAllSealedClasses());		
+		JPITypeDecl jpiTypeDecl = (JPITypeDecl)getJPIAccess().type();		
+
 		if (jpiTypeDecl.hasGlobalPointcut()){
 			globalPointcut = jpiTypeDecl.getPointcut().pointcut();
 			withinPointcut = OrPointcut.construct(
-				withinPointcut,
+				abc.ja.jpi.utils.PointcutCombination.makeWithinPointcut(getAllSealedClasses()),
+				//makeScope avoid matching over classes/aspects wich redifine the given jpi decl.
 				abc.ja.jpi.utils.PointcutCombination.makeScope(jpiTypeDecl, getAllExhibitDecls(), false),
 				pos()
 			);
@@ -257,6 +257,6 @@ aspect GlobaJPI{
 			}
 		}		
 		return ((abc.ja.jpi.AbcExtension)abc.main.Main.v().getAbcExtension()).cgq.equals("sealed");
-	}    
+	}
     
 }

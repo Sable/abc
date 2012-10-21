@@ -83,7 +83,7 @@ public class PointcutCombination {
 				pointcut = OrPointcut.construct(pointcut, new Within(getPattern(klass, klass.getParent()), klass.pos()), klass.pos());
 			}
 		}
-		return pointcut != null ? pointcut : new EmptyPointcut(new Position("", -1));
+		return pointcut!=null ? pointcut : new EmptyPointcut(new Position("", -1));
 	}
 	
 	
