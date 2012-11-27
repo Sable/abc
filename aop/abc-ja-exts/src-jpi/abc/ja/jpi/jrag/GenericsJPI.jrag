@@ -155,7 +155,6 @@ aspect GenericsJPI{
 	*/
 	
 	refine LookupJPIType eq Program.lookupJPIType(String packageName, String typeName, java.util.List<TypeDecl> parameterList) {
-				addPrimitiveTypes();
 		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
 		boolean match;
 		for(int i = 0; i < getNumCompilationUnit(); i++) {
