@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 570ms, memory usage: 17977248.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 584ms, memory usage: 17774280.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1027ms, memory usage: 18040216.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1022ms, memory usage: 17790984.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 671ms, memory usage: 20995448.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 692ms, memory usage: 20999392.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 552ms, memory usage: 8236136.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 560ms, memory usage: 8236800.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,23 +36,23 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 978ms, memory usage: 15757256.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 982ms, memory usage: 15727536.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@7690ad43.foo calls Outer$Inner@145f4685.mi
+Outer@6e2cdb34.foo calls Outer$Inner@42eb6b6e.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@145f4685.mi calls java.io.PrintStream@7b0ed035.println
+Outer$Inner@42eb6b6e.mi calls java.io.PrintStream@6dda2514.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@7690ad43.foo calls Outer$InnerRandom@90f9ffb.nextHook
+Outer@6e2cdb34.foo calls Outer$InnerRandom@672f5fb9.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@90f9ffb.nextHook calls Outer$InnerRandom@90f9ffb.next
+Outer$InnerRandom@672f5fb9.nextHook calls Outer$InnerRandom@672f5fb9.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@7690ad43.foo calls X.nextInt
+Outer@6e2cdb34.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -63,7 +63,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$6$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -72,7 +72,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2171ms, memory usage: 15147992.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2181ms, memory usage: 15148168.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -87,7 +87,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$29$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -96,7 +96,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2511ms, memory usage: 14512744.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2567ms, memory usage: 14544064.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -114,7 +114,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1761ms, memory usage: 12628024.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1789ms, memory usage: 12682104.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -138,26 +138,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2021ms, memory usage: 14071816.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2033ms, memory usage: 14071216.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 625ms, memory usage: 19935920.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 637ms, memory usage: 19968040.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 662ms, memory usage: 19020920.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 665ms, memory usage: 19058704.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 777ms, memory usage: 14568296.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 790ms, memory usage: 14601424.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -165,7 +165,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 719ms, memory usage: 21801528.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 738ms, memory usage: 21834872.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -189,7 +189,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:266)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1157ms, memory usage: 14540528.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1157ms, memory usage: 14596040.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -205,13 +205,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 664ms, memory usage: 32034344.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 662ms, memory usage: 32018392.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 288ms, memory usage: 12392264.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 205ms, memory usage: 12507152.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -220,7 +220,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 586ms, memory usage: 19492816.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 586ms, memory usage: 23240856.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -237,7 +237,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(Cast.java:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2428ms, memory usage: 13625184.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 3400ms, memory usage: 13784624.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -258,7 +258,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 700ms, memory usage: 41831296.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 704ms, memory usage: 32529824.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -267,14 +267,14 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1151ms, memory usage: 26068000.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1445ms, memory usage: 30928888.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 530ms, memory usage: 15117672.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 531ms, memory usage: 14978592.
 
 
 Running test 1500: abctests/cjp/shopping/Shopping Session Example
@@ -343,7 +343,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1500: "abctests/cjp/shopping/Shopping Session Example" failed in 1922ms, memory usage: 41201776.
+FAIL: Test 1500: "abctests/cjp/shopping/Shopping Session Example" failed in 1939ms, memory usage: 41735928.
 
 
 Running test 1501: abctests/cjp/matching/Don't match regular execution joinpoints on extracted method
@@ -412,7 +412,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1501: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1095ms, memory usage: 53130176.
+FAIL: Test 1501: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1013ms, memory usage: 56410400.
 
 
 Running test 1502: abctests/cjp/matching/Match on closure joinpoints
@@ -481,7 +481,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1502: "abctests/cjp/matching/Match on closure joinpoints" failed in 976ms, memory usage: 38240264.
+FAIL: Test 1502: "abctests/cjp/matching/Match on closure joinpoints" failed in 1022ms, memory usage: 38549120.
 
 
 Running test 1503: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -550,7 +550,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1503: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 947ms, memory usage: 47812200.
+FAIL: Test 1503: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 955ms, memory usage: 46717480.
 
 
 Running test 1504: abctests/cjp/matching/Match on two closure joinpoints of the same type
@@ -619,7 +619,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1504: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 930ms, memory usage: 55914784.
+FAIL: Test 1504: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 955ms, memory usage: 55292024.
 
 
 Running test 1505: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -688,7 +688,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1505: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 931ms, memory usage: 56134712.
+FAIL: Test 1505: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 957ms, memory usage: 55460160.
 
 
 Running test 1506: abctests/cjp/simplesyntax/Test simple syntax
@@ -757,7 +757,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1506: "abctests/cjp/simplesyntax/Test simple syntax" failed in 934ms, memory usage: 38245584.
+FAIL: Test 1506: "abctests/cjp/simplesyntax/Test simple syntax" failed in 936ms, memory usage: 38522544.
 
 
 Running test 1507: abctests/cjp/typechecks/Dont allow capture of break and continue
@@ -804,7 +804,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1507: "abctests/cjp/typechecks/Dont allow capture of break and continue" failed in 966ms, memory usage: 52887848.
+FAIL: Test 1507: "abctests/cjp/typechecks/Dont allow capture of break and continue" failed in 992ms, memory usage: 49662056.
 
 
 Running test 1508: abctests/cjp/typechecks/Only allow access to final locals
@@ -850,7 +850,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1508: "abctests/cjp/typechecks/Only allow access to final locals" failed in 923ms, memory usage: 53791592.
+FAIL: Test 1508: "abctests/cjp/typechecks/Only allow access to final locals" failed in 931ms, memory usage: 55969192.
 
 
 Running test 1509: abctests/cjp/typechecks/Check field accesses
@@ -896,7 +896,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1509: "abctests/cjp/typechecks/Check field accesses" failed in 952ms, memory usage: 53881528.
+FAIL: Test 1509: "abctests/cjp/typechecks/Check field accesses" failed in 1010ms, memory usage: 56168792.
 
 
 Running test 1510: abctests/cjp/typechecks/Check access to 'this'
@@ -941,7 +941,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1510: "abctests/cjp/typechecks/Check access to 'this'" failed in 933ms, memory usage: 38230088.
+FAIL: Test 1510: "abctests/cjp/typechecks/Check access to 'this'" failed in 933ms, memory usage: 38502048.
 
 
 Running test 1511: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -1004,7 +1004,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 957ms, memory usage: 53439376.
+FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 958ms, memory usage: 50443792.
 
 
 Running test 1512: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -1067,7 +1067,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1090ms, memory usage: 53610312.
+FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 974ms, memory usage: 54748520.
 
 
 Running test 1513: abctests/cjp/matching/Check thisJoinPoint.getArgs()
@@ -1130,7 +1130,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1513: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 1377ms, memory usage: 53539488.
+FAIL: Test 1513: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 948ms, memory usage: 55380440.
 
 
 Running test 1514: abctests/cjp/typechecks/Check return types and casts at runtime
@@ -1194,7 +1194,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1514: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 1223ms, memory usage: 38233496.
+FAIL: Test 1514: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 940ms, memory usage: 38571064.
 
 
 Running test 1515: abctests/cjp/typechecks/Check return types at compile time
@@ -1258,7 +1258,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1515: "abctests/cjp/typechecks/Check return types at compile time" failed in 1371ms, memory usage: 55221584.
+FAIL: Test 1515: "abctests/cjp/typechecks/Check return types at compile time" failed in 1021ms, memory usage: 45637912.
 
 
 Running test 1516: abctests/cjp/typechecks/Check return types at compile time (2)
@@ -1322,7 +1322,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1516: "abctests/cjp/typechecks/Check return types at compile time (2)" failed in 1165ms, memory usage: 38428208.
+FAIL: Test 1516: "abctests/cjp/typechecks/Check return types at compile time (2)" failed in 934ms, memory usage: 56459672.
 
 
 Running test 1517: abctests/cjp/typechecks/Check that CJP type is declared
@@ -1368,7 +1368,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1517: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 1163ms, memory usage: 53565304.
+FAIL: Test 1517: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 930ms, memory usage: 45834248.
 
 
 Running test 1518: abctests/cjp/typechecks/Check argument types
@@ -1434,7 +1434,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1518: "abctests/cjp/typechecks/Check argument types" failed in 1179ms, memory usage: 38235912.
+FAIL: Test 1518: "abctests/cjp/typechecks/Check argument types" failed in 929ms, memory usage: 38575368.
 
 
 Running test 1519: abctests/cjp/typechecks/Check exception types in advice
@@ -1481,7 +1481,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1519: "abctests/cjp/typechecks/Check exception types in advice" failed in 968ms, memory usage: 53230968.
+FAIL: Test 1519: "abctests/cjp/typechecks/Check exception types in advice" failed in 928ms, memory usage: 54231048.
 
 
 Running test 1520: abctests/cjp/typechecks/Check exception types in base code
@@ -1527,7 +1527,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1520: "abctests/cjp/typechecks/Check exception types in base code" failed in 932ms, memory usage: 53359064.
+FAIL: Test 1520: "abctests/cjp/typechecks/Check exception types in base code" failed in 938ms, memory usage: 54397424.
 
 
 Running test 1522: abctests/cjp/matching/Check after-returning value
@@ -1595,7 +1595,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1522: "abctests/cjp/matching/Check after-returning value" failed in 930ms, memory usage: 53430312.
+FAIL: Test 1522: "abctests/cjp/matching/Check after-returning value" failed in 945ms, memory usage: 54595992.
 
 
 Running test 1523: abctests/cjp/matching/Check after-throwing value
@@ -1664,7 +1664,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1523: "abctests/cjp/matching/Check after-throwing value" failed in 935ms, memory usage: 38244464.
+FAIL: Test 1523: "abctests/cjp/matching/Check after-throwing value" failed in 948ms, memory usage: 38578408.
 
 
 Running test 1524: abctests/cjp/typechecks/Check after-returning
@@ -1711,7 +1711,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1524: "abctests/cjp/typechecks/Check after-returning" failed in 921ms, memory usage: 47550128.
+FAIL: Test 1524: "abctests/cjp/typechecks/Check after-returning" failed in 943ms, memory usage: 56465304.
 
 
 Running test 1525: abctests/cjp/typechecks/Check after-throwing
@@ -1757,7 +1757,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.cjp.CompileSequence.compile(CompileSequence.java:86)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1525: "abctests/cjp/typechecks/Check after-throwing" failed in 927ms, memory usage: 56013240.
+FAIL: Test 1525: "abctests/cjp/typechecks/Check after-throwing" failed in 939ms, memory usage: 40209000.
 
 
 Running test 1600: abctests/jpi/simplesyntax/JPI syntax - jpi
@@ -1820,7 +1820,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1600: "abctests/jpi/simplesyntax/JPI syntax - jpi" failed in 2136ms, memory usage: 56306528.
+FAIL: Test 1600: "abctests/jpi/simplesyntax/JPI syntax - jpi" failed in 2111ms, memory usage: 47091096.
 
 
 Running test 1602: abctests/jpi/simplesyntax/JPI syntax - exhibit
@@ -1883,7 +1883,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1602: "abctests/jpi/simplesyntax/JPI syntax - exhibit" failed in 1014ms, memory usage: 42324640.
+FAIL: Test 1602: "abctests/jpi/simplesyntax/JPI syntax - exhibit" failed in 1038ms, memory usage: 42562816.
 
 
 Running test 1604: abctests/jpi/simplesyntax/JPI syntax - advice definition
@@ -1946,7 +1946,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1604: "abctests/jpi/simplesyntax/JPI syntax - advice definition" failed in 1027ms, memory usage: 54130728.
+FAIL: Test 1604: "abctests/jpi/simplesyntax/JPI syntax - advice definition" failed in 1034ms, memory usage: 54123872.
 
 
 Running test 1605: abctests/jpi/simplesyntax/JPI syntax - Inheritance
@@ -1994,7 +1994,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1605: "abctests/jpi/simplesyntax/JPI syntax - Inheritance" failed in 999ms, memory usage: 45036576.
+FAIL: Test 1605: "abctests/jpi/simplesyntax/JPI syntax - Inheritance" failed in 1013ms, memory usage: 45280912.
 
 
 Running test 1607: abctests/jpi/simplesyntax/JPI throw syntax
@@ -2031,7 +2031,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1607: "abctests/jpi/simplesyntax/JPI throw syntax" failed in 987ms, memory usage: 61355104.
+FAIL: Test 1607: "abctests/jpi/simplesyntax/JPI throw syntax" failed in 1009ms, memory usage: 55561184.
 
 
 Running test 1610: abctests/jpi/typechecks/Check JPI declared - class
@@ -2094,7 +2094,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1610: "abctests/jpi/typechecks/Check JPI declared - class" failed in 1006ms, memory usage: 62173064.
+FAIL: Test 1610: "abctests/jpi/typechecks/Check JPI declared - class" failed in 1005ms, memory usage: 62615072.
 
 
 Running test 1611: abctests/jpi/typechecks/Check JPI declared - aspect
@@ -2140,7 +2140,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1611: "abctests/jpi/typechecks/Check JPI declared - aspect" failed in 990ms, memory usage: 45023408.
+FAIL: Test 1611: "abctests/jpi/typechecks/Check JPI declared - aspect" failed in 1016ms, memory usage: 45309920.
 
 
 Running test 1612: abctests/jpi/typechecks/Check JPI inheritance
@@ -2188,7 +2188,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1612: "abctests/jpi/typechecks/Check JPI inheritance" failed in 998ms, memory usage: 56511384.
+FAIL: Test 1612: "abctests/jpi/typechecks/Check JPI inheritance" failed in 1033ms, memory usage: 61168144.
 
 
 Running test 1613: abctests/jpi/typechecks/Check Exhibit
@@ -2234,7 +2234,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1613: "abctests/jpi/typechecks/Check Exhibit" failed in 1032ms, memory usage: 61876112.
+FAIL: Test 1613: "abctests/jpi/typechecks/Check Exhibit" failed in 1054ms, memory usage: 61240752.
 
 
 Running test 1614: abctests/jpi/typechecks/Check Exhibit Pointcut
@@ -2280,7 +2280,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1614: "abctests/jpi/typechecks/Check Exhibit Pointcut" failed in 1017ms, memory usage: 62111472.
+FAIL: Test 1614: "abctests/jpi/typechecks/Check Exhibit Pointcut" failed in 1022ms, memory usage: 61397208.
 
 
 Running test 1615: abctests/jpi/typechecks/Check Advice
@@ -2327,7 +2327,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1615: "abctests/jpi/typechecks/Check Advice" failed in 1072ms, memory usage: 45022872.
+FAIL: Test 1615: "abctests/jpi/typechecks/Check Advice" failed in 1071ms, memory usage: 45375776.
 
 
 Running test 1616: abctests/jpi/typechecks/Check Advice exception
@@ -2364,7 +2364,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1616: "abctests/jpi/typechecks/Check Advice exception" failed in 1029ms, memory usage: 53679728.
+FAIL: Test 1616: "abctests/jpi/typechecks/Check Advice exception" failed in 1043ms, memory usage: 61566856.
 
 
 Running test 1617: abctests/jpi/typechecks/Check Proceed
@@ -2401,7 +2401,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1617: "abctests/jpi/typechecks/Check Proceed" failed in 991ms, memory usage: 61272000.
+FAIL: Test 1617: "abctests/jpi/typechecks/Check Proceed" failed in 1001ms, memory usage: 61727896.
 
 
 Running test 1618: abctests/jpi/typechecks/Check Aspect Definition
@@ -2466,7 +2466,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1618: "abctests/jpi/typechecks/Check Aspect Definition" failed in 1004ms, memory usage: 62879784.
+FAIL: Test 1618: "abctests/jpi/typechecks/Check Aspect Definition" failed in 1008ms, memory usage: 61923624.
 
 
 Running test 1619: abctests/jpi/typechecks/jpi-hierarchy/collect jpi hierarchy
@@ -2513,7 +2513,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1619: "abctests/jpi/typechecks/jpi-hierarchy/collect jpi hierarchy" failed in 1009ms, memory usage: 45025672.
+FAIL: Test 1619: "abctests/jpi/typechecks/jpi-hierarchy/collect jpi hierarchy" failed in 1041ms, memory usage: 45376904.
 
 
 Running test 1620: abctests/jpi/typechecks/Check Advice exception
@@ -2550,7 +2550,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1620: "abctests/jpi/typechecks/Check Advice exception" failed in 985ms, memory usage: 54532160.
+FAIL: Test 1620: "abctests/jpi/typechecks/Check Advice exception" failed in 994ms, memory usage: 62496448.
 
 
 Running test 1630: abctests/jpi/weaving/Check Weave
@@ -2613,7 +2613,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1630: "abctests/jpi/weaving/Check Weave" failed in 1016ms, memory usage: 61655744.
+FAIL: Test 1630: "abctests/jpi/weaving/Check Weave" failed in 1019ms, memory usage: 62620312.
 
 
 Running test 1631: abctests/jpi/weaving/Check Poincut
@@ -2659,7 +2659,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1631: "abctests/jpi/weaving/Check Poincut" failed in 993ms, memory usage: 54674336.
+FAIL: Test 1631: "abctests/jpi/weaving/Check Poincut" failed in 1018ms, memory usage: 62782608.
 
 
 Running test 1632: abctests/jpi/weaving/Check Poincut Args
@@ -2722,7 +2722,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1016ms, memory usage: 45041672.
+FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1466ms, memory usage: 45391848.
 
 
 Running test 1633: abctests/jpi/weaving/Check JPI header
@@ -2759,7 +2759,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1633: "abctests/jpi/weaving/Check JPI header" failed in 1009ms, memory usage: 55378920.
+FAIL: Test 1633: "abctests/jpi/weaving/Check JPI header" failed in 1512ms, memory usage: 59888408.
 
 
 Running test 1634: abctests/jpi/weaving/Check return types
@@ -2804,7 +2804,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1634: "abctests/jpi/weaving/Check return types" failed in 1007ms, memory usage: 61730416.
+FAIL: Test 1634: "abctests/jpi/weaving/Check return types" failed in 1205ms, memory usage: 61325248.
 
 
 Running test 1635: abctests/jpi/weaving/Check return types with DummyAspect
@@ -2849,7 +2849,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1635: "abctests/jpi/weaving/Check return types with DummyAspect" failed in 1005ms, memory usage: 61828384.
+FAIL: Test 1635: "abctests/jpi/weaving/Check return types with DummyAspect" failed in 1209ms, memory usage: 62336880.
 
 
 Running test 1640: abctests/jpi/matching/Simple Match
@@ -2916,7 +2916,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1640: "abctests/jpi/matching/Simple Match" failed in 1002ms, memory usage: 45042144.
+FAIL: Test 1640: "abctests/jpi/matching/Simple Match" failed in 1256ms, memory usage: 45390288.
 
 
 Running test 1641: abctests/jpi/matching/Dont Match
@@ -2980,7 +2980,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1003ms, memory usage: 59604200.
+FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1055ms, memory usage: 60380768.
 
 
 Running test 1642: abctests/jpi/matching/Inheritance Match
@@ -3047,7 +3047,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 997ms, memory usage: 59673896.
+FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1018ms, memory usage: 62716600.
 
 
 Running test 1643: abctests/jpi/matching/Inheritance Match 2
@@ -3115,7 +3115,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1029ms, memory usage: 59802536.
+FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1036ms, memory usage: 62849056.
 
 
 Running test 1644: abctests/jpi/matching/Inheritance Match 3
@@ -3179,7 +3179,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1031ms, memory usage: 45043800.
+FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1026ms, memory usage: 45393680.
 
 
 Running test 1645: abctests/jpi/matching/Inheritance Match 4
@@ -3242,7 +3242,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1013ms, memory usage: 61055512.
+FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1016ms, memory usage: 61139368.
 
 
 Running test 1646: abctests/jpi/matching/Double Match
@@ -3309,7 +3309,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1007ms, memory usage: 61094016.
+FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1023ms, memory usage: 61367584.
 
 
 Running test 1647: abctests/jpi/matching/Sub type match
@@ -3376,7 +3376,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1647: "abctests/jpi/matching/Sub type match" failed in 1007ms, memory usage: 61191296.
+FAIL: Test 1647: "abctests/jpi/matching/Sub type match" failed in 1002ms, memory usage: 61368992.
 
 
 Running test 1648: abctests/jpi/matching/exhibits/collect exhibits clauses
@@ -3444,7 +3444,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1648: "abctests/jpi/matching/exhibits/collect exhibits clauses" failed in 999ms, memory usage: 45046008.
+FAIL: Test 1648: "abctests/jpi/matching/exhibits/collect exhibits clauses" failed in 1015ms, memory usage: 45395936.
 
 
 Running test 1649: abctests/jpi/matching/InvPCD/Interfaces-InvPCD
@@ -3486,7 +3486,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 1005ms, memory usage: 60390520.
+FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 1027ms, memory usage: 61431640.
 
 
 Running test 1650: abctests/jpi/matching/InvPCD/Arguments-InvPCD
@@ -3532,7 +3532,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 1033ms, memory usage: 60486784.
+FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 1034ms, memory usage: 61508392.
 
 
 Running test 1651: abctests/jpi/matching/InvPCD/Target-InvPCD
@@ -3577,7 +3577,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 1020ms, memory usage: 60557960.
+FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 1010ms, memory usage: 61506432.
 
 
 Running test 1652: abctests/jpi/matching/InvPCD/This-InvPCD
@@ -3622,7 +3622,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 1012ms, memory usage: 45044872.
+FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 1011ms, memory usage: 45395640.
 
 
 Running test 1650: abctests/jpi/FSE-NI/example 1
@@ -3667,7 +3667,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 1040ms, memory usage: 52270832.
+FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 1029ms, memory usage: 58178328.
 
 
 Running test 1651: abctests/jpi/FSE-NI/example 2
@@ -3712,7 +3712,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1651: "abctests/jpi/FSE-NI/example 2" failed in 1002ms, memory usage: 55354024.
+FAIL: Test 1651: "abctests/jpi/FSE-NI/example 2" failed in 1030ms, memory usage: 62953984.
 
 
 Running test 1652: abctests/jpi/FSE-NI/example 3
@@ -3787,7 +3787,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1652: "abctests/jpi/FSE-NI/example 3" failed in 1006ms, memory usage: 62913936.
+FAIL: Test 1652: "abctests/jpi/FSE-NI/example 3" failed in 1016ms, memory usage: 63147848.
 
 
 Running test 1653: abctests/jpi/FSE-NI/example 4
@@ -3833,7 +3833,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 1003ms, memory usage: 45031544.
+FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 1018ms, memory usage: 45382072.
 
 
 Running test 1654: abctests/jpi/ICSE2012/website example
@@ -3880,7 +3880,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1654: "abctests/jpi/ICSE2012/website example" failed in 1017ms, memory usage: 59895368.
+FAIL: Test 1654: "abctests/jpi/ICSE2012/website example" failed in 1009ms, memory usage: 56089840.
 
 
 Running test 1660: abctests/jpi/staticoverloading/type check static overloading
@@ -3917,7 +3917,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1660: "abctests/jpi/staticoverloading/type check static overloading" failed in 990ms, memory usage: 60016200.
+FAIL: Test 1660: "abctests/jpi/staticoverloading/type check static overloading" failed in 1017ms, memory usage: 63256440.
 
 
 Running test 1661: abctests/jpi/staticoverloading/type check advice binding
@@ -3954,7 +3954,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1661: "abctests/jpi/staticoverloading/type check advice binding" failed in 1027ms, memory usage: 60114608.
+FAIL: Test 1661: "abctests/jpi/staticoverloading/type check advice binding" failed in 1005ms, memory usage: 56158976.
 
 
 Running test 1662: abctests/jpi/staticoverloading/type check exhibit clause
@@ -3991,7 +3991,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1662: "abctests/jpi/staticoverloading/type check exhibit clause" failed in 1400ms, memory usage: 45031904.
+FAIL: Test 1662: "abctests/jpi/staticoverloading/type check exhibit clause" failed in 997ms, memory usage: 45380216.
 
 
 Running test 1670: abctests/jpi/GenericAdvice/simplesyntax
@@ -4032,7 +4032,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1670: "abctests/jpi/GenericAdvice/simplesyntax" failed in 1580ms, memory usage: 62795904.
+FAIL: Test 1670: "abctests/jpi/GenericAdvice/simplesyntax" failed in 1002ms, memory usage: 54608568.
 
 
 Running test 1671: abctests/jpi/GenericAdvice/typecheck generic jpi
@@ -4073,7 +4073,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1671: "abctests/jpi/GenericAdvice/typecheck generic jpi" failed in 1254ms, memory usage: 45264528.
+FAIL: Test 1671: "abctests/jpi/GenericAdvice/typecheck generic jpi" failed in 1005ms, memory usage: 63260320.
 
 
 Running test 1672: abctests/jpi/GenericAdvice/typecheck generic exhibit
@@ -4114,7 +4114,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1672: "abctests/jpi/GenericAdvice/typecheck generic exhibit" failed in 1229ms, memory usage: 62181160.
+FAIL: Test 1672: "abctests/jpi/GenericAdvice/typecheck generic exhibit" failed in 1016ms, memory usage: 54717112.
 
 
 Running test 1673: abctests/jpi/GenericAdvice/typecheck generic advice
@@ -4155,7 +4155,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1673: "abctests/jpi/GenericAdvice/typecheck generic advice" failed in 1216ms, memory usage: 45033016.
+FAIL: Test 1673: "abctests/jpi/GenericAdvice/typecheck generic advice" failed in 998ms, memory usage: 45379032.
 
 
 Running test 1674: abctests/jpi/GenericAdvice/matching
@@ -4196,7 +4196,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1138ms, memory usage: 59502040.
+FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1002ms, memory usage: 59156616.
 
 
 Running test 1675: abctests/jpi/GenericAdvice/matching 2
@@ -4237,7 +4237,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1675: "abctests/jpi/GenericAdvice/matching 2" failed in 1041ms, memory usage: 60282320.
+FAIL: Test 1675: "abctests/jpi/GenericAdvice/matching 2" failed in 1004ms, memory usage: 59265584.
 
 
 Running test 1676: abctests/jpi/GenericAdvice/Integer methods on bound type Integer
@@ -4298,7 +4298,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1676: "abctests/jpi/GenericAdvice/Integer methods on bound type Integer" failed in 1010ms, memory usage: 60372392.
+FAIL: Test 1676: "abctests/jpi/GenericAdvice/Integer methods on bound type Integer" failed in 1003ms, memory usage: 62586808.
 
 
 Running test 1677: abctests/jpi/GenericAdvice/matching type variables in pointcut expression
@@ -4359,7 +4359,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1023ms, memory usage: 45050960.
+FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1005ms, memory usage: 45398560.
 
 
 Running test 1678: abctests/jpi/GenericAdvice/type check on Advice specifications
@@ -4400,7 +4400,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 994ms, memory usage: 58306616.
+FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 997ms, memory usage: 56920048.
 
 
 Running test 1679: abctests/jpi/GenericAdvice/exception handling
@@ -4437,7 +4437,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1679: "abctests/jpi/GenericAdvice/exception handling" failed in 1012ms, memory usage: 62613032.
+FAIL: Test 1679: "abctests/jpi/GenericAdvice/exception handling" failed in 1000ms, memory usage: 62390360.
 
 
 Running test 1680: abctests/jpi/GenericAdvice/exception handling with throw stmts
@@ -4479,7 +4479,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1680: "abctests/jpi/GenericAdvice/exception handling with throw stmts" failed in 998ms, memory usage: 62651496.
+FAIL: Test 1680: "abctests/jpi/GenericAdvice/exception handling with throw stmts" failed in 1000ms, memory usage: 62504328.
 
 
 Running test 1681: abctests/jpi/GenericAdvice/matching-3
@@ -4519,7 +4519,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1681: "abctests/jpi/GenericAdvice/matching-3" failed in 995ms, memory usage: 45035624.
+FAIL: Test 1681: "abctests/jpi/GenericAdvice/matching-3" failed in 1004ms, memory usage: 45386424.
 
 
 Running test 1682: abctests/jpi/GenericAdvice/matching-4
@@ -4559,7 +4559,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1682: "abctests/jpi/GenericAdvice/matching-4" failed in 1008ms, memory usage: 60569832.
+FAIL: Test 1682: "abctests/jpi/GenericAdvice/matching-4" failed in 1014ms, memory usage: 60515368.
 
 
 Running test 1683: abctests/jpi/GenericAdvice/matching-5
@@ -4599,7 +4599,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1683: "abctests/jpi/GenericAdvice/matching-5" failed in 1003ms, memory usage: 45175248.
+FAIL: Test 1683: "abctests/jpi/GenericAdvice/matching-5" failed in 1002ms, memory usage: 60758944.
 
 
 Running test 1684: abctests/jpi/GenericAdvice/inheritance in generice advice
@@ -4645,7 +4645,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 995ms, memory usage: 60164384.
+FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 1005ms, memory usage: 60894240.
 
 
 Running test 1692: abctests/jpi/GlobalJPI/typechecking
@@ -4686,7 +4686,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1692: "abctests/jpi/GlobalJPI/typechecking" failed in 1001ms, memory usage: 45961456.
+FAIL: Test 1692: "abctests/jpi/GlobalJPI/typechecking" failed in 1027ms, memory usage: 46307248.
 
 
 Running test 1693: abctests/jpi/GlobalJPI/typechecking around advice
@@ -4747,7 +4747,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1693: "abctests/jpi/GlobalJPI/typechecking around advice" failed in 1012ms, memory usage: 53407000.
+FAIL: Test 1693: "abctests/jpi/GlobalJPI/typechecking around advice" failed in 1012ms, memory usage: 55302688.
 
 
 Running test 1694: abctests/jpi/GlobalJPI/tychecking global PCD
@@ -4792,7 +4792,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1694: "abctests/jpi/GlobalJPI/tychecking global PCD" failed in 998ms, memory usage: 45032184.
+FAIL: Test 1694: "abctests/jpi/GlobalJPI/tychecking global PCD" failed in 1008ms, memory usage: 45382512.
 
 
 Running test 1695: abctests/jpi/GlobalJPI/matching
@@ -4833,7 +4833,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 996ms, memory usage: 58656640.
+FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 1012ms, memory usage: 61928024.
 
 
 Running test 1696: abctests/jpi/GlobalJPI/matching_2
@@ -4878,7 +4878,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 993ms, memory usage: 62033936.
+FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 1015ms, memory usage: 62094672.
 
 
 Running test 1697: abctests/jpi/GlobalJPI/matching_3
@@ -4919,7 +4919,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 995ms, memory usage: 62114472.
+FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1003ms, memory usage: 62224840.
 
 
 Running test 1698: abctests/jpi/GlobalJPI/matching_4
@@ -4980,7 +4980,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1698: "abctests/jpi/GlobalJPI/matching_4" failed in 1000ms, memory usage: 45052664.
+FAIL: Test 1698: "abctests/jpi/GlobalJPI/matching_4" failed in 1024ms, memory usage: 45402888.
 
 
 Running test 1699: abctests/jpi/GlobalJPI/matching_5
@@ -5041,7 +5041,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1699: "abctests/jpi/GlobalJPI/matching_5" failed in 999ms, memory usage: 54016904.
+FAIL: Test 1699: "abctests/jpi/GlobalJPI/matching_5" failed in 1010ms, memory usage: 54371544.
 
 
 Running test 1700: abctests/cjp/shopping/Shopping Session Example
@@ -5110,7 +5110,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1700: "abctests/cjp/shopping/Shopping Session Example" failed in 1001ms, memory usage: 61498728.
+FAIL: Test 1700: "abctests/cjp/shopping/Shopping Session Example" failed in 1003ms, memory usage: 61481208.
 
 
 Running test 1701: abctests/cjp/matching/Don't match regular execution joinpoints on extracted method
@@ -5179,7 +5179,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1701: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 996ms, memory usage: 61679720.
+FAIL: Test 1701: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1007ms, memory usage: 61629832.
 
 
 Running test 1702: abctests/cjp/matching/Match on closure joinpoints
@@ -5248,7 +5248,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1702: "abctests/cjp/matching/Match on closure joinpoints" failed in 1007ms, memory usage: 45055832.
+FAIL: Test 1702: "abctests/cjp/matching/Match on closure joinpoints" failed in 1003ms, memory usage: 45403584.
 
 
 Running test 1703: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -5317,7 +5317,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1703: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1011ms, memory usage: 60918104.
+FAIL: Test 1703: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1014ms, memory usage: 56446240.
 
 
 Running test 1704: abctests/cjp/matching/Match on two closure joinpoints of the same type
@@ -5386,7 +5386,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 988ms, memory usage: 61061808.
+FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1004ms, memory usage: 60788304.
 
 
 Running test 1705: abctests/cjp/matching/Match on closure joinpoints with arguments
@@ -5455,7 +5455,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1705: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 990ms, memory usage: 61171184.
+FAIL: Test 1705: "abctests/cjp/matching/Match on closure joinpoints with arguments" failed in 1008ms, memory usage: 60982840.
 
 
 Running test 1706: abctests/cjp/simplesyntax/Test simple syntax
@@ -5524,7 +5524,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1706: "abctests/cjp/simplesyntax/Test simple syntax" failed in 994ms, memory usage: 45056752.
+FAIL: Test 1706: "abctests/cjp/simplesyntax/Test simple syntax" failed in 1005ms, memory usage: 45405864.
 
 
 Running test 1707: abctests/cjp/typechecks/Dont allow capture of break and continue
@@ -5572,7 +5572,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1707: "abctests/cjp/typechecks/Dont allow capture of break and continue" failed in 994ms, memory usage: 52804208.
+FAIL: Test 1707: "abctests/cjp/typechecks/Dont allow capture of break and continue" failed in 1010ms, memory usage: 55855952.
 
 
 Running test 1708: abctests/cjp/typechecks/Only allow access to final locals
@@ -5619,7 +5619,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1708: "abctests/cjp/typechecks/Only allow access to final locals" failed in 990ms, memory usage: 57570824.
+FAIL: Test 1708: "abctests/cjp/typechecks/Only allow access to final locals" failed in 1509ms, memory usage: 62882432.
 
 
 Running test 1709: abctests/cjp/typechecks/Check field accesses
@@ -5666,7 +5666,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1709: "abctests/cjp/typechecks/Check field accesses" failed in 986ms, memory usage: 62553152.
+FAIL: Test 1709: "abctests/cjp/typechecks/Check field accesses" failed in 1844ms, memory usage: 57861168.
 
 
 Running test 1710: abctests/cjp/typechecks/Check access to 'this'
@@ -5711,7 +5711,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1710: "abctests/cjp/typechecks/Check access to 'this'" failed in 1004ms, memory usage: 45041784.
+FAIL: Test 1710: "abctests/cjp/typechecks/Check access to 'this'" failed in 1337ms, memory usage: 45388128.
 
 
 Running test 1711: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -5774,7 +5774,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1011ms, memory usage: 59379080.
+FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1192ms, memory usage: 60583072.
 
 
 Running test 1712: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -5837,7 +5837,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1008ms, memory usage: 62486336.
+FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1190ms, memory usage: 60945712.
 
 
 Running test 1713: abctests/cjp/matching/Check thisJoinPoint.getArgs()
@@ -5900,7 +5900,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1713: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 1002ms, memory usage: 62527640.
+FAIL: Test 1713: "abctests/cjp/matching/Check thisJoinPoint.getArgs()" failed in 1041ms, memory usage: 60988040.
 
 
 Running test 1714: abctests/cjp/typechecks/Check return types and casts at runtime
@@ -5965,7 +5965,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1714: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 1024ms, memory usage: 45042592.
+FAIL: Test 1714: "abctests/cjp/typechecks/Check return types and casts at runtime" failed in 1070ms, memory usage: 45391056.
 
 
 Running test 1715: abctests/cjp/typechecks/Check return types at compile time
@@ -6030,7 +6030,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1715: "abctests/cjp/typechecks/Check return types at compile time" failed in 1004ms, memory usage: 58161544.
+FAIL: Test 1715: "abctests/cjp/typechecks/Check return types at compile time" failed in 1015ms, memory usage: 57646952.
 
 
 Running test 1716: abctests/cjp/typechecks/Check return types at compile time (2)
@@ -6095,7 +6095,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1716: "abctests/cjp/typechecks/Check return types at compile time (2)" failed in 1012ms, memory usage: 62790808.
+FAIL: Test 1716: "abctests/cjp/typechecks/Check return types at compile time (2)" failed in 1018ms, memory usage: 61289440.
 
 
 Running test 1717: abctests/cjp/typechecks/Check that CJP type is declared
@@ -6142,7 +6142,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1717: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 1001ms, memory usage: 62830152.
+FAIL: Test 1717: "abctests/cjp/typechecks/Check that CJP type is declared" failed in 1014ms, memory usage: 57740576.
 
 
 Running test 1718: abctests/cjp/typechecks/Check argument types
@@ -6208,7 +6208,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1718: "abctests/cjp/typechecks/Check argument types" failed in 987ms, memory usage: 45044016.
+FAIL: Test 1718: "abctests/cjp/typechecks/Check argument types" failed in 1011ms, memory usage: 45394752.
 
 
 Running test 1719: abctests/cjp/typechecks/Check exception types in advice
@@ -6256,7 +6256,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1719: "abctests/cjp/typechecks/Check exception types in advice" failed in 995ms, memory usage: 54994480.
+FAIL: Test 1719: "abctests/cjp/typechecks/Check exception types in advice" failed in 1011ms, memory usage: 55946560.
 
 
 Running test 1720: abctests/cjp/typechecks/Check exception types in base code
@@ -6303,7 +6303,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1720: "abctests/cjp/typechecks/Check exception types in base code" failed in 989ms, memory usage: 55129608.
+FAIL: Test 1720: "abctests/cjp/typechecks/Check exception types in base code" failed in 1002ms, memory usage: 63104336.
 
 
 Running test 1722: abctests/cjp/matching/Check after-returning value
@@ -6371,7 +6371,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1722: "abctests/cjp/matching/Check after-returning value" failed in 1021ms, memory usage: 62762312.
+FAIL: Test 1722: "abctests/cjp/matching/Check after-returning value" failed in 1012ms, memory usage: 63198728.
 
 
 Running test 1723: abctests/cjp/matching/Check after-throwing value
@@ -6440,7 +6440,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1723: "abctests/cjp/matching/Check after-throwing value" failed in 1018ms, memory usage: 45052416.
+FAIL: Test 1723: "abctests/cjp/matching/Check after-throwing value" failed in 1055ms, memory usage: 45402832.
 
 
 Running test 1724: abctests/cjp/typechecks/Check after-returning
@@ -6488,7 +6488,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1724: "abctests/cjp/typechecks/Check after-returning" failed in 993ms, memory usage: 55134472.
+FAIL: Test 1724: "abctests/cjp/typechecks/Check after-returning" failed in 1059ms, memory usage: 60776952.
 
 
 Running test 1725: abctests/cjp/typechecks/Check after-throwing
@@ -6535,7 +6535,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1725: "abctests/cjp/typechecks/Check after-throwing" failed in 993ms, memory usage: 62235864.
+FAIL: Test 1725: "abctests/cjp/typechecks/Check after-throwing" failed in 1033ms, memory usage: 60942168.
 
 
 Running test 1730: abctests/jpi/open-sealed/matching/simple match with cgq set to default value
@@ -6580,7 +6580,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1730: "abctests/jpi/open-sealed/matching/simple match with cgq set to default value" failed in 996ms, memory usage: 62397512.
+FAIL: Test 1730: "abctests/jpi/open-sealed/matching/simple match with cgq set to default value" failed in 1029ms, memory usage: 61126400.
 
 
 Running test 1731: abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value
@@ -6650,7 +6650,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1731: "abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value" failed in 1006ms, memory usage: 45060624.
+FAIL: Test 1731: "abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value" failed in 1019ms, memory usage: 45409400.
 
 
 Running test 1732: abctests/jpi/open-sealed/matching/matching with default value of cgq
@@ -6696,7 +6696,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1732: "abctests/jpi/open-sealed/matching/matching with default value of cgq" failed in 993ms, memory usage: 52614456.
+FAIL: Test 1732: "abctests/jpi/open-sealed/matching/matching with default value of cgq" failed in 1010ms, memory usage: 56099560.
 
 
 Running test 1733: abctests/jpi/open-sealed/matching/matching with cgq in sealed
@@ -6741,7 +6741,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1733: "abctests/jpi/open-sealed/matching/matching with cgq in sealed" failed in 993ms, memory usage: 57899224.
+FAIL: Test 1733: "abctests/jpi/open-sealed/matching/matching with cgq in sealed" failed in 1009ms, memory usage: 62813360.
 
 
 Running test 1734: abctests/jpi/open-sealed/matching/matching with cgq in open
@@ -6786,7 +6786,7 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1734: "abctests/jpi/open-sealed/matching/matching with cgq in open" failed in 1007ms, memory usage: 62555272.
+FAIL: Test 1734: "abctests/jpi/open-sealed/matching/matching with cgq in open" failed in 1020ms, memory usage: 63011856.
 
 
 Running test 1735: abctests/jpi/open-sealed/matching/matching a open class sealed by a jp overriden
@@ -6831,6 +6831,6 @@ Caused by: java.lang.NullPointerException
 	at abc.ja.jpi.CompileSequence.compile(CompileSequence.java:89)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1735: "abctests/jpi/open-sealed/matching/matching a open class sealed by a jp overriden" failed in 1001ms, memory usage: 45060896.
+FAIL: Test 1735: "abctests/jpi/open-sealed/matching/matching a open class sealed by a jp overriden" failed in 1008ms, memory usage: 45409000.
 
 
