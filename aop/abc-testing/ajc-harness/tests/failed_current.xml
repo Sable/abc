@@ -101,13 +101,5 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="Check return types and casts at runtime" num="1514" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.cjp" files="CheckReturnTypesCorrect.java"></compile>
-    	<run class="CheckReturnTypesCorrect"></run>
-    </ajc-test>
-<ajc-test title="Check return types and casts at runtime" num="1714" dir="abctests/cjp/typechecks">
-        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesCorrect.java"></compile>
-    	<run class="CheckReturnTypesCorrect"></run>
-    </ajc-test>
  
 </suite>

@@ -5972,6 +5972,10 @@
         <compile options="-ext,abc.ja.cjp" files="CheckArgsExposure.java"></compile>
 		<run class="CheckArgsExposure"></run>
     </ajc-test>
+<ajc-test title="Check return types and casts at runtime" num="1514" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.cjp" files="CheckReturnTypesCorrect.java"></compile>
+    	<run class="CheckReturnTypesCorrect"></run>
+    </ajc-test>
 <ajc-test title="Check return types at compile time" num="1515" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.cjp" files="CheckReturnTypesIncorrect.java">
 	        <message line="7" kind="error"></message>
@@ -6585,6 +6589,10 @@
 <ajc-test title="Check thisJoinPoint.getArgs()" num="1713" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="CheckArgsExposure.java"></compile>
 		<run class="CheckArgsExposure"></run>
+    </ajc-test>
+<ajc-test title="Check return types and casts at runtime" num="1714" dir="abctests/cjp/typechecks">
+        <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesCorrect.java"></compile>
+    	<run class="CheckReturnTypesCorrect"></run>
     </ajc-test>
 <ajc-test title="Check return types at compile time" num="1715" dir="abctests/cjp/typechecks">
         <compile options="-ext,abc.ja.jpi" files="CheckReturnTypesIncorrect.java">
