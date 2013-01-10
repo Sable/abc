@@ -1,6 +1,6 @@
 aspect PreciseRethrowAbc {
 
 	//necessary for Java 7 frontened; hope that's correct...
-	eq ASTNode.getChild().inhModifiedInScope(Variable var) = false;
+	eq ParameterDeclaration.getChild().inhModifiedInScope(Variable var) = false;
 
 }
