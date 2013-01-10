@@ -1,0 +1,7 @@
+aspect PreciseRethrowAbc {
+
+	//necessary for Java 7 frontened; hope that's correct...
+	eq AdviceSpec.getChild().inhModifiedInScope(Variable var) = false;
+	eq PointcutDecl.getChild().inhModifiedInScope(Variable var) = false;
+
+}

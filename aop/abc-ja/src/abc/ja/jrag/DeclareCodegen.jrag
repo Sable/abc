@@ -65,7 +65,7 @@ aspect DeclareCodegen
 
     refine ExceptionHandling public void MethodAccess.exceptionHandling() { }
     refine ExceptionHandling public void ConstructorAccess.exceptionHandling() { }
-    refine ExceptionHandling public void ThrowStmt.exceptionHandling() { }
+    refine PreciseRethrow public void ThrowStmt.exceptionHandling() { }
 
     protected boolean Proceed.reachedException(TypeDecl type)
     {

@@ -65,13 +65,21 @@
 		<echo message="Generating to ${basedir}/generated..." />
 		<mkdir dir="${basedir}/generated" />
 		<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true" outdir="${basedir}/generated" lazyMaps="true" suppressWarnings="false" parentInterface="false" refineLegacy="false">
+			<fileset dir="${Java7Frontend}">
+				<include name="ConstantExpression.jrag"/>
+				<include name="Variable.jadd"/>
+			</fileset>
 			<fileset dir="${frontend}">
-				<include name="**/*.ast" />
-				<include name="**/*.jrag" />
-				<include name="**/*.jadd" />
-				<exclude name="BytecodeAttributes.jrag" />
-				<exclude name="BytecodeDescriptor.jrag" />
-				<exclude name="BytecodeReader.jrag" />
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+				<exclude name="Literals.ast"/>
+				<exclude name="CatchClause.ast"/>
+				<exclude name="Variable.jadd"/>
+				<exclude name="BytecodeAttributes.jrag"/>
+				<exclude name="BytecodeDescriptor.jrag"/>
+				<exclude name="BytecodeReader.jrag"/>
+				<exclude name="ConstantExpression.jrag"/>
 			</fileset>
 			<fileset dir="${frontend1.5}">
 				<include name="**/*.ast" />
@@ -102,6 +110,13 @@
 				<include name="**/*.ast" />
 				<include name="**/*.jrag" />
 				<include name="**/*.jadd" />
+			</fileset>
+			<fileset dir="${Java7Frontend}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+				<exclude name="ConstantExpression.jrag"/>
+				<exclude name="Variable.jadd"/>
 			</fileset>
 			<fileset dir="${basedir}/src/abc/ja/jrag">
 				<include name="**/*.ast" />
