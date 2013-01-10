@@ -394,13 +394,6 @@
 			<include name="**/*.jadd"/>
   	        <exclude name="**/FlushCaches.jrag"/>
 		</fileset>
-		<fileset dir="${Java7Frontend}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
-			<exclude name="ConstantExpression.jrag"/>
-			<exclude name="Variable.jadd"/>
-		</fileset>
 		<fileset dir="${basedir}/src-cjp/abc/ja/cjp/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -436,6 +429,13 @@
   			<include name="TypeConstraints/TypeConstraintSolving.jrag"/>
 			<include name="TypeConstraints/CollectTypeConstraints.jrag"/>
   		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
+		</fileset>
 	</jastadd>
 </target>
 	

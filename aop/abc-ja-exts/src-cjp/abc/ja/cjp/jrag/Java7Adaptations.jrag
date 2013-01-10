@@ -5,7 +5,27 @@ aspect Java7Adaptations {
 	eq CatchClause.handlesAllUncheckedExceptions() = false;
 	eq CatchClause.handlesUncheckedException() = false;
 	eq CatchClause.hasVariable(String name) = false;
-	eq CatchClause.accessParameter(Variable decl) = false;
+	eq CatchClause.accessParameter(Variable decl) = unknownVarAccess();
 	eq CatchParameterDeclaration.refreshVariable() = this;
 	eq CatchParameterDeclaration.mayBeFinal() = false;
+	syn lazy Collection<VarAccess> CatchParameterDeclaration.uses() = java.util.Collections.emptyList();
+	
+	public void CatchParameterDeclaration.checkRenamingPreconds(String new_name) {}
+	public boolean CatchParameterDeclaration.mustAlias(Location l) { return false; }
+	public void CatchParameterDeclaration.setTypeAccess(Access a) { setTypeAccess(a,0); }
+	public Access CatchParameterDeclaration.getTypeAccess() { return getTypeAccess(0); }
+	
+	public int MultiCatch.getIndexOfParameter(ParameterDeclaration pd) {
+		return -1;
+	}
+	
+	public ParameterDeclaration MultiCatch.getParameter(int i) {
+		throw new IllegalArgumentException("not implemented");
+	}
+	
+	public int MultiCatch.getNumParameter() {
+		return 0;
+	}
+	
+	
 }
