@@ -187,14 +187,22 @@
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
                 suppressWarnings="false" parentInterface="false">
-		<fileset dir="${frontend}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
- 			<exclude name="BytecodeAttributes.jrag"/>
-			<exclude name="BytecodeDescriptor.jrag"/>
-			<exclude name="BytecodeReader.jrag"/>
-		</fileset>
+			<fileset dir="${Java7Frontend}">
+				<include name="ConstantExpression.jrag"/>
+				<include name="Variable.jadd"/>
+			</fileset>
+			<fileset dir="${frontend}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+				<exclude name="Literals.ast"/>
+				<exclude name="CatchClause.ast"/>
+				<exclude name="Variable.jadd"/>
+				<exclude name="BytecodeAttributes.jrag"/>
+				<exclude name="BytecodeDescriptor.jrag"/>
+				<exclude name="BytecodeReader.jrag"/>
+				<exclude name="ConstantExpression.jrag"/>
+			</fileset>
 		<fileset dir="${frontend1.5}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -235,6 +243,13 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${basedir}/src-tm/abc/ja/tm/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -252,13 +267,21 @@
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
                 suppressWarnings="false" parentInterface="false">
+		<fileset dir="${Java7Frontend}">
+			<include name="ConstantExpression.jrag"/>
+			<include name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
- 			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="Literals.ast"/>
+			<exclude name="CatchClause.ast"/>
+			<exclude name="Variable.jadd"/>
+			<exclude name="BytecodeAttributes.jrag"/>
 			<exclude name="BytecodeDescriptor.jrag"/>
 			<exclude name="BytecodeReader.jrag"/>
+			<exclude name="ConstantExpression.jrag"/>
 		</fileset>
 		<fileset dir="${frontend1.5}">
 			<include name="**/*.ast"/>
@@ -295,6 +318,13 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${basedir}/src-eaj/abc/ja/eaj/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -312,13 +342,21 @@
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
                 suppressWarnings="false" parentInterface="false">
+		<fileset dir="${Java7Frontend}">
+			<include name="ConstantExpression.jrag"/>
+			<include name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
- 			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="Literals.ast"/>
+			<exclude name="CatchClause.ast"/>
+			<exclude name="Variable.jadd"/>
+			<exclude name="BytecodeAttributes.jrag"/>
 			<exclude name="BytecodeDescriptor.jrag"/>
 			<exclude name="BytecodeReader.jrag"/>
+			<exclude name="ConstantExpression.jrag"/>
 		</fileset>
 		<fileset dir="${frontend1.5}">
 			<include name="**/*.ast"/>
@@ -355,6 +393,13 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
   	        <exclude name="**/FlushCaches.jrag"/>
+		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
 		</fileset>
 		<fileset dir="${basedir}/src-cjp/abc/ja/cjp/jrag">
 			<include name="**/*.ast"/>
@@ -403,13 +448,21 @@
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
                 suppressWarnings="false" parentInterface="false">
+		<fileset dir="${Java7Frontend}">
+			<include name="ConstantExpression.jrag"/>
+			<include name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
- 			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="Literals.ast"/>
+			<exclude name="CatchClause.ast"/>
+			<exclude name="Variable.jadd"/>
+			<exclude name="BytecodeAttributes.jrag"/>
 			<exclude name="BytecodeDescriptor.jrag"/>
 			<exclude name="BytecodeReader.jrag"/>
+			<exclude name="ConstantExpression.jrag"/>
 		</fileset>
 		<fileset dir="${frontend1.5}">
 			<include name="**/*.ast"/>
@@ -446,6 +499,13 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
   	        <exclude name="**/FlushCaches.jrag"/>
+		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
 		</fileset>
 		<fileset dir="${basedir}/src-cjp/abc/ja/cjp/jrag">
 			<include name="**/*.ast"/>
@@ -499,13 +559,21 @@
                 noCacheCycle="true" noComponentCheck="true"
                 outdir="${basedir}/generated" lazyMaps="true"
                 suppressWarnings="false" parentInterface="false">
+		<fileset dir="${Java7Frontend}">
+			<include name="ConstantExpression.jrag"/>
+			<include name="Variable.jadd"/>
+		</fileset>
 		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
- 			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="Literals.ast"/>
+			<exclude name="CatchClause.ast"/>
+			<exclude name="Variable.jadd"/>
+			<exclude name="BytecodeAttributes.jrag"/>
 			<exclude name="BytecodeDescriptor.jrag"/>
 			<exclude name="BytecodeReader.jrag"/>
+			<exclude name="ConstantExpression.jrag"/>
 		</fileset>
 		<fileset dir="${frontend1.5}">
 			<include name="**/*.ast"/>
@@ -541,6 +609,13 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${Java7Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="ConstantExpression.jrag"/>
+			<exclude name="Variable.jadd"/>
 		</fileset>
 		<fileset dir="${basedir}/src-om/abc/ja/om/jrag">
 			<include name="**/*.ast"/>

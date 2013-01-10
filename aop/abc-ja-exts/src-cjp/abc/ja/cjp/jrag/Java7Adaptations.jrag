@@ -1,0 +1,11 @@
+aspect Java7Adaptations {
+
+	//adaptations to make JastAdd happy when using Java 7 frontend; may not be 100% correct 
+	eq Stmt.modifiedInScope(Variable var) = false;
+	eq CatchClause.handlesAllUncheckedExceptions() = false;
+	eq CatchClause.handlesUncheckedException() = false;
+	eq CatchClause.hasVariable(String name) = false;
+	eq CatchClause.accessParameter(Variable decl) = false;
+	eq CatchParameterDeclaration.refreshVariable() = this;
+	eq CatchParameterDeclaration.mayBeFinal() = false;
+}

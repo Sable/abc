@@ -165,7 +165,7 @@ aspect TypeCheckCJP {
  	
  	eq AnonymousMethod.getBlock().returnType() = type();
  	
-	refine NameCheck public void ParameterDeclaration.nameCheck() {
+	refine MultiCatch public void ParameterDeclaration.nameCheck() {
 		//do nothing
 	}
 

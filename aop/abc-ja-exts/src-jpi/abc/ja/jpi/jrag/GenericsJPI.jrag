@@ -816,7 +816,7 @@ aspect GenericsJPI{
 	
 	}
 	
-	refine ExceptionHandling protected boolean ThrowStmt.reachedException(TypeDecl catchType) {
+	refine PreciseRethrow protected boolean ThrowStmt.reachedException(TypeDecl catchType) {
 		if (!insideCJPAdviceDecl()) return true;
 	  	for(TypeDecl exceptionType : exceptionCollection()){
 			if(catchType.mayCatch(exceptionType)){
