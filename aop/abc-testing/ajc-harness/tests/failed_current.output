@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 586ms, memory usage: 17770320.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 829ms, memory usage: 17695408.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1044ms, memory usage: 7963464.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1070ms, memory usage: 8074992.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 812ms, memory usage: 21002360.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 694ms, memory usage: 21050872.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 562ms, memory usage: 9020472.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 570ms, memory usage: 9016304.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,23 +36,23 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 996ms, memory usage: 15813120.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1149ms, memory usage: 15781472.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@2fbb9549.foo calls Outer$Inner@4446041a.mi
+Outer@2c3c5cfa.foo calls Outer$Inner@2efc37c6.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@4446041a.mi calls java.io.PrintStream@50b769fa.println
+Outer$Inner@2efc37c6.mi calls java.io.PrintStream@30b1c043.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@2fbb9549.foo calls Outer$InnerRandom@dd66211.nextHook
+Outer@2c3c5cfa.foo calls Outer$InnerRandom@7d77df04.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@dd66211.nextHook calls Outer$InnerRandom@dd66211.next
+Outer$InnerRandom@7d77df04.nextHook calls Outer$InnerRandom@7d77df04.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@2fbb9549.foo calls X.nextInt
+Outer@2c3c5cfa.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -63,7 +63,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$2$around$942(AroundInnerCalls13.java:41)
+	at A.inline$4$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -72,7 +72,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2190ms, memory usage: 15158536.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 2200ms, memory usage: 15158424.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -87,7 +87,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$30$around$1600(AroundAll.java:199)
+	at A.inline$23$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -96,7 +96,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2604ms, memory usage: 14563256.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2569ms, memory usage: 14565528.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -114,7 +114,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1818ms, memory usage: 12536496.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 2213ms, memory usage: 12556224.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -138,26 +138,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2049ms, memory usage: 14094992.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 2071ms, memory usage: 14076200.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 634ms, memory usage: 19989904.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 666ms, memory usage: 19923264.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 708ms, memory usage: 12377976.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 675ms, memory usage: 12313704.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1104ms, memory usage: 15237672.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 796ms, memory usage: 15337688.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -165,7 +165,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 869ms, memory usage: 22503536.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 733ms, memory usage: 22579480.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -189,7 +189,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:266)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1164ms, memory usage: 14900456.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1176ms, memory usage: 15338792.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -205,13 +205,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 671ms, memory usage: 33025488.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 689ms, memory usage: 33399592.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 207ms, memory usage: 12556328.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 206ms, memory usage: 12556808.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -220,7 +220,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 590ms, memory usage: 7937008.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 600ms, memory usage: 7927488.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -237,7 +237,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(Cast.java:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 2483ms, memory usage: 13682192.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 3031ms, memory usage: 13642168.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -258,7 +258,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 734ms, memory usage: 26834560.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 739ms, memory usage: 26834784.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -267,14 +267,14 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1193ms, memory usage: 30535320.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1320ms, memory usage: 29119080.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /mnt/sdb1/var/lib/jenkins/jobs/ABC/workspace/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 545ms, memory usage: 8312984.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 542ms, memory usage: 21799592.
 
 
 Running test 1501: abctests/cjp/matching/Don't match regular execution joinpoints on extracted method
@@ -294,7 +294,7 @@ org.aspectj.bridge.AbortException: expected 2 matches but saw 2: 2 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1501: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1490ms, memory usage: 33360512.
+FAIL: Test 1501: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1495ms, memory usage: 19502096.
 
 
 Running test 1504: abctests/cjp/matching/Match on two closure joinpoints of the same type
@@ -314,7 +314,7 @@ org.aspectj.bridge.AbortException: expected 4 matches but saw 1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1504: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1246ms, memory usage: 19693440.
+FAIL: Test 1504: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1354ms, memory usage: 19588880.
 
 
 Running test 1642: abctests/jpi/matching/Inheritance Match
@@ -353,7 +353,7 @@ org.aspectj.bridge.AbortException: expected 1 matches but saw1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1751ms, memory usage: 26620696.
+FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1881ms, memory usage: 25934000.
 
 
 Running test 1643: abctests/jpi/matching/Inheritance Match 2
@@ -400,7 +400,7 @@ org.aspectj.bridge.AbortException: expected 1 matches but saw1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1806ms, memory usage: 29155176.
+FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1888ms, memory usage: 28589072.
 
 
 Running test 1646: abctests/jpi/matching/Double Match
@@ -441,7 +441,7 @@ org.aspectj.bridge.AbortException: expected 1 match but saw 1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1847ms, memory usage: 26627144.
+FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1896ms, memory usage: 25926152.
 
 
 Running test 1649: abctests/jpi/matching/InvPCD/Interfaces-InvPCD
@@ -485,7 +485,7 @@ org.aspectj.bridge.AbortException: expected 6 matches but saw 6: 6 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 2143ms, memory usage: 26871904.
+FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 2222ms, memory usage: 26023656.
 
 
 Running test 1650: abctests/jpi/matching/InvPCD/Arguments-InvPCD
@@ -527,7 +527,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 3 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 4090ms, memory usage: 26666104.
+FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 3104ms, memory usage: 26066608.
 
 
 Running test 1651: abctests/jpi/matching/InvPCD/Target-InvPCD
@@ -569,7 +569,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 3 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 3528ms, memory usage: 26638952.
+FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 2665ms, memory usage: 26120728.
 
 
 Running test 1652: abctests/jpi/matching/InvPCD/This-InvPCD
@@ -613,7 +613,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 3 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 2486ms, memory usage: 26640720.
+FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 2254ms, memory usage: 26180176.
 
 
 Running test 1650: abctests/jpi/FSE-NI/example 1
@@ -654,7 +654,7 @@ org.aspectj.bridge.AbortException: price must be less than PRICE 0.0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 3529ms, memory usage: 26712536.
+FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 3534ms, memory usage: 26226976.
 
 
 Running test 1653: abctests/jpi/FSE-NI/example 4
@@ -700,7 +700,7 @@ org.aspectj.bridge.AbortException: must be executed only 4 times, but was execut
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 3619ms, memory usage: 29283360.
+FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 4765ms, memory usage: 29095608.
 
 
 Running test 1674: abctests/jpi/GenericAdvice/matching
@@ -731,7 +731,7 @@ org.aspectj.bridge.AbortException: expected 5 matches but saw 5: 5 > 0
 	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
 	at C.shadow$28(matching.java:46)
-	at A.inline$8$around$0(matching.java:11)
+	at A.inline$7$around$0(matching.java:11)
 	at C.main(matching.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -740,7 +740,7 @@ org.aspectj.bridge.AbortException: expected 5 matches but saw 5: 5 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 2014ms, memory usage: 34690176.
+FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 2035ms, memory usage: 26608960.
 
 
 Running test 1677: abctests/jpi/GenericAdvice/matching type variables in pointcut expression
@@ -778,7 +778,7 @@ org.aspectj.bridge.AbortException: expected 2 matches but saw 2: 2 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1862ms, memory usage: 26897928.
+FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 2012ms, memory usage: 26429504.
 
 
 Running test 1684: abctests/jpi/GenericAdvice/inheritance in generice advice
@@ -829,7 +829,7 @@ org.aspectj.bridge.AbortException: expected 6 matches but saw 6: 6 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 3141ms, memory usage: 29074272.
+FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 3056ms, memory usage: 28449504.
 
 
 Running test 1695: abctests/jpi/GlobalJPI/matching
@@ -866,7 +866,7 @@ org.aspectj.bridge.AbortException: expected 2 matches but saw 2: 0 < 2
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 2911ms, memory usage: 26646256.
+FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 2990ms, memory usage: 26012560.
 
 
 Running test 1696: abctests/jpi/GlobalJPI/matching_2
@@ -904,7 +904,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 0 < 3
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 3625ms, memory usage: 26647720.
+FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 2628ms, memory usage: 26061712.
 
 
 Running test 1697: abctests/jpi/GlobalJPI/matching_3
@@ -948,7 +948,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 4: 0 < 3
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 3790ms, memory usage: 26590840.
+FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 3096ms, memory usage: 26119096.
 
 
 Running test 1701: abctests/cjp/matching/Don't match regular execution joinpoints on extracted method
@@ -983,7 +983,7 @@ org.aspectj.bridge.AbortException: expected 2 matches but saw 2: 2 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1701: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1347ms, memory usage: 27869624.
+FAIL: Test 1701: "abctests/cjp/matching/Don't match regular execution joinpoints on extracted method" failed in 1412ms, memory usage: 26176536.
 
 
 Running test 1704: abctests/cjp/matching/Match on two closure joinpoints of the same type
@@ -1018,7 +1018,7 @@ org.aspectj.bridge.AbortException: expected 4 matches but saw 1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1365ms, memory usage: 26952952.
+FAIL: Test 1704: "abctests/cjp/matching/Match on two closure joinpoints of the same type" failed in 1483ms, memory usage: 25954072.
 
 
 Running test 1730: abctests/jpi/open-sealed/matching/simple match with cgq set to default value
@@ -1053,7 +1053,7 @@ org.aspectj.bridge.AbortException: expected 1 matches but saw 1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1730: "abctests/jpi/open-sealed/matching/simple match with cgq set to default value" failed in 2900ms, memory usage: 26725168.
+FAIL: Test 1730: "abctests/jpi/open-sealed/matching/simple match with cgq set to default value" failed in 2968ms, memory usage: 25840024.
 
 
 Running test 1731: abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value
@@ -1090,7 +1090,7 @@ org.aspectj.bridge.AbortException: expected 1 matches but saw 1: 1 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1731: "abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value" failed in 2977ms, memory usage: 26723088.
+FAIL: Test 1731: "abctests/jpi/open-sealed/matching/matching over inner classes with cgq set to default value" failed in 3016ms, memory usage: 25873208.
 
 
 Running test 1732: abctests/jpi/open-sealed/matching/matching with default value of cgq
@@ -1125,7 +1125,7 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 3 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1732: "abctests/jpi/open-sealed/matching/matching with default value of cgq" failed in 2168ms, memory usage: 26726144.
+FAIL: Test 1732: "abctests/jpi/open-sealed/matching/matching with default value of cgq" failed in 2222ms, memory usage: 25914632.
 
 
 Running test 1733: abctests/jpi/open-sealed/matching/matching with cgq in sealed
@@ -1160,7 +1160,7 @@ org.aspectj.bridge.AbortException: expected 2 matches but saw 2: 2 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1733: "abctests/jpi/open-sealed/matching/matching with cgq in sealed" failed in 2173ms, memory usage: 26727784.
+FAIL: Test 1733: "abctests/jpi/open-sealed/matching/matching with cgq in sealed" failed in 2219ms, memory usage: 25956040.
 
 
 Running test 1734: abctests/jpi/open-sealed/matching/matching with cgq in open
@@ -1195,6 +1195,6 @@ org.aspectj.bridge.AbortException: expected 3 matches but saw 3: 3 > 0
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1734: "abctests/jpi/open-sealed/matching/matching with cgq in open" failed in 2168ms, memory usage: 26731144.
+FAIL: Test 1734: "abctests/jpi/open-sealed/matching/matching with cgq in open" failed in 2237ms, memory usage: 25998768.
 
 
