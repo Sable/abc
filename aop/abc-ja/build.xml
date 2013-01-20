@@ -140,6 +140,9 @@
 			<fileset dir="${frontend1.5}">
 				<include name="*.parser" />
 			</fileset>
+		    <fileset dir="${Java7Frontend}">
+		      <include name="Literals.parser"/>
+		    </fileset>
 			<filelist dir="${basedir}/">
 				<file name="src/abc/ja/parse/errorproductions.parser" />
 				<file name="src/abc/ja/parse/aspectj.parser" />

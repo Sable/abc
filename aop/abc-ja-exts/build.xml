@@ -640,6 +640,9 @@
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
     </fileset>
+    <fileset dir="${Java7Frontend}">
+      <include name="Literals.parser"/>
+    </fileset>
     <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
@@ -674,6 +677,9 @@
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
     </fileset>
+    <fileset dir="${Java7Frontend}">
+      <include name="Literals.parser"/>
+    </fileset>
     <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
@@ -706,6 +712,9 @@
     </filelist>
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
+    </fileset>
+    <fileset dir="${Java7Frontend}">
+      <include name="Literals.parser"/>
     </fileset>
     <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
@@ -740,6 +749,9 @@
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
     </fileset>
+    <fileset dir="${Java7Frontend}">
+      <include name="Literals.parser"/>
+    </fileset>
     <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
@@ -773,6 +785,9 @@
     </filelist>
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
+    </fileset>
+    <fileset dir="${Java7Frontend}">
+      <include name="Literals.parser"/>
     </fileset>
     <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>

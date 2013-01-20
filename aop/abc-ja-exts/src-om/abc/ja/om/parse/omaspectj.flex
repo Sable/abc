@@ -373,7 +373,12 @@ FloatingPointLiteral = [0-9]+ "." [0-9]* {ExponentPart}?
                      | "." [0-9]+ {ExponentPart}?
                      | [0-9]+ {ExponentPart}
 
-ExponentPart = [eE] {SignedInteger}
+NumericLiteral = 0 [_0-9a-fA-FxXlL.]* {ExponentPart}?
+               | [1-9] [_0-9a-fA-FxXlL.]* {ExponentPart}?
+               | \. [0-9] [_0-9a-fA-FxXlL.]* {ExponentPart}?
+ExponentPart = [eE] [+-]? [_0-9a-fA-FxX.]*
+             | [pP] [+-]? [_0-9a-fA-F]+        
+
 SignedInteger = [-+]? [0-9]+
 
 /* 3.10.4 Character Literals */
@@ -472,6 +477,8 @@ BinaryExponent = [pP] [+-]? [0-9]+
 
     /* 3.10.6 Null Literal */
     "null"  { return null_lit(); }
+
+    {NumericLiteral}               { return sym(Terminals.NUMERIC_LITERAL); }
 }
 
 /* Java-ish symbols and literals */
@@ -565,7 +572,7 @@ BinaryExponent = [pP] [+-]? [0-9]+
     \"      { enterLexerState(STRING); sb.setLength(0); }
 
  // 3.10.1 Integer Literals
-  {DecimalNumeral}               { return sym(Terminals.INTEGER_LITERAL); }
+/*  {DecimalNumeral}               { return sym(Terminals.INTEGER_LITERAL); }
   {DecimalNumeral} [lL]          { return sym(Terminals.LONG_LITERAL, str().substring(0,len()-1)); }
 
   {HexNumeral}                   { return sym(Terminals.INTEGER_LITERAL); }
@@ -584,7 +591,7 @@ BinaryExponent = [pP] [+-]? [0-9]+
   {HexadecimalFloatingPointLiteral} [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
   {HexadecimalFloatingPointLiteral} [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
   {HexadecimalFloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
-
+*/
 }
 
 <POINTCUT> {
