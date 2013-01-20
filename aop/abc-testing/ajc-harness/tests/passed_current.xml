@@ -5909,6 +5909,10 @@
 <ajc-test title="Shopping Session Example" num="1500" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.cjp" files="ShoppingSession.java"></compile>
     </ajc-test>
+<ajc-test title="Don't match regular execution joinpoints on extracted method" num="1501" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="DontMatchExecution.java"></compile>
+		<run class="DontMatchExecution"></run>
+    </ajc-test>
 <ajc-test title="Match on closure joinpoints" num="1502" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.cjp" files="MatchCJP.java"></compile>
 		<run class="MatchCJP"></run>
@@ -5916,6 +5920,10 @@
 <ajc-test title="Match on closure joinpoints with arguments" num="1503" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.cjp" files="MatchCJPWithArgs.java"></compile>
 		<run class="MatchCJPWithArgs"></run>
+    </ajc-test>
+<ajc-test title="Match on two closure joinpoints of the same type" num="1504" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="Match2CJP.java"></compile>
+		<run class="Match2CJP"></run>
     </ajc-test>
 <ajc-test title="Match on closure joinpoints with arguments" num="1505" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.cjp" files="Match2CJPWithDifferentArgs.java"></compile>
@@ -6055,13 +6063,6 @@
         	<message line="9" kind="error"></message>
         	<message line="11" kind="error"></message>
         	<message line="11" kind="error"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
-        <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
-        	<message line="8" kind="error"></message>
-        	<message line="8" kind="error"></message>
-        	<message line="8" kind="error"></message>
 		</compile>
     </ajc-test>
 <ajc-test title="JPI throw syntax" num="1607" dir="abctests/jpi/simplesyntax">
@@ -6225,6 +6226,21 @@
 		</compile>
 		<run class="DontMatch"></run>
     </ajc-test>
+<ajc-test title="Inheritance Match" num="1642" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch.java">
+	        <message line="13" kind="warning"></message>
+	        <message line="16" kind="warning"></message>
+		</compile>		
+		<run class="InheritanceMatch"></run>
+    </ajc-test>
+<ajc-test title="Inheritance Match 2" num="1643" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch2.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>
+		<run class="InheritanceMatch2"></run>
+    </ajc-test>
 <ajc-test title="Inheritance Match 3" num="1644" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java">
 	        <message line="17" kind="warning"></message>
@@ -6241,6 +6257,13 @@
 		</compile>		
 		<run class="InheritanceMatch4"></run>
     </ajc-test>
+<ajc-test title="Double Match" num="1646" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="DoubleMatch.java">
+	        <message line="15" kind="warning"></message>
+	        <message line="18" kind="warning"></message>
+		</compile>		
+		<run class="DoubleMatch"></run>
+    </ajc-test>
 <ajc-test title="Sub type match" num="1647" dir="abctests/jpi/matching">
         <compile options="-ext,abc.ja.jpi" files="SubTypeMatching.java">
 	        <message line="8" kind="warning"></message>
@@ -6250,6 +6273,42 @@
 <ajc-test title="collect exhibits clauses" num="1648" dir="abctests/jpi/matching/exhibits">
         <compile options="-ext,abc.ja.jpi" files="interfaces/JPI.java, classes/A.java, classes/B.java, aspects/M.java"></compile>
 		<run class="classes.modificables.A"></run>
+    </ajc-test>
+<ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="InterfacesType.java">
+        	<message line="13" kind="warning"></message>
+        	<message line="15" kind="warning"></message>
+        	<message line="30" kind="warning"></message>
+        	<message line="32" kind="warning"></message>
+		</compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="Arguments-InvPCD" num="1650" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="ArgumentType.java">
+        	<message line="20" kind="warning"></message>
+        	<message line="28" kind="warning"></message>        	
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="Target-InvPCD" num="1651" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="TargetType.java">
+        	<message line="30" kind="warning"></message>        	
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="This-InvPCD" num="1652" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="ThisType.java">
+        	<message line="8" kind="warning"></message>
+        	<message line="21" kind="warning"></message>
+        	<message line="33" kind="warning"></message>
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="example 1" num="1650" dir="abctests/jpi/FSE-NI">
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example1.java">
+	        <message line="9" kind="warning"></message>
+		</compile>		
+		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="example 2" num="1651" dir="abctests/jpi/FSE-NI">
         <compile options="-ext,abc.ja.jpi" files="Util.java, example2.java">
@@ -6262,6 +6321,13 @@
 	        <message line="11" kind="warning"></message>
 	        <message line="16" kind="warning"></message>
 		</compile>
+		<run class="ShoppingSession"></run>
+    </ajc-test>
+<ajc-test title="example 4" num="1653" dir="abctests/jpi/FSE-NI">
+        <compile options="-ext,abc.ja.jpi" files="Util.java, example4.java">
+	        <message line="11" kind="warning"></message>
+	        <message line="16" kind="warning"></message>	
+		</compile>				
 		<run class="ShoppingSession"></run>
     </ajc-test>
 <ajc-test title="website example" num="1654" dir="abctests/jpi/ICSE2012">
@@ -6327,6 +6393,12 @@
         	<message line="36" kind="error"></message>
 		</compile>
     </ajc-test>
+<ajc-test title="matching" num="1674" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching.java">
+        	<message line="33" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="matching 2" num="1675" dir="abctests/jpi/GenericAdvice">
         <compile options="-ext,abc.ja.jpi" files="matching_2.java">
         	<message line="20" kind="warning"></message>
@@ -6341,6 +6413,12 @@
         <compile options="-ext,abc.ja.jpi" files="IntegerMethods.java">
         	<message line="16" kind="warning"></message>        	
         </compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching type variables in pointcut expression" num="1677" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="TypeVariableInPointcutExpression.java">
+        	<message line="16" kind="warning"></message>        	
+        </compile>		
 		<run class="C"></run>
     </ajc-test>
 <ajc-test title="type check on Advice specifications" num="1678" dir="abctests/jpi/GenericAdvice">
@@ -6384,6 +6462,12 @@
 <ajc-test title="matching-5" num="1683" dir="abctests/jpi/GenericAdvice">
         <compile options="-ext,abc.ja.jpi" files="matching5.java"></compile>
     </ajc-test>
+<ajc-test title="inheritance in generice advice" num="1684" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="inheritance.java">
+	        <message line="16" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="simple syntax" num="1690" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="syntax.java">
         	<message line="9" kind="error"></message>
@@ -6413,6 +6497,18 @@
 	        <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="matching" num="1695" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_2" num="1696" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_3" num="1697" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
 <ajc-test title="matching_4" num="1698" dir="abctests/jpi/GlobalJPI">
         <compile options="-ext,abc.ja.jpi" files="matching4.java"></compile>
     </ajc-test>
@@ -6424,6 +6520,10 @@
 <ajc-test title="Shopping Session Example" num="1700" dir="abctests/cjp/shopping">
         <compile options="-ext,abc.ja.jpi" files="ShoppingSession.java"></compile>
     </ajc-test>
+<ajc-test title="Don't match regular execution joinpoints on extracted method" num="1701" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="DontMatchExecution.java"></compile>
+		<run class="DontMatchExecution"></run>
+    </ajc-test>
 <ajc-test title="Match on closure joinpoints" num="1702" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="MatchCJP.java"></compile>
 		<run class="MatchCJP"></run>
@@ -6431,6 +6531,10 @@
 <ajc-test title="Match on closure joinpoints with arguments" num="1703" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="MatchCJPWithArgs.java"></compile>
 		<run class="MatchCJPWithArgs"></run>
+    </ajc-test>
+<ajc-test title="Match on two closure joinpoints of the same type" num="1704" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="Match2CJP.java"></compile>
+		<run class="Match2CJP"></run>
     </ajc-test>
 <ajc-test title="Match on closure joinpoints with arguments" num="1705" dir="abctests/cjp/matching">
         <compile options="-ext,abc.ja.jpi" files="Match2CJPWithDifferentArgs.java"></compile>
@@ -6537,6 +6641,31 @@
         <compile options="-ext,abc.ja.jpi" files="CheckAfterThrowing.java">	        
 	        <message line="18" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="simple match with cgq set to default value" num="1730" dir="abctests/jpi/open-sealed/matching">
+        <compile options="-ext,abc.ja.jpi" files="SimpleMatch.java">
+        </compile>
+        <run class="SimpleMatch"></run>
+    </ajc-test>
+<ajc-test title="matching over inner classes with cgq set to default value" num="1731" dir="abctests/jpi/open-sealed/matching">
+        <compile options="-ext,abc.ja.jpi" files="InnerClasses.java">
+        </compile>
+        <run class="InnerClasses"></run>
+    </ajc-test>
+<ajc-test title="matching with default value of cgq" num="1732" dir="abctests/jpi/open-sealed/matching">
+        <compile options="-ext,abc.ja.jpi" files="JPIOverridenDefault.java">
+        </compile>
+        <run class="asp"></run>
+    </ajc-test>
+<ajc-test title="matching with cgq in sealed" num="1733" dir="abctests/jpi/open-sealed/matching">
+        <compile options="-ext,abc.ja.jpi,-cgq,sealed" files="JPIOverridenSealed.java">
+        </compile>
+        <run class="asp"></run>
+    </ajc-test>
+<ajc-test title="matching with cgq in open" num="1734" dir="abctests/jpi/open-sealed/matching">
+        <compile options="-ext,abc.ja.jpi,-cgq,open" files="JPIOverridenOpen.java">
+        </compile>
+        <run class="asp"></run>
     </ajc-test>
 <ajc-test title="matching a open class sealed by a jp overriden" num="1735" dir="abctests/jpi/open-sealed/matching">
         <compile options="-ext,abc.ja.jpi" files="JPIOverridenSealedByJPOpenKeyword.java">
