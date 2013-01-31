@@ -118,6 +118,7 @@ public class CompileSequence extends abc.main.CompileSequence {
     while (wcni.hasNext()) {
         String wcn = wcni.next();
         SootClass sootClass = Scene.v().loadClassAndSupport(wcn);
+        sootClass.setApplicationClass();
         abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addWeavableClass(AbcFactory.AbcClass(sootClass));
     }
     
