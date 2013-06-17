@@ -2673,10 +2673,6 @@
         <compile files="DeclaredExcs.java"></compile>
         <run class="DeclaredExcs"></run>
     </ajc-test>
-<ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOrdering.java"></compile>
-        <run class="AdviceOrdering"></run>
-    </ajc-test>
 <ajc-test title="advice on default constructor for a class only referenced via reflection" pr="241" num="470" keywords="from-resolved_10x" dir="new">
         <compile files="OddConstructors.java"></compile>
         <run class="OddConstructors"></run>
@@ -4115,16 +4111,6 @@
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
     </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="78401" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-		<message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
-    </ajc-test>
 <ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="TryFinallyInAround.java"></compile>
         <run class="TryFinallyInAround"></run>
@@ -4194,68 +4180,6 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
-<ajc-test title="declare warnings on binary javac 1.4 classes" pr="37020" num="794" dir="new/binaryWarnings/src">
-        <compile files="aspects/MainWarnings.java,../injars/app-javac-1.4.jar">
-        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
-        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
-        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
-        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
-        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
-        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
-        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
-        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
-        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
-        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
-        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
-        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
-        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
-        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
-        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
-        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
-        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
-        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
-        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-	</ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start" abccomment="ideally we'd get the message at line 6, but 12 is about the best we can do.                      6 isn't reported in the bytecode anywhere, so there's no hope of that.                      ajc does the same as us.">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
-        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
-        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary javac 1.4 classes" pr="37020" num="797" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start; XXX need javac inlining example" abccomment="ideally we'd get the message at line 6 and 17, but 12 and 20 is the best we can do                     given what the bytecode has. ajc does the same as us.">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-javac-1.4.jar">
-        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
-        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="20" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
 <ajc-test title="expected class tree" num="803" dir="incremental/initialTests/expClasses">
         <compile files="Main.java">
             <dir-changes expDir="expected"></dir-changes>
@@ -4303,18 +4227,6 @@
     </ajc-test>
 <ajc-test title="declare warnings on main - constructor execution" pr="37020" num="822" keywords="knownLimitation" dir="new/binaryWarnings/src">
         <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" num="823" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 main - constructor execution" pr="37020" num="824" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
         	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
         </compile>
         <run class="app.Main"></run>
@@ -4950,51 +4862,6 @@
         	<message line="7" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare error binary-weaving NPE 1" pr="57432" num="961" dir="bugs/systemouts" abccomment="we correctly report two errors at line 13">
-        <compile files="injar-debug.jar,A.java">
-			<ajcmessage line="12" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="13" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="20" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="22" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="23" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="27" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="28" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="29" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="30" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="31" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="32" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="33" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="34" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="35" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="36" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="37" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="38" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="39" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="40" kind="error" file="X.java"></ajcmessage>
-			<ajcmessage line="41" kind="error" file="X.java"></ajcmessage>
-			<message line="12" kind="error" file="X.java"></message>
-			<message line="13" kind="error" file="X.java"></message>
-			<message line="13" kind="error" file="X.java"></message>
-			<message line="20" kind="error" file="X.java"></message>
-			<message line="22" kind="error" file="X.java"></message>
-			<message line="23" kind="error" file="X.java"></message>
-			<message line="27" kind="error" file="X.java"></message>
-			<message line="28" kind="error" file="X.java"></message>
-			<message line="29" kind="error" file="X.java"></message>
-			<message line="30" kind="error" file="X.java"></message>
-			<message line="31" kind="error" file="X.java"></message>
-			<message line="32" kind="error" file="X.java"></message>
-			<message line="33" kind="error" file="X.java"></message>
-			<message line="34" kind="error" file="X.java"></message>
-			<message line="35" kind="error" file="X.java"></message>
-			<message line="36" kind="error" file="X.java"></message>
-			<message line="37" kind="error" file="X.java"></message>
-			<message line="38" kind="error" file="X.java"></message>
-			<message line="39" kind="error" file="X.java"></message>
-			<message line="40" kind="error" file="X.java"></message>
-			<message line="41" kind="error" file="X.java"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="declare error binary-weaving NPE 2 " pr="57432" num="962" dir="bugs/systemouts" abccomment="we generate 21 errors, just like ajc..">
         <compile files="injar-nodebug.jar,A.java">
 			<message kind="error"></message>
@@ -5283,12 +5150,6 @@
 <ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
        <compile files="BinaryClasses.jar,Aspect.java"></compile>
        <run class="BinaryClasses"></run>
-    </ajc-test>
-<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
-       <compile files="BinaryClasses2.jar,Aspect.java">
-           
-           <message line="24" kind="error" file="BinaryClasses2.java"></message>
-       </compile>
     </ajc-test>
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
