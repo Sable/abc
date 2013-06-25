@@ -1,5 +1,37 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
+ <ajc-test title="Inheritance of class and aspect vars in weaves" num="15" keywords="from-base" dir="base/test108">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="Inheritance of methods advised by aspects" num="18" keywords="from-base" dir="base/test111">
+        <compile files="Driver.java,SubClass.java,SuperClass.java,SuperAspect.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="DEPRECATED: Introduce of constructors" num="25" keywords="from-base" dir="base/test118" abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="advises on introduced methods and constructors" num="28" keywords="from-base" dir="base/test121" abccomment="test extra parameters introduced by ITDs. Fixed ODM Jul 5">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="proper matching of overloaded constructors" num="38" keywords="from-base" dir="base/test132">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="proper values for thisJoinPoint attributes" num="41" keywords="from-base" dir="base/test135" abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.                     Now seems to fail because of advice and aspect inheritance. ODM">
+        <compile files="Driver.java,JoinPointFields.java,TopFoo.java,pack/PackFoo.java,pack/JoinPointFields.java,pack/PackJoinPointFields.java"></compile>
+        <run class="test135.Driver"></run>
+    </ajc-test>
+<ajc-test title="operations on private and protected aspect members (++, -- in partciular)" num="43" keywords="from-base" dir="base/test137">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="thisResultObject for primitives" num="47" keywords="from-base" dir="base/test141">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
         <run class="InnerHell"></run>
@@ -27,25 +59,442 @@
         <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
         <run class="InterfaceAndInner"></run>
     </ajc-test>
+<ajc-test title="within and introductions behaves correctly" num="322" keywords="from-design" dir="design/intro">
+        <compile files="Within.java"></compile>
+        <run class="Within"></run>
+    </ajc-test>
+<ajc-test title="Joinpoint is not created for foo(String) when before() advice is present." num="332" keywords="from-design" dir="design/reflect">
+        <compile files="SimpleAround1.java"></compile>
+        <run class="SimpleAround1"></run>
+    </ajc-test>
+<ajc-test title="Checking new joinpoints" num="335" keywords="from-design" dir="design/reflect" abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04">
+        <compile files="Coverage.java"></compile>
+        <run class="Coverage"></run>
+    </ajc-test>
+<ajc-test title="field from implemented interface not found in advice" pr="96" num="339" keywords="from-resolved_10x" dir="new">
+        <compile files="FieldFromImplementsNotFound.java"></compile>
+        <run class="FieldFromImplementsNotFound"></run>
+    </ajc-test>
+<ajc-test title="advice and package visibility 1" pr="106" num="345" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"></compile>
+        <run class="packagevisibility.PackagesAndAdvice"></run>
+    </ajc-test>
+<ajc-test title="advice on implied empty constructor" num="347" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnEmptyConstructor.java"></compile>
+        <run class="AdviceOnEmptyConstructor"></run>
+    </ajc-test>
+<ajc-test title="and PR#201 advice on static methods fails javac compile with this" pr="221" num="357" keywords="from-resolved_10x" dir="new/adviceOnStaticMeth">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="non-static advice on inner class defined inside of method body" num="358" keywords="from-resolved_10x" dir="new" abccomment="fails on use of thisJoinPoint when advice applies inside inner class;                  generates verify error. error goes away when use of thisJoinPoint is                  commented out. Emailed Ganesh. ODM 09/07/04">
+        <compile files="MethodInner.java"></compile>
+        <run class="MethodInner"></run>
+    </ajc-test>
+<ajc-test title="simple single-threaded eachcflow test (includes aspectOf)" num="359" keywords="from-resolved_10x" dir="new">
+        <compile files="Client.java"></compile>
+        <run class="Client"></run>
+    </ajc-test>
+<ajc-test title="test after throwing advice in several ways" num="364" keywords="from-resolved_10x" dir="new" abccomment="the usual problem with around and exception checker. ODM 09/07/04">
+        <compile files="AfterThrowing.java"></compile>
+        <run class="AfterThrowing"></run>
+    </ajc-test>
+<ajc-test title="fancy name patterns for method names" num="365" keywords="from-resolved_10x" dir="new">
+        <compile files="WildNames.java"></compile>
+        <run class="WildNames"></run>
+    </ajc-test>
+<ajc-test title="calls: calls(...)" num="366" keywords="from-resolved_10x" dir="design/calls">
+        <compile options="-Xlint:ignore" files="Simple.java"></compile>
+        <run class="Simple"></run>
+    </ajc-test>
+<ajc-test title="more aspect inheritance" pr="265" num="371" keywords="from-resolved_10x" dir="new/beforeNotRun">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="compiler crashes with eachobject and named pointcuts with parameters" pr="290" num="373" keywords="from-resolved_10x" dir="new/pointcutParameter">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="lookup rules for unqualified pointcut names" pr="304" num="374" keywords="from-resolved_10x" dir="new/unqualifiedPointcutName">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="(DESIGN QUESTION) aspect of eachJVM advising its own initializer" pr="309" num="376" keywords="from-resolved_10x" dir="new">
+        <compile files="EachJVMOnSelf.java"></compile>
+        <run class="EachJVMOnSelf"></run>
+    </ajc-test>
+<ajc-test title="after returning advice on calls to constructors" pr="302" num="377" keywords="from-resolved_10x" dir="new">
+        <compile files="AfterConstructorCalls.java"></compile>
+        <run class="AfterConstructorCalls"></run>
+    </ajc-test>
+<ajc-test title="basic test of callsto pointcuts" num="386" keywords="from-resolved_10x" dir="new">
+        <compile files="CallsTo.java"></compile>
+        <run class="CallsTo"></run>
+    </ajc-test>
+<ajc-test title="Ensures introduction methods can have advice placed on them" num="393" keywords="from-resolved_10x" dir="new">
+        <compile files="Dominates.java"></compile>
+        <run class="Dominates"></run>
+    </ajc-test>
+<ajc-test title="Ensuring backdoor methods are produced." num="396" keywords="from-resolved_10x" dir="new">
+        <compile files="BackdoorMethods.java"></compile>
+        <run class="BackdoorMethods"></run>
+    </ajc-test>
+<ajc-test title="no duplicate advice methods in abstract aspects extended" num="398" keywords="from-resolved_10x" dir="new">
+        <compile files="GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java"></compile>
+        <run class="GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect"></run>
+    </ajc-test>
+<ajc-test title="Making sure final variables stay final." num="406" keywords="from-resolved_10x" dir="new">
+        <compile files="RemovingFinals.java"></compile>
+        <run class="RemovingFinals"></run>
+    </ajc-test>
+<ajc-test title="Problem resolving meta-joinpoint names with around advice on methods called from around advice." num="407" keywords="from-resolved_10x" dir="new">
+        <compile files="AroundAdviceOnMethodsCalledInAroundAdvice.java"></compile>
+        <run class="AroundAdviceOnMethodsCalledInAroundAdvice"></run>
+    </ajc-test>
+<ajc-test title="holding onto proceed calls in a closure-like way" num="41001" keywords="from-resolved_10x,knownLimitation" dir="abctests/new" abccomment="duplicated from 410 to fix bug in test case">
+        <compile files="HoldProceed.java"></compile>
+        <run class="HoldProceed"></run>
+    </ajc-test>
+<ajc-test title="inner aspects can't access outer pointcuts" pr="211" num="414" keywords="from-resolved_10x" dir="new/innerAspectAccess">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="Two anonymous classes in the same scope" num="421" keywords="from-resolved_10x" dir="new">
+        <compile files="TwoAnonymous.java"></compile>
+        <run class="TwoAnonymous"></run>
+    </ajc-test>
+<ajc-test title="introduction of an initializer into a class" pr="98" num="423" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroductionOfInitializer.java"></compile>
+        <run class="IntroductionOfInitializer"></run>
+    </ajc-test>
+<ajc-test title="some method accessibility tests, particularly package-protected and inheritance" num="424" keywords="from-resolved_10x" dir="new/access">
+        <compile files="Test1.java,pc/C.java,psub/SubC.java,psub/A.java"></compile>
+        <run class="Test1"></run>
+    </ajc-test>
+<ajc-test title="fairly monotonous (and non-covering) tests for expanded dot patterns" num="425" keywords="from-resolved_10x" dir="new">
+        <compile files="ExpandedDotDotPattern.java"></compile>
+        <run class="ExpandedDotDotPattern"></run>
+    </ajc-test>
+<ajc-test title="Checking formal matching as in Roeder's bug in 0.7b10" num="427" keywords="from-resolved_10x" dir="new">
+        <compile files="FormalMatching.java"></compile>
+        <run class="FormalMatching"></run>
+    </ajc-test>
+<ajc-test title="The pointcut params (..,int..) is not recognizing (Object,int,Object)." num="429" keywords="from-resolved_10x" dir="new">
+        <compile files="Params.java"></compile>
+        <run class="Params"></run>
+    </ajc-test>
+<ajc-test title="Handlers problem" pr="318" num="432" keywords="from-resolved_10x" dir="new">
+        <compile files="PR318.java"></compile>
+        <run class="PR318"></run>
+    </ajc-test>
+<ajc-test title="try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }" num="438" keywords="from-resolved_10x" dir="new">
+        <compile files="IfdefsAndAdvice.java"></compile>
+        <run class="IfdefsAndAdvice"></run>
+    </ajc-test>
+<ajc-test title="within and withincode (doesn't all work due to local class name issues)" num="439" keywords="from-resolved_10x" dir="new">
+        <compile files="WithinInners.java"></compile>
+        <run class="WithinInners"></run>
+    </ajc-test>
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
         <run class="AroundInnerCalls13"></run>
+    </ajc-test>
+<ajc-test title="around advice on calls within inner classes (including protected method calls) 2" num="441" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4" files="AroundInnerCalls.java"></compile>
+        <run class="AroundInnerCalls"></run>
+    </ajc-test>
+<ajc-test title="Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint." num="447" keywords="from-resolved_10x" dir="new">
+        <compile files="ThisJoinPointAssignments.java"></compile>
+        <run class="ThisJoinPointAssignments"></run>
+    </ajc-test>
+<ajc-test title="After advice isn't being woven into after throwing advice" num="452" keywords="from-resolved_10x" dir="new">
+        <compile files="AfterThrowingNotWoven.java"></compile>
+        <run class="AfterThrowingNotWoven"></run>
+    </ajc-test>
+<ajc-test title="Defines clfow$ajc0 more once. [eachcflow]" num="455" keywords="from-resolved_10x" dir="new">
+        <compile files="Binkley.java"></compile>
+        <run class="Binkley"></run>
+    </ajc-test>
+<ajc-test title="Null pointer on gets advice with coverage [painful]" num="461" keywords="from-resolved_10x" dir="new">
+        <compile files="NullPointerOnGets.java"></compile>
+        <run class="NullPointerOnGets"></run>
+    </ajc-test>
+<ajc-test title="Basic test for cflow pointcuts [eachcflow]" num="462" keywords="from-resolved_10x" dir="new">
+        <compile files="CFlowPoints.java"></compile>
+        <run class="CFlowPoints"></run>
+    </ajc-test>
+<ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" num="465" keywords="from-resolved_10x" dir="new">
+        <compile files="Binkley2.java"></compile>
+        <run class="Binkley2"></run>
+    </ajc-test>
+<ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnInheritedMethod.java"></compile>
+        <run class="AdviceOnInheritedMethod"></run>
+    </ajc-test>
+<ajc-test title=", PR#115 checks the ordering of catch clauses" pr="114" num="467" keywords="from-resolved_10x" dir="new">
+        <compile files="OrderOfCatches.java"></compile>
+        <run class="OrderOfCatches"></run>
+    </ajc-test>
+<ajc-test title="various declared exception permutations" num="468" keywords="from-resolved_10x" dir="new">
+        <compile files="DeclaredExcs.java"></compile>
+        <run class="DeclaredExcs"></run>
     </ajc-test>
 <ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOrdering.java"></compile>
         <run class="AdviceOrdering"></run>
     </ajc-test>
+<ajc-test title="advice on default constructor for a class only referenced via reflection" pr="241" num="470" keywords="from-resolved_10x" dir="new">
+        <compile files="OddConstructors.java"></compile>
+        <run class="OddConstructors"></run>
+    </ajc-test>
+<ajc-test title="join points in static/dynamic initializers aren't showing up." num="474" keywords="from-resolved_10x" dir="new">
+        <compile files="NonexistentInitializers.java"></compile>
+        <run class="NonexistentInitializers"></run>
+    </ajc-test>
+<ajc-test title="correct types of parameters at call-sites" num="476" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
+        <run vm="1.4" class="CallTypes"></run>
+    </ajc-test>
+<ajc-test title="Joinpoints are showing up on intermediate call sites" num="477" keywords="from-resolved_10x" dir="new">
+        <compile files="Counting1.java"></compile>
+        <run class="Counting1"></run>
+    </ajc-test>
+<ajc-test title="making sure that super calls are bound to the right methods" num="480" keywords="from-resolved_10x" dir="new">
+        <compile files="SupersAndInterfaces.java"></compile>
+        <run class="SupersAndInterfaces"></run>
+    </ajc-test>
+<ajc-test title="exceptions thrown and caught in advice, particularly try+proceed" num="483" keywords="from-resolved_10x" dir="new">
+        <compile files="TryAndProceed.java"></compile>
+        <run class="TryAndProceed"></run>
+    </ajc-test>
+<ajc-test title="Not and And operators in pointcuts not working" num="484" keywords="from-resolved_10x" dir="new">
+        <compile files="NotAndPointcut.java"></compile>
+        <run class="NotAndPointcut"></run>
+    </ajc-test>
+<ajc-test title="pcd if() dup methods produced when pointcut after advice etc (javac)" num="490" keywords="from-resolved_10x" dir="new">
+        <compile files="IfPCDDupMethod.java"></compile>
+        <run class="IfPCDDupMethod"></run>
+    </ajc-test>
+<ajc-test title="pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" num="491" keywords="from-resolved_10x" dir="new">
+        <compile files="IfPCDAdviceMethods.java"></compile>
+        <run class="IfPCDAdviceMethods"></run>
+    </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
+    </ajc-test>
+<ajc-test title="cflowbelow dependencies (from Chris Dutchyn)" num="498" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowBelowTest.java"></compile>
+        <run class="CflowBelowTest"></run>
+    </ajc-test>
+<ajc-test title="target type matching with messy interface hierarchies" num="499" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
+        <run vm="1.4" class="CallTypesI"></run>
+    </ajc-test>
+<ajc-test title="Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" pr="493" num="501" keywords="from-resolved_10x" dir="new">
+        <compile files="NonAlphaSignaturePatternCE.java"></compile>
+        <run class="NonAlphaSignaturePatternCE"></run>
+    </ajc-test>
+<ajc-test title="Arguments are not being passed in to calls advice" pr="335" num="504" keywords="from-resolved_10x" dir="new">
+        <compile files="PR335.java"></compile>
+        <run class="PR335"></run>
+    </ajc-test>
+<ajc-test title="interfaces as mixins with introduction" num="505" keywords="from-resolved_10x" dir="design/intro" abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04">
+        <compile files="Interfaces.java"></compile>
+        <run class="Interfaces"></run>
+    </ajc-test>
+<ajc-test title="ExceptionInInitializerError accessing cflow in aspect initialization - before variants" num="507" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowInitInAspectVariantsBefore.java"></compile>
+        <run class="CflowInitInAspectVariantsBefore"></run>
+    </ajc-test>
+<ajc-test title="NoClassDefFoundError accessing cflow in aspect initialization - after variants" num="508" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowInitInAspectVariantsAfter.java"></compile>
+        <run class="CflowInitInAspectVariantsAfter"></run>
+    </ajc-test>
+<ajc-test title="InternalCompilerError in JpPlan when args alone" num="509" keywords="from-resolved_10x" dir="new">
+        <compile files="ArgsAlone.java"></compile>
+        <run class="ArgsAlone"></run>
+    </ajc-test>
+<ajc-test title="compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" pr="528" num="511" keywords="from-resolved_10x" dir="new">
+        <compile files="PR528.java"></compile>
+        <run class="PR528"></run>
+    </ajc-test>
+<ajc-test title="missing method name to synthetic invocation" pr="535" num="513" keywords="from-resolved_10x,new-messages-vary" dir="new">
+        <compile files="PR535.java"></compile>
+        <run class="PR535"></run>
+    </ajc-test>
+<ajc-test title="introduced inner interfaces accessible inside aspect" pr="494" num="517" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroduceInnerInterfaceCP.java"></compile>
+        <run class="IntroduceInnerInterfaceCP"></run>
+    </ajc-test>
+<ajc-test title="validate (enclosing) join point and source locations" pr="525" num="518" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="NegativeSourceLocation.java"></compile>
+        <run class="NegativeSourceLocation"></run>
+    </ajc-test>
+<ajc-test title="cflow alone with around produces compiler bcg StackOverflowError" num="526" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowAlone.java"></compile>
+        <run class="CflowAlone"></run>
+    </ajc-test>
+<ajc-test title="get/set join points run for complex assignment operators (+=, etc.) (working)" num="527" keywords="from-resolved_10x" dir="new">
+        <compile files="AssignOps.java"></compile>
+        <run class="AssignOps"></run>
+    </ajc-test>
+<ajc-test title="Exercise runtime classes (optionally in 1.1 VM)" num="545" keywords="from-resolved_10x" dir="new/runtime">
+        <compile files="AllRuntime.java,TesterDriver.java"></compile>
+        <run class="TesterDriver"></run>
     </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
+<ajc-test title="beautiful recursive computation of factorial with around is now supported" num="564" keywords="from-resolved_10x" dir="new">
+        <compile files="CircularAdvice.java"></compile>
+        <run class="CircularAdvice"></run>
+    </ajc-test>
+<ajc-test title="multi-dispatch implemented through around + args" pr="632" num="566" keywords="from-resolved_10x" dir="new">
+        <compile files="MultiDispatchCp.java"></compile>
+        <run class="MultiDispatchCp"></run>
+    </ajc-test>
+<ajc-test title="unreachable code generated by around advice on the execution of void methods" num="568" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="AroundVoid.java"></compile>
+        <run class="AroundVoid"></run>
+    </ajc-test>
+<ajc-test title="more coverage for around and concrete methods on interfaces" pr="654" num="570" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="MultiAndAround.java"></compile>
+        <run class="MultiAndAround"></run>
+    </ajc-test>
+<ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
+        <compile files="Cricket.java"></compile>
+        <run class="Cricket"></run>
+    </ajc-test>
+<ajc-test title="after returning advice param" pr="694" num="573" keywords="from-resolved_10x" dir="new">
+        <compile files="AfterReturningParam.java"></compile>
+        <run class="AfterReturningParam"></run>
+    </ajc-test>
+<ajc-test title=". Matching arguments in cflow correctly." pr="479" num="576" keywords="from-resolved_10x" dir="new">
+        <compile files="MatchingArgumentsInCflow.java"></compile>
+        <run class="MatchingArgumentsInCflow"></run>
+    </ajc-test>
+<ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" num="582" keywords="from-resolved_10rc3" dir="new">
+        <compile files="PR559.java"></compile>
+        <run class="PR559"></run>
+    </ajc-test>
+<ajc-test title="more issues with abstract aspects and cflow pointcuts" pr="559" num="583" keywords="from-resolved_10rc3,fail-unimplemented" dir="new">
+        <compile files="AbstractCflows.java"></compile>
+        <run class="AbstractCflows"></run>
+    </ajc-test>
+<ajc-test title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" pr="560" num="584" keywords="from-resolved_10rc3" dir="new">
+        <compile files="PR560.java"></compile>
+        <run class="PR560"></run>
+    </ajc-test>
+<ajc-test title="around AST type XXX" pr="691" num="593" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="PR691.java"></compile>
+        <run class="PR691"></run>
+    </ajc-test>
+<ajc-test title="around all execution with double assignment in initializer (simple)" pr="687" num="594" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="AroundDoubleAssignment.java"></compile>
+        <run class="AroundDoubleAssignment"></run>
+    </ajc-test>
+<ajc-test title="default package for aspect introductions is not the current package" pr="548" num="597" keywords="from-resolved_10rc3,from-resolved_104" dir="new">
+        <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
+        <run class="one.TestAspect"></run>
+    </ajc-test>
+<ajc-test title="unqualified transitive pointcut references not resolved" pr="603" num="599" keywords="from-resolved_104" dir="new">
+        <compile files="PointcutQualification.java"></compile>
+        <run class="PointcutQualification"></run>
+    </ajc-test>
+<ajc-test title="simple call join point tests for JoinPoint SourceLocation context" pr="658" num="604" keywords="from-resolved_104" dir="new">
+        <compile files="SourceLocationCall.java"></compile>
+        <run class="SourceLocationCall"></run>
+    </ajc-test>
+<ajc-test title="name binding in around cflow" pr="666" num="606" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="AroundCall.java"></compile>
+        <run class="AroundCall"></run>
+    </ajc-test>
+<ajc-test title="name binding in around cflow - 2" pr="660" num="607" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="ArgsInCflow2.java"></compile>
+        <run class="ArgsInCflow2"></run>
+    </ajc-test>
+<ajc-test title="around name-binding in cflows using factorial" pr="677" num="608" keywords="from-resolved_104" dir="new">
+        <compile files="FactorialCflow.java"></compile>
+        <run class="FactorialCflow"></run>
+    </ajc-test>
+<ajc-test title="after returning from initialization causes ExceptionInInitializer in aspect" num="61501" dir="abctests/new">
+        <compile files="ConstructorExecInitFails.java"></compile>
+        <run class="ConstructorExecInitFails"></run>
+    </ajc-test>
+<ajc-test title="file order in type searching" pr="728" num="621" keywords="from-resolved_105" dir="new/pr728">
+        <compile files="AnotherClass.java,Interface.java"></compile>
+        <run class="AnotherClass"></run>
+    </ajc-test>
+<ajc-test title="ajc dies on cflow into field init anon class see knownbugs.txt" pr="755" num="637" keywords="from-resolved_105" dir="new">
+        <compile options="!eclipse" files="CflowOfFieldInitAnonMethods.java">
+        </compile>
+        <run options="!eclipse" class="CflowOfFieldInitAnonMethods"></run>
+    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
+    </ajc-test>
+<ajc-test title="static initializer member name" pr="771" num="644" keywords="from-resolved_105" dir="new">
+        <compile files="StaticInitName.java"></compile>
+        <run class="StaticInitName"></run>
+    </ajc-test>
+<ajc-test title="binding args with indeterminate prefix and suffix" pr="764" num="646" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArgs.java"></compile>
+        <run class="IndeterminateArgs"></run>
+    </ajc-test>
+<ajc-test title="check arg types with indeterminate prefix and suffix" pr="764" num="648" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArgType.java"></compile>
+        <run class="IndeterminateArgType"></run>
+    </ajc-test>
+<ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" num="649" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArg.java"></compile>
+        <run class="IndeterminateArg"></run>
+    </ajc-test>
+<ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" num="650" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateHandlerArg.java"></compile>
+        <run class="IndeterminateHandlerArg"></run>
+    </ajc-test>
+<ajc-test title="advising field get/sets when accessing via super" num="656" keywords="from-resolved_105" dir="new">
+        <compile files="SuperField.java"></compile>
+        <run class="SuperField"></run>
+    </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
+    </ajc-test>
+<ajc-test title="signature of handler join point" pr="883" num="687" dir="new">
+        <compile files="HandlerSignature.java"></compile>
+        <run class="HandlerSignature"></run>
+    </ajc-test>
+<ajc-test title="source locations within expressions" pr="885" num="688" dir="new">
+        <compile files="SourceLocationWithinExpr.java"></compile>
+        <run class="SourceLocationWithinExpr"></run>
+    </ajc-test>
+<ajc-test title="source locations within expressions (hard case of constructor start)" pr="885" num="68901" keywords="knownLimitation" dir="abctests/new" comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved" abccomment="cloned from 689 and source file changed slightly">
+        <compile files="SourceLocationWithinExprHard.java"></compile>
+        <run class="SourceLocationWithinExprHard"></run>
+    </ajc-test>
+<ajc-test title="incompatible class change error" pr="901" num="694" dir="bugs" comment="XXX Jim and Erik found/fixed this - need basis">
+        <compile files="IncompatibleClassChangeErrorBug.java"></compile>
+        <run class="IncompatibleClassChangeErrorBug"></run>
+    </ajc-test>
+<ajc-test title="simple cflow of method execution" pr="903" num="695" dir="bugs">
+        <compile files="ExecutionCflow.java"></compile>
+        <run class="ExecutionCflow"></run>
+    </ajc-test>
+<ajc-test title="after returning advice on interface and implementation constructor - fixed" pr="827" num="71801" keywords="tofix" dir="abctests/new" abccomment="Cloned from 718. PA">
+        <compile files="AfterReturningConstructor.java"></compile>
+        <run class="AfterReturningConstructor"></run>
+    </ajc-test>
+<ajc-test title="assert and pertarget crashes compiler" pr="28703" num="729" dir="bugs">
+        <compile options="-source,1.4" files="EnsureOverriding.java"></compile>
+        <run vm="1.4" class="EnsureOverriding"></run>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
@@ -53,10 +502,39 @@
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"></run>
     </ajc-test>
+<ajc-test title="VerifyError on accessing objects not accessible to the weaver" pr="29662" num="747" dir="bugs">
+        <compile files="AroundAccess.java">
+        </compile>
+        <run class="AroundAccess"></run>
+    </ajc-test>
+<ajc-test title="Error with certain combination of advice" pr="30168" num="750" dir="bugs/crashes">
+        <compile files="test/Test3.java"></compile>
+        <run class="test.Test3"></run>
+    </ajc-test>
+<ajc-test title="Pointcut adviceexecution() does not work" pr="31423" num="751" dir="bugs">
+        <compile files="AdviceExec.java"></compile>
+        <run class="AdviceExec"></run>
+    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="thisJoinPoint.getArgs() causes IncompatibleClassChangeError" pr="34210" num="757" dir="bugs">
+        <compile files="ThisJoinPointAndVerifier.java"></compile>
+        <run class="ThisJoinPointAndVerifier"></run>
+    </ajc-test>
+<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowCycles.java"></compile>
+        <run class="CflowCycles"></run>
+    </ajc-test>
+<ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
+        <compile files="CflowBinding.java"></compile>
+        <run class="CflowBinding"></run>
+    </ajc-test>
+<ajc-test title="cflow binding -- original weaver crash" pr="34858" num="765" dir="bugs">
+        <compile files="CflowBindingOrig.java"></compile>
+        <run class="CflowBindingOrig"></run>
     </ajc-test>
 <ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
         <compile files="ArgsInCflowCf.java">
@@ -69,6 +547,10 @@
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
+<ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" num="782" dir="bugs">
+        <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
+        <run class="tjpStaticPart.Test"></run>
+    </ajc-test>
 <ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="78401" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
                 <ajcmessage line="102" kind="warning"></ajcmessage>
@@ -78,6 +560,18 @@
         	<message line="124" kind="warning"></message>
         </compile>
         <run class="cap.OptionList"></run>
+    </ajc-test>
+<ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="TryFinallyInAround.java"></compile>
+        <run class="TryFinallyInAround"></run>
+    </ajc-test>
+<ajc-test title="advise join points in subclass of empty interface" pr="36778" num="786" dir="new">
+        <compile files="EmptyInterface.java"></compile>
+        <run class="EmptyInterface"></run>
+    </ajc-test>
+<ajc-test title="cflow concretization causing assertion failure" pr="36803" num="788" dir="bugs">
+        <compile files="CflowConcrete.java"></compile>
+        <run class="CflowConcrete"></run>
     </ajc-test>
 <ajc-test title="arrays via Class.forName()" num="792" dir="new" comment="this is a pureJava test, but we always want to run it">
         <compile files="ClassForName.java"></compile>
@@ -145,12 +639,26 @@
         	<message text="handler(RuntimeException)" line="20" kind="error" file="app/MainExecStartLines.java"></message>        	  
         </compile>
     </ajc-test>
+<ajc-test title="perthis and inline arounds" pr="37152" num="805" dir="bugs/inlineAround">
+        <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
+        </compile>
+        <run class="p1.Main"></run>
+    </ajc-test>
+<ajc-test title="Weaver fails with NPE for very large source files " pr="37325" num="808" dir="bugs">
+        <compile files="LongFile.java"></compile>
+        <run class="LongFile"></run>
+    </ajc-test>
 <ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
         <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
             <message text="no sources specified" kind="error"></message>
             <message text="bad sourceroot" kind="error"></message>
             <message text="Usage" kind="abort"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="Unexpected Xlint:unresolvableMember warning with withincode" pr="37739" num="815" dir="bugs">
+        <compile files="CatchSig.java">
+        </compile>
+        <run class="CatchSig"></run>
     </ajc-test>
 <ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" num="823" keywords="knownLimitation" dir="new/binaryWarnings/src">
         <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
@@ -164,6 +672,58 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
+<ajc-test title="Compiler crashes in jar and cflow (with no .jar)" pr="39462" num="840" dir="bugs/cflowAndJar">
+        <compile files="TestAspect.aj,Test.java,AbstractAspect.aj">
+        	<message line="16" kind="warning"></message>
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="subtype-qualified pointcut reference" pr="40876" num="845" dir="bugs">
+		<compile files="PointcutLibraryTest.java"></compile>
+		<run class="PointcutLibraryTest"></run>
+	</ajc-test>
+<ajc-test title="percflow aspects compiled from jars share one instance for all entry points" pr="41359" num="870" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
+	</ajc-test>
+<ajc-test title="JoinPoint Optimization when targetting 1.4" pr="45441" num="879" dir="bugs/jpOptimization">
+        <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
+        <run class="de.test.MyMain"></run>
+    </ajc-test>
+<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
+        <compile files="PrivilegedParsing.java"></compile>
+        <run class="PrivilegedParsing"></run>
+    </ajc-test>
+<ajc-test title="Erroneous exception conversion" pr="44587" num="912" dir="bugs">
+        <compile files="ErroneousExceptionConversion.java">
+        </compile>
+        <run class="ErroneousExceptionConversion"></run>
+    </ajc-test>
+<ajc-test title="declare warning on subtype constructor" pr="49295" num="916" dir="bugs" abccomment="Fixed grammar to allow space between dots in formal pattern. ODM 14/07/04">
+        <compile files="SubtypeConstructorCW.java">
+			<ajcmessage text="String as first" line="5" kind="warning"></ajcmessage>
+			<ajcmessage text="String as first" line="10" kind="warning"></ajcmessage>
+                        <message line="5" kind="warning"></message>
+                        <message line="10" kind="warning"></message>
+        </compile>
+        <run class="SubtypeConstructorCW"></run>
+    </ajc-test>
+<ajc-test title="CatchClauseSignature has broken operation" pr="50570" num="917" dir="bugs">
+        <compile files="HandlerSig.java"></compile>
+        <run class="HandlerSig"></run>
+    </ajc-test>
+<ajc-test title="mail list VerifyError with protected access" num="922" dir="bugs/protectedvf" abccomment="Need to make all aspects public prior to jimplification.                      ODM 16/07/04">
+		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"></compile>
+		<run class="main.Driver"></run>
+	</ajc-test>
+<ajc-test title="thisJoinPoint etc inside if pointcut" num="923" dir="abctests/design/reflection">
+           <compile files="InsideIf.java"></compile>
+           <run class="InsideIf"></run>
+        </ajc-test>
+<ajc-test title="cflow at handler joinpoints" num="924" dir="abctests/design/cflow">
+           <compile files="Handler.java"></compile>
+           <run class="Handler"></run>
+        </ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
             <message line="5" kind="warning"></message>
@@ -215,6 +775,18 @@
 			<message line="41" kind="error" file="X.java"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Test of cast pointcuts" num="975" dir="abctests/eaj/casting">
+         <compile options="-ext,abc.eaj" files="Test.java"></compile>
+         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Test of private pointcuts" num="977" dir="abctests/eaj/local_vars">
+         <compile options="-ext,abc.eaj" files="Fibonacci.java,Observer.java"></compile>
+         <run class="Fibonacci"></run>
+    </ajc-test>
+<ajc-test title="cflowbelow in abstract aspects" num="978" dir="abctests/bugs">
+          <compile files="AbstractPrec1.java"></compile>
+          <run class="AbstractPrec1"></run>
+    </ajc-test>
 <ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
        <compile files="BinaryClasses2.jar,Aspect.java">
            
@@ -225,20 +797,324 @@
 	<compile files="IntArray.java"></compile>
 	<run class="IntArray"></run>
     </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters" num="989" dir="abctests/bugs">
+        <compile files="CflowIf.java"></compile>
+        <run class="CflowIf"></run>
+    </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters 2" num="990" dir="abctests/bugs">
+	<compile files="CflowIf2.java"></compile>
+	<run class="CflowIf2"></run>
+    </ajc-test>
 <ajc-test title="cast pointcut can interact badly with jimple type assignment" num="992" dir="abctests/bugs">
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
+<ajc-test title="Try all advice types on the throw joinpoint" num="993" dir="abctests/eaj/throw_pointcut">
+        <compile options="-ext,abc.eaj" files="Throw.java">
+            <message line="18" kind="warning"></message>
+        </compile>
+        <run class="Throw"></run>
+    </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
+    </ajc-test>
+<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
+         <compile files="Foo.java">
+                  <message line="10" kind="warning"></message>
+         </compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 1" num="1010" dir="abctests/bugs">
+         <compile files="DollarMethod.java"></compile>
+         <run class="DollarMethod"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 3" num="1012" dir="abctests/bugs">
+         <compile files="Dollar$Method3.java"></compile>
+         <run class="Dollar$Method3"></run>
+    </ajc-test>
+<ajc-test title="interaction of named pointcuts and nested cflow" num="1014" dir="abctests/bugs">
+         <compile files="CflowInliningDepth.java"></compile>
+         <run class="CflowInliningDepth"></run>
+    </ajc-test>
+<ajc-test title="around weaver incorrectly unboxing double literals in float context" num="1017" dir="abctests/bugs">
+        <compile files="AroundUnboxing.java"></compile>
+        <run class="AroundUnboxing"></run>
+    </ajc-test>
+<ajc-test title="internal around weaver error when trying to capture proceed() into a closure" num="1018" dir="abctests/bugs">
+        <compile files="ExtractedProceed.java">
+         <message kind="warning"></message>
+          <message kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic tracematch" num="1019" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Basic.java"></compile>
+        <run class="Basic"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Plus and Star" num="1020" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PlusStar.java"></compile>
+        <run class="PlusStar"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Alternation" num="1021" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Alternation.java"></compile>
+	<run class="Alternation"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic variable bindings" num="1022" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Variables.java"></compile>
+	<run class="Variables"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 2" num="1024" dir="abctests/tracematches/failsafe3">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 3" num="1025" dir="abctests/tracematches/failsafe4">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: NoSuchMethodError (shouldn't occur..)" num="1026" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Test.java"></compile>
+	<run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Negative bindings should be checked correctly..." num="1027" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="NegBindings.java"></compile>
+	<run class="NegBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: states where x may be bound or unbound" num="1028" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MoreBindings.java"></compile>
+        <run class="MoreBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic around tracematch" num="1029" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="BasicAround.java"></compile>
+        <run class="BasicAround"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Around match with multiple bindings." num="1030" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MultipleBindingsForAround.java">
+            <message line="24" kind="warning"></message>
+        </compile>
+        <run class="MultipleBindingsForAround"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing the `perthread' modifier" num="1031" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PerThread.java"></compile>
+        <run class="PerThread"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
         <run class="AdviseSelf"></run>
     </ajc-test>
+<ajc-test title="Tracematches: Testing if pointcuts in symbols" num="1033" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="IfTest.java"></compile>
+        <run class="IfTest"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: When there is some() advice but not per-symbol" num="1034" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="NoUpdates.java"></compile>
+        <run class="NoUpdates"></run>
+	</ajc-test>
+<ajc-test title="Tracematches: Basic primitive variable bindings" num="1035" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PrimitiveVariables.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="PrimitiveVariables"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Primitive bindings don't cause errors." num="1036" dir="abctests/tracematches">
+	<compile options="-ext,abc.tm" files="IntVariable.java"></compile>
+	<run class="IntVariable"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Primitive negative bindings should be checked correctly..." num="1037" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PrimNegBindings.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="PrimNegBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Collectable weak bindings work correctly (Strings)" num="1040" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm,-debug,clashHashCodes" files="CollWeakRefs.java">
+	</compile>
+	<run class="CollWeakRefs"></run>
+    </ajc-test>
+<ajc-test title="Basic matching test" num="1109" keywords="openmod" dir="om/matchtest">
+        <compile options="-ext,abc.om" files="Module1.java,             Module2.java,             MatchTestA.java,             MatchTestB.java,             MatchTestMain.java,             AspectA.aj,             AspectB.aj,             AspectC.aj">
+		
+		<message line="15" kind="warning"></message>
+		<message line="15" kind="warning"></message>
+		<message line="18" kind="warning"></message>
+        </compile>
+        <run class="MatchTestMain"></run>
+    </ajc-test>
+<ajc-test title="External call only test" num="1110" keywords="openmod" dir="om/extcalltest">
+        <compile options="-ext,abc.om" files="FibMod.java,             A.java,             ExtCallTestMain.java,             FibAspect.aj,             FibExtAspect.aj">
+			<message line="12" kind="warning"></message>
+			<message line="12" kind="warning"></message>
+        </compile>
+        <run class="ExtCallTestMain"></run>
+    </ajc-test>
+<ajc-test title="Fib (Aldrich) precedence test" num="1111" keywords="openmod" dir="om/prectest">
+        <compile options="-ext,abc.om" files="Module1.java,             A.java,             PrecTestMain.java,             Fib.aj,             ACache.aj,             PrecFibExtAspect.aj">
+			<message line="9" kind="warning"></message>
+			<message line="9" kind="warning"></message>
+        </compile>
+        <run class="PrecTestMain"></run>
+    </ajc-test>
+<ajc-test title="Fib (Aldrich) reverse precedence test" num="1112" keywords="openmod" dir="om/prectest">
+        <compile options="-ext,abc.om" files="Module2.java,             A.java,             PrecTestMain2.java,             Fib.aj,             ACache.aj,             PrecFibExtAspect.aj">
+			<message line="9" kind="warning"></message>
+			<message line="9" kind="warning"></message>
+        </compile>
+        <run class="PrecTestMain2"></run>
+    </ajc-test>
+<ajc-test title="Empty signature test" num="1113" keywords="openmod" dir="om/emptysigtest">
+        <compile options="-ext,abc.om" files="Module.java,             A.java,             EmptySigTestMain.java,             AspectA.aj">
+	        <message line="15" kind="warning"></message>
+        </compile>
+        <run class="EmptySigTestMain"></run>
+    </ajc-test>
+<ajc-test title="Signature inheritance test" num="1114" keywords="openmod" dir="om/inheritsigtest">
+        <compile options="-ext,abc.om" files="ModuleA.java,             ModuleB.java,             ModuleC.java,             A.java,             B.java,             C.java,             InheritSigTest.java,             ExtAspectA.aj">
+			<message line="17" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+			<message line="25" kind="warning"></message>
+        </compile>
+        <run class="InheritSigTest"></run>
+    </ajc-test>
+<ajc-test title="CFlow signature test" num="1115" keywords="openmod" dir="om/cflowsigtest">
+        <compile options="-ext,abc.om" files="Module.java,             A.java,             CflowSigTestMain.java,             CFlowAspect.aj">
+        </compile>
+        <run class="CflowSigTestMain"></run>
+    </ajc-test>
+<ajc-test title="Args matching test" num="1116" keywords="openmod" dir="om/argstest">
+        <compile options="-ext,abc.om" files="Module.java,             A.java,             ArgsTestMain.java,             ArgsAspect.aj">
+			<message line="16" kind="warning"></message>
+        </compile>
+        <run class="ArgsTestMain"></run>
+    </ajc-test>
+<ajc-test title="Empty module test" num="1117" keywords="openmod" dir="om/emptymoduletest">
+        <compile options="-ext,abc.om" files="Module.java,             A.java,             EmptyModuleTestMain.java,             AspectA.aj">
+        </compile>
+        <run class="EmptyModuleTestMain"></run>
+    </ajc-test>
+<ajc-test title="Private signature test" num="1118" keywords="openmod" dir="om/privatesigtest">
+        <compile options="-ext,abc.om" files="ModuleA.java,             ModuleB.java,             ModuleC.java,             A.java,             B.java,             C.java,             PrivateSigTest.java,             ExtAspectA.aj">
+			<message line="17" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="20" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+			<message line="24" kind="warning"></message>
+        </compile>
+        <run class="PrivateSigTest"></run>
+    </ajc-test>
+<ajc-test title="Constrained module inclusion test" num="1119" keywords="openmod" dir="om/constraintest">
+        <compile options="-ext,abc.om" files="ModuleA.java,             ModuleB.java,             ModuleC.java,             A.java,             B.java,             C.java,             AspectA.java,             AspectB.java,             AspectC.java,             ConstrainTestMain.java,             ExtAspectA.aj">
+			<message line="17" kind="warning"></message>
+			<message line="17" kind="warning"></message>
+			<message line="17" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+			<message line="26" kind="warning"></message>
+        </compile>
+        <run class="ConstrainTestMain"></run>
+    </ajc-test>
+<ajc-test title="Multiple modules in a single file" num="1121" keywords="openmod" dir="om/multimodtest">
+        <compile options="-ext,abc.om" files="Modules.java,             A.java,             B.java,             C.java,             MultiModTest.java,             ExtAspectA.aj">
+			<message line="17" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+			<message line="25" kind="warning"></message>
+        </compile>
+        <run class="MultiModTest"></run>
+    </ajc-test>
+<ajc-test title="Inclusion with empty signatures" num="1123" keywords="openmod" dir="om/emptysiginctest">
+        <compile options="-ext,abc.om" files="Module.java,             AspectA.aj,             A.java,             B.java,             C.java,             EmptySigIncTestMain.java">
+			<message line="15" kind="warning"></message>
+			<message line="16" kind="warning"></message>
+			<message line="18" kind="warning"></message>
+			<message line="19" kind="warning"></message>
+			<message line="21" kind="warning"></message>
+			<message line="22" kind="warning"></message>
+        </compile>
+        <run class="EmptySigIncTestMain"></run>
+    </ajc-test>
+<ajc-test title="To test" num="1126" keywords="openmod" dir="om/totest">
+        <compile options="-ext,abc.om" files="Module.java,             ToTestMain.java,             A.java,             ExtAspectA.java,             ExtAspectB.java">
+			<message line="5" kind="warning"></message>
+			<message line="7" kind="warning"></message>
+        </compile>
+        <run class="ToTestMain"></run>
+    </ajc-test>
+<ajc-test title="Second inherit precedence test (checks for precedence of aspects of included modules)" num="1128" keywords="openmod" dir="om/inheritprectest2">
+        <compile options="-ext,abc.om" files="Modules.java,             InheritPrecTestMain2.java">
+        </compile>
+        <run class="InheritPrecTestMain2"></run>
+    </ajc-test>
+<ajc-test title="Module precedence test" num="1129" keywords="openmod" dir="om/modprectest">
+        <compile options="-ext,abc.om" files="Modules.java,             ModPrecTestMain.java">
+        </compile>
+        <run class="ModPrecTestMain"></run>
+    </ajc-test>
+<ajc-test title="Cflowdepth Factorial" num="1200" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact.java">
+        </compile>
+        <run class="Fact"></run>
+    </ajc-test>
+<ajc-test title="Cflowdepth Factorial with arguments" num="1201" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact2.java">
+        </compile>
+        <run class="Fact2"></run>
+    </ajc-test>
+<ajc-test title="Cflowbelowdepth Factorial" num="1202" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact3.java">
+        </compile>
+        <run class="Fact3"></run>
+    </ajc-test>
+<ajc-test title="Cflowbelowdepth Factorial with arguments" num="1203" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact4.java">
+        </compile>
+        <run class="Fact4"></run>
+    </ajc-test>
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="thisJoinPoint maintains object identity for an entire join point" num="1210" dir="abctests/bugs">
+        <compile files="TJP.java"></compile>
+        <run class="TJP"></run>
+    </ajc-test>
+<ajc-test title="Cflowdepth in complicated booleans" num="1212" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Test.java">
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Precedence of derived advice" num="1213" dir="abctests/bugs">
+        <compile files="DerivedAdvicePrecedence.java">
+        </compile>
+        <run class="DerivedAdvicePrecedence"></run>
+    </ajc-test>
+<ajc-test title="Contains basic matching test" num="1215" dir="contains/basic">
+        <compile options="-ext,abc.eaj" files="ContainsTest.java">
+        </compile>
+        <run class="ContainsTest"></run>
+    </ajc-test>
+<ajc-test title="Test of arrayget and arrayset" num="1216" dir="abctests/eaj/arrayget">
+         <compile options="-ext,abc.eaj" files="ArrayGetSet.java"></compile>
+         <run class="ArrayGetSet"></run>
+    </ajc-test>
+<ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,enableLockPointcuts" files="LockUnlock.java"></compile>
+        <run class="LockUnlock"></run>
+    </ajc-test>
+<ajc-test title="Equality-example for relational aspects" num="1403" dir="abctests/ra/equality">
+        <compile options="-ext,abc.ra,-warn-unused-advice:on" files="Bit.java,Equality.java,Example.java">
+	    	<message line="18" kind="warning"></message>
+		</compile>
+		<run class="Example"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getThis()" num="1511" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="CheckThisExposure.java"></compile>
+		<run class="CheckThisExposure"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getTarget()" num="1512" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.cjp" files="CheckTargetExposure.java"></compile>
+		<run class="CheckTargetExposure"></run>
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
@@ -246,6 +1122,107 @@
         	<message line="8" kind="error"></message>
         	<message line="8" kind="error"></message>
 		</compile>
+    </ajc-test>
+<ajc-test title="Check Poincut Args" num="1632" dir="abctests/jpi/weaving">
+        <compile options="-ext,abc.ja.jpi" files="CheckPointcutExpressionsArgs.java">
+	        <message line="16" kind="warning"></message>
+	        <message line="17" kind="warning"></message>
+	        <message line="29" kind="warning"></message>
+        </compile>
+		<run class="CheckPointcutExpressionsArgs"></run>
+    </ajc-test>
+<ajc-test title="Inheritance Match 3" num="1644" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch3.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>		
+		<run class="InheritanceMatch3"></run>
+    </ajc-test>
+<ajc-test title="Inheritance Match 4" num="1645" dir="abctests/jpi/matching">
+        <compile options="-ext,abc.ja.jpi" files="InheritanceMatch4.java">
+	        <message line="17" kind="warning"></message>
+	        <message line="20" kind="warning"></message>
+	        <message line="23" kind="warning"></message>
+		</compile>		
+		<run class="InheritanceMatch4"></run>
+    </ajc-test>
+<ajc-test title="Interfaces-InvPCD" num="1649" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="InterfacesType.java">
+        	<message line="13" kind="warning"></message>
+        	<message line="15" kind="warning"></message>
+        	<message line="30" kind="warning"></message>
+        	<message line="32" kind="warning"></message>
+		</compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="Arguments-InvPCD" num="1650" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="ArgumentType.java">
+        	<message line="20" kind="warning"></message>
+        	<message line="28" kind="warning"></message>        	
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="Target-InvPCD" num="1651" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="TargetType.java">
+        	<message line="30" kind="warning"></message>        	
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="This-InvPCD" num="1652" dir="abctests/jpi/matching/InvPCD">
+        <compile options="-ext,abc.ja.jpi" files="ThisType.java">
+        	<message line="8" kind="warning"></message>
+        	<message line="21" kind="warning"></message>
+        	<message line="33" kind="warning"></message>
+        </compile>
+		<run class="AS"></run>		
+    </ajc-test>
+<ajc-test title="matching" num="1674" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="matching.java">
+        	<message line="33" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching type variables in pointcut expression" num="1677" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="TypeVariableInPointcutExpression.java">
+        	<message line="16" kind="warning"></message>        	
+        </compile>		
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="type check on Advice specifications" num="1678" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="typecheckingGenericAdviceSpec.java">
+        	<message line="31" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="inheritance in generice advice" num="1684" dir="abctests/jpi/GenericAdvice">
+        <compile options="-ext,abc.ja.jpi" files="inheritance.java">
+	        <message line="16" kind="warning"></message>        	
+        </compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching" num="1695" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_2" num="1696" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching2.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_3" num="1697" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching3.java"></compile>
+		<run class="C"></run>
+    </ajc-test>
+<ajc-test title="matching_4" num="1698" dir="abctests/jpi/GlobalJPI">
+        <compile options="-ext,abc.ja.jpi" files="matching4.java"></compile>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getThis()" num="1711" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="CheckThisExposure.java"></compile>
+		<run class="CheckThisExposure"></run>
+    </ajc-test>
+<ajc-test title="Check thisJoinPoint.getTarget()" num="1712" dir="abctests/cjp/matching">
+        <compile options="-ext,abc.ja.jpi" files="CheckTargetExposure.java"></compile>
+		<run class="CheckTargetExposure"></run>
     </ajc-test>
  
 </suite>
