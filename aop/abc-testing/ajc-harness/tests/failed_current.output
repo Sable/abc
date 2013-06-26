@@ -13,7 +13,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:11)
 	at Driver.main(Driver.java:9)
 	... 7 more
-FAIL: Test 15: "base/test108/Inheritance of class and aspect vars in weaves" failed in 1932ms, memory usage: 14539128.
+FAIL: Test 15: "base/test108/Inheritance of class and aspect vars in weaves" failed in 1303ms, memory usage: 14544256.
 
 
 Running test 18: base/test111/Inheritance of methods advised by aspects
@@ -31,7 +31,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:7)
 	at Driver.main(Driver.java:4)
 	... 7 more
-FAIL: Test 18: "base/test111/Inheritance of methods advised by aspects" failed in 1217ms, memory usage: 14719208.
+FAIL: Test 18: "base/test111/Inheritance of methods advised by aspects" failed in 1197ms, memory usage: 14711880.
 
 
 Running test 25: base/test118/DEPRECATED: Introduce of constructors
@@ -49,12 +49,12 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:14)
 	at Driver.main(Driver.java:4)
 	... 7 more
-FAIL: Test 25: "base/test118/DEPRECATED: Introduce of constructors" failed in 2428ms, memory usage: 14713280.
+FAIL: Test 25: "base/test118/DEPRECATED: Introduce of constructors" failed in 2273ms, memory usage: 14713448.
 
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@21b49301
+creating: A@65bee298
 InvocationTargetException while trying to run compiled class: java.lang.NullPointerException
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -71,7 +71,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:10)
 	at Driver.main(Driver.java:4)
 	... 7 more
-FAIL: Test 28: "base/test121/advises on introduced methods and constructors" failed in 1955ms, memory usage: 15457456.
+FAIL: Test 28: "base/test121/advises on introduced methods and constructors" failed in 1750ms, memory usage: 15583920.
 
 
 Running test 38: base/test132/proper matching of overloaded constructors
@@ -89,7 +89,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:13)
 	at Driver.main(Driver.java:6)
 	... 7 more
-FAIL: Test 38: "base/test132/proper matching of overloaded constructors" failed in 906ms, memory usage: 14612872.
+FAIL: Test 38: "base/test132/proper matching of overloaded constructors" failed in 886ms, memory usage: 14845728.
 
 
 Running test 41: base/test135/proper values for thisJoinPoint attributes
@@ -107,7 +107,7 @@ Caused by: java.lang.NullPointerException
 	at test135.Driver.test(Driver.java:14)
 	at test135.Driver.main(Driver.java:9)
 	... 7 more
-FAIL: Test 41: "base/test135/proper values for thisJoinPoint attributes" failed in 1489ms, memory usage: 16177080.
+FAIL: Test 41: "base/test135/proper values for thisJoinPoint attributes" failed in 1326ms, memory usage: 16364032.
 
 
 Running test 43: base/test137/operations on private and protected aspect members (++, -- in partciular)
@@ -125,7 +125,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:9)
 	at Driver.main(Driver.java:6)
 	... 7 more
-FAIL: Test 43: "base/test137/operations on private and protected aspect members (++, -- in partciular)" failed in 1095ms, memory usage: 14529944.
+FAIL: Test 43: "base/test137/operations on private and protected aspect members (++, -- in partciular)" failed in 1068ms, memory usage: 14616960.
 
 
 Running test 47: base/test141/thisResultObject for primitives
@@ -143,7 +143,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:10)
 	at Driver.main(Driver.java:17)
 	... 7 more
-FAIL: Test 47: "base/test141/thisResultObject for primitives" failed in 1095ms, memory usage: 15939720.
+FAIL: Test 47: "base/test141/thisResultObject for primitives" failed in 1070ms, memory usage: 15958176.
 
 
 Running test 53: new/handle multiple nested inner classes
@@ -151,7 +151,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 742ms, memory usage: 12638048.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 651ms, memory usage: 12644208.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -160,13 +160,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1168ms, memory usage: 9399656.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1150ms, memory usage: 9421112.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 662ms, memory usage: 15998616.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 648ms, memory usage: 15988696.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -174,7 +174,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 728ms, memory usage: 9479536.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 535ms, memory usage: 9471016.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -184,7 +184,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1103ms, memory usage: 9743448.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1090ms, memory usage: 9579264.
 
 
 Running test 322: design/intro/within and introductions behaves correctly
@@ -203,7 +203,7 @@ Caused by: java.lang.NullPointerException
 	at C.A1$mi$417(Within.java)
 	at Within.main(Within.java:6)
 	... 7 more
-FAIL: Test 322: "design/intro/within and introductions behaves correctly" failed in 1616ms, memory usage: 15736112.
+FAIL: Test 322: "design/intro/within and introductions behaves correctly" failed in 1303ms, memory usage: 15693488.
 
 
 Running test 332: design/reflect/Joinpoint is not created for foo(String) when before() advice is present.
@@ -219,12 +219,12 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.NullPointerException
 	at SimpleAround1.shadow$6(SimpleAround1.java:38)
-	at A.inline$2$around$528(SimpleAround1.java)
+	at A.inline$1$around$528(SimpleAround1.java)
 	at SimpleAround1.foo(SimpleAround1.java)
 	at SimpleAround1.go(SimpleAround1.java:12)
 	at SimpleAround1.main(SimpleAround1.java:8)
 	... 7 more
-FAIL: Test 332: "design/reflect/Joinpoint is not created for foo(String) when before() advice is present." failed in 1044ms, memory usage: 15637064.
+FAIL: Test 332: "design/reflect/Joinpoint is not created for foo(String) when before() advice is present." failed in 1007ms, memory usage: 15638400.
 
 
 Running test 335: design/reflect/Checking new joinpoints
@@ -246,7 +246,7 @@ org.aspectj.bridge.AbortException: mumble.execution was not called
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 335: "design/reflect/Checking new joinpoints" failed in 1840ms, memory usage: 18087680.
+FAIL: Test 335: "design/reflect/Checking new joinpoints" failed in 1757ms, memory usage: 18083248.
 
 
 Running test 339: new/field from implemented interface not found in advice
@@ -264,7 +264,7 @@ Caused by: java.lang.NullPointerException
 	at FieldFromImplementsNotFound.test(FieldFromImplementsNotFound.java:22)
 	at FieldFromImplementsNotFound.main(FieldFromImplementsNotFound.java:11)
 	... 7 more
-FAIL: Test 339: "new/field from implemented interface not found in advice" failed in 1342ms, memory usage: 15143048.
+FAIL: Test 339: "new/field from implemented interface not found in advice" failed in 996ms, memory usage: 15137208.
 
 
 Running test 345: new/advice and package visibility 1
@@ -284,7 +284,7 @@ Caused by: java.lang.IllegalAccessError: tried to access class packagevisibility
 	at packagevisibility.PackagesAndAdvice.test(PackagesAndAdvice.java:16)
 	at packagevisibility.PackagesAndAdvice.main(PackagesAndAdvice.java:8)
 	... 7 more
-FAIL: Test 345: "new/advice and package visibility 1" failed in 1372ms, memory usage: 15881736.
+FAIL: Test 345: "new/advice and package visibility 1" failed in 1311ms, memory usage: 15878616.
 
 
 Running test 347: new/advice on implied empty constructor
@@ -302,7 +302,7 @@ Caused by: java.lang.NullPointerException
 	at AdviceOnEmptyConstructor.test(AdviceOnEmptyConstructor.java:8)
 	at AdviceOnEmptyConstructor.main(AdviceOnEmptyConstructor.java:4)
 	... 7 more
-FAIL: Test 347: "new/advice on implied empty constructor" failed in 951ms, memory usage: 15175440.
+FAIL: Test 347: "new/advice on implied empty constructor" failed in 895ms, memory usage: 15174072.
 
 
 Running test 357: new/adviceOnStaticMeth/and PR#201 advice on static methods fails javac compile with this
@@ -321,7 +321,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:12)
 	at Driver.main(Driver.java:9)
 	... 7 more
-FAIL: Test 357: "new/adviceOnStaticMeth/and PR#201 advice on static methods fails javac compile with this" failed in 885ms, memory usage: 15140688.
+FAIL: Test 357: "new/adviceOnStaticMeth/and PR#201 advice on static methods fails javac compile with this" failed in 876ms, memory usage: 15138568.
 
 
 Running test 358: new/non-static advice on inner class defined inside of method body
@@ -340,7 +340,7 @@ Caused by: java.lang.NullPointerException
 	at MethodInner.test(MethodInner.java:7)
 	at MethodInner.main(MethodInner.java:4)
 	... 7 more
-FAIL: Test 358: "new/non-static advice on inner class defined inside of method body" failed in 1051ms, memory usage: 15837208.
+FAIL: Test 358: "new/non-static advice on inner class defined inside of method body" failed in 1041ms, memory usage: 15832936.
 
 
 Running test 359: new/simple single-threaded eachcflow test (includes aspectOf)
@@ -367,7 +367,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 359: "new/simple single-threaded eachcflow test (includes aspectOf)" failed in 1053ms, memory usage: 33571920.
+FAIL: Test 359: "new/simple single-threaded eachcflow test (includes aspectOf)" failed in 979ms, memory usage: 33571184.
 
 
 Running test 364: new/test after throwing advice in several ways
@@ -390,7 +390,7 @@ org.aspectj.bridge.AbortException: expected note "Throwable:throwRuntimeExceptio
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 364: "new/test after throwing advice in several ways" failed in 1391ms, memory usage: 15299256.
+FAIL: Test 364: "new/test after throwing advice in several ways" failed in 1436ms, memory usage: 15314752.
 
 
 Running test 365: new/fancy name patterns for method names
@@ -409,7 +409,7 @@ Caused by: java.lang.NullPointerException
 	at WildNames.test(WildNames.java:9)
 	at WildNames.main(WildNames.java:4)
 	... 7 more
-FAIL: Test 365: "new/fancy name patterns for method names" failed in 959ms, memory usage: 15172720.
+FAIL: Test 365: "new/fancy name patterns for method names" failed in 1068ms, memory usage: 15187720.
 
 
 Running test 366: design/calls/calls: calls(...)
@@ -427,7 +427,7 @@ Caused by: java.lang.NullPointerException
 	at Simple.fromInstanceMethod(Simple.java)
 	at Simple.main(Simple.java:7)
 	... 7 more
-FAIL: Test 366: "design/calls/calls: calls(...)" failed in 1567ms, memory usage: 16054080.
+FAIL: Test 366: "design/calls/calls: calls(...)" failed in 1612ms, memory usage: 16068616.
 
 
 Running test 371: new/beforeNotRun/more aspect inheritance
@@ -446,7 +446,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java:12)
 	at Driver.main(Driver.java:9)
 	... 7 more
-FAIL: Test 371: "new/beforeNotRun/more aspect inheritance" failed in 1047ms, memory usage: 14996752.
+FAIL: Test 371: "new/beforeNotRun/more aspect inheritance" failed in 1020ms, memory usage: 15010936.
 
 
 Running test 373: new/pointcutParameter/compiler crashes with eachobject and named pointcuts with parameters
@@ -463,7 +463,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Driver.main(Driver.java:11)
 	... 7 more
-FAIL: Test 373: "new/pointcutParameter/compiler crashes with eachobject and named pointcuts with parameters" failed in 1003ms, memory usage: 14976040.
+FAIL: Test 373: "new/pointcutParameter/compiler crashes with eachobject and named pointcuts with parameters" failed in 977ms, memory usage: 14990160.
 
 
 Running test 374: new/unqualifiedPointcutName/lookup rules for unqualified pointcut names
@@ -480,7 +480,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Driver.main(Driver.java:14)
 	... 7 more
-FAIL: Test 374: "new/unqualifiedPointcutName/lookup rules for unqualified pointcut names" failed in 1020ms, memory usage: 14991936.
+FAIL: Test 374: "new/unqualifiedPointcutName/lookup rules for unqualified pointcut names" failed in 1004ms, memory usage: 15006200.
 
 
 Running test 376: new/(DESIGN QUESTION) aspect of eachJVM advising its own initializer
@@ -498,7 +498,7 @@ Caused by: java.lang.NullPointerException
 	at C.<init>(EachJVMOnSelf.java:19)
 	at EachJVMOnSelf.main(EachJVMOnSelf.java:5)
 	... 7 more
-FAIL: Test 376: "new/(DESIGN QUESTION) aspect of eachJVM advising its own initializer" failed in 1016ms, memory usage: 15609832.
+FAIL: Test 376: "new/(DESIGN QUESTION) aspect of eachJVM advising its own initializer" failed in 984ms, memory usage: 15623696.
 
 
 Running test 377: new/after returning advice on calls to constructors
@@ -515,7 +515,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AfterConstructorCalls.main(AfterConstructorCalls.java:5)
 	... 7 more
-FAIL: Test 377: "new/after returning advice on calls to constructors" failed in 1018ms, memory usage: 15096200.
+FAIL: Test 377: "new/after returning advice on calls to constructors" failed in 981ms, memory usage: 15108680.
 
 
 Running test 386: new/basic test of callsto pointcuts
@@ -532,7 +532,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CallsTo.main(CallsTo.java:5)
 	... 7 more
-FAIL: Test 386: "new/basic test of callsto pointcuts" failed in 1307ms, memory usage: 15442128.
+FAIL: Test 386: "new/basic test of callsto pointcuts" failed in 1250ms, memory usage: 15457512.
 
 
 Running test 393: new/Ensures introduction methods can have advice placed on them
@@ -550,7 +550,7 @@ Caused by: java.lang.NullPointerException
 	at Dominates.go(Dominates.java:27)
 	at Dominates.main(Dominates.java:22)
 	... 7 more
-FAIL: Test 393: "new/Ensures introduction methods can have advice placed on them" failed in 1809ms, memory usage: 15491888.
+FAIL: Test 393: "new/Ensures introduction methods can have advice placed on them" failed in 1735ms, memory usage: 15506368.
 
 
 Running test 396: new/Ensuring backdoor methods are produced.
@@ -568,7 +568,7 @@ Caused by: java.lang.NullPointerException
 	at BackdoorMethods.realMain(BackdoorMethods.java:8)
 	at BackdoorMethods.main(BackdoorMethods.java:5)
 	... 7 more
-FAIL: Test 396: "new/Ensuring backdoor methods are produced." failed in 1541ms, memory usage: 15986032.
+FAIL: Test 396: "new/Ensuring backdoor methods are produced." failed in 1488ms, memory usage: 15995640.
 
 
 Running test 398: new/no duplicate advice methods in abstract aspects extended
@@ -586,7 +586,7 @@ Caused by: java.lang.NullPointerException
 	at GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.realMain(GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java:11)
 	at GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.main(GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java:8)
 	... 7 more
-FAIL: Test 398: "new/no duplicate advice methods in abstract aspects extended" failed in 1244ms, memory usage: 15910776.
+FAIL: Test 398: "new/no duplicate advice methods in abstract aspects extended" failed in 1203ms, memory usage: 15908680.
 
 
 Running test 406: new/Making sure final variables stay final.
@@ -609,7 +609,7 @@ Caused by: java.lang.IllegalArgumentException: null message
 	at RemovingFinals.realMain(RemovingFinals.java:12)
 	at RemovingFinals.main(RemovingFinals.java:5)
 	... 7 more
-FAIL: Test 406: "new/Making sure final variables stay final." failed in 1063ms, memory usage: 16969376.
+FAIL: Test 406: "new/Making sure final variables stay final." failed in 1031ms, memory usage: 16970216.
 
 
 Running test 407: new/Problem resolving meta-joinpoint names with around advice on methods called from around advice.
@@ -629,11 +629,11 @@ Caused by: java.lang.ExceptionInInitializerError
 	... 7 more
 Caused by: java.lang.NullPointerException
 	at A.inline$0$around$776(AroundAdviceOnMethodsCalledInAroundAdvice.java:25)
-	at A.inline$11$around$775(AroundAdviceOnMethodsCalledInAroundAdvice.java)
+	at A.inline$7$around$775(AroundAdviceOnMethodsCalledInAroundAdvice.java)
 	at C.<init>(AroundAdviceOnMethodsCalledInAroundAdvice.java:59)
 	at C.<clinit>(AroundAdviceOnMethodsCalledInAroundAdvice.java:60)
 	... 9 more
-FAIL: Test 407: "new/Problem resolving meta-joinpoint names with around advice on methods called from around advice." failed in 1824ms, memory usage: 15940472.
+FAIL: Test 407: "new/Problem resolving meta-joinpoint names with around advice on methods called from around advice." failed in 1837ms, memory usage: 15943376.
 
 
 Running test 41001: abctests/new/holding onto proceed calls in a closure-like way
@@ -652,7 +652,7 @@ Caused by: java.lang.NullPointerException
 	at A.runProceeds(HoldProceed.java:64)
 	at HoldProceed.main(HoldProceed.java:11)
 	... 7 more
-FAIL: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" failed in 1556ms, memory usage: 16209368.
+FAIL: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" failed in 1506ms, memory usage: 16271120.
 
 
 Running test 414: new/innerAspectAccess/inner aspects can't access outer pointcuts
@@ -670,7 +670,7 @@ Caused by: java.lang.NullPointerException
 	at Driver.test(Driver.java)
 	at Driver.main(Driver.java:8)
 	... 7 more
-FAIL: Test 414: "new/innerAspectAccess/inner aspects can't access outer pointcuts" failed in 1085ms, memory usage: 14999352.
+FAIL: Test 414: "new/innerAspectAccess/inner aspects can't access outer pointcuts" failed in 931ms, memory usage: 15180968.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -688,7 +688,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at main.Main.main(Main.java:9)
 	... 7 more
-FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 2069ms, memory usage: 15867336.
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1746ms, memory usage: 15849808.
 
 
 Running test 421: new/Two anonymous classes in the same scope
@@ -706,7 +706,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at TwoAnonymous.main(TwoAnonymous.java:25)
 	... 7 more
-FAIL: Test 421: "new/Two anonymous classes in the same scope" failed in 1181ms, memory usage: 15889360.
+FAIL: Test 421: "new/Two anonymous classes in the same scope" failed in 1156ms, memory usage: 15925416.
 
 
 Running test 423: new/introduction of an initializer into a class
@@ -727,7 +727,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at Foo.<clinit>(IntroductionOfInitializer.java:35)
 	... 9 more
-FAIL: Test 423: "new/introduction of an initializer into a class" failed in 1032ms, memory usage: 15284624.
+FAIL: Test 423: "new/introduction of an initializer into a class" failed in 1005ms, memory usage: 15304968.
 
 
 Running test 424: new/access/some method accessibility tests, particularly package-protected and inheritance
@@ -745,7 +745,7 @@ Caused by: java.lang.NullPointerException
 	at pc.C.getInternalPackage(C.java)
 	at Test1.main(Test1.java:11)
 	... 7 more
-FAIL: Test 424: "new/access/some method accessibility tests, particularly package-protected and inheritance" failed in 1289ms, memory usage: 16283312.
+FAIL: Test 424: "new/access/some method accessibility tests, particularly package-protected and inheritance" failed in 1266ms, memory usage: 16302392.
 
 
 Running test 425: new/fairly monotonous (and non-covering) tests for expanded dot patterns
@@ -763,7 +763,7 @@ Caused by: java.lang.NullPointerException
 	at A.foo(ExpandedDotDotPattern.java)
 	at ExpandedDotDotPattern.main(ExpandedDotDotPattern.java:5)
 	... 7 more
-FAIL: Test 425: "new/fairly monotonous (and non-covering) tests for expanded dot patterns" failed in 1883ms, memory usage: 16516192.
+FAIL: Test 425: "new/fairly monotonous (and non-covering) tests for expanded dot patterns" failed in 1838ms, memory usage: 16542968.
 
 
 Running test 427: new/Checking formal matching as in Roeder's bug in 0.7b10
@@ -782,7 +782,7 @@ Caused by: java.lang.NullPointerException
 	at FormalMatching.realMain(FormalMatching.java:43)
 	at FormalMatching.main(FormalMatching.java:6)
 	... 7 more
-FAIL: Test 427: "new/Checking formal matching as in Roeder's bug in 0.7b10" failed in 1108ms, memory usage: 15637160.
+FAIL: Test 427: "new/Checking formal matching as in Roeder's bug in 0.7b10" failed in 966ms, memory usage: 15604312.
 
 
 Running test 429: new/The pointcut params (..,int..) is not recognizing (Object,int,Object).
@@ -800,7 +800,7 @@ Caused by: java.lang.NullPointerException
 	at Params.go(Params.java:9)
 	at Params.main(Params.java:4)
 	... 7 more
-FAIL: Test 429: "new/The pointcut params (..,int..) is not recognizing (Object,int,Object)." failed in 1961ms, memory usage: 16013680.
+FAIL: Test 429: "new/The pointcut params (..,int..) is not recognizing (Object,int,Object)." failed in 1780ms, memory usage: 16039656.
 
 
 Running test 432: new/Handlers problem
@@ -819,7 +819,7 @@ Caused by: java.lang.NullPointerException
 	at PR318.realMain(PR318.java:6)
 	at PR318.main(PR318.java:3)
 	... 7 more
-FAIL: Test 432: "new/Handlers problem" failed in 1123ms, memory usage: 15293656.
+FAIL: Test 432: "new/Handlers problem" failed in 1153ms, memory usage: 15267344.
 
 
 Running test 438: new/try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }
@@ -839,7 +839,7 @@ Caused by: java.lang.NullPointerException
 	at IfdefsAndAdvice.timeIt(IfdefsAndAdvice.java:24)
 	at IfdefsAndAdvice.main(IfdefsAndAdvice.java:15)
 	... 7 more
-FAIL: Test 438: "new/try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }" failed in 1027ms, memory usage: 15666848.
+FAIL: Test 438: "new/try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }" failed in 973ms, memory usage: 15652264.
 
 
 Running test 439: new/within and withincode (doesn't all work due to local class name issues)
@@ -860,7 +860,7 @@ Caused by: java.lang.NullPointerException
 	at C$1.run(WithinInners.java)
 	at WithinInners.main(WithinInners.java:7)
 	... 7 more
-FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed in 1567ms, memory usage: 16247264.
+FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed in 1291ms, memory usage: 16248808.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
@@ -891,7 +891,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1287ms, memory usage: 34469120.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1114ms, memory usage: 35120880.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
@@ -922,7 +922,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" failed in 1254ms, memory usage: 34087960.
+FAIL: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" failed in 1075ms, memory usage: 34176896.
 
 
 Running test 447: new/Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint.
@@ -943,7 +943,7 @@ org.aspectj.bridge.AbortException: Didn't set the JoinPoint
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 447: "new/Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint." failed in 1005ms, memory usage: 15282552.
+FAIL: Test 447: "new/Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint." failed in 973ms, memory usage: 15270392.
 
 
 Running test 452: new/After advice isn't being woven into after throwing advice
@@ -960,7 +960,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AfterThrowingNotWoven.main(AfterThrowingNotWoven.java:6)
 	... 7 more
-FAIL: Test 452: "new/After advice isn't being woven into after throwing advice" failed in 1334ms, memory usage: 15957736.
+FAIL: Test 452: "new/After advice isn't being woven into after throwing advice" failed in 1258ms, memory usage: 15948936.
 
 
 Running test 455: new/Defines clfow$ajc0 more once. [eachcflow]
@@ -977,7 +977,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at Binkley.<clinit>(Binkley.java)
 	... 7 more
-FAIL: Test 455: "new/Defines clfow$ajc0 more once. [eachcflow]" failed in 1103ms, memory usage: 15386920.
+FAIL: Test 455: "new/Defines clfow$ajc0 more once. [eachcflow]" failed in 1082ms, memory usage: 15392728.
 
 
 Running test 461: new/Null pointer on gets advice with coverage [painful]
@@ -1008,7 +1008,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 461: "new/Null pointer on gets advice with coverage [painful]" failed in 10195ms, memory usage: 54751360.
+FAIL: Test 461: "new/Null pointer on gets advice with coverage [painful]" failed in 10898ms, memory usage: 54561576.
 
 
 Running test 462: new/Basic test for cflow pointcuts [eachcflow]
@@ -1025,7 +1025,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CFlowPoints.main(CFlowPoints.java:5)
 	... 7 more
-FAIL: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" failed in 1406ms, memory usage: 14565280.
+FAIL: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" failed in 1388ms, memory usage: 14471824.
 
 
 Running test 465: new/Dave Binkley's problem with eachcflowroot. [eachcflow]
@@ -1045,7 +1045,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at C.<clinit>(Binkley2.java)
 	... 8 more
-FAIL: Test 465: "new/Dave Binkley's problem with eachcflowroot. [eachcflow]" failed in 1873ms, memory usage: 14908752.
+FAIL: Test 465: "new/Dave Binkley's problem with eachcflowroot. [eachcflow]" failed in 1787ms, memory usage: 14860984.
 
 
 Running test 466: new/advice on an inherited method
@@ -1064,7 +1064,7 @@ Caused by: java.lang.NullPointerException
 	at AdviceOnInheritedMethod.test(AdviceOnInheritedMethod.java:10)
 	at AdviceOnInheritedMethod.main(AdviceOnInheritedMethod.java:7)
 	... 7 more
-FAIL: Test 466: "new/advice on an inherited method" failed in 1269ms, memory usage: 15459344.
+FAIL: Test 466: "new/advice on an inherited method" failed in 1246ms, memory usage: 15592160.
 
 
 Running test 467: new/, PR#115 checks the ordering of catch clauses
@@ -1082,7 +1082,7 @@ Caused by: java.lang.NullPointerException
 	at OrderOfCatches.test(OrderOfCatches.java:11)
 	at OrderOfCatches.main(OrderOfCatches.java:7)
 	... 7 more
-FAIL: Test 467: "new/, PR#115 checks the ordering of catch clauses" failed in 1271ms, memory usage: 15638384.
+FAIL: Test 467: "new/, PR#115 checks the ordering of catch clauses" failed in 1264ms, memory usage: 15715728.
 
 
 Running test 468: new/various declared exception permutations
@@ -1113,7 +1113,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 468: "new/various declared exception permutations" failed in 967ms, memory usage: 32324488.
+FAIL: Test 468: "new/various declared exception permutations" failed in 1017ms, memory usage: 32529152.
 
 
 Running test 469: new/ordering of advice kinds as well as cflow and dominates
@@ -1121,7 +1121,7 @@ Commandline: abc -d new -warn-unused-advice:off new/AdviceOrdering.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/AdviceOrdering.java:22,34-51: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 920ms, memory usage: 15774304.
+FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 949ms, memory usage: 15853200.
 
 
 Running test 470: new/advice on default constructor for a class only referenced via reflection
@@ -1147,7 +1147,7 @@ Caused by: java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at C.<init>(OddConstructors.java:46)
 	... 14 more
-FAIL: Test 470: "new/advice on default constructor for a class only referenced via reflection" failed in 1232ms, memory usage: 15141680.
+FAIL: Test 470: "new/advice on default constructor for a class only referenced via reflection" failed in 1218ms, memory usage: 15272952.
 
 
 Running test 474: new/join points in static/dynamic initializers aren't showing up.
@@ -1164,7 +1164,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at NonexistentInitializers.<clinit>(NonexistentInitializers.java)
 	... 7 more
-FAIL: Test 474: "new/join points in static/dynamic initializers aren't showing up." failed in 1003ms, memory usage: 15289224.
+FAIL: Test 474: "new/join points in static/dynamic initializers aren't showing up." failed in 999ms, memory usage: 15335984.
 
 
 Running test 476: new/correct types of parameters at call-sites
@@ -1181,7 +1181,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CallTypes.main(CallTypes.java:8)
 	... 7 more
-FAIL: Test 476: "new/correct types of parameters at call-sites" failed in 1439ms, memory usage: 15608552.
+FAIL: Test 476: "new/correct types of parameters at call-sites" failed in 1432ms, memory usage: 15631088.
 
 
 Running test 477: new/Joinpoints are showing up on intermediate call sites
@@ -1198,7 +1198,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Counting1.main(Counting1.java)
 	... 7 more
-FAIL: Test 477: "new/Joinpoints are showing up on intermediate call sites" failed in 2035ms, memory usage: 15805888.
+FAIL: Test 477: "new/Joinpoints are showing up on intermediate call sites" failed in 1925ms, memory usage: 15833240.
 
 
 Running test 480: new/making sure that super calls are bound to the right methods
@@ -1215,7 +1215,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at SupersAndInterfaces.main(SupersAndInterfaces.java:7)
 	... 7 more
-FAIL: Test 480: "new/making sure that super calls are bound to the right methods" failed in 1589ms, memory usage: 15100880.
+FAIL: Test 480: "new/making sure that super calls are bound to the right methods" failed in 1346ms, memory usage: 15140680.
 
 
 Running test 483: new/exceptions thrown and caught in advice, particularly try+proceed
@@ -1246,7 +1246,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+proceed" failed in 1302ms, memory usage: 33210776.
+FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+proceed" failed in 1025ms, memory usage: 33263784.
 
 
 Running test 484: new/Not and And operators in pointcuts not working
@@ -1264,7 +1264,7 @@ Caused by: java.lang.NullPointerException
 	at NotAndPointcut.showBug(NotAndPointcut.java)
 	at NotAndPointcut.main(NotAndPointcut.java:7)
 	... 7 more
-FAIL: Test 484: "new/Not and And operators in pointcuts not working" failed in 900ms, memory usage: 14794568.
+FAIL: Test 484: "new/Not and And operators in pointcuts not working" failed in 921ms, memory usage: 14968656.
 
 
 Running test 490: new/pcd if() dup methods produced when pointcut after advice etc (javac)
@@ -1281,7 +1281,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IfPCDDupMethod.main(IfPCDDupMethod.java)
 	... 7 more
-FAIL: Test 490: "new/pcd if() dup methods produced when pointcut after advice etc (javac)" failed in 905ms, memory usage: 14697656.
+FAIL: Test 490: "new/pcd if() dup methods produced when pointcut after advice etc (javac)" failed in 881ms, memory usage: 14644232.
 
 
 Running test 491: new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]
@@ -1312,7 +1312,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 491: "new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" failed in 1585ms, memory usage: 35200448.
+FAIL: Test 491: "new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" failed in 1605ms, memory usage: 35391520.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -1343,7 +1343,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 1939ms, memory usage: 35700400.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 1855ms, memory usage: 36622392.
 
 
 Running test 498: new/cflowbelow dependencies (from Chris Dutchyn)
@@ -1360,7 +1360,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CflowBelowTest.main(CflowBelowTest.java:19)
 	... 7 more
-FAIL: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" failed in 1166ms, memory usage: 14720208.
+FAIL: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" failed in 1075ms, memory usage: 15533528.
 
 
 Running test 499: new/target type matching with messy interface hierarchies
@@ -1377,7 +1377,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CallTypesI.main(CallTypesI.java:8)
 	... 7 more
-FAIL: Test 499: "new/target type matching with messy interface hierarchies" failed in 1598ms, memory usage: 15427992.
+FAIL: Test 499: "new/target type matching with messy interface hierarchies" failed in 1621ms, memory usage: 15937184.
 
 
 Running test 501: new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)
@@ -1394,7 +1394,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at NonAlphaSignaturePatternCE.<clinit>(NonAlphaSignaturePatternCE.java)
 	... 7 more
-FAIL: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" failed in 1417ms, memory usage: 15244504.
+FAIL: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" failed in 1400ms, memory usage: 15487184.
 
 
 Running test 504: new/Arguments are not being passed in to calls advice
@@ -1412,7 +1412,7 @@ Caused by: java.lang.NullPointerException
 	at Ship.handleCollision(PR335.java)
 	at PR335.main(PR335.java:7)
 	... 7 more
-FAIL: Test 504: "new/Arguments are not being passed in to calls advice" failed in 1311ms, memory usage: 15140448.
+FAIL: Test 504: "new/Arguments are not being passed in to calls advice" failed in 1114ms, memory usage: 15526904.
 
 
 Running test 505: design/intro/interfaces as mixins with introduction
@@ -1427,11 +1427,11 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.NullPointerException
-	at A2.fieldinit$1681(Interfaces.java)
+	at A1.fieldinit$1681(Interfaces.java)
 	at C.<init>(Interfaces.java:96)
 	at Interfaces.main(Interfaces.java:14)
 	... 7 more
-FAIL: Test 505: "design/intro/interfaces as mixins with introduction" failed in 1699ms, memory usage: 15479352.
+FAIL: Test 505: "design/intro/interfaces as mixins with introduction" failed in 1508ms, memory usage: 15827392.
 
 
 Running test 507: new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants
@@ -1448,7 +1448,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at CflowInitInAspectVariantsBefore.<clinit>(CflowInitInAspectVariantsBefore.java)
 	... 7 more
-FAIL: Test 507: "new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants" failed in 1576ms, memory usage: 15132568.
+FAIL: Test 507: "new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants" failed in 1213ms, memory usage: 15380064.
 
 
 Running test 508: new/NoClassDefFoundError accessing cflow in aspect initialization - after variants
@@ -1465,7 +1465,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at CflowInitInAspectVariantsAfter.<clinit>(CflowInitInAspectVariantsAfter.java:28)
 	... 7 more
-FAIL: Test 508: "new/NoClassDefFoundError accessing cflow in aspect initialization - after variants" failed in 3103ms, memory usage: 14840704.
+FAIL: Test 508: "new/NoClassDefFoundError accessing cflow in aspect initialization - after variants" failed in 2973ms, memory usage: 15181376.
 
 
 Running test 509: new/InternalCompilerError in JpPlan when args alone
@@ -1482,7 +1482,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ArgsAlone.main(ArgsAlone.java:7)
 	... 7 more
-FAIL: Test 509: "new/InternalCompilerError in JpPlan when args alone" failed in 1113ms, memory usage: 14933608.
+FAIL: Test 509: "new/InternalCompilerError in JpPlan when args alone" failed in 1016ms, memory usage: 15191472.
 
 
 Running test 511: new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface
@@ -1504,7 +1504,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at B.<clinit>(PR528.java)
 	... 10 more
-FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" failed in 1523ms, memory usage: 15224592.
+FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" failed in 1492ms, memory usage: 15436384.
 
 
 Running test 513: new/missing method name to synthetic invocation
@@ -1525,7 +1525,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at A.<clinit>(PR535.java)
 	... 9 more
-FAIL: Test 513: "new/missing method name to synthetic invocation" failed in 1166ms, memory usage: 15104744.
+FAIL: Test 513: "new/missing method name to synthetic invocation" failed in 1045ms, memory usage: 15402496.
 
 
 Running test 517: new/introduced inner interfaces accessible inside aspect
@@ -1543,7 +1543,7 @@ Caused by: java.lang.NullPointerException
 	at AnotherClass.invoke(IntroduceInnerInterfaceCP.java:73)
 	at IntroduceInnerInterfaceCP.main(IntroduceInnerInterfaceCP.java:9)
 	... 7 more
-FAIL: Test 517: "new/introduced inner interfaces accessible inside aspect" failed in 1971ms, memory usage: 15414616.
+FAIL: Test 517: "new/introduced inner interfaces accessible inside aspect" failed in 1907ms, memory usage: 15438312.
 
 
 Running test 518: new/validate (enclosing) join point and source locations
@@ -1563,7 +1563,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at TargetClass.<clinit>(NegativeSourceLocation.java)
 	... 8 more
-FAIL: Test 518: "new/validate (enclosing) join point and source locations" failed in 2008ms, memory usage: 17095920.
+FAIL: Test 518: "new/validate (enclosing) join point and source locations" failed in 2052ms, memory usage: 17129360.
 
 
 Running test 526: new/cflow alone with around produces compiler bcg StackOverflowError
@@ -1594,7 +1594,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 526: "new/cflow alone with around produces compiler bcg StackOverflowError" failed in 1137ms, memory usage: 33250440.
+FAIL: Test 526: "new/cflow alone with around produces compiler bcg StackOverflowError" failed in 1086ms, memory usage: 33210816.
 
 
 Running test 527: new/get/set join points run for complex assignment operators (+=, etc.) (working)
@@ -1612,7 +1612,7 @@ Caused by: java.lang.NullPointerException
 	at AssignOps.<init>(AssignOps.java:71)
 	at AssignOps.main(AssignOps.java:67)
 	... 7 more
-FAIL: Test 527: "new/get/set join points run for complex assignment operators (+=, etc.) (working)" failed in 1469ms, memory usage: 15501968.
+FAIL: Test 527: "new/get/set join points run for complex assignment operators (+=, etc.) (working)" failed in 1172ms, memory usage: 15411416.
 
 
 Running test 545: new/runtime/Exercise runtime classes (optionally in 1.1 VM)
@@ -1629,7 +1629,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at TesterDriver.<clinit>(TesterDriver.java)
 	... 7 more
-FAIL: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" failed in 13713ms, memory usage: 17823744.
+FAIL: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" failed in 12691ms, memory usage: 17864136.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -1647,7 +1647,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1404ms, memory usage: 15226184.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1325ms, memory usage: 14958864.
 
 
 Running test 564: new/beautiful recursive computation of factorial with around is now supported
@@ -1665,7 +1665,7 @@ Caused by: java.lang.NullPointerException
 	at FactorialViaAround.inline$0$around$2045(CircularAdvice.java:20)
 	at CircularAdvice.main(CircularAdvice.java)
 	... 7 more
-FAIL: Test 564: "new/beautiful recursive computation of factorial with around is now supported" failed in 919ms, memory usage: 15166352.
+FAIL: Test 564: "new/beautiful recursive computation of factorial with around is now supported" failed in 905ms, memory usage: 15120504.
 
 
 Running test 566: new/multi-dispatch implemented through around + args
@@ -1680,7 +1680,7 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.NullPointerException
-	at Multi.inline$0$around$2053(MultiDispatchCp.java:49)
+	at Multi.inline$7$around$2053(MultiDispatchCp.java:49)
 	at C.doit(MultiDispatchCp.java:76)
 	at MultiDispatchCp.shadow$5(MultiDispatchCp.java:25)
 	at MultiDispatchCp.shadow$11(MultiDispatchCp.java:65)
@@ -1688,7 +1688,7 @@ Caused by: java.lang.NullPointerException
 	at MultiDispatchCp.run(MultiDispatchCp.java:65)
 	at MultiDispatchCp.main(MultiDispatchCp.java:9)
 	... 7 more
-FAIL: Test 566: "new/multi-dispatch implemented through around + args" failed in 1610ms, memory usage: 15772888.
+FAIL: Test 566: "new/multi-dispatch implemented through around + args" failed in 1645ms, memory usage: 15605400.
 
 
 Running test 568: new/unreachable code generated by around advice on the execution of void methods
@@ -1719,7 +1719,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 874ms, memory usage: 33510248.
+FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 880ms, memory usage: 33671288.
 
 
 Running test 570: new/more coverage for around and concrete methods on interfaces
@@ -1750,7 +1750,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 992ms, memory usage: 32721488.
+FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 1006ms, memory usage: 32796280.
 
 
 Running test 572: new/after returning advice order
@@ -1767,7 +1767,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Cricket.main(Cricket.java:7)
 	... 7 more
-FAIL: Test 572: "new/after returning advice order" failed in 1445ms, memory usage: 15004920.
+FAIL: Test 572: "new/after returning advice order" failed in 1393ms, memory usage: 14949640.
 
 
 Running test 573: new/after returning advice param
@@ -1785,7 +1785,7 @@ Caused by: java.lang.NullPointerException
 	at AfterReturningParam.<init>(AfterReturningParam.java:25)
 	at AfterReturningParam.main(AfterReturningParam.java:6)
 	... 7 more
-FAIL: Test 573: "new/after returning advice param" failed in 1051ms, memory usage: 15050088.
+FAIL: Test 573: "new/after returning advice param" failed in 1043ms, memory usage: 15011560.
 
 
 Running test 576: new/. Matching arguments in cflow correctly.
@@ -1803,7 +1803,7 @@ Caused by: java.lang.NullPointerException
 	at MethodParam.someMethod(MatchingArgumentsInCflow.java)
 	at MatchingArgumentsInCflow.main(MatchingArgumentsInCflow.java:17)
 	... 7 more
-FAIL: Test 576: "new/. Matching arguments in cflow correctly." failed in 1360ms, memory usage: 15123288.
+FAIL: Test 576: "new/. Matching arguments in cflow correctly." failed in 1117ms, memory usage: 15155768.
 
 
 Running test 582: new/subclass advice not run for join points selected by superclass cflow-based pointcuts
@@ -1834,7 +1834,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed in 3067ms, memory usage: 44216440.
+FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed in 2964ms, memory usage: 43687440.
 
 
 Running test 583: new/more issues with abstract aspects and cflow pointcuts
@@ -1851,7 +1851,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AbstractCflows.main(AbstractCflows.java:5)
 	... 7 more
-FAIL: Test 583: "new/more issues with abstract aspects and cflow pointcuts" failed in 2253ms, memory usage: 16263360.
+FAIL: Test 583: "new/more issues with abstract aspects and cflow pointcuts" failed in 2148ms, memory usage: 15661336.
 
 
 Running test 584: new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects
@@ -1868,7 +1868,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at PR560.<clinit>(PR560.java)
 	... 7 more
-FAIL: Test 584: "new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" failed in 1264ms, memory usage: 15421744.
+FAIL: Test 584: "new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" failed in 1269ms, memory usage: 15163768.
 
 
 Running test 593: new/around AST type XXX
@@ -1885,7 +1885,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PR691.main(PR691.java:8)
 	... 7 more
-FAIL: Test 593: "new/around AST type XXX" failed in 1204ms, memory usage: 15801496.
+FAIL: Test 593: "new/around AST type XXX" failed in 1167ms, memory usage: 15374168.
 
 
 Running test 594: new/around all execution with double assignment in initializer (simple)
@@ -1912,7 +1912,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 594: "new/around all execution with double assignment in initializer (simple)" failed in 843ms, memory usage: 33655856.
+FAIL: Test 594: "new/around all execution with double assignment in initializer (simple)" failed in 838ms, memory usage: 33223216.
 
 
 Running test 597: new/default package for aspect introductions is not the current package
@@ -1931,7 +1931,7 @@ Caused by: java.lang.NullPointerException
 	at one.C.foo(C.java)
 	at one.TestAspect.main(TestAspect.java:7)
 	... 7 more
-FAIL: Test 597: "new/default package for aspect introductions is not the current package" failed in 1422ms, memory usage: 15665488.
+FAIL: Test 597: "new/default package for aspect introductions is not the current package" failed in 1095ms, memory usage: 15419280.
 
 
 Running test 599: new/unqualified transitive pointcut references not resolved
@@ -1948,7 +1948,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at PointcutQualification.<clinit>(PointcutQualification.java)
 	... 7 more
-FAIL: Test 599: "new/unqualified transitive pointcut references not resolved" failed in 981ms, memory usage: 15665368.
+FAIL: Test 599: "new/unqualified transitive pointcut references not resolved" failed in 970ms, memory usage: 15370000.
 
 
 Running test 604: new/simple call join point tests for JoinPoint SourceLocation context
@@ -1969,7 +1969,7 @@ org.aspectj.bridge.AbortException: null JoinPoint@before() : trace1()
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 604: "new/simple call join point tests for JoinPoint SourceLocation context" failed in 943ms, memory usage: 15755496.
+FAIL: Test 604: "new/simple call join point tests for JoinPoint SourceLocation context" failed in 923ms, memory usage: 15471920.
 
 
 Running test 606: new/name binding in around cflow
@@ -1987,7 +1987,7 @@ Caused by: java.lang.NullPointerException
 	at AroundCall.<init>(AroundCall.java:3)
 	at AroundCall.main(AroundCall.java:10)
 	... 7 more
-FAIL: Test 606: "new/name binding in around cflow" failed in 1017ms, memory usage: 15752616.
+FAIL: Test 606: "new/name binding in around cflow" failed in 987ms, memory usage: 15446912.
 
 
 Running test 607: new/name binding in around cflow - 2
@@ -2004,7 +2004,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ArgsInCflow2.main(ArgsInCflow2.java)
 	... 7 more
-FAIL: Test 607: "new/name binding in around cflow - 2" failed in 953ms, memory usage: 15695120.
+FAIL: Test 607: "new/name binding in around cflow - 2" failed in 924ms, memory usage: 15425688.
 
 
 Running test 608: new/around name-binding in cflows using factorial
@@ -2022,7 +2022,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at A.<clinit>(FactorialCflow.java)
 	... 8 more
-FAIL: Test 608: "new/around name-binding in cflows using factorial" failed in 3559ms, memory usage: 15576624.
+FAIL: Test 608: "new/around name-binding in cflows using factorial" failed in 3231ms, memory usage: 15741792.
 
 
 Running test 61501: abctests/new/after returning from initialization causes ExceptionInInitializer in aspect
@@ -2042,7 +2042,7 @@ org.aspectj.bridge.AbortException: shouldn't be able to run
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 61501: "abctests/new/after returning from initialization causes ExceptionInInitializer in aspect" failed in 817ms, memory usage: 15544040.
+FAIL: Test 61501: "abctests/new/after returning from initialization causes ExceptionInInitializer in aspect" failed in 786ms, memory usage: 15584408.
 
 
 Running test 621: new/pr728/file order in type searching
@@ -2059,7 +2059,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AnotherClass.main(AnotherClass.java:12)
 	... 7 more
-FAIL: Test 621: "new/pr728/file order in type searching" failed in 1170ms, memory usage: 15231736.
+FAIL: Test 621: "new/pr728/file order in type searching" failed in 1138ms, memory usage: 15233200.
 
 
 Running test 637: new/ajc dies on cflow into field init anon class see knownbugs.txt
@@ -2076,7 +2076,7 @@ java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at CflowOfFieldInitAnonMethods.<clinit>(CflowOfFieldInitAnonMethods.java)
 	... 7 more
-FAIL: Test 637: "new/ajc dies on cflow into field init anon class see knownbugs.txt" failed in 1317ms, memory usage: 15601000.
+FAIL: Test 637: "new/ajc dies on cflow into field init anon class see knownbugs.txt" failed in 1275ms, memory usage: 15595296.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -2093,7 +2093,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at test.TypePat.main(TypePat.java:9)
 	... 7 more
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1166ms, memory usage: 16045584.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1146ms, memory usage: 16010016.
 
 
 Running test 644: new/static initializer member name
@@ -2116,7 +2116,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at C.<clinit>(StaticInitName.java)
 	... 11 more
-FAIL: Test 644: "new/static initializer member name" failed in 1100ms, memory usage: 16461416.
+FAIL: Test 644: "new/static initializer member name" failed in 1067ms, memory usage: 16432600.
 
 
 Running test 646: new/binding args with indeterminate prefix and suffix
@@ -2133,7 +2133,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IndeterminateArgs.main(IndeterminateArgs.java:80)
 	... 7 more
-FAIL: Test 646: "new/binding args with indeterminate prefix and suffix" failed in 1963ms, memory usage: 16352176.
+FAIL: Test 646: "new/binding args with indeterminate prefix and suffix" failed in 1867ms, memory usage: 16292272.
 
 
 Running test 648: new/check arg types with indeterminate prefix and suffix
@@ -2150,7 +2150,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IndeterminateArgType.main(IndeterminateArgType.java:15)
 	... 7 more
-FAIL: Test 648: "new/check arg types with indeterminate prefix and suffix" failed in 2121ms, memory usage: 16624896.
+FAIL: Test 648: "new/check arg types with indeterminate prefix and suffix" failed in 2051ms, memory usage: 16337672.
 
 
 Running test 649: new/testing and binding args with single indeterminate prefix and suffix
@@ -2167,7 +2167,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IndeterminateArg.main(IndeterminateArg.java:13)
 	... 7 more
-FAIL: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" failed in 22556ms, memory usage: 16544088.
+FAIL: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" failed in 22386ms, memory usage: 16537704.
 
 
 Running test 650: new/binding handler args with indeterminate prefix and suffix
@@ -2184,7 +2184,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IndeterminateHandlerArg.main(IndeterminateHandlerArg.java:49)
 	... 7 more
-FAIL: Test 650: "new/binding handler args with indeterminate prefix and suffix" failed in 1771ms, memory usage: 15203032.
+FAIL: Test 650: "new/binding handler args with indeterminate prefix and suffix" failed in 1824ms, memory usage: 15205848.
 
 
 Running test 656: new/advising field get/sets when accessing via super
@@ -2203,7 +2203,7 @@ Caused by: java.lang.NullPointerException
 	at Derived.<init>(SuperField.java:41)
 	at SuperField.main(SuperField.java:5)
 	... 7 more
-FAIL: Test 656: "new/advising field get/sets when accessing via super" failed in 1324ms, memory usage: 14504992.
+FAIL: Test 656: "new/advising field get/sets when accessing via super" failed in 1256ms, memory usage: 14793840.
 
 
 Running test 683: new/assert statement in advice  [requires 1.4]
@@ -2220,7 +2220,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AssertInAdviceBug.main(AssertInAdviceBug.java:28)
 	... 7 more
-FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed in 1276ms, memory usage: 17413504.
+FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed in 1135ms, memory usage: 17400320.
 
 
 Running test 687: new/signature of handler join point
@@ -2247,7 +2247,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "before handler" found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 687: "new/signature of handler join point" failed in 1113ms, memory usage: 16065184.
+FAIL: Test 687: "new/signature of handler join point" failed in 1077ms, memory usage: 16017896.
 
 
 Running test 688: new/source locations within expressions
@@ -2264,7 +2264,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at SourceLocationWithinExpr.main(SourceLocationWithinExpr.java:38)
 	... 7 more
-FAIL: Test 688: "new/source locations within expressions" failed in 1031ms, memory usage: 16190272.
+FAIL: Test 688: "new/source locations within expressions" failed in 992ms, memory usage: 16143768.
 
 
 Running test 68901: abctests/new/source locations within expressions (hard case of constructor start)
@@ -2281,7 +2281,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at SourceLocationWithinExprHard.main(SourceLocationWithinExprHard.java:38)
 	... 7 more
-FAIL: Test 68901: "abctests/new/source locations within expressions (hard case of constructor start)" failed in 1045ms, memory usage: 16175616.
+FAIL: Test 68901: "abctests/new/source locations within expressions (hard case of constructor start)" failed in 1093ms, memory usage: 16091792.
 
 
 Running test 694: bugs/incompatible class change error
@@ -2298,7 +2298,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IncompatibleClassChangeErrorBug.main(IncompatibleClassChangeErrorBug.java:10)
 	... 7 more
-FAIL: Test 694: "bugs/incompatible class change error" failed in 928ms, memory usage: 15470304.
+FAIL: Test 694: "bugs/incompatible class change error" failed in 931ms, memory usage: 15582848.
 
 
 Running test 695: bugs/simple cflow of method execution
@@ -2315,7 +2315,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ExecutionCflow.main(ExecutionCflow.java)
 	... 7 more
-FAIL: Test 695: "bugs/simple cflow of method execution" failed in 942ms, memory usage: 15484192.
+FAIL: Test 695: "bugs/simple cflow of method execution" failed in 931ms, memory usage: 15639216.
 
 
 Running test 71801: abctests/new/after returning advice on interface and implementation constructor - fixed
@@ -2333,7 +2333,7 @@ Caused by: java.lang.NullPointerException
 	at C.<init>(AfterReturningConstructor.java:20)
 	at AfterReturningConstructor.main(AfterReturningConstructor.java:13)
 	... 7 more
-FAIL: Test 71801: "abctests/new/after returning advice on interface and implementation constructor - fixed" failed in 1335ms, memory usage: 15511824.
+FAIL: Test 71801: "abctests/new/after returning advice on interface and implementation constructor - fixed" failed in 1300ms, memory usage: 15687016.
 
 
 Running test 729: bugs/assert and pertarget crashes compiler
@@ -2351,14 +2351,14 @@ Caused by: java.lang.NullPointerException
 	at Derived.lockResource(EnsureOverriding.java)
 	at EnsureOverriding.main(EnsureOverriding.java:37)
 	... 7 more
-FAIL: Test 729: "bugs/assert and pertarget crashes compiler" failed in 1248ms, memory usage: 15712688.
+FAIL: Test 729: "bugs/assert and pertarget crashes compiler" failed in 1219ms, memory usage: 15888920.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 771ms, memory usage: 14790872.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 626ms, memory usage: 14969272.
 
 
 Running test 747: bugs/VerifyError on accessing objects not accessible to the weaver
@@ -2377,7 +2377,7 @@ Caused by: java.lang.NullPointerException
 	at AroundAccess.foo(AroundAccess.java)
 	at AroundAccess.main(AroundAccess.java:10)
 	... 7 more
-FAIL: Test 747: "bugs/VerifyError on accessing objects not accessible to the weaver" failed in 952ms, memory usage: 15568504.
+FAIL: Test 747: "bugs/VerifyError on accessing objects not accessible to the weaver" failed in 970ms, memory usage: 15745968.
 
 
 Running test 750: bugs/crashes/Error with certain combination of advice
@@ -2395,7 +2395,7 @@ Caused by: java.lang.NullPointerException
 	at test.Test3.foo(Test3.java)
 	at test.Test3.main(Test3.java:8)
 	... 7 more
-FAIL: Test 750: "bugs/crashes/Error with certain combination of advice" failed in 954ms, memory usage: 15903592.
+FAIL: Test 750: "bugs/crashes/Error with certain combination of advice" failed in 934ms, memory usage: 16084520.
 
 
 Running test 751: bugs/Pointcut adviceexecution() does not work
@@ -2412,13 +2412,13 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AdviceExec.main(AdviceExec.java)
 	... 7 more
-FAIL: Test 751: "bugs/Pointcut adviceexecution() does not work" failed in 978ms, memory usage: 15418184.
+FAIL: Test 751: "bugs/Pointcut adviceexecution() does not work" failed in 938ms, memory usage: 15599904.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 670ms, memory usage: 15183144.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 649ms, memory usage: 15375928.
 
 
 Running test 757: bugs/thisJoinPoint.getArgs() causes IncompatibleClassChangeError
@@ -2437,7 +2437,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ThisJoinPointAndVerifier.main(ThisJoinPointAndVerifier.java:11)
 	... 7 more
-FAIL: Test 757: "bugs/thisJoinPoint.getArgs() causes IncompatibleClassChangeError" failed in 933ms, memory usage: 15815952.
+FAIL: Test 757: "bugs/thisJoinPoint.getArgs() causes IncompatibleClassChangeError" failed in 915ms, memory usage: 15996096.
 
 
 Running test 762: new/can't apply around advice to the execution of around advice
@@ -2468,7 +2468,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed in 1248ms, memory usage: 33273656.
+FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed in 975ms, memory usage: 33258024.
 
 
 Running test 764: bugs/cflow binding issues with ignoring state
@@ -2495,7 +2495,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed in 988ms, memory usage: 33216200.
+FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed in 929ms, memory usage: 33339584.
 
 
 Running test 765: bugs/cflow binding -- original weaver crash
@@ -2522,13 +2522,13 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 765: "bugs/cflow binding -- original weaver crash" failed in 885ms, memory usage: 32239464.
+FAIL: Test 765: "bugs/cflow binding -- original weaver crash" failed in 747ms, memory usage: 32113984.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 870ms, memory usage: 15253352.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 819ms, memory usage: 15234304.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -2536,7 +2536,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 785ms, memory usage: 15654728.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 770ms, memory usage: 15635792.
 
 
 Running test 782: bugs/Internal compiler error with thisJoinPoint.getStaticPart()
@@ -2554,7 +2554,7 @@ Caused by: java.lang.NullPointerException
 	at tjpStaticPart.Exceptions.inline$0$around$2684(Exceptions.java:13)
 	at tjpStaticPart.Test.main(Test.java)
 	... 7 more
-FAIL: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()" failed in 966ms, memory usage: 16240960.
+FAIL: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()" failed in 961ms, memory usage: 16257048.
 
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
@@ -2581,7 +2581,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 15166ms, memory usage: 49002568.
+FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 14274ms, memory usage: 49010704.
 
 
 Running test 785: new/try/finally in around advice (same as ...messy arounds?)
@@ -2612,7 +2612,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed in 1772ms, memory usage: 33240480.
+FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed in 1757ms, memory usage: 33223448.
 
 
 Running test 786: new/advise join points in subclass of empty interface
@@ -2632,7 +2632,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at C.<clinit>(EmptyInterface.java)
 	... 8 more
-FAIL: Test 786: "new/advise join points in subclass of empty interface" failed in 1283ms, memory usage: 14781008.
+FAIL: Test 786: "new/advise join points in subclass of empty interface" failed in 1270ms, memory usage: 14852264.
 
 
 Running test 788: bugs/cflow concretization causing assertion failure
@@ -2652,7 +2652,7 @@ Caused by: java.lang.ExceptionInInitializerError
 Caused by: java.lang.NullPointerException
 	at TestAjc.<clinit>(CflowConcrete.java)
 	... 8 more
-FAIL: Test 788: "bugs/cflow concretization causing assertion failure" failed in 1046ms, memory usage: 15000424.
+FAIL: Test 788: "bugs/cflow concretization causing assertion failure" failed in 998ms, memory usage: 15108672.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -2676,7 +2676,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 949ms, memory usage: 16845600.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 899ms, memory usage: 16845448.
 
 
 Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
@@ -2701,7 +2701,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:50: preinitialization(app.C.new())
-FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 784ms, memory usage: 14294160.
+FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 750ms, memory usage: 14277080.
 
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
@@ -2726,7 +2726,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:50: preinitialization(app.C.new())
-FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 776ms, memory usage: 14294872.
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 765ms, memory usage: 14290384.
 
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
@@ -2735,7 +2735,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:17: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 705ms, memory usage: 14242528.
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 690ms, memory usage: 14242440.
 
 
 Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
@@ -2744,7 +2744,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:20: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 705ms, memory usage: 14243728.
+FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 700ms, memory usage: 14240976.
 
 
 Running test 805: bugs/inlineAround/perthis and inline arounds
@@ -2764,7 +2764,7 @@ Caused by: java.lang.IllegalAccessError: tried to access class p1.C from class a
 	at p1.Main.doit(Main.java:9)
 	at p1.Main.main(Main.java:5)
 	... 7 more
-FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1735ms, memory usage: 15459056.
+FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1627ms, memory usage: 15471832.
 
 
 Running test 808: bugs/Weaver fails with NPE for very large source files 
@@ -2782,7 +2782,7 @@ Caused by: java.lang.NullPointerException
 	at LongFile.doit(LongFile.java)
 	at LongFile.main(LongFile.java:5)
 	... 7 more
-FAIL: Test 808: "bugs/Weaver fails with NPE for very large source files " failed in 1030ms, memory usage: 15622264.
+FAIL: Test 808: "bugs/Weaver fails with NPE for very large source files " failed in 992ms, memory usage: 15625632.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -2798,7 +2798,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:604)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 649ms, memory usage: 35445648.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 636ms, memory usage: 35440880.
 
 
 Running test 815: bugs/Unexpected Xlint:unresolvableMember warning with withincode
@@ -2816,7 +2816,7 @@ Caused by: java.lang.NullPointerException
 	at B.<init>(CatchSig.java)
 	at CatchSig.main(CatchSig.java:14)
 	... 7 more
-FAIL: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" failed in 1175ms, memory usage: 15569312.
+FAIL: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" failed in 1115ms, memory usage: 15576680.
 
 
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
@@ -2824,7 +2824,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:23: execution(Main.new())
-FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 866ms, memory usage: 14031320.
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 754ms, memory usage: 14014736.
 
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
@@ -2832,7 +2832,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:23: execution(Main.new())
-FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 792ms, memory usage: 14115088.
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 774ms, memory usage: 14098736.
 
 
 Running test 840: bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)
@@ -2853,7 +2853,7 @@ Caused by: java.lang.NullPointerException
 	at Test.doSayHello(Test.java)
 	at Test.main(Test.java:8)
 	... 7 more
-FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed in 1183ms, memory usage: 15865048.
+FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed in 1143ms, memory usage: 15855440.
 
 
 Running test 845: bugs/subtype-qualified pointcut reference
@@ -2870,7 +2870,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PointcutLibraryTest.main(PointcutLibraryTest.java:10)
 	... 7 more
-FAIL: Test 845: "bugs/subtype-qualified pointcut reference" failed in 1297ms, memory usage: 15772224.
+FAIL: Test 845: "bugs/subtype-qualified pointcut reference" failed in 1250ms, memory usage: 15773896.
 
 
 Running test 870: bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points
@@ -2888,7 +2888,7 @@ Caused by: java.lang.NullPointerException
 	at PerCFlowTestHelper.startNewPerCFlow(PerCFlowCompileFromJarTest.java)
 	at PerCFlowCompileFromJarTest.main(PerCFlowCompileFromJarTest.java:8)
 	... 7 more
-FAIL: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" failed in 1176ms, memory usage: 15019128.
+FAIL: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" failed in 1146ms, memory usage: 15017856.
 
 
 Running test 879: bugs/jpOptimization/JoinPoint Optimization when targetting 1.4
@@ -2906,7 +2906,7 @@ Caused by: java.lang.NullPointerException
 	at de.test.MyMain.sayHello(MyMain.java)
 	at de.test.MyMain.main(MyMain.java:7)
 	... 7 more
-FAIL: Test 879: "bugs/jpOptimization/JoinPoint Optimization when targetting 1.4" failed in 949ms, memory usage: 15825288.
+FAIL: Test 879: "bugs/jpOptimization/JoinPoint Optimization when targetting 1.4" failed in 908ms, memory usage: 15825792.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
@@ -2923,7 +2923,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrivilegedParsing.main(PrivilegedParsing.java:12)
 	... 7 more
-FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 980ms, memory usage: 16041944.
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 956ms, memory usage: 16040952.
 
 
 Running test 912: bugs/Erroneous exception conversion
@@ -2944,7 +2944,7 @@ org.aspectj.bridge.AbortException: Wanted an ExceptionInInitializerError but got
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 912: "bugs/Erroneous exception conversion" failed in 1021ms, memory usage: 16612768.
+FAIL: Test 912: "bugs/Erroneous exception conversion" failed in 926ms, memory usage: 16590960.
 
 
 Running test 916: bugs/declare warning on subtype constructor
@@ -2966,7 +2966,7 @@ Caused by: java.lang.NullPointerException
 	at C.<init>(SubtypeConstructorCW.java:5)
 	at SubtypeConstructorCW.main(SubtypeConstructorCW.java:19)
 	... 7 more
-FAIL: Test 916: "bugs/declare warning on subtype constructor" failed in 1094ms, memory usage: 16394760.
+FAIL: Test 916: "bugs/declare warning on subtype constructor" failed in 1071ms, memory usage: 16370376.
 
 
 Running test 917: bugs/CatchClauseSignature has broken operation
@@ -2983,7 +2983,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at HandlerSig.main(HandlerSig.java:19)
 	... 7 more
-FAIL: Test 917: "bugs/CatchClauseSignature has broken operation" failed in 1148ms, memory usage: 16647320.
+FAIL: Test 917: "bugs/CatchClauseSignature has broken operation" failed in 1095ms, memory usage: 16626136.
 
 
 Running test 922: bugs/protectedvf/mail list VerifyError with protected access
@@ -3014,7 +3014,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 922: "bugs/protectedvf/mail list VerifyError with protected access" failed in 939ms, memory usage: 33070592.
+FAIL: Test 922: "bugs/protectedvf/mail list VerifyError with protected access" failed in 866ms, memory usage: 33073024.
 
 
 Running test 923: abctests/design/reflection/thisJoinPoint etc inside if pointcut
@@ -3039,7 +3039,7 @@ org.aspectj.bridge.AbortException: [ expected event "ran advice" not found]
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 923: "abctests/design/reflection/thisJoinPoint etc inside if pointcut" failed in 1050ms, memory usage: 15169216.
+FAIL: Test 923: "abctests/design/reflection/thisJoinPoint etc inside if pointcut" failed in 1001ms, memory usage: 15172224.
 
 
 Running test 924: abctests/design/cflow/cflow at handler joinpoints
@@ -3056,13 +3056,13 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Handler.main(Handler.java:8)
 	... 7 more
-FAIL: Test 924: "abctests/design/cflow/cflow at handler joinpoints" failed in 1037ms, memory usage: 15076456.
+FAIL: Test 924: "abctests/design/cflow/cflow at handler joinpoints" failed in 995ms, memory usage: 15076920.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 123ms, memory usage: 14136536.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 120ms, memory usage: 14151352.
 
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
@@ -3090,7 +3090,7 @@ Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/b
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:39: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:40: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:41: NPE
-FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 726ms, memory usage: 14917600.
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 702ms, memory usage: 14917032.
 
 
 Running test 975: abctests/eaj/casting/Test of cast pointcuts
@@ -3107,7 +3107,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Test.main(Test.java)
 	... 7 more
-FAIL: Test 975: "abctests/eaj/casting/Test of cast pointcuts" failed in 1178ms, memory usage: 16086792.
+FAIL: Test 975: "abctests/eaj/casting/Test of cast pointcuts" failed in 1201ms, memory usage: 16084688.
 
 
 Running test 977: abctests/eaj/local_vars/Test of private pointcuts
@@ -3134,7 +3134,7 @@ Caused by: java.lang.NullPointerException
 	at Fibonacci.fib(Fibonacci.java:9)
 	at Fibonacci.main(Fibonacci.java:14)
 	... 7 more
-FAIL: Test 977: "abctests/eaj/local_vars/Test of private pointcuts" failed in 1131ms, memory usage: 15565544.
+FAIL: Test 977: "abctests/eaj/local_vars/Test of private pointcuts" failed in 1357ms, memory usage: 15564024.
 
 
 Running test 978: abctests/bugs/cflowbelow in abstract aspects
@@ -3152,7 +3152,7 @@ Caused by: java.lang.NullPointerException
 	at AbstractPrec1.foo(AbstractPrec1.java:7)
 	at AbstractPrec1.main(AbstractPrec1.java:26)
 	... 7 more
-FAIL: Test 978: "abctests/bugs/cflowbelow in abstract aspects" failed in 1256ms, memory usage: 15630904.
+FAIL: Test 978: "abctests/bugs/cflowbelow in abstract aspects" failed in 1151ms, memory usage: 15626208.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
@@ -3160,7 +3160,7 @@ Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/dec
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar, but is in BinaryClasses2.java.
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar:24: No constructor in declared parent matches super call
-FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 860ms, memory usage: 13056280.
+FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 603ms, memory usage: 13051536.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -3169,7 +3169,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 943ms, memory usage: 10544200.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 556ms, memory usage: 10544152.
 
 
 Running test 989: abctests/bugs/lifting if out of cflow, with correct parameters
@@ -3188,7 +3188,7 @@ Caused by: java.lang.NullPointerException
 	at CflowIf.fac(CflowIf.java:25)
 	at CflowIf.main(CflowIf.java:30)
 	... 7 more
-FAIL: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" failed in 983ms, memory usage: 16063728.
+FAIL: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" failed in 960ms, memory usage: 16065144.
 
 
 Running test 990: abctests/bugs/lifting if out of cflow, with correct parameters 2
@@ -3205,7 +3205,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CflowIf2.main(CflowIf2.java)
 	... 7 more
-FAIL: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" failed in 1172ms, memory usage: 15987408.
+FAIL: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" failed in 1163ms, memory usage: 15989960.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -3222,7 +3222,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(/var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/cast.jar:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1639ms, memory usage: 16090320.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1564ms, memory usage: 16091960.
 
 
 Running test 993: abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint
@@ -3246,7 +3246,7 @@ org.aspectj.bridge.AbortException: compare: expected exception !equals compare: 
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" failed in 1127ms, memory usage: 17128672.
+FAIL: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" failed in 1013ms, memory usage: 17130120.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -3267,7 +3267,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 710ms, memory usage: 29900408.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 708ms, memory usage: 29900264.
 
 
 Running test 1006: abctests/around/adviceexecution/around with circular adviceexecution advice
@@ -3288,7 +3288,7 @@ Caused by: java.lang.NullPointerException
 	at Aspect.inline$0$around$3023(Foo.java)
 	at Foo.main(Foo.java)
 	... 7 more
-FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed in 1794ms, memory usage: 16392240.
+FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed in 1209ms, memory usage: 16394960.
 
 
 Running test 1010: abctests/bugs/correct handling of methods in source with $ in the name 1
@@ -3305,7 +3305,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at DollarMethod.main(DollarMethod.java:13)
 	... 7 more
-FAIL: Test 1010: "abctests/bugs/correct handling of methods in source with $ in the name 1" failed in 945ms, memory usage: 16230832.
+FAIL: Test 1010: "abctests/bugs/correct handling of methods in source with $ in the name 1" failed in 915ms, memory usage: 16228112.
 
 
 Running test 1012: abctests/bugs/correct handling of methods in source with $ in the name 3
@@ -3322,7 +3322,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Dollar$Method3.main(Dollar:13)
 	... 7 more
-FAIL: Test 1012: "abctests/bugs/correct handling of methods in source with $ in the name 3" failed in 948ms, memory usage: 16213568.
+FAIL: Test 1012: "abctests/bugs/correct handling of methods in source with $ in the name 3" failed in 922ms, memory usage: 16215048.
 
 
 Running test 1014: abctests/bugs/interaction of named pointcuts and nested cflow
@@ -3339,7 +3339,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CflowInliningDepth.main(CflowInliningDepth.java)
 	... 7 more
-FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed in 1017ms, memory usage: 16308832.
+FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed in 947ms, memory usage: 16304520.
 
 
 Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
@@ -3370,7 +3370,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed in 794ms, memory usage: 33120528.
+FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed in 773ms, memory usage: 33121096.
 
 
 Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
@@ -3397,7 +3397,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed in 846ms, memory usage: 33124736.
+FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed in 798ms, memory usage: 33125304.
 
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
@@ -3415,7 +3415,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Basic.main(Basic.java:7)
 	... 7 more
-FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2074ms, memory usage: 17895664.
+FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 1951ms, memory usage: 17896288.
 
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
@@ -3432,7 +3432,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PlusStar.main(PlusStar.java:7)
 	... 7 more
-FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 2179ms, memory usage: 17307888.
+FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 2282ms, memory usage: 17308640.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
@@ -3450,12 +3450,12 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Alternation.main(Alternation.java:7)
 	... 7 more
-FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 1770ms, memory usage: 17976560.
+FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 1783ms, memory usage: 17977048.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-f(java.lang.Object@699004fc)
+f(java.lang.Object@4668c81c)
 InvocationTargetException while trying to run compiled class: java.lang.NullPointerException
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -3468,7 +3468,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Variables.main(Variables.java:8)
 	... 7 more
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2003ms, memory usage: 18082856.
+FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2315ms, memory usage: 18082176.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
@@ -3489,7 +3489,7 @@ org.aspectj.bridge.AbortException: 2 violations
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 2074ms, memory usage: 17758376.
+FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 1929ms, memory usage: 17756968.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
@@ -3510,7 +3510,7 @@ org.aspectj.bridge.AbortException: 2 violations
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1963ms, memory usage: 17786576.
+FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1941ms, memory usage: 17785216.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
@@ -3527,7 +3527,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Test.main(Test.java:7)
 	... 7 more
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1738ms, memory usage: 17900424.
+FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1718ms, memory usage: 17898792.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
@@ -3544,7 +3544,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at NegBindings.main(NegBindings.java:10)
 	... 7 more
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1843ms, memory usage: 17494096.
+FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1749ms, memory usage: 17491656.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
@@ -3565,7 +3565,7 @@ org.aspectj.bridge.AbortException: 1 match expected, 0 seen
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1907ms, memory usage: 17590112.
+FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1819ms, memory usage: 17589928.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
@@ -3582,7 +3582,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at BasicAround.main(BasicAround.java:15)
 	... 7 more
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1359ms, memory usage: 17432584.
+FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1227ms, memory usage: 17432584.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
@@ -3602,7 +3602,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at MultipleBindingsForAround.main(MultipleBindingsForAround.java:15)
 	... 7 more
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1359ms, memory usage: 17372096.
+FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1346ms, memory usage: 17372120.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
@@ -3624,7 +3624,7 @@ org.aspectj.bridge.AbortException: One match per thread
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 2181ms, memory usage: 18505000.
+FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 2154ms, memory usage: 18504928.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -3633,7 +3633,7 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1189ms, memory usage: 17411360.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1195ms, memory usage: 17411136.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
@@ -3650,7 +3650,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IfTest.main(IfTest.java:15)
 	... 7 more
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1401ms, memory usage: 17372464.
+FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1406ms, memory usage: 17373856.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
@@ -3667,7 +3667,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at NoUpdates.main(NoUpdates.java:10)
 	... 7 more
-FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 2056ms, memory usage: 17311944.
+FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1574ms, memory usage: 17313336.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
@@ -3688,7 +3688,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrimitiveVariables.main(PrimitiveVariables.java:7)
 	... 7 more
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1854ms, memory usage: 18107488.
+FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1971ms, memory usage: 18107280.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
@@ -3705,7 +3705,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at IntVariable.main(IntVariable.java:5)
 	... 7 more
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1563ms, memory usage: 17048936.
+FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1544ms, memory usage: 17050144.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
@@ -3725,7 +3725,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrimNegBindings.main(PrimNegBindings.java:10)
 	... 7 more
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 2394ms, memory usage: 17544864.
+FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1738ms, memory usage: 17544568.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
@@ -3742,7 +3742,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CollWeakRefs.main(CollWeakRefs.java:10)
 	... 7 more
-FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1344ms, memory usage: 16757576.
+FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1304ms, memory usage: 16758384.
 
 
 Running test 1109: om/matchtest/Basic matching test
@@ -3764,7 +3764,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at MatchTestMain.main(MatchTestMain.java:13)
 	... 7 more
-FAIL: Test 1109: "om/matchtest/Basic matching test" failed in 2216ms, memory usage: 17607712.
+FAIL: Test 1109: "om/matchtest/Basic matching test" failed in 1714ms, memory usage: 17614624.
 
 
 Running test 1110: om/extcalltest/External call only test
@@ -3785,7 +3785,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ExtCallTestMain.main(ExtCallTestMain.java:5)
 	... 7 more
-FAIL: Test 1110: "om/extcalltest/External call only test" failed in 1972ms, memory usage: 17282768.
+FAIL: Test 1110: "om/extcalltest/External call only test" failed in 1364ms, memory usage: 17291896.
 
 
 Running test 1111: om/prectest/Fib (Aldrich) precedence test
@@ -3806,7 +3806,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrecTestMain.main(PrecTestMain.java:6)
 	... 7 more
-FAIL: Test 1111: "om/prectest/Fib (Aldrich) precedence test" failed in 1953ms, memory usage: 18043152.
+FAIL: Test 1111: "om/prectest/Fib (Aldrich) precedence test" failed in 1621ms, memory usage: 17970160.
 
 
 Running test 1112: om/prectest/Fib (Aldrich) reverse precedence test
@@ -3827,7 +3827,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrecTestMain2.main(PrecTestMain2.java:6)
 	... 7 more
-FAIL: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" failed in 1646ms, memory usage: 18016240.
+FAIL: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" failed in 1620ms, memory usage: 17961504.
 
 
 Running test 1113: om/emptysigtest/Empty signature test
@@ -3848,7 +3848,7 @@ Caused by: java.lang.NullPointerException
 	at A.f(A.java:11)
 	at EmptySigTestMain.main(EmptySigTestMain.java:15)
 	... 7 more
-FAIL: Test 1113: "om/emptysigtest/Empty signature test" failed in 1449ms, memory usage: 17411112.
+FAIL: Test 1113: "om/emptysigtest/Empty signature test" failed in 1252ms, memory usage: 17392672.
 
 
 Running test 1114: om/inheritsigtest/Signature inheritance test
@@ -3871,7 +3871,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at InheritSigTest.main(InheritSigTest.java:14)
 	... 7 more
-FAIL: Test 1114: "om/inheritsigtest/Signature inheritance test" failed in 1600ms, memory usage: 17564376.
+FAIL: Test 1114: "om/inheritsigtest/Signature inheritance test" failed in 1571ms, memory usage: 17545864.
 
 
 Running test 1115: om/cflowsigtest/CFlow signature test
@@ -3888,7 +3888,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at CflowSigTestMain.main(CflowSigTestMain.java:13)
 	... 7 more
-FAIL: Test 1115: "om/cflowsigtest/CFlow signature test" failed in 1305ms, memory usage: 17480576.
+FAIL: Test 1115: "om/cflowsigtest/CFlow signature test" failed in 1305ms, memory usage: 17461992.
 
 
 Running test 1116: om/argstest/Args matching test
@@ -3908,7 +3908,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ArgsTestMain.main(ArgsTestMain.java:14)
 	... 7 more
-FAIL: Test 1116: "om/argstest/Args matching test" failed in 1317ms, memory usage: 17319168.
+FAIL: Test 1116: "om/argstest/Args matching test" failed in 1255ms, memory usage: 17317040.
 
 
 Running test 1117: om/emptymoduletest/Empty module test
@@ -3925,7 +3925,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at EmptyModuleTestMain.main(EmptyModuleTestMain.java:14)
 	... 7 more
-FAIL: Test 1117: "om/emptymoduletest/Empty module test" failed in 1300ms, memory usage: 17413048.
+FAIL: Test 1117: "om/emptymoduletest/Empty module test" failed in 1260ms, memory usage: 17410760.
 
 
 Running test 1118: om/privatesigtest/Private signature test
@@ -3949,7 +3949,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at PrivateSigTest.main(PrivateSigTest.java:14)
 	... 7 more
-FAIL: Test 1118: "om/privatesigtest/Private signature test" failed in 1589ms, memory usage: 17545272.
+FAIL: Test 1118: "om/privatesigtest/Private signature test" failed in 1586ms, memory usage: 17542984.
 
 
 Running test 1119: om/constraintest/Constrained module inclusion test
@@ -3965,9 +3965,6 @@ Warning at om/constraintest/ConstrainTestMain.java:18,8-14: An advice in aspect 
 Warning at om/constraintest/ConstrainTestMain.java:22,8-14: An advice in aspect AspectC would normally apply here, but does not match any of the signatures of module ModuleB
 Warning at om/constraintest/ConstrainTestMain.java:22,8-14: An advice in aspect ExtAspectA would normally apply here, but does not match any of the signatures of module ModuleB
 Warning at om/constraintest/ConstrainTestMain.java:26,8-14: An advice in aspect ExtAspectA would normally apply here, but does not match any of the signatures of module ModuleC
-AspectA
-AspectB
-AspectC
 InvocationTargetException while trying to run compiled class: java.lang.NullPointerException
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -3978,9 +3975,9 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.NullPointerException
-	at ConstrainTestMain.main(ConstrainTestMain.java:3)
+	at ConstrainTestMain.main(ConstrainTestMain.java:14)
 	... 7 more
-FAIL: Test 1119: "om/constraintest/Constrained module inclusion test" failed in 1737ms, memory usage: 17896640.
+FAIL: Test 1119: "om/constraintest/Constrained module inclusion test" failed in 1698ms, memory usage: 17897248.
 
 
 Running test 1121: om/multimodtest/Multiple modules in a single file
@@ -4003,7 +4000,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at MultiModTest.main(MultiModTest.java:14)
 	... 7 more
-FAIL: Test 1121: "om/multimodtest/Multiple modules in a single file" failed in 1576ms, memory usage: 17520944.
+FAIL: Test 1121: "om/multimodtest/Multiple modules in a single file" failed in 1562ms, memory usage: 17521344.
 
 
 Running test 1123: om/emptysiginctest/Inclusion with empty signatures
@@ -4028,7 +4025,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at EmptySigIncTestMain.main(EmptySigIncTestMain.java)
 	... 7 more
-FAIL: Test 1123: "om/emptysiginctest/Inclusion with empty signatures" failed in 1193ms, memory usage: 17448888.
+FAIL: Test 1123: "om/emptysiginctest/Inclusion with empty signatures" failed in 1186ms, memory usage: 17465400.
 
 
 Running test 1126: om/totest/To test
@@ -4049,7 +4046,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ToTestMain.main(ToTestMain.java:3)
 	... 7 more
-FAIL: Test 1126: "om/totest/To test" failed in 1293ms, memory usage: 18263368.
+FAIL: Test 1126: "om/totest/To test" failed in 1248ms, memory usage: 18273376.
 
 
 Running test 1128: om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)
@@ -4066,7 +4063,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at InheritPrecTestMain2.main(InheritPrecTestMain2.java)
 	... 7 more
-FAIL: Test 1128: "om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)" failed in 1531ms, memory usage: 17310368.
+FAIL: Test 1128: "om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)" failed in 1328ms, memory usage: 17313152.
 
 
 Running test 1129: om/modprectest/Module precedence test
@@ -4083,7 +4080,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ModPrecTestMain.main(ModPrecTestMain.java)
 	... 7 more
-FAIL: Test 1129: "om/modprectest/Module precedence test" failed in 1837ms, memory usage: 17855992.
+FAIL: Test 1129: "om/modprectest/Module precedence test" failed in 1781ms, memory usage: 17862688.
 
 
 Running test 1200: cflowdepth/Cflowdepth Factorial
@@ -4101,7 +4098,7 @@ Caused by: java.lang.NullPointerException
 	at Fact.fact(Fact.java)
 	at Fact.main(Fact.java:3)
 	... 7 more
-FAIL: Test 1200: "cflowdepth/Cflowdepth Factorial" failed in 1101ms, memory usage: 17307864.
+FAIL: Test 1200: "cflowdepth/Cflowdepth Factorial" failed in 1080ms, memory usage: 17343008.
 
 
 Running test 1201: cflowdepth/Cflowdepth Factorial with arguments
@@ -4119,7 +4116,7 @@ Caused by: java.lang.NullPointerException
 	at Fact2.fact(Fact2.java)
 	at Fact2.main(Fact2.java:3)
 	... 7 more
-FAIL: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" failed in 1120ms, memory usage: 17441016.
+FAIL: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" failed in 1104ms, memory usage: 17477056.
 
 
 Running test 1202: cflowdepth/Cflowbelowdepth Factorial
@@ -4137,7 +4134,7 @@ Caused by: java.lang.NullPointerException
 	at Fact3.fact(Fact3.java)
 	at Fact3.main(Fact3.java:3)
 	... 7 more
-FAIL: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" failed in 1097ms, memory usage: 17428832.
+FAIL: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" failed in 1212ms, memory usage: 17477384.
 
 
 Running test 1203: cflowdepth/Cflowbelowdepth Factorial with arguments
@@ -4155,14 +4152,14 @@ Caused by: java.lang.NullPointerException
 	at Fact4.fact(Fact4.java)
 	at Fact4.main(Fact4.java:3)
 	... 7 more
-FAIL: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" failed in 1080ms, memory usage: 17557552.
+FAIL: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" failed in 1069ms, memory usage: 17608032.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 484ms, memory usage: 11246752.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 476ms, memory usage: 11288352.
 
 
 Running test 1210: abctests/bugs/thisJoinPoint maintains object identity for an entire join point
@@ -4179,7 +4176,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at TJP.main(TJP.java:7)
 	... 7 more
-FAIL: Test 1210: "abctests/bugs/thisJoinPoint maintains object identity for an entire join point" failed in 1057ms, memory usage: 17412624.
+FAIL: Test 1210: "abctests/bugs/thisJoinPoint maintains object identity for an entire join point" failed in 1029ms, memory usage: 17449208.
 
 
 Running test 1212: cflowdepth/Cflowdepth in complicated booleans
@@ -4196,7 +4193,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at Test.main(Test.java)
 	... 7 more
-FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed in 1059ms, memory usage: 17894632.
+FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed in 1038ms, memory usage: 17922576.
 
 
 Running test 1213: abctests/bugs/Precedence of derived advice
@@ -4213,7 +4210,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at DerivedAdvicePrecedence.main(DerivedAdvicePrecedence.java)
 	... 7 more
-FAIL: Test 1213: "abctests/bugs/Precedence of derived advice" failed in 1144ms, memory usage: 18297832.
+FAIL: Test 1213: "abctests/bugs/Precedence of derived advice" failed in 1129ms, memory usage: 18315600.
 
 
 Running test 1215: contains/basic/Contains basic matching test
@@ -4230,7 +4227,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ContainsTest.main(ContainsTest.java)
 	... 7 more
-FAIL: Test 1215: "contains/basic/Contains basic matching test" failed in 1397ms, memory usage: 18475832.
+FAIL: Test 1215: "contains/basic/Contains basic matching test" failed in 1115ms, memory usage: 18465264.
 
 
 Running test 1216: abctests/eaj/arrayget/Test of arrayget and arrayset
@@ -4247,7 +4244,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at ArrayGetSet.main(ArrayGetSet.java:6)
 	... 7 more
-FAIL: Test 1216: "abctests/eaj/arrayget/Test of arrayget and arrayset" failed in 1452ms, memory usage: 17582600.
+FAIL: Test 1216: "abctests/eaj/arrayget/Test of arrayget and arrayset" failed in 1124ms, memory usage: 17573136.
 
 
 Running test 1219: abctests/eaj/lock_unlock/lock/unlock pointcuts
@@ -4264,7 +4261,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at LockUnlock.main(LockUnlock.java:13)
 	... 7 more
-FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed in 3070ms, memory usage: 17353584.
+FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed in 3157ms, memory usage: 17230520.
 
 
 Running test 1403: abctests/ra/equality/Equality-example for relational aspects
@@ -4285,7 +4282,7 @@ Caused by: java.lang.NullPointerException
 	at Equality.after$3516(Equality.java:15)
 	at Example.main(Example.java:10)
 	... 7 more
-FAIL: Test 1403: "abctests/ra/equality/Equality-example for relational aspects" failed in 3193ms, memory usage: 21745696.
+FAIL: Test 1403: "abctests/ra/equality/Equality-example for relational aspects" failed in 3471ms, memory usage: 21684624.
 
 
 Running test 1511: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -4304,7 +4301,7 @@ Caused by: java.lang.NullPointerException
 	at CheckThisExposure.instanceMethod(CheckThisExposure.java)
 	at CheckThisExposure.main(CheckThisExposure.java:17)
 	... 7 more
-FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1327ms, memory usage: 22357544.
+FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1327ms, memory usage: 22358696.
 
 
 Running test 1512: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -4323,7 +4320,7 @@ Caused by: java.lang.NullPointerException
 	at CheckTargetExposure.instanceMethod(CheckTargetExposure.java)
 	at CheckTargetExposure.main(CheckTargetExposure.java:17)
 	... 7 more
-FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1490ms, memory usage: 22412728.
+FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1354ms, memory usage: 22421192.
 
 
 Running test 1606: abctests/jpi/simplesyntax/JPI syntax - Inheritance2
@@ -4331,7 +4328,7 @@ Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.j
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at abctests/jpi/simplesyntax/InheritanceSyntax2.java:8,60: Unexpected token NUMERIC_LITERAL
-FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 896ms, memory usage: 32403040.
+FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 901ms, memory usage: 32390192.
 
 
 Running test 1632: abctests/jpi/weaving/Check Poincut Args
@@ -4377,7 +4374,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1641ms, memory usage: 70058696.
+FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1175ms, memory usage: 70062448.
 
 
 Running test 1644: abctests/jpi/matching/Inheritance Match 3
@@ -4415,7 +4412,7 @@ Caused by: java.lang.NullPointerException
 	at InheritanceMatch3.foo(InheritanceMatch3.java)
 	at InheritanceMatch3.main(InheritanceMatch3.java:30)
 	... 7 more
-FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1429ms, memory usage: 32549128.
+FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1422ms, memory usage: 32540568.
 
 
 Running test 1645: abctests/jpi/matching/Inheritance Match 4
@@ -4453,7 +4450,7 @@ Caused by: java.lang.NullPointerException
 	at InheritanceMatch4.foo(InheritanceMatch4.java)
 	at InheritanceMatch4.main(InheritanceMatch4.java:30)
 	... 7 more
-FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1471ms, memory usage: 32613216.
+FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1448ms, memory usage: 32613352.
 
 
 Running test 1649: abctests/jpi/matching/InvPCD/Interfaces-InvPCD
@@ -4491,7 +4488,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AS.main(InterfacesType.java:45)
 	... 7 more
-FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 1684ms, memory usage: 32594616.
+FAIL: Test 1649: "abctests/jpi/matching/InvPCD/Interfaces-InvPCD" failed in 1628ms, memory usage: 32594680.
 
 
 Running test 1650: abctests/jpi/matching/InvPCD/Arguments-InvPCD
@@ -4527,7 +4524,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AS.main(ArgumentType.java)
 	... 7 more
-FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 2171ms, memory usage: 32664976.
+FAIL: Test 1650: "abctests/jpi/matching/InvPCD/Arguments-InvPCD" failed in 2072ms, memory usage: 32663352.
 
 
 Running test 1651: abctests/jpi/matching/InvPCD/Target-InvPCD
@@ -4562,7 +4559,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at AS.main(TargetType.java:37)
 	... 7 more
-FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 1929ms, memory usage: 32729792.
+FAIL: Test 1651: "abctests/jpi/matching/InvPCD/Target-InvPCD" failed in 1862ms, memory usage: 32732520.
 
 
 Running test 1652: abctests/jpi/matching/InvPCD/This-InvPCD
@@ -4600,7 +4597,7 @@ Caused by: java.lang.NullPointerException
 	at B.foo(ThisType.java)
 	at AS.main(ThisType.java:41)
 	... 7 more
-FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 1660ms, memory usage: 32802104.
+FAIL: Test 1652: "abctests/jpi/matching/InvPCD/This-InvPCD" failed in 2196ms, memory usage: 32780424.
 
 
 Running test 1674: abctests/jpi/GenericAdvice/matching
@@ -4642,7 +4639,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1619ms, memory usage: 73028312.
+FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1263ms, memory usage: 73028416.
 
 
 Running test 1677: abctests/jpi/GenericAdvice/matching type variables in pointcut expression
@@ -4688,7 +4685,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1342ms, memory usage: 72131136.
+FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1357ms, memory usage: 72119528.
 
 
 Running test 1678: abctests/jpi/GenericAdvice/type check on Advice specifications
@@ -4733,7 +4730,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at C.main(typecheckingGenericAdviceSpec.java:36)
 	... 7 more
-FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 1527ms, memory usage: 34467792.
+FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 1646ms, memory usage: 34463888.
 
 
 Running test 1684: abctests/jpi/GenericAdvice/inheritance in generice advice
@@ -4776,7 +4773,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.NullPointerException
 	at C.main(inheritance.java:23)
 	... 7 more
-FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 2566ms, memory usage: 34644200.
+FAIL: Test 1684: "abctests/jpi/GenericAdvice/inheritance in generice advice" failed in 2244ms, memory usage: 34667208.
 
 
 Running test 1695: abctests/jpi/GlobalJPI/matching
@@ -4822,7 +4819,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 1235ms, memory usage: 73585344.
+FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 1195ms, memory usage: 73551448.
 
 
 Running test 1696: abctests/jpi/GlobalJPI/matching_2
@@ -4856,7 +4853,7 @@ Caused by: java.lang.NullPointerException
 	at A.call(matching2.java)
 	at C.main(matching2.java:28)
 	... 7 more
-FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 1745ms, memory usage: 32129312.
+FAIL: Test 1696: "abctests/jpi/GlobalJPI/matching_2" failed in 1706ms, memory usage: 32113280.
 
 
 Running test 1697: abctests/jpi/GlobalJPI/matching_3
@@ -4902,7 +4899,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1380ms, memory usage: 73601344.
+FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1375ms, memory usage: 73599072.
 
 
 Running test 1698: abctests/jpi/GlobalJPI/matching_4
@@ -4948,7 +4945,7 @@ Caused by: java.lang.RuntimeException: Invalid type: null_type
 	at abc.main.CompileSequence.output(CompileSequence.java:268)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
 	... 4 more
-FAIL: Test 1698: "abctests/jpi/GlobalJPI/matching_4" failed in 1304ms, memory usage: 73110120.
+FAIL: Test 1698: "abctests/jpi/GlobalJPI/matching_4" failed in 1259ms, memory usage: 73115448.
 
 
 Running test 1711: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -4982,7 +4979,7 @@ Caused by: java.lang.NullPointerException
 	at CheckThisExposure.instanceMethod(CheckThisExposure.java)
 	at CheckThisExposure.main(CheckThisExposure.java:17)
 	... 7 more
-FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1525ms, memory usage: 32188584.
+FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1707ms, memory usage: 32177248.
 
 
 Running test 1712: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -5016,6 +5013,6 @@ Caused by: java.lang.NullPointerException
 	at CheckTargetExposure.instanceMethod(CheckTargetExposure.java)
 	at CheckTargetExposure.main(CheckTargetExposure.java:17)
 	... 7 more
-FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1590ms, memory usage: 32104432.
+FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1557ms, memory usage: 32106704.
 
 
