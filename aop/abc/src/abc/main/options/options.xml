@@ -53,6 +53,13 @@ the XML file has two alias tags. -->
 	Display information about what abc is doing as it runs.
       </long_desc>
     </boolopt>
+    <boolopt>
+      <alias>android</alias>
+      <short_desc>Process Android APK files.</short_desc>
+      <long_desc>
+	Will read APK files as injars and produce APK files as outjars.
+      </long_desc>
+    </boolopt>
     <argfileopt>
       <alias>argfile</alias>
       <set_arg_label>filename</set_arg_label>

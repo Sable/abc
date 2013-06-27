@@ -283,6 +283,15 @@ public class Main {
             soot_args.add(".");
         }
         
+        if(OptionsParser.v().android()) {
+            soot_args.add("-src-prec");
+            soot_args.add("apk");
+            soot_args.add("-f");
+            soot_args.add("dex");
+            soot_args.add("-allow-phantom-refs");
+            Debug.v().dontCheckExceptions=true;
+        }
+        
         if(OptionsParser.v().g())
         	compilerOptionIgnored("g", "abc currently does not support generating debug information.");
 
@@ -675,6 +684,10 @@ public class Main {
         Iterator jari = OptionsParser.v().injars().iterator();
         while (jari.hasNext()) {
             String jar = (String)jari.next();
+            if(!new File(jar).exists()) {
+                throw new IllegalArgumentException(
+                        "Cannot load JAR/APK from " + jar);
+            }
             List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
             jar_classes.addAll(this_jar_classes);
         }

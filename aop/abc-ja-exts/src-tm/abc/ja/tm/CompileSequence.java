@@ -33,6 +33,7 @@ import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import polyglot.util.StdErrorQueue;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import abc.ja.tm.jrag.BytecodeParser;
 import abc.ja.tm.jrag.CompilationUnit;
@@ -44,6 +45,7 @@ import abc.main.AbcTimer;
 import abc.main.CompilerFailedException;
 import abc.main.Debug;
 import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.matching.MethodAdviceList;
@@ -99,6 +101,15 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
 
+    // Fetch all the weavable classes and put them in the right places
+    Iterator<String> wcni = jar_classes.iterator();
+    while (wcni.hasNext()) {
+        String wcn = wcni.next();
+        SootClass sootClass = Scene.v().loadClassAndSupport(wcn);
+        sootClass.setApplicationClass();
+        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addWeavableClass(AbcFactory.AbcClass(sootClass));
+    }
+    
     Program program = new Program();
     program.state().reset();
 
