@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 753ms, memory usage: 12649864.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 743ms, memory usage: 13350864.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1192ms, memory usage: 9477656.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1147ms, memory usage: 9474792.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 667ms, memory usage: 15904424.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 654ms, memory usage: 15885736.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 540ms, memory usage: 9406752.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 540ms, memory usage: 9380464.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,7 +36,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1082ms, memory usage: 9437680.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1053ms, memory usage: 9409600.
 
 
 Running test 345: new/advice and package visibility 1
@@ -56,158 +56,42 @@ Caused by: java.lang.IllegalAccessError: tried to access class packagevisibility
 	at packagevisibility.PackagesAndAdvice.test(PackagesAndAdvice.java:16)
 	at packagevisibility.PackagesAndAdvice.main(PackagesAndAdvice.java:8)
 	... 7 more
-FAIL: Test 345: "new/advice and package visibility 1" failed in 1321ms, memory usage: 15887672.
-
-
-Running test 359: new/simple single-threaded eachcflow test (includes aspectOf)
-Commandline: abc -d new -warn-unused-advice:off new/Client.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 359: "new/simple single-threaded eachcflow test (includes aspectOf)" failed in 1063ms, memory usage: 33497128.
+FAIL: Test 345: "new/advice and package visibility 1" failed in 1406ms, memory usage: 15887976.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
+File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
+Outer.foo() calls Outer.Inner.mi()
+Outer@735b0e26.foo calls Outer$Inner@5efe1bf4.mi
+Outer.Inner.mi() calls PrintStream.println(..)
+Outer$Inner@5efe1bf4.mi calls java.io.PrintStream@7cdd60e4.println
+.
+Outer.foo() calls Outer.InnerRandom.nextHook(..)
+Outer@735b0e26.foo calls Outer$InnerRandom@58e403c4.nextHook
+Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
+Outer$InnerRandom@58e403c4.nextHook calls Outer$InnerRandom@58e403c4.next
+Outer.foo() calls Outer.1.nextInt(..)
+Outer@735b0e26.foo calls X.nextInt
+Test failed, compiled class behaved incorrectly
+Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
+org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
+	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
+	at org.aspectj.testing.Tester.handle(Tester.java:963)
+	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
+	at org.aspectj.testing.Tester.check(Tester.java:204)
+	at org.aspectj.testing.Tester.check(Tester.java:145)
+	at org.aspectj.testing.Tester.check(Tester.java:133)
+	at A.inline$7$around$942(AroundInnerCalls13.java:7)
+	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1136ms, memory usage: 34156880.
-
-
-Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
-Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" failed in 1154ms, memory usage: 33795512.
-
-
-Running test 461: new/Null pointer on gets advice with coverage [painful]
-Commandline: abc -d new -warn-unused-advice:off new/NullPointerOnGets.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 461: "new/Null pointer on gets advice with coverage [painful]" failed in 10094ms, memory usage: 54719144.
-
-
-Running test 468: new/various declared exception permutations
-Commandline: abc -d new -warn-unused-advice:off new/DeclaredExcs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 468: "new/various declared exception permutations" failed in 1049ms, memory usage: 32443248.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1750ms, memory usage: 16648128.
 
 
 Running test 469: new/ordering of advice kinds as well as cflow and dominates
@@ -215,131 +99,33 @@ Commandline: abc -d new -warn-unused-advice:off new/AdviceOrdering.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/AdviceOrdering.java:22,34-51: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 961ms, memory usage: 15844896.
-
-
-Running test 483: new/exceptions thrown and caught in advice, particularly try+proceed
-Commandline: abc -d new -warn-unused-advice:off new/TryAndProceed.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+proceed" failed in 1057ms, memory usage: 33223760.
-
-
-Running test 491: new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]
-Commandline: abc -d new -warn-unused-advice:off new/IfPCDAdviceMethods.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 491: "new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" failed in 1594ms, memory usage: 35310496.
+FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 940ms, memory usage: 15873336.
 
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new -warn-unused-advice:off new/AroundAll.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
+File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
+InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 1946ms, memory usage: 36470976.
-
-
-Running test 526: new/cflow alone with around produces compiler bcg StackOverflowError
-Commandline: abc -d new -warn-unused-advice:off new/CflowAlone.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 526: "new/cflow alone with around produces compiler bcg StackOverflowError" failed in 1093ms, memory usage: 33173240.
+Caused by: java.lang.IllegalAccessError
+	at A.inline$2$around$1600(AroundAll.java:20)
+	at C.shadow$35(AroundAll.java:198)
+	at A.inline$27$around$1600(AroundAll.java:199)
+	at C.<clinit>(AroundAll.java:198)
+	at AroundAll.shadow$6(AroundAll.java:6)
+	at A.inline$0$around$1600(AroundAll.java:199)
+	at AroundAll.shadow$8(AroundAll.java:198)
+	at A.inline$28$around$1600(AroundAll.java:199)
+	at AroundAll.main(AroundAll.java:198)
+	... 7 more
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2367ms, memory usage: 16413640.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -357,127 +143,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1386ms, memory usage: 15317408.
-
-
-Running test 568: new/unreachable code generated by around advice on the execution of void methods
-Commandline: abc -d new -warn-unused-advice:off new/AroundVoid.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 932ms, memory usage: 33717800.
-
-
-Running test 570: new/more coverage for around and concrete methods on interfaces
-Commandline: abc -d new -warn-unused-advice:off new/MultiAndAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 982ms, memory usage: 32783880.
-
-
-Running test 582: new/subclass advice not run for join points selected by superclass cflow-based pointcuts
-Commandline: abc -d new -warn-unused-advice:off new/PR559.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed in 2999ms, memory usage: 43618968.
-
-
-Running test 594: new/around all execution with double assignment in initializer (simple)
-Commandline: abc -d new -warn-unused-advice:off new/AroundDoubleAssignment.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 594: "new/around all execution with double assignment in initializer (simple)" failed in 831ms, memory usage: 33230216.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1363ms, memory usage: 15254768.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -501,111 +167,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1572ms, memory usage: 16138120.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1490ms, memory usage: 16089384.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 629ms, memory usage: 14980912.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 592ms, memory usage: 14941912.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 645ms, memory usage: 15392632.
-
-
-Running test 762: new/can't apply around advice to the execution of around advice
-Commandline: abc -d new -warn-unused-advice:off new/CflowCycles.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed in 1018ms, memory usage: 33274320.
-
-
-Running test 764: bugs/cflow binding issues with ignoring state
-Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed in 1028ms, memory usage: 33274592.
-
-
-Running test 765: bugs/cflow binding -- original weaver crash
-Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBindingOrig.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 765: "bugs/cflow binding -- original weaver crash" failed in 815ms, memory usage: 32053448.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 637ms, memory usage: 15322248.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 868ms, memory usage: 15223472.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 813ms, memory usage: 16405440.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -613,65 +194,48 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 823ms, memory usage: 15622112.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 929ms, memory usage: 16737280.
 
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
 Commandline: abc -d abctests/bugs/messyAround -warn-unused-advice:off abctests/bugs/messyAround/aspects/Trace.aj abctests/bugs/messyAround/cap/OptionList.java abctests/bugs/messyAround/DebugTrace.aj 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+Compilation produced the following warnings:
+Warning at abctests/bugs/messyAround/cap/OptionList.java:102,11-22: handler join points do not support after advice, but some advice from aspect DebugTrace (abctests/bugs/messyAround/aspects/Trace.aj, line 137) would otherwise apply here
+Warning at abctests/bugs/messyAround/cap/OptionList.java:124,10-21: handler join points do not support after advice, but some advice from aspect DebugTrace (abctests/bugs/messyAround/aspects/Trace.aj, line 137) would otherwise apply here
+File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/messyAround/[Ljava/lang/String;.class not found, skipping...
+data:         Throwing Exception at: execution(void cap.OptionList.main(ClassNotFoundException))
+
+Exception Stack Trace:
+
+java.lang.IllegalAccessError: tried to access class java.lang.AbstractStringBuilder from class aspects.Trace
+	at aspects.Trace.traceEnter(Trace.aj:278)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
+	at cap.OptionList.main(OptionList.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 15473ms, memory usage: 48532688.
 
 
-Running test 785: new/try/finally in around advice (same as ...messy arounds?)
-Commandline: abc -d new -warn-unused-advice:off new/TryFinallyInAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
+InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access class java.lang.AbstractStringBuilder from class aspects.Trace
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed in 2002ms, memory usage: 33013528.
+Caused by: java.lang.IllegalAccessError: tried to access class java.lang.AbstractStringBuilder from class aspects.Trace
+	at aspects.Trace.traceEnter(Trace.aj:278)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
+	at cap.OptionList.main(OptionList.java)
+	... 7 more
+FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 15663ms, memory usage: 19735424.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -695,7 +259,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1047ms, memory usage: 16790808.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1012ms, memory usage: 16914480.
 
 
 Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
@@ -720,7 +284,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:50: preinitialization(app.C.new())
-FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 788ms, memory usage: 14285328.
+FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 772ms, memory usage: 14356624.
 
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
@@ -745,7 +309,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:50: preinitialization(app.C.new())
-FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 790ms, memory usage: 14295368.
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 763ms, memory usage: 14344208.
 
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
@@ -754,7 +318,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:17: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 716ms, memory usage: 14253520.
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 698ms, memory usage: 14268816.
 
 
 Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
@@ -763,7 +327,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:20: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 715ms, memory usage: 14254784.
+FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 700ms, memory usage: 14277784.
 
 
 Running test 805: bugs/inlineAround/perthis and inline arounds
@@ -783,7 +347,7 @@ Caused by: java.lang.IllegalAccessError: tried to access class p1.C from class a
 	at p1.Main.doit(Main.java:9)
 	at p1.Main.main(Main.java:5)
 	... 7 more
-FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1657ms, memory usage: 15482664.
+FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1593ms, memory usage: 15505544.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -799,7 +363,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:613)
 	at abc.main.Main.run(Main.java:407)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 610ms, memory usage: 35396600.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 620ms, memory usage: 35409472.
 
 
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
@@ -807,7 +371,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:23: execution(Main.new())
-FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 833ms, memory usage: 13957616.
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 818ms, memory usage: 13962240.
 
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
@@ -815,44 +379,13 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:23: execution(Main.new())
-FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 960ms, memory usage: 14067648.
-
-
-Running test 922: bugs/protectedvf/mail list VerifyError with protected access
-Commandline: abc -d bugs/protectedvf -warn-unused-advice:off bugs/protectedvf/main/Driver.java bugs/protectedvf/main/p2/AbstractTest.aj bugs/protectedvf/main/p1/ConcreteTest.aj 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 922: "bugs/protectedvf/mail list VerifyError with protected access" failed in 879ms, memory usage: 33667560.
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 1102ms, memory usage: 14056520.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 120ms, memory usage: 14043576.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 116ms, memory usage: 14169296.
 
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
@@ -880,7 +413,7 @@ Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/b
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:39: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:40: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:41: NPE
-FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 764ms, memory usage: 14936488.
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 727ms, memory usage: 14927704.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
@@ -888,7 +421,7 @@ Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/dec
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar, but is in BinaryClasses2.java.
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar:24: No constructor in declared parent matches super call
-FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 615ms, memory usage: 13010576.
+FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 609ms, memory usage: 13063328.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -897,7 +430,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 571ms, memory usage: 10557848.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 561ms, memory usage: 10556568.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -914,7 +447,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(/var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/cast.jar:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1687ms, memory usage: 16090584.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1683ms, memory usage: 16103088.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -935,11 +468,11 @@ Caused by: soot.SootResolver$SootClassNotFoundException: couldn't find class: E$
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 714ms, memory usage: 29835704.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 681ms, memory usage: 30025640.
 
 
-Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundUnboxing.java 
+Running test 1007: abctests/bugs/make sure we get valid jimple for perthis/pertarget bind methods
+Commandline: abc -d abctests/bugs -warn-unused-advice:off -debug doValidate abctests/bugs/PerTarget.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
 polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
@@ -947,53 +480,17 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
+Caused by: java.lang.RuntimeException: local type not allowed in final code:word
+	at soot.Body.validateTypes(Body.java:256)
+	at soot.Body.validate(Body.java:232)
+	at soot.PackManager.convertJimpleBodyToBaf(PackManager.java:888)
+	at soot.PackManager.runBodyPacks(PackManager.java:844)
+	at soot.PackManager.runBodyPacks(PackManager.java:510)
+	at soot.PackManager.runBodyPacks(PackManager.java:417)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed in 828ms, memory usage: 33051944.
-
-
-Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed in 869ms, memory usage: 33054944.
+FAIL: Test 1007: "abctests/bugs/make sure we get valid jimple for perthis/pertarget bind methods" failed in 770ms, memory usage: 33075344.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -1002,14 +499,36 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1151ms, memory usage: 17510176.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1119ms, memory usage: 17552064.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 488ms, memory usage: 11483656.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 479ms, memory usage: 11491136.
+
+
+Running test 1220: abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts
+Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug doValidate -debug enableLockPointcuts abctests/eaj/lock_unlock/SyncMethods.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:415)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: java.lang.RuntimeException: local type not allowed in final code:word
+	at soot.Body.validateTypes(Body.java:256)
+	at soot.Body.validate(Body.java:232)
+	at soot.PackManager.convertJimpleBodyToBaf(PackManager.java:888)
+	at soot.PackManager.runBodyPacks(PackManager.java:844)
+	at soot.PackManager.runBodyPacks(PackManager.java:510)
+	at soot.PackManager.runBodyPacks(PackManager.java:417)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts" failed in 919ms, memory usage: 34916112.
 
 
 Running test 1606: abctests/jpi/simplesyntax/JPI syntax - Inheritance2
@@ -1017,278 +536,6 @@ Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.j
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at abctests/jpi/simplesyntax/InheritanceSyntax2.java:8,60: Unexpected token NUMERIC_LITERAL
-FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 1162ms, memory usage: 32414912.
-
-
-Running test 1632: abctests/jpi/weaving/Check Poincut Args
-Commandline: abc -d abctests/jpi/weaving -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/weaving/CheckPointcutExpressionsArgs.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-72	0	0	0	72
-===Exhibits===
-normal	generic	seal	overall
-28	0	0	28
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-0	0	0	0	0
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-1	19	0	0	0	20
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-0	0	0	0	0	0
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1634ms, memory usage: 69943080.
-
-
-Running test 1674: abctests/jpi/GenericAdvice/matching
-Commandline: abc -d abctests/jpi/GenericAdvice -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/GenericAdvice/matching.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-139	25	0	0	164
-===Exhibits===
-normal	generic	seal	overall
-83	7	0	90
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-3	3	6	0	12
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-21	38	1	0	0	60
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-0	5	0	0	0	5
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:654)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1332ms, memory usage: 72901760.
-
-
-Running test 1677: abctests/jpi/GenericAdvice/matching type variables in pointcut expression
-Commandline: abc -d abctests/jpi/GenericAdvice -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/GenericAdvice/TypeVariableInPointcutExpression.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-139	32	0	0	171
-===Exhibits===
-normal	generic	seal	overall
-83	14	0	97
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-5	5	10	0	20
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-21	38	1	0	0	60
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-0	9	0	0	0	9
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1677: "abctests/jpi/GenericAdvice/matching type variables in pointcut expression" failed in 1417ms, memory usage: 71989800.
-
-
-Running test 1695: abctests/jpi/GlobalJPI/matching
-Commandline: abc -d abctests/jpi/GlobalJPI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/GlobalJPI/matching.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-143	45	8	7	203
-===Exhibits===
-normal	generic	seal	overall
-88	18	1	107
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-5	5	12	2	24
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-21	38	1	0	0	60
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-3	14	2	1	0	20
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1695: "abctests/jpi/GlobalJPI/matching" failed in 1237ms, memory usage: 73412384.
-
-
-Running test 1697: abctests/jpi/GlobalJPI/matching_3
-Commandline: abc -d abctests/jpi/GlobalJPI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/GlobalJPI/matching3.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-143	45	9	8	205
-===Exhibits===
-normal	generic	seal	overall
-89	19	3	111
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-5	5	12	3	25
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-21	39	1	0	0	61
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-3	15	2	1	0	21
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1430ms, memory usage: 73356624.
-
-
-Running test 1698: abctests/jpi/GlobalJPI/matching_4
-Commandline: abc -d abctests/jpi/GlobalJPI -warn-unused-advice:off -ext abc.ja.jpi abctests/jpi/GlobalJPI/matching4.java 
-===JPIs===
-normal	generic	global	genericGlobal	overall
-143	45	9	9	206
-===Exhibits===
-normal	generic	seal	overall
-89	21	3	113
-===PCD===
-thisInv	targetInv	argsInv	global	overall
-5	5	12	5	27
-===CJPAdvice===
-before	around	after	after-returning	after-throwing	overall
-21	39	1	0	0	61
-===GenericCJPAdvice===
-generic-before	generic-around	generic-after	generic-after-returning	generic-after-throwing	overall
-3	16	2	1	0	22
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:415)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:60)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:193)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1524)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:71)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:361)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:290)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:697)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:576)
-	at soot.baf.JasminClass.<init>(JasminClass.java:95)
-	at soot.PackManager.writeClass(PackManager.java:939)
-	at soot.PackManager.writeOutput(PackManager.java:522)
-	at soot.PackManager.writeOutput(PackManager.java:431)
-	at abc.main.CompileSequence.output(CompileSequence.java:268)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:136)
-	... 4 more
-FAIL: Test 1698: "abctests/jpi/GlobalJPI/matching_4" failed in 1357ms, memory usage: 73026616.
+FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 1011ms, memory usage: 32560888.
 
 
