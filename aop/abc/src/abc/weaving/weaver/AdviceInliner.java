@@ -34,6 +34,8 @@ import soot.Body;
 import soot.IntType;
 import soot.Local;
 import soot.Modifier;
+import soot.PrimType;
+import soot.RefLikeType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
@@ -1119,7 +1121,7 @@ public class AdviceInliner { //extends BodyTransformer {
 			if (returnType==null)
 				throw new InternalCompilerError("");
 			
-			if (!consistentTypes)
+			if (!consistentTypes || !returnType.isAllowedInFinalCode())
 				continue;
 			
 			changedMethodsSigs.put(m.getSignature(), m);
