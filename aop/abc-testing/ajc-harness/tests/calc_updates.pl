@@ -126,9 +126,11 @@ if (scalar @ARGV > 0) {
    }
    close DEVNULL;
 
-   open MAIL, qq{| mail -s "$subject" $address};
-
-   select(MAIL);
+#don't send email for now
+#
+#  open MAIL, qq{| mail -s "$subject" $address};
+#
+#  select(MAIL);
 }
 
 print "Pass: ";

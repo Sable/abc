@@ -15,4 +15,4 @@ shift 2
 nice -n 5 ./runtests $* abcTests.xml # -morexml abcWholeProgramTests.xml 
 svn update --non-interactive --trust-server-cert $FILES
 # perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
-./calc_updates.pl "$ADDRESS" "$SUBJECT"
+./calc_updates.pl "$ADDRESS" "$SUBJECT" > updates.txt
