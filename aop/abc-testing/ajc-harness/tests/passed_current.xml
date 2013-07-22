@@ -5217,6 +5217,10 @@
          </compile>
          <run class="Foo"></run>
     </ajc-test>
+<ajc-test title="make sure we get valid jimple for perthis/pertarget bind methods" num="1007" dir="abctests/bugs">
+         <compile options="-debug,doValidate" files="PerTarget.java"></compile>
+         <run class="PerTarget"></run>
+    </ajc-test>
 <ajc-test title="precedence of percflowsetups" num="1008" dir="abctests/bugs/percflowinterfaces">
          <compile files="F.java"></compile>
     </ajc-test>
@@ -5724,6 +5728,13 @@
 <ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
         <compile options="-ext,abc.eaj,-debug,enableLockPointcuts" files="LockUnlock.java"></compile>
         <run class="LockUnlock"></run>
+    </ajc-test>
+<ajc-test title="warning on restructuring for sync. methods and lock/unlock pointcuts" num="1220" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts" files="SyncMethods.java">
+	        <message line="15" kind="warning"></message>
+	        <message line="15" kind="warning"></message>
+        </compile>
+        <run class="SyncMethods"></run>
     </ajc-test>
 <ajc-test title="Typechecks for relational aspects (1 of 2)" num="1401" dir="abctests/ra/typechecks">
         <compile options="-ext,abc.ra" files="T1.java">

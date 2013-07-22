@@ -245,10 +245,6 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
-<ajc-test title="make sure we get valid jimple for perthis/pertarget bind methods" num="1007" dir="abctests/bugs">
-         <compile options="-debug,doValidate" files="PerTarget.java"></compile>
-         <run class="PerTarget"></run>
-    </ajc-test>
 <ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
         <run class="AdviseSelf"></run>
@@ -256,13 +252,6 @@
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
-    </ajc-test>
-<ajc-test title="warning on restructuring for sync. methods and lock/unlock pointcuts" num="1220" dir="abctests/eaj/lock_unlock">
-        <compile options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts" files="SyncMethods.java">
-	        <message line="15" kind="warning"></message>
-	        <message line="15" kind="warning"></message>
-        </compile>
-        <run class="SyncMethods"></run>
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
