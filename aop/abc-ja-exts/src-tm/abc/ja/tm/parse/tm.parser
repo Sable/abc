@@ -284,12 +284,12 @@ Regex regex_count =
         return new RegexPlus(a);
     :}
 |
-    regex_simple.a LBRACK INTEGER_LITERAL.n RBRACK.y
+    regex_simple.a LBRACK NUMERIC_LITERAL.n RBRACK.y
     {:
         return new RegexCount(a, new IntegerLiteral(n), new IntegerLiteral(n));
     :}
 |
-    regex_simple.a LBRACK INTEGER_LITERAL.m COMMA INTEGER_LITERAL.n RBRACK.y
+    regex_simple.a LBRACK NUMERIC_LITERAL.m COMMA NUMERIC_LITERAL.n RBRACK.y
     {:
         return new RegexCount(a, new IntegerLiteral(m), new IntegerLiteral(n));
     :}
