@@ -20,16 +20,22 @@
 
 package abc.weaving.residues;
 
+import java.util.Collections;
+
 import soot.FastHierarchy;
 import soot.Local;
 import soot.PrimType;
+import soot.RefType;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
@@ -172,8 +178,20 @@ public class Bind extends Residue {
                     FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
                     if(hier.canStoreType(from,to)) castneeded=false;
                 }
-                if(!castneeded)
-                    set=variable.set(localgen,units,begin,wc,val);
+                if(!castneeded) {
+                	
+                	if(Debug.v().internStringArguments) {
+	                	RefType stringType = RefType.v("java.lang.String");
+						if(from.equals(stringType)) {
+	                		SootClass stringClass = Scene.v().getSootClass("java.lang.String");
+							AssignStmt internCall = Jimple.v().newAssignStmt(val, Jimple.v().newVirtualInvokeExpr((Local) val, Scene.v().makeMethodRef(stringClass, "intern", Collections.<Type>emptyList(), stringType, false)));
+							units.insertAfter(internCall, begin);
+							begin = internCall;
+	                    }
+                	}
+                	
+                	set=variable.set(localgen,units,begin,wc,val);
+                }
                 else
                     set=variable.set
                         (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));

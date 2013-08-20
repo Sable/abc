@@ -284,6 +284,10 @@ public class Debug {
 
     public boolean traceExecution = false;
     
+    //if enabled, changes Bind residues to automatically intern String arguments to tracematches
+    //this influences the way tracematches match Strings
+    public boolean internStringArguments = false;
+    
 
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
