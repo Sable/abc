@@ -45,15 +45,15 @@ public class CodeGenHelper
     public static final int SKIP_LABEL = 2;
 
     protected TraceMatch tm;
-    protected SootClass thread_local;
+    protected final SootClass thread_local;
     protected SootClass constraint;
     protected SootClass disjunct;
     protected SootClass event;
-    protected SootClass lock;
-    protected SootClass set;
-    protected SootClass cleanup_refs;
-    protected Type object;
-    protected Type object_array;
+    protected final SootClass lock;
+    protected final SootClass set;
+    protected final SootClass cleanup_refs;
+    protected final Type object;
+    protected final Type object_array;
 
     protected String disjuncts_name = null;
     protected String disjuncts_index_name = null;
@@ -228,7 +228,7 @@ public class CodeGenHelper
         SootField field = new SootField(
                                 tm.getName() + "lock",
                                 lock.getType(),
-                                Modifier.PUBLIC);
+                                Modifier.PRIVATE | Modifier.FINAL);
 
         tm.getContainerClass().addField(field);
     }
