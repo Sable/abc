@@ -42,6 +42,7 @@ import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootResolver;
 import soot.jimple.toolkits.base.ExceptionChecker;
 import soot.jimple.toolkits.base.ExceptionCheckerError;
 import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
@@ -264,6 +265,21 @@ public class CompileSequence {
     }
 
     public void output() {
+    	// When running on Android, we need to include our runtime
+    	// classes into the APK
+        if(OptionsParser.v().android()) {
+        	Iterator<SootClass> it = Scene.v().getClasses().snapshotIterator();
+        	while (it.hasNext()) {
+        		SootClass sc = it.next();
+        		if (sc.getName().startsWith("org.aspectbench.runtime.")
+        				|| sc.getName().startsWith("org.aspectbench.tm.runtime.")
+        				|| sc.getName().startsWith("org.aspectj.lang.")) {
+        			Scene.v().forceResolve(sc.getName(), SootClass.BODIES);
+        			sc.setApplicationClass();
+        		}
+        	}
+        }
+    	
         // Write classes
         PackManager.v().writeOutput();
     }
