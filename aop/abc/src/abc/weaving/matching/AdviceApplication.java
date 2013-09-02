@@ -286,14 +286,9 @@ public abstract class AdviceApplication {
     public static Hashtable<SootMethod, MethodAdviceList> computeAdviceLists(GlobalAspectInfo info)
         throws SemanticException
     {
-        Iterator<AbcClass> clsIt;
-
         Hashtable<SootMethod, MethodAdviceList> ret=new Hashtable<SootMethod, MethodAdviceList>();
 
-        for(clsIt=info.getWeavableClasses().iterator();clsIt.hasNext();) {
-
-            final AbcClass cls =  clsIt.next();
-
+        for(final AbcClass cls : info.getWeavableClasses()) {
             SootClass sootCls = cls.getSootClass();
             Iterator<SootMethod> methodIt;
 
