@@ -268,15 +268,23 @@ public class CompileSequence {
     	// When running on Android, we need to include our runtime
     	// classes into the APK
         if(OptionsParser.v().android()) {
-        	Iterator<SootClass> it = Scene.v().getClasses().snapshotIterator();
-        	while (it.hasNext()) {
-        		SootClass sc = it.next();
-        		if (sc.getName().startsWith("org.aspectbench.runtime.")
-        				|| sc.getName().startsWith("org.aspectbench.tm.runtime.")
-        				|| sc.getName().startsWith("org.aspectj.lang.")) {
-        			Scene.v().forceResolve(sc.getName(), SootClass.BODIES);
-        			sc.setApplicationClass();
-        		}
+        	// We need to scan multiple times since resolving a class can give
+        	// us references to further classes we need to resolve.
+        	boolean changed = true;
+        	while (changed) {
+        		changed = false;
+	        	Iterator<SootClass> it = Scene.v().getClasses().snapshotIterator();
+	        	while (it.hasNext()) {
+	        		SootClass sc = it.next();
+	        		if (!sc.isApplicationClass())
+		        		if (sc.getName().startsWith("org.aspectbench.runtime.")
+		        				|| sc.getName().startsWith("org.aspectbench.tm.runtime.")
+		        				|| sc.getName().startsWith("org.aspectj.lang.")) {
+		        			Scene.v().forceResolve(sc.getName(), SootClass.BODIES);
+		        			sc.setApplicationClass();
+		        			changed = true;
+		        		}
+	        	}
         	}
         }
     	
