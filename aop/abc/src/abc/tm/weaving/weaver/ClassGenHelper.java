@@ -155,7 +155,7 @@ public class ClassGenHelper {
     // Relevant members
     TraceMatch curTraceMatch;
     IndexingScheme curIndScheme;
-    SootClass constraint, disjunct, event;
+    private SootClass constraint, disjunct, event;
     
     private SootClass curClass;
     private SootMethod curMethod;
@@ -3727,6 +3727,7 @@ public class ClassGenHelper {
         startMethod(name, param_types, setType, Modifier.PUBLIC);
         Local map = getParamLocal(0, mapType);
         
+        getThisLocal();
         Local[] keys = new Local[depth];
         for(int i = 1; i <= depth; i++) {
             keys[i-1] = getParamLocal(i, objectType);
