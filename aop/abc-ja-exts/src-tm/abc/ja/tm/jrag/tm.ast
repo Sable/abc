@@ -26,5 +26,5 @@ RegexSequence : Regex ::= Lhs:Regex Rhs:Regex;
 RegexSymbol : Regex ::= SymbolAccess;
 RegexStar : Regex ::= Regex;
 RegexPlus : Regex ::= Regex;
-RegexCount : Regex ::= Regex Min:IntegerLiteral Max:IntegerLiteral;
+RegexCount : Regex ::= Regex Min:NumericLiteral Max:NumericLiteral;
 RegexSkipSequence : Regex ::= Lhs:Regex Forbidden:SymbolAccess* Rhs:Regex;
