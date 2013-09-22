@@ -19,7 +19,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 14: "base/test107/make sure new weaves work inside of packages (again)" failed in 980ms, memory usage: 33003528.
+FAIL: Test 14: "base/test107/make sure new weaves work inside of packages (again)" failed in 1077ms, memory usage: 32986992.
 
 
 Running test 26: base/test119/Local declarations in advise bodies
@@ -43,7 +43,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 26: "base/test119/Local declarations in advise bodies" failed in 883ms, memory usage: 32964536.
+FAIL: Test 26: "base/test119/Local declarations in advise bodies" failed in 884ms, memory usage: 32966096.
 
 
 Running test 37: base/test130/multiple arounds successfully intercept and return own values
@@ -67,7 +67,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 37: "base/test130/multiple arounds successfully intercept and return own values" failed in 807ms, memory usage: 32886768.
+FAIL: Test 37: "base/test130/multiple arounds successfully intercept and return own values" failed in 822ms, memory usage: 33176296.
 
 
 Running test 40: base/test134/proper handling of formals in catch advice
@@ -91,7 +91,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 40: "base/test134/proper handling of formals in catch advice" failed in 790ms, memory usage: 33182496.
+FAIL: Test 40: "base/test134/proper handling of formals in catch advice" failed in 852ms, memory usage: 32993816.
 
 
 Running test 45: base/test139/inner aspects and around
@@ -115,7 +115,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 45: "base/test139/inner aspects and around" failed in 860ms, memory usage: 32814024.
+FAIL: Test 45: "base/test139/inner aspects and around" failed in 789ms, memory usage: 32813808.
 
 
 Running test 46: base/test140/aspect inheritance and advice, introduction
@@ -139,7 +139,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 46: "base/test140/aspect inheritance and advice, introduction" failed in 801ms, memory usage: 32629176.
+FAIL: Test 46: "base/test140/aspect inheritance and advice, introduction" failed in 867ms, memory usage: 32628408.
 
 
 Running test 53: new/handle multiple nested inner classes
@@ -147,7 +147,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 575ms, memory usage: 12268056.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 571ms, memory usage: 12318904.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -156,7 +156,7 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1166ms, memory usage: 9391920.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1179ms, memory usage: 9398640.
 
 
 Running test 119: pureJava/finally at the end of a method that needs to return
@@ -186,7 +186,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:324)
 	at abc.main.CompileSequence.weave(CompileSequence.java:434)
 	... 5 more
-FAIL: Test 119: "pureJava/finally at the end of a method that needs to return" failed in 747ms, memory usage: 29910640.
+FAIL: Test 119: "pureJava/finally at the end of a method that needs to return" failed in 975ms, memory usage: 29910288.
 
 
 Running test 153: pureJava/test try/catch/finally statements
@@ -216,13 +216,13 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:324)
 	at abc.main.CompileSequence.weave(CompileSequence.java:434)
 	... 5 more
-FAIL: Test 153: "pureJava/test try/catch/finally statements" failed in 784ms, memory usage: 29757376.
+FAIL: Test 153: "pureJava/test try/catch/finally statements" failed in 1119ms, memory usage: 29760208.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 671ms, memory usage: 15871808.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 668ms, memory usage: 15872736.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -230,7 +230,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 543ms, memory usage: 9621672.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 636ms, memory usage: 9604272.
 
 
 Running test 180: pureJava/nested synchronized blocks have interesting frame location problems
@@ -260,7 +260,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:324)
 	at abc.main.CompileSequence.weave(CompileSequence.java:434)
 	... 5 more
-FAIL: Test 180: "pureJava/nested synchronized blocks have interesting frame location problems" failed in 700ms, memory usage: 29477176.
+FAIL: Test 180: "pureJava/nested synchronized blocks have interesting frame location problems" failed in 740ms, memory usage: 29460136.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -270,7 +270,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1090ms, memory usage: 9685160.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1137ms, memory usage: 9698160.
 
 
 Running test 332: design/reflect/Joinpoint is not created for foo(String) when before() advice is present.
@@ -294,7 +294,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 332: "design/reflect/Joinpoint is not created for foo(String) when before() advice is present." failed in 838ms, memory usage: 33903008.
+FAIL: Test 332: "design/reflect/Joinpoint is not created for foo(String) when before() advice is present." failed in 840ms, memory usage: 33903064.
 
 
 Running test 338: new/properly make choice between cast and parenthesis in parser
@@ -318,7 +318,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 338: "new/properly make choice between cast and parenthesis in parser" failed in 803ms, memory usage: 33418944.
+FAIL: Test 338: "new/properly make choice between cast and parenthesis in parser" failed in 784ms, memory usage: 33422320.
 
 
 Running test 340: new/make sure advice affects introduced methods and constructors
@@ -342,7 +342,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 340: "new/make sure advice affects introduced methods and constructors" failed in 805ms, memory usage: 33025048.
+FAIL: Test 340: "new/make sure advice affects introduced methods and constructors" failed in 872ms, memory usage: 33028912.
 
 
 Running test 341: new/new around construct
@@ -366,7 +366,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 341: "new/new around construct" failed in 771ms, memory usage: 33110128.
+FAIL: Test 341: "new/new around construct" failed in 805ms, memory usage: 33111472.
 
 
 Running test 345: new/advice and package visibility 1
@@ -390,7 +390,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 345: "new/advice and package visibility 1" failed in 841ms, memory usage: 33658888.
+FAIL: Test 345: "new/advice and package visibility 1" failed in 819ms, memory usage: 33661936.
 
 
 Running test 352: new/arndAdvRet/a couple different returns from around advice
@@ -414,7 +414,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 352: "new/arndAdvRet/a couple different returns from around advice" failed in 870ms, memory usage: 32440784.
+FAIL: Test 352: "new/arndAdvRet/a couple different returns from around advice" failed in 880ms, memory usage: 32445176.
 
 
 Running test 361: new/generating the right throws clause for call-site advice (and around)
@@ -438,7 +438,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 361: "new/generating the right throws clause for call-site advice (and around)" failed in 777ms, memory usage: 32879600.
+FAIL: Test 361: "new/generating the right throws clause for call-site advice (and around)" failed in 780ms, memory usage: 32876912.
 
 
 Running test 362: new/advice on calls to static methods using several syntax
@@ -462,7 +462,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 362: "new/advice on calls to static methods using several syntax" failed in 846ms, memory usage: 32941984.
+FAIL: Test 362: "new/advice on calls to static methods using several syntax" failed in 871ms, memory usage: 32953400.
 
 
 Running test 363: new/, PR#249, PR#250 advice on constructor sites
@@ -486,7 +486,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 363: "new/, PR#249, PR#250 advice on constructor sites" failed in 816ms, memory usage: 32173224.
+FAIL: Test 363: "new/, PR#249, PR#250 advice on constructor sites" failed in 833ms, memory usage: 32174920.
 
 
 Running test 364: new/test after throwing advice in several ways
@@ -510,7 +510,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 364: "new/test after throwing advice in several ways" failed in 897ms, memory usage: 32380224.
+FAIL: Test 364: "new/test after throwing advice in several ways" failed in 873ms, memory usage: 32382496.
 
 
 Running test 367: new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method
@@ -534,7 +534,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 367: "new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method" failed in 823ms, memory usage: 32016376.
+FAIL: Test 367: "new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method" failed in 863ms, memory usage: 32015496.
 
 
 Running test 369: new/badCast/and 276 cast error generated by ajc when type not in signature
@@ -558,7 +558,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 369: "new/badCast/and 276 cast error generated by ajc when type not in signature" failed in 824ms, memory usage: 31530848.
+FAIL: Test 369: "new/badCast/and 276 cast error generated by ajc when type not in signature" failed in 789ms, memory usage: 31531264.
 
 
 Running test 372: new/around and calls with both calling and called this params
@@ -582,7 +582,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 372: "new/around and calls with both calling and called this params" failed in 809ms, memory usage: 32139912.
+FAIL: Test 372: "new/around and calls with both calling and called this params" failed in 796ms, memory usage: 32140104.
 
 
 Running test 380: new/Advice on advice
@@ -606,7 +606,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 380: "new/Advice on advice" failed in 838ms, memory usage: 32151568.
+FAIL: Test 380: "new/Advice on advice" failed in 834ms, memory usage: 32146456.
 
 
 Running test 387: new/package wildcards in packages
@@ -630,7 +630,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 387: "new/package wildcards in packages" failed in 822ms, memory usage: 32076768.
+FAIL: Test 387: "new/package wildcards in packages" failed in 832ms, memory usage: 32069032.
 
 
 Running test 389: new/around advice on calls and receptions with lots of context
@@ -654,7 +654,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 389: "new/around advice on calls and receptions with lots of context" failed in 839ms, memory usage: 32094624.
+FAIL: Test 389: "new/around advice on calls and receptions with lots of context" failed in 799ms, memory usage: 32093856.
 
 
 Running test 392: new/many this's into around advice on calls
@@ -678,7 +678,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 392: "new/many this's into around advice on calls" failed in 852ms, memory usage: 32664144.
+FAIL: Test 392: "new/many this's into around advice on calls" failed in 829ms, memory usage: 32676808.
 
 
 Running test 394: new/No boolean appearing in the 'if' clause for around advice with eachJVM()
@@ -702,7 +702,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 394: "new/No boolean appearing in the 'if' clause for around advice with eachJVM()" failed in 879ms, memory usage: 32373912.
+FAIL: Test 394: "new/No boolean appearing in the 'if' clause for around advice with eachJVM()" failed in 914ms, memory usage: 32383928.
 
 
 Running test 398: new/no duplicate advice methods in abstract aspects extended
@@ -726,7 +726,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 398: "new/no duplicate advice methods in abstract aspects extended" failed in 823ms, memory usage: 33782032.
+FAIL: Test 398: "new/no duplicate advice methods in abstract aspects extended" failed in 839ms, memory usage: 33790904.
 
 
 Running test 400: new/Instantiating non-static inner classes in advice.
@@ -750,7 +750,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 400: "new/Instantiating non-static inner classes in advice." failed in 907ms, memory usage: 33233016.
+FAIL: Test 400: "new/Instantiating non-static inner classes in advice." failed in 917ms, memory usage: 33242456.
 
 
 Running test 407: new/Problem resolving meta-joinpoint names with around advice on methods called from around advice.
@@ -774,7 +774,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 407: "new/Problem resolving meta-joinpoint names with around advice on methods called from around advice." failed in 992ms, memory usage: 33571392.
+FAIL: Test 407: "new/Problem resolving meta-joinpoint names with around advice on methods called from around advice." failed in 989ms, memory usage: 33580512.
 
 
 Running test 41001: abctests/new/holding onto proceed calls in a closure-like way
@@ -798,7 +798,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" failed in 914ms, memory usage: 33538888.
+FAIL: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" failed in 870ms, memory usage: 33549304.
 
 
 Running test 411: new/basic test of declare soft
@@ -822,7 +822,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 411: "new/basic test of declare soft" failed in 933ms, memory usage: 33274992.
+FAIL: Test 411: "new/basic test of declare soft" failed in 851ms, memory usage: 33282776.
 
 
 Running test 434: new/strictfp modifier allowed on advice
@@ -846,7 +846,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 434: "new/strictfp modifier allowed on advice" failed in 775ms, memory usage: 32335456.
+FAIL: Test 434: "new/strictfp modifier allowed on advice" failed in 761ms, memory usage: 32320120.
 
 
 Running test 435: new/No argthis was being created for calls advice.
@@ -870,7 +870,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 435: "new/No argthis was being created for calls advice." failed in 866ms, memory usage: 33880480.
+FAIL: Test 435: "new/No argthis was being created for calls advice." failed in 868ms, memory usage: 33869248.
 
 
 Running test 437: new/Null pointer on gets advice showing the case causing the error
@@ -894,7 +894,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 437: "new/Null pointer on gets advice showing the case causing the error" failed in 809ms, memory usage: 33578456.
+FAIL: Test 437: "new/Null pointer on gets advice showing the case causing the error" failed in 797ms, memory usage: 33570544.
 
 
 Running test 439: new/within and withincode (doesn't all work due to local class name issues)
@@ -918,7 +918,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed in 987ms, memory usage: 33120744.
+FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed in 973ms, memory usage: 33132304.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
@@ -942,7 +942,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 984ms, memory usage: 33886032.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 973ms, memory usage: 33886256.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
@@ -966,7 +966,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" failed in 925ms, memory usage: 33699704.
+FAIL: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" failed in 980ms, memory usage: 33872280.
 
 
 Running test 442: new/Arguments to runNext should be final when needed
@@ -990,7 +990,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 442: "new/Arguments to runNext should be final when needed" failed in 836ms, memory usage: 32099328.
+FAIL: Test 442: "new/Arguments to runNext should be final when needed" failed in 896ms, memory usage: 32306872.
 
 
 Running test 455: new/Defines clfow$ajc0 more once. [eachcflow]
@@ -1014,7 +1014,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 455: "new/Defines clfow$ajc0 more once. [eachcflow]" failed in 838ms, memory usage: 33427912.
+FAIL: Test 455: "new/Defines clfow$ajc0 more once. [eachcflow]" failed in 828ms, memory usage: 33591560.
 
 
 Running test 461: new/Null pointer on gets advice with coverage [painful]
@@ -1038,7 +1038,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 461: "new/Null pointer on gets advice with coverage [painful]" failed in 4287ms, memory usage: 55997600.
+FAIL: Test 461: "new/Null pointer on gets advice with coverage [painful]" failed in 4530ms, memory usage: 56226592.
 
 
 Running test 462: new/Basic test for cflow pointcuts [eachcflow]
@@ -1062,7 +1062,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" failed in 899ms, memory usage: 32933304.
+FAIL: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" failed in 859ms, memory usage: 33203448.
 
 
 Running test 465: new/Dave Binkley's problem with eachcflowroot. [eachcflow]
@@ -1086,7 +1086,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 465: "new/Dave Binkley's problem with eachcflowroot. [eachcflow]" failed in 929ms, memory usage: 32727000.
+FAIL: Test 465: "new/Dave Binkley's problem with eachcflowroot. [eachcflow]" failed in 924ms, memory usage: 32792528.
 
 
 Running test 466: new/advice on an inherited method
@@ -1110,7 +1110,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 466: "new/advice on an inherited method" failed in 890ms, memory usage: 33006944.
+FAIL: Test 466: "new/advice on an inherited method" failed in 875ms, memory usage: 32967144.
 
 
 Running test 468: new/various declared exception permutations
@@ -1134,7 +1134,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 468: "new/various declared exception permutations" failed in 887ms, memory usage: 32471152.
+FAIL: Test 468: "new/various declared exception permutations" failed in 820ms, memory usage: 32478096.
 
 
 Running test 469: new/ordering of advice kinds as well as cflow and dominates
@@ -1158,7 +1158,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 973ms, memory usage: 33060168.
+FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 928ms, memory usage: 33062832.
 
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
@@ -1182,7 +1182,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 472: "new/primitive parameters coercable to Object just like return values are" failed in 806ms, memory usage: 32223512.
+FAIL: Test 472: "new/primitive parameters coercable to Object just like return values are" failed in 816ms, memory usage: 32229464.
 
 
 Running test 477: new/Joinpoints are showing up on intermediate call sites
@@ -1206,7 +1206,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 477: "new/Joinpoints are showing up on intermediate call sites" failed in 979ms, memory usage: 33915456.
+FAIL: Test 477: "new/Joinpoints are showing up on intermediate call sites" failed in 990ms, memory usage: 33919216.
 
 
 Running test 483: new/exceptions thrown and caught in advice, particularly try+proceed
@@ -1230,7 +1230,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+proceed" failed in 954ms, memory usage: 33839664.
+FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+proceed" failed in 1018ms, memory usage: 33843104.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -1253,10 +1253,10 @@ Caused by: java.lang.IllegalAccessError
 	at AroundAll.shadow$6(AroundAll.java:6)
 	at A.inline$0$around$1600(AroundAll.java:199)
 	at AroundAll.shadow$8(AroundAll.java:198)
-	at A.inline$30$around$1600(AroundAll.java:199)
+	at A.inline$24$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	... 7 more
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2682ms, memory usage: 16126720.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2629ms, memory usage: 16127736.
 
 
 Running test 498: new/cflowbelow dependencies (from Chris Dutchyn)
@@ -1280,7 +1280,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" failed in 803ms, memory usage: 33259816.
+FAIL: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" failed in 810ms, memory usage: 33258008.
 
 
 Running test 501: new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)
@@ -1304,7 +1304,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" failed in 913ms, memory usage: 33192352.
+FAIL: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" failed in 934ms, memory usage: 33192976.
 
 
 Running test 503: new/anonInnerClass/anonymous inner class with aspect
@@ -1328,7 +1328,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 503: "new/anonInnerClass/anonymous inner class with aspect" failed in 773ms, memory usage: 32982520.
+FAIL: Test 503: "new/anonInnerClass/anonymous inner class with aspect" failed in 759ms, memory usage: 32983480.
 
 
 Running test 504: new/Arguments are not being passed in to calls advice
@@ -1352,7 +1352,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 504: "new/Arguments are not being passed in to calls advice" failed in 886ms, memory usage: 32365848.
+FAIL: Test 504: "new/Arguments are not being passed in to calls advice" failed in 861ms, memory usage: 32371368.
 
 
 Running test 507: new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants
@@ -1376,7 +1376,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 507: "new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants" failed in 871ms, memory usage: 32725232.
+FAIL: Test 507: "new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants" failed in 860ms, memory usage: 32715840.
 
 
 Running test 508: new/NoClassDefFoundError accessing cflow in aspect initialization - after variants
@@ -1400,7 +1400,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 508: "new/NoClassDefFoundError accessing cflow in aspect initialization - after variants" failed in 960ms, memory usage: 32958880.
+FAIL: Test 508: "new/NoClassDefFoundError accessing cflow in aspect initialization - after variants" failed in 930ms, memory usage: 32959816.
 
 
 Running test 511: new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface
@@ -1424,7 +1424,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" failed in 867ms, memory usage: 32455152.
+FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" failed in 875ms, memory usage: 32451512.
 
 
 Running test 513: new/missing method name to synthetic invocation
@@ -1448,7 +1448,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 513: "new/missing method name to synthetic invocation" failed in 821ms, memory usage: 32311360.
+FAIL: Test 513: "new/missing method name to synthetic invocation" failed in 838ms, memory usage: 32302416.
 
 
 Running test 516: new/unreproduced bug with advice - probably UTR
@@ -1472,7 +1472,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 516: "new/unreproduced bug with advice - probably UTR" failed in 1149ms, memory usage: 33421176.
+FAIL: Test 516: "new/unreproduced bug with advice - probably UTR" failed in 880ms, memory usage: 33232448.
 
 
 Running test 519: new/advice formals are just like method formals
@@ -1496,7 +1496,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 519: "new/advice formals are just like method formals" failed in 775ms, memory usage: 33431000.
+FAIL: Test 519: "new/advice formals are just like method formals" failed in 817ms, memory usage: 32436800.
 
 
 Running test 521: new/advice throws clauses must be compatible with joinpoints they apply to
@@ -1520,7 +1520,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 521: "new/advice throws clauses must be compatible with joinpoints they apply to" failed in 920ms, memory usage: 33673072.
+FAIL: Test 521: "new/advice throws clauses must be compatible with joinpoints they apply to" failed in 870ms, memory usage: 33615792.
 
 
 Running test 526: new/cflow alone with around produces compiler bcg StackOverflowError
@@ -1544,7 +1544,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 526: "new/cflow alone with around produces compiler bcg StackOverflowError" failed in 883ms, memory usage: 32869736.
+FAIL: Test 526: "new/cflow alone with around produces compiler bcg StackOverflowError" failed in 848ms, memory usage: 32644536.
 
 
 Running test 545: new/runtime/Exercise runtime classes (optionally in 1.1 VM)
@@ -1568,7 +1568,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" failed in 1915ms, memory usage: 41158048.
+FAIL: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" failed in 1799ms, memory usage: 41128704.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -1586,7 +1586,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1274ms, memory usage: 15468624.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1275ms, memory usage: 15582496.
 
 
 Running test 557: new/simple test for around and casting
@@ -1610,7 +1610,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 557: "new/simple test for around and casting" failed in 820ms, memory usage: 33485320.
+FAIL: Test 557: "new/simple test for around and casting" failed in 812ms, memory usage: 33478768.
 
 
 Running test 558: new/aroundinner/aroundInner 1 - around advice inner Thread subclass running proceed but not writing field
@@ -1634,7 +1634,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 558: "new/aroundinner/aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" failed in 872ms, memory usage: 34437920.
+FAIL: Test 558: "new/aroundinner/aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" failed in 819ms, memory usage: 34430480.
 
 
 Running test 559: new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy
@@ -1658,7 +1658,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 559: "new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" failed in 858ms, memory usage: 33969432.
+FAIL: Test 559: "new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" failed in 817ms, memory usage: 33968128.
 
 
 Running test 560: new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field
@@ -1682,7 +1682,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 560: "new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field" failed in 965ms, memory usage: 33294624.
+FAIL: Test 560: "new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field" failed in 837ms, memory usage: 33129904.
 
 
 Running test 561: new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field
@@ -1706,7 +1706,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 561: "new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field" failed in 955ms, memory usage: 33256120.
+FAIL: Test 561: "new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field" failed in 843ms, memory usage: 33065832.
 
 
 Running test 562: new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface
@@ -1730,7 +1730,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 562: "new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" failed in 959ms, memory usage: 33288680.
+FAIL: Test 562: "new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" failed in 835ms, memory usage: 33047776.
 
 
 Running test 564: new/beautiful recursive computation of factorial with around is now supported
@@ -1754,7 +1754,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 564: "new/beautiful recursive computation of factorial with around is now supported" failed in 834ms, memory usage: 32220544.
+FAIL: Test 564: "new/beautiful recursive computation of factorial with around is now supported" failed in 798ms, memory usage: 32081504.
 
 
 Running test 568: new/unreachable code generated by around advice on the execution of void methods
@@ -1778,7 +1778,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 884ms, memory usage: 32533480.
+FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 854ms, memory usage: 32436976.
 
 
 Running test 569: new/Overriding method implementations using introduction on interfaces
@@ -1802,7 +1802,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 569: "new/Overriding method implementations using introduction on interfaces" failed in 895ms, memory usage: 32680296.
+FAIL: Test 569: "new/Overriding method implementations using introduction on interfaces" failed in 891ms, memory usage: 32635232.
 
 
 Running test 570: new/more coverage for around and concrete methods on interfaces
@@ -1826,7 +1826,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 886ms, memory usage: 32400856.
+FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 865ms, memory usage: 32366728.
 
 
 Running test 572: new/after returning advice order
@@ -1850,7 +1850,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 572: "new/after returning advice order" failed in 850ms, memory usage: 32507672.
+FAIL: Test 572: "new/after returning advice order" failed in 897ms, memory usage: 32491464.
 
 
 Running test 576: new/. Matching arguments in cflow correctly.
@@ -1874,7 +1874,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 576: "new/. Matching arguments in cflow correctly." failed in 818ms, memory usage: 32632048.
+FAIL: Test 576: "new/. Matching arguments in cflow correctly." failed in 835ms, memory usage: 32629064.
 
 
 Running test 577: new/. Binding variables with numbers in their name with pertarget(..)'s.
@@ -1898,7 +1898,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 577: "new/. Binding variables with numbers in their name with pertarget(..)'s." failed in 874ms, memory usage: 32500624.
+FAIL: Test 577: "new/. Binding variables with numbers in their name with pertarget(..)'s." failed in 823ms, memory usage: 32500376.
 
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
@@ -1922,7 +1922,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1006ms, memory usage: 32977480.
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 987ms, memory usage: 32975352.
 
 
 Running test 582: new/subclass advice not run for join points selected by superclass cflow-based pointcuts
@@ -1946,7 +1946,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed in 1396ms, memory usage: 40878520.
+FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed in 1368ms, memory usage: 40878000.
 
 
 Running test 583: new/more issues with abstract aspects and cflow pointcuts
@@ -1970,7 +1970,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 583: "new/more issues with abstract aspects and cflow pointcuts" failed in 908ms, memory usage: 32891040.
+FAIL: Test 583: "new/more issues with abstract aspects and cflow pointcuts" failed in 873ms, memory usage: 32891904.
 
 
 Running test 584: new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects
@@ -1994,7 +1994,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 584: "new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" failed in 832ms, memory usage: 32102104.
+FAIL: Test 584: "new/compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" failed in 835ms, memory usage: 32106104.
 
 
 Running test 593: new/around AST type XXX
@@ -2018,7 +2018,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 593: "new/around AST type XXX" failed in 817ms, memory usage: 33365592.
+FAIL: Test 593: "new/around AST type XXX" failed in 794ms, memory usage: 33392624.
 
 
 Running test 595: new/around all execution with double assignment in initializer (coverage)
@@ -2042,7 +2042,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 595: "new/around all execution with double assignment in initializer (coverage)" failed in 944ms, memory usage: 33571480.
+FAIL: Test 595: "new/around all execution with double assignment in initializer (coverage)" failed in 849ms, memory usage: 34391672.
 
 
 Running test 599: new/unqualified transitive pointcut references not resolved
@@ -2066,7 +2066,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 599: "new/unqualified transitive pointcut references not resolved" failed in 766ms, memory usage: 33229536.
+FAIL: Test 599: "new/unqualified transitive pointcut references not resolved" failed in 783ms, memory usage: 33133536.
 
 
 Running test 606: new/name binding in around cflow
@@ -2090,7 +2090,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 606: "new/name binding in around cflow" failed in 788ms, memory usage: 33250144.
+FAIL: Test 606: "new/name binding in around cflow" failed in 775ms, memory usage: 33142144.
 
 
 Running test 607: new/name binding in around cflow - 2
@@ -2114,7 +2114,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 607: "new/name binding in around cflow - 2" failed in 787ms, memory usage: 32882344.
+FAIL: Test 607: "new/name binding in around cflow - 2" failed in 856ms, memory usage: 32187456.
 
 
 Running test 608: new/around name-binding in cflows using factorial
@@ -2138,7 +2138,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 608: "new/around name-binding in cflows using factorial" failed in 900ms, memory usage: 33449048.
+FAIL: Test 608: "new/around name-binding in cflows using factorial" failed in 887ms, memory usage: 33426544.
 
 
 Running test 613: new/replacing this or target in around advice
@@ -2162,7 +2162,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 613: "new/replacing this or target in around advice" failed in 840ms, memory usage: 32399336.
+FAIL: Test 613: "new/replacing this or target in around advice" failed in 867ms, memory usage: 32374312.
 
 
 Running test 637: new/ajc dies on cflow into field init anon class see knownbugs.txt
@@ -2186,7 +2186,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 637: "new/ajc dies on cflow into field init anon class see knownbugs.txt" failed in 857ms, memory usage: 34156384.
+FAIL: Test 637: "new/ajc dies on cflow into field init anon class see knownbugs.txt" failed in 868ms, memory usage: 34106112.
 
 
 Running test 642: new/bad interaction with after returning, around and void methods (from Rich Price)
@@ -2210,7 +2210,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 642: "new/bad interaction with after returning, around and void methods (from Rich Price)" failed in 799ms, memory usage: 33917624.
+FAIL: Test 642: "new/bad interaction with after returning, around and void methods (from Rich Price)" failed in 794ms, memory usage: 33869552.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -2234,7 +2234,7 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1648ms, memory usage: 15677592.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1630ms, memory usage: 15677888.
 
 
 Running test 649: new/testing and binding args with single indeterminate prefix and suffix
@@ -2265,7 +2265,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" failed in 21532ms, memory usage: 39230424.
+FAIL: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" failed in 22841ms, memory usage: 39230480.
 
 
 Running test 672: base/test131/various forms of package name pattern matching work
@@ -2289,7 +2289,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 672: "base/test131/various forms of package name pattern matching work" failed in 880ms, memory usage: 33799152.
+FAIL: Test 672: "base/test131/various forms of package name pattern matching work" failed in 847ms, memory usage: 33922960.
 
 
 Running test 695: bugs/simple cflow of method execution
@@ -2313,7 +2313,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 695: "bugs/simple cflow of method execution" failed in 799ms, memory usage: 33555392.
+FAIL: Test 695: "bugs/simple cflow of method execution" failed in 797ms, memory usage: 33587872.
 
 
 Running test 728: bugs/percflow code hangs compiler
@@ -2337,7 +2337,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 728: "bugs/percflow code hangs compiler" failed in 805ms, memory usage: 32939528.
+FAIL: Test 728: "bugs/percflow code hangs compiler" failed in 777ms, memory usage: 32950384.
 
 
 Running test 729: bugs/assert and pertarget crashes compiler
@@ -2361,14 +2361,14 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 729: "bugs/assert and pertarget crashes compiler" failed in 829ms, memory usage: 33775464.
+FAIL: Test 729: "bugs/assert and pertarget crashes compiler" failed in 811ms, memory usage: 33787384.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 605ms, memory usage: 14895680.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 606ms, memory usage: 14900568.
 
 
 Running test 745: bugs/Static inner aspects cannot reference user defined pointcuts 2
@@ -2392,13 +2392,13 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 745: "bugs/Static inner aspects cannot reference user defined pointcuts 2" failed in 804ms, memory usage: 33592760.
+FAIL: Test 745: "bugs/Static inner aspects cannot reference user defined pointcuts 2" failed in 783ms, memory usage: 33594560.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 647ms, memory usage: 15314632.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 645ms, memory usage: 15327104.
 
 
 Running test 754: bugs/ajc reports error when encountering static declaration of nested classes
@@ -2422,7 +2422,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 754: "bugs/ajc reports error when encountering static declaration of nested classes" failed in 812ms, memory usage: 34068760.
+FAIL: Test 754: "bugs/ajc reports error when encountering static declaration of nested classes" failed in 813ms, memory usage: 34077112.
 
 
 Running test 762: new/can't apply around advice to the execution of around advice
@@ -2446,7 +2446,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed in 829ms, memory usage: 33812816.
+FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed in 795ms, memory usage: 33818272.
 
 
 Running test 764: bugs/cflow binding issues with ignoring state
@@ -2470,7 +2470,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed in 833ms, memory usage: 33928832.
+FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed in 794ms, memory usage: 33932696.
 
 
 Running test 765: bugs/cflow binding -- original weaver crash
@@ -2494,7 +2494,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 765: "bugs/cflow binding -- original weaver crash" failed in 757ms, memory usage: 32416424.
+FAIL: Test 765: "bugs/cflow binding -- original weaver crash" failed in 751ms, memory usage: 32418648.
 
 
 Running test 769: new/illegal name binding in around cflow
@@ -2518,7 +2518,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 865ms, memory usage: 32598240.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 841ms, memory usage: 32613304.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -2542,7 +2542,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 881ms, memory usage: 32915560.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 854ms, memory usage: 32917224.
 
 
 Running test 782: bugs/Internal compiler error with thisJoinPoint.getStaticPart()
@@ -2566,7 +2566,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()" failed in 833ms, memory usage: 34150264.
+FAIL: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()" failed in 806ms, memory usage: 34149800.
 
 
 Running test 783: bugs/Inconsistant stack height with around
@@ -2590,7 +2590,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 783: "bugs/Inconsistant stack height with around" failed in 836ms, memory usage: 33670952.
+FAIL: Test 783: "bugs/Inconsistant stack height with around" failed in 804ms, memory usage: 33676768.
 
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
@@ -2614,7 +2614,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 7678ms, memory usage: 46020528.
+FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 7494ms, memory usage: 46282200.
 
 
 Running test 785: new/try/finally in around advice (same as ...messy arounds?)
@@ -2638,7 +2638,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed in 1025ms, memory usage: 32652744.
+FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed in 874ms, memory usage: 32973240.
 
 
 Running test 788: bugs/cflow concretization causing assertion failure
@@ -2662,7 +2662,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 788: "bugs/cflow concretization causing assertion failure" failed in 788ms, memory usage: 33115432.
+FAIL: Test 788: "bugs/cflow concretization causing assertion failure" failed in 831ms, memory usage: 33309264.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -2686,7 +2686,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 961ms, memory usage: 17164112.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 958ms, memory usage: 17290384.
 
 
 Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
@@ -2711,7 +2711,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:50: preinitialization(app.C.new())
-FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 759ms, memory usage: 15345528.
+FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 720ms, memory usage: 15530984.
 
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
@@ -2736,7 +2736,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:50: preinitialization(app.C.new())
-FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 725ms, memory usage: 15363720.
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 723ms, memory usage: 15546440.
 
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
@@ -2745,7 +2745,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:17: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 646ms, memory usage: 15328752.
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 648ms, memory usage: 15510536.
 
 
 Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
@@ -2754,7 +2754,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:20: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 639ms, memory usage: 15342128.
+FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 647ms, memory usage: 15524272.
 
 
 Running test 805: bugs/inlineAround/perthis and inline arounds
@@ -2774,7 +2774,7 @@ Caused by: java.lang.IllegalAccessError: tried to access class p1.C from class a
 	at p1.Main.doit(Main.java:9)
 	at p1.Main.main(Main.java:5)
 	... 7 more
-FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1633ms, memory usage: 15990400.
+FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1633ms, memory usage: 16003160.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -2790,7 +2790,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:613)
 	at abc.main.Main.run(Main.java:407)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 641ms, memory usage: 36038088.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 621ms, memory usage: 36138048.
 
 
 Running test 815: bugs/Unexpected Xlint:unresolvableMember warning with withincode
@@ -2814,7 +2814,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" failed in 811ms, memory usage: 33573888.
+FAIL: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" failed in 805ms, memory usage: 33581152.
 
 
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
@@ -2822,7 +2822,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:23: execution(Main.new())
-FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 839ms, memory usage: 13840128.
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 818ms, memory usage: 13904416.
 
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
@@ -2830,7 +2830,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:23: execution(Main.new())
-FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 1208ms, memory usage: 13983632.
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 800ms, memory usage: 14048440.
 
 
 Running test 837: bugs/switch statement in aspects crashes weaving
@@ -2854,7 +2854,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 837: "bugs/switch statement in aspects crashes weaving" failed in 846ms, memory usage: 32605248.
+FAIL: Test 837: "bugs/switch statement in aspects crashes weaving" failed in 833ms, memory usage: 32608128.
 
 
 Running test 840: bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)
@@ -2878,7 +2878,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed in 851ms, memory usage: 33118488.
+FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed in 859ms, memory usage: 33123464.
 
 
 Running test 845: bugs/subtype-qualified pointcut reference
@@ -2902,7 +2902,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 845: "bugs/subtype-qualified pointcut reference" failed in 827ms, memory usage: 33043512.
+FAIL: Test 845: "bugs/subtype-qualified pointcut reference" failed in 861ms, memory usage: 33047768.
 
 
 Running test 870: bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points
@@ -2926,7 +2926,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" failed in 822ms, memory usage: 32161232.
+FAIL: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" failed in 838ms, memory usage: 32122360.
 
 
 Running test 875: bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes
@@ -2950,7 +2950,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 875: "bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes" failed in 847ms, memory usage: 33668664.
+FAIL: Test 875: "bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes" failed in 856ms, memory usage: 33433792.
 
 
 Running test 884: bugs/alias getCause for getWrappedThrowable in SoftException
@@ -2974,7 +2974,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 884: "bugs/alias getCause for getWrappedThrowable in SoftException" failed in 776ms, memory usage: 33790464.
+FAIL: Test 884: "bugs/alias getCause for getWrappedThrowable in SoftException" failed in 823ms, memory usage: 33976472.
 
 
 Running test 885: bugs/Declare soft softening other exception types
@@ -2998,7 +2998,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 885: "bugs/Declare soft softening other exception types" failed in 810ms, memory usage: 31799232.
+FAIL: Test 885: "bugs/Declare soft softening other exception types" failed in 793ms, memory usage: 32436272.
 
 
 Running test 894: bugs/inner aspect containing declare soft
@@ -3022,7 +3022,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 894: "bugs/inner aspect containing declare soft" failed in 825ms, memory usage: 31283536.
+FAIL: Test 894: "bugs/inner aspect containing declare soft" failed in 825ms, memory usage: 31404080.
 
 
 Running test 898: bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits
@@ -3048,7 +3048,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits" failed in 885ms, memory usage: 32526000.
+FAIL: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits" failed in 869ms, memory usage: 32546264.
 
 
 Running test 924: abctests/design/cflow/cflow at handler joinpoints
@@ -3072,7 +3072,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 924: "abctests/design/cflow/cflow at handler joinpoints" failed in 799ms, memory usage: 33620232.
+FAIL: Test 924: "abctests/design/cflow/cflow at handler joinpoints" failed in 769ms, memory usage: 33395984.
 
 
 Running test 930: bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)
@@ -3099,13 +3099,13 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" failed in 2350ms, memory usage: 36520656.
+FAIL: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" failed in 2006ms, memory usage: 36685432.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 117ms, memory usage: 13985760.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 117ms, memory usage: 14091632.
 
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
@@ -3133,7 +3133,7 @@ Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/b
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:39: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:40: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:41: NPE
-FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 759ms, memory usage: 14807832.
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 742ms, memory usage: 14894096.
 
 
 Running test 978: abctests/bugs/cflowbelow in abstract aspects
@@ -3157,7 +3157,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 978: "abctests/bugs/cflowbelow in abstract aspects" failed in 877ms, memory usage: 33099304.
+FAIL: Test 978: "abctests/bugs/cflowbelow in abstract aspects" failed in 809ms, memory usage: 32928536.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
@@ -3165,7 +3165,7 @@ Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/dec
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar, but is in BinaryClasses2.java.
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar:24: No constructor in declared parent matches super call
-FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 703ms, memory usage: 11986328.
+FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 680ms, memory usage: 11996112.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -3174,7 +3174,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 641ms, memory usage: 9718160.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 649ms, memory usage: 9566760.
 
 
 Running test 989: abctests/bugs/lifting if out of cflow, with correct parameters
@@ -3198,7 +3198,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" failed in 864ms, memory usage: 32951176.
+FAIL: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" failed in 822ms, memory usage: 32951408.
 
 
 Running test 990: abctests/bugs/lifting if out of cflow, with correct parameters 2
@@ -3222,7 +3222,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" failed in 914ms, memory usage: 33054688.
+FAIL: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" failed in 840ms, memory usage: 33055032.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -3239,7 +3239,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(cast.jar:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1788ms, memory usage: 15194808.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1756ms, memory usage: 15195280.
 
 
 Running test 993: abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint
@@ -3264,7 +3264,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" failed in 893ms, memory usage: 34009304.
+FAIL: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" failed in 914ms, memory usage: 34022976.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -3285,7 +3285,7 @@ Caused by: soot.SootResolver$SootClassNotFoundException: couldn't find class: E$
 	at abc.main.CompileSequence.compile(CompileSequence.java:362)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:101)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 754ms, memory usage: 29034888.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 747ms, memory usage: 29034232.
 
 
 Running test 1004: abctests/around/initialization/around with initialization
@@ -3309,7 +3309,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1004: "abctests/around/initialization/around with initialization" failed in 839ms, memory usage: 33148440.
+FAIL: Test 1004: "abctests/around/initialization/around with initialization" failed in 850ms, memory usage: 33146704.
 
 
 Running test 1014: abctests/bugs/interaction of named pointcuts and nested cflow
@@ -3333,7 +3333,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed in 842ms, memory usage: 33134256.
+FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed in 850ms, memory usage: 33135656.
 
 
 Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
@@ -3357,7 +3357,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed in 786ms, memory usage: 32010880.
+FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed in 797ms, memory usage: 32009288.
 
 
 Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
@@ -3381,7 +3381,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed in 785ms, memory usage: 31917664.
+FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed in 818ms, memory usage: 31916256.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
@@ -3407,7 +3407,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 1312ms, memory usage: 35757168.
+FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 1270ms, memory usage: 35750656.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
@@ -3433,7 +3433,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 1213ms, memory usage: 35203320.
+FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 1172ms, memory usage: 35193008.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
@@ -3459,7 +3459,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 1136ms, memory usage: 34963776.
+FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 1120ms, memory usage: 34959616.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
@@ -3485,7 +3485,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1135ms, memory usage: 34925272.
+FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1148ms, memory usage: 34924296.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
@@ -3511,7 +3511,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1068ms, memory usage: 34810752.
+FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1020ms, memory usage: 34809448.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
@@ -3537,7 +3537,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1154ms, memory usage: 34731616.
+FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1135ms, memory usage: 34730768.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
@@ -3563,7 +3563,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1105ms, memory usage: 34712152.
+FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1101ms, memory usage: 34711320.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
@@ -3588,7 +3588,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 897ms, memory usage: 34476128.
+FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 900ms, memory usage: 34475224.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
@@ -3613,7 +3613,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 909ms, memory usage: 34754208.
+FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 899ms, memory usage: 34754488.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -3639,7 +3639,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1083ms, memory usage: 35079872.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1117ms, memory usage: 35080168.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
@@ -3665,7 +3665,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1056ms, memory usage: 34762504.
+FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1096ms, memory usage: 34751256.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
@@ -3691,7 +3691,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1215ms, memory usage: 35069784.
+FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1250ms, memory usage: 35075624.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
@@ -3717,7 +3717,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 941ms, memory usage: 33730592.
+FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 940ms, memory usage: 33732584.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
@@ -3743,7 +3743,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1080ms, memory usage: 34805000.
+FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1342ms, memory usage: 34811648.
 
 
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
@@ -3769,7 +3769,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1005ms, memory usage: 34225352.
+FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1052ms, memory usage: 34227904.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
@@ -3795,7 +3795,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1059ms, memory usage: 34063432.
+FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 997ms, memory usage: 34064304.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
@@ -3821,7 +3821,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1044ms, memory usage: 34864488.
+FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1040ms, memory usage: 34866584.
 
 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
@@ -3847,7 +3847,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1022ms, memory usage: 34916688.
+FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1035ms, memory usage: 34917480.
 
 
 Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
@@ -3873,7 +3873,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1025ms, memory usage: 34974168.
+FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1017ms, memory usage: 34974472.
 
 
 Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
@@ -3899,7 +3899,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1027ms, memory usage: 35096392.
+FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1047ms, memory usage: 35098416.
 
 
 Running test 1111: om/prectest/Fib (Aldrich) precedence test
@@ -3924,7 +3924,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1111: "om/prectest/Fib (Aldrich) precedence test" failed in 960ms, memory usage: 35235440.
+FAIL: Test 1111: "om/prectest/Fib (Aldrich) precedence test" failed in 966ms, memory usage: 35219784.
 
 
 Running test 1112: om/prectest/Fib (Aldrich) reverse precedence test
@@ -3949,7 +3949,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" failed in 936ms, memory usage: 35342128.
+FAIL: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" failed in 1471ms, memory usage: 35315704.
 
 
 Running test 1115: om/cflowsigtest/CFlow signature test
@@ -3974,7 +3974,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1115: "om/cflowsigtest/CFlow signature test" failed in 903ms, memory usage: 34764328.
+FAIL: Test 1115: "om/cflowsigtest/CFlow signature test" failed in 909ms, memory usage: 34779968.
 
 
 Running test 1127: om/omantstest/omants test
@@ -3999,7 +3999,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1127: "om/omantstest/omants test" failed in 5866ms, memory usage: 63324200.
+FAIL: Test 1127: "om/omantstest/omants test" failed in 5112ms, memory usage: 63324800.
 
 
 Running test 1200: cflowdepth/Cflowdepth Factorial
@@ -4024,7 +4024,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1200: "cflowdepth/Cflowdepth Factorial" failed in 893ms, memory usage: 35357584.
+FAIL: Test 1200: "cflowdepth/Cflowdepth Factorial" failed in 817ms, memory usage: 35365328.
 
 
 Running test 1201: cflowdepth/Cflowdepth Factorial with arguments
@@ -4049,7 +4049,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" failed in 854ms, memory usage: 35281800.
+FAIL: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" failed in 840ms, memory usage: 35285448.
 
 
 Running test 1202: cflowdepth/Cflowbelowdepth Factorial
@@ -4074,7 +4074,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" failed in 887ms, memory usage: 35212800.
+FAIL: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" failed in 855ms, memory usage: 35211384.
 
 
 Running test 1203: cflowdepth/Cflowbelowdepth Factorial with arguments
@@ -4099,14 +4099,14 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" failed in 863ms, memory usage: 35224624.
+FAIL: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" failed in 848ms, memory usage: 35221064.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 478ms, memory usage: 11211112.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 485ms, memory usage: 11204768.
 
 
 Running test 1212: cflowdepth/Cflowdepth in complicated booleans
@@ -4131,7 +4131,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.weave(CompileSequence.java:520)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed in 868ms, memory usage: 35393480.
+FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed in 853ms, memory usage: 35401608.
 
 
 Running test 1403: abctests/ra/equality/Equality-example for relational aspects
@@ -4157,7 +4157,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 1403: "abctests/ra/equality/Equality-example for relational aspects" failed in 1402ms, memory usage: 40377616.
+FAIL: Test 1403: "abctests/ra/equality/Equality-example for relational aspects" failed in 1692ms, memory usage: 40382080.
 
 
 Running test 1511: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -4181,7 +4181,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.cjp.CompileSequence.weave(CompileSequence.java:200)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1098ms, memory usage: 43887504.
+FAIL: Test 1511: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1069ms, memory usage: 43893048.
 
 
 Running test 1512: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -4205,7 +4205,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.cjp.CompileSequence.weave(CompileSequence.java:200)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1096ms, memory usage: 43886792.
+FAIL: Test 1512: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1080ms, memory usage: 43891496.
 
 
 Running test 1606: abctests/jpi/simplesyntax/JPI syntax - Inheritance2
@@ -4213,7 +4213,7 @@ Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.j
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at abctests/jpi/simplesyntax/InheritanceSyntax2.java:8,60: Unexpected token NUMERIC_LITERAL
-FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 1170ms, memory usage: 33702760.
+FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 1055ms, memory usage: 33712080.
 
 
 Running test 1632: abctests/jpi/weaving/Check Poincut Args
@@ -4252,7 +4252,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1656ms, memory usage: 72028168.
+FAIL: Test 1632: "abctests/jpi/weaving/Check Poincut Args" failed in 1189ms, memory usage: 72025344.
 
 
 Running test 1640: abctests/jpi/matching/Simple Match
@@ -4291,7 +4291,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1640: "abctests/jpi/matching/Simple Match" failed in 1322ms, memory usage: 74081816.
+FAIL: Test 1640: "abctests/jpi/matching/Simple Match" failed in 1212ms, memory usage: 74084944.
 
 
 Running test 1641: abctests/jpi/matching/Dont Match
@@ -4330,7 +4330,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1164ms, memory usage: 71571416.
+FAIL: Test 1641: "abctests/jpi/matching/Dont Match" failed in 1153ms, memory usage: 71573120.
 
 
 Running test 1642: abctests/jpi/matching/Inheritance Match
@@ -4369,7 +4369,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1244ms, memory usage: 73844960.
+FAIL: Test 1642: "abctests/jpi/matching/Inheritance Match" failed in 1193ms, memory usage: 73844312.
 
 
 Running test 1643: abctests/jpi/matching/Inheritance Match 2
@@ -4408,7 +4408,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1353ms, memory usage: 73325744.
+FAIL: Test 1643: "abctests/jpi/matching/Inheritance Match 2" failed in 1285ms, memory usage: 73324808.
 
 
 Running test 1644: abctests/jpi/matching/Inheritance Match 3
@@ -4447,7 +4447,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1444ms, memory usage: 73331944.
+FAIL: Test 1644: "abctests/jpi/matching/Inheritance Match 3" failed in 1252ms, memory usage: 73334352.
 
 
 Running test 1645: abctests/jpi/matching/Inheritance Match 4
@@ -4486,7 +4486,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1402ms, memory usage: 73289328.
+FAIL: Test 1645: "abctests/jpi/matching/Inheritance Match 4" failed in 1285ms, memory usage: 73294256.
 
 
 Running test 1646: abctests/jpi/matching/Double Match
@@ -4525,7 +4525,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1333ms, memory usage: 73344632.
+FAIL: Test 1646: "abctests/jpi/matching/Double Match" failed in 1304ms, memory usage: 73349728.
 
 
 Running test 1648: abctests/jpi/matching/exhibits/collect exhibits clauses
@@ -4564,7 +4564,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1648: "abctests/jpi/matching/exhibits/collect exhibits clauses" failed in 1256ms, memory usage: 71146504.
+FAIL: Test 1648: "abctests/jpi/matching/exhibits/collect exhibits clauses" failed in 1320ms, memory usage: 71152168.
 
 
 Running test 1650: abctests/jpi/FSE-NI/example 1
@@ -4603,7 +4603,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 1424ms, memory usage: 75164416.
+FAIL: Test 1650: "abctests/jpi/FSE-NI/example 1" failed in 1397ms, memory usage: 75159592.
 
 
 Running test 1651: abctests/jpi/FSE-NI/example 2
@@ -4642,7 +4642,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1651: "abctests/jpi/FSE-NI/example 2" failed in 1415ms, memory usage: 75288320.
+FAIL: Test 1651: "abctests/jpi/FSE-NI/example 2" failed in 1334ms, memory usage: 75287128.
 
 
 Running test 1652: abctests/jpi/FSE-NI/example 3
@@ -4681,7 +4681,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1652: "abctests/jpi/FSE-NI/example 3" failed in 1461ms, memory usage: 75870424.
+FAIL: Test 1652: "abctests/jpi/FSE-NI/example 3" failed in 1373ms, memory usage: 75875072.
 
 
 Running test 1653: abctests/jpi/FSE-NI/example 4
@@ -4720,7 +4720,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 1325ms, memory usage: 75694192.
+FAIL: Test 1653: "abctests/jpi/FSE-NI/example 4" failed in 1395ms, memory usage: 75697320.
 
 
 Running test 1654: abctests/jpi/ICSE2012/website example
@@ -4759,7 +4759,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1654: "abctests/jpi/ICSE2012/website example" failed in 1371ms, memory usage: 74923368.
+FAIL: Test 1654: "abctests/jpi/ICSE2012/website example" failed in 1433ms, memory usage: 74923160.
 
 
 Running test 1674: abctests/jpi/GenericAdvice/matching
@@ -4798,7 +4798,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1348ms, memory usage: 74002048.
+FAIL: Test 1674: "abctests/jpi/GenericAdvice/matching" failed in 1310ms, memory usage: 73995072.
 
 
 Running test 1676: abctests/jpi/GenericAdvice/Integer methods on bound type Integer
@@ -4837,7 +4837,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1676: "abctests/jpi/GenericAdvice/Integer methods on bound type Integer" failed in 1230ms, memory usage: 72017336.
+FAIL: Test 1676: "abctests/jpi/GenericAdvice/Integer methods on bound type Integer" failed in 1244ms, memory usage: 72012776.
 
 
 Running test 1678: abctests/jpi/GenericAdvice/type check on Advice specifications
@@ -4876,7 +4876,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 1322ms, memory usage: 73710848.
+FAIL: Test 1678: "abctests/jpi/GenericAdvice/type check on Advice specifications" failed in 1235ms, memory usage: 73714216.
 
 
 Running test 1683: abctests/jpi/GenericAdvice/matching-5
@@ -4915,7 +4915,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1683: "abctests/jpi/GenericAdvice/matching-5" failed in 1278ms, memory usage: 74062480.
+FAIL: Test 1683: "abctests/jpi/GenericAdvice/matching-5" failed in 1255ms, memory usage: 74057600.
 
 
 Running test 1697: abctests/jpi/GlobalJPI/matching_3
@@ -4954,7 +4954,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1208ms, memory usage: 75802264.
+FAIL: Test 1697: "abctests/jpi/GlobalJPI/matching_3" failed in 1175ms, memory usage: 75436528.
 
 
 Running test 1711: abctests/cjp/matching/Check thisJoinPoint.getThis()
@@ -4993,7 +4993,7 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1198ms, memory usage: 73863368.
+FAIL: Test 1711: "abctests/cjp/matching/Check thisJoinPoint.getThis()" failed in 1224ms, memory usage: 74017200.
 
 
 Running test 1712: abctests/cjp/matching/Check thisJoinPoint.getTarget()
@@ -5032,6 +5032,6 @@ Caused by: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 	at abc.ja.jpi.CompileSequence.weave(CompileSequence.java:204)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:116)
 	... 4 more
-FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1146ms, memory usage: 73805752.
+FAIL: Test 1712: "abctests/cjp/matching/Check thisJoinPoint.getTarget()" failed in 1206ms, memory usage: 73992904.
 
 
