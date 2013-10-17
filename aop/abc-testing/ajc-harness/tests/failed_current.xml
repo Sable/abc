@@ -10,6 +10,10 @@
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
         <run class="ConstructorNotFound_PR408"></run>
     </ajc-test>
+<ajc-test title="local types can be bound in the signatures of other local types" pr="547" num="154" keywords="from-resolved_10rc3,from-java" dir="pureJava">
+        <compile files="LocalInners.java"></compile>
+        <run class="LocalInners"></run>
+    </ajc-test>
 <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage line="3" kind="error"></ajcmessage>
@@ -43,6 +47,10 @@
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
     </ajc-test>
+<ajc-test title="unreproduced bug with advice - probably UTR" pr="521" num="516" keywords="from-resolved_10x" dir="new">
+        <compile files="PR520.java"></compile>
+        <run class="PR520"></run>
+    </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
@@ -51,9 +59,17 @@
         <compile files="AroundVoid.java"></compile>
         <run class="AroundVoid"></run>
     </ajc-test>
+<ajc-test title="final local variables may be accessed from inner class" pr="739" num="629" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="LocalsFromInnerCP.java"></compile>
+        <run class="LocalsFromInnerCP"></run>
+    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
+    </ajc-test>
+<ajc-test title="Locals inside other locals, ordering of processing [eh]" num="651" keywords="from-resolved_105" dir="pureJava" abccomment="Verify error in abc and j2j (when --app used).                   Reported to Jennifer, July 1/04 LJH, Fixed July 2/04">
+        <compile files="LocalInners2.java"></compile>
+        <run class="LocalInners2"></run>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
@@ -86,6 +102,17 @@
         	<message line="124" kind="warning"></message>
         </compile>
         <run class="cap.OptionList"></run>
+    </ajc-test>
+<ajc-test title="advise join points in subclass of empty interface" pr="36778" num="786" dir="new">
+        <compile files="EmptyInterface.java"></compile>
+        <run class="EmptyInterface"></run>
+    </ajc-test>
+<ajc-test title="can't put around advice on interface static initializer" pr="36778" num="787" dir="new" comment="this tests for a nice message given a compiler limitation" abccomment="we just produce a warning, and just in one place">
+        <compile files="EmptyInterfaceCE.java">
+        	<ajcmessage line="20" kind="error"></ajcmessage>
+        	<ajcmessage line="23" kind="error"></ajcmessage>
+        	<message line="20" kind="warning"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="arrays via Class.forName()" num="792" dir="new" comment="this is a pureJava test, but we always want to run it">
         <compile files="ClassForName.java"></compile>
@@ -157,6 +184,10 @@
         <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
         </compile>
         <run class="p1.Main"></run>
+    </ajc-test>
+<ajc-test title="Weaver fails with NPE for very large source files " pr="37325" num="808" dir="bugs">
+        <compile files="LongFile.java"></compile>
+        <run class="LongFile"></run>
     </ajc-test>
 <ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
         <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
@@ -252,6 +283,10 @@
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,enableLockPointcuts" files="LockUnlock.java"></compile>
+        <run class="LockUnlock"></run>
     </ajc-test>
 <ajc-test title="JPI syntax - Inheritance2" num="1606" dir="abctests/jpi/simplesyntax">
         <compile options="-ext,abc.ja.jpi" files="InheritanceSyntax2.java">
