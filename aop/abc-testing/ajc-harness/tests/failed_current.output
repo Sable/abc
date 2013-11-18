@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 575ms, memory usage: 13350816.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 605ms, memory usage: 12650536.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,7 +12,7 @@ Commandline: abc -cp new:../../../clara/lib/clara-complete.jar:../../../abc/lib/
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1166ms, memory usage: 9399344.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1205ms, memory usage: 9506072.
 
 
 Running test 154: pureJava/local types can be bound in the signatures of other local types
@@ -39,13 +39,13 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 11 more
-FAIL: Test 154: "pureJava/local types can be bound in the signatures of other local types" failed in 733ms, memory usage: 28749776.
+FAIL: Test 154: "pureJava/local types can be bound in the signatures of other local types" failed in 725ms, memory usage: 28799688.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 752ms, memory usage: 15159280.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 679ms, memory usage: 15979456.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -53,7 +53,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 546ms, memory usage: 9514976.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 559ms, memory usage: 9458664.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -63,7 +63,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1132ms, memory usage: 9539560.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1097ms, memory usage: 9776824.
 
 
 Running test 345: new/advice and package visibility 1
@@ -78,28 +78,28 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.IllegalAccessError: tried to access class packagevisibility.testPackage.Class2 from class packagevisibility.A
-	at packagevisibility.A.inline$0$around$576(PackagesAndAdvice.java:29)
+	at packagevisibility.A.inline$1$around$576(PackagesAndAdvice.java:29)
 	at packagevisibility.testPackage.Class1.doItToClass2(Class1.java:9)
 	at packagevisibility.PackagesAndAdvice.test(PackagesAndAdvice.java:16)
 	at packagevisibility.PackagesAndAdvice.main(PackagesAndAdvice.java:8)
 	... 7 more
-FAIL: Test 345: "new/advice and package visibility 1" failed in 1392ms, memory usage: 15921296.
+FAIL: Test 345: "new/advice and package visibility 1" failed in 1331ms, memory usage: 15923064.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/[Ljava/lang/String;.class not found, skipping...
 Outer.foo() calls Outer.Inner.mi()
-Outer@6c8d306c.foo calls Outer$Inner@29663a21.mi
+Outer@6f089525.foo calls Outer$Inner@1c77e916.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@29663a21.mi calls java.io.PrintStream@767261c2.println
+Outer$Inner@1c77e916.mi calls java.io.PrintStream@467b1f4.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@6c8d306c.foo calls Outer$InnerRandom@412c07d1.nextHook
+Outer@6f089525.foo calls Outer$InnerRandom@519a4fcd.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@412c07d1.nextHook calls Outer$InnerRandom@412c07d1.next
+Outer$InnerRandom@519a4fcd.nextHook calls Outer$InnerRandom@519a4fcd.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@6c8d306c.foo calls X.nextInt
+Outer@6f089525.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -109,7 +109,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:204)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
-	at A.inline$1$around$942(AroundInnerCalls13.java:7)
+	at A.inline$7$around$942(AroundInnerCalls13.java:7)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -118,7 +118,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1800ms, memory usage: 16712936.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 1780ms, memory usage: 16713600.
 
 
 Running test 469: new/ordering of advice kinds as well as cflow and dominates
@@ -126,7 +126,7 @@ Commandline: abc -d new -warn-unused-advice:off new/AdviceOrdering.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/AdviceOrdering.java:22,34-51: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 986ms, memory usage: 16019672.
+FAIL: Test 469: "new/ordering of advice kinds as well as cflow and dominates" failed in 1004ms, memory usage: 16012840.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -144,15 +144,15 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.IllegalAccessError
 	at A.inline$2$around$1600(AroundAll.java:20)
 	at C.shadow$35(AroundAll.java:198)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$29$around$1600(AroundAll.java:199)
 	at C.<clinit>(AroundAll.java:198)
 	at AroundAll.shadow$6(AroundAll.java:6)
 	at A.inline$0$around$1600(AroundAll.java:199)
 	at AroundAll.shadow$8(AroundAll.java:198)
-	at A.inline$22$around$1600(AroundAll.java:199)
+	at A.inline$28$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	... 7 more
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2565ms, memory usage: 16499288.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 2463ms, memory usage: 16520128.
 
 
 Running test 516: new/unreproduced bug with advice - probably UTR
@@ -181,7 +181,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 11 more
-FAIL: Test 516: "new/unreproduced bug with advice - probably UTR" failed in 763ms, memory usage: 30384864.
+FAIL: Test 516: "new/unreproduced bug with advice - probably UTR" failed in 860ms, memory usage: 30383024.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -199,7 +199,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1388ms, memory usage: 15279640.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1376ms, memory usage: 15027856.
 
 
 Running test 568: new/unreachable code generated by around advice on the execution of void methods
@@ -223,7 +223,7 @@ Caused by: java.lang.RuntimeException: Body of method <C: java.lang.Object shado
 	at abc.main.CompileSequence.optimize(CompileSequence.java:264)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:130)
 	... 4 more
-FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 903ms, memory usage: 34064816.
+FAIL: Test 568: "new/unreachable code generated by around advice on the execution of void methods" failed in 868ms, memory usage: 33945672.
 
 
 Running test 629: pureJava/final local variables may be accessed from inner class
@@ -252,7 +252,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 12 more
-FAIL: Test 629: "pureJava/final local variables may be accessed from inner class" failed in 767ms, memory usage: 30122048.
+FAIL: Test 629: "pureJava/final local variables may be accessed from inner class" failed in 768ms, memory usage: 30133344.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -276,7 +276,7 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:413)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1505ms, memory usage: 16050848.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 1516ms, memory usage: 16048800.
 
 
 Running test 651: pureJava/Locals inside other locals, ordering of processing [eh]
@@ -304,26 +304,26 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 11 more
-FAIL: Test 651: "pureJava/Locals inside other locals, ordering of processing [eh]" failed in 774ms, memory usage: 28173072.
+FAIL: Test 651: "pureJava/Locals inside other locals, ordering of processing [eh]" failed in 787ms, memory usage: 28031072.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 614ms, memory usage: 15039944.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 627ms, memory usage: 14975872.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 655ms, memory usage: 15474032.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 657ms, memory usage: 15392824.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 891ms, memory usage: 15987048.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 951ms, memory usage: 15639480.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -331,7 +331,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 725ms, memory usage: 16674016.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 923ms, memory usage: 16643872.
 
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
@@ -347,7 +347,7 @@ Exception Stack Trace:
 
 java.lang.IllegalAccessError: tried to access class java.lang.AbstractStringBuilder from class aspects.Trace
 	at aspects.Trace.traceEnter(Trace.aj:278)
-	at aspects.Trace.inline$29$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -369,10 +369,10 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.IllegalAccessError: tried to access class java.lang.AbstractStringBuilder from class aspects.Trace
 	at aspects.Trace.traceEnter(Trace.aj:278)
-	at aspects.Trace.inline$29$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	... 7 more
-FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 17960ms, memory usage: 20682552.
+FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed in 18741ms, memory usage: 20209624.
 
 
 Running test 786: new/advise join points in subclass of empty interface
@@ -400,7 +400,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 11 more
-FAIL: Test 786: "new/advise join points in subclass of empty interface" failed in 827ms, memory usage: 29107808.
+FAIL: Test 786: "new/advise join points in subclass of empty interface" failed in 776ms, memory usage: 28856056.
 
 
 Running test 787: new/can't put around advice on interface static initializer
@@ -428,7 +428,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 11 more
-FAIL: Test 787: "new/can't put around advice on interface static initializer" failed in 827ms, memory usage: 29045504.
+FAIL: Test 787: "new/can't put around advice on interface static initializer" failed in 774ms, memory usage: 28865608.
 
 
 Running test 792: new/arrays via Class.forName()
@@ -452,7 +452,7 @@ Caused by: java.lang.ClassNotFoundException: [Ljava.lang.String;
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
 	at ClassForName.main(ClassForName.java:9)
 	... 7 more
-FAIL: Test 792: "new/arrays via Class.forName()" failed in 1093ms, memory usage: 16836000.
+FAIL: Test 792: "new/arrays via Class.forName()" failed in 1068ms, memory usage: 16758464.
 
 
 Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
@@ -477,7 +477,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:50: preinitialization(app.C.new())
-FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 808ms, memory usage: 14337928.
+FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed in 766ms, memory usage: 14306368.
 
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
@@ -502,7 +502,7 @@ Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/bina
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:35: Main.stop withincode(void Main.go(String))
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:42: withincode(void Main.stop())
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:50: preinitialization(app.C.new())
-FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 808ms, memory usage: 14334136.
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 791ms, memory usage: 14315232.
 
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
@@ -511,7 +511,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-ajc-1.1.jar:17: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 725ms, memory usage: 14270440.
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 710ms, memory usage: 14274240.
 
 
 Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
@@ -520,7 +520,7 @@ Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:12: execution(void MainExecStartLines.main(String[]))
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/appStartLines-javac-1.4.jar:20: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 726ms, memory usage: 14270592.
+FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed in 706ms, memory usage: 14280856.
 
 
 Running test 805: bugs/inlineAround/perthis and inline arounds
@@ -540,7 +540,7 @@ Caused by: java.lang.IllegalAccessError: tried to access class p1.C from class a
 	at p1.Main.doit(Main.java:9)
 	at p1.Main.main(Main.java:5)
 	... 7 more
-FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1723ms, memory usage: 15452432.
+FAIL: Test 805: "bugs/inlineAround/perthis and inline arounds" failed in 1697ms, memory usage: 15514720.
 
 
 Running test 808: bugs/Weaver fails with NPE for very large source files 
@@ -569,7 +569,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 12 more
-FAIL: Test 808: "bugs/Weaver fails with NPE for very large source files " failed in 863ms, memory usage: 29227328.
+FAIL: Test 808: "bugs/Weaver fails with NPE for very large source files " failed in 780ms, memory usage: 29321760.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -585,7 +585,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:613)
 	at abc.main.Main.run(Main.java:407)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 625ms, memory usage: 32061728.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 604ms, memory usage: 31999792.
 
 
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
@@ -593,7 +593,7 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-javac-1.4.jar:23: execution(Main.new())
-FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 820ms, memory usage: 14346888.
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed in 868ms, memory usage: 14020680.
 
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
@@ -601,13 +601,13 @@ Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../inj
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar, but is in app/Main.java.
 Errors found during this compilation:
 Warning at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/new/binaryWarnings/injars/app-ajc-1.1.jar:23: execution(Main.new())
-FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 844ms, memory usage: 14358496.
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed in 948ms, memory usage: 14108816.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 125ms, memory usage: 14053712.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 123ms, memory usage: 14152456.
 
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
@@ -635,7 +635,7 @@ Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/b
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:39: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:40: NPE
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/bugs/systemouts/injar-debug.jar:41: NPE
-FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 748ms, memory usage: 14872216.
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed in 749ms, memory usage: 14957088.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
@@ -643,7 +643,7 @@ Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/dec
 Found an unexpected error - should be in file /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar, but is in BinaryClasses2.java.
 Errors found during this compilation:
 Semantic Error at /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClasses2.jar:24: No constructor in declared parent matches super call
-FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 626ms, memory usage: 13021912.
+FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed in 624ms, memory usage: 13091800.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -652,7 +652,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 577ms, memory usage: 10564208.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 581ms, memory usage: 10558664.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -669,7 +669,7 @@ java.lang.reflect.InvocationTargetException
 Caused by: java.lang.ClassCastException: CD cannot be cast to CC
 	at Cast.main(Cast.java:5)
 	... 7 more
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1781ms, memory usage: 16180656.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 1720ms, memory usage: 16125040.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -690,7 +690,7 @@ Caused by: soot.SootResolver$SootClassNotFoundException: couldn't find class: E$
 	at abc.main.CompileSequence.compile(CompileSequence.java:362)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:101)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 716ms, memory usage: 30219208.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 708ms, memory usage: 30343688.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -699,14 +699,14 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1195ms, memory usage: 17564504.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1172ms, memory usage: 17539248.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /var/lib/jenkins/workspace/ABC/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 482ms, memory usage: 11565568.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 497ms, memory usage: 11024168.
 
 
 Running test 1219: abctests/eaj/lock_unlock/lock/unlock pointcuts
@@ -735,7 +735,7 @@ Caused by: java.lang.RuntimeException: InnerClass annotation type string must be
 	at soot.javaToJimple.InitialResolver.resolveFromJavaFile(InitialResolver.java:184)
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
 	... 12 more
-FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed in 745ms, memory usage: 32538080.
+FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed in 820ms, memory usage: 32463288.
 
 
 Running test 1606: abctests/jpi/simplesyntax/JPI syntax - Inheritance2
@@ -743,6 +743,6 @@ Commandline: abc -d abctests/jpi/simplesyntax -warn-unused-advice:off -ext abc.j
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at abctests/jpi/simplesyntax/InheritanceSyntax2.java:8,60: Unexpected token NUMERIC_LITERAL
-FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 1157ms, memory usage: 32552176.
+FAIL: Test 1606: "abctests/jpi/simplesyntax/JPI syntax - Inheritance2" failed in 957ms, memory usage: 32527528.
 
 
