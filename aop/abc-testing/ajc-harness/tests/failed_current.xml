@@ -10,6 +10,10 @@
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
         <run class="ConstructorNotFound_PR408"></run>
     </ajc-test>
+<ajc-test title="breaking out of a labeled block inside of an if" num="124" keywords="from-java" dir="pureJava">
+        <compile files="Breaks.java"></compile>
+        <run class="Breaks"></run>
+    </ajc-test>
 <ajc-test title="local types can be bound in the signatures of other local types" pr="547" num="154" keywords="from-resolved_10rc3,from-java" dir="pureJava">
         <compile files="LocalInners.java"></compile>
         <run class="LocalInners"></run>

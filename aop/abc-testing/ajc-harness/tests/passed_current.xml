@@ -508,10 +508,6 @@
         <compile files="PrivateFields.java"></compile>
         <run class="PrivateFields"></run>
     </ajc-test>
-<ajc-test title="breaking out of a labeled block inside of an if" num="124" keywords="from-java" dir="pureJava">
-        <compile files="Breaks.java"></compile>
-        <run class="Breaks"></run>
-    </ajc-test>
 <ajc-test title="abstractifying a method and getting it back through super" num="125" keywords="from-java" dir="pureJava">
         <compile files="Abstracts.java"></compile>
         <run class="Abstracts"></run>
