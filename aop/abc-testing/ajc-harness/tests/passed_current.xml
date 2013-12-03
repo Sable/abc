@@ -3624,11 +3624,6 @@
         <compile options="-source,1.4" files="AssertsCv.java"></compile>
         <run vm="1.4" class="AssertsCv"></run>
     </ajc-test>
-<ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
-        <run vm="1.4" class="AssertInOnePackage"></run>
-    </ajc-test>
 <ajc-test title="assert tests in introduction [requires 1.4]" num="668" keywords="from-14tests,fail-unimplemented" dir="new">
         <compile options="-source,1.4" files="AssertInIntro.java"></compile>
         <run vm="1.4" class="AssertInIntro"></run>
