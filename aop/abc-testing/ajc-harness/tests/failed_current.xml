@@ -75,11 +75,6 @@
         <compile files="LocalInners2.java"></compile>
         <run class="LocalInners2"></run>
     </ajc-test>
-<ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
-        <run vm="1.4" class="AssertInOnePackage"></run>
-    </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
