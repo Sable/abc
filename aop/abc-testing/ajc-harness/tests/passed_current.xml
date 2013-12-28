@@ -74,6 +74,10 @@
         </compile>
         
     </ajc-test>
+<ajc-test title="DEPRECATED: Introduce of constructors" num="25" keywords="from-base" dir="base/test118" abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="Local declarations in advise bodies" num="26" keywords="from-base" dir="base/test119">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -155,6 +159,10 @@
         <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="aspect inheritance and advice, introduction" num="46" keywords="from-base" dir="base/test140">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="thisResultObject for primitives" num="47" keywords="from-base" dir="base/test141">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
@@ -464,6 +472,10 @@
         <compile files="AnonFolding.java"></compile>
         <run class="AnonFolding"></run>
     </ajc-test>
+<ajc-test title="finally at the end of a method that needs to return" num="119" keywords="from-java" dir="pureJava" abccomment="incorrect code generation by j2j for m().  Problem                   reported to Jennifer July 1/04.  LJH                    FIXED July 2/04 LJH">
+        <compile files="FinallyAndReturns.java"></compile>
+        <run class="FinallyAndReturns"></run>
+    </ajc-test>
 <ajc-test title="return;;; is not really legal" num="120" keywords="from-java,purejava" dir="pureJava" abccomment="ajc doesn't report one error per spurious ;, abc does.                   Added additional messages. PA/AGS">
         <compile files="ReachableEmpty.java">
             <ajcmessage line="5" kind="error"></ajcmessage>
@@ -653,6 +665,10 @@
 <ajc-test title="test + and += for strings and variously typed values" num="152" keywords="from-java" dir="pureJava" abccomment="Isolated problem cases and sent BigStringLJH.java to                     Jennifer.  July 2/04 LJH">
         <compile files="BigString.java"></compile>
         <run class="BigString"></run>
+    </ajc-test>
+<ajc-test title="test try/catch/finally statements" num="153" keywords="from-java" dir="pureJava" abccomment="j2j crashes with a stack overflow error.  Reported             to Jennifer, July 2/04 LJH  FIXED July 3/04 LJH">
+        <compile files="TryCatchFinally.java"></compile>
+        <run class="TryCatchFinally"></run>
     </ajc-test>
 <ajc-test title="final constructor parameter causes incorrect compiler error" num="155" keywords="from-java,purejava" dir="new">
         <compile files="FinalConstructorParm.java"></compile>
@@ -2003,6 +2019,10 @@
         <compile files="Overriding.java"></compile>
         <run class="Overriding"></run>
     </ajc-test>
+<ajc-test title="within and introductions behaves correctly" num="322" keywords="from-design" dir="design/intro">
+        <compile files="Within.java"></compile>
+        <run class="Within"></run>
+    </ajc-test>
 <ajc-test title="introduction of static methods and fields on classes and interfaces" num="323" keywords="from-design,knownLimitation" dir="design/intro" abccomment="abc does not implement static intertype fields on interfaces, either. ODM 07/07/04">
         <compile files="Statics.java">
            <message line="46" kind="error"></message>
@@ -2215,6 +2235,14 @@
 <ajc-test title="advice on calls to static methods using several syntax" pr="246" num="362" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
         <compile files="StaticCalls.java"></compile>
         <run class="StaticCalls"></run>
+    </ajc-test>
+<ajc-test title=", PR#249, PR#250 advice on constructor sites" pr="248" num="363" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
+        <compile files="NewSiteAdvice.java"></compile>
+        <run class="NewSiteAdvice"></run>
+    </ajc-test>
+<ajc-test title="test after throwing advice in several ways" num="364" keywords="from-resolved_10x" dir="new" abccomment="the usual problem with around and exception checker. ODM 09/07/04">
+        <compile files="AfterThrowing.java"></compile>
+        <run class="AfterThrowing"></run>
     </ajc-test>
 <ajc-test title="fancy name patterns for method names" num="365" keywords="from-resolved_10x" dir="new">
         <compile files="WildNames.java"></compile>
@@ -2621,6 +2649,10 @@
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
     </ajc-test>
+<ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnInheritedMethod.java"></compile>
+        <run class="AdviceOnInheritedMethod"></run>
+    </ajc-test>
 <ajc-test title=", PR#115 checks the ordering of catch clauses" pr="114" num="467" keywords="from-resolved_10x" dir="new">
         <compile files="OrderOfCatches.java"></compile>
         <run class="OrderOfCatches"></run>
@@ -2656,6 +2688,10 @@
 <ajc-test title="correct types of parameters at call-sites" num="476" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
         <run vm="1.4" class="CallTypes"></run>
+    </ajc-test>
+<ajc-test title="Joinpoints are showing up on intermediate call sites" num="477" keywords="from-resolved_10x" dir="new">
+        <compile files="Counting1.java"></compile>
+        <run class="Counting1"></run>
     </ajc-test>
 <ajc-test title="Reception based on strictfp modifier" num="478" keywords="from-resolved_10x" dir="new">
         <compile files="StrictFpReceptions.java"></compile>
@@ -2693,6 +2729,10 @@
 <ajc-test title="Coverage tests for Member initializers should run before the current class constructor and after super" num="486" keywords="from-resolved_10x" dir="new">
         <compile files="MemberInitializationsAfterExplicitConstructorCallsCoverage.java"></compile>
         <run class="MemberInitializationsAfterExplicitConstructorCallsCoverage"></run>
+    </ajc-test>
+<ajc-test title="thisJoinPoint{Static} not visible in if() pcd of named pointcut" num="487" keywords="from-resolved_10x" dir="new">
+        <compile files="IfPCDExprJoinPointVisibleCE.java"></compile>
+        <run class="IfPCDExprJoinPointVisibleCE"></run>
     </ajc-test>
 <ajc-test title="pcd if() NPE in compiler when unwinding assignment in pcd if(expr)" num="489" keywords="from-resolved_10x" dir="new">
         <compile files="IfPCDExprAssignUnparseFailure.java"></compile>
@@ -2749,6 +2789,10 @@
 <ajc-test title="Arguments are not being passed in to calls advice" pr="335" num="504" keywords="from-resolved_10x" dir="new">
         <compile files="PR335.java"></compile>
         <run class="PR335"></run>
+    </ajc-test>
+<ajc-test title="interfaces as mixins with introduction" num="505" keywords="from-resolved_10x" dir="design/intro" abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04">
+        <compile files="Interfaces.java"></compile>
+        <run class="Interfaces"></run>
     </ajc-test>
 <ajc-test title="ExceptionInInitializerError accessing cflow in aspect initialization - before variants" num="507" keywords="from-resolved_10x" dir="new">
         <compile files="CflowInitInAspectVariantsBefore.java"></compile>
@@ -3200,6 +3244,10 @@
         <compile options="-1.4" files="AroundChangeThis.java"></compile>
         <run class="AroundChangeThis"></run>
     </ajc-test>
+<ajc-test title="default package for aspect introductions is not the current package" pr="548" num="597" keywords="from-resolved_10rc3,from-resolved_104" dir="new">
+        <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
+        <run class="one.TestAspect"></run>
+    </ajc-test>
 <ajc-test title="anon class written to wrong directory" pr="569" num="598" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
         <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
         <run class="a.IntroAnon"></run>
@@ -3497,6 +3545,14 @@
             <message line="67" kind="error"></message>
             <message line="68" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="check arg types with indeterminate prefix and suffix" pr="764" num="648" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArgType.java"></compile>
+        <run class="IndeterminateArgType"></run>
+    </ajc-test>
+<ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" num="649" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArg.java"></compile>
+        <run class="IndeterminateArg"></run>
     </ajc-test>
 <ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" num="650" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateHandlerArg.java"></compile>
@@ -4211,6 +4267,10 @@
 			<jamessage line="10" kind="error"></jamessage>
 		</compile>
 	</ajc-test>
+<ajc-test title="subtype-qualified pointcut reference" pr="40876" num="845" dir="bugs">
+		<compile files="PointcutLibraryTest.java"></compile>
+		<run class="PointcutLibraryTest"></run>
+	</ajc-test>
 <ajc-test title="weaver trace on mis-qualified pointcut reference" pr="40858" num="846" dir="bugs" comment="super is not permitted in pointcuts in 1.1">
 		<compile files="SuperPointcutCE.java">
 			<message line="23" kind="error"></message>
@@ -4505,6 +4565,10 @@
         </compile>
         <run class="SubtypeConstructorCW"></run>
     </ajc-test>
+<ajc-test title="CatchClauseSignature has broken operation" pr="50570" num="917" dir="bugs">
+        <compile files="HandlerSig.java"></compile>
+        <run class="HandlerSig"></run>
+    </ajc-test>
 <ajc-test title="after returning with parameter: matching rules" pr="42668" num="918" dir="new">
         <compile files="AfterReturningParamMatching.java"></compile>
         <run class="AfterReturningParamMatching"></run>
@@ -4513,6 +4577,10 @@
 		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"></compile>
 		<run class="main.Driver"></run>
 	</ajc-test>
+<ajc-test title="thisJoinPoint etc inside if pointcut" num="923" dir="abctests/design/reflection">
+           <compile files="InsideIf.java"></compile>
+           <run class="InsideIf"></run>
+        </ajc-test>
 <ajc-test title="cflow at handler joinpoints" num="924" dir="abctests/design/cflow">
            <compile files="Handler.java"></compile>
            <run class="Handler"></run>
@@ -5457,6 +5525,10 @@
 			<message line="7" kind="warning"></message>
         </compile>
         <run class="ToTestMain"></run>
+    </ajc-test>
+<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
+        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
+        </compile>
     </ajc-test>
 <ajc-test title="Second inherit precedence test (checks for precedence of aspects of included modules)" num="1128" keywords="openmod" dir="om/inheritprectest2">
         <compile options="-ext,abc.om" files="Modules.java,             InheritPrecTestMain2.java">
