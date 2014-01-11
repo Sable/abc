@@ -4737,12 +4737,6 @@
 		<compile options="-Xlint:warning" files="SuidTest.java, Util.java, AfterReturningStaticinitializationAdvice.aj"></compile>
         <run class="Util"></run>
 	</ajc-test>
-<ajc-test title="SUID: Declare extends" pr="41181" num="938" dir="bugs/serialVersionUID" comment="OK">
-		<compile files="Test.java, Util.java"></compile>
-        <run class="Test"></run>
-		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareExtends.aj"></compile>
-        <run class="Util"></run>
-	</ajc-test>
 <ajc-test title="SUID: Declare implements non-Serializable (compile)" pr="41181" num="940" dir="bugs/serialVersionUID" comment="OK because not Serializable">
 		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplements.aj"></compile>
 	</ajc-test>
@@ -5102,9 +5096,6 @@
 <ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
        <compile files="BinaryClasses.jar,Aspect.java"></compile>
        <run class="BinaryClasses"></run>
-    </ajc-test>
-<ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
-        <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
 <ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
 	<compile files="QualThis.java"></compile>

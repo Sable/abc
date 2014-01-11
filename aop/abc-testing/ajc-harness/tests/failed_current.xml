@@ -212,6 +212,12 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
+<ajc-test title="SUID: Declare extends" pr="41181" num="938" dir="bugs/serialVersionUID" comment="OK">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareExtends.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
             <message line="5" kind="warning"></message>
@@ -268,6 +274,9 @@
            
            <message line="24" kind="error" file="BinaryClasses2.java"></message>
        </compile>
+    </ajc-test>
+<ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
+        <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
 <ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
 	<compile files="IntArray.java"></compile>
