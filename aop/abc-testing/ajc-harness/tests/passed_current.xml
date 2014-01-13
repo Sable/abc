@@ -670,6 +670,10 @@
         <compile files="TryCatchFinally.java"></compile>
         <run class="TryCatchFinally"></run>
     </ajc-test>
+<ajc-test title="local types can be bound in the signatures of other local types" pr="547" num="154" keywords="from-resolved_10rc3,from-java" dir="pureJava">
+        <compile files="LocalInners.java"></compile>
+        <run class="LocalInners"></run>
+    </ajc-test>
 <ajc-test title="final constructor parameter causes incorrect compiler error" num="155" keywords="from-java,purejava" dir="new">
         <compile files="FinalConstructorParm.java"></compile>
         <run class="FinalConstructorParm"></run>
@@ -2830,6 +2834,10 @@
         <compile options="-Xlint:ignore" files="PR519.java"></compile>
         <run class="PR519"></run>
     </ajc-test>
+<ajc-test title="unreproduced bug with advice - probably UTR" pr="521" num="516" keywords="from-resolved_10x" dir="new">
+        <compile files="PR520.java"></compile>
+        <run class="PR520"></run>
+    </ajc-test>
 <ajc-test title="introduced inner interfaces accessible inside aspect" pr="494" num="517" keywords="from-resolved_10x" dir="new">
         <compile files="IntroduceInnerInterfaceCP.java"></compile>
         <run class="IntroduceInnerInterfaceCP"></run>
@@ -3446,6 +3454,10 @@
             <message line="81" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="final local variables may be accessed from inner class" pr="739" num="629" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="LocalsFromInnerCP.java"></compile>
+        <run class="LocalsFromInnerCP"></run>
+    </ajc-test>
 <ajc-test title="missing package identifier" pr="723" num="630" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="MissingPackageCE.java">
             <message line="2" kind="error"></message>
@@ -3557,6 +3569,10 @@
 <ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" num="650" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateHandlerArg.java"></compile>
         <run class="IndeterminateHandlerArg"></run>
+    </ajc-test>
+<ajc-test title="Locals inside other locals, ordering of processing [eh]" num="651" keywords="from-resolved_105" dir="pureJava" abccomment="Verify error in abc and j2j (when --app used).                   Reported to Jennifer, July 1/04 LJH, Fixed July 2/04">
+        <compile files="LocalInners2.java"></compile>
+        <run class="LocalInners2"></run>
     </ajc-test>
 <ajc-test title="subclass access to enclosing super class private members" pr="752" num="652" keywords="from-resolved_105,purejava,fail-unimplemented" dir="pureJava">
         <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
@@ -4087,6 +4103,17 @@
         <compile files="TryFinallyInAround.java"></compile>
         <run class="TryFinallyInAround"></run>
     </ajc-test>
+<ajc-test title="advise join points in subclass of empty interface" pr="36778" num="786" dir="new">
+        <compile files="EmptyInterface.java"></compile>
+        <run class="EmptyInterface"></run>
+    </ajc-test>
+<ajc-test title="can't put around advice on interface static initializer" pr="36778" num="787" dir="new" comment="this tests for a nice message given a compiler limitation" abccomment="we just produce a warning, and just in one place">
+        <compile files="EmptyInterfaceCE.java">
+        	<ajcmessage line="20" kind="error"></ajcmessage>
+        	<ajcmessage line="23" kind="error"></ajcmessage>
+        	<message line="20" kind="warning"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="cflow concretization causing assertion failure" pr="36803" num="788" dir="bugs">
         <compile files="CflowConcrete.java"></compile>
         <run class="CflowConcrete"></run>
@@ -4146,6 +4173,10 @@
             <dir-changes expDir="expected"></dir-changes>
         </compile>
         <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="Weaver fails with NPE for very large source files " pr="37325" num="808" dir="bugs">
+        <compile files="LongFile.java"></compile>
+        <run class="LongFile"></run>
     </ajc-test>
 <ajc-test title="CLE: -help usage" num="809" keywords="command-line-error,knownLimitation" dir="harness" comment="can't test -help: has to abort, but returns 0, normal status">
         <compile options="-help" badInput="true">
@@ -5680,6 +5711,10 @@
     </ajc-test>
 <ajc-test title="Pointcut predecence, bug 81" num="1218" dir="abctests/bugs">
         <compile files="PointcutPrecedence.java"></compile>
+    </ajc-test>
+<ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,enableLockPointcuts" files="LockUnlock.java"></compile>
+        <run class="LockUnlock"></run>
     </ajc-test>
 <ajc-test title="warning on restructuring for sync. methods and lock/unlock pointcuts" num="1220" dir="abctests/eaj/lock_unlock">
         <compile options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts" files="SyncMethods.java">
