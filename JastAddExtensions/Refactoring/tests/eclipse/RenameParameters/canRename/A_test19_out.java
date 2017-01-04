@@ -3,8 +3,7 @@ package p;
 class A{
 	A i;
 	void m(A j){
-		j.toString();
-		j.equals(j.toString());
+		j.contentEquals(j.toString())
 		j.i.i= j;
 	};
 }
